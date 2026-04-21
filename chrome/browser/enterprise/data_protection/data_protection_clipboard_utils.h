@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 
+#include "base/functional/callback.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/content_browser_client.h"
@@ -109,6 +110,19 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
 void ReplacePasteToFindBar(
     content::WebContents* web_contents,
     base::OnceCallback<void(std::optional<std::u16string>)> callback);
+
+// Checks if the user is allowed to use the "Search for..." context menu item
+// in the given WebContents based on DataControlsRules policies.
+// Returns true if search is allowed, false otherwise.
+bool IsSearchWithAllowed(content::WebContents* web_contents);
+
+// Checks if the user is allowed to use the "Search for..." context menu item
+// in the given WebContents based on DataControlsRules policies.
+// If the action is allowed (or reported/warned and bypassed),
+// `on_allowed_callback` will be run.
+void ShouldAllowSearchWith(content::WebContents* web_contents,
+                           size_t selection_size,
+                           base::OnceClosure on_allowed_callback);
 
 }  // namespace enterprise_data_protection
 

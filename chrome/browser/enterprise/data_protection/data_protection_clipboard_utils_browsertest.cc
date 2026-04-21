@@ -35,6 +35,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -78,7 +79,7 @@ class DataControlsClipboardUtilsBrowserTest
   DataControlsClipboardUtilsBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         data_controls::kDataControlsDragEnforcement,
-    };
+        data_controls::kDataControlsSearchWith};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1922,6 +1923,178 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
     run_loop.Run();
   }
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsSearchWithAllowed_Allowed) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+  EXPECT_TRUE(IsSearchWithAllowed(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsSearchWithAllowed_Blocked) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "block_rule",
+                                   "rule_id": "444",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  EXPECT_FALSE(IsSearchWithAllowed(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsSearchWithAllowed_Warned) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "warn_rule",
+                                   "rule_id": "333",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  EXPECT_TRUE(IsSearchWithAllowed(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       ShouldAllowSearchWith_Allowed) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectNoReport();
+
+  base::test::TestFuture<void> callback_future;
+  ShouldAllowSearchWith(contents(), 10, callback_future.GetCallback());
+  EXPECT_TRUE(callback_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       ShouldAllowSearchWith_WarnedBypassed) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "warn_rule",
+                                   "rule_id": "333",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("about:blank");
+  expected_event.set_source("about:blank");
+  expected_event.set_destination("");
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(10);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::CLIPBOARD_COPY);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_id(333);
+  triggered_rule.set_rule_name("warn_rule");
+
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+  base::test::TestFuture<void> callback_future;
+  ShouldAllowSearchWith(contents(), 10, callback_future.GetCallback());
+
+  helper.WaitForDialogToInitialize();
+  EXPECT_FALSE(callback_future.IsReady());
+
+  helper.BypassWarning();
+  helper.WaitForDialogToClose();
+
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       ShouldAllowSearchWith_WarnedCanceled) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "warn_rule",
+                                   "rule_id": "333",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("about:blank");
+  expected_event.set_source("about:blank");
+  expected_event.set_destination("");
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(10);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::CLIPBOARD_COPY);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_id(333);
+  triggered_rule.set_rule_name("warn_rule");
+
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
+  base::test::TestFuture<void> callback_future;
+  ShouldAllowSearchWith(contents(), 10, callback_future.GetCallback());
+
+  helper.WaitForDialogToInitialize();
+  EXPECT_FALSE(callback_future.IsReady());
+
+  helper.CloseDialogWithoutBypass();
+  helper.WaitForDialogToClose();
+
+  run_loop.Run();
+
+  EXPECT_FALSE(callback_future.IsReady());
 }
 
 }  // namespace enterprise_data_protection

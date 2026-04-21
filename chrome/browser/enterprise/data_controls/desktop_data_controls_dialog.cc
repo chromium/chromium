@@ -88,8 +88,19 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
                        l10n_util::GetStringUTF16(
                            IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON));
         break;
-      case DataControlsDialog::Type::kClipboardShareWarn:
       case DataControlsDialog::Type::kClipboardActionWarn:
+        SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                   static_cast<int>(ui::mojom::DialogButton::kOk));
+
+        SetButtonLabel(ui::mojom::DialogButton::kOk,
+                       l10n_util::GetStringUTF16(IDS_CANCEL));
+
+        SetButtonStyle(ui::mojom::DialogButton::kCancel,
+                       ui::ButtonStyle::kTonal);
+        SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                       l10n_util::GetStringUTF16(IDS_CONTINUE));
+        break;
+      case DataControlsDialog::Type::kClipboardShareWarn:
       case DataControlsDialog::Type::kClipboardShareBlock:
       case DataControlsDialog::Type::kClipboardActionBlock:
         // These flows are exclusive to mobile.
@@ -129,9 +140,10 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
       case DataControlsDialog::Type::kClipboardCopyWarn:
         id = IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE;
         break;
-
-      case DataControlsDialog::Type::kClipboardShareWarn:
       case DataControlsDialog::Type::kClipboardActionWarn:
+        id = IDS_DATA_CONTROLS_CLIPBOARD_ACTION_WARN_TITLE;
+        break;
+      case DataControlsDialog::Type::kClipboardShareWarn:
       case DataControlsDialog::Type::kClipboardShareBlock:
       case DataControlsDialog::Type::kClipboardActionBlock:
         // These flows are exclusive to mobile.

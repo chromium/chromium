@@ -72,9 +72,10 @@ void DesktopDataControlsDialogTestHelper::BypassWarning() {
   // launching modally, so to avoid that issue accepting/cancelling the dialog
   // is done asynchronously.
   ASSERT_TRUE(dialog_delegate_);
-  ASSERT_TRUE(dialog_->type() ==
-                  DataControlsDialog::Type::kClipboardPasteWarn ||
-              dialog_->type() == DataControlsDialog::Type::kClipboardCopyWarn);
+  ASSERT_TRUE(
+      dialog_->type() == DataControlsDialog::Type::kClipboardPasteWarn ||
+      dialog_->type() == DataControlsDialog::Type::kClipboardCopyWarn ||
+      dialog_->type() == DataControlsDialog::Type::kClipboardActionWarn);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&views::DialogDelegate::CancelDialog,
                                 base::Unretained(dialog_delegate_)));

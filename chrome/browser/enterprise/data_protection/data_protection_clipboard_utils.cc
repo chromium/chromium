@@ -987,4 +987,85 @@ void OnGetSourceClipboardEndpointForFindBar(
   std::move(callback).Run(std::nullopt);
 }
 
+bool IsSearchWithAllowed(content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(data_controls::kDataControlsSearchWith)) {
+    return true;
+  }
+
+  auto source = GetValidURLEndpoint(web_contents);
+  if (!source) {
+    return true;
+  }
+
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source->browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
+
+  return verdict.level() != data_controls::Rule::Level::kBlock;
+}
+
+void ShouldAllowSearchWith(content::WebContents* web_contents,
+                           size_t selection_size,
+                           base::OnceClosure on_allowed_callback) {
+  if (!base::FeatureList::IsEnabled(data_controls::kDataControlsSearchWith)) {
+    std::move(on_allowed_callback).Run();
+    return;
+  }
+
+  auto source = GetValidURLEndpoint(web_contents);
+  if (!source) {
+    std::move(on_allowed_callback).Run();
+    return;
+  }
+
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source->browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
+
+  ui::ClipboardMetadata metadata{
+      .size = selection_size,
+      .format_type = ui::ClipboardFormatType::PlainTextType()};
+
+  switch (verdict.level()) {
+    case data_controls::Rule::Level::kReport:
+      MaybeReportDataControlsCopy(*source, metadata, verdict);
+      [[fallthrough]];
+    case data_controls::Rule::Level::kNotSet:
+    case data_controls::Rule::Level::kAllow:
+      std::move(on_allowed_callback).Run();
+      break;
+    case data_controls::Rule::Level::kWarn: {
+      auto* factory = GetDialogFactory();
+      if (!factory) {
+        LOG(ERROR) << "Failed to retrieve dialog factory";
+        std::move(on_allowed_callback).Run();
+        break;
+      }
+      factory->ShowDialogIfNeeded(
+          web_contents,
+          data_controls::DataControlsDialog::Type::kClipboardActionWarn,
+          base::BindOnce(
+              [](const content::ClipboardEndpoint& source,
+                 const ui::ClipboardMetadata& metadata,
+                 data_controls::Verdict verdict,
+                 base::OnceClosure on_allowed_callback, bool bypassed) {
+                if (bypassed) {
+                  MaybeReportDataControlsCopy(source, metadata, verdict,
+                                              /*bypassed=*/true);
+                  std::move(on_allowed_callback).Run();
+                } else {
+                  MaybeReportDataControlsCopy(source, metadata, verdict,
+                                              /*bypassed=*/false);
+                }
+              },
+              *source, metadata, std::move(verdict),
+              std::move(on_allowed_callback)));
+      break;
+    }
+    case data_controls::Rule::Level::kBlock:
+      LOG(ERROR) << "Block verdict for search with should be unreachable";
+      break;
+  }
+}
+
 }  // namespace enterprise_data_protection
