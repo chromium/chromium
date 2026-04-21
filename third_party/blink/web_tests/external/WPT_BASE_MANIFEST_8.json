@@ -415335,6 +415335,10 @@
         "85fa3b8faeb517e796dfcb9963ec865d395ceb2e",
         []
        ],
+       "tab-size-expected.txt": [
+        "6254e852f8ef53345e3ef3beb9008ac43160c0b3",
+        []
+       ],
        "text-combine-upright-expected.txt": [
         "a066e3953e924ba7c5072a5cc66de6effdaf447e",
         []
@@ -421798,11 +421802,11 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "9c2fbf7eafd9974d6971800d18840e3ba37b66c0",
+      "04efea2f7b20cf579b6330d3b9c223c944828115",
       []
      ],
      "getComputedStyle-pseudo-picker-expected.txt": [
-      "568932199930b8755420af45d49e5cd66d9cfeaa",
+      "21f7e6125718fccd387bb1d052303c7d462e5cb8",
       []
      ],
      "getComputedStyle-resolved-min-size-auto-expected.txt": [
@@ -582450,6 +582454,27 @@
         {}
        ]
       ],
+      "text-decoration-skip-spaces-computed.html": [
+       "cbb1f51a3b8aadf449688f67f891a2fb28fe024b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-decoration-skip-spaces-invalid.html": [
+       "eb73f20318782a2f0e948e616b4252a512445404",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-decoration-skip-spaces-valid.html": [
+       "70dffa041e2e7e86aeda833af846f1426b260808",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-decoration-style-computed.html": [
        "d8e7a22349ae4cbb91288b08aa9ee0538404e40f",
        [
@@ -586394,7 +586419,7 @@
         ]
        ],
        "tab-size.html": [
-        "099349e08ec05f8dde0277528a64151dcad27664",
+        "b0db2d724bbaa319a6ab6c4e22d28b33fa8eea6d",
         [
          null,
          {}
@@ -710487,7 +710512,7 @@
         ]
        ],
        "customizable-combobox-keyboard-behavior.tentative.html": [
-        "8690291fd230d8f32b87725b117c8770dfb22d81",
+        "78c96eabf1c707cf103a11eb3149949e7cce456f",
         [
          null,
          {
