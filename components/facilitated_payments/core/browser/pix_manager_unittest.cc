@@ -402,9 +402,34 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled, CopyTrigger_LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName,
+       ukm::builders::FacilitatedPayments_PixCodeCopied::kHasIframeName});
   EXPECT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("HasIframe"), false);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_LogPixCodeCopied_HasIframe) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableIframeForPix);
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  GURL url("https://example.com/");
+  GURL iframe_url("https://iframe.example.com/");
+  url::Origin origin = url::Origin::Create(url);
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName,
+       ukm::builders::FacilitatedPayments_PixCodeCopied::kHasIframeName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("HasIframe"), true);
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,

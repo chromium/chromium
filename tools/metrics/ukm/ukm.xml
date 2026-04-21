@@ -9340,11 +9340,19 @@ be describing additional metrics about the same event.
 
 <event name="FacilitatedPayments.PixCodeCopied">
   <owner>siashah@google.com</owner>
+  <owner>longsheng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a likely Pix code is copied to the clipboard
-    on any website.
+    on any website. It includes whether the copy event occurred within an
+    iframe.
   </summary>
+  <metric name="HasIframe" enum="Boolean">
+    <summary>
+      A boolean denoting if the Pix code copy event occurred within an iframe or
+      in the mainframe.
+    </summary>
+  </metric>
   <metric name="PixCodeCopied" enum="Boolean">
     <summary>
       Always set to true. So acts as a counter for the number of times a likely

@@ -98,7 +98,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
       &PixManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
   pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
-  LogPixCodeCopied(ukm_source_id_);
+  LogPixCodeCopied(ukm_source_id_, pix_code_is_in_iframe_);
   // TODO(crbug.com/479520609): Stop populating experiment IDs once backend
   // experiment is fully enabled without the integrator trigger.
   if (base::FeatureList::IsEnabled(kEnableIframeForPix)) {
