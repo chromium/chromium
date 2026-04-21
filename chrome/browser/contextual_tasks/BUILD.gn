@@ -81,6 +81,8 @@ source_set("impl") {
     "contextual_tasks_context_signal_utils.h",
     "contextual_tasks_service_factory.cc",
     "contextual_tasks_utils.cc",
+    "site_exclusion_detail.cc",
+    "site_exclusion_detail.h",
   ]
 
   if (is_android) {
