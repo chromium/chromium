@@ -540,17 +540,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad" units="ms" expires_after="2026-03-01">
+<histogram name="DevTools.TraceLoad" units="ms" expires_after="2027-05-01">
   <owner>paulirish@google.com</owner>
   <owner>jacktfranklin@google.com</owner>
   <owner>victorporof@google.com</owner>
   <summary>
     Measures the time a trace is loading. Starts when recording is stopped or
     file/url load was started. Stops after the first render of the flamechart.
+
+    Warning: this histogram was expired from 2026-03-01 to M149 (2026-06-02);
+    data may be missing.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad2" units="ms" expires_after="2025-07-18">
+<histogram name="DevTools.TraceLoad2" units="ms" expires_after="2027-05-01">
   <owner>paulirish@google.com</owner>
   <owner>jacktfranklin@google.com</owner>
   <owner>victorporof@google.com</owner>
@@ -558,6 +561,9 @@ chromium-metrics-reviews@google.com.
     Measures the time a trace is loading. Starts when recording is stopped or
     file/url load was started. Stops after the first render of the flamechart.
     Supports values over 10s.
+
+    Warning: this histogram was expired from 2025-07-18 to M149 (2026-06-02);
+    data may be missing.
   </summary>
 </histogram>
 
