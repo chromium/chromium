@@ -16,7 +16,7 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_navigation_ui_data.h"
 #endif
 
@@ -55,7 +55,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // reflected in the clone.  All owned data members are deep copied.
   std::unique_ptr<content::NavigationUIData> Clone() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   void SetExtensionNavigationUIData(
       std::unique_ptr<extensions::ExtensionNavigationUIData> extension_data);
 
@@ -93,7 +93,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   }
 
  private:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Manages the lifetime of optional ExtensionNavigationUIData information.
   std::unique_ptr<extensions::ExtensionNavigationUIData> extension_data_;
 #endif

@@ -11,6 +11,9 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class NavigationHandle;
