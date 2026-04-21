@@ -19,6 +19,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -37,6 +38,7 @@
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/strike_database/strike_database.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
@@ -611,8 +613,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin,
                                                        delete_end);
-      web_data_service->RemoveEntityInstancesModifiedBetween(delete_begin,
-                                                             delete_end);
+      if (autofill::EntityDataManager* entity_data_manager =
+              IOSAutofillEntityDataManagerFactory::GetForProfile(profile_)) {
+        entity_data_manager->RemoveEntityInstancesModifiedBetween(delete_begin,
+                                                                  delete_end);
+      }
 
       // Clear out the Autofill StrikeDatabase in its entirety.
       strike_database::StrikeDatabase* strike_database =
