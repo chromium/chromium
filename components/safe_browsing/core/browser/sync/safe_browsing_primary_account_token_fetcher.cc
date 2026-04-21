@@ -40,6 +40,9 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
                      weak_ptr_factory_.GetWeakPtr()));
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+
+  // |KImmediate| because access token is considered optional for Safe Browsing
+  // requests. Don't wait for refresh flow if it isn't available.
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           account_id, signin::OAuthConsumerId::kSafeBrowsing,
