@@ -177,8 +177,8 @@ struct NewTabURLDetails {
 #else
     const bool default_is_google = DefaultSearchProviderIsGoogle(profile);
     const GURL local_url(default_is_google
-                             ? chrome::kChromeUINewTabPageURL
-                             : chrome::kChromeUINewTabPageThirdPartyURL);
+                             ? chrome::ChromeUINewTabPageURLAsGURL()
+                             : GURL(chrome::kChromeUINewTabPageThirdPartyURL));
     if (default_is_google) {
       return NewTabURLDetails(local_url, NEW_TAB_URL_VALID);
     }
@@ -246,7 +246,7 @@ bool IsNTPOrRelatedURL(const GURL& url, Profile* profile) {
   }
 
   if (!IsInstantExtendedAPIEnabled()) {
-    return url == chrome::kChromeUINewTabURL;
+    return url == chrome::ChromeUINewTabURLAsGURL();
   }
 
   return profile && IsNTPOrRelatedURLHelper(url, profile);
@@ -294,7 +294,7 @@ bool NavEntryIsInstantNTP(content::WebContents* contents,
 }
 
 bool IsInstantNTPURL(const GURL& url, Profile* profile) {
-  if (MatchesOrigin(url, GURL(chrome::kChromeUINewTabPageURL))) {
+  if (MatchesOrigin(url, chrome::ChromeUINewTabPageURLAsGURL())) {
     return true;
   }
 
@@ -396,7 +396,7 @@ bool HandleNewTabURLReverseRewrite(GURL* url,
   }
 
   if (IsInstantNTPURL(*url, profile)) {
-    *url = GURL(chrome::kChromeUINewTabURL);
+    *url = chrome::ChromeUINewTabURLAsGURL();
     return true;
   }
 

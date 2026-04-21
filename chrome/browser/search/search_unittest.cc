@@ -301,7 +301,7 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
   // Local NTP.
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeUINewTabPageURL));
+  NavigateAndCommitActiveTab(chrome::ChromeUINewTabPageURLAsGURL());
   EXPECT_FALSE(
       NavEntryIsInstantNTP(contents, controller.GetLastCommittedEntry()));
   // Remote NTP.
@@ -312,7 +312,7 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
 
 TEST_F(SearchTest, InstantCacheableNTPNavigationEntryNewProfile) {
   SetSearchProvider(false, false);
-  AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
@@ -331,9 +331,9 @@ TEST_F(SearchTest, NoRewriteInIncognito) {
   TestingProfile* incognito =
       TestingProfile::Builder().BuildIncognito(profile());
   EXPECT_EQ(GURL(), GetNewTabPageURL(incognito));
-  GURL new_tab_url(chrome::kChromeUINewTabURL);
+  GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_FALSE(HandleNewTabURLRewrite(&new_tab_url, incognito));
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), new_tab_url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), new_tab_url);
 }
 
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
@@ -341,7 +341,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
   SetSearchProvider(true, true);
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
-  GURL new_tab_url(chrome::kChromeUINewTabURL);
+  GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
@@ -351,7 +351,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   SetSearchProvider(false, true);
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
-  GURL new_tab_url(chrome::kChromeUINewTabURL);
+  GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
@@ -365,14 +365,14 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
 
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
-  GURL new_tab_url(chrome::kChromeUINewTabURL);
+  GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
 TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;
-  GURL ntp_url(chrome::kChromeUINewTabURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
 
   EXPECT_FALSE(IsNTPOrRelatedURL(invalid_url, profile()));
 
