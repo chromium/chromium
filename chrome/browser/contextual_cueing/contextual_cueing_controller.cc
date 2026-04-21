@@ -24,15 +24,18 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -112,6 +115,8 @@ ContextualCueingController::ContextualCueingController(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
               browser_window_interface_->GetProfile())),
       sync_service_(SyncServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile())),
+      template_url_service_(TemplateURLServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile())) {
   if (page_content_annotations_service_) {
     page_content_annotations_service_->AddObserver(
@@ -148,6 +153,14 @@ void ContextualCueingController::OnPageContentAnnotated(
     RecordContextualCueingDecision(
         ContextualCueingDecision::
             kNoLongerActiveTabAfterCategoryClassification);
+    return;
+  }
+
+  if (!IsUrlEligibleForCue(active_web_contents->GetLastCommittedURL())) {
+    MODEL_EXECUTION_LOG(
+        base::StringPrintf("%s ineligible for cue: URL is ineligible.",
+                           active_web_contents->GetLastCommittedURL().spec()));
+    RecordContextualCueingDecision(ContextualCueingDecision::kUrlNotEligible);
     return;
   }
 
@@ -342,6 +355,20 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   if (IsAllowedToShowCue()) {
     ShowCue(*target_type, *target, std::move(*response));
   }
+}
+
+bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  if (google_util::IsGoogleSearchUrl(url)) {
+    return false;
+  }
+  if (template_url_service_ &&
+      template_url_service_->ExtractSearchMetadata(url)) {
+    return false;
+  }
+  return true;
 }
 
 bool ContextualCueingController::IsAllowedToShowCue() {

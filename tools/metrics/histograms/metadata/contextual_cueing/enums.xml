@@ -104,6 +104,9 @@ chromium-metrics-reviews@google.com.
     Cue could not be shown because too many cues were shown to the user for this
     specific origin recently.
   </int>
+  <int value="20" label="Cue not shown: ineligible URL">
+    Cue could not be shown because the URL is ineligible.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->

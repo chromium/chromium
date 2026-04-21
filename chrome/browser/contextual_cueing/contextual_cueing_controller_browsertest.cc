@@ -120,7 +120,8 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
             response_any, /*execution_info=*/nullptr));
   }
 
-  void SimulateFilterPassed() {
+  void SimulateFilterPassed(
+      const GURL& url = GURL("https://www.activetab.com")) {
     content::WebContents* active_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_web_contents);
@@ -129,7 +130,7 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
             active_web_contents->GetController()
                 .GetLastCommittedEntry()
                 ->GetTimestamp(),
-            GURL("https://www.activetab.com")),
+            url),
         page_content_annotations::PageContentAnnotationsResult::
             CreateCategoryResults({
                 page_content_annotations::Category(
@@ -546,6 +547,60 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
         "ContextualCueing.V2.Decision",
         ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       NonHttpUrlNotEligible) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate a new page load.
+  GURL non_http_url("chrome://settings");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_http_url));
+  SimulateFilterPassed(non_http_url);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Should not be shown.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUrlNotEligible,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       GoogleSearchUrlNotEligible) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate a new page load.
+  GURL search_url("https://www.google.com/search?q=test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  SimulateFilterPassed(search_url);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Should not be shown.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUrlNotEligible,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       OtherSearchEngineUrlNotEligible) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate a new page load.
+  GURL search_url("https://duckduckgo.com/?q=test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+  SimulateFilterPassed(search_url);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Should not be shown.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUrlNotEligible,
+                                      1);
 }
 
 }  // namespace

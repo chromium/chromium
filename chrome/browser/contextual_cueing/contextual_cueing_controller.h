@@ -17,6 +17,7 @@
 class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
 class TabListInterface;
+class TemplateURLService;
 
 namespace actions {
 class ActionItem;
@@ -72,6 +73,9 @@ class ContextualCueingController
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
+  // Whether the URL is eligible for a cue.
+  bool IsUrlEligibleForCue(const GURL& url);
+
   // Returns true if the cue should be shown to the user.
   bool IsAllowedToShowCue();
 
@@ -94,6 +98,7 @@ class ContextualCueingController
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
   raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};
