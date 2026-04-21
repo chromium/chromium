@@ -108,18 +108,11 @@ TEST_F(SqlTrackedSequenceBoundTest, AsyncCallWithArgsThen) {
   EXPECT_TRUE(then_called);
 }
 
-// TODO(crbug.com/504495556): The test is consistently failing on ChromeOS.
-// Re-enable it.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_IntAsyncCall DISABLED_IntAsyncCall
-#else
-#define MAYBE_IntAsyncCall IntAsyncCall
-#endif
-TEST_F(SqlTrackedSequenceBoundTest, MAYBE_IntAsyncCall) {
+TEST_F(SqlTrackedSequenceBoundTest, IntAsyncCall) {
   SqlTrackedSequenceBound<DummyBackend> tracked_sequence_bound(
       base::ThreadPool::CreateSequencedTaskRunner({}), async_task_manager_);
 
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       tracked_sequence_bound.AsyncCall(&DummyBackend::IntMethod),
       "Then\\(\\) not invoked for a method that returns a non-void type");
 }
@@ -151,18 +144,11 @@ TEST_F(SqlTrackedSequenceBoundTest, IntAsyncCallWithArgsThen) {
   EXPECT_EQ(10, then_result);
 }
 
-// TODO(crbug.com/504495556): The test is consistently failing on ChromeOS.
-// Re-enable it.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MissingWithArgs DISABLED_MissingWithArgs
-#else
-#define MAYBE_MissingWithArgs MissingWithArgs
-#endif
-TEST_F(SqlTrackedSequenceBoundTest, MAYBE_MissingWithArgs) {
+TEST_F(SqlTrackedSequenceBoundTest, MissingWithArgs) {
   SqlTrackedSequenceBound<DummyBackend> tracked_sequence_bound(
       base::ThreadPool::CreateSequencedTaskRunner({}), async_task_manager_);
 
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       tracked_sequence_bound.AsyncCall(&DummyBackend::VoidMethodWithArgs),
       "Wrong number of arguments provided to WithArgs");
 }
