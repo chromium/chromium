@@ -104,8 +104,14 @@ BASE_FEATURE(kContextualTasksUpdateModelOnNavigation,
 
 BASE_FEATURE(kContextualTasksVideoCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksPdfCitations, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUpdateModelOnNavigation);
+}
+
+bool GetIsContextualTasksPdfCitationsEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
 
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(

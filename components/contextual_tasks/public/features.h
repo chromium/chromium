@@ -75,7 +75,13 @@ BASE_DECLARE_FEATURE(kContextualTasksUpdateModelOnNavigation);
 // navigating.
 BASE_DECLARE_FEATURE(kContextualTasksVideoCitations);
 
+// Enables intercepting PDF links with page numbers to scroll to page instead of
+// navigating.
+BASE_DECLARE_FEATURE(kContextualTasksPdfCitations);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
+
+bool GetIsContextualTasksPdfCitationsEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
