@@ -861,7 +861,15 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         DefaultSymbolWithPointSize(kPasteActionSymbol, kSymbolActionPointSize);
 
     // Copy link action.
-    if (!self.locationBarSteadyView.hidden) {
+    BOOL canShowCopyLinkAction = NO;
+    if (IsChromeNextIaEnabled()) {
+      canShowCopyLinkAction =
+          !self.locationBarSteadyView.isHidden && !(_isNTP && self.incognito);
+    } else {
+      canShowCopyLinkAction = !self.locationBarSteadyView.isHidden;
+    }
+
+    if (canShowCopyLinkAction) {
       UIAction* copyAction = [UIAction
           actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
                     image:DefaultSymbolWithPointSize(kCopyActionSymbol,
