@@ -173,6 +173,9 @@ void RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
 
 ScopedJavaLocalRef<jobject> ToJniCallback(JNIEnv* env,
                                           base::OnceClosure&& callback) {
+  if (callback.is_null()) {
+    return nullptr;
+  }
   return ToJniCallback(env, base::BindOnce(
                                 [](base::OnceClosure captured_callback,
                                    const jni_zero::JavaRef<jobject>& j_null) {
@@ -187,6 +190,9 @@ ScopedJavaLocalRef<jobject> ToJniCallback(JNIEnv* env,
 ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {
+  if (callback.is_null()) {
+    return nullptr;
+  }
   return ToJniCallback(env,
                        base::BindRepeating(
                            [](const base::RepeatingClosure& captured_callback,
@@ -201,6 +207,9 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
 
 ScopedJavaLocalRef<jobject> ToJniCallback(JNIEnv* env,
                                           base::RepeatingClosure&& callback) {
+  if (callback.is_null()) {
+    return nullptr;
+  }
   return ToJniCallback(env, base::BindRepeating(
                                 [](base::RepeatingClosure captured_callback,
                                    const jni_zero::JavaRef<jobject>& j_null) {

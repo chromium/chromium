@@ -11,6 +11,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -234,9 +236,6 @@ float GetScaleFactor(WindowAndroid* window) {
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> title = ConvertUTF16ToJavaString(
-      env, dialog_model_->title(DialogModelHost::GetPassKey()));
-
   ScopedJavaLocalRef<jstring> ok_button_label = GetButtonLabel(
       env, dialog_model_->ok_button(DialogModelHost::GetPassKey()), IDS_APP_OK);
   ScopedJavaLocalRef<jstring> cancel_button_label = GetButtonLabel(
@@ -246,15 +245,14 @@ void ModalDialogWrapper::BuildPropertyModel() {
   ModalDialogButtonStyles buttonStyles = GetButtonStyles();
 
   Java_ModalDialogWrapper_withTitleAndButtons(
-      env, java_obj_, title, ok_button_label, cancel_button_label,
-      static_cast<int>(buttonStyles));
+      env, java_obj_, dialog_model_->title(DialogModelHost::GetPassKey()),
+      ok_button_label, cancel_button_label, static_cast<int>(buttonStyles));
 
   float scale = GetScaleFactor(window_android_);
   SkBitmap bitmap =
       getIconBitmap(dialog_model_->icon(DialogModelHost::GetPassKey()), scale);
   if (!bitmap.isNull()) {
-    Java_ModalDialogWrapper_withTitleIcon(env, java_obj_,
-                                          gfx::ConvertToJavaBitmap(bitmap));
+    Java_ModalDialogWrapper_withTitleIcon(env, java_obj_, bitmap);
   }
 
   std::u16string checkbox_text;
@@ -312,49 +310,36 @@ void ModalDialogWrapper::BuildPropertyModel() {
 
   if (!all_paragraph_spans.empty()) {
     // vector<vector<u16string>> -> String[][]
-    ScopedJavaLocalRef<jclass> string_array_class =
-        base::android::GetClass(env, "[Ljava/lang/String;");
-    auto java_spans_array = jni_zero::AdoptRef(
-        env, env->NewObjectArray(all_paragraph_spans.size(),
-                                 string_array_class.obj(), nullptr));
-    for (size_t i = 0; i < all_paragraph_spans.size(); ++i) {
-      ScopedJavaLocalRef<jobjectArray> inner_array =
-          base::android::ToJavaArrayOfStrings(env, all_paragraph_spans[i]);
-      env->SetObjectArrayElement(java_spans_array.obj(), i, inner_array.obj());
+    ScopedJavaLocalRef<jobjectArray> first_spans_array = jni_zero::ToJniArray(
+        env, all_paragraph_spans[0], jni_zero::g_string_class);
+    jclass string_array_class = env->GetObjectClass(first_spans_array.obj());
+    ScopedJavaLocalRef<jobjectArray> java_spans_array =
+        jni_zero::NewArray<jobjectArray>(env, all_paragraph_spans.size(),
+                                         string_array_class);
+    java_spans_array.Set(env, 0, first_spans_array);
+
+    for (size_t i = 1; i < all_paragraph_spans.size(); ++i) {
+      ScopedJavaLocalRef<jobjectArray> spans_array = jni_zero::ToJniArray(
+          env, all_paragraph_spans[i], jni_zero::g_string_class);
+      java_spans_array.Set(env, i, spans_array);
     }
 
-    // Create the 2D Java array for callbacks.
-    ScopedJavaLocalRef<jclass> jni_callback_class =
-        base::android::GetClass(env, "org/chromium/base/JniRepeatingCallback");
+    jclass jni_callback_class =
+        org_chromium_base_JniRepeatingCallback_clazz(env);
+    ScopedJavaLocalRef<jobjectArray> first_callbacks_array =
+        jni_zero::ToJniArray(env, all_paragraph_closures[0],
+                             jni_callback_class);
+    jclass callback_array_class =
+        env->GetObjectClass(first_callbacks_array.obj());
+    ScopedJavaLocalRef<jobjectArray> java_callbacks_array =
+        jni_zero::NewArray<jobjectArray>(env, all_paragraph_closures.size(),
+                                         callback_array_class);
+    java_callbacks_array.Set(env, 0, first_callbacks_array);
 
-    // To get the class for an array of JniRepeatingCallback, we can create a
-    // dummy array and get its class. This is necessary because the standard
-    // "[Lorg/chromium/base/JniRepeatingCallback;" does not work.
-    ScopedJavaLocalRef<jobjectArray> dummy_array = jni_zero::AdoptRef(
-        env, env->NewObjectArray(0, jni_callback_class.obj(), nullptr));
-    CHECK(dummy_array);
-    ScopedJavaLocalRef<jclass> jni_callback_array_class =
-        jni_zero::AdoptRef(env, env->GetObjectClass(dummy_array.obj()));
-    CHECK(jni_callback_array_class);
-
-    auto java_callbacks_array = jni_zero::AdoptRef(
-        env, env->NewObjectArray(all_paragraph_closures.size(),
-                                 jni_callback_array_class.obj(), nullptr));
-
-    for (size_t i = 0; i < all_paragraph_closures.size(); ++i) {
-      std::vector<ScopedJavaLocalRef<jobject>> jobjects;
-      for (const auto& closure : all_paragraph_closures[i]) {
-        if (closure) {
-          jobjects.push_back(base::android::ToJniCallback(env, closure));
-        } else {
-          jobjects.push_back(nullptr);
-        }
-      }
-      ScopedJavaLocalRef<jobjectArray> inner_array =
-          base::android::ToJavaArrayOfObjects(env, jni_callback_class.obj(),
-                                              jobjects);
-      env->SetObjectArrayElement(java_callbacks_array.obj(), i,
-                                 inner_array.obj());
+    for (size_t i = 1; i < all_paragraph_closures.size(); ++i) {
+      ScopedJavaLocalRef<jobjectArray> callbacks_array = jni_zero::ToJniArray(
+          env, all_paragraph_closures[i], jni_callback_class);
+      java_callbacks_array.Set(env, i, callbacks_array);
     }
 
     Java_ModalDialogWrapper_withMessageParagraphs(
@@ -362,29 +347,13 @@ void ModalDialogWrapper::BuildPropertyModel() {
   }
 
   if (!checkbox_text.empty()) {
-    ScopedJavaLocalRef<jstring> java_checkbox_label =
-        ConvertUTF16ToJavaString(env, checkbox_text);
-    Java_ModalDialogWrapper_withCheckbox(env, java_obj_, java_checkbox_label,
+    Java_ModalDialogWrapper_withCheckbox(env, java_obj_, checkbox_text,
                                          checked);
   }
 
   if (!menu_item_icons.empty()) {
-    ScopedJavaLocalRef<jclass> bitmap_class =
-        base::android::GetClass(env, "android/graphics/Bitmap");
-    auto java_icons_array = jni_zero::AdoptRef(
-        env, env->NewObjectArray(menu_item_icons.size(), bitmap_class.obj(),
-                                 nullptr));
-    for (size_t i = 0; i < menu_item_icons.size(); ++i) {
-      env->SetObjectArrayElement(
-          java_icons_array.obj(), i,
-          gfx::ConvertToJavaBitmap(menu_item_icons[i]).obj());
-    }
-
-    ScopedJavaLocalRef<jobjectArray> java_labels_array =
-        base::android::ToJavaArrayOfStrings(env, menu_item_labels);
-
-    Java_ModalDialogWrapper_withMenuItems(env, java_obj_, java_icons_array,
-                                          java_labels_array);
+    Java_ModalDialogWrapper_withMenuItems(env, java_obj_, menu_item_icons,
+                                          menu_item_labels);
   }
 }
 

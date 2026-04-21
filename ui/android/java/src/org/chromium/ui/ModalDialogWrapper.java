@@ -18,6 +18,7 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.JniRepeatingCallback;
@@ -71,7 +72,10 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @CalledByNative
     private void withTitleAndButtons(
-            String title, String positiveButton, String negativeButton, int buttonStyles) {
+            @JniType("std::u16string") String title,
+            String positiveButton,
+            String negativeButton,
+            int buttonStyles) {
         mPropertyModelBuilder
                 .with(ModalDialogProperties.TITLE, title)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButton)
@@ -80,7 +84,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     }
 
     @CalledByNative
-    private void withTitleIcon(Bitmap iconBitmap) {
+    private void withTitleIcon(@JniType("SkBitmap") Bitmap iconBitmap) {
         if (mContext == null) return;
         Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
         mPropertyModelBuilder.with(ModalDialogProperties.TITLE_ICON, iconDrawable);
@@ -138,7 +142,9 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     }
 
     @CalledByNative
-    private void withMenuItems(Bitmap[] icons, String[] texts) {
+    private void withMenuItems(
+            @JniType("std::vector<SkBitmap>") Bitmap[] icons,
+            @JniType("std::vector<std::u16string>") String[] texts) {
         if (mContext == null) return;
         assert icons.length == texts.length
                 : "Menu item icons and texts must have the same length.";
@@ -159,7 +165,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     }
 
     @CalledByNative
-    private void withCheckbox(String text, boolean isChecked) {
+    private void withCheckbox(@JniType("std::u16string") String text, boolean isChecked) {
         mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_TEXT, text);
         mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_CHECKED, isChecked);
     }

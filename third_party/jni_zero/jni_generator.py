@@ -406,8 +406,13 @@ class JniObject:
       for cbn in c.called_by_natives:
         for param in cbn.params:
           java_type = param.java_type
-          if java_type.is_object_array() and java_type.converted_type:
-            ret.add(java_type.java_class)
+          # Arrays with @JniType need class accessors, but users will likely
+          # need the class accessors when not using @JniType as well.
+          if java_type.is_array() and java_type.java_class:
+            if upper_bound_type := java_type.java_class.upper_bound_type:
+              ret.add(upper_bound_type.java_class)
+            else:
+              ret.add(java_type.java_class)
 
     # jclasses required for @JniType conversions.
     for native in self.proxy_natives:

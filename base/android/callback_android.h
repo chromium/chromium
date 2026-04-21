@@ -303,6 +303,13 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
   return base::android::ToJniCallback(env, std::move(callback));
 }
 
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<base::RepeatingClosure>(
+    JNIEnv* env,
+    const base::RepeatingClosure& callback) {
+  return base::android::ToJniCallback(env, callback);
+}
+
 template <typename R, typename... Args>
 inline ScopedJavaLocalRef<jobject> ToJniType(
     JNIEnv* env,

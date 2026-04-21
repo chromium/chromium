@@ -353,6 +353,12 @@ class JavaRef : public JavaRef<jobject> {
     return Get(env, index).template ConvertTo<U>(env);
   }
 
+  void Set(JNIEnv* env, int32_t index, const JavaRef<jobject>& value) const
+    requires std::is_same_v<T, jobjectArray>
+  {
+    env->SetObjectArrayElement(this->obj(), index, value.obj());
+  }
+
   template <typename U>
   void CopyTo(JNIEnv* env, std::vector<ScopedJavaLocalRef<U>>* buf) const
     requires std::is_convertible_v<T, jobjectArray>;
@@ -398,6 +404,12 @@ class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
   template <typename U>
   U GetAs(JNIEnv* env, int32_t index) const {
     return Get(env, index).template ConvertTo<U>(env);
+  }
+
+  template <typename U>
+    requires internal::IsConvertableJObject<T, U>
+  void Set(JNIEnv* env, int32_t index, const JavaRef<U>& value) const {
+    env->SetObjectArrayElement(this->obj(), index, value.obj());
   }
 
   JArrayView<T> CreateView(JNIEnv* env) const [[clang::lifetimebound]] {
