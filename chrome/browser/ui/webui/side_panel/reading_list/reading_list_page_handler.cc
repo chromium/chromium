@@ -156,11 +156,11 @@ ReadingListPageHandler::ReadingListPageHandler(
     mojo::PendingRemote<reading_list::mojom::Page> page,
     ReadingListUI* reading_list_ui,
     content::WebUI* web_ui)
-    : receiver_(this, std::move(receiver)),
+    : content::WebContentsObserver(web_ui->GetWebContents()),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       reading_list_ui_(reading_list_ui),
       web_ui_(web_ui),
-      web_contents_(web_ui->GetWebContents()),
       clock_(base::DefaultClock::GetInstance()) {
   Profile* profile = Profile::FromWebUI(web_ui);
   DCHECK(profile);
@@ -302,12 +302,20 @@ void ReadingListPageHandler::GetWindowData(GetWindowDataCallback callback) {
   std::move(callback).Run(std::move(windows));
 }
 
+void ReadingListPageHandler::WebContentsDestroyed() {
+  reading_list_model_scoped_observation_.Reset();
+  reading_list_model_ = nullptr;
+}
+
 void ReadingListPageHandler::ReadingListModelCompletedBatchUpdates(
     const ReadingListModel* model) {
+  CHECK(web_contents());
   DCHECK(model == reading_list_model_);
-  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN) {
+
+  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
     return;
   }
+
   page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
   UpdateCurrentPageActionButton();
   reading_list_model_->MarkAllSeen();
@@ -324,8 +332,10 @@ void ReadingListPageHandler::ReadingListModelBeingDeleted(
 
 void ReadingListPageHandler::ReadingListDidApplyChanges(
     ReadingListModel* model) {
+  CHECK(web_contents());
   DCHECK(model == reading_list_model_);
-  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+
+  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN ||
       reading_list_model_->IsPerformingBatchUpdates()) {
     return;
   }
@@ -413,7 +423,8 @@ std::string ReadingListPageHandler::GetTimeSinceLastUpdate(
 }
 
 void ReadingListPageHandler::UpdateCurrentPageActionButton() {
-  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+  CHECK(web_contents());
+  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN ||
       Profile::FromWebUI(web_ui_)->IsGuestSession()) {
     return;
   }
