@@ -87,64 +87,6 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
   }
 }
 
-// Populates `InputTypeRule` for `omnibox::INPUT_TYPE_DRIVE` if it does
-// not exist.
-void MaybePopulateDriveInputTypeRule(omnibox::SearchboxConfig* config) {
-  if (!config) {
-    return;
-  }
-  omnibox::RuleSet* rule_set = config->mutable_rule_set();
-
-  bool drive_rule_exists =
-      std::ranges::any_of(rule_set->input_type_rules(), [](const auto& rule) {
-        return rule.input_type() == omnibox::INPUT_TYPE_DRIVE;
-      });
-
-  // Populate `InputTypeRule` for `omnibox::INPUT_TYPE_DRIVE`.
-  if (!drive_rule_exists) {
-    omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
-    new_rule->set_input_type(omnibox::INPUT_TYPE_DRIVE);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_DRIVE);
-  }
-
-  // Add `omnibox::INPUT_TYPE_DRIVE` to the `allowed_input_types` in
-  // `ToolRule` for all tools if the tool allows both images and files.
-  for (auto& tool_rule : *rule_set->mutable_tool_rules()) {
-    bool has_image = false;
-    bool has_file = false;
-    for (const auto& input_type : tool_rule.allowed_input_types()) {
-      if (input_type == omnibox::INPUT_TYPE_LENS_IMAGE) {
-        has_image = true;
-      } else if (input_type == omnibox::INPUT_TYPE_LENS_FILE) {
-        has_file = true;
-      }
-    }
-    if (has_image && has_file) {
-      tool_rule.add_allowed_input_types(omnibox::INPUT_TYPE_DRIVE);
-    }
-  }
-
-  // Add `omnibox::INPUT_TYPE_DRIVE` to the `allowed_input_types` in
-  // `ModelRule` for all models if the model allows both images and files.
-  for (auto& model_rule : *rule_set->mutable_model_rules()) {
-    bool has_image = false;
-    bool has_file = false;
-    for (const auto& input_type : model_rule.allowed_input_types()) {
-      if (input_type == omnibox::INPUT_TYPE_LENS_IMAGE) {
-        has_image = true;
-      } else if (input_type == omnibox::INPUT_TYPE_LENS_FILE) {
-        has_file = true;
-      }
-    }
-    if (has_image && has_file) {
-      model_rule.add_allowed_input_types(omnibox::INPUT_TYPE_DRIVE);
-    }
-  }
-}
-
 std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
     const GURL& active_url,
     const std::vector<omnibox::ModelConfig>& model_configs,
@@ -210,11 +152,6 @@ InputStateModel::InputStateModel(
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
-  if (is_signed_in_ && base::FeatureList::IsEnabled(
-                           omnibox::kComposeboxDriveContextMenuOption)) {
-    MaybePopulateDriveInputTypeRule(&mutable_config);
-  }
-
   if (mutable_config.has_rule_set()) {
     rule_set_ = mutable_config.rule_set();
 
@@ -238,6 +175,10 @@ InputStateModel::InputStateModel(
         mutable_config.input_type_configs().size());
     for (const auto& input_type_config : mutable_config.input_type_configs()) {
       if (input_type_config.has_input_type()) {
+        if (input_type_config.input_type() == omnibox::INPUT_TYPE_DRIVE &&
+            !IsDriveSupported()) {
+          continue;
+        }
         state_.allowed_input_types.push_back(input_type_config.input_type());
       }
     }
@@ -251,6 +192,10 @@ InputStateModel::InputStateModel(
     }
     state_.input_type_configs.reserve(mutable_config.input_type_configs_size());
     for (const auto& input_type_config : mutable_config.input_type_configs()) {
+      if (input_type_config.input_type() == omnibox::INPUT_TYPE_DRIVE &&
+          !IsDriveSupported()) {
+        continue;
+      }
       state_.input_type_configs.push_back(input_type_config);
     }
     if (mutable_config.has_tools_section_config()) {
@@ -288,13 +233,6 @@ InputStateModel::InputStateModel(
     state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_BROWSER_TAB);
   }
 
-  // Only add drive if it does not already exist and the drive flag is
-  // enabled.
-  if (!contains(omnibox::INPUT_TYPE_DRIVE) && is_signed_in_ &&
-      base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
-    state_.allowed_input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
-  }
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   // the initial model should be the first allowed model, but can be
   // overridden by parameters in the active web contents URL.
@@ -441,6 +379,14 @@ void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
 
   // Notify subscribers once `state_` is updated.
   notifySubscribers();
+}
+
+bool InputStateModel::IsDriveSupported() const {
+  // Drive is only supported when the user is signed in, not in an
+  // off-the-record (incognito) session, and the feature flag is enabled.
+  return is_signed_in_ && !is_off_the_record_ &&
+         base::FeatureList::IsEnabled(
+             omnibox::kComposeboxDriveContextMenuOption);
 }
 
 // Helper to check if search content sharing is enabled based on the

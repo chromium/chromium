@@ -110,6 +110,9 @@ class InputStateModel {
   // user preference from enterprise policy.
   bool IsSearchContentSharingEnabled() const;
 
+  // Helper to check if the Drive input type is supported.
+  bool IsDriveSupported() const;
+
   // Returns the rule for a given `model`.
   const omnibox::ModelRule* GetModelRule(ModelMode model) const;
 

@@ -59,7 +59,7 @@ class InputStateModelTest : public testing::Test {
   const std::vector<const contextual_search::FileInfo*> empty_file_info_list_;
 };
 
-TEST_F(InputStateModelTest, AddsDriveInputWhenFlagEnabled) {
+TEST_F(InputStateModelTest, DoesNotRemoveDriveInputWhenSignedInAndFlagEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {omnibox::kComposeboxDriveContextMenuOption}, {});
@@ -69,6 +69,8 @@ TEST_F(InputStateModelTest, AddsDriveInputWhenFlagEnabled) {
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   config.add_input_type_configs()->set_input_type(
       omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_DRIVE);
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
@@ -81,7 +83,7 @@ TEST_F(InputStateModelTest, AddsDriveInputWhenFlagEnabled) {
                   omnibox::INPUT_TYPE_BROWSER_TAB, omnibox::INPUT_TYPE_DRIVE));
 }
 
-TEST_F(InputStateModelTest, DoesNotAddDriveInputWhenFlagDisabled) {
+TEST_F(InputStateModelTest, RemovesDriveInputWhenFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {omnibox::kComposeboxDriveContextMenuOption});
@@ -91,6 +93,32 @@ TEST_F(InputStateModelTest, DoesNotAddDriveInputWhenFlagDisabled) {
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   config.add_input_type_configs()->set_input_type(
       omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_DRIVE);
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.allowed_input_types,
+              testing::UnorderedElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                            omnibox::INPUT_TYPE_LENS_FILE,
+                                            omnibox::INPUT_TYPE_BROWSER_TAB));
+}
+
+TEST_F(InputStateModelTest, RemovesDriveInputWhenNotSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kComposeboxDriveContextMenuOption}, {});
+
+  omnibox::SearchboxConfig config;
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_DRIVE);
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
@@ -585,6 +613,7 @@ TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
       omnibox::InputType::INPUT_TYPE_LENS_FILE,
       omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+      omnibox::InputType::INPUT_TYPE_DRIVE,
   };
 
   // Enable content sharing policy.
@@ -630,6 +659,7 @@ TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
       omnibox::InputType::INPUT_TYPE_LENS_FILE,
       omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+      omnibox::InputType::INPUT_TYPE_DRIVE,
   };
   input_state_model_->set_state_for_testing(state_);
 
@@ -642,7 +672,8 @@ TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
   EXPECT_THAT(new_state.allowed_input_types,
               UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
                                    omnibox::InputType::INPUT_TYPE_LENS_FILE,
-                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::InputType::INPUT_TYPE_DRIVE));
   EXPECT_TRUE(new_state.disabled_input_types.empty());
 }
 
