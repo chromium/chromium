@@ -3972,7 +3972,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           features::kFileSystemAccessPersistentPermissions));
 
   // The exception placeholder should not be translated. See
-  // crbug.com/1095878.
+  // crbug.com/40700443.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 

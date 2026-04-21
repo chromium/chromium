@@ -1285,7 +1285,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
         browser_policy_connector_ash);
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
-    // not handle flaky network. See http://crbug.com/332572
+    // not handle flaky network. See http://crbug.com/41082635
     display_host->StartWizard(WelcomeView::kScreenId);
     // Make sure we load an initial wallpaper here. If the boot animation
     // might be played it will be covered by the StartWizard call.

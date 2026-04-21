@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, ResizeClampedToCurrentDisplay) {
 }
 
 // Opens two popups with custom position and size, but one has noopener. They
-// should both have the same position and size. http://crbug.com/1011688
+// should both have the same position and size. http://crbug.com/40651776
 IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
   const char kFeatures[] =
       "left=${screen.availLeft},top=${screen.availTop},width=200,height=200";

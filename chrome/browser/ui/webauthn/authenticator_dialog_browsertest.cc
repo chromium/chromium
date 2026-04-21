@@ -115,7 +115,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     content::RenderFrameHost* rfh = browser()
@@ -611,7 +611,7 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
   // AuthenticatorDialogTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     content::RenderFrameHost* rfh = browser()

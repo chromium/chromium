@@ -179,7 +179,7 @@ int VersionUI::VersionProcessorVariation() {
   // bitness. Search the code for "generate_resource_allowlist" for more
   // information. Therefore, make sure both the IDS_VERSION_UI_32BIT and
   // IDS_VERSION_UI_64BIT strings are marked as always used so that they’re
-  // never stripped. https://crbug.com/1119479
+  // never stripped. https://crbug.com/40145503
   IDS_VERSION_UI_32BIT;
   IDS_VERSION_UI_64BIT;
 #endif  // BUILDFLAG(IS_ANDROID)

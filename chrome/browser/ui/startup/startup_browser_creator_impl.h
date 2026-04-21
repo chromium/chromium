@@ -62,7 +62,7 @@ class StartupBrowserCreatorImpl {
   // launch another instance. `restore_tabbed_browser` should only be
   // flipped false by Ash full restore code path, suppressing restoring a normal
   // browser when there were only PWAs open in previous session. See
-  // crbug.com/1463906.
+  // crbug.com/40275406.
   void Launch(Profile* profile,
               chrome::startup::IsProcessStartup process_startup,
               bool restore_tabbed_browser);
@@ -164,7 +164,7 @@ class StartupBrowserCreatorImpl {
   // is necessary, and opens the URLs in a new or restored browser accordingly.
   // `restore_tabbed_browser` should only be flipped false by Ash full
   // restore code path, suppressing restoring a normal browser when there were
-  // only PWAs open in previous session. See crbug.com/1463906.
+  // only PWAs open in previous session. See crbug.com/40275406.
   void DetermineURLsAndLaunch(chrome::startup::IsProcessStartup process_startup,
                               bool restore_tabbed_browser);
 
@@ -208,7 +208,7 @@ class StartupBrowserCreatorImpl {
   // Returns the relevant bitmask options which must be passed when restoring a
   // session. `restore_tabbed_browser` should only be flipped false by Ash
   // full restore code path, suppressing restoring a normal browser when there
-  // were only PWAs open in previous session. See crbug.com/1463906.
+  // were only PWAs open in previous session. See crbug.com/40275406.
   static SessionRestore::BehaviorBitmask DetermineSynchronousRestoreOptions(
       bool has_create_browser_default,
       bool has_create_browser_switch,

@@ -528,8 +528,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       label_is(u"***"));
 }
 
-// This is a regression test for crbug.com/521133 to ensure that we don't crash
-// when suggestions updates race with user selections.
+// This is a regression test for crbug.com/41195069 to ensure that we don't
+// crash when suggestions updates race with user selections.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
   ShowSuggestions(manager(), {SuggestionType::kMixedFormMessage});
 

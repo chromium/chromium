@@ -29,7 +29,7 @@ const content::BrowserContext* GetBrowserContextForWindow(
     bool presenting) {
   DCHECK(window);
   auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
-  // Speculative fix for multi-profile crash. crbug.com/661821
+  // Speculative fix for multi-profile crash. crbug.com/41284353
   if (!window_manager) {
     return nullptr;
   }

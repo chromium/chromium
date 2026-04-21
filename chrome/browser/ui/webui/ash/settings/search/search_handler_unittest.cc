@@ -276,7 +276,7 @@ TEST_F(SearchHandlerTest, DefaultRank) {
             search_results[2]->text);
 }
 
-// Regression test for https://crbug.com/1090184.
+// Regression test for https://crbug.com/40133644.
 TEST_F(SearchHandlerTest, CompareSearchResults) {
   // Create two equal dummy results.
   mojom::SearchResultPtr a = CreateDummyResult();

@@ -15,7 +15,7 @@
 using BrowserCommandControllerInteractiveTest =
     FullscreenKeyboardBrowserTestBase;
 #if BUILDFLAG(IS_MAC)
-// Flaky http://crbug.com/852285
+// Flaky http://crbug.com/41394313
 #define MAYBE_ShortcutsShouldTakeEffectInWindowMode \
   DISABLED_ShortcutsShouldTakeEffectInWindowMode
 #else
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
 
 #if BUILDFLAG(IS_MAC)
 // TODO(zijiehe): Figure out why this test crashes on Mac OSX. The suspicious
-// command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/738949.
+// command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/40528519.
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInBrowserFullscreen \
   DISABLED_KeyEventsShouldBeConsumedByWebPageInBrowserFullscreen
 #else
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/850594
+// https://crbug.com/41393319
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForEsc \
   DISABLED_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForEsc
 #else
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// Triggers a DCHECK in MacViews: http://crbug.com/823478
+// Triggers a DCHECK in MacViews: http://crbug.com/41377501
 #define MAYBE_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForF11 \
   DISABLED_KeyEventsShouldBeConsumedByWebPageInJsFullscreenExceptForF11
 #else
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // TODO(zijiehe): Figure out why this test crashes on Mac OSX. The suspicious
-// command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/738949.
-// Flaky on multiple Linxu bots: https://crbug.com/1120315
+// command is "SendFullscreenShortcutAndWait()". See, http://crbug.com/40528519.
+// Flaky on multiple Linxu bots: https://crbug.com/40714688
 #define MAYBE_ShortcutsShouldTakeEffectInBrowserFullscreen \
   DISABLED_ShortcutsShouldTakeEffectInBrowserFullscreen
 #else
@@ -149,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerInteractiveTest,
 // non-exiting commands, which is not the goal of this test.
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// This test is flaky on ChromeOS and Linux, see http://crbug.com/754878 and
-// http://crbug.com/759704 respectively.
+// This test is flaky on ChromeOS and Linux, see http://crbug.com/41339012 and
+// http://crbug.com/41341579 respectively.
 // TODO(zijiehe): Find out the root cause.
 #define MAYBE_ShortcutsShouldTakeEffectInJsFullscreen \
   DISABLED_ShortcutsShouldTakeEffectInJsFullscreen

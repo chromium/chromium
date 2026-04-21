@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 
 // Test whether the top view's status is correct during various transitions
 // among normal state, browser fullscreen mode, and tab fullscreen mode.
-// Sheriff: http://crbug.com/925928
+// Sheriff: http://crbug.com/41437713
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   ExclusiveAccessContext* context = GetExclusiveAccessManager()->context();
 #if BUILDFLAG(IS_MAC)
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 // element in the tab is handled in the renderer process if both elements are in
 // the same process. But the request will come to the browser when the element
 // is in a different process, such as OOPIF, because the renderer doesn't know
-// if an element in other renderer process is in fullscreen. crbug.com/1298081
+// if an element in other renderer process is in fullscreen. crbug.com/40822728
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                        EnterFullscreenWhenInFullscreen) {
   EnterActiveTabFullscreen();

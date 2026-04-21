@@ -1355,7 +1355,7 @@ TEST_F(SiteSettingsHandlerTest, GetEnforcedDefault) {
   ValidateDefault(CONTENT_SETTING_ALLOW, "policy", 1U);
 }
 
-// Flaky on CrOS and Linux. https://crbug.com/930481
+// Flaky on CrOS and Linux. https://crbug.com/41440409
 TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   SetupModel();
 

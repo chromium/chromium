@@ -23,7 +23,7 @@
 using PinnedTabServiceBrowserTest = InProcessBrowserTest;
 
 // Makes sure pinned tabs are updated when tabstrip is empty.
-// http://crbug.com/71939
+// http://crbug.com/40519327
 IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   Profile* profile = browser()->profile();
   GURL url("https://www.google.com");

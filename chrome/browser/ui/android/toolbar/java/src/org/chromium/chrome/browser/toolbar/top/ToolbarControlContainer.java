@@ -337,7 +337,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         // Update the find toolbar view or view stub. We only do this for tablets
         // (find_toolbar_tablet_stub) since find_toolbar_stub is used for phone only.
-        // TODO (crbug.com/1517059): Let FindToolbar itself decide how to set the top margin.
+        // TODO (crbug.com/41490042): Let FindToolbar itself decide how to set the top margin.
         {
             View findToolbar = findViewById(R.id.find_toolbar);
             if (findToolbar == null) {

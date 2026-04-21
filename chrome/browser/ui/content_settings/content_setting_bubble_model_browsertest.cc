@@ -127,8 +127,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
 
 // Tests that clicking on the manage button in the media bubble opens the
 // correct section of the settings UI. This test sometimes leaks memory,
-// detected by linux_chromium_asan_rel_ng. See http://crbug/668693 for more
-// info.
+// detected by linux_chromium_asan_rel_ng. See http://crbug.com/41288110 for
+// more info.
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
                        DISABLED_ManageLink) {
   // For each of the three options, we click the manage button and check if the

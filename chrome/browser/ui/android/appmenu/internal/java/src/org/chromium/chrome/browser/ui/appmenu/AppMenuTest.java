@@ -964,7 +964,7 @@ public class AppMenuTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
-    @DisabledTest(message = "crbug.com/1186468")
+    @DisabledTest(message = "crbug.com/40753753")
     public void testDragHelper_ClickItem() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();

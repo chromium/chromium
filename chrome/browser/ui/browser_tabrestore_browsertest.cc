@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
 //
 // Previously, on Mac, a selected restored tab only started loading when a
 // native message indicated that the window was visible. On other platforms,
-// it started loading synchronously. https://crbug.com/1022492
+// it started loading synchronously. https://crbug.com/40106638
 IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
                        SelectedRestoredTabStartsLoading) {
   sessions::SerializedNavigationEntry navigation_entry;

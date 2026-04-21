@@ -158,7 +158,7 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText_EmptyStrings) {
   //   IDS_SAVE_PASSWORD overridden above.
   // * |kBrandingEnabled| needs to be true, otherwise the code won't try to
   //   dereference placeholder offsets from the localised string, which
-  //   triggers the crash in http://crbug.com/658902.
+  //   triggers the crash in http://crbug.com/41282671.
   // * SAVE_PASSWORD dialog type needs to be passed to match the
   //   IDS_SAVE_PASSWORD overridden above.
   std::u16string title =

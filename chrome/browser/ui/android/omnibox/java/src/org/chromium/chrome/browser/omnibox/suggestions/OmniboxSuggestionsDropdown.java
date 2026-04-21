@@ -201,7 +201,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // 2. the list is too short, and almost entirely fits on the screen, leaving at most
             //    just a few pixels of content hiding under the keyboard.
             // Note that the list may extend below the keyboard and still be non-scrollable:
-            // http://crbug/1479437
+            // http://crbug.com/40071508
 
             // Otherwise decide whether keyboard should be shown or not.
             // We want to call keyboard up only when we know we reached the top of the list.
@@ -482,7 +482,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public boolean onGenericMotionEvent(MotionEvent event) {
         // For some reason, RecyclerView.onGenericMotionEvent() always returns false even after
         // handling events. Consume mouse/trackpad events to ensure clicks and scroll do not
-        // bleed through to sibling views that are obscured by the list.  crbug.com/968414
+        // bleed through to sibling views that are obscured by the list.  crbug.com/40629803
         int action = event.getActionMasked();
         boolean shouldConsumeGenericMotionEvent =
                 (MotionEventUtils.isPointerEvent(event)

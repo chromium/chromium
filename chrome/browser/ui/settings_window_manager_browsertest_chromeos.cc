@@ -230,7 +230,7 @@ class SettingsWindowManagerLoginTest : public MixinBasedInProcessBrowserTest {
   ash::LoginManagerMixin login_manager_{&mixin_host_, {}};
 };
 
-// Regression test for crash. https://crbug.com/1174525
+// Regression test for crash. https://crbug.com/40746844
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerLoginTest, OpenBeforeLogin) {
   // Precondition: We're not signed in.
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());

@@ -99,7 +99,7 @@ SignInInternalsHandler::SignInInternalsHandler() = default;
 
 SignInInternalsHandler::~SignInInternalsHandler() {
   // This handler can be destroyed without OnJavascriptDisallowed() ever being
-  // called (https://crbug.com/1199198). Call it to ensure that `this` is
+  // called (https://crbug.com/40055554). Call it to ensure that `this` is
   // removed as an observer.
   OnJavascriptDisallowed();
 }

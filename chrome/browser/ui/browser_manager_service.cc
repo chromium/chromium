@@ -106,10 +106,10 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
   // false, while the user manager window is still opened. This cannot be fixed
   // in ProfileDestroyer::DestroyProfileWhenAppropriate(), because the
   // ProfileManager needs to be able to destroy all profiles when it is
-  // destroyed. See crbug.com/527035
+  // destroyed. See crbug.com/40433858
   //
   // Non-primary OffTheRecord profiles should not be destroyed directly by
-  // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
+  // Browser (e.g. for offscreen tabs, https://crbug.com/41285708).
   //
   // TODO(crbug.com/40159237): Use ScopedProfileKeepAlive for Incognito too,
   // instead of separate logic for Incognito and regular profiles.
@@ -120,7 +120,7 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
     // The Printing Background Manager holds onto preview dialog WebContents
     // whose corresponding print jobs have not yet fully spooled. Make sure
     // these get destroyed before tearing down the incognito profile so that
-    // their RenderFrameHosts can exit in time - see crbug.com/579155
+    // their RenderFrameHosts can exit in time - see crbug.com/41235373
     g_browser_process->background_printing_manager()
         ->DeletePreviewContentsForBrowserContext(&profile_.get());
 #endif

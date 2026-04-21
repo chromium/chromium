@@ -1618,7 +1618,7 @@ void InternetSection::OnNetworkList(
   }
 
   // Edge case where Ethernet device is present but no network is connected,
-  // i.e. on Chromeboxes. http://crbug.com/1096768
+  // i.e. on Chromeboxes. http://crbug.com/40136347
   if (does_ethernet_device_exist_ && !connected_ethernet_guid_.has_value()) {
     updater.AddSearchTags(GetEthernetNotConnectedSearchConcepts());
   }

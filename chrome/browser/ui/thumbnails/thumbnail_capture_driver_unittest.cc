@@ -529,7 +529,7 @@ TEST_F(ThumbnailCaptureDriverTest, DoesNotReCaptureAfterFinalThumbnail) {
 
 // Going from kReadyForFinalCapture to a lower readiness should always
 // invalidate the current thumbnail. Capture should restart from
-// scratch. Regression test for https://crbug.com/1137330
+// scratch. Regression test for https://crbug.com/40724746
 TEST_F(ThumbnailCaptureDriverTest, InvalidatesThumbnailOnReadinessDecrease) {
   {
     InSequence s;

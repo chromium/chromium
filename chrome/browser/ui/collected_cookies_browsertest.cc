@@ -28,7 +28,7 @@ class CollectedCookiesTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-// If this crashes on Windows, use http://crbug.com/79331
+// If this crashes on Windows, use http://crbug.com/40553919
 IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, DoubleDisplay) {
   ShowUi(std::string());
 
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, DoubleDisplay) {
   TabDialogs::FromWebContents(web_contents)->ShowCollectedCookies();
 }
 
-// If this crashes on Windows, use http://crbug.com/79331
+// If this crashes on Windows, use http://crbug.com/40553919
 IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, NavigateAway) {
   ShowUi(std::string());
 

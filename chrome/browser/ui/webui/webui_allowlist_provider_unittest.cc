@@ -412,7 +412,7 @@ TEST_F(WebUIAllowlistProviderTest, RegisterThirdPartyCookiesNotifiesOnlyOnce) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-// Regression test for https://crbug.com/1514740.
+// Regression test for https://crbug.com/41487293.
 TEST_F(WebUIAllowlistProviderTest, CookieSettings) {
   const GURL url = GURL("https://google.com/");
   const GURL top_level_url = GURL("chrome-untrusted://test/");

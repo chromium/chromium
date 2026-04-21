@@ -176,7 +176,7 @@ void SystemWebDialogDelegate::Focus() {
   // Focusing a modal dialog does not make it the topmost dialog and does not
   // enable interaction. It does however remove focus from the current dialog,
   // preventing interaction with any dialog. TODO(stevenjb): Investigate and
-  // fix, https://crbug.com/914133.
+  // fix, https://crbug.com/40606092.
   if (GetDialogModalType() == ui::mojom::ModalType::kNone) {
     if (!dialog_window()->IsVisible()) {
       dialog_window()->Show();

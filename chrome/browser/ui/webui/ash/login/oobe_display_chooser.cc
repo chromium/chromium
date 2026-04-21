@@ -27,7 +27,7 @@ bool TouchSupportAvailable(const display::Display& display) {
   return display.touch_support() == display::Display::TouchSupport::AVAILABLE;
 }
 
-// TODO(felixe): More context at crbug.com/738885
+// TODO(felixe): More context at crbug.com/40528488
 const uint16_t kDeviceIds[] = {0x0457, 0x266e, 0x222a};
 
 // Returns true if `vendor_id` is a valid vendor id that may be made the primary

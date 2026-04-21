@@ -14,8 +14,8 @@ import org.chromium.build.annotations.NullMarked;
  * Sub-class of UrlBar that contains newer Android APIs to avoid verification errors.
  *
  * <p>Only super calls to new Android APIs belong here - if it is a normal call to a new Android
- * API, use ApiHelperForX. See crbug.com/999165 for more description of what verification errors are
- * and why they are expensive.
+ * API, use ApiHelperForX. See crbug.com/41479032 for more description of what verification errors
+ * are and why they are expensive.
  */
 @NullMarked
 public class UrlBarApi26 extends UrlBar {
@@ -25,7 +25,7 @@ public class UrlBarApi26 extends UrlBar {
 
     @Override
     public void onProvideAutofillStructure(ViewStructure structure, int autofillFlags) {
-        // https://crbug.com/996402: Prevent breaking autofill services on newer versions of
+        // https://crbug.com/41477530: Prevent breaking autofill services on newer versions of
         // Android.
         mRequestingAutofillStructure = true;
         super.onProvideAutofillStructure(structure, autofillFlags);
@@ -34,7 +34,7 @@ public class UrlBarApi26 extends UrlBar {
 
     @Override
     public int getAutofillType() {
-        // https://crbug.com/1103555: Prevent augmented autofill service from taking over the
+        // https://crbug.com/40139311: Prevent augmented autofill service from taking over the
         // session by disabling both standard and augmented autofill on versions of Android
         // where both are supported.
         return AUTOFILL_TYPE_NONE;

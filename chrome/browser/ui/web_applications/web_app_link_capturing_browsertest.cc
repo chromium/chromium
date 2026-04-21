@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   // At present we can't create a sandbox srcdoc frame in a top-level
   // about:blank frame, so navigate to an empty page. See
-  // https://crbug.com/1499982
+  // https://crbug.com/40288011
   GURL url = embedded_test_server()->GetURL("/title1.html");
   NavigateSelf(browser(), url);
   content::WebContents* web_contents =
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   NavigateCapturable(browser(), GetNestedAppUrl());
 
-  // https://crbug.com/1476011: ChromeOS currently capturing nested app links
+  // https://crbug.com/40279851: ChromeOS currently capturing nested app links
   // into the parent app, but other platforms split the URL space and fully
   // respect the child app's user setting.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -538,10 +538,10 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 #endif
 }
 
-// https://crbug.com/1476011: ChromeOS currently capturing nested app links into
-// the parent app, treating them as overlapping apps. Other platforms split the
-// URL space and fully respect the child app's user setting.
-// Thus, on non-CrOS platforms both apps can capture links.
+// https://crbug.com/40279851: ChromeOS currently capturing nested app links
+// into the parent app, treating them as overlapping apps. Other platforms split
+// the URL space and fully respect the child app's user setting. Thus, on
+// non-CrOS platforms both apps can capture links.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
                        ParentAppAndChildAppCapture) {

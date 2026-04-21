@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
   EXPECT_TRUE(shell_test_api.IsContextMenuShown());
 }
 
-// A regression test for https://crbug.com/1350711 in which a session is started
-// quickly after clicking the sign out button.
+// A regression test for https://crbug.com/40060518 in which a session is
+// started quickly after clicking the sign out button.
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        SimulateStartingSessionAfterSignOut) {
   ash::Shell::Get()->session_controller()->RequestSignOut();

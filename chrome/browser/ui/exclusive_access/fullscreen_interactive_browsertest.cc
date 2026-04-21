@@ -89,7 +89,7 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// https://crbug.com/1087875: Flaky on Linux, Mac and Windows.
+// https://crbug.com/40133132: Flaky on Linux, Mac and Windows.
 // TODO(crbug.com/40810181): Flaky on Chrome OS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN)
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
   }
 
   // Exit fullscreen on the child frame.
-  // This will not work with --site-per-process until crbug.com/617369
+  // This will not work with --site-per-process until crbug.com/41257216
   // is fixed.
   if (!content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     {

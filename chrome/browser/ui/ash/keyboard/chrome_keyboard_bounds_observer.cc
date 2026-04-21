@@ -121,7 +121,7 @@ void ChromeKeyboardBoundsObserver::UpdateOccludedBounds(
 
     aura::Window* window = view->GetNativeView();
     // Added while we determine if RenderWidgetHostViewChildFrame can be
-    // changed to always return a non-null value: https://crbug.com/644726.
+    // changed to always return a non-null value: https://crbug.com/40483928.
     // If we cannot guarantee a non-null value, then this may need to stay.
     if (!window) {
       continue;
@@ -137,7 +137,7 @@ void ChromeKeyboardBoundsObserver::UpdateOccludedBounds(
 
   // Window reshape can race with the IME trying to keep the text input caret
   // visible. Do this here because the widget bounds change happens before the
-  // occluded bounds are updated. https://crbug.com/937722
+  // occluded bounds are updated. https://crbug.com/41444631
   ui::InputMethod* ime = GetCurrentInputMethod();
   if (ime && ime->GetTextInputClient()) {
     ime->GetTextInputClient()->EnsureCaretNotInRect(occluded_bounds_in_screen_);

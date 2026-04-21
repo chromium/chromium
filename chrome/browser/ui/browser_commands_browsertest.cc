@@ -107,14 +107,14 @@ class BrowserCommandsTest : public InProcessBrowserTest {
 };
 
 // Verify that calling BookmarkCurrentTab() just after closing all tabs doesn't
-// cause a crash. https://crbug.com/799668
+// cause a crash. https://crbug.com/40557069
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, BookmarkCurrentTabAfterCloseTabs) {
   browser()->tab_strip_model()->CloseAllTabs();
   BookmarkCurrentTab(browser());
 }
 
 // Verify that all of selected tabs are refreshed after executing a reload
-// command. https://crbug.com/862102
+// command. https://crbug.com/41400681
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
   constexpr int kTabCount = 3;
   std::vector<ReloadObserver> watcher_vec(kTabCount);

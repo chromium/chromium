@@ -466,7 +466,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     }
   }
   // Sometimes tab_indices is empty, and TabStripModel::AddToNewGroup
-  // requires a non-empty vector (Fixes https://crbug.com/1339140)
+  // requires a non-empty vector (Fixes https://crbug.com/40060062)
   if (tab_indices.empty()) {
     return;
   }

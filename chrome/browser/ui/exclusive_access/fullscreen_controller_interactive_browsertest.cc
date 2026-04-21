@@ -180,7 +180,7 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen(
 // and some flakiness has occurred when calling |ToggleTabFullscreen|, so that
 // method has been made robust by retrying if the transition fails.
 // The root cause of that flakiness should still be tracked down, see
-// http://crbug.com/133831. In the mean time, this method
+// http://crbug.com/40229557. In the mean time, this method
 // allows a fullscreen_controller_interactive_browsertest.cc test to verify
 // that when running serially there is no flakiness in the transition.
 void FullscreenControllerInteractiveTest::ToggleTabFullscreenNoRetries(
@@ -228,7 +228,7 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestNewTabExitsFullscreen) {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
-  // Flaky in Linux interactive_ui_tests_wayland: crbug.com/1200036
+  // Flaky in Linux interactive_ui_tests_wayland: crbug.com/40761568
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
 }
 
-// Test is flaky on all platforms: https://crbug.com/1234337
+// Test is flaky on all platforms: https://crbug.com/40781433
 // Tests fullscreen is exited when navigating back.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        DISABLED_TestTabExitsFullscreenOnGoBack) {
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-// Test is flaky on all platforms: https://crbug.com/1234337
+// Test is flaky on all platforms: https://crbug.com/40781433
 // Tests tab fullscreen exits, but browser fullscreen remains, on navigation.
 IN_PROC_BROWSER_TEST_F(
     FullscreenControllerInteractiveTest,
@@ -522,11 +522,11 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-// Disabled on all due to issue with code under test: http://crbug.com/1255610.
+// Disabled on all due to issue with code under test: http://crbug.com/40795016.
 //
 // Was also disabled on platforms before:
-// Times out sometimes on Linux. http://crbug.com/135115
-// Mac: http://crbug.com/103912
+// Times out sometimes on Linux. http://crbug.com/40234381
+// Mac: http://crbug.com/40113467
 // Tests pointer lock then fullscreen in same request.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        DISABLED_PointerLockAndFullscreen) {
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Tests pointer lock is exited on page navigation.
 #if BUILDFLAG(IS_LINUX) && defined(USE_AURA)
-// https://crbug.com/1191964
+// https://crbug.com/40756957
 #define MAYBE_TestTabExitsPointerLockOnNavigation \
   DISABLED_TestTabExitsPointerLockOnNavigation
 #else
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Tests pointer lock is exited when navigating back.
 #if BUILDFLAG(IS_LINUX) && defined(USE_AURA)
-// https://crbug.com/1192097
+// https://crbug.com/40757042
 #define MAYBE_TestTabExitsPointerLockOnGoBack \
   DISABLED_TestTabExitsPointerLockOnGoBack
 #else
@@ -679,8 +679,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 #if BUILDFLAG(IS_LINUX) && defined(USE_AURA) || \
     BUILDFLAG(IS_WIN) && defined(NDEBUG)
-// TODO(erg): linux_aura bringup: http://crbug.com/163931
-// Test is flaky on Windows: https://crbug.com/1124492
+// TODO(erg): linux_aura bringup: http://crbug.com/40295645
+// Test is flaky on Windows: https://crbug.com/40717280
 #define MAYBE_TestTabDoesntExitPointerLockOnSubFrameNavigation \
   DISABLED_TestTabDoesntExitPointerLockOnSubFrameNavigation
 #else

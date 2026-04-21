@@ -107,7 +107,7 @@ std::string GetNewTabBackgroundPositionCSS(
   // TODO(glen): This is a quick workaround to hide the notused.png image when
   // no image is provided - we don't have time right now to figure out why
   // this is painting as white.
-  // http://crbug.com/17593
+  // http://crbug.com/40963242
   if (!theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     return "-64px";
   }

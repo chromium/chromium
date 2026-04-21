@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   feedback_dialog->GetWidget()->Close();
 }
 
-// Regression test for crbug.com/1493774.
+// Regression test for crbug.com/40936831.
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        TabMoveToOtherBrowserDoesNotCrash) {
   // Create another browser.

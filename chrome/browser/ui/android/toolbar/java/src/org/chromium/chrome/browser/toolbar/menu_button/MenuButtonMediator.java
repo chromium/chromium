@@ -158,7 +158,7 @@ class MenuButtonMediator implements AppMenuObserver {
     public void onMenuVisibilityChanged(boolean isVisible) {
         if (isVisible) {
             // Defocus here to avoid handling focus in multiple places, e.g., when the
-            // forward button is pressed. (see crbug.com/414219)
+            // forward button is pressed. (see crbug.com/41132127)
             mSetUrlBarFocusFunction.setFocus(false, OmniboxFocusReason.UNFOCUS);
 
             View view = mActivity.getCurrentFocus();

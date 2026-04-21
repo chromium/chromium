@@ -13,7 +13,7 @@ namespace {
 class TabModelListTest : public ChromeRenderViewHostTestHarness {};
 }  // namespace
 
-// Regression test for http://crbug.com/432685.
+// Regression test for http://crbug.com/40393627.
 TEST_F(TabModelListTest, TestGetTabModelForWebContents) {
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);

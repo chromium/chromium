@@ -154,7 +154,7 @@ void ChromeZoomLevelPrefs::OnZoomLevelChanged(
 }
 
 // TODO(wjmaclean): Remove the dictionary_path once the migration code is
-// removed. crbug.com/420643
+// removed. crbug.com/40387789
 void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     const base::DictValue& host_zoom_dictionary,
     bool sanitize_partition_host_zoom_levels) {
@@ -177,7 +177,7 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
 
     // Filter out A) the empty host, B) zoom levels equal to the default; and
     // remember them, so that we can later erase them from Prefs.
-    // Values of type A and B could have been stored due to crbug.com/364399.
+    // Values of type A and B could have been stored due to crbug.com/40361379.
     // Values of type B could further have been stored before the default zoom
     // level was set to its current value. In either case, SetZoomLevelForHost
     // will ignore type B values, thus, to have consistency with HostZoomMap's

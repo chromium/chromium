@@ -246,7 +246,7 @@ TEST_F(MediaNotificationProviderImplTest, NotifyObserverOnListChangeTest) {
   SimulateHideNotification(id);
 }
 
-// Regression test for https://crbug.com/1312419. This should not crash on ASan
+// Regression test for https://crbug.com/40059272. This should not crash on ASan
 // builds (or any other build of course).
 TEST_F(MediaNotificationProviderImplTest, DontUseDeletedListView) {
   // Simulate a media session item.

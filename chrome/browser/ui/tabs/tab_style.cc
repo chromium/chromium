@@ -19,7 +19,7 @@ namespace {
 // the tab.
 constexpr int kChromeRefreshSeparatorThickness = 2;
 constexpr int kChromeRefreshSeparatorHorizontalMargin = 2;
-// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
+// TODO (crbug.com/40915785): This constant should be in LayoutConstants.
 constexpr int kChromeRefreshSeparatorHeight = 16;
 
 // The padding from the top of the tab to the content area.

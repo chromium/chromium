@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup) {
   // Navigate() should have opened a new, focused popup window, with a toolbar.
   EXPECT_NE(browser(), params.browser);
 #if 0
-  // TODO(stevenjb): Enable this test. See: crbug.com/79493
+  // TODO(stevenjb): Enable this test. See: crbug.com/41360906
   EXPECT_TRUE(browser->window()->IsActive());
 #endif
   EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupUnfocused) {
                   ->window()
                   ->IsToolbarVisible());
 #if 0
-// TODO(stevenjb): Enable this test. See: crbug.com/79493
+// TODO(stevenjb): Enable this test. See: crbug.com/41360906
   EXPECT_FALSE(p.browser->window()->IsActive());
 #endif
 }
@@ -1099,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabIncognitoLeak) {
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// Flaky on ASAN on Mac. See https://crbug.com/674497.
+// Flaky on ASAN on Mac. See https://crbug.com/40498261.
 #define MAYBE_Disposition_Incognito DISABLED_Disposition_Incognito
 #else
 #define MAYBE_Disposition_Incognito Disposition_Incognito

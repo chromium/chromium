@@ -165,7 +165,7 @@ TEST(LoginHandlerTest, DialogStringsAndRealm) {
 
 // Tests that LoginTabHelper does not crash if
 // WillProcessMainFrameUnauthorizedResponse() is called when there is no pending
-// entry. Regression test for https://crbug.com/1015787.
+// entry. Regression test for https://crbug.com/40653919.
 TEST_F(LoginHandlerWithWebContentsTest, NoPendingEntryDoesNotCrash) {
   LoginTabHelper::CreateForWebContents(web_contents());
   LoginTabHelper* helper = LoginTabHelper::FromWebContents(web_contents());

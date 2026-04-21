@@ -284,7 +284,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
 
         // Dismiss the message when the original tab in which the message is shown is
         // hidden. This prevents the prompt from being shown if the tab is opened after being
-        // hidden for a duration in which the survey expired. See crbug.com/1249055 for details.
+        // hidden for a duration in which the survey expired. See crbug.com/40790974 for details.
         mDismissMessageTabObserver =
                 new EmptyTabObserver() {
                     @Override

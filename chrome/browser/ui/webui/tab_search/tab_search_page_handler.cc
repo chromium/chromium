@@ -209,7 +209,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // CloseWebContentsAt() closes the WebContents hosting this
   // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
   // that no further actions are performed following the call to
-  // CloseWebContentsAt(). See (https://crbug.com/1175507).
+  // CloseWebContentsAt(). See (https://crbug.com/40054717).
   tabs_api::TabStripService* const service =
       GetTabStripService(tab->GetBrowserWindowInterface());
   CHECK(service);

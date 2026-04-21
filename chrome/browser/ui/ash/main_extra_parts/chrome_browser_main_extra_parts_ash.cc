@@ -474,8 +474,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
           Profile::FromBrowserContext(
               ash::BrowserContextHelper::Get()->GetSigninBrowserContext())
               ->GetOriginalProfile());
-  // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
-  // before using it InitializeDeviceDisablingManager.
+  // https://crbug.com/41413838 ensuring that LoginScreenClientImpl is
+  // initialized before using it InitializeDeviceDisablingManager.
   g_browser_process->platform_part()->InitializeDeviceDisablingManager();
 
   media_client_ = std::make_unique<MediaClientImpl>();
@@ -582,8 +582,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   ash::bluetooth_config::Shutdown();
 
   // Disable event dispatch before Exo starts closing windows to prevent
-  // synthetic events from being dispatched. crbug.com/874156 and
-  // crbug.com/1163269.
+  // synthetic events from being dispatched. crbug.com/41408016 and
+  // crbug.com/40740041.
   ash::Shell::Get()->ShutdownEventDispatch();
 
   // ExoParts uses state from ash, delete it before ash so that exo can

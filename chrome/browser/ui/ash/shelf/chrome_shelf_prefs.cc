@@ -495,7 +495,8 @@ void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
                                      const char* local,
                                      const char* synced) {
   // Ash's prefs *should* have been propagated to Chrome by now, but maybe not.
-  // This belongs in Ash, but it can't observe syncing changes: crbug.com/774657
+  // This belongs in Ash, but it can't observe syncing changes:
+  // crbug.com/41349744
   if (prefs->FindPreference(local) && prefs->FindPreference(synced) &&
       !prefs->FindPreference(local)->HasUserSetting()) {
     prefs->SetString(local, prefs->GetString(synced));

@@ -369,7 +369,7 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
 }
 
 void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
-  // Update crbug.com/1276603 with crash stack if this CHECK fires.
+  // Update crbug.com/40808991 with crash stack if this CHECK fires.
   CHECK_NE(task_id_being_created_, task_id);
 
   auto it = task_id_to_arc_app_window_info_.find(task_id);

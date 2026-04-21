@@ -249,8 +249,8 @@ TEST_F(SerialChooserControllerTest, PortSelected) {
       .WillOnce([&](device::mojom::SerialPortInfoPtr port) {
         EXPECT_EQ(port_token, port->token);
 
-        // Regression test for https://crbug.com/1069057. Ensure that the set of
-        // options is still valid after the callback is run.
+        // Regression test for https://crbug.com/40683822. Ensure that the set
+        // of options is still valid after the callback is run.
         EXPECT_EQ(1u, controller->NumOptions());
         EXPECT_EQ(u"Test Port (ttyS0)", controller->GetOption(0));
       });

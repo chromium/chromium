@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
 // extension may modify groups while the menu is open. If a group referenced in
 // the menu goes away, ensure we handle this gracefully.
 //
-// Regression test for crbug.com/1197875
+// Regression test for crbug.com/40055511
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
                        AddToExistingGroupAfterGroupDestroyed) {
   chrome::NewTab(browser());

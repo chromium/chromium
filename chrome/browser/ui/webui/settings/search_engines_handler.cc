@@ -232,7 +232,7 @@ base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
   size_t last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
 
-  // Sanity check for https://crbug.com/781703.
+  // Sanity check for https://crbug.com/40548229.
   CHECK_LE(last_active_engine_index, last_other_engine_index);
 
   for (size_t i = last_active_engine_index; i < last_other_engine_index; ++i) {
@@ -244,7 +244,7 @@ base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
   base::ListValue extensions;
   size_t engine_count = list_controller_.table_model()->RowCount();
 
-  // Sanity check for https://crbug.com/781703.
+  // Sanity check for https://crbug.com/40548229.
   CHECK_LE(last_other_engine_index, engine_count);
 
   for (size_t i = last_other_engine_index; i < engine_count; ++i) {

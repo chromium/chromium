@@ -27,7 +27,7 @@ namespace {
 
 constexpr int kUpdateIconIntervalMs = 40;  // 40ms for 25 frames per second.
 
-// Controls the spinner animation. See crbug.com/922977 for details.
+// Controls the spinner animation. See crbug.com/41436174 for details.
 constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(200);
 constexpr base::TimeDelta kFadeOutDuration = base::Milliseconds(200);
 constexpr base::TimeDelta kMinimumShowDuration = base::Milliseconds(200);

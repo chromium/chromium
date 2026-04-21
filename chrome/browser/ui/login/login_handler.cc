@@ -185,7 +185,7 @@ LoginHandler::LoginHandler(
 }
 
 void LoginHandler::NotifyAuthNeeded() {
-  // Only used by tests. This is being refactored. https://crbug.com/1371177.
+  // Only used by tests. This is being refactored. https://crbug.com/40870289.
 }
 
 void LoginHandler::NotifyAuthSupplied(std::u16string_view username,
@@ -362,7 +362,7 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
 
   if (!network::IsUrlPotentiallyTrustworthy(authority_url)) {
     // TODO(asanka): The string should be different for proxies and servers.
-    // http://crbug.com/620756
+    // http://crbug.com/40473278
     *explanation = l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_NOT_PRIVATE);
   } else {
     explanation->clear();

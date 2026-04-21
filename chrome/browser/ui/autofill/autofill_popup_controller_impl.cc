@@ -254,7 +254,7 @@ void AutofillPopupControllerImpl::Show(
       *ignore_focus_loss_ || (view_ && view_->HasFocus());
 
   // Autofill popups should only be shown in focused windows because on Windows
-  // the popup may overlap the focused window (see crbug.com/1239760).
+  // the popup may overlap the focused window (see crbug.com/40056880).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       (!rwhv || !rwhv->HasFocus()) && IsRootPopup() &&
       !should_ignore_focus_loss) {
@@ -454,7 +454,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
 
   // Ignore clicks immediately after the popup was shown. This is to prevent
-  // users accidentally accepting suggestions (crbug.com/1279268).
+  // users accidentally accepting suggestions (crbug.com/40058217).
   if ((!barrier_for_accepting_ || !barrier_for_accepting_->value()) &&
       !disable_threshold_for_testing_) {
     return;
@@ -715,11 +715,11 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
 
   // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
   // prevents recursive calls triggered by `view_->Hide()`
-  // (crbug.com/1267047).
+  // (crbug.com/40204318).
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // TODO(crbug.com/1341374, crbug.com/1277218): Move this into the asynchronous
-  // call?
+  // TODO(crbug.com/40230669, crbug.com/40207703): Move this into the
+  // asynchronous call?
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);

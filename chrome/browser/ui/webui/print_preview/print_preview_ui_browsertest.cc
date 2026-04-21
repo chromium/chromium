@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
             chrome::IsCommandEnabled(browser(), IDC_BASIC_PRINT));
 }
 
-// Disable the test for mac, see http://crbug/367665.
+// Disable the test for mac, see http://crbug.com/40362877.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TaskManagerNewPrintPreview DISABLED_TaskManagerNewPrintPreview
 #else
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
       WaitForTaskManagerRows(1, MatchPrint(url::kAboutBlankURL)));
 }
 
-// http://crbug/367665.
+// http://crbug.com/40362877.
 IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
                        DISABLED_TaskManagerExistingPrintPreview) {
   // Create the print preview dialog.
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-// http://crbug.com/396360
+// http://crbug.com/40375875
 IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
                        DISABLED_NoCrashOnCloseWithOtherTabs) {
   // Now print preview.
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PreviewStartedMetric) {
       /*expected_count=*/1);
 
   // Watch for the next navigation in the print preview dialog. The metric
-  // shouldn't change. See crbug.com/1075795 and crbug.com/1448984.
+  // shouldn't change. See crbug.com/40128379 and crbug.com/40269592.
   content::TestNavigationObserver nav_observer(nullptr);
   nav_observer.WatchExistingWebContents();
   nav_observer.Wait();

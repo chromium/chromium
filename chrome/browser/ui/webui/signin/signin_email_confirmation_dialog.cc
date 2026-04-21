@@ -186,7 +186,7 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
     }
   } else {
     // If the dialog is dismissed without any return value, then simply close
-    // the dialog. (see http://crbug.com/667690)
+    // the dialog. (see http://crbug.com/41287540)
     action = CLOSE;
   }
 

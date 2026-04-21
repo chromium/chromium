@@ -263,7 +263,7 @@ void ChromeAppDelegate::RenderFrameCreated(
     // can incorrectly have host level zoom settings. These aren't wanted as
     // apps cannot be zoomed, so are removed. This should be removed if apps
     // can be made to zoom again.
-    // See http://crbug.com/446759 for more details.
+    // See http://crbug.com/40400194 for more details.
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame_host);
     DCHECK(web_contents);

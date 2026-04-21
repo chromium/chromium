@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                   apps::LaunchContainer::kLaunchContainerTab);
 }
 
-// Regression test for crbug.com/1126091
+// Regression test for crbug.com/40718323
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
   GURL handler_url = embedded_https_test_server().GetURL(

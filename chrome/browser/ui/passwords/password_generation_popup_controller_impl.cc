@@ -219,7 +219,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this = GetWeakPtr();
   if (driver_) {
-    // See https://crbug.com/1133635 for when `driver_` might be null due to a
+    // See https://crbug.com/40053471 for when `driver_` might be null due to a
     // compromised renderer.
     driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
                                        current_generated_password_);

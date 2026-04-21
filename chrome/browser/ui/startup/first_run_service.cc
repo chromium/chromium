@@ -84,7 +84,7 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   if (signin_util::IsForceSigninEnabled()) {
     // Corresponding policy: BrowserSignin=2
     // Debugging note: On Linux this policy is not supported and does not get
-    // translated to the prefs (see crbug.com/956998), but we still respond to
+    // translated to the prefs (see crbug.com/41455343), but we still respond to
     // `prefs::kForceBrowserSignin` being set (e.g. if manually edited).
     return PolicyEffect::kDisabled;
   }

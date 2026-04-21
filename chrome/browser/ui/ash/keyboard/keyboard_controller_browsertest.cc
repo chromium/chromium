@@ -188,7 +188,7 @@ class KeyboardControllerWebContentTest : public InProcessBrowserTest {
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
 };
 
-// Test for crbug.com/404340. After enabling an IME in a different extension,
+// Test for crbug.com/41126256. After enabling an IME in a different extension,
 // its virtual keyboard should not become visible if previous one is not.
 IN_PROC_BROWSER_TEST_F(KeyboardControllerWebContentTest,
                        EnableIMEInDifferentExtension) {
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
                                 .height());
 }
 
-// Tests that ime window won't overscroll. See crbug.com/529880.
+// Tests that ime window won't overscroll. See crbug.com/40435010.
 IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
                        DisableOverscrollForImeWindow) {
   auto extension = CreateDummyExtension();
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerStateTest,
   EXPECT_EQ(controller->GetStateForTest(), keyboard::KeyboardUIState::kShown);
 }
 
-// See crbug.com/755354.
+// See crbug.com/41339286.
 IN_PROC_BROWSER_TEST_F(KeyboardControllerStateTest,
                        DisablingKeyboardGoesToInitialState) {
   auto* controller = keyboard::KeyboardUIController::Get();

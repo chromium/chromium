@@ -371,7 +371,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             height = Math.min(windowSpace, contentSpace) - top;
         }
 
-        // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
+        // TODO(pnoland@, https://crbug.com/40257117): avoid pushing changes that are identical to
         // the previous alignment value.
         OmniboxAlignment omniboxAlignment =
                 new OmniboxAlignment(

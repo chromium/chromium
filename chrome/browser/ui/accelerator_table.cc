@@ -175,7 +175,7 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     // Chrome OS supports the print key, however XKB conflates the print
     // and printscreen keys together so it is not supported on Linux.
-    // See crbug.com/683097
+    // See crbug.com/41296059
     {ui::VKEY_PRINT, ui::EF_NONE, IDC_PRINT},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -101,7 +101,7 @@ void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
     content::RenderFrameHost* render_frame_host,
     int content_restrictions) {
   // Speculative short-term-fix while we get at the root of
-  // https://crbug.com/752822 .
+  // https://crbug.com/41337937 .
   content::WebContents* web_contents_to_use =
       GetWebContentsToUse(render_frame_host);
   if (!web_contents_to_use) {

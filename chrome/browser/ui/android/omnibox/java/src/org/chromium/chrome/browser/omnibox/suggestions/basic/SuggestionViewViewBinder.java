@@ -42,7 +42,7 @@ public class SuggestionViewViewBinder {
             updateSuggestionTextColor(view, model);
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {
             updateSuggestionTextColor(view, model);
-            // https://crbug.com/609680: ensure URLs are always composed LTR and that their
+            // https://crbug.com/40084252: ensure URLs are always composed LTR and that their
             // components are not re-ordered.
             final boolean isSearch = model.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION);
             final TextView tv = view.findViewById(R.id.line_2);

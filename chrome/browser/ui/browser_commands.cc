@@ -289,7 +289,7 @@ bool GetTabURLAndTitleToSave(content::WebContents* web_contents,
                              GURL* url,
                              std::u16string* title) {
   // |web_contents| can be nullptr if the last tab in the browser was closed
-  // but the browser wasn't closed yet. https://crbug.com/799668
+  // but the browser wasn't closed yet. https://crbug.com/40557069
   if (!web_contents) {
     return false;
   }
@@ -326,7 +326,7 @@ bool BookmarkCurrentTabHelper(BrowserWindowInterface* browser,
   content::WebContents* const web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
   // |web_contents| can be nullptr if the last tab in the browser was closed
-  // but the browser wasn't closed yet. https://crbug.com/799668
+  // but the browser wasn't closed yet. https://crbug.com/40557069
   if (!web_contents) {
     return false;
   }
@@ -1169,7 +1169,7 @@ content::WebContents& NewTab(BrowserWindowInterface* browser,
   displayer_browser->GetWindow()->Show();
   // The call to AddBlankTabAt above did not set the focus to the tab as its
   // window was not active, so we have to do it explicitly.
-  // See http://crbug.com/6380.
+  // See http://crbug.com/41270207.
   displayer_browser->GetTabStripModel()->GetActiveWebContents()->RestoreFocus();
 
   return *contents;
@@ -2608,7 +2608,7 @@ bool CanToggleCaretBrowsing(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_MAC)
   // On Mac, ignore the keyboard shortcut unless web contents is focused,
   // because the keyboard shortcut interferes with a Japenese IME when the
-  // omnibox is focused.  See https://crbug.com/1138475
+  // omnibox is focused.  See https://crbug.com/40725478
   WebContents* web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {

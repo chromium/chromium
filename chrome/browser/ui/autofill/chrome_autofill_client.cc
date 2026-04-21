@@ -867,7 +867,7 @@ void ChromeAutofillClient::UpdateAutofillSuggestions(
 
   // When a form changes dynamically, `suggestion_controller_` may hold a
   // delegate of the wrong type, so updating the popup would call into the wrong
-  // delegate. Hence, just close the existing popup (crbug.com/1113241).
+  // delegate. Hence, just close the existing popup (crbug.com/40143378).
   if (main_filling_product !=
       suggestion_controller_.get()->GetMainFillingProduct()) {
     suggestion_controller_->Hide(SuggestionHidingReason::kStaleData);

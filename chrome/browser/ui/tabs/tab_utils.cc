@@ -16,7 +16,7 @@
 bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
   content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
 
-  // Prevent crashes with null WebContents (https://crbug.com/797647).
+  // Prevent crashes with null WebContents (https://crbug.com/41362347).
   if (!web_contents) {
     return false;
   }

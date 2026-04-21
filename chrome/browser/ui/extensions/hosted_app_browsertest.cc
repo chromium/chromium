@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
   NavigateAndCheckForToolbar(app_browser_, app_url, true);
 }
 
-// Flaky, mostly on Windows: http://crbug.com/1032319
+// Flaky, mostly on Windows: http://crbug.com/40662800
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ShouldShowCustomTabBarForHTTPAppHTTPSUrl \
   DISABLED_ShouldShowCustomTabBarForHTTPAppHTTPSUrl
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, FromOutsideHostedApp) {
     RenderFrameHost* diff_dir_rfh =
         TestSubframeProcess(main_frame, app_url, true, false);
     // Popups from the subframe, though same-origin, should swap to the app.
-    // See https://crbug.com/89272.
+    // See https://crbug.com/40596907.
     TestPopupProcess(diff_dir_rfh, app_url, false, true);
   }
 
@@ -1483,8 +1483,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
 // Check that we can successfully complete a navigation to an app URL with a
 // "//" path (on which GURL::Resolve() currently fails due to
-// https://crbug.com/1034197), and that the resulting SiteInstance has a valid
-// site URL. See https://crbug.com/1016954.
+// https://crbug.com/40663665), and that the resulting SiteInstance has a valid
+// site URL. See https://crbug.com/40104314.
 // The navigation currently fails/results in a 404 on Windows, so it's currently
 // disabled.  TODO(crbug.com/40152624): Fix this.
 #if BUILDFLAG(IS_WIN)
@@ -1506,7 +1506,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   // Navigate to a URL under the app's extent, but with a path (//) that
   // GURL::Resolve() fails to resolve against a relative URL (see the
-  // explanation in https://crbug.com/1034197).  Avoid giving the "//" directly
+  // explanation in https://crbug.com/40663665).  Avoid giving the "//" directly
   // to EmbeddedTestServer::GetURL(), which also uses GURL::Resolve()
   // internally and would otherwise produce an empty/invalid URL to navigate
   // to.
@@ -2472,7 +2472,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
 };
 
 // This test case implements creis@'s repro case from
-// https://bugs.chromium.org/p/chromium/issues/detail?id=1141721#c32.
+// https://crbug.com/40727308#c32.
 // Prior to the fix, we end up putting the app's extension url into the opt-in
 // list, then later the second navigation tries to compare an effective URL to
 // the actual (extension) url in the ProcessLocks in CanAccessDataForOrigin,

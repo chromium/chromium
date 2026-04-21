@@ -140,7 +140,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(
                webapps::UninstallResultCode code) {
               // This ensures that the scoped_keep_alive will be deleted in the
               // next message loop, giving objects like DialogDelegate enough
-              // time to shut itself down. See crbug.com/1506302 for more
+              // time to shut itself down. See crbug.com/40946953 for more
               // information.
               base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
                   FROM_HERE, std::move(scoped_keep_alive));
@@ -350,7 +350,7 @@ bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
   }
 #if BUILDFLAG(IS_MAC)
   // On macOS it is only possible to reparent the window when the shortcut (app
-  // shim) was created. See https://crbug.com/915571.
+  // shim) was created. See https://crbug.com/40606764.
   return shortcut_created;
 #else
   return true;

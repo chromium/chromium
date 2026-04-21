@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
 }
 
 // Makes sure the tab can be closed while the dialog is showing.
-// https://crbug.com/484376
+// https://crbug.com/41172350
 // TODO(crbug.com/409069597): Re-enable this test on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CloseTabWhileDialogShowing DISABLED_CloseTabWhileDialogShowing

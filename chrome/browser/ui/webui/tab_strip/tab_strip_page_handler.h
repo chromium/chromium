@@ -150,7 +150,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
 
   // A flag that tracks whether or not a scroll begin gesture event should
   // initiate a drag. This is used to ensure we start a drag only for event
-  // streams intended to trigger a drag (See crbug.com/1204572).
+  // streams intended to trigger a drag (See crbug.com/40764118).
   bool should_drag_on_gesture_scroll_ = false;
 
   // Determines whether to show the context menu after a tap gesture.

@@ -242,7 +242,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
   // bug. http://b/315364997.
   //
   // A bug is filed to track future works for fixing this confusing naming
-  // disparity. https://crbug.com/1473895
+  // disparity. https://crbug.com/40279151
   if (event && event->type() == ui::EventType::kKeyReleased) {
     std::move(callback).Run(ActivateOrAdvanceToNextBrowser(), std::move(items));
     return;
@@ -360,7 +360,7 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
   DCHECK(!from_context_menu);
 
   // Check that the index is valid and the browser has not been closed.
-  // It's unclear why, but the browser's window may be null: crbug.com/937088
+  // It's unclear why, but the browser's window may be null: crbug.com/41444285
   if (command_id < static_cast<int64_t>(app_menu_items_.size()) &&
       app_menu_items_[command_id].first &&
       app_menu_items_[command_id].first->window()) {

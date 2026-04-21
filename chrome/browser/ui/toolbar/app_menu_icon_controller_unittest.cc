@@ -126,7 +126,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
     return GetParam() >= install_static::DEV_INDEX;
 #else
     // Non-Windows platforms don't have a way to specify the channel; see
-    // https://crbug.com/903798.
+    // https://crbug.com/40601741.
     return false;
 #endif
   }

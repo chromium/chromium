@@ -140,7 +140,7 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
 // Returns true if we should force dark foreground colors for the Google logo
 // and the One Google Bar. This is done to fix specific GWS themes where the
 // always-light logo and OGB colors do not sufficiently contrast with lighter
-// image backgrounds (see crbug.com/1329552).
+// image backgrounds (see crbug.com/40842679).
 // TODO(crbug.com/40842305): Address this in a general way and extend support to
 // custom background images, not just CWS themes.
 bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
@@ -298,7 +298,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   // applied when the user does not have a custom background selected and has
   // installed a CWS theme with a bundled background image. The first condition
   // is necessary as a custom background image can be set while a CWS theme with
-  // a bundled image is concurrently enabled (see crbug.com/1329552).
+  // a bundled image is concurrently enabled (see crbug.com/40842679).
   if (!custom_background.has_value() && theme_has_custom_image &&
       ShouldForceDarkForegroundColorsForLogo(theme_service)) {
     theme->logo_color =

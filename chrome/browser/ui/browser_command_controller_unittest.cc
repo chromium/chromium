@@ -370,7 +370,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
       // 1. Most commands are disabled in fullscreen.
       // 2. In fullscreen, only the exit fullscreen commands are reserved. All
       // other shortcuts should be delivered to the web page. See
-      // http://crbug.com/680809.
+      // http://crbug.com/40501396.
 
       //         Command ID        |      tab mode      |      fullscreen     |
       //                           | enabled | reserved | enabled  | reserved |
@@ -482,7 +482,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
 
 // Ensure that the logic for enabling IDC_OPTIONS is consistent, regardless of
 // the order of entering fullscreen and forced incognito modes. See
-// http://crbug.com/694331.
+// http://crbug.com/40507396.
 TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
   TestingProfile* profile = browser()->profile()->AsTestingProfile();
   // Setup guest session.

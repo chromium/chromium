@@ -320,7 +320,8 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   // For in-session login flows, request Gaia to ignore third party SAML IdP SSO
   // redirection policies (and redirect to SAML IdPs by default), otherwise some
   // managed users will not be able to login to Chrome OS at all. Please check
-  // https://crbug.com/984525 and https://crbug.com/984525#c20 for more context.
+  // https://crbug.com/41471092 and https://crbug.com/41471092#c20 for more
+  // context.
   params.Set("ignoreCrOSIdpSetting", true);
 }
 

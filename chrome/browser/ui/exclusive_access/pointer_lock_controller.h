@@ -99,7 +99,7 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   // Optionally a WebContents instance that is granted permission to silently
   // lock the mouse pointer. This is granted only if the WebContents instance
   // has previously locked and displayed the permission bubble until the bubble
-  // time out has expired. https://crbug.com/725370
+  // time out has expired. https://crbug.com/40522116
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_granted_silent_pointer_lock_permission_ = nullptr;
 

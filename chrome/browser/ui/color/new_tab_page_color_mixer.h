@@ -19,7 +19,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderKey& key);
 
 // Allows the Linux mixer to override certain colors to be the light theme
-// colors to retain the original color behavior in GTK+. See crbug.com/998903.
+// colors to retain the original color behavior in GTK+. See crbug.com/40642550.
 // This logic will be refactored once the NewTabPage comprehensive theming
 // experiment has completed.
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode);

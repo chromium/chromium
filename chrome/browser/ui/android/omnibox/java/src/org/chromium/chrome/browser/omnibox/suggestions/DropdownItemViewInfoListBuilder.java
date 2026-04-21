@@ -246,9 +246,9 @@ class DropdownItemViewInfoListBuilder {
         // Note that despite GroupsDetails map not holding <null> values,
         // a group definition for specific ID may be unavailable, or the group
         // header text may be empty.
-        // TODO(http://crbug/1518967): move this to the calling function and instantiate the
+        // TODO(http://crbug.com/41491951): move this to the calling function and instantiate the
         // HeaderView undonditionally when passing from one suggestion group to another.
-        // TODO(http://crbug/1518967): collapse Header and DivierLine to a single component.
+        // TODO(http://crbug.com/41491951): collapse Header and DivierLine to a single component.
         String headerText = null;
         boolean showGroupSeparatorDecoration = false;
 

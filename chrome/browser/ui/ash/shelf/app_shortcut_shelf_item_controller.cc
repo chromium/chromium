@@ -305,7 +305,7 @@ void AppShortcutShelfItemController::ItemSelected(
   // bug. http://b/315364997.
   //
   // A bug is filed to track future works for fixing this confusing naming
-  // disparity. https://crbug.com/1473895
+  // disparity. https://crbug.com/40279151
   if (event && event->type() == ui::EventType::kKeyReleased) {
     auto optional_action = AdvanceToNextApp(filter_predicate);
     if (optional_action.has_value()) {

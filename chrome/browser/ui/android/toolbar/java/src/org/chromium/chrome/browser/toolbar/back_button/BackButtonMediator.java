@@ -134,7 +134,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                     public void onUrlUpdated(Tab tab) {
                         // Some updates such as making a navigation entry unskippable can change
                         // canGoBack() result. Such updates are delivered here and we want to handle
-                        // them to update our state, see https://crbug.com/1477784.
+                        // them to update our state, see https://crbug.com/40071066.
                         updateButtonEnabledState();
                     }
                 };

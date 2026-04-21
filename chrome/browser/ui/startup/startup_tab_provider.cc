@@ -326,11 +326,11 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
 
     // This call can (in rare circumstances) block the UI thread.
     // FixupRelativeFile may access to current working directory, which is a
-    // blocking API. http://crbug.com/60641
-    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a
+    // blocking API. http://crbug.com/40466600
+    // http://crbug.com/40364501: Only use URLFixerUpper if we don't have a
     // valid URL, otherwise we will look in the current directory for a file
     // named 'about' if the browser was started with a about:foo argument.
-    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
+    // http://crbug.com/40389934: Always use URLFixerUpper on file:// URLs,
     // otherwise we wouldn't correctly handle '#' in a file name.
     if (!url.is_valid() || url.SchemeIsFile()) {
       base::ScopedAllowBlocking allow_blocking;

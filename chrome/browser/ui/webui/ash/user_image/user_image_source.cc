@@ -78,7 +78,7 @@ scoped_refptr<base::RefCountedMemory> LoadUserImageFrameForScaleFactor(
     return ui::ResourceBundle::GetSharedInstance()
         .LoadDataResourceBytesForScale(resource_id, scale_factor);
   }
-  // TODO(reveman): Add support for frames beyond 0 (crbug.com/750064).
+  // TODO(reveman): Add support for frames beyond 0 (crbug.com/40532347).
   if (frame) {
     NOTIMPLEMENTED() << "Unsupported frame: " << frame;
     return nullptr;
@@ -102,7 +102,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageFrame(
   if (frame == -1) {
     return image_bytes;
   }
-  // TODO(reveman): Add support for frames beyond 0 (crbug.com/750064).
+  // TODO(reveman): Add support for frames beyond 0 (crbug.com/40532347).
   if (frame) {
     NOTIMPLEMENTED() << "Unsupported frame: " << frame;
     return nullptr;

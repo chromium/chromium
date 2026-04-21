@@ -66,7 +66,7 @@
                                                    window:(NSWindow*)window {
   // TODO(erikchen): Detect symbolic hot keys, and force control to be passed
   // back to AppKit so that it can handle it correctly.
-  // https://crbug.com/846893.
+  // https://crbug.com/40578102.
 
   NSResponder* responder = [window firstResponder];
   if ([responder respondsToSelector:@selector(isKeyLocked:)]) {
@@ -90,7 +90,7 @@
   //  * Avoiding sleeps. By default, the implementation of NSMenu
   //  performKeyEquivalent: has a nested run loop that spins for 100ms. If we
   //  avoid that by spinning our task runner in their private mode, there's a
-  //  built in nanosleep. See https://crbug.com/836947#c8.
+  //  built in nanosleep. See https://crbug.com/41385540#c8.
   //
   // By not passing the event to AppKit, we do lose out on the brief
   // highlighting of the NSMenu.

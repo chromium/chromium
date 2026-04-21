@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
 // Tests that view-source: works correctly on a subpage of
 // chrome://interstitials (using chrome://interstitials/ssl).
 
-// Test is currently flaky on Windows (crbug.com/926392)
+// Test is currently flaky on Windows (crbug.com/41437969)
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialWithPathViewSource \
   DISABLED_InterstitialWithPathViewSource
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
 
 // Checks that the interstitial page uses correct web contents. If not, closing
 // the tab might result in a freed web contents pointer and cause a crash.
-// See https://crbug.com/611706 for details.
+// See https://crbug.com/41253835 for details.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UseCorrectWebContents) {
   int current_tab = browser()->tab_strip_model()->active_index();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),

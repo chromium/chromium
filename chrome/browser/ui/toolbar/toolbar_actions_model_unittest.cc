@@ -1063,7 +1063,7 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
               testing::ElementsAre(id_a, id_b, id_c, extension_id));
 
   // Try to move the force-pinned extension. This shouldn't do anything because
-  // they can't be moved. See crbug.com/1266952.
+  // they can't be moved. See crbug.com/40204281.
   toolbar_model()->MovePinnedAction(extension_id, 1);
   EXPECT_THAT(prefs->GetPinnedExtensions(),
               testing::ElementsAre(id_a, id_b, id_c));
@@ -1223,7 +1223,7 @@ TEST_F(ToolbarActionsModelUnitTest,
 // Tests that the pin state (and position) for extensions that are unloaded
 // (but *not* uninstalled) is preserved, even if the pinning order was modified
 // while they were unloaded.
-// Regression test for crbug.com/1203899.
+// Regression test for crbug.com/40763758.
 TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
@@ -1268,8 +1268,8 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
                              browser_action_c()->id()));
 
   // Repeat the unload, reload flow, but move a pinned action
-  // (https://crbug.com/1203899) and unpin an action
-  // (https://crbug.com/1205561) between the unload and the reload.
+  // (https://crbug.com/40763758) and unpin an action
+  // (https://crbug.com/40764658) between the unload and the reload.
   registrar()->DisableExtension(
       browser_action_a()->id(),
       {extensions::disable_reason::DISABLE_USER_ACTION});

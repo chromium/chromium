@@ -131,7 +131,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
  private:
 #if BUILDFLAG(IS_MAC)
   // On Mac, entering into the system fullscreen mode can tickle crashes in
-  // the WindowServer (c.f. https://crbug.com/828031), so provide a fake for
+  // the WindowServer (c.f. https://crbug.com/40569686), so provide a fake for
   // testing.
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_window_;
 #endif

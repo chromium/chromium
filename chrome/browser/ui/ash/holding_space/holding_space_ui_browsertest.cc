@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
 
   // Verify drag-and-drop of pinned file items.
   // NOTE: Dragging a pinned file from a non-top row of the pinned files
-  // container grid previously resulted in a crash (crbug.com/1143426). To
+  // container grid previously resulted in a crash (crbug.com/40155085). To
   // explicitly test against this case we will add and drag a second row item.
   HoldingSpaceItem* const pinned_file = AddPinnedFile();
   AddPinnedFile();

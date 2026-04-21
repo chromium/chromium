@@ -440,7 +440,7 @@ std::string FullscreenControllerStateTest::GetAndClearDebugLog() {
 bool FullscreenControllerStateTest::ShouldSkipStateAndEventPair(State state,
                                                                 Event event) {
   // TODO(scheib) Toggling Tab fullscreen while pending Tab or
-  // Browser fullscreen is broken currently http://crbug.com/154196
+  // Browser fullscreen is broken currently http://crbug.com/40951066
   if ((state == STATE_TO_BROWSER_FULLSCREEN ||
        state == STATE_TO_TAB_FULLSCREEN) &&
       (event == ENTER_TAB_FULLSCREEN || event == EXIT_TAB_FULLSCREEN)) {

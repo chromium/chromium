@@ -298,7 +298,7 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
       (app_type == apps::AppType::kChromeApp ||
        app_type == apps::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
-    // application. See http://crbug.com/1232520 for more information.
+    // application. See http://crbug.com/40191158 for more information.
     if (!app_launch_info->container.has_value() ||
         !app_launch_info->disposition.has_value()) {
       std::move(callback).Run({});

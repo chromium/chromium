@@ -106,7 +106,7 @@ void ChromeWebContentsHandler::AddNewContents(
   const bool browser_created = !browser;
   if (!browser) {
     // The request can be triggered by Captive portal when browser is not ready
-    // (https://crbug.com/1141608).
+    // (https://crbug.com/40154317).
     if (Browser::GetCreationStatusForProfile(profile) !=
         Browser::CreationStatus::kOk) {
       return;

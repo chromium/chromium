@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 
 // OpenURLFromTab goes through a different code path than traditional popups
 // that use window.open(). Make sure the tracker is created in those cases.
-// Disabled due to flakiness. See crbug.com/1186441.
+// Disabled due to flakiness. See crbug.com/40753743.
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        DISABLED_ControlClick_HasTracker) {
   base::HistogramTester tester;
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       entry, kUkmNumGestureScrollBeginInteractions, 0u);
 }
 
-// Disabled due to flakiness. See crbug.com/1186441.
+// Disabled due to flakiness. See crbug.com/40753743.
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        DISABLED_ShiftClick_HasTracker) {
   base::HistogramTester tester;

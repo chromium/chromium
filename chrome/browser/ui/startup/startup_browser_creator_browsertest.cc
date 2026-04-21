@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsOnNewWindow) {
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
   // Add --app=<url> to the command line. Tests launching legacy apps which may
   // have been created by "Add to Desktop" in old versions of Chrome.
-  // TODO(mgiuca): Delete this feature (https://crbug.com/751029). We are
+  // TODO(mgiuca): Delete this feature (https://crbug.com/41337042). We are
   // keeping it for now to avoid disrupting existing workflows.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   GURL url = chrome_test_utils::GetTestUrl(
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
   // legacy apps which may have been created by "Add to Desktop" in old versions
   // of Chrome. Some existing workflows (especially testing scenarios) also
   // use the --incognito command line.
-  // TODO(mgiuca): Delete this feature (https://crbug.com/751029). We are
+  // TODO(mgiuca): Delete this feature (https://crbug.com/41337042). We are
   // keeping it for now to avoid disrupting existing workflows.
   // IMPORTANT NOTE: This is being committed because it is an easy fix, but
   // this use case is not officially supported. If a future refactor or
@@ -1686,7 +1686,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
   EXPECT_EQ(chrome::GetBrowserCount(&profile2), 1u);
 }
 
-// Flaky. See https://crbug.com/819976.
+// Flaky. See https://crbug.com/41375379.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
                        DISABLED_ProfilesLaunchedAfterCrash) {
   // After an unclean exit, all profiles will be launched. However, they won't
@@ -2584,7 +2584,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 #define MAYBE_LastUsedProfilesWithRealWebApp LastUsedProfilesWithRealWebApp
 #endif
 // TODO(stahon@microsoft.com) App restores are disabled on mac.
-// see http://crbug.com/1194201
+// see http://crbug.com/40758309
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
                        MAYBE_LastUsedProfilesWithRealWebApp) {
   // Make StartupBrowserCreator::WasRestarted() return true.
@@ -3155,7 +3155,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTabs) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
-// http://crbug.com/314819
+// http://crbug.com/40339772
 #define MAYBE_RestoreOnStartupURLsPolicySpecified \
   DISABLED_RestoreOnStartupURLsPolicySpecified
 #else
@@ -3213,7 +3213,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_MAC)
-// http://crbug.com/314819
+// http://crbug.com/40339772
 #define MAYBE_FirstRunTabsWithRestoreSession \
   DISABLED_FirstRunTabsWithRestoreSession
 #else
@@ -3447,7 +3447,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
 
   // Add --app=<url> to the command line. Tests launching legacy apps which may
   // have been created by "Add to Desktop" in old versions of Chrome.
-  // TODO(mgiuca): Delete this feature (https://crbug.com/751029). We are
+  // TODO(mgiuca): Delete this feature (https://crbug.com/41337042). We are
   // keeping it for now to avoid disrupting existing workflows.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   GURL url = chrome_test_utils::GetTestUrl(
@@ -3690,7 +3690,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
 
   // Passing the kDisableWebSecurity argument here presently does not do
   // anything because of the aforementioned limitation.
-  // https://crbug.com/1060293
+  // https://crbug.com/40121975
   infobars::ContentInfoBarManager* infobar_manager =
       LaunchKioskBrowserAndGetCreatedInfoBarManager(
           switches::kDisableWebSecurity);
@@ -3864,7 +3864,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorPickerTest,
     ::testing::Values(
-// Flaky: https://crbug.com/1126886
+// Flaky: https://crbug.com/40148327
 #if !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_WIN)
         // Picker should be shown in normal multi-profile startup situation.
         ProfilePickerSetup{/*expected_to_show=*/true},
@@ -3909,7 +3909,7 @@ INSTANTIATE_TEST_SUITE_P(
                            /*switch_name=*/std::nullopt,
                            /*switch_value_ascii=*/std::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
-        // Regression test for http://crbug.com/1166192
+        // Regression test for http://crbug.com/40741954
         // Picker should be shown after exit.
         ProfilePickerSetup{
             /*expected_to_show=*/true,
@@ -3917,7 +3917,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*switch_value_ascii=*/std::nullopt,
             /*url_arg=*/std::nullopt,
             /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kExit},
-        // Regression test for http://crbug.com/1245374
+        // Regression test for http://crbug.com/40196098
         // Picker should not be shown after restart.
         ProfilePickerSetup{
             /*expected_to_show=*/false,

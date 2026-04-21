@@ -4924,7 +4924,7 @@ class DummySingleWebContentsDialogManager
 }  // namespace
 
 // Verifies a newly inserted tab retains its previous blocked state.
-// http://crbug.com/276334
+// http://crbug.com/41038967
 TEST_P(TabStripModelTest, TabBlockedState) {
   // Start with a source tab tabstrip()->
   TestTabStripModelDelegate dummy_tab_strip_delegate;
@@ -6012,7 +6012,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
 }
 
 // Ensure that the opener for a tab never refers to a dangling WebContents.
-// Regression test for crbug.com/1092308.
+// Regression test for crbug.com/40052517.
 TEST_P(TabStripModelTest, DanglingOpener) {
   PrepareTabs(tabstrip(), 2);
 

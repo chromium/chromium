@@ -233,7 +233,7 @@ class DiceWebSigninInterceptHandlerTestBase : public testing::Test {
   base::DictValue GetInterceptionParameters() {
     Profile* profile = profile_manager_.CreateTestingProfile("Primary Profile");
     // Resetting the platform authority to NONE, as not all platforms have the
-    // same value in browser tests. See https://crbug.com/1324377.
+    // same value in browser tests. See https://crbug.com/40839235.
     policy::ScopedManagementServiceOverrideForTesting
         platform_management_authority_override(
             policy::ManagementServiceFactory::GetForPlatform(),

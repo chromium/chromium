@@ -244,7 +244,7 @@ public class FullscreenSigninMediator
 
     private void onNativeLoaded() {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
-        // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
+        // the delegate after the mediator is destroyed. See https://crbug.com/40214143.
         if (mDestroyed) return;
 
         mDelegate.recordNativeInitializedHistogram();
@@ -262,7 +262,7 @@ public class FullscreenSigninMediator
     /** Checks the initial load status. See {@link #onInitialLoadCompleted} for details. */
     private void checkWhetherInitialLoadCompleted(@LoadPoint int slowestLoadPoint) {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
-        // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
+        // the delegate after the mediator is destroyed. See https://crbug.com/40214143.
         if (mDestroyed) return;
 
         // The initialization flow requires native to be ready before the initial loading spinner
@@ -753,7 +753,7 @@ public class FullscreenSigninMediator
 
     /**
      * Returns whether the user has already clicked either 'Continue' or 'Dismiss'. If the user has
-     * pressed either of the two buttons consecutive taps are ignored. See crbug.com/1294994 for
+     * pressed either of the two buttons consecutive taps are ignored. See crbug.com/40214140 for
      * details.
      */
     boolean isContinueOrDismissClicked() {

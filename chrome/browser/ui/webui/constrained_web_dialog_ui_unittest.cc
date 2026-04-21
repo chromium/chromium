@@ -101,7 +101,7 @@ class ConstrainedWebDialogUITest : public ::testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-// Demonstrates that empty args list won't cause a crash: crbug.com/1262467.
+// Demonstrates that empty args list won't cause a crash: crbug.com/40799522.
 TEST_F(ConstrainedWebDialogUITest, DialogCloseWithEmptyArgs) {
   base::RunLoop run_loop;
   dialog_delegate()->GetWebDialogDelegate()->RegisterOnDialogClosedCallback(

@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 }
 
 // Verify that the WebUI NTP uses an available spare process and does not
-// discard it as in https://crbug.com/1094088.
+// discard it as in https://crbug.com/40699271.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   // Capture current spare renderer.
   std::vector<content::ChildProcessId> spare_ids_before_navigation =

@@ -379,7 +379,7 @@ void OobeUIDialogDelegate::Close() {
 
   // We do not call LoginScreen::NotifyOobeDialogVisibility here, because this
   // would cause the LoginShelfView to update its button visibility even though
-  // the login screen is about to be destroyed. See http://crbug/836172
+  // the login screen is about to be destroyed. See http://crbug.com/40573223
   widget_->Close();
 }
 

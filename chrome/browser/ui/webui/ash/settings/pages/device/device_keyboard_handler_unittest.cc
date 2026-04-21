@@ -313,7 +313,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Some keyboard devices don't report the string "keyboard" as part of their
   // device names. Those should also be detected as external keyboards, and
   // should show the capslock and external meta remapping.
-  // https://crbug.com/834594.
+  // https://crbug.com/40572504.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
           {6, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",

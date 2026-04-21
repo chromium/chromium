@@ -10,7 +10,7 @@
 using ScreenOrientationDelegateChromeosTest = InProcessBrowserTest;
 
 // Tests that an orientation delegate is created and set. Regression test for
-// https://crbug.com/889981
+// https://crbug.com/40595741
 IN_PROC_BROWSER_TEST_F(ScreenOrientationDelegateChromeosTest, Basic) {
   EXPECT_NE(nullptr, content::GetScreenOrientationDelegate());
 }

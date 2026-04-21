@@ -358,7 +358,7 @@ TEST_F(ThumbnailImageTest, ClearExistingThumbnailNotifiesObservers) {
 }
 
 // Makes sure a null dereference does not happen. Regression test for
-// crbug.com/1159701.
+// crbug.com/40737604.
 TEST_F(ThumbnailImageTest, UnsubscribeAfterDelegateDestroyed) {
   auto delegate = std::make_unique<StubDelegate>();
   auto image = base::MakeRefCounted<ThumbnailImage>(delegate.get());
@@ -373,7 +373,7 @@ TEST_F(ThumbnailImageTest, UnsubscribeAfterDelegateDestroyed) {
 }
 
 // Ensures subscribers with a size hint get notified correctly on
-// thumbnail clear. Regression test for crbug.com/1168483 where
+// thumbnail clear. Regression test for crbug.com/40165031 where
 // CropPreviewImage was called on blank thumbnails resulting in a
 // DCHECK.
 TEST_F(ThumbnailImageTest, DoesNotCropBlankThumbnails) {

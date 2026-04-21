@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailReadinessTrackerBrowserTest,
   content::NavigateIframeToURL(web_contents(), "if", iframe_url);
 }
 
-// Regression test for crbug.com/1120940.
+// Regression test for crbug.com/40715186.
 //
 // Artifical navigations like history.pushState() shouldn't invalidate
 // our thumbnail.

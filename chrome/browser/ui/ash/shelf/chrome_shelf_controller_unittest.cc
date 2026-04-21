@@ -2566,7 +2566,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForSuspendedApp) {
 }
 
 // Ensure the spinner controller does not override the active app controller
-// (crbug.com/701152).
+// (crbug.com/40510580).
 TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
   InitShelfController();
   SendListOfArcApps();
@@ -2783,7 +2783,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcWindowRecreation) {
 // ARC app item controller and vice versa. This should not happen in normal
 // cases but in case of ARC boot failure this may lead to such situation. This
 // test verifies that dynamic change of app item controllers is safe. See more
-// crbug.com/770005.
+// crbug.com/40542371.
 TEST_F(ChromeShelfControllerWithArcTest, OverrideAppItemController) {
   extension_registrar_->AddExtension(arc_support_host_.get());
 
@@ -3164,7 +3164,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(1, model_->item_count());
 }
 
-// Check edge case where a visiting V1 app gets closed (crbug.com/321374).
+// Check edge case where a visiting V1 app gets closed (crbug.com/40342048).
 TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V1CloseOnVisitingDesktop) {
   // Create a browser item in the controller.

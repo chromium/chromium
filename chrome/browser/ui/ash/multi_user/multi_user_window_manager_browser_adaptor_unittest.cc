@@ -762,7 +762,7 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
 }
 
 // Tests that windows in active and inactive desks show up correctly after
-// switching profile (crbug.com/1182069). This test checks the followings:
+// switching profile (crbug.com/40170645). This test checks the followings:
 // 1. window local visibility (appearance in desk miniviews) regardless
 // of its ancestors' visibility like hidden parent desk container
 // (see `Window::TargetVisibility()`).
@@ -976,7 +976,7 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, TransientWindows) {
 }
 
 // Verifies duplicate observers are not added for transient dialog windows.
-// https://crbug.com/937333
+// https://crbug.com/41444428
 TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
        SetWindowOwnerOnTransientDialog) {
   AddLoggedInUsers({kAccountIdA});
@@ -1654,7 +1654,7 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, WindowsOrderPreservedTests) {
 
 // Tests that GlobalBrowserCollection::GetActiveBrowser() works properly in
 // multi-user scenario, that is it should return the browser with active window
-// associated with it (crbug.com/675265).
+// associated with it (crbug.com/40498682).
 TEST_F(MultiUserWindowManagerBrowserAdaptorTest, GetActiveBrowser) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 

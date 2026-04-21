@@ -97,7 +97,7 @@ class ConstrainedWebDialogBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that opening/closing the constrained window won't crash it.
-// Flaky on trusty builder: http://crbug.com/1020490.
+// Flaky on trusty builder: http://crbug.com/40656498.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BasicTest DISABLED_BasicTest
 #else
@@ -153,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
 
 // Tests that dialog autoresizes based on web contents when autoresizing
 // is enabled.
-// Flaky on CrOS: http://crbug.com/928924
-// Flaky on Mac: http://crbug.com/1498848
+// Flaky on CrOS: http://crbug.com/41439468
+// Flaky on Mac: http://crbug.com/40939810
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ContentResizeInAutoResizingDialog \
   DISABLED_ContentResizeInAutoResizingDialog

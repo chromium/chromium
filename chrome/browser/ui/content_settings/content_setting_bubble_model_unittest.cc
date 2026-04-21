@@ -1127,7 +1127,7 @@ class GenericSensorContentSettingBubbleModelTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Regression test for https://crbug.com/955408
+// Regression test for https://crbug.com/41454392
 // See also: ContentSettingImageModelTest.SensorAccessPermissionsChanged
 TEST_F(GenericSensorContentSettingBubbleModelTest,
        SensorAccessPermissionsChanged) {

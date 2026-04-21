@@ -88,7 +88,7 @@ TEST_F(AuthenticatorSheetBaseTest, IsOtherMechanismButtonVisible) {
   }
 }
 
-// Regression test for crbug.com/1408492.
+// Regression test for crbug.com/40888494.
 TEST_F(AuthenticatorSheetBaseTest,
        IsOtherMechanismButtonVisible_NoDialogModel) {
   auto dialog_model = base::MakeRefCounted<AuthenticatorRequestDialogModel>(

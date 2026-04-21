@@ -8,7 +8,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-// https://crbug.com/833624
+// https://crbug.com/41383694
 class InvalidUserDataDirTest : public InProcessBrowserTest {
  public:
   InvalidUserDataDirTest() = default;

@@ -443,14 +443,14 @@ bool BrowserCommandController::IsReservedCommandOrKey(
   if (window()->IsFullscreen()) {
     // In fullscreen, all commands except for IDC_FULLSCREEN and IDC_EXIT should
     // be delivered to the web page. The intent to implement and ship can be
-    // found in http://crbug.com/680809.
+    // found in http://crbug.com/40501396.
     const bool is_exit_fullscreen =
         (command_id == IDC_EXIT || command_id == IDC_FULLSCREEN);
 #if BUILDFLAG(IS_MAC)
     // This behavior is different on Mac OS, which has a unique user-initiated
-    // full-screen mode. According to the discussion in http://crbug.com/702251,
-    // the commands should be reserved for browser-side handling if the browser
-    // window's toolbar is visible.
+    // full-screen mode. According to the discussion in
+    // http://crbug.com/40511102, the commands should be reserved for
+    // browser-side handling if the browser window's toolbar is visible.
     if (window()->IsToolbarShowing()) {
       if (command_id == IDC_FULLSCREEN) {
         return true;
@@ -1604,7 +1604,7 @@ void BrowserCommandController::InitCommandState() {
   // The VisitDesktop command is only supported for up to 5 logged in users
   // because that's the max number of user sessions. If that number is increased
   // the IDC_VISIT_DESKTOP_OF_LRU_USER_ command ids should be updated as well.
-  // crbug.com/940461
+  // crbug.com/41446075
   static_assert(
       session_manager::kMaximumNumberOfUserSessions <=
           IDC_VISIT_DESKTOP_OF_LRU_USER_LAST -

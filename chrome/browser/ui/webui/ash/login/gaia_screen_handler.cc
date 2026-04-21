@@ -807,7 +807,7 @@ void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
   }
   if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
     // Silently ignore this error - it is used as an intermediate state for
-    // committed interstitials (see https://crbug.com/1049349 for details).
+    // committed interstitials (see https://crbug.com/40672487 for details).
     return;
   }
   if (error_code == net::ERR_ABORTED) {
@@ -1135,7 +1135,8 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   if (LoginDisplayHost::default_host()) {
     LoginDisplayHost::default_host()->OnGaiaScreenReady();
   } else {
-    // Used to debug crbug.com/902315. Feel free to remove after that is fixed.
+    // Used to debug crbug.com/41424664. Feel free to remove after that is
+    // fixed.
     LOG(ERROR) << "HandleGaiaUIReady: There is no LoginDisplayHost";
   }
 }

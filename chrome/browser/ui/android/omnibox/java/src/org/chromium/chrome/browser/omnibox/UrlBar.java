@@ -456,7 +456,7 @@ public class UrlBar extends AutocompleteEditText {
         // See crbug.com/410642190
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
-        // Due to crbug.com/1103555, Autofill had to be disabled on the UrlBar to work around
+        // Due to crbug.com/40139311, Autofill had to be disabled on the UrlBar to work around
         // an issue on Android Q+. With Autofill disabled, the Autofill compat mode no longer
         // learns of changes to the UrlBar, which prevents it from cancelling the session if
         // the domain changes. We restore this behavior by mimicking the relevant part of
@@ -1002,8 +1002,8 @@ public class UrlBar extends AutocompleteEditText {
                     assert MathUtils.areFloatsEqual(horizontal, width) || horizontal > width
                             : "finalVisibleCharIndex is too small: "
                                     + String.valueOf(finalVisibleCharIndexExclusive)
-                                    + ". If discovered locally please update crbug.com/1465967 with"
-                                    + " the url.";
+                                    + ". If discovered locally please update crbug.com/40067648"
+                                    + " with the url.";
                 }
 
                 // To avoid issues where a small portion of the character following
@@ -1031,7 +1031,7 @@ public class UrlBar extends AutocompleteEditText {
 
         final int originEndIndex = Math.min(mOriginEndIndex, urlTextLength);
         if (mOriginEndIndex > urlTextLength) {
-            // If discovered locally, please update crbug.com/859219 with the steps to reproduce.
+            // If discovered locally, please update crbug.com/41398885 with the steps to reproduce.
             assert false
                     : "Attempting to scroll past the end of the URL: "
                             + url
@@ -1248,7 +1248,7 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public Editable getText() {
         if (mRequestingAutofillStructure) {
-            // crbug.com/1109186: mTextForAutofillServices must not be null here, but Autofill
+            // crbug.com/40141623: mTextForAutofillServices must not be null here, but Autofill
             // requests can be triggered before it is initialized.
             return new SpannableStringBuilder(
                     mTextForAutofillServices != null ? mTextForAutofillServices : "");
@@ -1260,7 +1260,7 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public CharSequence getAccessibilityClassName() {
         // When UrlBar is used as a read-only TextView, force Talkback to pronounce it like
-        // TextView. Otherwise Talkback will say "Edit box, http://...". crbug.com/636988
+        // TextView. Otherwise Talkback will say "Edit box, http://...". crbug.com/40480292
         if (isEnabled()) {
             return super.getAccessibilityClassName();
         } else {

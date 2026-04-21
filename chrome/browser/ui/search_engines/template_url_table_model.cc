@@ -132,7 +132,7 @@ void TemplateURLTableModel::ModifyTemplateURL(size_t index,
 }
 
 TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
-  // Sanity checks for https://crbug.com/781703.
+  // Sanity checks for https://crbug.com/40548229.
   CHECK_LT(index, entries_.size());
   CHECK(std::ranges::contains(template_url_service_->GetTemplateURLs(),
                               entries_[index]))

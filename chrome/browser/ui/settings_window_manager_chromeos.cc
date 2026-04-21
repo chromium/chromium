@@ -190,7 +190,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   params.user_gesture = true;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
-  CHECK(params.browser);  // See https://crbug.com/1174525
+  CHECK(params.browser);  // See https://crbug.com/40746844
   browser = params.browser;
 
   // operator[] not used because SessionID has no default constructor.

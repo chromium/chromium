@@ -41,7 +41,7 @@ public class StatusIconView extends LinearLayout {
             ViewUtils.requestLayout(this, "StatusIconView setVisibility");
             // If the icon's visibility changes while layout is pending, we can end up in a bad
             // state due to a stale measurement cache. Post a task to request layout to force this
-            // visibility change (https://crbug.com/1345552, https://crbug.com/1399457).
+            // visibility change (https://crbug.com/40853631, https://crbug.com/40883150).
             if (wasLayoutPreviouslyRequested && getHandler() != null) {
                 getHandler()
                         .post(

@@ -122,7 +122,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   if (![sender isEnabled]) {
     // This code is reachable e.g. if the user mashes the back button, queuing
     // up a bunch of events before the button's enabled state is updated:
-    // http://crbug.com/63254
+    // http://crbug.com/40478451
     return;
   }
 

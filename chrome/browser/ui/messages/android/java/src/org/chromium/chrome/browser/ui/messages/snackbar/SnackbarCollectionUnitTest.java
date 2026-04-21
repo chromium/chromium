@@ -149,7 +149,7 @@ public class SnackbarCollectionUnitTest {
         }
     }
 
-    // This test is added as a result of crbug.com/1258303.
+    // This test is added as a result of crbug.com/40796914.
     // Test that the action/dismiss callbacks are not invoked when the controller is null.
     @Test
     @Feature({"Browser", "Snackbar"})

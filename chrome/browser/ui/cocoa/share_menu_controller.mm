@@ -88,7 +88,7 @@ bool CanShare() {
     // equivalent. We defer the expensive population of sharing services until
     // the menu is actually opened (see menuNeedsUpdate:).
     // This prevents hangs on key presses when the menu is not open.
-    // See https://crbug.com/1309422.
+    // See https://crbug.com/40829755.
     NSMenuItem* email = [[NSMenuItem alloc]
         initWithTitle:l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
                action:@selector(emailLink:)
@@ -109,7 +109,7 @@ bool CanShare() {
   // sharing service plugins from the filesystem. This can hang due to TCC
   // (Transparency, Consent, and Control) permissions or slow disk I/O. Never
   // consider the current WatchHangsInScope as hung. HangWatching will resume
-  // when the next task is pumped. See https://crbug.com/1309422.
+  // when the next task is pumped. See https://crbug.com/40829755.
   base::HangWatcher::InvalidateActiveExpectations();
 
   // Using a real URL instead of empty string to avoid system log about relative

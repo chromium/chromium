@@ -1662,7 +1662,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Draw the optional button if visible. We check for both visibility and width because in
         // some cases (e.g. the first frame of the showing animation) the view may be visible with a
         // width of zero. Calling draw in this state results in drawing the inner ImageButton when
-        // it's not supposed to. (See https://crbug.com/1422176 for an example of this happening).
+        // it's not supposed to. (See https://crbug.com/40896761 for an example of this happening).
         if (mOptionalButtonCoordinator != null
                 && mOptionalButtonCoordinator.getViewVisibility() != View.GONE
                 && mOptionalButtonCoordinator.getViewWidth() != 0) {
@@ -2056,7 +2056,7 @@ public class ToolbarPhone extends ToolbarLayout
     public void finishAnimations() {
         // The Android framework calls onAnimationEnd() on listeners before Animator#isRunning()
         // returns false. Sometimes this causes the progress bar visibility to be set incorrectly.
-        // Update the visibility now that animations are set to null. (see crbug.com/606419)
+        // Update the visibility now that animations are set to null. (see crbug.com/41250767)
         updateProgressBarVisibility();
     }
 
@@ -2203,7 +2203,7 @@ public class ToolbarPhone extends ToolbarLayout
         mTabSwitcherState = inTabSwitcherMode ? ENTERING_TAB_SWITCHER : EXITING_TAB_SWITCHER;
 
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
-        // crbug.com/974745.
+        // crbug.com/41465292.
         ViewUtils.requestLayout(this, "ToolbarPhone.setTabSwitcherMode");
 
         finishAnimations();
@@ -2244,7 +2244,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
-        // crbug.com/974745.
+        // crbug.com/41465292.
         ViewUtils.requestLayout(this, "ToolbarPhone.onTabSwitcherTransitionFinished");
         finishAnimations();
         updateVisualsForLocationBarState();
@@ -3325,7 +3325,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // This exception is to prevent early change of theme color when exiting the tab switcher
         // since currently visual state does not map correctly to tab switcher state. See
-        // https://crbug.com/832594 for more info.
+        // https://crbug.com/41383056 for more info.
         if (mTabSwitcherState != EXITING_TAB_SWITCHER) {
             updateToolbarBackgroundFromState(mVisualState);
         }

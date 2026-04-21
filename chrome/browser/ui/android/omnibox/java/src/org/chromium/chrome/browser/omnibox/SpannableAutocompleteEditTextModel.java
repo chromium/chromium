@@ -466,14 +466,15 @@ public class SpannableAutocompleteEditTextModel
 
     private boolean doesKeyboardSupportAutocomplete() {
         String pkgName = mDelegate.getKeyboardPackageName();
-        return !pkgName.contains(".iqqi") // crbug.com/767016
+        return !pkgName.contains(".iqqi") // crbug.com/41345660
                 && !pkgName.contains("omronsoft")
-                && !pkgName.contains(".iwnn"); // crbug.com/758443
+                && !pkgName.contains(".iwnn"); // crbug.com/40536735
     }
 
     @Override
     public boolean shouldFinishCompositionOnDeletion() {
-        // crbug.com/758443, crbug.com/766888: Japanese keyboard does not finish composition when we
+        // crbug.com/40536735, crbug.com/41345594: Japanese keyboard does not finish composition
+        // when we
         // restore the deleted text, and later typing will make Japanese keyboard move before the
         // restored character. Most keyboards accept finishComposingText and update their internal
         // states.
@@ -483,7 +484,7 @@ public class SpannableAutocompleteEditTextModel
         // keyboards, instead we call finishComposingText() for all the keyboards except for Samsung
         // keyboard.
         return !pkgName.contains("com.sec.android.inputmethod")
-                // crbug.com/1071011: LG keyboard has the same issue.
+                // crbug.com/40684893: LG keyboard has the same issue.
                 && !pkgName.contains("com.lge.ime");
     }
 

@@ -61,11 +61,11 @@ using DownloadVector = DownloadManager::DownloadVector;
 namespace {
 
 // Character limit for URL/origin strings displayed in the downloads page, to
-// avoid surpassing mojo data limit (c.f. crbug.com/1070451). If it's really
+// avoid surpassing mojo data limit (c.f. crbug.com/40684561). If it's really
 // this long, the user won't be able to see the whole thing anyway.
 // Use a much smaller limit than url::kMaxURLChars (2M) since this is for
 // display only, and long URLs will affect page load speed and may cause
-// JavaScript errors (https://crbug.com/1522764).
+// JavaScript errors (https://crbug.com/41495722).
 const size_t kMaxDisplayURLChars = 16 * 1024;
 
 // Returns an enum value to be used as the |danger_type| value in

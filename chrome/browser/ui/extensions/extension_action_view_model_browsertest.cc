@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   // Simulate NativeTheme update after `image_source` is created.
   // `image_source` should paint fine without hitting use-after-free in such
-  // case.  See http://crbug.com/1315967
+  // case.  See http://crbug.com/40833823
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
   image_source->GetImageForScale(1.0f);
 }

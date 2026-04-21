@@ -498,7 +498,7 @@ void NetworkStateNotifier::OnConnectErrorGetProperties(
       NetworkState::StateIsConnecting(state)) {
     NET_LOG(EVENT) << "Skipping connect error notification. State: " << state;
     // Network is no longer in an error state. This can happen if an
-    // unexpected idle state transition occurs, see http://crbug.com/333955.
+    // unexpected idle state transition occurs, see http://crbug.com/41083575.
     return;
   }
   ShowConnectErrorNotification(error_name, service_path,

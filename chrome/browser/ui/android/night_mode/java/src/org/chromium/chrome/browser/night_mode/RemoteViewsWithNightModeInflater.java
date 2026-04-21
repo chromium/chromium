@@ -83,7 +83,7 @@ public class RemoteViewsWithNightModeInflater {
             final Context contextForResources =
                     getContextForResources(remoteViews, isInLocalNightMode);
             // App context must be used instead of activity context to avoid the support library
-            // bug, see https://crbug.com/783834
+            // bug, see https://crbug.com/40549339
             Context appContext = ContextUtils.getApplicationContext();
             Context contextForRemoteViews =
                     new RemoteViewsContextWrapper(appContext, contextForResources);

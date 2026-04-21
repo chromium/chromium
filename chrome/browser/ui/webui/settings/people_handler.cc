@@ -891,7 +891,7 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
         chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     if (browser) {
       // Clearing the primary account isn't sufficient to signout SAML accounts,
-      // see http://crbug.com/1114646.
+      // see http://crbug.com/40710922.
       browser->GetFeatures().signin_view_controller()->ShowGaiaLogoutTab(
           signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
     }
@@ -1057,7 +1057,7 @@ void PeopleHandler::CloseSyncSetup() {
 
     // The call to RevokeSyncConsent() above may delete the current browser that
     // owns `this` if force signin is enabled. Accessing instance members caused
-    // crashes (see https://crbug.com/1441820) which we guard against by
+    // crashes (see https://crbug.com/40266665) which we guard against by
     // checking a weak pointer to the current instance.
     if (!self_weak_ptr) {
       return;
@@ -1107,7 +1107,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // After a primary account was set, the Sync setup will start soon. Grab a
       // SetupInProgressHandle right now to avoid a temporary "missing Sync
-      // confirmation" error in the avatar menu. See crbug.com/928696.
+      // confirmation" error in the avatar menu. See crbug.com/41439343.
       syncer::SyncService* service = GetSyncService();
       if (service && !sync_blocker_) {
         sync_blocker_ = service->GetSetupInProgressHandle();

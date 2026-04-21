@@ -550,7 +550,7 @@ public class VoiceRecognitionHandler {
     @VisibleForTesting
     protected void recordSuccessMetrics(@VoiceInteractionSource int source) {
         // Defensive check to guard against onIntentResult being called more than once. This only
-        // happens with assistant experiments. See crbug.com/1116927 for details.
+        // happens with assistant experiments. See crbug.com/40712241 for details.
         if (mQueryStartTimeMs == null) return;
         mQueryStartTimeMs = null;
         mCurrentOnCanceledCallback = null;

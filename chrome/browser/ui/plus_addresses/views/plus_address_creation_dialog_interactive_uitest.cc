@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId),
           Do([this]() {
             // Close the web contents, ensuring there aren't issues with
-            // teardown. See crbug.com/1502957.
+            // teardown. See crbug.com/40943361.
             EXPECT_EQ(1, browser()->tab_strip_model()->count());
             browser()->tab_strip_model()->GetActiveWebContents()->Close();
           })));

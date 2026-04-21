@@ -21,7 +21,7 @@ bool NavigationShouldInvalidateThumbnail(
   // document. They aren't considered loading; onload is never triggered
   // after they complete. They shouldn't affect the thumbnail.
   //
-  // See crbug.com/1120940 for why this is necessary.
+  // See crbug.com/40715186 for why this is necessary.
   if (navigation->IsSameDocument()) {
     return false;
   }

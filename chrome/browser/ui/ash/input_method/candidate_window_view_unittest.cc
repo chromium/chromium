@@ -192,7 +192,7 @@ TEST_F(CandidateWindowViewTest, SelectCandidateAtTest) {
                                           &candidate_window_small);
   candidate_window_small.set_cursor_position(candidate_window_small_size - 1);
   // Make sure the test doesn't crash if the candidate window reduced
-  // its size. (crbug.com/174163)
+  // its size. (crbug.com/40300928)
   candidate_window_view()->UpdateCandidates(candidate_window_small);
   SelectCandidateAt(candidate_window_small_size - 1);
 }

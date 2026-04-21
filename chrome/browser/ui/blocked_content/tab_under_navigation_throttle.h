@@ -31,7 +31,7 @@ inline constexpr char kBlockTabUnderFormatMessage[] =
 //  in the background to be considered a tab-under restricts the scope of the
 //  intervention. For instance, popups that do not completely hide the original
 //  page may cause subsequent tab-under navigations to occur while visible (not
-//  compeltely backgrounded). See https://crbug.com/733736.
+//  compeltely backgrounded). See https://crbug.com/41325640.
 //
 //  For now, we allow these tab-unders because this pattern seems to be
 //  legitimate for some cases (like auth).

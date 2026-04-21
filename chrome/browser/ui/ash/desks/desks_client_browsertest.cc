@@ -3361,7 +3361,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   EXPECT_EQ(0u, GetDeskTemplates().size());
 }
 
-// Flakily failing https://crbug.com/1447440
+// Flakily failing https://crbug.com/40913634
 // Tests that admin templates policy can be set.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
                        SetAndClearAdminTemplates) {

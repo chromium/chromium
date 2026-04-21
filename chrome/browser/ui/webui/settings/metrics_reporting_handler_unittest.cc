@@ -48,7 +48,7 @@ class MetricsReportingHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    // For crbug.com/637068 which only run on official bots with no try jobs.
+    // For crbug.com/41269588 which only run on official bots with no try jobs.
     base::RunLoop().RunUntilIdle();
     handler_.reset();
     base::RunLoop().RunUntilIdle();

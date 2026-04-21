@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
 }
 
 // Verify that re-enabling AutomationManagerAura after disable will not cause
-// crash.  See https://crbug.com/1177042.
+// crash.  See https://crbug.com/40748249.
 IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
                        ReenableDoesNotCauseCrash) {
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();

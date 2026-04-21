@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
                        GeneratedIconFlagFalseNegative) {
   webapps::AppId app_id = InstallWebAppAndAwaitAppService(
       "/web_apps/get_manifest.html?no_icons.json");
-  // In https://crbug.com/1317922 manifest update erroneously set
+  // In https://crbug.com/40835055 manifest update erroneously set
   // is_generated_icon to false.
   CreateUpdateScope()->UpdateApp(app_id)->SetIsGeneratedIcon(false);
   RunIconChecksWithMetricExpectations(

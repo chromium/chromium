@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocusFindInPage) {
   // relationship is fixed.
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSMajorVersion() >= 13) {
-    GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1446127";
+    GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/40268465";
   }
 #endif
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocusFindInPage) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   // Select 1st tab, focus should still be on the location-bar.
-  // (bug http://crbug.com/23296)
+  // (bug http://crbug.com/41007822)
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
 
 // Tests that focus goes where expected when using reload on a crashed tab.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Hangy, http://crbug.com/50025.
+// Hangy, http://crbug.com/41182734.
 #define MAYBE_FocusOnReloadCrashedTab DISABLED_FocusOnReloadCrashedTab
 #else
 #define MAYBE_FocusOnReloadCrashedTab FocusOnReloadCrashedTab
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmnibox) {
   // Verify that a navigation has started.
   EXPECT_TRUE(web_contents->GetController().GetPendingEntry());
   // Verify that the Omnibox text is not selected - this is a regression test
-  // for https://crbug.com/1048742.
+  // for https://crbug.com/40672172.
   EXPECT_FALSE(view->IsSelectAll());
   // Intentionally not asserting anything about IsViewFocused in this
   // _intermediate_ state.
@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, OmniboxFocusStateAcrossHistory) {
                    ContentsWebView::kContentsWebViewElementId));
 }
 
-// Ensure that crbug.com/567445 does not regress. This test checks that the
+// Ensure that crbug.com/40083350 does not regress. This test checks that the
 // Omnibox does not get focused when loading about:blank in a case where it's
 // not the startup URL, e.g. when a page opens a popup to about:blank, with a
 // null opener, and then navigates it. This is a potential security issue; see
@@ -774,9 +774,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AboutBlankNavigationLocationTest) {
   EXPECT_FALSE(IsViewFocused(VIEW_ID_OMNIBOX));
 }
 
-// Regression test for https://crbug.com/677716.  This ensures that the omnibox
-// does not get focused if another tab in the same window navigates to the New
-// Tab Page, since that can scroll the origin of the selected tab out of view.
+// Regression test for https://crbug.com/40086361.  This ensures that the
+// omnibox does not get focused if another tab in the same window navigates to
+// the New Tab Page, since that can scroll the origin of the selected tab out of
+// view.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
   // Start at the NTP and navigate to a test page.  We will later go back to the
   // NTP, which gives the omnibox focus in some cases.
@@ -807,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 // Tests that the location bar is focusable when showing, which is the case in
 // popup windows.
 // TODO(crbug.com/40794922): Flaky on Linux.
-// TODO(crbug/1520655): Broken since CR2023.
+// TODO(crbug.com/41493632): Broken since CR2023.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
   Browser* popup_browser = CreateBrowserForPopup(browser()->profile());
 

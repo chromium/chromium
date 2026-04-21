@@ -171,7 +171,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   EXPECT_EQ(310 + 252, y2.value());
 }
 
-// http://crbug.com/39625
+// http://crbug.com/41121561
 TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   PrefService* pref = profile()->GetPrefs();
   ASSERT_TRUE(pref);

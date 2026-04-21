@@ -59,21 +59,22 @@ bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
   }
 
   // Browser-initiated navigations (e.g. typing in an omnibox) are taken care of
-  // in Browser::UpdateUIForNavigationInTab.  See also https://crbug.com/1048591
-  // for possible regression risks related to returning |true| here.
+  // in Browser::UpdateUIForNavigationInTab.  See also
+  // https://crbug.com/40672083 for possible regression risks related to
+  // returning |true| here.
   if (!navigation->IsRendererInitiated()) {
     return false;
   }
 
   // Renderer-initiated navigations shouldn't focus the tab contents, unless the
-  // navigation is leaving the NTP.  See also https://crbug.com/1027719.
+  // navigation is leaving the NTP.  See also https://crbug.com/40660393.
   bool started_at_ntp = IsNtpURL(web_contents()->GetLastCommittedURL());
   if (!started_at_ntp) {
     return false;
   }
 
   // Navigations initiated via chrome.tabs.update and similar APIs should not
-  // steal focus from the omnibox.  See also https://crbug.com/1085779.
+  // steal focus from the omnibox.  See also https://crbug.com/40693812.
   if (navigation->GetPageTransition() & ui::PAGE_TRANSITION_FROM_API) {
     return false;
   }
@@ -91,7 +92,7 @@ bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
 }
 
 bool FocusTabAfterNavigationHelper::IsNtpURL(const GURL& url) {
-  // TODO(lukasza): https://crbug.com/1034999: Try to avoid special-casing
+  // TODO(lukasza): https://crbug.com/40664076: Try to avoid special-casing
   // kChromeUINewTabURL below and covering it via IsNTPOrRelatedURL instead.
   if (url == GURL(chrome::kChromeUINewTabURL)) {
     return true;

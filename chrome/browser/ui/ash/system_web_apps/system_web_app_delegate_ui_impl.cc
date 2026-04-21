@@ -82,7 +82,7 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   content::WebContents* web_contents = browser->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
-    // TODO(crbug.com/1308962): Migrate to use PWA pinned home tab when ready.
+    // TODO(crbug.com/40829466): Migrate to use PWA pinned home tab when ready.
     web_contents = browser->NavigateWebApp(
         url, ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
                                : BrowserDelegate::TabPinning::kNo);

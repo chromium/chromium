@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 
 // Equivalent to browser_tests
 // FindInPageControllerTest.GlobalPasteBoardClearMatches.
-// TODO(http://crbug.com/843878): Remove when referenced bug is fixed.
-// Flaky. crbug.com/864585
+// TODO(http://crbug.com/41389476): Remove when referenced bug is fixed.
+// Flaky. crbug.com/41402159
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        DISABLED_GlobalPasteBoardClearMatches) {
   FindBarController* find_bar_controller =
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 
 // Equivalent to browser_tests
 // FindInPageControllerTest.IncognitoFindNextShared.
-// TODO(http://crbug.com/843878): Remove when referenced bug is fixed.
+// TODO(http://crbug.com/41389476): Remove when referenced bug is fixed.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        IncognitoFindNextShared) {
   chrome::Find(browser());
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 
 // Equivalent to browser_tests
 // FindInPageControllerTest.PreferPreviousSearch.
-// TODO(http://crbug.com/843878): Remove when referenced bug is fixed.
+// TODO(http://crbug.com/41389476): Remove when referenced bug is fixed.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        PreferPreviousSearch) {
   FindBarController* find_bar_controller =

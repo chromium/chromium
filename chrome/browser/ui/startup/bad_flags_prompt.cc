@@ -117,7 +117,7 @@ const char* const kBadFlags[] = {
 
 #if BUILDFLAG(IS_LINUX)
     // Speech dispatcher is buggy, it can crash and it can make Chrome freeze.
-    // http://crbug.com/327295
+    // http://crbug.com/40078530
     switches::kEnableSpeechDispatcher,
 #endif
 

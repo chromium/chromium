@@ -139,7 +139,7 @@ class AppMenuDragHelper {
     void finishDragging() {
         // If the menu is being dismissed, we cannot access mAppMenu.getPopup().getListView()
         // needed to by menuItemAction. Only clear highlighting if the menu is still showing.
-        // See crbug.com/589805.
+        // See crbug.com/41241151.
         @Nullable PopupWindow popupWindow = mAppMenu.getPopup();
         if (popupWindow != null && popupWindow.isShowing()) {
             menuItemAction(0, 0, ItemAction.CLEAR_HIGHLIGHT_ALL);

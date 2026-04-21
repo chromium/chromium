@@ -728,10 +728,10 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue& args) {
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);
   DCHECK(profile_statistics_keep_alive_);
 
-  // Deleting the profile may delete `this` (see See https://crbug.com/1488267),
-  // if the profile picker was shown in a tab. Keep the `ScopedProfileKeepAlive`
-  // until the end of the function, to avoid the profile being unloaded and
-  // reloaded.
+  // Deleting the profile may delete `this` (see See
+  // https://crbug.com/40934491), if the profile picker was shown in a tab. Keep
+  // the `ScopedProfileKeepAlive` until the end of the function, to avoid the
+  // profile being unloaded and reloaded.
   std::unique_ptr<ScopedProfileKeepAlive> profile_statistics_keep_alive =
       std::move(profile_statistics_keep_alive_);
   webui::DeleteProfileAtPath(*profile_path,
@@ -933,7 +933,7 @@ void ProfilePickerHandler::AddProfileToListAndPushUpdates(
       profiles_order_.insert({profile_path, number_of_profiles});
   // We shouldn't add the same profile to the list more than once. Use
   // `insert()` to not corrput the map in case this happens.
-  // https://crbug.com/1195784
+  // https://crbug.com/40759222
   DCHECK(it_and_whether_inserted.second);
 
   MaybeUpdateGuestMode();

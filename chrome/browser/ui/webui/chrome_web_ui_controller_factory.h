@@ -33,7 +33,7 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
 
   static ChromeWebUIControllerFactory* GetInstance();
 
-  // http://crbug.com/829412
+  // http://crbug.com/40091019
   // Renderers with WebUI bindings shouldn't make http(s) requests for security
   // reasons (e.g. to avoid malicious responses being able to run code in
   // priviliged renderers). Fix these webui's to make requests through C++

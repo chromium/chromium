@@ -145,7 +145,7 @@ TEST_F(AddressEditorControllerTest, SetProfileInfo) {
     EXPECT_EQ(controller_->GetProfileInfo(type_value_pair.first),
               type_value_pair.second);
   }
-  // First and last names must be reset, see crbug.com/1496322.
+  // First and last names must be reset, see crbug.com/40286758.
   EXPECT_EQ(controller_->GetProfileInfo(NAME_FIRST), u"");
   EXPECT_EQ(controller_->GetProfileInfo(NAME_LAST), u"");
 }

@@ -49,7 +49,7 @@ class ScopedMouseDisabler {
             view->GetWidget()->GetNativeWindow()->GetRootWindow())) {
     // Generate a mouse move event to remove any effects caused by mouse enter
     // (e.g. hover). This is necessary as hiding cursor may not emit mouse exit
-    // event. (crbug.com/723535).
+    // event. (crbug.com/40521214).
     ui::test::EventGenerator generator(
         view->GetWidget()->GetNativeWindow()->GetRootWindow());
     generator.MoveMouseTo({0, 0});

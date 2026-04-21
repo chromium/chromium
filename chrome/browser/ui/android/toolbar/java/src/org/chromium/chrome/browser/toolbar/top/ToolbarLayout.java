@@ -218,7 +218,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mAppMenuButtonHelper = appMenuButtonHelper;
     }
 
-    // TODO(pnoland, https://crbug.com/865801): Move this from ToolbarLayout to forthcoming
+    // TODO(pnoland, https://crbug.com/40585866): Move this from ToolbarLayout to forthcoming
     // BrowsingModeToolbarCoordinator.
     @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {}
@@ -652,7 +652,7 @@ public abstract class ToolbarLayout extends FrameLayout
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
         // Consumes mouse/trackpad button events on toolbar so they don't get leaked to content
-        // layer. See https://crbug.com/740855 (mouse) and https://crbug.com/384916573 (trackpad).
+        // layer. See https://crbug.com/40529425 (mouse) and https://crbug.com/384916573 (trackpad).
         if (MotionEventUtils.isPointerEvent(event)) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_BUTTON_PRESS

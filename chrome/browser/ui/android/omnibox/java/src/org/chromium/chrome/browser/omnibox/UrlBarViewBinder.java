@@ -182,7 +182,7 @@ class UrlBarViewBinder {
 
     private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
         // These get* methods may fail on some devices, so we're calling all of them before
-        // applying tint to any of the drawables. See https://crbug.com/1263630.
+        // applying tint to any of the drawables. See https://crbug.com/40800314.
         final Drawable textCursor = assumeNonNull(view.getTextCursorDrawable());
         final Drawable textSelectHandle = assumeNonNull(view.getTextSelectHandle());
         final Drawable textSelectHandleLeft = assumeNonNull(view.getTextSelectHandleLeft());

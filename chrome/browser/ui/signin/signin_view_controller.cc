@@ -732,7 +732,7 @@ void SigninViewController::ShowGaiaLogoutTab(
     signin_metrics::SourceForRefreshTokenOperation source) {
   // Since the user may be triggering navigation from another UI element such as
   // a menu, ensure the web contents (and therefore the page that is about to be
-  // shown) is focused. (See crbug/926492 for motivation.)
+  // shown) is focused. (See crbug.com/41438063 for motivation.)
   auto* const contents = tab_strip_model_->GetActiveWebContents();
   if (contents) {
     contents->Focus();

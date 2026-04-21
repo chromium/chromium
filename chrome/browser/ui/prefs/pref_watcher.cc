@@ -119,7 +119,7 @@ class PrimaryPastePrefHelper : public ui::PrimaryPastePrefObserver {
 
 // Watching all these settings per tab is slow when a user has a lot of tabs and
 // and they use session restore. So watch them once per profile.
-// http://crbug.com/452693
+// http://crbug.com/41154242
 PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 

@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 // Showing an alert will raise the tab over the popup.
 #if !BUILDFLAG(IS_MAC)
   // Mac doesn't activate the browser during modal dialogs, see
-  // https://crbug.com/687732 for details.
+  // https://crbug.com/40504559 for details.
   ui_test_utils::BrowserActivationWaiter alert_waiter(browser());
 #endif
   bool ignored;
@@ -651,9 +651,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Tests that the print preview dialog can't be used to create popunders. The
 // test was added due to a bug in MacViews that causes dialogs to activate
-// their parents (https://crbug.com/1073587).
+// their parents (https://crbug.com/40127640).
 // TODO(weili): investigate why this failed on Linux and ChromeOS bots,
-// and why it was flaky on Windows. https://crbug.com/1241815.
+// and why it was flaky on Windows. https://crbug.com/40786255.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PrintPreviewPopUnder PrintPreviewPopUnder
 #else
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
 
 // Make sure the poput is attributed to the right WebContents when it is
 // triggered from a different WebContents. Regression test for
-// https://crbug.com/1128495
+// https://crbug.com/40719662
 // Flaky on windows and mac: b/40896665.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_PopupTriggeredFromDifferentWebContents \

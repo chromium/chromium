@@ -114,7 +114,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoUnvailable) {
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), profile_name_future.Get());
 }
 
-// Regression test for https://crbug.com/1481902
+// Regression test for https://crbug.com/40072102
 TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoMissing) {
   auto scoped_timeout_override =
       ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(

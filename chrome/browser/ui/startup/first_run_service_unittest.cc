@@ -89,7 +89,7 @@ TEST_F(FirstRunServiceTest, ShouldOpenFirstRun) {
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
 }
 
-// Regression test for crbug.com/1450709.
+// Regression test for crbug.com/40065181.
 TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
   signin::IdentityTestEnvironment identity_test_env;
   TestingProfileManager testing_profile_manager{

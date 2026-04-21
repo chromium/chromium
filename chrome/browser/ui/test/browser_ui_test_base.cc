@@ -60,7 +60,7 @@ void BrowserUiTestBase::Invoke() {
   base::LaunchOptions options;
 
   // Wait on subprocess. Otherwise the whole process group will be killed on
-  // parent process exit. See http://crbug.com/1094369.
+  // parent process exit. See http://crbug.com/40135391.
   options.wait = true;
 
   base::LaunchProcess(invoker, options);

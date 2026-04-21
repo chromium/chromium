@@ -73,7 +73,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     // It's possible that the WebContents is no longer in the tab strip. If so,
-    // just give up. https://crbug.com/786178
+    // just give up. https://crbug.com/40550429
     return;
   }
 
@@ -89,7 +89,7 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
   if (!browser) {
     // It's rare, but there are crashes from where sites are trying to show
     // dialogs in the split second of time between when their Browser is gone
-    // and they're gone. In that case, bail. https://crbug.com/1142806
+    // and they're gone. In that case, bail. https://crbug.com/40727952
     return false;
   }
 
@@ -159,7 +159,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::OnTabStripModelChanged(
         // short term because the tab in question is being removed.
         // TODO(erikchen): Clean up TabStripModel observer API so that this
         // doesn't require re-entrancy and/or works correctly
-        // https://crbug.com/842194.
+        // https://crbug.com/40575977.
         DCHECK(tab_strip_model_being_observed_);
         tab_strip_model_being_observed_->RemoveObserver(this);
         tab_strip_model_being_observed_ = nullptr;

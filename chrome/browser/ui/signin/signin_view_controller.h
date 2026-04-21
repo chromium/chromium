@@ -124,7 +124,7 @@ class SigninViewController {
   // function does not clear it, but still invalidates its credentials.
   // This is the only way to properly signout all accounts. In particular,
   // calling Gaia logout programmatically or revoking the tokens does not sign
-  // out SAML accounts completely (see https://crbug.com/1069421).
+  // out SAML accounts completely (see https://crbug.com/40125905).
   void ShowGaiaLogoutTab(signin_metrics::SourceForRefreshTokenOperation source);
 
   // Shows the modal signin intercept first run experience dialog as a

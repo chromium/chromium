@@ -56,7 +56,7 @@ NSMutableArray* g_filtered_entries_array = nil;
   //     upon their selection.
   //   - Remove the "Open URL" one provided by SystemUIServer, as it is
   //     redundant to the one provided by Chromium and has other serious issues.
-  //     (https://crbug.com/960209)
+  //     (https://crbug.com/40094890)
 
   for (_NSServiceEntry* nextEntry in entries) {
     NSString* bundleIdentifier = [nextEntry bundleIdentifier];

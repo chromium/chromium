@@ -130,7 +130,7 @@ class ChromeOSTermsHandler
                        content::URLDataSource::GotDataCallback callback)
       : path_(path),
         callback_(std::move(callback)),
-        // Previously we were using "initial locale" http://crbug.com/145142
+        // Previously we were using "initial locale" http://crbug.com/40915798
         locale_(g_browser_process->GetApplicationLocale()) {}
 
   virtual ~ChromeOSTermsHandler() = default;

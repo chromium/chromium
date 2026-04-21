@@ -469,7 +469,7 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
 
   if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
     // Silently ignore this error - it is used as an intermediate state for
-    // committed interstitials (see https://crbug.com/1049349 for details).
+    // committed interstitials (see https://crbug.com/40672487 for details).
     return;
   }
 

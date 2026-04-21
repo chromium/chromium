@@ -1070,7 +1070,7 @@ class TabStripModel {
   //   1) This allows us to send the minimal number of necessary notifications.
   //   This is important because some notifications cause the main thread to
   //   synchronously communicate with the GPU process and cause jank.
-  //   https://crbug.com/826287.
+  //   https://crbug.com/41379209.
   //   2) This allows us to avoid some problems caused by re-entrancy [e.g.
   //   using destroyed WebContents instances]. Ideally, this second check
   //   wouldn't be necessary because we would enforce that there is no

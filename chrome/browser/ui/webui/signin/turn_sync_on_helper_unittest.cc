@@ -481,7 +481,7 @@ class TurnSyncOnHelperTest : public testing::Test {
         weak_closure.Get().Then(flow_completion_loop_.QuitClosure()));
 
     // In no circumstance should the flow complete synchronously. It can cause
-    // some crashes, see https://crbug.com/1367078.
+    // some crashes, see https://crbug.com/40867387.
     EXPECT_FALSE(weak_closure.did_run());
 
     return helper;
@@ -1684,7 +1684,7 @@ TEST_F(TurnSyncOnHelperTest, StartSync) {
 
 // Tests that the user is signed in and Sync configuration is complete.
 // Also tests that turning sync on enables URL-keyed anonymized data collection.
-// Regression test for http://crbug.com/812546
+// Regression test for http://crbug.com/41370767
 TEST_F(TurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
@@ -1716,7 +1716,7 @@ TEST_F(TurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
 
 // For users on a cloud managed device, tests that the user is signed in only
 // after Sync engine starts.
-// Regression test for http://crbug.com/812546
+// Regression test for http://crbug.com/41370767
 TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupCompletedForCloudManagedDevices) {
   // Simulate a managed browser.
@@ -1760,7 +1760,7 @@ TEST_F(TurnSyncOnHelperTest,
 
 // For enterprise user, tests that the user is signed in only after Sync engine
 // starts.
-// Regression test for http://crbug.com/812546
+// Regression test for http://crbug.com/41370767
 TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupCompletedForEnterpriseAccount) {
   // Reset the account info to be an enterprise account.
@@ -1802,7 +1802,7 @@ TEST_F(TurnSyncOnHelperTest,
 
 // For enterprise user, tests that the user is signed in only after Sync engine
 // fails to start.
-// Regression test for http://crbug.com/812546
+// Regression test for http://crbug.com/41370767
 TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupFailedForEnterpriseAccount) {
   // Reset the account info to be an enterprise account.
@@ -1844,7 +1844,7 @@ TEST_F(TurnSyncOnHelperTest,
 
 // For users on a cloud managed device, tests that the user is signed in only
 // after Sync engine fails to start.
-// Regression test for http://crbug.com/812546
+// Regression test for http://crbug.com/41370767
 TEST_F(TurnSyncOnHelperTest,
        ShowSyncDialogBlockedUntilSyncStartupFailedForCloudManagedDevices) {
   // Simulate a managed platform.

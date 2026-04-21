@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarModelTest, ShouldElideLongURLs) {
   NavigateAndCheckElided(GURL(std::string("data:abc") + long_text));
 }
 
-// Regression test for crbug.com/792401.
+// Regression test for crbug.com/40553422.
 IN_PROC_BROWSER_TEST_F(LocationBarModelTest,
                        ShouldDisplayURLWhileNavigatingAwayFromNTP) {
   LocationBarModel* location_bar_model =

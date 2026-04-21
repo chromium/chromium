@@ -312,7 +312,7 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(
 void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
   // Invalidates in particular ChromeAutofillClient's WeakPtr to `this`, which
   // prevents recursive calls triggered by `view_->Hide()`
-  // (crbug.com/1267047).
+  // (crbug.com/40204318).
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Mark the popup-like filling sources as unavailable.
@@ -327,8 +327,8 @@ void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
     }
   }
 
-  // TODO(crbug.com/1341374, crbug.com/1277218): Move this into the asynchronous
-  // call?
+  // TODO(crbug.com/40230669, crbug.com/40207703): Move this into the
+  // asynchronous call?
   if (view_) {
     view_->Hide();
     view_.reset();
@@ -403,14 +403,14 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
     int index,
     autofill::AutofillMetrics::SuggestionAcceptedMethod accept_method) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
-  // users accidentally accepting suggestions (crbug.com/1279268).
+  // users accidentally accepting suggestions (crbug.com/40058217).
   if (!barrier_for_accepting_.value() && !disable_threshold_for_testing_) {
     return;
   }
 
   if (base::checked_cast<size_t>(index) >= suggestions_.size() ||
       !IsAcceptableSuggestionType(suggestions_[index].type)) {
-    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
+    // Prevents crashes from crbug.com/41195069. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
     // If the index points out of bounds, Chrome will crash. Prevent this by
     // ignoring the selection and wait for another signal from the user.

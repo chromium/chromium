@@ -167,7 +167,7 @@ enum class LayoutConstant {
   // space to prevent a gap from appearing between the toolbar and the
   // bottom of tabs on some non-integral scales.
   // TODO(tbergquist): Remove this after pixel canvas or any deeper fix to
-  // non-pixel-aligned drawing goes in.  See https://crbug.com/765723.
+  // non-pixel-aligned drawing goes in.  See https://crbug.com/41344902.
   kTabstripToolbarOverlap,
 
   // The total height, including icons and insets, of buttons in the toolbar.

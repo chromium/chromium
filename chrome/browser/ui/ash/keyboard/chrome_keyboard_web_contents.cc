@@ -91,7 +91,7 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
     aura::Window* keyboard_window = source->GetNativeView();
     // keyboard window must have been added to keyboard container window at this
     // point. Otherwise, wrong keyboard bounds is used and may cause problem as
-    // described in https://crbug.com/367788.
+    // described in https://crbug.com/41104064.
     DCHECK(keyboard_window->parent());
     // keyboard window bounds may not set to |pos| after this call. If keyboard
     // is in FULL_WIDTH mode, only the height of keyboard window will be
@@ -134,7 +134,7 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
         return false;
       default:
         // Stop gesture events from being passed to renderer to suppress the
-        // context menu. https://crbug.com/685140
+        // context menu. https://crbug.com/41297372
         return true;
     }
   }

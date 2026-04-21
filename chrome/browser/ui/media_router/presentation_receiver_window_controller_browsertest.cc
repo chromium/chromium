@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   destroyer.AwaitTerminate(std::move(receiver_window));
 }
 
-// Flaky. See https://crbug.com/880045.
+// Flaky. See https://crbug.com/41411389.
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
                        DISABLED_NavigationClosesWindow) {
   // Start receiver window.
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   destroyer.AwaitTerminate(std::move(receiver_window));
 }
 
-// Flaky. See https://crbug.com/840136.
+// Flaky. See https://crbug.com/41387325.
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
                        DISABLED_PresentationApiCommunication) {
   // Start receiver window.

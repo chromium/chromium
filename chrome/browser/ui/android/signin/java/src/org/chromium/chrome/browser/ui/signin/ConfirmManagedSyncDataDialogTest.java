@@ -99,7 +99,7 @@ public class ConfirmManagedSyncDataDialogTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1341379")
+    @DisabledTest(message = "https://crbug.com/40851006")
     public void testDialogIsDismissedAndOnCancelNotCalledWhenRecreated() {
         showManagedSyncDataDialog();
         onView(withText(R.string.sign_in_managed_account))

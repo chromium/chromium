@@ -36,8 +36,8 @@ std::string FourCharToString(FourCharCode code) {
 //
 // The -[NSAppleEventDescriptor description] method does this too, but the
 // problem is that it is implemented using AEPrintDescToHandle, which is both
-// flaky <http://crbug.com/239807> and constantly buffer-overflows and fails
-// ASan tests <http://crbug.com/177177>.
+// flaky <http://crbug.com/40317263> and constantly buffer-overflows and fails
+// ASan tests <http://crbug.com/40302460>.
 //
 // This function does not handle every type that AEPrintDescToHandle does, but
 // it covers the cases hit by the unit test, and fails in an obvious way should

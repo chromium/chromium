@@ -77,7 +77,7 @@ void ChromePopupNavigationDelegate::OnPopupBlocked(
   // before the //chrome-level initialization of the messages infrastructure
   // has run. Short-circuit out in that case to prevent a crash when
   // PopupBlockedMessageDelegate tries to map the resource ID via
-  // MessageDispatcherBridge. crbug.com/1308214
+  // MessageDispatcherBridge. crbug.com/40828937
   if (message_dispatcher_bridge->IsMessagesEnabledForEmbedder()) {
     blocked_content::PopupBlockedMessageDelegate::CreateForWebContents(
         web_contents);

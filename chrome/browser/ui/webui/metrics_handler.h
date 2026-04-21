@@ -33,7 +33,7 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // user action.
   void HandleRecordAction(const base::ListValue& args);
 
-  // TODO(dbeam): http://crbug.com/104338
+  // TODO(dbeam): http://crbug.com/40668996
 
   // Callback for the "metricsHandler:recordInHistogram" message. This records
   // into a histogram. |args| contains the histogram name, the value to record,

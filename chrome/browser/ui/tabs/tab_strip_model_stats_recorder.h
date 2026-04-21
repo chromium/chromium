@@ -18,7 +18,7 @@ class BrowserTabStripTracker;
 
 // TabStripModelStatsRecorder records user tab interaction stats.
 // In particular, we record tab's lifetime and state transition probability to
-// study user interaction with background tabs. (crbug.com/517335)
+// study user interaction with background tabs. (crbug.com/40430165)
 class TabStripModelStatsRecorder : public TabStripModelObserver {
  public:
   // TabState represents a lifecycle of a tab in TabStripModel.

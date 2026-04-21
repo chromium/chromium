@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }
 
-// Regression test for https://crbug.com/894955, where the framebust UI would
+// Regression test for https://crbug.com/40597964, where the framebust UI would
 // persist on subsequent navigations.
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        FramebustBlocked_SubsequentNavigation_NoUI) {

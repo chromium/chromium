@@ -254,7 +254,7 @@ void KeyboardLockInteractiveBrowserTest::
   WaitForKeyboardLock();
 }
 
-// https://crbug.com/1382717 Flaky on Linux
+// https://crbug.com/40877439 Flaky on Linux
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_RequestedButNotActive DISABLED_RequestedButNotActive
 #else
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SendShortcutsAndExpectPrevented());
 }
 
-// https://crbug.com/1382699 Flaky on Linux
+// https://crbug.com/40877427 Flaky on Linux
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_ActiveWithSomeKeysLocked DISABLED_ActiveWithSomeKeysLocked
 #else
@@ -339,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_EQ(initial_browser_count + 1, GetBrowserCount());
 }
 
-// https://crbug.com/1108391 Flakey on ChromeOS.
-// https://crbug.com/1121172 Also flaky on Mac
+// https://crbug.com/40707442 Flakey on ChromeOS.
+// https://crbug.com/40715327 Also flaky on Mac
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_SubsequentLockCallSupersedesPreviousCall \
   DISABLED_SubsequentLockCallSupersedesPreviousCall
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// BringBrowserWindowToFront hangs on Linux: http://crbug.com/163931
+// BringBrowserWindowToFront hangs on Linux: http://crbug.com/40295645
 #define MAYBE_GainAndLoseFocusInWindowMode DISABLED_GainAndLoseFocusInWindowMode
 #else
 #define MAYBE_GainAndLoseFocusInWindowMode GainAndLoseFocusInWindowMode
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// BringBrowserWindowToFront hangs on Linux: http://crbug.com/163931
+// BringBrowserWindowToFront hangs on Linux: http://crbug.com/40295645
 #define MAYBE_GainAndLoseFocusInFullscreen DISABLED_GainAndLoseFocusInFullscreen
 #else
 #define MAYBE_GainAndLoseFocusInFullscreen GainAndLoseFocusInFullscreen

@@ -201,7 +201,7 @@ OpenedWebContentsSet OpenAllHelper(
     // there is a URL that is not allowed in incognito mode.
     // In this case we don't set the disposition to `NEW_BACKGROUND_TAB`
     // until we have opened the first URL that can be opened in incognito.
-    // See crbug.com/1349283.
+    // See crbug.com/40855833.
     if (opening_in_new_window) {
       if (!opening_urls_in_incognito || url_allowed_in_incognito) {
         disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;

@@ -2026,7 +2026,7 @@ TEST_F(PageInfoTest, AdPersonalization) {
 
 // Tests that metrics are recorded on a PageInfo for pages with
 // various Safety Tip statuses.
-// See https://crbug.com/1114659 for why the test is disabled on Android.
+// See https://crbug.com/40710931 for why the test is disabled on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SafetyTipMetrics DISABLED_SafetyTipMetrics
 #else

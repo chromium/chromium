@@ -122,7 +122,7 @@ mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
 // chrome/browser/resources/print_preview/native_layer.js
 //
 // Name of a dictionary field specifying whether to print automatically in
-// kiosk mode. See http://crbug.com/31395.
+// kiosk mode. See http://crbug.com/40339435.
 const char kIsInKioskAutoPrintMode[] = "isInKioskAutoPrintMode";
 // Dictionary field to indicate whether Chrome is running in forced app (app
 // kiosk) mode. It's not the same as desktop Chrome kiosk (the one above).

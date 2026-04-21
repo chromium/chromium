@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, CloseBubbleView) {
 // instance is removed from the profile.
 //
 // This uses the deprecated "unowned" API to the GlobalErrorService to maintain
-// coverage. When those calls are eventually removed (http://crbug.com/673578)
+// coverage. When those calls are eventually removed (http://crbug.com/41290855)
 // these uses should be switched to the non-deprecated API.
 IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest,
                        BubbleViewDismissedOnRemove) {

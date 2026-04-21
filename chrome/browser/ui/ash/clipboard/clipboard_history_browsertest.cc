@@ -1196,7 +1196,7 @@ class ClipboardHistoryTextfieldBrowserTest
 };
 
 // Verifies that the clipboard history menu responses to the gesture tap
-// correctly (https://crbug.com/1142088).
+// correctly (https://crbug.com/40727504).
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        VerifyResponseToGestures) {
   base::HistogramTester histogram_tester;
@@ -1826,7 +1826,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
 }
 
 // Verifies that the delete button should show after its host item view is under
-// gesture press for enough long time (https://crbug.com/1147584).
+// gesture press for enough long time (https://crbug.com/40156682).
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
                        DeleteButtonShowAfterLongPress) {
   SetClipboardText("A");

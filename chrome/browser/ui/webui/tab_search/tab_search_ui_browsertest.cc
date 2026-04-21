@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_CloseTabAction) {
 
 // When hosting the Tab Search UI as a browser tab, ensure that closing the tab
 // hosting Tab Search does not result in any UAF errors. Test for regression
-// (https://crbug.com/1175507).
+// (https://crbug.com/40054717).
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                        CloseTabSearchAsBrowserTabDoesNotCrash) {
   AppendTab(chrome::kChromeUITabSearchURL);

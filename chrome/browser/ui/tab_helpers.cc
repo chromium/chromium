@@ -559,7 +559,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
   // TODO(siggi): Remove this once the Resource Coordinator refactoring is done.
-  //     See https://crbug.com/910288.
+  //     See https://crbug.com/40604438.
   resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
       web_contents);
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -649,7 +649,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(IS_ANDROID)
   webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
   {
-    // Remove after fixing https://crbug/905919
+    // Remove after fixing https://crbug.com/41426655
     TRACE_EVENT0("browser", "AppBannerManagerAndroid::CreateForWebContents");
     webapps::AppBannerManagerAndroid::CreateForWebContents(
         web_contents, std::make_unique<webapps::ChromeAppBannerManagerAndroid>(

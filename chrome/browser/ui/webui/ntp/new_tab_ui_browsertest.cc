@@ -72,8 +72,8 @@ class NewTabUIProcessPerTabTest : public NewTabUIBrowserTest {
 
 // Navigates away from NTP before it commits, in process-per-tab mode.
 // Ensures that we don't load the normal page in the NTP process (and thus
-// crash), as in http://crbug.com/69224.
-// If this flakes, use http://crbug.com/87200
+// crash), as in http://crbug.com/41301876.
+// If this flakes, use http://crbug.com/40588433
 IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
   // Bring up a new tab page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),

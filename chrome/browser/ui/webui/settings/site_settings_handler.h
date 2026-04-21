@@ -189,7 +189,7 @@ class SiteSettingsHandler
   void HandleResetCategoryPermissionForPattern(const base::ListValue& args);
   void HandleSetCategoryPermissionForPattern(const base::ListValue& args);
 
-  // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
+  // TODO(andypaicu, crbug.com/40592192): Update to only expect a list of three
   // arguments, replacing the current (requesting,embedding) arguments with
   // simply (origin) and update all call sites.
   // Handles resetting a chooser exception for the given site.

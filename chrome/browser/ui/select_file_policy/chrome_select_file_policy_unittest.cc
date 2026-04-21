@@ -21,7 +21,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(USE_AURA)
-// http://crbug.com/105200
+// http://crbug.com/40118689
 #define MAYBE_ExpectAsynchronousListenerCall \
   DISABLED_ExpectAsynchronousListenerCall
 #else

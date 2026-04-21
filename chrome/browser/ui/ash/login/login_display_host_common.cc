@@ -431,7 +431,8 @@ void LoginDisplayHostCommon::OnGaiaScreenReady() {
   if (GetExistingUserController()) {
     GetExistingUserController()->OnGaiaScreenReady();
   } else {
-    // Used to debug crbug.com/902315. Feel free to remove after that is fixed.
+    // Used to debug crbug.com/41424664. Feel free to remove after that is
+    // fixed.
     LOG(ERROR) << "OnGaiaScreenReady: there is no existing user controller";
   }
 }

@@ -167,7 +167,7 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
     // capture any audio and won't produce any audio frames. This will cause the
     // muxer to discard video frames if it expects audio frames but got none,
     // which may cause the produced webm file to be empty. See issues
-    // https://crbug.com/1151167 and https://crbug.com/1151418.
+    // https://crbug.com/40158187 and https://crbug.com/40158296.
     ash::CaptureModeTestApi().SetAudioRecordingMode(
         ash::AudioRecordingMode::kOff);
   }

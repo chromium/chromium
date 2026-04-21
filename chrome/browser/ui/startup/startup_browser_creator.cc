@@ -1081,7 +1081,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // These flags are expected to be set together with `--no-startup-window`
     // and `switches::kProfileDirectory` which suppress the profile picker.
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
-      // TODO(http://crbug.com/1293024): Refactor command line processing logic
+      // TODO(http://crbug.com/40819749): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
       NOTREACHED()
           << "Failed to launch a native message host: couldn't pick a profile";
@@ -1155,8 +1155,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // `switches::kUninstallAppId` is expected to be set together with a
     // specific profile dir, which suppresses the profile picker, see
     // `ShouldShowProfilePickerAtProcessLaunch()`.
-    // TODO(http://crbug.com/1293024): Refactor command line processing logic to
-    // validate the flag sets and reliably determine the startup mode.
+    // TODO(http://crbug.com/40819749): Refactor command line processing logic
+    // to validate the flag sets and reliably determine the startup mode.
     CHECK_EQ(profile_info.mode, StartupProfileMode::kBrowserWindow)
         << "Failed to uninstall app: couldn't pick a profile";
     std::string app_id =
@@ -1185,7 +1185,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // The exception is when there are no browser windows, since we don't want
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
-    // background page of apps. Tracked at http://crbug.com/175381
+    // background page of apps. Tracked at http://crbug.com/40301548
     if (chrome::GetBrowserCount(privacy_safe_profile) != 0) {
       return true;
     }
@@ -1205,7 +1205,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // The exception is when there are no browser windows, since we don't want
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
-    // background page of apps. Tracked at http://crbug.com/175381
+    // background page of apps. Tracked at http://crbug.com/40301548
     if (chrome::GetBrowserCount(privacy_safe_profile) != 0) {
       return true;
     }
@@ -1222,7 +1222,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
           chrome::kJumpListIconDirname,
           base::WrapUnique(new base::SupportsUserData::Data()));
     } else {
-      // TODO(http://crbug.com/1293024): Refactor command line processing logic
+      // TODO(http://crbug.com/40819749): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
       DUMP_WILL_BE_NOTREACHED()
           << "Failed start for jumplist action: couldn't pick a profile";
@@ -1245,8 +1245,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // Having access to an incognito profile for this action (as checked below)
     // requires starting with a regular user profile (non-guest) and suppresses
     // profile picker startups, see `ShouldShowProfilePickerAtProcessLaunch()`.
-    // TODO(http://crbug.com/1293024): Refactor command line processing logic to
-    // validate the flag sets and reliably determine the startup mode.
+    // TODO(http://crbug.com/40819749): Refactor command line processing logic
+    // to validate the flag sets and reliably determine the startup mode.
     CHECK_EQ(profile_info.mode, StartupProfileMode::kBrowserWindow)
         << "Failed start for GCPW signin: couldn't pick a profile";
 
@@ -1270,8 +1270,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   if (command_line.HasSwitch(switches::kAppId)) {
     // `switches::kAppId` presence suppresses the profile picker, see
     // `ShouldShowProfilePickerAtProcessLaunch()`.
-    // TODO(http://crbug.com/1293024): Refactor command line processing logic to
-    // validate the flag sets and reliably determine the startup mode.
+    // TODO(http://crbug.com/40819749): Refactor command line processing logic
+    // to validate the flag sets and reliably determine the startup mode.
     CHECK_EQ(profile_info.mode, StartupProfileMode::kBrowserWindow)
         << "Failed launch with app: couldn't pick a profile";
     std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
@@ -1290,7 +1290,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-  // TODO(http://crbug.com/1293024): Refactor command line processing logic to
+  // TODO(http://crbug.com/40819749): Refactor command line processing logic to
   // validate the flag sets and reliably determine the startup mode.
   // Try a shortcut app launch (--app is present).
   // When running in incognito or guest mode, there typically won't be an

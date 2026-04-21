@@ -84,7 +84,7 @@ class TestBrowserDialog : public TestBrowserUi {
   // If set to true, the dialog bounds will be verified to fit inside the
   // display's work area.
   // This should always be true, but some dialogs don't yet size themselves
-  // properly. https://crbug.com/893292.
+  // properly. https://crbug.com/41419544.
   bool should_verify_dialog_bounds_ = true;
 };
 

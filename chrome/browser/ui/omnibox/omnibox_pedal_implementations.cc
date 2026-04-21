@@ -325,7 +325,7 @@ class OmniboxPedalTranslate : public OmniboxPedal {
     // translate UI does not yet inform users with a clear helpful error message
     // when requesting translation for a page that doesn't support translation,
     // so this is a quick early-out to prevent bad message crashes.
-    // See: https://crbug.com/1131136
+    // See: https://crbug.com/40721236
     return !input.current_url().SchemeIs(
         client.GetEmbedderRepresentationOfAboutScheme());
   }

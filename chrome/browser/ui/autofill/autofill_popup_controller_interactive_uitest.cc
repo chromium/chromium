@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 }
 
 // Tests that entering fullscreen hides the popup and, in particular, does not
-// crash (crbug.com/1267047).
+// crash (crbug.com/40204318).
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowEnterFullscreen) {
   EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 }
 
 // Tests that exiting fullscreen hides the popup and, in particular, does not
-// crash (crbug.com/1267047).
+// crash (crbug.com/40204318).
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowExitFullscreen) {
   content::WebContentsDelegate* wcd = browser();
@@ -192,14 +192,14 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
-  // is hidden. See http://crbug.com/232475.
+  // is hidden. See http://crbug.com/40077420.
   // To do that, simulate that the RFH is deleted. This causes driver deletion,
   // which deletes the AutofillManager, which deletes the ExternalDelegate.
   ContentAutofillDriverFactory::FromWebContents(web_contents())
       ->RenderFrameDeleted(main_rfh());
 }
 
-// crbug.com/965025
+// crbug.com/40095103
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
                                         /*expect_popup_to_be_shown=*/true));

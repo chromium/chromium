@@ -140,7 +140,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // one app is starting. It's safe to close all the spinners since their
   // respective apps take at most another few seconds to start.
   // Work is ongoing to make this occur as infrequently as possible.
-  // See https://crbug.com/854911.
+  // See https://crbug.com/41395833.
   if (guest_os::IsUnregisteredCrostiniShelfAppId(shelf_app_id)) {
     ChromeShelfController::instance()
         ->GetShelfSpinnerController()

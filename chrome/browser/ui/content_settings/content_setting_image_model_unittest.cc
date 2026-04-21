@@ -475,7 +475,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
 
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
-// Regression test for https://crbug.com/955408
+// Regression test for https://crbug.com/41454392
 // See also: ContentSettingBubbleModelTest.SensorAccessPermissionsChanged
 TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
   PageSpecificContentSettings::CreateForWebContents(
@@ -590,7 +590,7 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
   }
 }
 
-// Regression test for http://crbug.com/161854.
+// Regression test for http://crbug.com/40294555.
 TEST_F(ContentSettingImageModelTest, NULLPageSpecificContentSettings) {
   PageSpecificContentSettings::DeleteForWebContentsForTest(web_contents());
   EXPECT_EQ(nullptr, PageSpecificContentSettings::GetForFrame(

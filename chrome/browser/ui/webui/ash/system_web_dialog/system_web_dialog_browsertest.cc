@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, InstanceTest) {
   EXPECT_EQ(dialog, found_dialog);
   // Closing (deleting) the dialog causes a crash in WebDialogView when the main
   // loop is run. TODO(stevenjb): Investigate, fix, and test closing the dialog.
-  // https://crbug.com/855344.
+  // https://crbug.com/40581911.
 }
 
 IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {

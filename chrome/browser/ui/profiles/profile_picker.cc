@@ -146,7 +146,7 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
     return StartupProfileMode::kBrowserWindow;
   }
 
-  // TODO (crbug/1155158): Move this over the urls check (in
+  // TODO (crbug.com/40159795): Move this over the urls check (in
   // startup_browser_creator.cc) once the profile picker can forward urls
   // specified in command line.
   if (availability_on_startup == AvailabilityOnStartup::kForced) {

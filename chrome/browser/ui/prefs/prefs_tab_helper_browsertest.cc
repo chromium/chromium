@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, WebPrefs) {
 
 // Tests that changes in browser preferences are reflected in Blink's web
 // preferences. Note that these preferences are not handled on non-desktop
-// Android, see http://crbug.com/308033, but can be modified by extension APIs
+// Android, see http://crbug.com/40337093, but can be modified by extension APIs
 // on desktop Android.
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {

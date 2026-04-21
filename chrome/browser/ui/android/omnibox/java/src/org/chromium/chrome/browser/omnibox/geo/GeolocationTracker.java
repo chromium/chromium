@@ -42,7 +42,7 @@ class GeolocationTracker {
 
         // Length of time before the location request should be canceled. This timeout ensures the
         // device doesn't get stuck in an infinite loop trying and failing to get a location, which
-        // would cause battery drain. See: http://crbug.com/309917
+        // would cause battery drain. See: http://crbug.com/40337850
         private static final int REQUEST_TIMEOUT_MS = 60 * 1000; // 60 sec.
 
         private final LocationManager mLocationManager;
@@ -156,7 +156,7 @@ class GeolocationTracker {
                 try {
                     locationManager.requestSingleUpdate(provider, sListener, null);
                 } catch (NullPointerException ex) {
-                    // https://crbug.com/819730: This can trigger an NPE due to a underlying
+                    // https://crbug.com/41375255: This can trigger an NPE due to a underlying
                     // OS/framework bug.  By ignoring this, we will not get a newer location age.
                     sListener.markRegistrationFailed();
                 }

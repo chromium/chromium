@@ -67,7 +67,7 @@ using ChromeNewWindowClientBrowserTest = InProcessBrowserTest;
 // current active window's profile to determine on which profile's desktop we
 // should open a new window.
 //
-// Test is flaky. See https://crbug.com/884118
+// Test is flaky. See https://crbug.com/41413832
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
                        DISABLED_NewWindowForActiveWindowProfileTest) {
   CreateAndStartUserSession(

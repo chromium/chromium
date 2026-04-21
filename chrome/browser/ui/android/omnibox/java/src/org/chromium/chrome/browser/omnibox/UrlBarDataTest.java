@@ -67,11 +67,11 @@ public class UrlBarDataTest {
         verifyOriginSpan("https://www.google.com", null, "https://www.google.com/");
         verifyOriginSpan("https://www.google.com", "/?q=blah", "https://www.google.com/?q=blah");
 
-        // crbug.com/414990
+        // crbug.com/41132542
         String testUrl =
                 "https://disneyworld.disney.go.com/special-offers/"
-                        + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
-                        + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
+                    + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
+                    + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
         verifyOriginSpan(
                 "https://disneyworld.disney.go.com",
                 "/special-offers/?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
@@ -79,10 +79,10 @@ public class UrlBarDataTest {
                         + "1540wwa14043",
                 testUrl);
 
-        // crbug.com/415387
+        // crbug.com/41132753
         verifyOriginSpan("ftp://example.com/ftp.html", null, "ftp://example.com/ftp.html");
 
-        // crbug.com/447416
+        // crbug.com/40400510
         verifyOriginSpan("file:///dev/blah", null, "file:///dev/blah");
         verifyOriginSpan(
                 "javascript:window.alert('hello');", null, "javascript:window.alert('hello');");
@@ -90,16 +90,16 @@ public class UrlBarDataTest {
                 "data:text/html;charset=utf-8,Page%201",
                 null, "data:text/html;charset=utf-8,Page%201");
 
-        // crbug.com/1080395
+        // crbug.com/40052250
         verifyOriginSpan("blob:https://origin", "/GUID", "blob:https://origin/GUID");
         verifyOriginSpan("blob:http://origin", "/GUID", "blob:http://origin/GUID");
         verifyOriginSpan("blob:google.com", "/GUID", "blob:google.com/GUID");
 
-        // crbug.com/1257746
+        // crbug.com/40200799
         verifyOriginSpan("content://dev/blah", null, "content://dev/blah");
     }
 
-    // http://crbug/1485446
+    // http://crbug.com/40072988
     @Test
     public void forUrlAndText_missingDisplayTextSchemeDoesNotConfuseHosts() {
         var url = new GURL("https://www.a.com/https://bbb.com/i.htm");
@@ -111,7 +111,7 @@ public class UrlBarDataTest {
         Assert.assertEquals("a.com".length(), data.originEndIndex);
     }
 
-    // http://crbug/1485446
+    // http://crbug.com/40072988
     @Test
     public void forUrlAndText_missingDisplayTextSchemeDoesNotConfusePaths() {
         var url = new GURL("https://www.a.com/?k=v/bbb.com/i.htm");

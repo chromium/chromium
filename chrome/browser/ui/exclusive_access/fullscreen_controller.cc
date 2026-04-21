@@ -85,7 +85,7 @@ void FullscreenController::RemoveObserver(FullscreenObserver* observer) {
 
 int64_t FullscreenController::GetDisplayId(const WebContents& web_contents) {
   if (auto* screen = display::Screen::Get()) {
-    // crbug.com/1347558 WebContents::GetNativeView is const-incorrect.
+    // crbug.com/40233000 WebContents::GetNativeView is const-incorrect.
     // const_cast is used to access GetNativeView(). Also GetDisplayNearestView
     // should accept const gfx::NativeView, but there is other const
     // incorrectness down the call chain in some implementations.
@@ -213,9 +213,9 @@ void FullscreenController::EnterFullscreenModeForTab(
       !requesting_another_screen && IsWindowFullscreenForTabOrPending();
 
   if (exclusive_access_tab() && exclusive_access_tab() != web_contents) {
-    // This unexpected condition may be hit in practice; see crbug.com/1456875.
+    // This unexpected condition may be hit in practice; see crbug.com/40918158.
     // In known circumstances it is safe to just clear the exclusive_access_tab,
-    // but behavior and assumptions should be rectified; see crbug.com/1244121.
+    // but behavior and assumptions should be rectified; see crbug.com/40787691.
     NOTIMPLEMENTED() << "Conflicting exclusive access tab assignment detected";
     SetTabWithExclusiveAccess(nullptr);
   }
@@ -308,7 +308,7 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 
   // For Tab Fullscreen -> Browser Fullscreen, enter browser fullscreen on the
   // display that originated the browser fullscreen prior to the tab fullscreen.
-  // crbug.com/1313606.
+  // crbug.com/40832401.
   if (was_browser_fullscreen && web_contents &&
       display_id_prior_to_tab_fullscreen_ != display::kInvalidDisplayId &&
       display_id_prior_to_tab_fullscreen_ != GetDisplayId(*web_contents)) {

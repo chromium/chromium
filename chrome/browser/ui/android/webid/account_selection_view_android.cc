@@ -465,7 +465,7 @@ void AccountSelectionViewAndroid::OnAccountSelected(
       is_sign_in ? Account::LoginState::kSignIn : Account::LoginState::kSignUp);
   // The AccountSelectionViewAndroid may be destroyed.
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
-  // See https://crbug.com/1393650 for details.
+  // See https://crbug.com/40248291 for details.
 }
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env,

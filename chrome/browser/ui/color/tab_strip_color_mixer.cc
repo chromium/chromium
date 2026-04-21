@@ -193,8 +193,8 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabButtonInkDropFrameInactive] =
       ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameInactive);
 
-  // TODO (crbug.com/1399942): consolidate the new tab button color ids once the
-  // refresh flag is enabled by default.
+  // TODO (crbug.com/40883407): consolidate the new tab button color ids once
+  // the refresh flag is enabled by default.
   mixer[kColorNewTabButtonCRForegroundFrameActive] = {kColorToolbarButtonIcon};
   mixer[kColorNewTabButtonCRForegroundFrameInactive] = {
       kColorToolbarButtonIconInactive};

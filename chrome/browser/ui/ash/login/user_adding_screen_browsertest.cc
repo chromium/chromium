@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, InfoBubbleVisible) {
 }
 
 // Makes sure Chrome doesn't crash if we lock the screen during an add-user
-// flow. Regression test for crbug.com/467111.
+// flow. Regression test for crbug.com/40409495.
 // Note that this test has been moved from ScreenLockerTest because it is easier
 // to login a user here; and without any logged user on the user adding screen,
 // a OOBE dialog would appear, making the test crash.

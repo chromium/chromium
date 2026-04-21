@@ -347,7 +347,8 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  // Needed because WebUI doesn't handle renderer crashes. See crbug.com/610450.
+  // Needed because WebUI doesn't handle renderer crashes. See
+  // crbug.com/41253133.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   UpdateSyncState();

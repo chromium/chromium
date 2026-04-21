@@ -170,7 +170,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Has ShutdownDisplayHost() already been called?  Used to avoid posting our
   // own deletion to the message loop twice if the user logs out while we're
-  // still in the process of cleaning up after login (http://crbug.com/134463).
+  // still in the process of cleaning up after login
+  // (http://crbug.com/40853076).
   bool shutting_down_ = false;
 
   // Used to make sure Finalize() is not called twice.

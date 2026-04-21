@@ -108,9 +108,9 @@ const std::string TabStripUIBrowserTest::tab_query_js(
     "    .shadowRoot.querySelector('tabstrip-tab')"
     "    .shadowRoot.querySelector('#tab')");
 
-// https://crbug.com/1246369: Test is flaky on Linux/Windows, disabled for
+// https://crbug.com/40789199: Test is flaky on Linux/Windows, disabled for
 // investigation.
-// https://crbug.com/1263485: Also flaky on chromeos.
+// https://crbug.com/40800244: Also flaky on chromeos.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ActivatingTabClosesEmbedder DISABLED_ActivatingTabClosesEmbedder
 #else

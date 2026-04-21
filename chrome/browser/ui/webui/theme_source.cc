@@ -51,7 +51,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/1113869
+#include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/40143654
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -140,7 +140,7 @@ void ThemeSource::StartDataRequest(
   const float max_scale = ui::GetScaleForResourceScaleFactor(
       ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor());
   const float unreasonable_scale = max_scale * 32;
-  // TODO(reveman): Add support frames beyond 0 (crbug.com/750064).
+  // TODO(reveman): Add support frames beyond 0 (crbug.com/40532347).
   if ((resource_id == -1) || (scale >= unreasonable_scale) || (frame > 0)) {
     // Either we have no data to send back, or the requested scale is
     // unreasonably large.  This shouldn't happen normally, as chrome://theme/
@@ -152,7 +152,7 @@ void ThemeSource::StartDataRequest(
              ((scale > max_scale) || (frame != -1))) {
     // This will extract and scale frame 0 of animated images.
     // TODO(reveman): Support scaling of animated images and avoid scaling and
-    // re-encode when specific frame is specified (crbug.com/750064).
+    // re-encode when specific frame is specified (crbug.com/40532347).
     DCHECK_LE(frame, 0);
     SendThemeImage(std::move(callback), resource_id, scale);
   } else {

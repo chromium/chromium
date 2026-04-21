@@ -758,7 +758,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.
   // NOTE: Use caution when overriding content security policies as that cean
-  // lead to subtle security bugs such as https://crbug.com/1251541.
+  // lead to subtle security bugs such as https://crbug.com/40057334.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
       base::StringPrintf("child-src https: %s %s %s;",

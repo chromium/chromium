@@ -12,7 +12,7 @@
 
 AppWindowShelfController::AppWindowShelfController(ChromeShelfController* owner)
     : owner_(owner) {
-  // TODO: this doesn't work in mash: https://crbug.com/826386 .
+  // TODO: this doesn't work in mash: https://crbug.com/41379274 .
   if (ash::Shell::HasInstance() && ash::Shell::Get()->GetPrimaryRootWindow()) {
     activation_client_ =
         wm::GetActivationClient(ash::Shell::Get()->GetPrimaryRootWindow());
@@ -57,6 +57,6 @@ void AppWindowShelfController::ShelfItemDelegateChanged(
   DCHECK(old_delegate);
 
   // Notify the shelf controller that its delegate might be destroyed and
-  // cache needs to be updated. See crbug.com/770005
+  // cache needs to be updated. See crbug.com/40542371
   OnItemDelegateDiscarded(old_delegate);
 }

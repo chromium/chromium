@@ -115,7 +115,7 @@ std::u16string GetHungWebContentsTitle(
   }
   // TODO(xji): Consider adding a special case if the title text is a URL,
   // since those should always have LTR directionality. Please refer to
-  // http://crbug.com/6726 for more information.
+  // http://crbug.com/41290309 for more information.
   base::i18n::AdjustStringForLocaleDirection(&page_title);
 
   if (affected_web_contents->GetPrimaryMainFrame()->GetProcess() ==

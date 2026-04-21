@@ -179,7 +179,7 @@ CastConfigControllerMediaRouter::CastConfigControllerMediaRouter(
     const ApplicationLocaleStorage* application_locale_storage)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   // TODO(jdufault): This should use a callback interface once there is an
-  // equivalent. See crbug.com/666005.
+  // equivalent. See crbug.com/41286649.
   session_observation_.Observe(session_manager::SessionManager::Get());
 }
 

@@ -51,7 +51,7 @@ public class NightModeUtils {
         if (uiNightMode == (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK)) return;
 
         // Rebase the theme against the new configuration, so the attributes get resolved to the
-        // correct colors based on the night mode setting. See https://crbug.com/1280540.
+        // correct colors based on the night mode setting. See https://crbug.com/40811531.
         activity.getTheme().rebase();
     }
 
@@ -68,7 +68,7 @@ public class NightModeUtils {
 
         // Override uiMode so that UIs created by the DecorView (e.g. context menu, floating
         // action bar) get the correct theme. May check if this is needed on newer version
-        // of support library. See https://crbug.com/935731.
+        // of support library. See https://crbug.com/40615505.
         final int nightMode =
                 provider.isInNightMode()
                         ? Configuration.UI_MODE_NIGHT_YES

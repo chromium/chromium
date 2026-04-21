@@ -88,8 +88,8 @@ class PasswordGenerationPopupViewTest : public PasswordManagerBrowserTestBase {
   }
 };
 
-// Regression test for crbug.com/400543. Verifying that moving the mouse in the
-// editing dialog doesn't crash.
+// Regression test for crbug.com/40377826. Verifying that moving the mouse in
+// the editing dialog doesn't crash.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        MouseMovementInEditingPopup) {
   auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());

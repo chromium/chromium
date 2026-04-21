@@ -125,7 +125,7 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
 using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<
     TestAutofillSuggestionControllerAutofillClient>;
 
-// Regression test for (crbug.com/1513574): Showing an Autofill Compose
+// Regression test for (crbug.com/41486145): Showing an Autofill Compose
 // suggestion twice does not crash.
 TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
   ShowSuggestions(manager(), {Suggestion(u"Help me write",

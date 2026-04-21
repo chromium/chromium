@@ -161,7 +161,7 @@ void TranslateBubbleModelImpl::RevertTranslation() {
 void TranslateBubbleModelImpl::OnBubbleClosing() {
   // TODO(curranmax): This will mark the UI as closed when the widget has lost
   // focus. This means it is basically impossible for the final state to have
-  // the UI shown. https://crbug.com/1114868.
+  // the UI shown. https://crbug.com/40144098.
   ui_delegate_->OnUIClosedByUser();
 
   if (!translate_executed_) {

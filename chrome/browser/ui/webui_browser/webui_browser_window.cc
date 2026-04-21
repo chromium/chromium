@@ -353,7 +353,7 @@ const ui::ThemeProvider* WebUIBrowserWindow::GetThemeProvider() const {
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/40771982.
   if (app_controller && (!IsUsingLinuxSystemTheme(browser_->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
@@ -377,7 +377,7 @@ WebUIBrowserWindow::GetThemeInitializerSupplier() const {
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/40771982.
   if (app_controller && (!IsUsingLinuxSystemTheme(browser_->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();

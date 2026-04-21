@@ -35,7 +35,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   // The content view for the window.
   // TODO(lgrey): Instead of retaining this, we should refrain from trying to
   // remove the tracking area when the content view has already dealloced.
-  // Unfortunately, until we have a repro for https://crbug.com/1064911, we
+  // Unfortunately, until we have a repro for https://crbug.com/40681550, we
   // can't verify more targeted fixes (for example, only removing the tracking
   // area if |_controller| has a window).
   NSView* __strong _contentView;
@@ -99,7 +99,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
     return;
   }
 
-  // TODO(https://crbug.com/1063417, https://crbug.com/1064911): This DCHECK
+  // TODO(https://crbug.com/40123289, https://crbug.com/40681550): This DCHECK
   // is hit when closing a fullscreen window using the traffic lights. This is
   // because removeTrackingArea should be removed in response to the window
   // closing, but isn't.

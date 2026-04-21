@@ -24,7 +24,7 @@ MediaNotificationDeviceMonitor::Create(
     MediaNotificationDeviceProvider* device_provider) {
 // The device monitor implementation on linux does not reliably detect
 // connection changes for some devices. In this case we fall back to polling the
-// device provider. See crbug.com/1112480 for more information.
+// device provider. See crbug.com/40143046 for more information.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   return std::make_unique<PollingDeviceMonitorImpl>(device_provider);
 #else

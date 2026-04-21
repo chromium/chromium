@@ -483,7 +483,7 @@ void ShowSettingsSubPageInTabbedBrowser(BrowserWindowInterface* browser,
 
   // Since the user may be triggering navigation from another UI element such as
   // a menu, ensure the web contents (and therefore the settings page that is
-  // about to be shown) is focused. (See crbug/926492 for motivation.)
+  // about to be shown) is focused. (See crbug.com/41438063 for motivation.)
   FocusWebContents(browser);
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GetSettingsUrl(sub_page));
 }
@@ -542,7 +542,7 @@ void ShowClearBrowsingDataDialog(BrowserWindowInterface* browser) {
 
 void ShowPasswordManager(BrowserWindowInterface* bwi) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordManager"));
-  // This code is necessary to fix a bug (crbug.com/1448559) during Password
+  // This code is necessary to fix a bug (crbug.com/40269361) during Password
   // Manager Shortcut tutorial flow.
   auto* service =
       UserEducationServiceFactory::GetForBrowserContext(bwi->GetProfile());

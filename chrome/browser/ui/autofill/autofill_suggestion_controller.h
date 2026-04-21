@@ -51,7 +51,7 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   // Accepts the suggestion at `index`. The suggestion is only accepted if the
   // UI has been shown for at least `kIgnoreEarlyClicksOnSuggestionsDuration` to
-  // allow ruling out accidental UI interactions (crbug.com/1279268).
+  // allow ruling out accidental UI interactions (crbug.com/40058217).
   static constexpr base::TimeDelta kIgnoreEarlyClicksOnSuggestionsDuration =
       base::Milliseconds(500);
   virtual void AcceptSuggestion(

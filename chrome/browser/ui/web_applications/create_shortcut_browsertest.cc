@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // Check that toolbar is not shown for shortcut apps within extensions pages.
 // This simulates a case where the user has manually navigated to a page hosted
 // within an extension, then added it as a shortcut app.
-// Regression test for https://crbug.com/828233.
+// Regression test for https://crbug.com/40569785.
 //
 // TODO(crbug.com/40793595): Remove chrome-extension scheme for web apps.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 }
 
 // Tests that Create Shortcut doesn't timeout on a page that has a delayed
-// iframe load. Context: crbug.com/1046883
+// iframe load. Context: crbug.com/40671065
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
   ASSERT_TRUE(embedded_test_server()->Start());
   NavigateViaLinkClickToURLAndWait(

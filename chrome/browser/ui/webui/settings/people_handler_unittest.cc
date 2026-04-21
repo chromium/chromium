@@ -1246,7 +1246,7 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Regression test for crash in guest mode. https://crbug.com/1040476
+// Regression test for crash in guest mode. https://crbug.com/40114033
 TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile::Builder builder;

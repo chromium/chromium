@@ -294,7 +294,7 @@ void FindBarController::OnFindResultAvailable(
 
   // Only "final" results may audibly alert the user. Also don't alert when
   // we're only highlighting results (when first opening the find bar).
-  // See https://crbug.com/1131780
+  // See https://crbug.com/40721569
   if (!find_tab_helper->find_result().final_update() ||
       !find_tab_helper->should_find_match()) {
     return;

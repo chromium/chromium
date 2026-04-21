@@ -23,7 +23,7 @@ constexpr base::TimeDelta kShortBlurTimeLimit = base::Minutes(1);
 
 // The minimum amount of time between a setting change and a subsequent setting
 // change. If two changes occur les than this amount of time from each other,
-// they are ignored by metrics. See https://crbug.com/1073714 for details.
+// they are ignored by metrics. See https://crbug.com/40127700 for details.
 constexpr base::TimeDelta kMinSubsequentChange = base::Milliseconds(200);
 
 // Min/max values for the duration metrics. Note that these values are tied to
@@ -198,7 +198,7 @@ void PerSessionSettingsUserActionTracker::RecordSettingChange(
 
   if (!last_record_setting_changed_timestamp_.is_null()) {
     // If it has been less than |kMinSubsequentChange| since the last recorded
-    // setting change, this change is discarded. See https://crbug.com/1073714
+    // setting change, this change is discarded. See https://crbug.com/40127700
     // for details.
     if (now - last_record_setting_changed_timestamp_ < kMinSubsequentChange) {
       return;

@@ -14,7 +14,7 @@ using FindBarControllerTest = InProcessBrowserTest;
 
 // Creating the FindBarController on startup can result in a startup performance
 // regression. This test ensures that the FindBarController isn't created until
-// truly needed. See https://crbug.com/783350.
+// truly needed. See https://crbug.com/41354464.
 IN_PROC_BROWSER_TEST_F(FindBarControllerTest,
                        NoFindBarControllerOnBrowserCreate) {
   // FindBarController should not be created on browser start.

@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, PerTabModeResetSendsEvent) {
   TestResetOnNavigation(ZoomController::ZOOM_MODE_ISOLATED);
 }
 
-// Regression test: crbug.com/450909.
+// Regression test: crbug.com/40402157.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, NavigationResetsManualMode) {
   TestResetOnNavigation(ZoomController::ZOOM_MODE_MANUAL);
 }
@@ -310,8 +310,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // If the previous page was bfcached, evict it, in order to test the
-  // conditions that were the cause of https://crbug.com/1264958 (the page scale
-  // needs to apply to a new RenderFrameHost).
+  // conditions that were the cause of https://crbug.com/40203602 (the page
+  // scale needs to apply to a new RenderFrameHost).
   if (rfh_a) {
     ASSERT_TRUE(rfh_a->IsInactiveAndDisallowActivation(
         content::DisallowActivationReasonId::kForTesting));
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// Regression test: crbug.com/438979.
+// Regression test: crbug.com/40396772.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
                        SettingsZoomAfterLoadingWorks) {
   GURL url = GURL("chrome://newtab");

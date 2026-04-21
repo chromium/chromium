@@ -433,8 +433,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // find that action, and insert the moved action to its left.
   //
   // To further complicate things, force-pinned actions are stored in
-  // |pinned_action_ids_| but not in the pref (crbug.com/1266952). So we have to
-  // find the ID not just of the action to its right, but the first action to
+  // |pinned_action_ids_| but not in the pref (crbug.com/40204281). So we have
+  // to find the ID not just of the action to its right, but the first action to
   // its right that is *not* force-pinned.
   //
   // For example:

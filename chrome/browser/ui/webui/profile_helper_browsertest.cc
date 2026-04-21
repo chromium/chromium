@@ -107,7 +107,7 @@ class ProfileHelperTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
-    // See crbug.com/1073451.
+    // See crbug.com/40686320.
 #if BUILDFLAG(IS_WIN)
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif

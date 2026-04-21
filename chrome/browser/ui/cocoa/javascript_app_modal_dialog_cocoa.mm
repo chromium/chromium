@@ -136,7 +136,7 @@ void JavaScriptAppModalDialogCocoa::ShowAppModalDialog() {
   // on which we will call Show. We need different paths (mojo for remote and
   // raw pointers for in-process) to have consistent ordering with other
   // remote_cocoa interfaces.
-  // https://crbug.com/1236369
+  // https://crbug.com/40192708
   if (auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
           controller_->web_contents()->GetNativeView())) {
     // If the alert is from a window that is out of process then use the

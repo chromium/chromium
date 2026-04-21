@@ -2288,7 +2288,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OriginTextRemoved) {
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that
-// redirects to a web app.  https://crbug.com/721949.
+// redirects to a web app.  https://crbug.com/41319247.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2847,7 +2847,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   ASSERT_TRUE(is_handling_extension(expected_extensions[0]));
 
   // Simulate the user permanently denying file handling permission. Regression
-  // test for crbug.com/1269387
+  // test for crbug.com/40205010
   base::RunLoop run_loop_remove_file_handlers;
   provider().scheduler().PersistFileHandlersUserChoice(
       app_id, /*allowed=*/false, run_loop_remove_file_handlers.QuitClosure());

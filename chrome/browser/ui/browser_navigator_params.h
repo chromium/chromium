@@ -222,7 +222,7 @@ struct NavigateParams {
     // Show the browser window after navigating but do not activate.
     // Note: This may cause a space / virtual desktop switch if the window is
     // being shown on a display which is currently showing a fullscreen app.
-    // (crbug.com/1315749).
+    // (crbug.com/40221919).
     kShowWindowInactive
   };
   // WARNING: Default depends on the constructor used.

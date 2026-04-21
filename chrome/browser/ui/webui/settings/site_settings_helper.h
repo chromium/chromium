@@ -215,7 +215,8 @@ void GetContentCategorySetting(const HostContentSettingsMap* map,
 // Retrieves the current setting for a given origin, category pair, the source
 // of that setting, and its display name, which will be different if it's an
 // extension. Note this is similar to GetContentCategorySetting() above but this
-// goes through the PermissionManager (preferred, see https://crbug.com/739241).
+// goes through the PermissionManager (preferred, see
+// https://crbug.com/40528601).
 ContentSetting GetContentSettingForOrigin(Profile* profile,
                                           const HostContentSettingsMap* map,
                                           const GURL& origin,

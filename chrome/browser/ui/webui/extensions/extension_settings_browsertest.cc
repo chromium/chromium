@@ -65,7 +65,7 @@ class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #if !BUILDFLAG(IS_ANDROID)  // TODO(b/476468383): does not build on android.
 // Tests that viewing a source of the options page works fine.
-// This is a regression test for https://crbug.com/796080.
+// This is a regression test for https://crbug.com/41361513.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   // Navigate to an in-page (guest-view-based) extension options page
   // and grab the WebContents hosting the options page.

@@ -409,10 +409,13 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         try {
             return LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         } catch (SecurityException e) {
-            Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/1027709\n", e);
+            Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/40660387\n", e);
             return null;
         } catch (RuntimeException e) {
-            Log.e(TAG, "Can be thrown if underlying services are dead, see crbug.com/1121602\n", e);
+            Log.e(
+                    TAG,
+                    "Can be thrown if underlying services are dead, see crbug.com/40715590\n",
+                    e);
             return null;
         }
     }

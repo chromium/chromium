@@ -161,7 +161,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       // maximized windows. Additionally creating a window with a maximized
       // show state results in an invisible window if the window is a PWA
       // (i.e. out-of-process remote cocoa) window
-      // (https://crbug.com/1441966). Never using WindowShowState::kMaximized
+      // (https://crbug.com/40910284). Never using WindowShowState::kMaximized
       // on Mac is also consistent with NativeWidgetMac::Show, which does not
       // support WindowShowState::kMaximized either.
 #if !BUILDFLAG(IS_MAC)

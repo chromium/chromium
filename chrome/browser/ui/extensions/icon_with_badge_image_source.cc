@@ -128,7 +128,8 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   const gfx::Rect icon_area = GetIconAreaRect();
 
   // Force the pixel width of badge to be either odd (if the icon width is odd)
-  // or even otherwise. If there is a mismatch you get http://crbug.com/26400.
+  // or even otherwise. If there is a mismatch you get
+  // http://crbug.com/41028811.
   if (icon_area.width() != 0 && (badge_width % 2 != icon_area.width() % 2)) {
     badge_width += 1;
   }

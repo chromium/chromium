@@ -144,7 +144,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
     return;
   }
 
-  // Web apps should not display the session restore bubble (crbug.com/1264121)
+  // Web apps should not display the session restore bubble (crbug.com/40800614)
   const bool should_display_bubble =
       !is_web_app && HasPendingUncleanExit(browser->GetProfile());
   base::UmaHistogramBoolean("Startup.CrashBubbleShown", should_display_bubble);

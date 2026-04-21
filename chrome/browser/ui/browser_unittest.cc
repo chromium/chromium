@@ -57,7 +57,7 @@ class BrowserUnitTest : public BrowserWithTestWindowTest {
   }
 };
 
-// Ensure crashed tabs are not reloaded when selected. crbug.com/232323
+// Ensure crashed tabs are not reloaded when selected. crbug.com/41007585
 TEST_F(BrowserUnitTest, ReloadCrashedTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
@@ -95,7 +95,7 @@ TEST_F(BrowserUnitTest, ReloadCrashedTab) {
 }
 
 // This tests a workaround which is not necessary on Mac.
-// https://crbug.com/719230
+// https://crbug.com/41317454
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SetBackgroundColorForNewTab DISABLED_SetBackgroundColorForNewTab
 #else

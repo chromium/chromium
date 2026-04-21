@@ -121,7 +121,7 @@ bool LoginWebDialog::HandleOpenURLFromTab(
   // but there is no browser window associated with it. A helper screen will
   // fire an auto-reload, which in turn leads to opening a new browser window,
   // so we must suppress it.
-  // http://crbug.com/443096
+  // http://crbug.com/41148677
   return source &&
          !ash::BrowserController::GetInstance()->GetBrowserForTab(source);
 }

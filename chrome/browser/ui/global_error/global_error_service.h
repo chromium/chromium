@@ -47,7 +47,7 @@ class GlobalErrorService : public KeyedService {
   std::unique_ptr<GlobalError> RemoveGlobalError(GlobalError* error);
 
   // DEPRECATED; DO NOT USE!
-  // http://crbug.com/673578
+  // http://crbug.com/41290855
   //
   // These functions allow adding and removing of a GlobalError that is not
   // owned by the GlobalErrorService. In this case, the error's lifetime must

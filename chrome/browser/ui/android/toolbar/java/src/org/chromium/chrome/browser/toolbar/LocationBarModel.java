@@ -427,7 +427,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public UrlBarData getUrlBarData() {
-        // Part of scroll jank investigation http://crbug.com/905461. Will remove TraceEvent after
+        // Part of scroll jank investigation http://crbug.com/41426407. Will remove TraceEvent after
         // the investigation is complete.
         try (TraceEvent te = TraceEvent.scoped("LocationBarModel.getUrlBarData")) {
             if (!hasTab()) {
