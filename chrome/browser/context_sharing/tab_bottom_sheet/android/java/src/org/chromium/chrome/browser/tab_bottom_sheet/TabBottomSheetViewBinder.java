@@ -40,9 +40,11 @@ public class TabBottomSheetViewBinder {
             View peekContainer = view.findViewById(R.id.actor_control_container);
             View expandedContent = view.findViewById(R.id.expanded_content_group);
             peekContainer.setAlpha(alpha);
-            peekContainer.setVisibility(alpha == 0.0f ? View.GONE : View.VISIBLE);
+            peekContainer.setVisibility(alpha == 0.0f ? View.INVISIBLE : View.VISIBLE);
             expandedContent.setAlpha(1.0f - alpha);
-            expandedContent.setVisibility(alpha == 1.0f ? View.GONE : View.VISIBLE);
+            // Using INVISIBLE instead of GONE to keep the view in layout hierarchy,
+            // allowing the BottomSheetController to calculate correct scrollable height.
+            expandedContent.setVisibility(alpha == 1.0f ? View.INVISIBLE : View.VISIBLE);
         }
     }
 }

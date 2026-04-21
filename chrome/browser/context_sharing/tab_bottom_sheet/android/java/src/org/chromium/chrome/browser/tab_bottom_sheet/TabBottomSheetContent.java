@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.NullUtil;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -54,6 +55,10 @@ public class TabBottomSheetContent implements BottomSheetContent {
                 mContentView
                         .getResources()
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
+
+        View view = mContentView.findViewById(R.id.actor_control_container);
+        View peekContainer = NullUtil.assertNonNull(view);
+        peekContainer.setBackgroundColor(mBackgroundColor);
     }
 
     @Override
