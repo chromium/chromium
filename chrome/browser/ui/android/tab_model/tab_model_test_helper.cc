@@ -169,7 +169,9 @@ void TestTabModel::ActivateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-tabs::TabInterface* TestTabModel::OpenTab(const GURL& url, int index) {
+tabs::TabInterface* TestTabModel::OpenTab(const GURL& url,
+                                          int index,
+                                          bool foreground) {
   NOTIMPLEMENTED();
   return nullptr;
 }
@@ -505,7 +507,9 @@ void OwningTestTabModel::ActivateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-tabs::TabInterface* OwningTestTabModel::OpenTab(const GURL& url, int index) {
+tabs::TabInterface* OwningTestTabModel::OpenTab(const GURL& url,
+                                                int index,
+                                                bool foreground) {
   NOTIMPLEMENTED();
   return nullptr;
 }

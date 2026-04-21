@@ -502,12 +502,19 @@ void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {
   SetActiveIndex(index);
 }
 
-tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url, int index) {
+tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url,
+                                               int index,
+                                               bool foreground) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
 
-  return Java_TabModelJniBridge_openTabProgrammatically(env, jobj, jurl, index);
+  tabs::TabInterface* tab = Java_TabModelJniBridge_openTabProgrammatically(
+      env, jobj, jurl, index, foreground);
+  if (foreground && tab) {
+    ActivateTab(tab->GetHandle());
+  }
+  return tab;
 }
 
 void TabModelJniBridge::SetOpenerForTab(tabs::TabHandle target,

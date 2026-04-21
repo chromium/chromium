@@ -126,10 +126,10 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
     }
 
     /**
-     * Returns the index of the last tab in the model opened by the specified
-     * opener, starting at startIndex. To clarify, the tabs are traversed in the
-     * descending order of their position in the model. This means that the tab
-     * furthest in the stack with the given opener id will be returned.
+     * Returns the index of the last tab in the model opened by the specified opener, starting at
+     * startIndex. To clarify, the tabs are traversed in the descending order of their position in
+     * the model. This means that the tab furthest in the stack with the given opener id will be
+     * returned.
      *
      * @param openerId The opener of interest.
      * @param startIndex The start point of the search.
@@ -200,7 +200,8 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                         && type != TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
                         && type != TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
                         && type != TabLaunchType.FROM_REPARENTING_BACKGROUND
-                        && type != TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND)
+                        && type != TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND
+                        && type != TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND)
                 || isCurrentModelIncognitoBranded != isNewTabIncognitoBranded;
     }
 

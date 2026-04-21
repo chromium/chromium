@@ -507,18 +507,20 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      *
      * @param url URL to show.
      * @param index Index for the tab, it will ignore if it is invalid.
+     * @param foreground Whether to open the tab in the foreground.
      */
     @CalledByNative
     @VisibleForTesting
-    public @JniType("TabAndroid*") @Nullable Tab openTabProgrammatically(GURL url, int index) {
+    public @JniType("TabAndroid*") @Nullable Tab openTabProgrammatically(
+            GURL url, int index, boolean foreground) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
-
+        @TabLaunchType
+        int launchType =
+                foreground
+                        ? TabLaunchType.FROM_TAB_LIST_INTERFACE
+                        : TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND;
         return getTabCreator(isIncognitoBranded())
-                .createNewTab(
-                        loadParams,
-                        TabLaunchType.FROM_TAB_LIST_INTERFACE,
-                        /* parent= */ null,
-                        index);
+                .createNewTab(loadParams, launchType, /* parent= */ null, index);
     }
 
     @CalledByNative

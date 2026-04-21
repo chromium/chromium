@@ -250,7 +250,7 @@ public class TabModelImplTest {
                     assertEquals(1, mTabModelJni.getCount());
 
                     GURL url = new GURL("https://www.chromium.org");
-                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0);
+                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0, true);
                     assertNotNull(tab);
                     assertEquals(url, tab.getUrl());
                     assertEquals(2, mTabModelJni.getCount());
@@ -266,6 +266,35 @@ public class TabModelImplTest {
                     assertTrue(
                             willOpenInForeground(
                                     TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                                    tab.isIncognitoBranded(),
+                                    mTabModelJni.isIncognitoBranded()));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenTabProgrammatically_Background() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mTabModelJni.getCount());
+
+                    GURL url = new GURL("https://www.chromium.org");
+                    Tab tab = mTabModelJni.openTabProgrammatically(url, 0, false);
+                    assertNotNull(tab);
+                    assertEquals(url, tab.getUrl());
+                    assertEquals(2, mTabModelJni.getCount());
+
+                    Tab foundTab = mTabModelJni.getTabAt(0);
+                    assertNotNull(foundTab);
+                    assertEquals(tab, foundTab);
+                    assertEquals(url, foundTab.getUrl());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                            tab.getTabLaunchTypeAtCreation());
+
+                    assertFalse(
+                            willOpenInForeground(
+                                    TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
                                     tab.isIncognitoBranded(),
                                     mTabModelJni.isIncognitoBranded()));
                 });

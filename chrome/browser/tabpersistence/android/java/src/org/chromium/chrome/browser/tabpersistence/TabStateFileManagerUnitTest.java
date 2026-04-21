@@ -193,12 +193,13 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(31, TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE);
         Assert.assertEquals(32, TabLaunchTypeAtCreation.FROM_LINK_CREATING_NEW_WINDOW);
         Assert.assertEquals(33, TabLaunchTypeAtCreation.FROM_TIPS_NOTIFICATIONS);
+        Assert.assertEquals(34, TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE_BACKGROUND);
         // Note this should be the total number of TabLaunchTypeAtCreation values including
         // SIZE and UNKNOWN so it should be equal to the last value +3.
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                36,
+                37,
                 TabLaunchTypeAtCreation.names.length);
     }
 
@@ -209,7 +210,7 @@ public class TabStateFileManagerUnitTest {
                         + " FlatBufferTabStateSerializer#getLaunchTypeFromFlatBuffer,"
                         + " FlatBufferTabStateSerializer#getLaunchTypeToFlatBuffer"
                         + " and this test file.",
-                34,
+                35,
                 TabLaunchType.SIZE);
     }
 

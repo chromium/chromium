@@ -168,6 +168,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 return "LinkToNewWindow";
             case TabLaunchType.FROM_TIPS_NOTIFICATIONS:
                 return "TipsNotifications";
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND:
+                return "TabListInterfaceBackground";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -186,6 +188,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
     /**
      * Preconnect to the URL and its subresources as the tab is being created.
+     *
      * @param url URL to be preconnected to.
      */
     private void maybePreconnectUrlAndSubResources(GURL url) {
@@ -772,6 +775,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION:
             case TabLaunchType.FROM_TAB_LIST_INTERFACE:
             case TabLaunchType.FROM_TIPS_NOTIFICATIONS:
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
                 // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
                 // (https://crbug.com/758027)

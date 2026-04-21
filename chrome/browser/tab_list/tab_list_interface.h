@@ -73,7 +73,9 @@ class TabListInterface {
 
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
-  virtual tabs::TabInterface* OpenTab(const GURL& url, int index) = 0;
+  virtual tabs::TabInterface* OpenTab(const GURL& url,
+                                      int index,
+                                      bool foreground = true) = 0;
 
   // Sets the opener for the `target` tab to be the `opener` tab.
   virtual void SetOpenerForTab(tabs::TabHandle target,

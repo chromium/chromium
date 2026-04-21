@@ -787,7 +787,8 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="From Tab List Interface"/>
   <int value="32" label="From Link, Creating New Window"/>
   <int value="33" label="From Tips Notifications"/>
-  <int value="34" label="Size"/>
+  <int value="34" label="From Tab List Interface Background"/>
+  <int value="35" label="Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->
