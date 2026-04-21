@@ -26,6 +26,13 @@
   _agent->SetLastShownViewState(viewState);
 }
 
+- (void)didUpdateProcessingStatus:
+            (ios::provider::GeminiClientMode)processingStatus
+                        sessionID:(NSString*)sessionID
+                   conversationID:(NSString*)conversationID {
+  // TODO(crbug.com/504758406): Handle processing status updates.
+}
+
 - (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
   if (!_agent) {
     return;
