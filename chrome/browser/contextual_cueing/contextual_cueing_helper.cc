@@ -54,6 +54,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #endif
 
 namespace contextual_cueing {
@@ -394,8 +396,21 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+
+  bool existing_side_panel_open = false;
+#if !BUILDFLAG(IS_ANDROID)
+  auto* bwi =
+      tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
+  auto* side_panel_ui = bwi ? bwi->GetFeatures().side_panel_ui() : nullptr;
+  existing_side_panel_open =
+      side_panel_ui &&
+      (side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
+       side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kToolbar));
+#endif
+
   const bool should_open_side_panel =
-      decision_result->auto_open_eligible &&
+      !existing_side_panel_open && decision_result->auto_open_eligible &&
       base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
 
   Profile* profile =
@@ -422,7 +437,6 @@ void ContextualCueingHelper::OnCueingDecision(
   // Handle side panel auto-open case: bypass nudge and open panel directly.
   // If auto-open fails or is disabled, falls through to standard nudge.
   if (should_open_side_panel) {
-    auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && tab_interface) {
