@@ -75,7 +75,7 @@
   [_consumer setNewEntity:_params->new_entity
                 oldEntity:_params->old_entity
                 userEmail:_params->user_email
-              isLocalSave:_params->save_is_synchronous];
+        saveIsSynchronous:_params->save_is_synchronous];
 }
 
 @end
