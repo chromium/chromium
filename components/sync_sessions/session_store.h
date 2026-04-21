@@ -66,6 +66,8 @@ class SessionStore {
   static std::string GetHeaderStorageKey(const std::string& session_tag);
   static std::string GetTabStorageKey(const std::string& session_tag,
                                       int tab_node_id);
+  static std::string GetTabScreenshotStorageKey(const std::string& session_tag,
+                                                int tab_node_id);
   // Verifies if |storage_key| corresponds to an entity in the local session,
   // identified by the session tag.
   bool StorageKeyMatchesLocalSession(const std::string& storage_key) const;
@@ -108,7 +110,8 @@ class SessionStore {
     // the caller's responsibility to do so *before* calling these functions.
     std::string PutWithoutUpdatingTracker(
         const sync_pb::SessionSpecifics& specifics);
-    std::string DeleteLocalTabWithoutUpdatingTracker(int tab_node_id);
+    std::vector<std::string> DeleteLocalTabWithoutUpdatingTracker(
+        int tab_node_id);
 
     syncer::MetadataChangeList* GetMetadataChangeList();
 

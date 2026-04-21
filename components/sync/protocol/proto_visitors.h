@@ -1420,6 +1420,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionSpecifics& proto) {
   VISIT(session_tag);
   VISIT(header);
   VISIT(tab);
+  VISIT(tab_screenshot);
   VISIT(tab_node_id);
 }
 
@@ -1437,6 +1438,10 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionTab& proto) {
   VISIT_REP(variation_id);
   VISIT_ENUM(browser_type);
   VISIT(last_active_time_unix_epoch_millis);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SessionTabScreenshot& proto) {
+  VISIT_BYTES(screenshot_data);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {

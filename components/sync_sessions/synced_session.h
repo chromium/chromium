@@ -66,7 +66,8 @@ struct SyncedSessionWindow {
   sync_pb::SessionWindow ToSessionWindowProto() const;
 
   // Type of the window. See session_specifics.proto.
-  sync_pb::SyncEnums::BrowserType window_type;
+  sync_pb::SyncEnums::BrowserType window_type =
+      sync_pb::SyncEnums::BROWSER_TYPE_UNKNOWN;
 
   // The SessionWindow this object wraps.
   sessions::SessionWindow wrapped_window;

@@ -277,6 +277,12 @@ std::set<int> SyncedSessionTracker::LookupTabNodeIds(
   return session ? session->tab_node_pool.GetAllTabNodeIds() : std::set<int>();
 }
 
+std::set<int> SyncedSessionTracker::LookupScreenshotTabNodeIds(
+    const std::string& session_tag) const {
+  const TrackedSession* session = LookupTrackedSession(session_tag);
+  return session ? session->tab_node_ids_with_screenshots : std::set<int>();
+}
+
 const SyncedSession* SyncedSessionTracker::LookupLocalSession() const {
   return LookupSession(local_session_tag_);
 }
@@ -331,6 +337,7 @@ void SyncedSessionTracker::DeleteForeignTab(const std::string& session_tag,
   TrackedSession* session = LookupTrackedSession(session_tag);
   if (session) {
     session->tab_node_pool.DeleteTabNode(tab_node_id);
+    session->tab_node_ids_with_screenshots.erase(tab_node_id);
   }
 }
 
@@ -421,6 +428,7 @@ void SyncedSessionTracker::CleanupSessionImpl(
       }
 
       session->tab_node_pool.FreeTab(tab_id);
+      session->tab_node_ids_with_screenshots.erase(tab_node_id);
     }
 
     session->synced_tab_map.erase(tab_id);
@@ -717,6 +725,27 @@ void SyncedSessionTracker::ReassociateLocalTab(int tab_node_id,
   session->synced_tab_map[new_tab_id] = tab_ptr;
 }
 
+void SyncedSessionTracker::SetTabNodeHasScreenshot(
+    const std::string& session_tag,
+    int tab_node_id,
+    bool has_screenshot) {
+  TrackedSession* session = LookupTrackedSession(session_tag);
+  if (!session) {
+    return;
+  }
+  if (has_screenshot) {
+    session->tab_node_ids_with_screenshots.insert(tab_node_id);
+  } else {
+    session->tab_node_ids_with_screenshots.erase(tab_node_id);
+  }
+}
+
+bool SyncedSessionTracker::TabNodeHasScreenshot(const std::string& session_tag,
+                                                int tab_node_id) const {
+  const TrackedSession* session = LookupTrackedSession(session_tag);
+  return session && session->tab_node_ids_with_screenshots.count(tab_node_id);
+}
+
 void SyncedSessionTracker::Clear() {
   session_map_.clear();
   local_session_tag_.clear();
@@ -808,8 +837,18 @@ void UpdateTrackerWithSpecifics(const sync_pb::SessionSpecifics& specifics,
     if (session->GetModifiedTime() < modification_time) {
       session->SetModifiedTime(modification_time);
     }
+  } else if (specifics.has_tab_screenshot()) {
+    if (specifics.tab_node_id() == TabNodePool::kInvalidTabNodeID) {
+      DLOG(WARNING) << "Ignoring session tab screenshot with invalid tab node "
+                    << "ID for session tag " << session_tag << ".";
+      return;
+    }
+    DVLOG(1) << "Tracking screenshot for " << session_tag << "'s tab node "
+             << specifics.tab_node_id();
+    tracker->SetTabNodeHasScreenshot(session_tag, specifics.tab_node_id(),
+                                     /*has_screenshot=*/true);
   } else {
-    LOG(WARNING) << "Ignoring session node with missing header/tab "
+    LOG(WARNING) << "Ignoring session node with missing header/tab/screenshot "
                  << "fields and tag " << session_tag << ".";
   }
 }
@@ -819,27 +858,36 @@ void SerializeTrackerToSpecifics(
     const base::RepeatingCallback<void(const std::string& session_name,
                                        sync_pb::SessionSpecifics* specifics)>&
         output_cb) {
-  std::map<std::string, std::set<int>> session_tag_to_node_ids;
+  std::map<std::string, std::set<int>> session_tag_to_tab_node_ids;
+  std::map<std::string, std::set<int>> session_tag_to_screenshot_node_ids;
   for (const SyncedSession* session :
        tracker.LookupAllSessions(SyncedSessionTracker::RAW)) {
-    // Request all tabs.
-    session_tag_to_node_ids[session->GetSessionTag()] =
-        tracker.LookupTabNodeIds(session->GetSessionTag());
+    const std::string& session_tag = session->GetSessionTag();
+    // Request all tabs (associated or free).
+    session_tag_to_tab_node_ids[session_tag] =
+        tracker.LookupTabNodeIds(session_tag);
+    // Request all screenshots.
+    session_tag_to_screenshot_node_ids[session_tag] =
+        tracker.LookupScreenshotTabNodeIds(session_tag);
     // Request the header too.
-    session_tag_to_node_ids[session->GetSessionTag()].insert(
+    session_tag_to_tab_node_ids[session_tag].insert(
         TabNodePool::kInvalidTabNodeID);
   }
-  SerializePartialTrackerToSpecifics(tracker, session_tag_to_node_ids,
+  SerializePartialTrackerToSpecifics(tracker, session_tag_to_tab_node_ids,
+                                     session_tag_to_screenshot_node_ids,
                                      output_cb);
 }
 
 void SerializePartialTrackerToSpecifics(
     const SyncedSessionTracker& tracker,
-    const std::map<std::string, std::set<int>>& session_tag_to_node_ids,
+    const std::map<std::string, std::set<int>>& session_tag_to_tab_node_ids,
+    const std::map<std::string, std::set<int>>&
+        session_tag_to_screenshot_node_ids,
     const base::RepeatingCallback<void(const std::string& session_name,
                                        sync_pb::SessionSpecifics* specifics)>&
         output_cb) {
-  for (const auto& [session_tag, node_ids] : session_tag_to_node_ids) {
+  // Process tabs and header.
+  for (const auto& [session_tag, node_ids] : session_tag_to_tab_node_ids) {
     const SyncedSession* session = tracker.LookupSession(session_tag);
     if (!session) {
       // Unknown session.
@@ -896,6 +944,29 @@ void SerializePartialTrackerToSpecifics(
       tab_pb.set_session_tag(session_tag);
       tab_pb.mutable_tab()->set_tab_id(tab_id.id());
       output_cb.Run(session->GetSessionName(), &tab_pb);
+    }
+  }
+
+  // Process screenshots.
+  for (const auto& [session_tag, screenshot_node_ids] :
+       session_tag_to_screenshot_node_ids) {
+    const SyncedSession* session = tracker.LookupSession(session_tag);
+    if (!session) {
+      // Unknown session.
+      continue;
+    }
+
+    for (int tab_node_id : screenshot_node_ids) {
+      if (tracker.TabNodeHasScreenshot(session_tag, tab_node_id)) {
+        sync_pb::SessionSpecifics screenshot_pb;
+        screenshot_pb.set_session_tag(session_tag);
+        screenshot_pb.set_tab_node_id(tab_node_id);
+        // Note: The tracker does not keep screenshot data in memory, and so it
+        // can't populate it here. Screenshot data can only be queried from the
+        // SessionStore (which will load it from disk asynchronously).
+        screenshot_pb.mutable_tab_screenshot();
+        output_cb.Run(session->GetSessionName(), &screenshot_pb);
+      }
     }
   }
 }

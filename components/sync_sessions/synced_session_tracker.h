@@ -70,6 +70,13 @@ class SyncedSessionTracker {
   // session having tag |session_tag|.
   std::set<int> LookupTabNodeIds(const std::string& session_tag) const;
 
+  // Returns the tab node ids for all screenshots associated with the session
+  // having tag |session_tag|. This is *usually* a subset of what
+  // LookupTabNodeIds() would return, but in some cases (orphaned screenshots)
+  // it may contain additional entries.
+  std::set<int> LookupScreenshotTabNodeIds(
+      const std::string& session_tag) const;
+
   // Returns the session windows associated with the session given
   // by |session_tag|. Returns an empty vector if there are no windows for
   // `session_tag`. Ownership of SessionWindows stays within the
@@ -214,6 +221,17 @@ class SyncedSessionTracker {
   // have no effect.
   void ReassociateLocalTab(int tab_node_id, SessionID new_tab_id);
 
+  // **** Methods for querying/manipulating screenshots ****.
+
+  // Sets whether the given tab node has a screenshot.
+  void SetTabNodeHasScreenshot(const std::string& session_tag,
+                               int tab_node_id,
+                               bool has_screenshot);
+
+  // Returns whether the given tab node has a screenshot.
+  bool TabNodeHasScreenshot(const std::string& session_tag,
+                            int tab_node_id) const;
+
   // **** Methods for querying/manipulating overall state ****.
 
   // Free the memory for all dynamically allocated objects and clear the
@@ -269,6 +287,11 @@ class SyncedSessionTracker {
     // Mappings between tab node IDs and tab IDs. For the local session, it also
     // knows about available sync nodes associated with this session.
     TabNodePool tab_node_pool;
+
+    // The set of tab node IDs for which a screenshot exists in the store. This
+    // is *typically* a subset of the associated tabs in the TabNodePool, but
+    // it's not guaranteed (e.g. in case of orphaned screenshots).
+    std::set<int> tab_node_ids_with_screenshots;
   };
 
   // LookupTrackedSession() returns null if the session tag is unknown.
@@ -319,7 +342,9 @@ void SerializeTrackerToSpecifics(
 // entities.
 void SerializePartialTrackerToSpecifics(
     const SyncedSessionTracker& tracker,
-    const std::map<std::string, std::set<int>>& session_tag_to_node_ids,
+    const std::map<std::string, std::set<int>>& session_tag_to_tab_node_ids,
+    const std::map<std::string, std::set<int>>&
+        session_tag_to_screenshot_node_ids,
     const base::RepeatingCallback<void(const std::string& session_name,
                                        sync_pb::SessionSpecifics* specifics)>&
         output_cb);

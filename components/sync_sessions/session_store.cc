@@ -11,10 +11,10 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -38,22 +38,71 @@ using sync_pb::SessionSpecifics;
 using syncer::DataTypeStore;
 using syncer::MetadataChangeList;
 
+// NOTE: Values are persisted (as part of storage keys); do not renumber, and
+// only add new entries at the end.
+enum class EntityType {
+  kHeader = 0,
+  kTab = 1,
+  kScreenshot = 2,
+  // Add new entries here.
+  kMaxValue = kScreenshot
+};
+
+// Returns the type (header, tab, or screenshot) contained in `specifics`, which
+// must be valid according to SessionStore::AreValidSpecifics().
+EntityType EntityTypeFromValidSpecifics(
+    const sync_pb::SessionSpecifics& specifics) {
+  DCHECK(SessionStore::AreValidSpecifics(specifics));
+
+  if (specifics.has_header()) {
+    return EntityType::kHeader;
+  }
+  if (specifics.has_tab()) {
+    return EntityType::kTab;
+  }
+  DCHECK(specifics.has_tab_screenshot());
+  return EntityType::kScreenshot;
+}
+
 std::string TabNodeIdToClientTag(const std::string& session_tag,
                                  int tab_node_id) {
   CHECK_GT(tab_node_id, TabNodePool::kInvalidTabNodeID);
   return base::StringPrintf("%s %d", session_tag.c_str(), tab_node_id);
 }
 
-std::string EncodeStorageKey(const std::string& session_tag, int tab_node_id) {
+std::string ScreenshotTabNodeIdToClientTag(const std::string& session_tag,
+                                           int tab_node_id) {
+  return TabNodeIdToClientTag(session_tag, tab_node_id) + " screenshot";
+}
+
+std::string EncodeStorageKey(const std::string& session_tag,
+                             int tab_node_id,
+                             EntityType type) {
   base::Pickle pickle;
   pickle.WriteString(session_tag);
   pickle.WriteInt(tab_node_id);
+  switch (type) {
+    case EntityType::kHeader:
+    case EntityType::kTab:
+      // For backwards compatibility reasons, header and tab entities do *not*
+      // encode the type. They can instead be distinguished by the `tab_node_id`
+      // (which is `kInvalidTabNodeID` for headers).
+      break;
+    case EntityType::kScreenshot:
+      pickle.WriteInt(static_cast<int>(type));
+      break;
+  }
   return std::string(pickle.AsStringView());
 }
 
 bool DecodeStorageKey(const std::string& storage_key,
                       std::string* session_tag,
-                      int* tab_node_id) {
+                      int* tab_node_id,
+                      EntityType* type) {
+  CHECK(session_tag);
+  CHECK(tab_node_id);
+  CHECK(type);
+
   base::PickleIterator iter =
       base::PickleIterator::WithData(base::as_byte_span(storage_key));
   if (!iter.ReadString(session_tag)) {
@@ -62,6 +111,21 @@ bool DecodeStorageKey(const std::string& storage_key,
   if (!iter.ReadInt(tab_node_id)) {
     return false;
   }
+  int type_int = -1;
+  if (!iter.ReadInt(&type_int)) {
+    // For backward compatibility, if the type is missing, it's either a header
+    // or a tab.
+    *type = (*tab_node_id == TabNodePool::kInvalidTabNodeID)
+                ? EntityType::kHeader
+                : EntityType::kTab;
+    return true;
+  }
+  // Only screenshot entities should have the type set explicitly (see
+  // EncodeStorageKey()).
+  if (type_int != static_cast<int>(EntityType::kScreenshot)) {
+    return false;
+  }
+  *type = EntityType::kScreenshot;
   return true;
 }
 
@@ -75,6 +139,9 @@ std::unique_ptr<syncer::EntityData> MoveToEntityData(
   } else if (specifics->has_tab()) {
     entity_data->name +=
         base::StringPrintf(" (tab node %d)", specifics->tab_node_id());
+  } else if (specifics->has_tab_screenshot()) {
+    entity_data->name += base::StringPrintf(" (screenshot for tab node %d)",
+                                            specifics->tab_node_id());
   }
   entity_data->specifics.mutable_session()->Swap(specifics);
   return entity_data;
@@ -177,35 +244,55 @@ SessionStore::WriteBatch::DeleteForeignEntityAndUpdateTracker(
     const std::string& storage_key) {
   std::string session_tag;
   int tab_node_id;
-  bool success = DecodeStorageKey(storage_key, &session_tag, &tab_node_id);
+  EntityType type;
+  bool success =
+      DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
   DCHECK(success);
   DCHECK_NE(session_tag, session_tracker_->GetLocalSessionTag());
 
-  std::vector<std::string> deleted_storage_keys;
-  deleted_storage_keys.push_back(storage_key);
+  base::flat_set<std::string> deleted_storage_keys;
+  deleted_storage_keys.insert(storage_key);
 
-  if (tab_node_id == TabNodePool::kInvalidTabNodeID) {
-    // Removal of a foreign header entity cascades the deletion of all tabs in
-    // the same session too.
-    for (int cascading_tab_node_id :
-         session_tracker_->LookupTabNodeIds(session_tag)) {
-      std::string tab_storage_key =
-          GetTabStorageKey(session_tag, cascading_tab_node_id);
-      // Note that DeleteForeignSession() below takes care of removing all tabs
-      // from the tracker, so no DeleteForeignTab() needed.
-      batch_->DeleteData(tab_storage_key);
-      deleted_storage_keys.push_back(std::move(tab_storage_key));
-    }
+  switch (type) {
+    case EntityType::kHeader:
+      // Removal of a foreign header entity cascades the deletion of all tabs
+      // and screenshots in the same session too.
+      for (int cascading_tab_node_id :
+           session_tracker_->LookupTabNodeIds(session_tag)) {
+        deleted_storage_keys.insert(
+            GetTabStorageKey(session_tag, cascading_tab_node_id));
+      }
+      for (int cascading_screenshot_tab_node_id :
+           session_tracker_->LookupScreenshotTabNodeIds(session_tag)) {
+        deleted_storage_keys.insert(GetTabScreenshotStorageKey(
+            session_tag, cascading_screenshot_tab_node_id));
+      }
 
-    // Delete session itself.
-    session_tracker_->DeleteForeignSession(session_tag);
-  } else {
-    // Removal of a foreign tab entity.
-    session_tracker_->DeleteForeignTab(session_tag, tab_node_id);
+      // Delete session itself.
+      session_tracker_->DeleteForeignSession(session_tag);
+      break;
+    case EntityType::kTab:
+      // Removal of a foreign tab entity cascades the deletion of the associated
+      // screenshot entity.
+      if (session_tracker_->TabNodeHasScreenshot(session_tag, tab_node_id)) {
+        deleted_storage_keys.insert(
+            GetTabScreenshotStorageKey(session_tag, tab_node_id));
+      }
+      session_tracker_->DeleteForeignTab(session_tag, tab_node_id);
+      break;
+    case EntityType::kScreenshot:
+      // Removal of a screenshot entity does not cascade. If the tab node
+      // doesn't exist, this does nothing.
+      session_tracker_->SetTabNodeHasScreenshot(session_tag, tab_node_id,
+                                                /*has_screenshot=*/false);
+      break;
   }
 
-  batch_->DeleteData(storage_key);
-  return deleted_storage_keys;
+  for (const std::string& key : deleted_storage_keys) {
+    batch_->DeleteData(key);
+  }
+
+  return std::move(deleted_storage_keys).extract();
 }
 
 std::string SessionStore::WriteBatch::PutWithoutUpdatingTracker(
@@ -217,12 +304,19 @@ std::string SessionStore::WriteBatch::PutWithoutUpdatingTracker(
   return storage_key;
 }
 
-std::string SessionStore::WriteBatch::DeleteLocalTabWithoutUpdatingTracker(
+std::vector<std::string>
+SessionStore::WriteBatch::DeleteLocalTabWithoutUpdatingTracker(
     int tab_node_id) {
-  std::string storage_key =
-      EncodeStorageKey(session_tracker_->GetLocalSessionTag(), tab_node_id);
-  batch_->DeleteData(storage_key);
-  return storage_key;
+  const std::string session_tag = session_tracker_->GetLocalSessionTag();
+  const std::string tab_storage_key =
+      GetTabStorageKey(session_tag, tab_node_id);
+  const std::string tab_screenshot_storage_key =
+      GetTabScreenshotStorageKey(session_tag, tab_node_id);
+
+  batch_->DeleteData(tab_storage_key);
+  batch_->DeleteData(tab_screenshot_storage_key);
+
+  return {std::move(tab_storage_key), std::move(tab_screenshot_storage_key)};
 }
 
 MetadataChangeList* SessionStore::WriteBatch::GetMetadataChangeList() {
@@ -244,17 +338,26 @@ bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
     return false;
   }
 
-  // Only one of header or tab may be set.
-  if (specifics.has_header() && specifics.has_tab()) {
+  // Only one of header, tab or tab_screenshot may be set.
+  if (((specifics.has_header() ? 1 : 0) + (specifics.has_tab() ? 1 : 0) +
+       (specifics.has_tab_screenshot() ? 1 : 0)) != 1) {
     return false;
   }
 
-  // Tabs must have both a valid tab ID and tab node ID.
+  // Tabs must have both a valid tab node ID and tab ID.
   if (specifics.has_tab()) {
     if (specifics.tab_node_id() < 0) {
       return false;
     }
     if (specifics.tab().tab_id() <= 0) {
+      return false;
+    }
+    return true;
+  }
+
+  // Tab screenshots must have a valid tab node ID.
+  if (specifics.has_tab_screenshot()) {
+    if (specifics.tab_node_id() < 0) {
       return false;
     }
     return true;
@@ -291,33 +394,51 @@ std::string SessionStore::GetClientTag(const SessionSpecifics& specifics) {
     return specifics.session_tag();
   }
 
-  DCHECK(specifics.has_tab());
-  return TabNodeIdToClientTag(specifics.session_tag(), specifics.tab_node_id());
+  if (specifics.has_tab()) {
+    return TabNodeIdToClientTag(specifics.session_tag(),
+                                specifics.tab_node_id());
+  }
+
+  DCHECK(specifics.has_tab_screenshot());
+  return ScreenshotTabNodeIdToClientTag(specifics.session_tag(),
+                                        specifics.tab_node_id());
 }
 
 // static
 std::string SessionStore::GetStorageKey(const SessionSpecifics& specifics) {
   DCHECK(AreValidSpecifics(specifics));
-  return EncodeStorageKey(specifics.session_tag(), specifics.tab_node_id());
+  return EncodeStorageKey(specifics.session_tag(), specifics.tab_node_id(),
+                          EntityTypeFromValidSpecifics(specifics));
 }
 
 // static
 std::string SessionStore::GetHeaderStorageKey(const std::string& session_tag) {
-  return EncodeStorageKey(session_tag, TabNodePool::kInvalidTabNodeID);
+  return EncodeStorageKey(session_tag, TabNodePool::kInvalidTabNodeID,
+                          EntityType::kHeader);
 }
 
 // static
 std::string SessionStore::GetTabStorageKey(const std::string& session_tag,
                                            int tab_node_id) {
   DCHECK_GE(tab_node_id, 0);
-  return EncodeStorageKey(session_tag, tab_node_id);
+  return EncodeStorageKey(session_tag, tab_node_id, EntityType::kTab);
+}
+
+// static
+std::string SessionStore::GetTabScreenshotStorageKey(
+    const std::string& session_tag,
+    int tab_node_id) {
+  DCHECK_GE(tab_node_id, 0);
+  return EncodeStorageKey(session_tag, tab_node_id, EntityType::kScreenshot);
 }
 
 bool SessionStore::StorageKeyMatchesLocalSession(
     const std::string& storage_key) const {
   std::string session_tag;
   int tab_node_id;
-  bool success = DecodeStorageKey(storage_key, &session_tag, &tab_node_id);
+  EntityType type;
+  bool success =
+      DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
   DCHECK(success);
   return session_tag == local_session_info_.session_tag;
 }
@@ -479,9 +600,7 @@ SessionStore::SessionStore(
 
       UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
       DVLOG(1) << "Loaded local header.";
-    } else {
-      DCHECK(specifics.has_tab());
-
+    } else if (specifics.has_tab()) {
       // This is a valid old tab node, add it to the tracker and associate
       // it (using the new tab id).
       DVLOG(1) << "Associating local tab " << specifics.tab().tab_id()
@@ -491,6 +610,11 @@ SessionStore::SessionStore(
           specifics.tab_node_id(),
           SessionID::FromSerializedValue(specifics.tab().tab_id()));
       UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
+    } else if (specifics.has_tab_screenshot()) {
+      UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
+    } else {
+      // Unreachable because `AreValidSpecifics()` was checked above.
+      NOTREACHED();
     }
   }
 
@@ -506,20 +630,33 @@ SessionStore::~SessionStore() = default;
 
 std::unique_ptr<syncer::DataBatch> SessionStore::GetSessionDataForKeys(
     const std::vector<std::string>& storage_keys) const {
-  // Decode |storage_keys| into a map that can be fed to
+  // Decode |storage_keys| into two maps that can be fed to
   // SerializePartialTrackerToSpecifics().
   std::map<std::string, std::set<int>> session_tag_to_node_ids;
+  std::map<std::string, std::set<int>> session_tag_to_screenshot_node_ids;
+
   for (const std::string& storage_key : storage_keys) {
     std::string session_tag;
     int tab_node_id;
-    bool success = DecodeStorageKey(storage_key, &session_tag, &tab_node_id);
+    EntityType type;
+    bool success =
+        DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
     DCHECK(success);
-    session_tag_to_node_ids[session_tag].insert(tab_node_id);
+    switch (type) {
+      case EntityType::kHeader:
+      case EntityType::kTab:
+        session_tag_to_node_ids[session_tag].insert(tab_node_id);
+        break;
+      case EntityType::kScreenshot:
+        session_tag_to_screenshot_node_ids[session_tag].insert(tab_node_id);
+        break;
+    }
   }
   // Run the actual serialization into a data batch.
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   SerializePartialTrackerToSpecifics(
       session_tracker_, session_tag_to_node_ids,
+      session_tag_to_screenshot_node_ids,
       base::BindRepeating(
           [](syncer::MutableDataBatch* batch, const std::string& session_name,
              sync_pb::SessionSpecifics* specifics) {

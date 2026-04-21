@@ -168,6 +168,16 @@ sync_pb::SessionSpecifics CreateTabSpecifics(const std::string& session_tag,
   return specifics;
 }
 
+sync_pb::SessionSpecifics CreateTabScreenshotSpecifics(
+    const std::string& session_tag,
+    int tab_node_id) {
+  sync_pb::SessionSpecifics specifics;
+  specifics.set_session_tag(session_tag);
+  specifics.set_tab_node_id(tab_node_id);
+  specifics.mutable_tab_screenshot()->set_screenshot_data("some data");
+  return specifics;
+}
+
 class SessionSyncBridgeTest : public ::testing::Test {
  protected:
   SessionSyncBridgeTest()
@@ -936,6 +946,8 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
       SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId1);
   const std::string tab_storage_key2 =
       SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId2);
+  const std::string tab_screenshot_storage_key2 =
+      SessionStore::GetTabScreenshotStorageKey(kLocalCacheGuid, kTabNodeId2);
   const std::string tab_storage_key3 =
       SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId3);
   const std::string tab_client_tag1 =
@@ -996,6 +1008,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // deletion. For that to trigger, we need to trigger the next association,
   // which we do by navigating in one of the open tabs.
   EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _, _));
+  EXPECT_CALL(mock_processor(), Delete(tab_screenshot_storage_key2, _, _));
   real_processor()->OnCommitCompleted(
       GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag2)},
@@ -1917,13 +1930,16 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   const int kWindowId = 2000001;
   const int kTabId = 2000002;
   const int kTabNodeId = 2003;
+  const int kOrphanedScreenshotTabNodeId = 2004;
 
   InitializeBridge();
   StartSyncing();
 
   // Construct a remote update.
   syncer::UpdateResponseDataList updates;
-  // Two entities belong to a recent session.
+  // The stale session contains the header, a tab, a corresponding screenshot,
+  // and an orphaned screenshot (i.e. with a tab node ID that doesn't correspond
+  // to an actual tab).
   updates.push_back(SpecificsToUpdateResponse(
       CreateHeaderSpecificsWithOneTab(kStaleSessionTag, kWindowId, kTabId),
       stale_mtime));
@@ -1931,6 +1947,14 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
       CreateTabSpecifics(kStaleSessionTag, kWindowId, kTabId, kTabNodeId,
                          "http://baz.com/"),
       stale_mtime));
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateTabScreenshotSpecifics(kStaleSessionTag, kTabNodeId), stale_mtime));
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateTabScreenshotSpecifics(kStaleSessionTag,
+                                   kOrphanedScreenshotTabNodeId),
+      stale_mtime));
+
+  // Two entities belong to a recent session.
   updates.push_back(SpecificsToUpdateResponse(
       CreateHeaderSpecificsWithOneTab(kRecentSessionTag, kWindowId, kTabId),
       recent_mtime));
@@ -1946,6 +1970,13 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   EXPECT_CALL(mock_processor(), Delete(SessionStore::GetTabStorageKey(
                                            kStaleSessionTag, kTabNodeId),
                                        _, _));
+  EXPECT_CALL(mock_processor(), Delete(SessionStore::GetTabScreenshotStorageKey(
+                                           kStaleSessionTag, kTabNodeId),
+                                       _, _));
+  EXPECT_CALL(mock_processor(),
+              Delete(SessionStore::GetTabScreenshotStorageKey(
+                         kStaleSessionTag, kOrphanedScreenshotTabNodeId),
+                     _, _));
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
   real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
@@ -1969,6 +2000,39 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
 
   EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB,
             tab_data->specifics.session().tab().browser_type());
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldProcessScreenshots) {
+  const std::string kForeignSessionTag = "foreignsessiontag";
+  const int kForeignWindowId = 2000001;
+  const int kForeignTabId = 2000002;
+  const int kForeignTabNodeId = 2003;
+
+  const sync_pb::SessionSpecifics foreign_header =
+      CreateHeaderSpecificsWithOneTab(kForeignSessionTag, kForeignWindowId,
+                                      kForeignTabId);
+  const sync_pb::SessionSpecifics foreign_tab =
+      CreateTabSpecifics(kForeignSessionTag, kForeignWindowId, kForeignTabId,
+                         kForeignTabNodeId, "http://baz.com/");
+  const sync_pb::SessionSpecifics foreign_screenshot =
+      CreateTabScreenshotSpecifics(kForeignSessionTag, kForeignTabNodeId);
+
+  InitializeBridge();
+
+  // Note: The bridge should correctly process the screenshot even though it
+  // comes in *before* the corresponding tab.
+  StartSyncing({foreign_header, foreign_screenshot, foreign_tab});
+
+  EXPECT_THAT(GetAllData(),
+              testing::IsSupersetOf(
+                  {Pair(_, EntityDataHasSpecifics(MatchesHeader(
+                               kForeignSessionTag, {kForeignWindowId},
+                               {kForeignTabId}))),
+                   Pair(_, EntityDataHasSpecifics(MatchesTab(
+                               kForeignSessionTag, kForeignWindowId,
+                               kForeignTabId, kForeignTabNodeId, _))),
+                   Pair(_, EntityDataHasSpecifics(MatchesTabScreenshot(
+                               kForeignSessionTag, kForeignTabNodeId)))}));
 }
 
 }  // namespace

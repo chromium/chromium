@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -67,10 +68,12 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
 
   // WriteBatch implementation.
   void Delete(int tab_node_id) override {
-    const std::string storage_key =
+    const std::vector<std::string> storage_keys =
         batch_->DeleteLocalTabWithoutUpdatingTracker(tab_node_id);
-    processor_->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
-                       batch_->GetMetadataChangeList());
+    for (const std::string& storage_key : storage_keys) {
+      processor_->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
+                         batch_->GetMetadataChangeList());
+    }
   }
 
   void Put(std::unique_ptr<sync_pb::SessionSpecifics> specifics) override {
@@ -131,7 +134,6 @@ bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
   return sessions_client_ &&
          sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync();
 }
-
 
 std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
