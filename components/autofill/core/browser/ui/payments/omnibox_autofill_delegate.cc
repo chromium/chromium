@@ -21,12 +21,7 @@ using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
 
 OmniboxAutofillDelegate::OmniboxAutofillDelegate(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {
-  // While InitializationPolicy::kExpectNoPreexistingManagers would make more
-  // sense for production, it fails in tests, likely because
-  // TestPaymentsAutofillClient is lazily initialized.
-  autofill_managers_observation_.Observe(
-      client, autofill::ScopedAutofillManagersObservation::
-                  InitializationPolicy::kObservePreexistingManagers);
+  autofill_managers_observation_.Observe(client);
 }
 
 OmniboxAutofillDelegate::~OmniboxAutofillDelegate() = default;
