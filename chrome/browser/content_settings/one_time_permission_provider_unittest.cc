@@ -148,6 +148,25 @@ TEST_F(OneTimePermissionProviderTest, SetAndGetGeolocationSetting) {
                 ContentSettingsType::GEOLOCATION, false));
 }
 
+TEST_F(OneTimePermissionProviderTest, EphemeralClearsPersistentGrantTrue) {
+  ContentSettingConstraints constraints = one_time_constraints();
+  constraints.set_ephemeral_clears_persistent_grant(true);
+  base::Value value(CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION, std::move(value), constraints));
+  EXPECT_EQ(value, base::Value());
+}
+
+TEST_F(OneTimePermissionProviderTest, EphemeralClearsPersistentGrantFalse) {
+  ContentSettingConstraints constraints = one_time_constraints();
+  constraints.set_ephemeral_clears_persistent_grant(false);
+  base::Value value(CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION, std::move(value), constraints));
+}
+
 TEST_F(OneTimePermissionProviderTest, ClearAll) {
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(

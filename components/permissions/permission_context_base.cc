@@ -31,6 +31,7 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -880,7 +881,39 @@ void PermissionContextBase::UpdateSetting(
     if (content_settings::ShouldTypeExpireActively(content_settings_type())) {
       constraints.set_lifetime(kOneTimePermissionMaximumLifetime);
     }
+
+    // Check if there is a persistent BLOCK state and revert it to ASK if so.
+    content_settings::SettingInfo setting_info;
+    PermissionSetting previous_setting =
+        PermissionsClient::Get()
+            ->GetSettingsMap(browser_context())
+            ->GetPermissionSetting(request_data.requesting_origin,
+                                   request_data.embedding_origin,
+                                   content_settings_type(), &setting_info);
+    if (setting_info.metadata.session_model() ==
+            content_settings::mojom::SessionModel::DURABLE &&
+        setting_info.source == content_settings::SettingSource::kUser) {
+      if (info->delegate().RemoveBlockedPermissionsForEphemeralGrant(
+              previous_setting, setting)) {
+        content_settings::ContentSettingConstraints durable_constraints;
+        durable_constraints.set_session_model(
+            content_settings::mojom::SessionModel::DURABLE);
+        if (content_settings::CanBeAutoRevokedAsUnusedPermission(
+                content_settings_type(),
+                info->delegate().ToValue(previous_setting),
+                /*is_one_time=*/false)) {
+          durable_constraints.set_track_last_visit_for_autoexpiration(true);
+        }
+
+        PermissionsClient::Get()
+            ->GetSettingsMap(browser_context())
+            ->SetPermissionSettingDefaultScope(
+                request_data.requesting_origin, request_data.embedding_origin,
+                content_settings_type(), previous_setting, durable_constraints);
+      }
+    }
   }
+
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context())
       ->SetPermissionSettingDefaultScope(

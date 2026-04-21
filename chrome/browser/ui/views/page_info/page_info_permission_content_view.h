@@ -59,10 +59,13 @@ class PageInfoPermissionContentView
   METADATA_HEADER(PageInfoPermissionContentView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStateLabelElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRememberCheckboxElementId);
   PageInfoPermissionContentView(PageInfo* presenter,
                                 ChromePageInfoUiDelegate* ui_delegate,
                                 ContentSettingsType type,
                                 content::WebContents* web_contents);
+
   ~PageInfoPermissionContentView() override;
 
   // PageInfoUI implementations.

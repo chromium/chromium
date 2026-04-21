@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,6 +34,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -339,6 +343,20 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
         }),
         setting,
         "Checking if the content setting value matches the expectation");
+  }
+
+  auto CheckContentSettingIsOneTime(ContentSettingsType type,
+                                    bool is_one_time) {
+    return CheckResult(
+        base::BindLambdaForTesting([type, this]() {
+          content_settings::SettingInfo info;
+          host_content_settings_map()->GetContentSetting(GetURL(), GetURL(),
+                                                         type, &info);
+          return info.metadata.session_model() ==
+                 content_settings::mojom::SessionModel::ONE_TIME;
+        }),
+        is_one_time,
+        "Checking if the content setting is a one-time permission");
   }
 
  protected:
@@ -678,3 +696,61 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
           u"To use your clipboard, give Chrome access in system settings."));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       MicrophoneAllowOnEveryVisitToggleTest) {
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(
+      content_settings::mojom::SessionModel::ONE_TIME);
+  host_content_settings_map()->SetPermissionSettingDefaultScope(
+      GetURL(), GetURL(), ContentSettingsType::MEDIASTREAM_MIC,
+      CONTENT_SETTING_ALLOW, constraints);
+
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
+      WaitForShow(PermissionToggleRowView::kRowSubTitleMicrophoneElementId),
+      CheckViewProperty(
+          PermissionToggleRowView::kRowSubTitleMicrophoneElementId,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE)),
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      PressButton(PermissionToggleRowView::kSubpageButtonElementId),
+      WaitForShow(PageInfoPermissionContentView::kRememberCheckboxElementId),
+      CheckContentSettingIsOneTime(ContentSettingsType::MEDIASTREAM_MIC, true),
+      CheckViewProperty(
+          PageInfoPermissionContentView::kStateLabelElementId,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE)),
+      PressButton(PageInfoPermissionContentView::kRememberCheckboxElementId),
+      CheckContentSettingIsOneTime(ContentSettingsType::MEDIASTREAM_MIC, false),
+      CheckViewProperty(
+          PageInfoPermissionContentView::kStateLabelElementId,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED)),
+      PressButton(PageInfoViewFactory::kBackButtonElementId),
+      WaitForShow(PageInfoMainView::kMainLayoutElementId),
+      // The main page is recreated, so we need to name the row again.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // For permanent allow, subtitle is empty if not used recently.
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u""),
+      PressButton(PermissionToggleRowView::kSubpageButtonElementId),
+      WaitForShow(PageInfoPermissionContentView::kRememberCheckboxElementId),
+      PressButton(PageInfoPermissionContentView::kRememberCheckboxElementId),
+      CheckContentSettingIsOneTime(ContentSettingsType::MEDIASTREAM_MIC, true),
+      CheckViewProperty(
+          PageInfoPermissionContentView::kStateLabelElementId,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE)),
+      PressButton(PageInfoViewFactory::kBackButtonElementId),
+      WaitForShow(PageInfoMainView::kMainLayoutElementId),
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetRowSubTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE)));
+}

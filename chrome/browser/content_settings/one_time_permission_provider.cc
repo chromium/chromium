@@ -154,13 +154,11 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   }
 
   NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
-
-  // We need to handle transitions from Allow to Allow Once gracefully.
-  // In that case we add the Allow Once setting in this provider, but also
-  // have to clear the Allow setting in the pref provider. By returning false
-  // here, we let the control flow trickle down to the pref provider.
-  value = base::Value();
-  return false;
+  if (constraints.ephemeral_clears_persistent_grant()) {
+    value = base::Value();
+    return false;
+  }
+  return true;
 }
 
 bool OneTimePermissionProvider::UpdateLastUsedTime(

@@ -51,6 +51,12 @@ class PermissionSettingsInfo {
     // when nothing is allowed and the permission is not undecided.
     virtual bool IsBlocked(const PermissionSetting& setting) const;
 
+    // Turns blocked permissions that are granted in `new_ephemeral_setting`
+    // into ASK state, and returns true if anything was changed.
+    virtual bool RemoveBlockedPermissionsForEphemeralGrant(
+        PermissionSetting& setting,
+        const PermissionSetting& new_ephemeral_setting) const = 0;
+
     // Returns whether the permission setting supports expiration tracking.
     virtual bool CanTrackLastVisit() const = 0;
 
