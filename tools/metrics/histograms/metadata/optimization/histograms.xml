@@ -1217,7 +1217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelExecution.OnDeviceModelCrashCount"
-    enum="OnDeviceModelValidationResult" expires_after="2027-04-14">
+    units="crashes" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>
   <owner>holte@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
