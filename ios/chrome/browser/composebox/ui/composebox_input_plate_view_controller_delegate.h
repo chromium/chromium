@@ -86,6 +86,10 @@ enum class FuseboxAttachmentButtonType;
 - (void)composeboxViewControllerDidTapDeepSearchButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
+/// Informs the delegate that a user did tap on the plus button.
+- (void)composeboxViewControllerDidTapPlusButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
+
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController

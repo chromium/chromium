@@ -666,6 +666,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewController:self didTapMicButton:_micButton];
 }
 
+- (void)plusButtonTapped {
+  [self.delegate composeboxViewControllerDidTapPlusButton:self];
+  [self plusButtonDidOpenMenu];
+}
+
 - (void)visualSearchButtonTapped {
   using enum ComposeboxInputPlateControls;
   if ((_visibleControls & kLens) != kNone) {
@@ -1093,10 +1098,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
        forControlEvents:UIControlEventTouchDown];
-  [plusButton addTarget:self
-                 action:@selector(plusButtonDidOpenMenu)
-       forControlEvents:UIControlEventMenuActionTriggered];
-  plusButton.showsMenuAsPrimaryAction = YES;
+
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [plusButton addTarget:self
+                   action:@selector(plusButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+  } else {
+    [plusButton addTarget:self
+                   action:@selector(plusButtonDidOpenMenu)
+         forControlEvents:UIControlEventMenuActionTriggered];
+    plusButton.showsMenuAsPrimaryAction = YES;
+  }
 
   return plusButton;
 }
@@ -1244,7 +1256,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 /// Configures the menu items for the plus (+) button.
 - (void)updatePlusButtonItems {
-  if (!_plusButton) {
+  if (!_plusButton || IsComposeboxPlusButtonBottomSheet()) {
     return;
   }
 

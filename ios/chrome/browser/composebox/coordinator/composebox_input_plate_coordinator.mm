@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
@@ -141,6 +142,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   ComposeboxMetricsRecorder* _metricsRecorder;
   ComposeboxModeHolder* _modeHolder;
   ComposeboxSnackbarPresenter* _snackbarPresenter;
+
+  // The coordinator for the bottom sheet menu.
+  ComposeboxMenuCoordinator* _menuCoorinator;
 
   // Service to check for AI mode eligibility.
   raw_ptr<AimEligibilityService> _aimEligibilityService;
@@ -443,6 +447,18 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
             visibleInternalButtons {
   [_mediator
       recordPlusMenuOpenedWithVisibleInternalButtons:visibleInternalButtons];
+}
+
+- (void)composeboxViewControllerDidTapPlusButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
+        initWithBaseViewController:_viewController
+                           browser:self.browser];
+    // TODO(crbug.com/504900698): Pass the UIInputState and the delegate to
+    // handle actions.
+    [_menuCoorinator start];
+  }
 }
 
 - (void)composeboxViewControllerDidTapFileButton:
