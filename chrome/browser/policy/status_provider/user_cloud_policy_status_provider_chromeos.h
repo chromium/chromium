@@ -18,8 +18,9 @@ class CloudPolicyCore;
 class UserCloudPolicyStatusProviderChromeOS
     : public UserCloudPolicyStatusProvider {
  public:
-  explicit UserCloudPolicyStatusProviderChromeOS(policy::CloudPolicyCore* core,
-                                                 Profile* profile);
+  explicit UserCloudPolicyStatusProviderChromeOS(
+      policy::CloudPolicyManager* cloud_policy_manager,
+      Profile* profile);
 
   UserCloudPolicyStatusProviderChromeOS(
       const UserCloudPolicyStatusProviderChromeOS&) = delete;

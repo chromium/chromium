@@ -18,8 +18,7 @@ class CloudPolicyCore;
 class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
  public:
   explicit UserCloudPolicyStatusProvider(
-      policy::CloudPolicyCore* core,
-      policy::CloudPolicyCore* extension_install_core,
+      policy::CloudPolicyManager* cloud_policy_manager,
       Profile* profile);
 
   UserCloudPolicyStatusProvider(const UserCloudPolicyStatusProvider&) = delete;
@@ -30,9 +29,6 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
 
   // CloudPolicyCoreStatusProvider implementation.
   base::DictValue GetStatus() override;
-
- private:
-  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_H_

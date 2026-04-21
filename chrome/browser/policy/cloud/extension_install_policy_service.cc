@@ -257,6 +257,9 @@ class ExtensionInstallPolicyServiceImpl::ClientInitializationWaiter
       client_observation_{this};
 };
 
+void ExtensionInstallPolicyService::Observer::OnManagerInitializationComplete(
+    CloudPolicyManager*) {}
+
 ExtensionInstallPolicyServiceImpl::ExtensionInstallPolicyServiceImpl(
     Profile* profile)
     : profile_(*profile) {

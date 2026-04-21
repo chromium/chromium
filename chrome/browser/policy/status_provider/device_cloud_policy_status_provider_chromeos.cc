@@ -8,15 +8,16 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
-        const policy::BrowserPolicyConnectorAsh* connector)
-    : CloudPolicyCoreStatusProvider(
-          connector->GetDeviceCloudPolicyManager()->core(),
-          connector->GetDeviceCloudPolicyManager()->extension_install_core()) {
+        const policy::BrowserPolicyConnectorAsh* connector,
+        Profile* profile)
+    : CloudPolicyCoreStatusProvider(connector->GetDeviceCloudPolicyManager(),
+                                    profile) {
   enterprise_domain_manager_ = connector->GetEnterpriseDomainManager();
 }
 
@@ -24,7 +25,8 @@ DeviceCloudPolicyStatusProviderChromeOS::
     ~DeviceCloudPolicyStatusProviderChromeOS() = default;
 
 base::DictValue DeviceCloudPolicyStatusProviderChromeOS::GetStatus() {
-  base::DictValue dict = policy::PolicyStatusProvider::GetStatusFromCore(core_);
+  base::DictValue dict =
+      policy::PolicyStatusProvider::GetStatusFromCore(core());
   dict.Set(policy::kEnterpriseDomainManagerKey, enterprise_domain_manager_);
   dict.Set(policy::kPolicyDescriptionKey, kDevicePolicyStatusDescription);
   GetOffHoursStatus(&dict);

@@ -21,11 +21,9 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
-    policy::CloudPolicyCore* core,
-    policy::CloudPolicyCore* extension_install_core,
+    policy::CloudPolicyManager* cloud_policy_manager,
     Profile* profile)
-    : CloudPolicyCoreStatusProvider(core, extension_install_core),
-      profile_(profile) {}
+    : CloudPolicyCoreStatusProvider(cloud_policy_manager, profile) {}
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() = default;
 
@@ -34,13 +32,13 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
   const bool show_flex_org_warning = false;
 #else
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
+      IdentityManagerFactory::GetForProfile(profile());
   const bool show_flex_org_warning =
       identity_manager && identity_manager
                               ->FindExtendedAccountInfoByEmailAddress(
-                                  profile_->GetProfileUserName())
+                                  profile()->GetProfileUserName())
                               .IsMemberOfFlexOrg();
-  if (!show_flex_org_warning && !core_->store()->is_managed()) {
+  if (!show_flex_org_warning && !core()->store()->is_managed()) {
     return {};
   }
 #endif
@@ -48,33 +46,36 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
+          .GetProfileAttributesWithPath(profile()->GetPath());
   auto enrollment_token =
       entry ? entry->GetProfileManagementEnrollmentToken() : std::string();
 
-  base::DictValue dict = policy::PolicyStatusProvider::GetStatusFromCore(core_);
+  base::DictValue dict =
+      policy::PolicyStatusProvider::GetStatusFromCore(core());
 
-  if (extension_install_core_ && extension_install_core_->client() &&
-      extension_install_core_->client()->HasPolicyTypeToFetch()) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (extension_install_core() && extension_install_core()->client() &&
+      extension_install_core()->client()->HasPolicyTypeToFetch()) {
     dict.Merge(policy::PolicyStatusProvider::GetStatusFromCore(
-        extension_install_core_, /*is_extension_install_policy=*/true));
+        extension_install_core(), /*is_extension_install_policy=*/true));
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   if (enrollment_token.empty()) {
     SetDomainExtractedFromUsername(dict);
-    GetUserAffiliationStatus(&dict, profile_);
+    GetUserAffiliationStatus(&dict, profile());
     dict.Set(policy::kFlexOrgWarningKey, show_flex_org_warning);
   } else {
     dict.Set(policy::kEnrollmentTokenKey, enrollment_token);
     dict.Set(policy::kDomainKey,
-             gaia::ExtractDomainName(core_->store()->policy()->username()));
+             gaia::ExtractDomainName(core()->store()->policy()->username()));
     dict.Remove(policy::kUsernameKey);
     dict.Remove(policy::kGaiaIdKey);
   }
   UpdateLastReportTimestamp(
-      dict, profile_->GetPrefs(),
+      dict, profile()->GetPrefs(),
       enterprise_reporting::kLastUploadSucceededTimestamp);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetProfileId(&dict, profile_);
+  SetProfileId(&dict, profile());
   return dict;
 }

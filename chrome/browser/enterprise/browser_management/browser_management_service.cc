@@ -66,8 +66,7 @@ BrowserManagementService::BrowserManagementService(Profile* profile)
       profile->GetCloudPolicyManager();
   if (cloud_policy_manager) {
     provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
-        cloud_policy_manager->core(),
-        cloud_policy_manager->extension_install_core(), profile);
+        cloud_policy_manager, profile);
     policy_status_provider_observations_.Observe(provider_.get());
   }
 

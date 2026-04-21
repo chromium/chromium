@@ -94,15 +94,14 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
         local_account_service);
   } else if (user_cloud_policy) {
     return std::make_unique<UserCloudPolicyStatusProviderChromeOS>(
-        user_cloud_policy->core(), profile);
+        user_cloud_policy, profile);
   }
 #else   // BUILDFLAG(IS_CHROMEOS)
   policy::CloudPolicyManager* cloud_policy_manager =
       profile->GetCloudPolicyManager();
   if (cloud_policy_manager) {
-    return std::make_unique<UserCloudPolicyStatusProvider>(
-        cloud_policy_manager->core(),
-        cloud_policy_manager->extension_install_core(), profile);
+    return std::make_unique<UserCloudPolicyStatusProvider>(cloud_policy_manager,
+                                                           profile);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<policy::PolicyStatusProvider>();
@@ -114,7 +113,8 @@ std::unique_ptr<policy::PolicyStatusProvider>
 GetChromeOSDevicePolicyStatusProvider(
     Profile* profile,
     policy::BrowserPolicyConnectorAsh* connector) {
-  return std::make_unique<DeviceCloudPolicyStatusProviderChromeOS>(connector);
+  return std::make_unique<DeviceCloudPolicyStatusProviderChromeOS>(connector,
+                                                                   profile);
 }
 #else
 // Returns policy status provider for machine policies for non-ChromeOS

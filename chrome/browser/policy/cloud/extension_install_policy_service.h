@@ -40,6 +40,7 @@ class ExtensionInstallPolicyService
  public:
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnManagerInitializationComplete(CloudPolicyManager* manager);
     virtual void OnExtensionInstallPolicyUpdated() = 0;
   };
 
