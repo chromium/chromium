@@ -771,6 +771,7 @@ export class SpeechController {
 
     utterance.onstart = () => {
       this.clearEngineTimeout_();
+      this.setEngineState_(SpeechEngineState.LOADED);
       this.setPreviewVoicePlaying_(previewVoice);
     };
 
