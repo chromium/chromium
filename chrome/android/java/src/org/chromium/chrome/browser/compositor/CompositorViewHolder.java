@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Size;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.KeyEvent;
@@ -217,6 +218,10 @@ public class CompositorViewHolder extends FrameLayout
     // Cache objects that should not be created frequently.
     private final Rect mCacheRect = new Rect();
     private final Point mCachePoint = new Point();
+
+    // Cache the last known normal size of the view to be used when entering offscreen rendering
+    // mode like Actor Picture-in-Picture.
+    private final Point mLastNormalSize = new Point();
 
     private boolean mControlsResizeView;
     private boolean mInGesture;
@@ -510,6 +515,18 @@ public class CompositorViewHolder extends FrameLayout
         } else {
             mCachePoint.set(getWidth(), getHeight());
         }
+
+        // Cache the latest valid normal size to be used when entering offscreen rendering mode like
+        // Actor Picture-in-Picture. We only update the cache when we are not in PiP mode to avoid
+        // picking up the shrinking dimensions during transition.
+        if (mCachePoint.x > 0
+                && mCachePoint.y > 0
+                && (mActivity == null || !mActivity.isInPictureInPictureMode())) {
+            if (mLastNormalSize.x != mCachePoint.x || mLastNormalSize.y != mCachePoint.y) {
+                mLastNormalSize.set(mCachePoint.x, mCachePoint.y);
+            }
+        }
+
         return mCachePoint;
     }
 
@@ -954,6 +971,10 @@ public class CompositorViewHolder extends FrameLayout
      */
     public @Nullable View getActiveSurfaceView() {
         return mCompositorView.getActiveSurfaceView();
+    }
+
+    public Size getLastNormalSize() {
+        return new Size(mLastNormalSize.x, mLastNormalSize.y);
     }
 
     @VisibleForTesting
@@ -1703,6 +1724,17 @@ public class CompositorViewHolder extends FrameLayout
         mControlsResizeView = true;
         updateWebContentsSize(getCurrentTab());
         onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
+    }
+
+    /**
+     * Override the content view for the current tab and makes sure the WebContents is sized
+     * correctly. Used only for offscreen rendering mode.
+     *
+     * @param tab The tab to set as the current tab.
+     */
+    public void overrideTab(@Nullable Tab tab) {
+        assert tab == null || !tab.getIsOffscreenRenderingSupplier().get();
+        setTab(tab);
     }
 
     private void setTab(@Nullable Tab tab) {

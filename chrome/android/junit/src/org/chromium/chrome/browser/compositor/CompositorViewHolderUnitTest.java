@@ -27,6 +27,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.IBinder;
+import android.util.Size;
 import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -1371,5 +1372,27 @@ public class CompositorViewHolderUnitTest {
         assertEquals(
                 "Unexpected start margin.", expectedStartMargin, layoutParams.getMarginStart());
         assertEquals("Unexpected end margin.", expectedEndMargin, layoutParams.getMarginEnd());
+    }
+
+    @Test
+    public void testGetLastNormalSize() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(mWindowAndroid, null, mPrefService);
+
+        assertEquals(new Size(0, 0), mCompositorViewHolder.getLastNormalSize());
+
+        mCompositorViewHolder.layout(0, 0, 100, 200);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        assertEquals(new Size(100, 200), mCompositorViewHolder.getLastNormalSize());
+
+        when(mActivity.isInPictureInPictureMode()).thenReturn(true);
+        mCompositorViewHolder.layout(0, 0, 50, 50);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        assertEquals(new Size(100, 200), mCompositorViewHolder.getLastNormalSize());
+
+        when(mActivity.isInPictureInPictureMode()).thenReturn(false);
+        mCompositorViewHolder.layout(0, 0, 300, 400);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        assertEquals(new Size(300, 400), mCompositorViewHolder.getLastNormalSize());
     }
 }
