@@ -147,6 +147,8 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
                         &CADisplayLinkMac::Step,
                         display_link->weak_factory_.GetWeakPtr())];
 
+    TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay succeeded");
+
     return display_link;
   }
 
@@ -173,6 +175,7 @@ CADisplayLinkMac::~CADisplayLinkMac() {
 
 std::unique_ptr<VSyncCallbackMac> CADisplayLinkMac::RegisterCallback(
     VSyncCallbackMac::Callback callback) {
+  TRACE_EVENT("gpu", "CADisplayLinkMac::RegisterCallback");
   // Make CADisplayLink callbacks to run on the same RUNLOOP of the register
   // thread without PostTask accross threads.
   auto new_callback = base::WrapUnique(new VSyncCallbackMac(
@@ -190,6 +193,7 @@ std::unique_ptr<VSyncCallbackMac> CADisplayLinkMac::RegisterCallback(
 }
 
 void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
+  TRACE_EVENT("gpu", "CADisplayLinkMac::UnregisterCallback");
   vsync_callback_ = nullptr;
   if (@available(macos 14.0, *)) {
     objc_state_->display_link.paused = YES;

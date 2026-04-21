@@ -216,6 +216,7 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
     return nullptr;
   }
 
+  TRACE_EVENT("gpu", "CVDisplayLinkMac::GetForDisplay succeeded");
   TryRecordDisplayLinkCreation(display_id, true);
   return result;
 }
@@ -365,6 +366,7 @@ CVDisplayLinkMac::~CVDisplayLinkMac() {
 std::unique_ptr<VSyncCallbackMac> CVDisplayLinkMac::RegisterCallback(
     VSyncCallbackMac::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("gpu", "CVDisplayLinkMac::RegisterCallback");
 
   // Make add the new callback. Register first before calling
   // EnsureDisplayLinkRunning() to ensure the callback function is available.
@@ -387,6 +389,7 @@ std::unique_ptr<VSyncCallbackMac> CVDisplayLinkMac::RegisterCallback(
 
 void CVDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("gpu", "CVDisplayLinkMac::UnregisterCallback");
   callbacks_.erase(callback);
 }
 

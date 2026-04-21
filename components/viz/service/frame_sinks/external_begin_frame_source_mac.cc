@@ -88,6 +88,8 @@ ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
 
 void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   if (!time_source_) {
+    TRACE_EVENT("viz",
+                "ExternalBeginFrameSourceMac::CreateDelayBasedTimeSource");
     time_source_ = std::make_unique<DelayBasedTimeSource>(
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
     time_source_->SetClient(this);
@@ -123,6 +125,9 @@ void ExternalBeginFrameSourceMac::UpdateVSyncDisplay() {
 
 void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
                                                     bool force_update) {
+  TRACE_EVENT2("viz", "ExternalBeginFrameSourceMac::SetVSyncDisplayID",
+               "display_id", display_id, "force_update", force_update);
+
   if (display_id_ == display_id && !force_update) {
     return;
   }
@@ -182,6 +187,8 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
     DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
                 << display_id_ << ". Switch to DelayBasedTimeSource.";
 
+    TRACE_EVENT("viz", "ExternalBeginFrameSourceMac DisplayLinkMac failed.");
+
     // TODO: Set hw_takes_any_refresh_rate_ to true for Timer.
     hw_takes_any_refresh_rate_ = false;
     if (multiple_hw_refresh_rates_callback_) {
@@ -233,6 +240,8 @@ void ExternalBeginFrameSourceMac::StopBeginFrame() {
 }
 
 void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
+  TRACE_EVENT1("viz", "ExternalBeginFrameSourceMac::OnNeedsBeginFrames",
+               "needs_begin_frames", needs_begin_frames);
   if (needs_begin_frames_ == needs_begin_frames) {
     return;
   }
