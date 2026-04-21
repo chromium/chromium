@@ -930,7 +930,7 @@ void TestingProfile::BlockUntilHistoryProcessesPendingRequests() {
 }
 
 GURL TestingProfile::GetHomePage() {
-  return GURL(chrome::kChromeUINewTabURL);
+  return chrome::ChromeUINewTabURLAsGURL();
 }
 
 void TestingProfile::SetCreationTimeForTesting(base::Time creation_time) {
