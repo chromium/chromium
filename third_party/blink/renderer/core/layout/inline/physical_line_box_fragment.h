@@ -27,7 +27,9 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
     // Ruby line box. It is treated as a normal line box.
     // This type is only for FragmenItem. PhysicalLineBoxFragment never uses
     // this.
-    kRubyLineBox
+    kRubyLineBox,
+
+    kMaxValue = kRubyLineBox
   };
 
   static const PhysicalLineBoxFragment* Create(LineBoxFragmentBuilder* builder);

@@ -58,6 +58,13 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
       ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
+  static_assert(std::to_underlying(ItemType::kMaxValue) <
+                (1 << kConstTypeBits));
+  static_assert(std::to_underlying(TextItemType::kMaxValue) <
+                (1 << kSubTypeBits));
+  static_assert(std::to_underlying(LineBoxType::kMaxValue) <
+                (1 << kSubTypeBits));
+
 #if DCHECK_IS_ON()
   if (text_.shape_result) {
     DCHECK_EQ(text_.shape_result->StartIndex(), StartOffset());
