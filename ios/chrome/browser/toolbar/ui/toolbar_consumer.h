@@ -31,6 +31,9 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Sets whether the page is loading.
 - (void)setIsLoading:(BOOL)isLoading;
 
+// Sets the `progress` between 0.0 and 1.0 for the loading progress bar.
+- (void)setLoadingProgress:(double)progress;
+
 // Sets whether the share button is enabled.
 - (void)setShareEnabled:(BOOL)enabled;
 

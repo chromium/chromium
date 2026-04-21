@@ -211,7 +211,8 @@
     _topToolbarViewController = [self
         createToolbarViewControllerForMediator:_topToolbarMediator
                                    locationBar:_topLocationBarCoordinator
-                                                   .locationBarViewController];
+                                                   .locationBarViewController
+                                   topPosition:YES];
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:browser];
@@ -238,7 +239,8 @@
     _bottomToolbarViewController = [self
         createToolbarViewControllerForMediator:_bottomToolbarMediator
                                    locationBar:_bottomLocationBarCoordinator
-                                                   .locationBarViewController];
+                                                   .locationBarViewController
+                                   topPosition:NO];
     if (!IsFullscreenRefactoringEnabled()) {
       _bottomToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
           FullscreenController::FromBrowser(browser),
@@ -1175,7 +1177,8 @@
 // Creates a new toolbar view controller, for the associated `mediator`.
 - (ToolbarViewController*)
     createToolbarViewControllerForMediator:(ToolbarMediator*)mediator
-                               locationBar:(UIViewController*)locationBar {
+                               locationBar:(UIViewController*)locationBar
+                               topPosition:(BOOL)topPosition {
   CHECK(IsChromeNextIaEnabled());
 
   BOOL incognito = self.profile->IsOffTheRecord();
@@ -1184,7 +1187,8 @@
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
 
   ToolbarViewController* toolbarViewController =
-      [[ToolbarViewController alloc] initInIncognito:incognito];
+      [[ToolbarViewController alloc] initInIncognito:incognito
+                                         topPosition:topPosition];
   toolbarViewController.buttonFactory = [[ToolbarButtonFactory alloc] init];
   toolbarViewController.mutator = mediator;
   toolbarViewController.browserCoordinatorHandler =

@@ -105,12 +105,14 @@
   [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
   [self.consumer
       setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
-  [self.consumer setIsLoading:webState->IsLoading()];
 
   const GURL visibleURL = webState->GetVisibleURL();
+  [self.consumer setShareEnabled:!visibleURL.is_empty()];
 
   [self.consumer setNTPVisible:IsUrlNtp(visibleURL)];
-  [self.consumer setShareEnabled:!visibleURL.is_empty()];
+
+  [self.consumer setIsLoading:webState->IsLoading()];
+  [self.consumer setLoadingProgress:webState->GetLoadingProgress()];
 
   [self.consumer
             setMenu:[_buttonMenuFactory
