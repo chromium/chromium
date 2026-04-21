@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORDING_DATA_MANAGER_IMPL_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORDING_DATA_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,13 +17,13 @@
 
 namespace record_replay {
 
-// Concrete implementation for `RecordingDataManager` using a LevelDB-backed
-// database to save and load `Recording` protos by URL.
+// Concrete implementation for `RecordingDataManager` using a SQLite database
+// to save and load `Recording` protos and `ActivityAnnotation`s.
 //
 // Owned by `RecordingDataManagerFactory` as a `KeyedService`, and thus tied to
 // the lifecycle of a `Profile`.
-// It runs on the UI thread but uses `leveldb_proto` for background database
-// I/O.
+// It runs on the UI thread but uses `CapabilitiesDatabase` on a background
+// sequence for database I/O.
 class RecordingDataManagerImpl : public RecordingDataManager {
  public:
   explicit RecordingDataManagerImpl(base::FilePath profile_path);
@@ -31,10 +32,25 @@ class RecordingDataManagerImpl : public RecordingDataManager {
   ~RecordingDataManagerImpl() override;
 
   // RecordingDataManager:
-  void AddRecording(Recording recording) override;
+  void AddRecording(Recording recording,
+                    base::OnceCallback<void(int64_t)> callback) override;
   void GetRecordingsByUrl(
       std::string url,
       base::OnceCallback<void(std::vector<Recording>)> callback) override;
+  void SaveActivityAnnotation(std::optional<int64_t> annotation_id,
+                              ActivityAnnotation annotation,
+                              std::string target_url,
+                              std::optional<int64_t> recording_id,
+                              base::OnceClosure callback) override;
+  void GetActivityAnnotation(
+      int64_t annotation_id,
+      base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback)
+      override;
+  void GetActivityAnnotationsByUrl(
+      std::string url,
+      base::OnceCallback<
+          void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback)
+      override;
 
  private:
   base::SequenceBound<CapabilitiesDatabase> db_;

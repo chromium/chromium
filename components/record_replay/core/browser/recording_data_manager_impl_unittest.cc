@@ -78,13 +78,14 @@ class RecordingDataManagerImplTest : public ::testing::Test {
 TEST_F(RecordingDataManagerImplTest, AddAndRetrieveRecording) {
   const Recording recording = CreateLoginRecording();
 
-  data_manager().AddRecording(recording);
+  data_manager().AddRecording(recording, base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   base::test::TestFuture<std::vector<Recording>> future;
   data_manager().GetRecordingsByUrl(recording.url(), future.GetCallback());
   std::vector<Recording> recordings = future.Get();
   ASSERT_EQ(recordings.size(), 1u);
+  recordings[0].clear_id();
   EXPECT_THAT(recordings[0], EqualsProto(recording));
 }
 
@@ -104,8 +105,10 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleRecordings) {
     EXPECT_TRUE(appointment_future.Get().empty());
   }
 
-  data_manager().AddRecording(appointment_recording);
-  data_manager().AddRecording(login_recording);
+  data_manager().AddRecording(appointment_recording,
+                              base::BindOnce([](int64_t id) {}));
+  data_manager().AddRecording(login_recording,
+                              base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   {
@@ -119,6 +122,8 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleRecordings) {
     std::vector<Recording> appointment_recordings = appointment_future.Get();
     ASSERT_EQ(login_recordings.size(), 1u);
     ASSERT_EQ(appointment_recordings.size(), 1u);
+    login_recordings[0].clear_id();
+    appointment_recordings[0].clear_id();
     EXPECT_THAT(login_recordings[0], EqualsProto(login_recording));
     EXPECT_THAT(appointment_recordings[0], EqualsProto(appointment_recording));
   }
@@ -128,8 +133,10 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
   const Recording first_recording = CreateLoginRecording();
   const Recording second_recording = CreateLoginRecording();
 
-  data_manager().AddRecording(first_recording);
-  data_manager().AddRecording(first_recording);
+  data_manager().AddRecording(first_recording,
+                              base::BindOnce([](int64_t id) {}));
+  data_manager().AddRecording(first_recording,
+                              base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   base::test::TestFuture<std::vector<Recording>> future;
@@ -138,8 +145,43 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
   std::vector<Recording> recordings = future.Get();
   ASSERT_EQ(recordings.size(), 2u);
   // Ensure the newest recording is first since the UI currently uses that.
+  recordings[0].clear_id();
+  recordings[1].clear_id();
   EXPECT_THAT(recordings[0], EqualsProto(second_recording));
   EXPECT_THAT(recordings[1], EqualsProto(first_recording));
+}
+
+TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityAnnotation) {
+  const Recording recording = CreateLoginRecording();
+
+  base::test::TestFuture<int64_t> id_future;
+  data_manager().AddRecording(recording, id_future.GetCallback());
+  int64_t recording_id = id_future.Get();
+  ASSERT_GT(recording_id, 0);
+
+  ActivityAnnotation annotation;
+  annotation.set_title("Test Title");
+  annotation.set_description("Test Description");
+  StepAnnotation step;
+  step.set_description("Step 1");
+  (*annotation.mutable_steps())[1] = step;
+
+  base::test::TestFuture<void> add_future;
+  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
+                                        recording.url(), recording_id,
+                                        add_future.GetCallback());
+  add_future.Get();
+
+  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+      get_future;
+  data_manager().GetActivityAnnotationsByUrl(recording.url(),
+                                             get_future.GetCallback());
+  auto retrieved = get_future.Get();
+
+  ASSERT_EQ(retrieved.size(), 1u);
+  EXPECT_EQ(retrieved[0].second.title(), "Test Title");
+  EXPECT_EQ(retrieved[0].second.description(), "Test Description");
+  EXPECT_EQ(retrieved[0].second.steps().at(1).description(), "Step 1");
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "url/gurl.h"
 
 namespace record_replay {
 
@@ -21,6 +22,17 @@ constexpr int kVersionNumber = 1;
 
 constexpr base::FilePath::StringViewType kCapabilitiesDatabaseFileName =
     FILE_PATH_LITERAL("ReplayCapabilitiesDatabase.db");
+
+std::string NormalizeUrl(const std::string& url_string) {
+  GURL url(url_string);
+  if (!url.is_valid()) {
+    return url_string;
+  }
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements).spec();
+}
 }  // namespace
 
 CapabilitiesDatabase::CapabilitiesDatabase()
@@ -37,6 +49,9 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
+  // Enable foreign key support.
+  std::ignore = db_.Execute("PRAGMA foreign_keys = ON");
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return;
@@ -44,9 +59,14 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("wipe-recordings")) {
     std::ignore = db_.Execute("DROP TABLE IF EXISTS Recordings");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityAnnotations");
   }
 
   if (!CreateRecordingsTable()) {
+    return;
+  }
+
+  if (!CreateActivityAnnotationsTable()) {
     return;
   }
 
@@ -66,11 +86,6 @@ int CapabilitiesDatabase::GetDatabaseVersion() {
 
 bool CapabilitiesDatabase::Migrate(int version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (version < kVersionNumber) {
-    // Current version is 1, so no migrations needed yet.
-    // In the future, migration steps would go here.
-  }
 
   return db_.Execute(base::StrCat(
       {"PRAGMA user_version = ", base::NumberToString(kVersionNumber)}));
@@ -97,7 +112,27 @@ bool CapabilitiesDatabase::CreateRecordingsTable() {
       "CREATE INDEX IF NOT EXISTS recordings_url ON Recordings(url)");
 }
 
-void CapabilitiesDatabase::AddRecording(Recording recording) {
+bool CapabilitiesDatabase::CreateActivityAnnotationsTable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_.DoesTableExist("ActivityAnnotations")) {
+    return true;
+  }
+
+  static constexpr char kSql[] =
+      "CREATE TABLE ActivityAnnotations("
+      "annotation_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "recording_id INTEGER REFERENCES Recordings(id) ON DELETE SET NULL,"
+      "target_url TEXT,"
+      "proto BLOB)";
+  if (!db_.Execute(kSql)) {
+    return false;
+  }
+  return db_.Execute(
+      "CREATE INDEX IF NOT EXISTS activity_annotations_url ON "
+      "ActivityAnnotations(target_url)");
+}
+
+int64_t CapabilitiesDatabase::AddRecording(Recording recording) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "INSERT INTO Recordings(url, start_time, name, proto) "
@@ -106,28 +141,108 @@ void CapabilitiesDatabase::AddRecording(Recording recording) {
   statement.BindString(0, std::move(recording.url()));
   statement.BindInt64(1, recording.start_time());
   statement.BindString(2, std::move(recording.name()));
+
+  // The ID should not be serialized to the database.
+  recording.clear_id();
   statement.BindBlob(3, recording.SerializeAsString());
 
-  statement.Run();
+  if (statement.Run()) {
+    return db_.GetLastInsertRowId();
+  }
+  return -1;
 }
 
 std::vector<Recording> CapabilitiesDatabase::GetRecordingsByUrl(
     std::string url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "SELECT proto FROM Recordings WHERE url=? ORDER BY start_time DESC";
+      "SELECT id, proto FROM Recordings WHERE url=? ORDER BY start_time DESC";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, std::move(url));
 
   std::vector<Recording> recordings;
   while (statement.Step()) {
+    int64_t id = statement.ColumnInt64(0);
     Recording recording;
-    if (recording.ParseFromString(statement.ColumnBlobAsString(0))) {
+    if (recording.ParseFromString(statement.ColumnBlobAsString(1))) {
+      recording.set_id(id);
       recordings.push_back(std::move(recording));
     }
   }
 
   return recordings;
+}
+
+void CapabilitiesDatabase::SaveActivityAnnotation(
+    std::optional<int64_t> annotation_id,
+    ActivityAnnotation annotation,
+    std::string target_url,
+    std::optional<int64_t> recording_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string normalized_url = NormalizeUrl(target_url);
+  annotation.set_url(normalized_url);
+  if (recording_id) {
+    annotation.set_recording_id(*recording_id);
+  }
+
+  static constexpr char kSql[] =
+      "INSERT OR REPLACE INTO ActivityAnnotations(annotation_id, recording_id, "
+      "target_url, proto) "
+      "VALUES(?, ?, ?, ?)";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  if (annotation_id) {
+    statement.BindInt64(0, *annotation_id);
+  } else {
+    statement.BindNull(0);
+  }
+  if (recording_id) {
+    statement.BindInt64(1, *recording_id);
+  } else {
+    statement.BindNull(1);
+  }
+  statement.BindString(2, normalized_url);
+  statement.BindBlob(3, annotation.SerializeAsString());
+
+  statement.Run();
+}
+
+std::optional<ActivityAnnotation> CapabilitiesDatabase::GetActivityAnnotation(
+    int64_t annotation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT proto FROM ActivityAnnotations WHERE annotation_id=?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, annotation_id);
+
+  if (statement.Step()) {
+    ActivityAnnotation annotation;
+    if (annotation.ParseFromString(statement.ColumnBlobAsString(0))) {
+      return annotation;
+    }
+  }
+
+  return std::nullopt;
+}
+
+std::vector<std::pair<int64_t, ActivityAnnotation>>
+CapabilitiesDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string normalized_url = NormalizeUrl(url);
+  static constexpr char kSql[] =
+      "SELECT annotation_id, proto FROM ActivityAnnotations WHERE target_url=?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindString(0, normalized_url);
+
+  std::vector<std::pair<int64_t, ActivityAnnotation>> annotations;
+  while (statement.Step()) {
+    int64_t id = statement.ColumnInt64(0);
+    ActivityAnnotation annotation;
+    if (annotation.ParseFromString(statement.ColumnBlobAsString(1))) {
+      annotations.emplace_back(id, std::move(annotation));
+    }
+  }
+  return annotations;
 }
 
 }  // namespace record_replay

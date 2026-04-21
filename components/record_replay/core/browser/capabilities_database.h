@@ -4,6 +4,8 @@
 
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_CAPABILITIES_DATABASE_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_CAPABILITIES_DATABASE_H_
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,11 +33,26 @@ class CapabilitiesDatabase {
   // is empty, the database is opened in memory which suffices for testing.
   void Init(base::FilePath profile_path);
 
-  // Adds a recording to the database.
-  void AddRecording(Recording recording);
+  // Adds a recording to the database. Returns the generated ID of the newly
+  // added recording, or -1 on failure.
+  int64_t AddRecording(Recording recording);
 
   // Retrieves every Recording that matches the given `url`.
   std::vector<Recording> GetRecordingsByUrl(std::string url);
+
+  // Handles both insertion (when annotation_id is nullopt) and updates.
+  void SaveActivityAnnotation(std::optional<int64_t> annotation_id,
+                              ActivityAnnotation annotation,
+                              std::string target_url,
+                              std::optional<int64_t> recording_id);
+
+  // Retrieves the annotation for a given ID, if it exists.
+  std::optional<ActivityAnnotation> GetActivityAnnotation(
+      int64_t annotation_id);
+
+  // Retrieves all annotations for a site, returning their IDs and proto data.
+  std::vector<std::pair<int64_t, ActivityAnnotation>>
+  GetActivityAnnotationsByUrl(const std::string& url);
 
  private:
   // Returns the current version of the database.
@@ -46,6 +63,9 @@ class CapabilitiesDatabase {
 
   // Creates the "Recordings" table if it doesn't exist.
   bool CreateRecordingsTable();
+
+  // Creates the "ActivityAnnotations" table if it doesn't exist.
+  bool CreateActivityAnnotationsTable();
 
   sql::Database db_;
 

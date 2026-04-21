@@ -14,12 +14,36 @@ namespace record_replay {
 
 class MockRecordingDataManager : public RecordingDataManager {
  public:
-  MOCK_METHOD(void, AddRecording, (Recording recording), (override));
+  MOCK_METHOD(void,
+              AddRecording,
+              (Recording recording, base::OnceCallback<void(int64_t)> callback),
+              (override));
   MOCK_METHOD(void,
               GetRecordingsByUrl,
               (std::string url,
                base::OnceCallback<void(std::vector<Recording>)> callback),
               (override));
+  MOCK_METHOD(void,
+              SaveActivityAnnotation,
+              (std::optional<int64_t> annotation_id,
+               ActivityAnnotation annotation,
+               std::string target_url,
+               std::optional<int64_t> recording_id,
+               base::OnceClosure callback),
+              (override));
+  MOCK_METHOD(
+      void,
+      GetActivityAnnotation,
+      (int64_t annotation_id,
+       base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      GetActivityAnnotationsByUrl,
+      (std::string url,
+       base::OnceCallback<
+           void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback),
+      (override));
 };
 
 class SaveRecordingBubbleControllerImplTest : public testing::Test {};
@@ -32,10 +56,12 @@ TEST_F(SaveRecordingBubbleControllerImplTest, OnSave_SavesRecording) {
   base::MockCallback<base::OnceCallback<void(std::string_view)>> show_toast;
   base::MockCallback<base::OnceClosure> on_close;
 
-  EXPECT_CALL(mock_manager, AddRecording).WillOnce([](Recording r) {
-    EXPECT_EQ(r.url(), "http://example.com");
-    EXPECT_EQ(r.name(), "Test Name");
-  });
+  EXPECT_CALL(mock_manager, AddRecording(testing::_, testing::_))
+      .WillOnce([](Recording r, base::OnceCallback<void(int64_t)> callback) {
+        EXPECT_EQ(r.url(), "http://example.com");
+        EXPECT_EQ(r.name(), "Test Name");
+        std::move(callback).Run(1);
+      });
   EXPECT_CALL(show_toast, Run(testing::Eq("Recording saved")));
 
   auto controller = std::make_unique<SaveRecordingBubbleControllerImpl>(
@@ -51,7 +77,7 @@ TEST_F(SaveRecordingBubbleControllerImplTest, OnCancel_DoesNotSave) {
   base::MockCallback<base::OnceCallback<void(std::string_view)>> show_toast;
   base::MockCallback<base::OnceClosure> on_close;
 
-  EXPECT_CALL(mock_manager, AddRecording(testing::_)).Times(0);
+  EXPECT_CALL(mock_manager, AddRecording(testing::_, testing::_)).Times(0);
   EXPECT_CALL(show_toast, Run(testing::_)).Times(0);
 
   auto controller = std::make_unique<SaveRecordingBubbleControllerImpl>(

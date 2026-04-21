@@ -38,7 +38,10 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "recording_data_manager_impl_unittest.cc" ]
+  sources = [
+    "capabilities_database_unittest.cc",
+    "recording_data_manager_impl_unittest.cc",
+  ]
   deps = [
     ":browser",
     "//base/test:test_support",

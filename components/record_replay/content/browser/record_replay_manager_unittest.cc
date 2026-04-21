@@ -29,12 +29,36 @@ using ::testing::ReturnRef;
 
 class MockRecordingDataManager : public RecordingDataManager {
  public:
-  MOCK_METHOD(void, AddRecording, (Recording recording), (override));
+  MOCK_METHOD(void,
+              AddRecording,
+              (Recording recording, base::OnceCallback<void(int64_t)> callback),
+              (override));
   MOCK_METHOD(void,
               GetRecordingsByUrl,
               (std::string url,
                base::OnceCallback<void(std::vector<Recording>)> callback),
               (override));
+  MOCK_METHOD(void,
+              SaveActivityAnnotation,
+              (std::optional<int64_t> annotation_id,
+               ActivityAnnotation annotation,
+               std::string target_url,
+               std::optional<int64_t> recording_id,
+               base::OnceClosure callback),
+              (override));
+  MOCK_METHOD(
+      void,
+      GetActivityAnnotation,
+      (int64_t annotation_id,
+       base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      GetActivityAnnotationsByUrl,
+      (std::string url,
+       base::OnceCallback<
+           void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback),
+      (override));
 };
 
 class MockRecordReplayDriverFactory : public RecordReplayDriverFactory {
@@ -60,7 +84,8 @@ class MockRecordReplayDriverFactory : public RecordReplayDriverFactory {
 
 class MockRecordReplayClient : public RecordReplayClient {
  public:
-  explicit MockRecordReplayClient(content::WebContents* web_contents) {
+  explicit MockRecordReplayClient(content::WebContents* web_contents)
+      : manager_(this) {
     ON_CALL(*this, GetPrimaryMainFrameUrl())
         .WillByDefault(Return(web_contents->GetLastCommittedURL()));
     ON_CALL(*this, GetManager()).WillByDefault(ReturnRef(manager_));
@@ -83,7 +108,7 @@ class MockRecordReplayClient : public RecordReplayClient {
 
  private:
   MockRecordingDataManager data_manager_;
-  RecordReplayManager manager_{this};
+  RecordReplayManager manager_;
   MockRecordReplayDriverFactory driver_factory_;
 };
 
