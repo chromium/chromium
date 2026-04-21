@@ -49,8 +49,8 @@ enum class GpuErrorReason {
 
 void FatalGpuErrorFn(const char* msg) {
   SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg", msg);
-  std::string msg_str(msg);
-  std::string msg_continued;
+  std::string_view msg_str = msg;
+  std::string_view msg_continued;
   constexpr size_t kCrashStringSize = 1024;
   // The error message may be long as it potentially includes the shader,
   // collect another 3k if needed.
