@@ -16,7 +16,6 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "ubsan-vptr",
-                "archive_schema_version": 0,
                 "archive_subdir": "vptr",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-ubsan"
