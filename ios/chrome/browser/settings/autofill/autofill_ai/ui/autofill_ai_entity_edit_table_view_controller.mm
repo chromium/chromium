@@ -457,6 +457,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (countryItem.detailText.length > 1) {
         present.insert(autofill::AttributeType(countryItem.attributeType));
       }
+    } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
+      AutofillAIEntityEditDateItem* dateItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
+      if (dateItem.textFieldValue.length > 0) {
+        present.insert(autofill::AttributeType(dateItem.attributeType));
+      }
     }
   }
   return present;
@@ -492,6 +498,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (countryItem.hasValidValueStatus != itemIsValid) {
         countryItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:countryItem];
+      }
+    } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
+      AutofillAIEntityEditDateItem* dateItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
+      BOOL itemIsValid = !missingFields.contains(
+          autofill::AttributeType(dateItem.attributeType));
+      if (dateItem.hasValidValueStatus != itemIsValid) {
+        dateItem.hasValidValueStatus = itemIsValid;
+        [itemsToReconfigure addObject:dateItem];
       }
     }
   }

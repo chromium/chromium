@@ -170,11 +170,15 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       autofill::AttributeType attrType(dateItem.attributeType);
       autofill::AttributeInstance attrInstance(attrType);
-      attrInstance.SetInfo(
-          attrType.field_type(),
-          AttributeValueFromNSDate(dateItem.dateValue ?: [NSDate date]),
-          _locale, GetAttributeFormatString(),
-          autofill::VerificationStatus::kNoStatus);
+
+      std::u16string value_to_save;
+      if (dateItem.textFieldValue.length > 0 && dateItem.dateValue) {
+        value_to_save = AttributeValueFromNSDate(dateItem.dateValue);
+      }
+
+      attrInstance.SetInfo(attrType.field_type(), value_to_save, _locale,
+                           GetAttributeFormatString(),
+                           autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));
     }
@@ -237,7 +241,8 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 - (void)didChangeDate:(NSDate*)date
               forItem:(AutofillAIEntityEditDateItem*)item {
   item.dateValue = date;
-  item.detailText = [_dateFormatter stringFromDate:date];
+  item.textFieldValue = [_dateFormatter stringFromDate:date];
+  [self.consumer updateItem:item];
 }
 
 - (autofill::DenseSet<autofill::AttributeType>)getMissingRequiredFieldsFor:
