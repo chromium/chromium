@@ -1433,9 +1433,21 @@ void MediaSessionImpl::GetMediaImageBitmap(
     }
   }
 
+  // If we're downloading an image that isn't the favicon, then we should
+  // download it from the frame which set the artwork URL. We download favicon
+  // images from the main frame.
+  GlobalRenderFrameHostId frame_for_download;
+  if (!source_icon) {
+    if (!routed_service_) {
+      std::move(callback).Run(SkBitmap());
+      return;
+    }
+    frame_for_download = routed_service_->GetRenderFrameHostId();
+  }
+
   const gfx::Size preferred_size(desired_size_px, desired_size_px);
-  web_contents()->DownloadImage(
-      image.src, false /* is_favicon */, preferred_size,
+  web_contents()->DownloadImageInFrame(
+      frame_for_download, image.src, false /* is_favicon */, preferred_size,
       desired_size_px /* max_bitmap_size */, false /* bypass_cache */,
       base::BindOnce(&MediaSessionImpl::OnImageDownloadComplete,
                      base::Unretained(this),

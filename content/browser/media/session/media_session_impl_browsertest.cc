@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -384,9 +385,20 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
  protected:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
+    last_request_path_ = request.relative_url;
+    auto it = request.headers.find("Referer");
+    if (it != request.headers.end()) {
+      last_request_referer_ = it->second;
+    } else {
+      last_request_referer_.clear();
+    }
+
     get_favicon_calls();
     return std::make_unique<net::test_server::BasicHttpResponse>();
   }
+
+  std::string last_request_path_;
+  std::string last_request_referer_;
 
   raw_ptr<MediaSessionImpl> media_session_ = nullptr;
   raw_ptr<MockAudioFocusDelegate> mock_audio_focus_delegate_ = nullptr;
@@ -3304,6 +3316,77 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   EXPECT_EQ(AudioFocusType::kAmbient, *GetSessionAudioFocusType());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       DownloadArtworkFromCorrectFrame) {
+  // Navigate to a page with an iframe.
+  GURL main_url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  GURL iframe_url =
+      embedded_test_server()->GetURL("example2.com", "/title1.html");
+
+  // Create the iframe.
+  ASSERT_TRUE(ExecJs(
+      main_frame,
+      base::StringPrintf("let iframe = document.createElement('iframe'); "
+                         "iframe.src = '%s'; "
+                         "document.body.appendChild(iframe);",
+                         iframe_url.spec().c_str())));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Get the RenderFrameHost for the iframe.
+  RenderFrameHost* iframe_host = nullptr;
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  web_contents->ForEachRenderFrameHost([&](RenderFrameHost* rfh) {
+    if (rfh->GetLastCommittedURL() == iframe_url) {
+      iframe_host = rfh;
+    }
+  });
+  ASSERT_TRUE(iframe_host);
+
+  // Set up the media session service for the iframe.
+  MockMediaSessionServiceImpl mock_media_session_service(iframe_host);
+
+  // Set the metadata with artwork.
+  blink::mojom::SpecMediaMetadataPtr spec_metadata(
+      blink::mojom::SpecMediaMetadata::New());
+  spec_metadata->title = u"title";
+  spec_metadata->artist = u"artist";
+  spec_metadata->album = u"album";
+
+  std::vector<media_session::MediaImage> images;
+  media_session::MediaImage image;
+  image.src = favicon_server().GetURL("/artwork.png");
+  image.sizes.emplace_back(100, 100);
+  images.push_back(image);
+  spec_metadata->artwork = images;
+
+  mock_media_session_service.SetMetadata(std::move(spec_metadata));
+
+  // Start a player in the iframe.
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      iframe_host, media::MediaContentType::kPersistent);
+  StartNewPlayer(player_observer.get());
+  ResolveAudioFocusSuccess();
+
+  // Get the media image bitmap.
+  base::RunLoop run_loop;
+  media_session_->GetMediaImageBitmap(
+      images[0], 100, 100,
+      base::BindLambdaForTesting([&](const SkBitmap&) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  // Check that the artwork was downloaded.
+  EXPECT_EQ(last_request_path_, "/artwork.png");
+
+  // Check that the artwork was downloaded from the iframe.
+  EXPECT_EQ(last_request_referer_, iframe_url.GetWithEmptyPath().spec());
+
+  RemovePlayers(player_observer.get());
+}
 
 class MediaSessionImplPrerenderingBrowserTest
     : public MediaSessionImplBrowserTest {
