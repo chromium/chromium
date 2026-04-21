@@ -12115,7 +12115,6 @@ if (!is_android && !is_chromeos_device) {
         "//ui/views",
         "//ui/views:test_support",
         "//ui/views:views_interactive_ui_tests",
-        "//ui/views/controls/webview:test_support",
       ]
 
       if (enable_pdf) {

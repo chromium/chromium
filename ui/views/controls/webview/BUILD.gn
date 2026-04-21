@@ -66,25 +66,3 @@ component("webview") {
   }
 }
 
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "../../test/webview_test_helper.cc",
-    "../../test/webview_test_helper.h",
-  ]
-
-  public_deps = [ ":webview" ]
-  deps = [
-    "//base",
-    "//content",
-    "//content/test:test_support",
-    "//skia",
-    "//testing/gtest",
-    "//ui/base",
-    "//ui/events",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
-}
