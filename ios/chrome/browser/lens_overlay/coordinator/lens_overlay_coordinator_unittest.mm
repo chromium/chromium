@@ -12,6 +12,7 @@
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -121,6 +123,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     // must be created first. Please maintain this order.
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
 
     // LensOverlayCoordinator
     coordinator_ = [[LensOverlayCoordinator alloc]
@@ -158,6 +161,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:gemini_commands_handler_
                      forProtocol:@protocol(BWGCommands)];
+
+    fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:fullscreen_handler_
+                     forProtocol:@protocol(FullscreenCommands)];
 
     // Tab helper
     std::unique_ptr<LensOverlayFakeWebState> web_state =
@@ -259,6 +267,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
   id<ToolbarCommands> toolbar_commands_handler_;
   id<BWGCommands> gemini_commands_handler_;
+  id<FullscreenCommands> fullscreen_handler_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]

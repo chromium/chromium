@@ -150,6 +150,20 @@ void FullscreenBrowserAgent::NotifyFullscreenDidTransition(
   }
 }
 
+bool FullscreenBrowserAgent::IsEnabled() const {
+  return disabled_count_ == 0;
+}
+
+FullscreenState FullscreenBrowserAgent::State() const {
+  if (top_progress_ == 0.0 && bottom_progress_ == 0.0) {
+    return FullscreenState::kUICollapsed;
+  }
+  if (top_progress_ == 1.0 && bottom_progress_ == 1.0) {
+    return FullscreenState::kUIExpanded;
+  }
+  return FullscreenState::kInProgress;
+}
+
 void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key,
                                                       bool animated) {
   disabled_count_++;

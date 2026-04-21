@@ -10,10 +10,14 @@
 #import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -221,10 +225,14 @@ void ExtendSnapshot(UIImage* snapshot,
 LensOverlaySnapshotController::LensOverlaySnapshotController(
     SnapshotTabHelper* snapshot_tab_helper,
     FullscreenController* fullscreen_controller,
+    FullscreenBrowserAgent* fullscreen_agent,
+    id<FullscreenCommands> fullscreen_handler,
     UIWindow* window,
     bool is_bottom_omnibox)
     : snapshot_tab_helper_(snapshot_tab_helper),
       fullscreen_controller_(fullscreen_controller),
+      fullscreen_agent_(fullscreen_agent),
+      fullscreen_handler_(fullscreen_handler),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       base_window_(window),
       is_bottom_omnibox_(is_bottom_omnibox) {}
@@ -289,22 +297,32 @@ void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
     return;
   }
 
-  // If fullscreen is already enabled directly take the screenshot.
-  bool is_already_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
-  if (is_already_fullscreen) {
-    ShowStaticSnapshotOfBaseWindowIfNeeded();
-    return;
-  }
+  if (IsFullscreenRefactoringEnabled()) {
+    bool is_already_fullscreen =
+        fullscreen_agent_->State() == FullscreenState::kUICollapsed;
+    bool is_disabled = !fullscreen_agent_->IsEnabled();
 
-  // Register as observer and request fullscreen.
-  fullscreen_controller_->AddObserver(this);
-  if (fullscreen_controller_->IsEnabled()) {
-    // Enter fullscreen and rely on the update from the fullscreen controller.
-    fullscreen_controller_->EnterFullscreen();
+    if (is_already_fullscreen || is_disabled) {
+      ShowStaticSnapshotOfBaseWindowIfNeeded();
+    } else {
+      fullscreen_agent_->AddObserver(this);
+      [fullscreen_handler_ enterFullscreenWithTrigger:
+                               FullscreenModeTransitionTrigger::kUserControlled
+                                             animated:YES];
+    }
   } else {
-    // Fullscreen could not be requested, likely because the content is too
-    // small to enlarge the view. Go straight to fetching a screenshot.
-    ShowStaticSnapshotOfBaseWindowIfNeeded();
+    // If fullscreen is already enabled directly take the screenshot.
+    bool is_already_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
+    bool is_disabled = !fullscreen_controller_->IsEnabled();
+
+    if (is_already_fullscreen || is_disabled) {
+      ShowStaticSnapshotOfBaseWindowIfNeeded();
+    } else {
+      // Register as observer and request fullscreen.
+      fullscreen_controller_->AddObserver(this);
+      // Enter fullscreen and rely on the update from the fullscreen controller.
+      fullscreen_controller_->EnterFullscreen();
+    }
   }
 }
 
@@ -316,6 +334,22 @@ void LensOverlaySnapshotController::FullscreenDidAnimate(
   // Progress of 0.0 means that the toolbar is completely hidden.
   bool is_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
   if (!is_fullscreen) {
+    return;
+  }
+
+  task_tracker_.PostTask(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&LensOverlaySnapshotController::
+                         ShowStaticSnapshotOfBaseWindowIfNeeded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlaySnapshotController::FullscreenDidTransition(
+    FullscreenBrowserAgent* agent,
+    FullscreenTransition transition) {
+  DCHECK(agent == this->fullscreen_agent_);
+
+  if (transition != FullscreenTransition::kEnterFullscreen) {
     return;
   }
 
@@ -513,7 +547,11 @@ void LensOverlaySnapshotController::BeginCapturing() {
 }
 
 void LensOverlaySnapshotController::FinalizeCapturing() {
-  fullscreen_controller_->RemoveObserver(this);
+  if (IsFullscreenRefactoringEnabled()) {
+    fullscreen_agent_->RemoveObserver(this);
+  } else {
+    fullscreen_controller_->RemoveObserver(this);
+  }
   is_capturing_ = false;
   if (delegate_) {
     delegate_->OnSnapshotCaptureEnd();

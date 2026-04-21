@@ -18,6 +18,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -63,6 +64,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -1363,14 +1365,22 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
 
-  FullscreenController* fullscreenController =
-      FullscreenController::FromBrowser(browser);
-
-  if (animated) {
-    fullscreenController->ExitFullscreen(
-        FullscreenModeTransitionTrigger::kForcedByCode);
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> fullscreenHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
+    [fullscreenHandler
+        exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:animated];
   } else {
-    fullscreenController->ExitFullscreenWithoutAnimation();
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(browser);
+
+    if (animated) {
+      fullscreenController->ExitFullscreen(
+          FullscreenModeTransitionTrigger::kForcedByCode);
+    } else {
+      fullscreenController->ExitFullscreenWithoutAnimation();
+    }
   }
 }
 
@@ -1456,10 +1466,26 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return NO;
   }
 
+  FullscreenController* fullscreenController =
+      IsFullscreenRefactoringEnabled()
+          ? nullptr
+          : FullscreenController::FromBrowser(browser);
+
+  FullscreenBrowserAgent* fullscreenAgent =
+      IsFullscreenRefactoringEnabled()
+          ? FullscreenBrowserAgent::FromBrowser(browser)
+          : nullptr;
+
+  id<FullscreenCommands> fullscreenHandler =
+      IsFullscreenRefactoringEnabled()
+          ? HandlerForProtocol(browser->GetCommandDispatcher(),
+                               FullscreenCommands)
+          : nil;
+
   _associatedTabHelper->SetSnapshotController(
       std::make_unique<LensOverlaySnapshotController>(
-          SnapshotTabHelper::FromWebState(activeWebState),
-          FullscreenController::FromBrowser(browser), sceneWindow,
+          SnapshotTabHelper::FromWebState(activeWebState), fullscreenController,
+          fullscreenAgent, fullscreenHandler, sceneWindow,
           IsCurrentLayoutBottomOmnibox(browser)));
 
   return YES;

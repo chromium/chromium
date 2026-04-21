@@ -17,6 +17,16 @@ class FullscreenBrowserAgentTest;
 class FullscreenMediatorPassKeyProvider;
 enum class FullscreenModeTransitionTrigger;
 
+// Enum representing the current state of the fullscreen UI.
+enum class FullscreenState {
+  // The toolbars are fully expanded and visible.
+  kUIExpanded,
+  // The toolbars are in the process of expanding or collapsing.
+  kInProgress,
+  // The toolbars are fully collapsed and hidden (fullscreen).
+  kUICollapsed,
+};
+
 // A class that holds the fullscreen state for a browser.
 class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
  public:
@@ -74,6 +84,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // Returns the disabled counter.
   size_t disabled_count() const { return disabled_count_; }
+
+  // Returns whether fullscreen is enabled.
+  bool IsEnabled() const;
+
+  // Returns the current fullscreen state.
+  FullscreenState State() const;
 
   // Invalidates the current inset ranges and recalculates them by notifying
   // observers.

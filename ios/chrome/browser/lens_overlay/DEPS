@@ -2,6 +2,8 @@ include_rules = [
   # keep-sorted start
   "+components/lens",
   "+ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h",
+  "+ios/chrome/browser/fullscreen/model",
+  "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/menu/ui_bundled",

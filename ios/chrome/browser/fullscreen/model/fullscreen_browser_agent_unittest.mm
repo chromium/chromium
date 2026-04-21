@@ -292,3 +292,39 @@ TEST_F(FullscreenBrowserAgentTest, FullscreenDidTransition) {
 
   agent->RemoveObserver(&observer);
 }
+
+// Tests that IsEnabled() returns correct values.
+TEST_F(FullscreenBrowserAgentTest, IsEnabled) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_TRUE(agent->IsEnabled());
+
+  // Disable fullscreen.
+  agent->IncrementDisabledCounter(PassKey(), /*animated=*/false);
+  EXPECT_FALSE(agent->IsEnabled());
+
+  // Re-enable.
+  agent->DecrementDisabledCounter(PassKey());
+  EXPECT_TRUE(agent->IsEnabled());
+}
+
+// Tests that State() returns correct values.
+TEST_F(FullscreenBrowserAgentTest, State) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+
+  // Enter Fullscreen.
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kForcedByCode,
+                         /*animated=*/false);
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+
+  // Disable fullscreen (which also exits fullscreen).
+  agent->IncrementDisabledCounter(PassKey(), /*animated=*/false);
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+}
