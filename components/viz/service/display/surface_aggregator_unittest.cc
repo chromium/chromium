@@ -9861,6 +9861,64 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateTrackedElementRects) {
   EXPECT_TRUE(new_aggregated_frame.tracked_element_rects.empty());
 }
 
+// Confirm that tracked element rects are expanded to include the filter bounds
+// when they intersect with a pixel-moving filter rect.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       AggregateTrackedElementRectsWithPixelMovingFilter) {
+  // Tracked element on the child surface. The element rect will intersect with
+  // the area affected by the filter.
+  TrackedElementFeature feature =
+      TrackedElementFeature::kTrackedElementFeatureMax;
+  TrackedElementId element_id = base::Token::CreateRandom();
+  TrackedElementRect element_rect(element_id, gfx::Rect(50, 50, 25, 25));
+
+  // The child surface has a pass with a pixel-moving filter.
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  {
+    CompositorFrame child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, gfx::Size(50, 50))
+                    .AddSolidColorQuad(gfx::Rect(50, 50), SkColors::kGreen)
+                    .AddFilter(cc::FilterOperation::CreateBlurFilter(5.0f)))
+            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{2},
+                                             gfx::Size(100, 100))
+                               .AddRenderPassQuad(gfx::Rect(50, 50),
+                                                  CompositorRenderPassId{1}))
+            .AddTrackedElementRect(feature, element_rect)
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+  }
+
+  // The root surface embeds the child surface.
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, gfx::Size(100, 100))
+                  .AddSurfaceQuad(gfx::Rect(100, 100),
+                                  SurfaceRange(child_surface_id)))
+          .Build();
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // Confirm that the tracked element rect was added to the aggregated frame.
+  EXPECT_EQ(aggregated_frame.tracked_element_rects.size(), 1u);
+  auto& elements = aggregated_frame.tracked_element_rects[feature];
+  // The element bounds should be expanded by the blur filter bounds (15 pixels
+  // in all directions around the 50x50 pass quad), which would be
+  // [-15, -15, 80x80]. However, this is clipped to the root target space (the
+  // 100x100 root pass), so the filter rect is actually [0, 0, 65x65]. The
+  // union of the tracked element rect, at [50, 50, 25x25], and the clipped
+  // 65x65 filter rect is: [0, 0, 75x75].
+  gfx::Rect expected_bounds(0, 0, 75, 75);
+  EXPECT_THAT(elements,
+              ElementsAre(TrackedElementRect(element_id, expected_bounds)));
+}
+
 // Confirm that delegated ink metadata on an undrawn surface is not on the
 // aggregated surface unless the undrawn surface contains a CopyOutputRequest.
 TEST_F(SurfaceAggregatorValidSurfaceTest,

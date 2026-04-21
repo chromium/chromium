@@ -462,7 +462,7 @@ SurfaceAggregator::~SurfaceAggregator() {
 }
 
 // This function is called at each render pass - CopyQuadsToPass().
-void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
+void SurfaceAggregator::ProcessPixelMovingFilters(
     const ResolvedFrameData& resolved_frame,
     const CompositorRenderPassDrawQuad* render_pass_quad,
     const gfx::Transform& parent_target_transform,
@@ -481,40 +481,52 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
     return;
   }
 
-  gfx::Rect damage_rect = render_pass_quad->rect;
-  gfx::Rect damage_rect_in_target_space;
+  gfx::Rect filter_rect_in_target_space;
   if (child_render_pass.filters.HasFilterThatMovesPixels()) {
     // The size of pixel-moving foreground filter is allowed to expand.
     // No intersecting shared_quad_state->clip_rect for the expanded rect.
-    damage_rect_in_target_space = GetTargetExpandedRectForPixelMovingFilters(
+    filter_rect_in_target_space = GetTargetExpandedRectForPixelMovingFilters(
         *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     const auto* shared_quad_state = render_pass_quad->shared_quad_state;
-    damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
-        shared_quad_state->quad_to_target_transform, damage_rect);
+    filter_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
+        shared_quad_state->quad_to_target_transform, render_pass_quad->rect);
     if (shared_quad_state->clip_rect) {
-      damage_rect_in_target_space.Intersect(
+      filter_rect_in_target_space.Intersect(
           shared_quad_state->clip_rect.value());
     }
   }
 
-  gfx::Rect damage_rect_in_root_target_space =
+  gfx::Rect filter_rect_in_root_target_space =
       TransformRectToDestRootTargetSpace(
-          damage_rect_in_target_space, parent_target_transform,
+          filter_rect_in_target_space, parent_target_transform,
           dest_transform_to_root_target, dest_root_target_clip_rect);
 
   // The whole render pass rect with pixel-moving foreground filters or
   // backdrop filters is considered damaged if it intersects with the other
   // damages.
-  if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
-    // Since |damage_rect_in_root_target_space| is available, just pass this
+  if (needs_surface_damage_rect_list_ &&
+      filter_rect_in_root_target_space.Intersects(root_damage_rect_)) {
+    // Since |filter_rect_in_root_target_space| is available, just pass this
     // rect and reset the other arguments.
     AddSurfaceDamageToDamageList(
-        damage_rect_in_root_target_space,
+        filter_rect_in_root_target_space,
         /*parent_target_transform*/ gfx::Transform(),
         /*dest_root_target_clip_rect*/ {},
         /*dest_transform_to_root_target*/ gfx::Transform(),
         /*resolved_frame=*/nullptr, /*zero_damage_texture_draw_quad=*/false);
+  }
+
+  // If any tracked element intersects with pixel-moving foreground filters or
+  // backdrop filters, update the tracked element's visible bounds to include
+  // the filter bounding rect.
+  for (auto& [feature, tracked_elements] : tracked_element_rects_) {
+    for (auto& rect_data : tracked_elements) {
+      if (rect_data.visible_bounds.Intersects(
+              filter_rect_in_root_target_space)) {
+        rect_data.visible_bounds.Union(filter_rect_in_root_target_space);
+      }
+    }
   }
 }
 
@@ -1444,12 +1456,12 @@ void SurfaceAggregator::CopyQuadsToPass(
             pass_quad, resolved_pass_data.render_pass(),
             resolved_pass_data.remapped_id());
 
-        if (needs_surface_damage_rect_list_ &&
-            resolved_pass.aggregation().will_draw) {
-          AddRenderPassFilterDamageToDamageList(
-              resolved_frame, pass_quad, target_transform,
-              new_dest_root_target_clip_rect,
-              dest_pass->transform_to_root_target);
+        if (resolved_pass.aggregation().will_draw &&
+            (needs_surface_damage_rect_list_ ||
+             !tracked_element_rects_.empty())) {
+          ProcessPixelMovingFilters(resolved_frame, pass_quad, target_transform,
+                                    new_dest_root_target_clip_rect,
+                                    dest_pass->transform_to_root_target);
         }
       } else if (const auto* texture_quad =
                      quad->DynamicCast<TextureDrawQuad>()) {

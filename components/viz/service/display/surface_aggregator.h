@@ -290,7 +290,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       ResolvedFrameData* resolved_frame,
       bool force_add_zero_damage_rect);
 
-  void AddRenderPassFilterDamageToDamageList(
+  // Updates the surface damage rect list and tracked element rects based on
+  // pixel moving filters in the render pass.
+  void ProcessPixelMovingFilters(
       const ResolvedFrameData& resolved_frame,
       const CompositorRenderPassDrawQuad* render_pass_quad,
       const gfx::Transform& parent_target_transform,
