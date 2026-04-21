@@ -569,9 +569,14 @@ void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
               // URL. A query parameter needs to be present, but its
               // value is not used for continued threads.
               url = net::AppendQueryParameter(url, "q", thread->title);
-              DCHECK(thread->conversation_turn_id.has_value());
-              url = net::AppendQueryParameter(
-                  url, "mstk", thread->conversation_turn_id.value());
+
+              // There are rare cases where the mstk may not be present before
+              // this url is requested. If that is the case, do not attempt to
+              // include it in the url.
+              if (thread->conversation_turn_id) {
+                url = net::AppendQueryParameter(
+                    url, "mstk", thread->conversation_turn_id.value());
+              }
               url = net::AppendQueryParameter(url, "mtid", thread->server_id);
 
             } else if (thread->type == ThreadType::kGemini) {
