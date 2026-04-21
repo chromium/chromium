@@ -377,7 +377,7 @@ function addDatabaseManagerInfo(
 
     labelDOM.textContent = databaseManagerInfo[i] + ': ';
     const value = databaseManagerInfo[i + 1];
-    assert(value);
+    assert(value !== undefined && value !== null);
     if (Array.isArray(value)) {
       const blockQuote = document.createElement('blockquote');
       value.forEach(item => {
