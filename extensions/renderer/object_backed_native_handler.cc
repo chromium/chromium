@@ -195,6 +195,11 @@ void ObjectBackedNativeHandler::Invalidate() {
       CHECK(GetPrivate(local_data, kHandlerFunction, &handler_function_value));
       DeletePrivate(local_data, kHandlerFunction);
     }
+  } else {
+    for (auto& fn : handler_functions_) {
+      fn->Reset();
+      fn.release();
+    }
   }
 
   router_data_.clear();
