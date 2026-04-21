@@ -7,7 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-// The fallback height for the minimized detent.
+// Accessibility identifiers for the Assistant Container detents.
+extern NSString* const kAssistantContainerDetentMinimizedIdentifier;
+extern NSString* const kAssistantContainerDetentMediumIdentifier;
+extern NSString* const kAssistantContainerDetentLargeIdentifier;
+
+// Minimized height for the Assistant Container.
 extern const NSInteger kAssistantContainerMinimizedDetentHeight;
 
 // Represents a detent of the Assistant Container.

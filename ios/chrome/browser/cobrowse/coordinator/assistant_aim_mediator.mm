@@ -17,7 +17,9 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -25,9 +27,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-// Sheet detent update animation duration.
-const CGFloat kSheetDetentAnimationDuration = 0.3;
 
 }  // namespace
 
@@ -79,8 +78,14 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
 
 // Loads the URL defined in the cobrowse context.
 - (void)loadAIMURL {
+  AssistantContainerDetent detent;
+  if (IsAssistantAimMinimizedStateEnabled()) {
+    detent = AssistantContainerDetent::kMinimized;
+  } else {
+    detent = AssistantContainerDetent::kMedium;
+  }
   [_containerHandler
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium
+      animateAssistantContainerToDetent:detent
                                duration:kSheetDetentAnimationDuration
                                   curve:UIViewAnimationCurveEaseInOut];
   web::NavigationManager::WebLoadParams params(_context.url);

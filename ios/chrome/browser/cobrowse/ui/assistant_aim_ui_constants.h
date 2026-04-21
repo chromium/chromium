@@ -10,4 +10,7 @@
 // Accessibility identifier for the Assistant AIM close button.
 extern NSString* const kAssistantAIMCloseButtonAccessibilityIdentifier;
 
+// Duration for sheet detent update animations.
+extern const CGFloat kSheetDetentAnimationDuration;
+
 #endif  // IOS_CHROME_BROWSER_COBROWSE_UI_ASSISTANT_AIM_UI_CONSTANTS_H_

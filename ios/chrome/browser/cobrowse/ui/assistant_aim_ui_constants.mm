@@ -6,3 +6,5 @@
 
 NSString* const kAssistantAIMCloseButtonAccessibilityIdentifier =
     @"AssistantAIMCloseButtonAccessibilityIdentifier";
+
+const CGFloat kSheetDetentAnimationDuration = 0.3;

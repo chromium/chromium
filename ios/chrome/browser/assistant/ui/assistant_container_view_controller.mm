@@ -120,7 +120,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   // which prevents excessive layout passes in the parent view when resizing
   // the Assistant container.
   self.view = [[ChromeOverlayContainerView alloc] init];
-
   [self setupDimmingView];
 
   _assistantContainerView = [[AssistantContainerView alloc] init];
@@ -150,6 +149,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
                        _assistantContainerView.contentView);
     [_childViewController didMoveToParentViewController:self];
   }
+
+  [self updateAccessibilityIdentifier];
 
   // Create and activate the height constraint.
   CGFloat initialHeight =
@@ -491,12 +492,38 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _dimmingView.alpha = constraints.background_dimming_alpha;
 }
 
+// Updates the accessibility identifier of the container view based on the
+// current detent.
+- (void)updateAccessibilityIdentifier {
+  if (!_assistantContainerView) {
+    return;
+  }
+  AssistantContainerDetent detent =
+      _activeDetent.value_or(self.detents.front());
+  switch (detent) {
+    case AssistantContainerDetent::kMinimized:
+      _assistantContainerView.accessibilityIdentifier =
+          kAssistantContainerDetentMinimizedIdentifier;
+      break;
+    case AssistantContainerDetent::kMedium:
+      _assistantContainerView.accessibilityIdentifier =
+          kAssistantContainerDetentMediumIdentifier;
+      break;
+    case AssistantContainerDetent::kLarge:
+      _assistantContainerView.accessibilityIdentifier =
+          kAssistantContainerDetentLargeIdentifier;
+      break;
+  }
+}
+
 // Notifies the delegate of a detent change if it differs from the previously
 // notified active detent.
 - (void)notifyDelegateOfDetentChangeIfNeeded:
     (AssistantContainerDetent)newDetent {
-  if (!_activeDetent.has_value() || _activeDetent.value() != newDetent) {
+  if (_activeDetent != newDetent) {
     _activeDetent = newDetent;
+    [self updateAccessibilityIdentifier];
+
     if ([self.delegate respondsToSelector:@selector(assistantContainer:
                                                        didChangeDetent:)]) {
       [self.delegate assistantContainer:self didChangeDetent:newDetent];
@@ -701,11 +728,14 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   // Calculate target height based on gesture end state.
   CGFloat currentHeight = _heightConstraint.constant;
-  NSInteger targetHeight = [self targetHeightForCurrentHeight:currentHeight
-                                                     velocity:velocity];
+  AssistantContainerDetent targetDetent =
+      [self targetDetentForCurrentHeight:currentHeight velocity:velocity];
+  NSInteger targetHeight = _detentHeights[targetDetent];
 
   _heightConstraint.constant = targetHeight;
   [self updateContainerStylingForHeight:targetHeight];
+
+  [self notifyDelegateOfDetentChangeIfNeeded:targetDetent];
 
   // Current height from visual frame (approximate start of animation).
   CGFloat currentFrameHeight = self.view.frame.size.height;
@@ -725,12 +755,12 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 // Calculates the target height based on the current height and velocity of the
 // gesture.
-- (NSInteger)targetHeightForCurrentHeight:(CGFloat)currentHeight
-                                 velocity:(CGPoint)velocity {
+- (AssistantContainerDetent)targetDetentForCurrentHeight:(CGFloat)currentHeight
+                                                velocity:(CGPoint)velocity {
   NSInteger maxHeight = [self effectiveMaxHeight];
   NSInteger minHeight = [self effectiveMinHeight];
 
-  NSInteger bestDetentValue = 0;
+  AssistantContainerDetent bestDetent = self.detents.front();
   NSInteger minDistance = NSIntegerMax;
 
   // Project height based on velocity to simulate momentum.
@@ -745,10 +775,10 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     NSInteger diff = ABS(projectedHeight - val);
     if (diff < minDistance) {
       minDistance = diff;
-      bestDetentValue = val;
+      bestDetent = detent;
     }
   }
-  return bestDetentValue;
+  return bestDetent;
 }
 
 - (void)updateHeightConstraint {

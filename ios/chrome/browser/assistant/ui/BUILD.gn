@@ -1,15 +1,12 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 source_set("ui") {
   sources = [
     "assistant_container_animatable.h",
     "assistant_container_animator.h",
     "assistant_container_animator.mm",
     "assistant_container_delegate.h",
-    "assistant_container_detent.h",
-    "assistant_container_detent.mm",
     "assistant_container_layout_utils.h",
     "assistant_container_layout_utils.mm",
     "assistant_container_presentation_context.h",
@@ -20,6 +17,7 @@ source_set("ui") {
     "assistant_container_view_controller.mm",
   ]
   deps = [
+    ":detent",
     "//base",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
@@ -33,6 +31,14 @@ source_set("ui") {
   ]
 }
 
+source_set("detent") {
+  sources = [
+    "assistant_container_detent.h",
+    "assistant_container_detent.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -40,6 +46,7 @@ source_set("unit_tests") {
     "assistant_container_view_controller_unittest.mm",
   ]
   deps = [
+    ":detent",
     ":ui",
     "//base",
     "//base/test:test_support",

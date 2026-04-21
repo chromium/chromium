@@ -71,6 +71,11 @@ const char kAskAboutThisPageDescription[] =
 const char kAskGeminiChipName[] = "Ask Gemini Chip";
 const char kAskGeminiChipDescription[] = "Enables the Ask Gemini Chip feature.";
 
+const char kAssistantAimMinimizedStateName[] = "AssistantAimMinimizedState";
+const char kAssistantAimMinimizedStateDescription[] =
+    "When enabled, the Assistant AIM (Co-browse) interface initially appears "
+    "in a minimized state instead of the default medium state.";
+
 const char kAssistantContainerName[] = "Assistant Container";
 const char kAssistantContainerDescription[] =
     "Enables the Assistant Container feature.";

@@ -4,4 +4,11 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 
+NSString* const kAssistantContainerDetentMinimizedIdentifier =
+    @"kAssistantContainerDetentMinimizedIdentifier";
+NSString* const kAssistantContainerDetentMediumIdentifier =
+    @"kAssistantContainerDetentMediumIdentifier";
+NSString* const kAssistantContainerDetentLargeIdentifier =
+    @"kAssistantContainerDetentLargeIdentifier";
+
 const NSInteger kAssistantContainerMinimizedDetentHeight = 72;

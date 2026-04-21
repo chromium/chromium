@@ -121,6 +121,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   _inputViewController.view.alpha = effectPercentage;
   _webStateView.alpha = effectPercentage;
   _inputViewFade.alpha = effectPercentage;
+  _inputViewController.view.hidden = (effectPercentage == 0);
+
   [_headerView adjustForPercentage:effectPercentage];
 }
 

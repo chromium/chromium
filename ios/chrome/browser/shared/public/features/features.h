@@ -988,4 +988,10 @@ BASE_DECLARE_FEATURE(kCobrowseAimHistory);
 // Returns true if the CobrowseAimHistory feature is enabled.
 bool IsCobrowseAimHistoryEnabled();
 
+// Enables the `AssistantAimMinimizedState` feature.
+BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
+
+// Returns true if the `AssistantAimMinimizedState` feature is enabled.
+bool IsAssistantAimMinimizedStateEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -62,6 +62,9 @@ extern const char kAskAboutThisPageDescription[];
 extern const char kAskGeminiChipName[];
 extern const char kAskGeminiChipDescription[];
 
+extern const char kAssistantAimMinimizedStateName[];
+extern const char kAssistantAimMinimizedStateDescription[];
+
 extern const char kAssistantContainerName[];
 extern const char kAssistantContainerDescription[];
 

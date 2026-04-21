@@ -1225,3 +1225,9 @@ BASE_FEATURE(kCobrowseAimHistory, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsCobrowseAimHistoryEnabled() {
   return base::FeatureList::IsEnabled(kCobrowseAimHistory);
 }
+
+BASE_FEATURE(kAssistantAimMinimizedState, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAssistantAimMinimizedStateEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
+}
