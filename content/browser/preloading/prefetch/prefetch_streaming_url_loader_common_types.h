@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/prefetch_update_headers_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_request_headers.h"
@@ -201,24 +202,6 @@ CONTENT_EXPORT std::ostream& operator<<(
 
 using OnServiceWorkerStateDeterminedCallback =
     base::OnceCallback<void(PrefetchServiceWorkerState)>;
-
-// Indicates the modification to the network request upon redirect, which should
-// be applied to `PrefetchContainer::resource_request_` or passed to
-// `FollowRedirect()`.
-struct CONTENT_EXPORT PrefetchUpdateHeadersParams final {
-  PrefetchUpdateHeadersParams();
-  ~PrefetchUpdateHeadersParams();
-  PrefetchUpdateHeadersParams(PrefetchUpdateHeadersParams&&);
-  PrefetchUpdateHeadersParams& operator=(PrefetchUpdateHeadersParams&&);
-  PrefetchUpdateHeadersParams(const PrefetchUpdateHeadersParams&) = delete;
-  PrefetchUpdateHeadersParams& operator=(const PrefetchUpdateHeadersParams&) =
-      delete;
-
-  std::vector<std::string> removed_headers;
-  net::HttpRequestHeaders modified_headers;
-  net::HttpRequestHeaders modified_cors_exempt_headers;
-};
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_COMMON_TYPES_H_

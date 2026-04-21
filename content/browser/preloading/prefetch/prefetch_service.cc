@@ -451,6 +451,8 @@ PrefetchService::CreatePrefetchContainerFromPrePrefetchForTesting(  // IN-TEST
   std::unique_ptr<PrePrefetchService> pre_prefetch_service =
       PrePrefetchService::Create(
           GetBrowserContext(),
+          /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+          /*initial_origin_hint=*/
           url::Origin::Create(prefetch_request->key().url()),
           /*initial_javascript_enabled_hint=*/
           prefetch_request->is_javascript_enabled(),

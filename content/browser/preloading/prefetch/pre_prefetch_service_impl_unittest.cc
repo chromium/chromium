@@ -85,7 +85,9 @@ TEST_F(PrePrefetchServiceImplTest, StartPrePrefetchRequestFromNonUIThread) {
       }));
 
   auto service = PrePrefetchService::Create(
-      browser_context(), url::Origin::Create(prefetch_url),
+      browser_context(),
+      /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+      url::Origin::Create(prefetch_url),
       /*initial_javascript_enabled_hint=*/true,
       /*initial_should_append_variations_header_hint=*/false);
   ASSERT_NE(service, nullptr);

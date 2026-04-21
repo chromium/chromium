@@ -10,6 +10,7 @@
 #include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
+#include "content/public/browser/prefetch_update_headers_params.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -27,12 +28,29 @@ class CONTENT_EXPORT PrePrefetchService {
  public:
   virtual ~PrePrefetchService() = default;
 
-  // Creates `PrePrefetchService` with `BrowserContext`. Callers can specify
-  // hints for the initial PrePrefetch request. These hints are utilized to
-  // pre-calculate the UI-thread-dependent parts of the PrePrefetch
-  // `ResourceRequest`, which will later be used on a non-UI thread.
+  // Creates `PrePrefetchService` with `BrowserContext`.
+  // Accepts embedder callbacks to modify the PrePrefetch initial request
+  // headers. Therefore, for example, they can conceptually emulate header
+  // modifications performed in
+  // `ContentBrowserClient::WillCreateURLLoaderFactory`. Currently we accept
+  // `embedder_non_ui_thread_update_headers_callbacks`, which are expected to be
+  // run on PrePrefetch non-UI thread/sequence (e.g. `PrePrefetchServiceCore`).
+  // It should have no dependency on UI thread, otherwise it can cause a thread
+  // hop to the UI thread when called, which nullifies the PrePrefetch benefit.
+  // If multiple callbacks are provided, they are run in the order they are
+  // provided, and previous `ResourceRequest` update is passed to the next
+  // callback.
+  // If we need to have UI-dependent embedder callbacks, that should  be
+  // considered in a separate way (See
+  // `PrePrefetchServiceImpl::PreCalculatePrePrefetchHeadersOnUI()` for
+  // example).
+  // Callers can also specify hints for the initial PrePrefetch request. These
+  // hints are utilized to pre-calculate the UI-thread-dependent parts of the
+  // PrePrefetch `ResourceRequest`, which will later be used on a non-UI thread.
   static std::unique_ptr<PrePrefetchService> Create(
       BrowserContext* browser_context,
+      std::vector<PrePrefetchUpdateHeadersCallback>
+          embedder_non_ui_thread_update_headers_callbacks = {},
       std::optional<url::Origin> initial_origin_hint = std::nullopt,
       std::optional<bool> initial_javascript_enabled_hint = std::nullopt,
       std::optional<bool> initial_should_append_variations_header_hint =

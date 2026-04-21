@@ -721,6 +721,7 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
   // Create `PrePrefetchServiceImpl`.
   auto pre_prefetch_service = PrePrefetchService::Create(
       shell()->web_contents()->GetBrowserContext(),
+      /*embedder_non_ui_thread_update_headers_callbacks=*/{},
       url::Origin::Create(prefetch_url),
       /*initial_javascript_enabled_hint=*/true,
       /*initial_should_append_variations_header_hint=*/false);

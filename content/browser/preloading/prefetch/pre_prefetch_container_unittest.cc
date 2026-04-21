@@ -99,7 +99,8 @@ TEST_F(PrePrefetchContainerTest, StartPrePrefetch) {
             PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
             return PrePrefetchContainer::CreateAndStartForTesting(
                 std::move(prefetch_request), std::move(factory),
-                ui_thread_pre_calculated_headers);
+                ui_thread_pre_calculated_headers,
+                /*non_ui_thread_update_headers_callbacks=*/{});
           },
           base::Unretained(this), prefetch_url,
           std::move(url_loader_factory_remote)),

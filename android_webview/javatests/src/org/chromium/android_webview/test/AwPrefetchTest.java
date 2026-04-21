@@ -804,6 +804,62 @@ public class AwPrefetchTest extends AwParameterizedTest {
         prefetchManager.setCallbackForTesting(null);
     }
 
+    /**
+     * Tests that a Prefetch/PrePrefetch request correctly includes the "X-Requested-With" header.
+     */
+    private void testPrefetchHasExpectedXRequestedWithHeader() throws Throwable {
+        AwPrefetchParameters prefetchParameters = getAwPrefetchParameters();
+
+        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+        CountDownLatch startLatch = new CountDownLatch(1);
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+
+        prefetchManager.startPrefetchRequestAsync(
+                SystemClock.uptimeMillis(),
+                mPrefetchUrl,
+                prefetchParameters,
+                callback,
+                Runnable::run,
+                prefetchKey -> {
+                    callback.setPrefetchKey(prefetchKey);
+                    startLatch.countDown();
+                });
+        Assert.assertTrue(
+                "startPrefetchRequestAsync timed out", startLatch.await(5, TimeUnit.SECONDS));
+        callback.mOnStatusUpdatedHelper.waitForNext();
+
+        HashMap<String, String> prefetchHeaders =
+                mTestServer.getRequestHeadersForUrl(BASIC_PREFETCH_RELATIVE_PATH);
+        String xRequestedWith = prefetchHeaders.get("X-Requested-With");
+        Assert.assertNotNull("X-Requested-With header should be present", xRequestedWith);
+        Assert.assertEquals(
+                InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
+                xRequestedWith);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "disable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchHasExpectedXRequestedWithHeader_OMTPrefetchDisabled() throws Throwable {
+        testPrefetchHasExpectedXRequestedWithHeader();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchHasExpectedXRequestedWithHeader_OMTPrefetchEnabled() throws Throwable {
+        testPrefetchHasExpectedXRequestedWithHeader();
+    }
+
     private String getUrl(final String relativePath) {
         return mTestServer.getURLWithHostName("a.test", relativePath);
     }

@@ -1250,7 +1250,9 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
   void SetUp() override {
     PrefetchServiceTest::SetUp();
     pre_prefetch_service_ = PrePrefetchService::Create(
-        browser_context(), url::Origin::Create(GURL("https://example.com")),
+        browser_context(),
+        /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+        url::Origin::Create(GURL("https://example.com")),
         /*initial_javascript_enabled_hint=*/true,
         /*initial_should_append_variations_header_hint=*/false);
     PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(

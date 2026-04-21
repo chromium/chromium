@@ -6,13 +6,6 @@
 
 namespace content {
 
-PrefetchUpdateHeadersParams::PrefetchUpdateHeadersParams() = default;
-PrefetchUpdateHeadersParams::~PrefetchUpdateHeadersParams() = default;
-PrefetchUpdateHeadersParams::PrefetchUpdateHeadersParams(
-    PrefetchUpdateHeadersParams&&) = default;
-PrefetchUpdateHeadersParams& PrefetchUpdateHeadersParams::operator=(
-    PrefetchUpdateHeadersParams&&) = default;
-
 std::ostream& operator<<(std::ostream& ostream,
                          PrefetchServiceWorkerState service_worker_state) {
   switch (service_worker_state) {

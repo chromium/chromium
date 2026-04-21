@@ -455,17 +455,8 @@ void InterceptedRequest::InterceptWithCookieHeader(std::string cookie) {
 
 void InterceptedRequest::InterceptResponseReceived(
     AwContentsIoThreadClient::InterceptResponseData async_result) {
-  // We send the application's package name in the X-Requested-With header for
-  // compatibility with previous WebView versions. This should not be visible to
-  // shouldInterceptRequest. It should also not trigger CORS preflight if
-  // OOR-CORS is enabled.
-  std::string header = content::GetCorsExemptRequestedWithHeaderName();
-
-  // Only overwrite if the header hasn't already been set
-  if (!request_.headers.HasHeader(header)) {
-    request_.cors_exempt_headers.SetHeader(
-        header, base::android::apk_info::host_package_name());
-  }
+  AwProxyingURLLoaderFactory::SetRequestedWithHeader(
+      request_, request_.cors_exempt_headers);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (async_result.response && async_result.response->RaisedException(env)) {
@@ -978,6 +969,22 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
 
 AwProxyingURLLoaderFactory::~AwProxyingURLLoaderFactory() = default;
 
+// static
+void AwProxyingURLLoaderFactory::SetRequestedWithHeader(
+    const network::ResourceRequest& request,
+    net::HttpRequestHeaders& cors_exempt_headers) {
+  // We send the application's package name in the X-Requested-With header for
+  // compatibility with previous WebView versions. This should not be visible to
+  // shouldInterceptRequest. It should also not trigger CORS preflight if
+  // OOR-CORS is enabled.
+  std::string header = content::GetCorsExemptRequestedWithHeaderName();
+
+  // Only overwrite if the header hasn't already been set
+  if (!request.headers.HasHeader(header)) {
+    cors_exempt_headers.SetHeader(header,
+                                  base::android::apk_info::host_package_name());
+  }
+}
 
 // static
 void AwProxyingURLLoaderFactory::CreateProxy(

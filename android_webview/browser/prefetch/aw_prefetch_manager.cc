@@ -11,10 +11,12 @@
 #include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/network_service/aw_proxying_url_loader_factory.h"
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 #include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
+#include "base/android/apk_info.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_is_test.h"
@@ -115,6 +117,26 @@ namespace {
 
 static PrefService* g_pref_service_for_testing = nullptr;
 
+// A part of header modification for PrePrefetch, which would be added via
+// `AwProxyingURLLoaderFactory` (by
+// `ContentBrowserClient::WillCreateURLLoaderFactory`) normally on non UI
+// thread.
+content::PrefetchUpdateHeadersParams GetAwPrefetchHeadersOnNonUIThread(
+    const network::ResourceRequest& request) {
+  content::PrefetchUpdateHeadersParams headers;
+  // We can safely ignore any processing handled in
+  // `shouldInterceptRequest`, because prefetch intentionally bypasses it.
+
+  AwProxyingURLLoaderFactory::SetRequestedWithHeader(
+      request, headers.modified_cors_exempt_headers);
+
+  // TODO(crbug.com/452389538): Apply custom headers configured by the
+  // application via the AndroidX Profile.setCustomHeaders() API
+  // (AwOriginMatchedHeader).
+
+  return headers;
+}
+
 std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(
     content::BrowserContext* browser_context,
     std::optional<AwPrefetchLatestInfoPref> initial_prefetch_hints,
@@ -127,13 +149,17 @@ std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(
     // the likely initial PrePrefetch request for pre-calculating UI
     // thread dependent parts of the PrePrefetch `ResourceRequest`.
     return content::PrePrefetchService::Create(
-        browser_context, initial_prefetch_hints.value().origin,
+        browser_context,
+        {base::BindRepeating(&GetAwPrefetchHeadersOnNonUIThread)},
+        initial_prefetch_hints.value().origin,
         initial_prefetch_hints.value().javascript_enabled,
         // All prefetches from `AwPrefetchManager` will have false
         // `initial_should_append_variations_header_hint`.
         /*initial_should_append_variations_header_hint=*/false);
   }
-  return content::PrePrefetchService::Create(browser_context);
+  return content::PrePrefetchService::Create(
+      browser_context,
+      {base::BindRepeating(&GetAwPrefetchHeadersOnNonUIThread)});
 }
 
 }  // namespace

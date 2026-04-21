@@ -92,6 +92,12 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   ~AwProxyingURLLoaderFactory() override;
 
+  // Set the X-Requested-With header if it is not already present in the regular
+  // headers.
+  static void SetRequestedWithHeader(
+      const network::ResourceRequest& request,
+      net::HttpRequestHeaders& cors_exempt_headers);
+
   // static
   static void CreateProxy(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,

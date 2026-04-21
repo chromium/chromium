@@ -14,6 +14,7 @@
 #include "content/public/browser/pre_prefetch_service.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
+#include "content/public/browser/prefetch_update_headers_params.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -61,6 +62,8 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
  public:
   PrePrefetchServiceImpl(
       BrowserContext* browser_context,
+      std::vector<PrePrefetchUpdateHeadersCallback>
+          embedder_non_ui_thread_update_headers_callbacks,
       std::optional<url::Origin> initial_origin_hint,
       std::optional<bool> initial_javascript_enabled_hint,
       std::optional<bool> initial_should_append_variations_header_hint);
