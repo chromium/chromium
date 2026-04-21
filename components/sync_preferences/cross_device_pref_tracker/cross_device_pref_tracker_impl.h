@@ -156,7 +156,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Checks if local device info became ready and performs initial sync if so.
   void HandleLocalDeviceInfoIfAvailable();
 
-  // Checks if Sync is active and ready for writes, and performs a full refresh
+  // Checks if sync is active and ready for writes, and performs a full refresh
   // if the state changed from unconfigured to configured.
   void OnSyncStateChanged();
 
@@ -167,6 +167,12 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Pushes the current state of all tracked prefs. Used when Sync state changes
   // or local device info becomes ready.
   void SyncAllOnDevicePrefsToCrossDevice();
+
+  // Helper to record an observed preference change. It will either apply the
+  // change immediately (if syncing) or queue it for later.
+  void RecordObservedPrefChange(std::string_view tracked_pref_name,
+                                std::optional<base::Time> observed_time,
+                                PrefService* tracked_pref_service);
 
   // Detects newly available devices by comparing known GUIDs with the current
   // list from `DeviceInfoTracker`, and triggers notifications for their prefs.
@@ -188,8 +194,9 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   std::vector<const syncer::DeviceInfo*> GetActiveDevices() const;
 
   // Compares the old and new service status of the tracker and notifies
-  // observers if changes have occurred.
-  void UpdateServiceStatus();
+  // observers if changes have occurred. Also triggers initial sync and
+  // flushes queued updates when the service becomes available.
+  void RefreshServiceStatusAndSyncState();
 
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
@@ -211,8 +218,13 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Provides the lists of prefs to be tracked.
   std::unique_ptr<CrossDevicePrefProvider> pref_provider_;
 
-  // Registrars for observing changes to tracked prefs.
+  // Maps `tracked_pref_name` -> most recent observed change time for
+  // preferences that changed while sync was not yet ready.
+  base::flat_map<std::string, base::Time> pending_observed_changes_;
+
+  // Registrar for observing changes to tracked prefs.
   PrefChangeRegistrar profile_pref_registrar_;
+
   PrefChangeRegistrar local_pref_registrar_;
 
   // Registrar for observing changes to cross-device storage prefs (remote
