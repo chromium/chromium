@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_script = [
+  "cache_hint_attribute_value.cc",
+  "cache_hint_attribute_value.h",
   "classic_pending_script.cc",
   "classic_pending_script.h",
   "classic_script.cc",

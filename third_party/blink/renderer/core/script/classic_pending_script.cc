@@ -131,7 +131,8 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
     const String& source_text,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
-    scheduler::TaskAttributionInfo* task_state) {
+    scheduler::TaskAttributionInfo* task_state,
+    CacheHintAttributeValue /*unused*/) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,

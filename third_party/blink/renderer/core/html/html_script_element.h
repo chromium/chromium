@@ -126,6 +126,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   String SignatureAttributeValue() const override;
   String ReferrerPolicyAttributeValue() const override;
   String FetchPriorityAttributeValue() const override;
+  String CacheHintAttributeValue() const override;
   String ChildTextContent() override;
   String ScriptTextInternalSlot() const override;
   bool AsyncAttributeValue() const override;

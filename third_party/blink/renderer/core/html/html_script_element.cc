@@ -362,6 +362,10 @@ String HTMLScriptElement::FetchPriorityAttributeValue() const {
   return FastGetAttribute(html_names::kFetchpriorityAttr);
 }
 
+String HTMLScriptElement::CacheHintAttributeValue() const {
+  return FastGetAttribute(html_names::kCachehintAttr);
+}
+
 String HTMLScriptElement::ChildTextContent() {
   return TextFromChildren();
 }
