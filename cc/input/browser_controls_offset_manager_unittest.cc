@@ -1826,21 +1826,30 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
     AnimationDirection scroll_end_animation_direction_;
   };
 
-  // Returns true if scrolling the client by the given scroll delta triggered a
-  // snap animation. Also checks if the triggered animation is configured
-  // correctly.
+  // Returns assertion success if scrolling the client by the given scroll delta
+  // triggered a snap animation, and failure otherwise. Also checks if the
+  // triggered animation is configured correctly.
   testing::AssertionResult ScrollDidAnimate(
       float scroll_y,
       AnimationDirection animation_direction,
       base::TimeDelta time_delta_from_previous_scroll_update =
           base::Milliseconds(1),
       bool is_inertial = false) {
-    BrowserControlsOffsetManager* manager = client_.manager();
+    constexpr base::TimeDelta kEpsilonTimeDelta = base::Microseconds(1);
 
-    // Advance the mock clock by 1ms to ensure that the second scroll update is
-    // not coalesced with the first and is treated as a new sample.
-    mock_clock_.Advance(time_delta_from_previous_scroll_update);
-    client_.ScrollVerticallyBy(scroll_y, is_inertial);
+    BrowserControlsOffsetManager* manager = client_.manager();
+    // Advance the mock clock to ensure that the second scroll update is not
+    // coalesced with the first and is treated as a new sample. Also, split the
+    // scroll delta into two parts since BrowserControlsOffsetManager requires
+    // at least two samples in the scroll velocity tracker to trigger the
+    // animation.
+    mock_clock_.Advance(time_delta_from_previous_scroll_update -
+                        kEpsilonTimeDelta);
+    client_.ScrollVerticallyBy(scroll_y / 2, is_inertial);
+
+    mock_clock_.Advance(kEpsilonTimeDelta);
+    client_.ScrollVerticallyBy(scroll_y / 2, is_inertial);
+
     if (!manager->HasAnimation()) {
       if (animation_direction == AnimationDirection::kNone) {
         return testing::AssertionSuccess();

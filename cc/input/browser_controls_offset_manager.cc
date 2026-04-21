@@ -756,6 +756,13 @@ void BrowserControlsOffsetManager::ScrollBySnap(
       did_hide_this_scroll_ && !is_inertial) {
     return;
   }
+
+  // Wait for at least two samples to setup the snap animation as the velocity
+  // is not as accurate with a single sample.
+  if (scroll_velocity_tracker_.num_samples() < 2) {
+    return;
+  }
+
   SetupSnapAnimation(direction, pending_delta);
 }
 

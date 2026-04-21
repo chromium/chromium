@@ -37,6 +37,8 @@ class CC_EXPORT ScrollVelocityTracker {
   // Discards all recorded samples and resets state.
   void Reset();
 
+  size_t num_samples() const { return samples_.size(); }
+
  private:
   struct Sample {
     base::TimeTicks timestamp;
