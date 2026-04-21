@@ -65,10 +65,11 @@ class NET_EXPORT MacSystemProxyResolutionRequest
   // resolution.
   void CancelResolveRequest();
 
-  // Returns a typed pointer to the Mac-specific service. Stored as a member
-  // with the static_cast performed once in the constructor where the type is
-  // guaranteed. Used to call DidFinishResolvingProxy().
-  const raw_ptr<MacSystemProxyResolutionService> mac_service_;
+  // Typed pointer to the Mac-specific service. Cached via static_cast in the
+  // constructor where the type is guaranteed. Cleared alongside the base
+  // service_ pointer in ProxyResolutionComplete() to avoid dangling when the
+  // service is destroyed with in-flight requests.
+  raw_ptr<MacSystemProxyResolutionService> mac_service_;
 
   // Manages the cross-process proxy resolution. Deleting this will cancel a
   // pending proxy resolution. After a callback has been received via

@@ -24,8 +24,15 @@ class MacSystemProxyResolver;
 class NET_EXPORT MacSystemProxyResolutionService
     : public SystemProxyResolutionService {
  public:
-  // Creates a MacSystemProxyResolutionService or returns nullptr if the
-  // resolver is null.
+  // Creates a MacSystemProxyResolutionService.  Returns nullptr if
+  // `mac_system_proxy_resolver` is null, signalling that system proxy
+  // resolution is unavailable.  All production callers are expected to
+  // supply a valid resolver; the nullptr-in/nullptr-out contract exists
+  // so that the shared typed test CreateWithNullResolver (and any other
+  // caller that may not have a resolver on a given platform) can detect
+  // unsupported configurations rather than crashing.
+  //
+  // This mirrors WindowsSystemProxyResolutionService::Create().
   static std::unique_ptr<MacSystemProxyResolutionService> Create(
       std::unique_ptr<MacSystemProxyResolver> mac_system_proxy_resolver);
 

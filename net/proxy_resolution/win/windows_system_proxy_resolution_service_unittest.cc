@@ -57,15 +57,15 @@ class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
   MockWindowsSystemProxyResolver() = default;
   ~MockWindowsSystemProxyResolver() override = default;
 
-  void add_server_to_proxy_list(const ProxyServer& proxy_server) {
+  void AddServerToProxyList(const ProxyServer& proxy_server) {
     proxy_list_.AddProxyServer(proxy_server);
   }
 
-  void set_winhttp_status(WinHttpStatus winhttp_status) {
+  void SetWinHttpStatus(WinHttpStatus winhttp_status) {
     winhttp_status_ = winhttp_status;
   }
 
-  void set_windows_error(int windows_error) { windows_error_ = windows_error; }
+  void SetWindowsError(int windows_error) { windows_error_ = windows_error; }
 
   std::unique_ptr<Request> GetProxyForUrl(
       const GURL& url,
@@ -134,15 +134,15 @@ class WindowsSystemProxyResolutionServiceTest
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyFailed) {
   base::HistogramTester histogram_tester;
-  resolver()->set_winhttp_status(WinHttpStatus::kAborted);
+  resolver()->SetWinHttpStatus(WinHttpStatus::kAborted);
 
   const int kTestWindowsError = 12345;
-  resolver()->set_windows_error(kTestWindowsError);
+  resolver()->SetWindowsError(kTestWindowsError);
 
   // Make sure there would be a proxy result on success.
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS foopy:8443");
-  resolver()->add_server_to_proxy_list(proxy_server);
+  resolver()->AddServerToProxyList(proxy_server);
 
   ProxyInfo info;
   TestCompletionCallback callback;
@@ -169,7 +169,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyWithResults) {
   base::HistogramTester histogram_tester;
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS foopy:8443");
-  resolver()->add_server_to_proxy_list(proxy_server);
+  resolver()->AddServerToProxyList(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
 
   DoResolveProxyTest(expected_proxy_list);

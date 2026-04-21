@@ -126,6 +126,11 @@ void MacSystemProxyResolutionRequest::ProxyResolutionComplete(
   // clears service_, and the callback invocation may destroy `this`.
   CompletionOnceCallback callback = std::move(user_callback_);
 
+  // Clear mac_service_ alongside MarkCompleted() which clears the base
+  // service_. Without this, mac_service_ would dangle after the service is
+  // destroyed with in-flight requests (the request outlives the service until
+  // the caller destroys the returned unique_ptr).
+  mac_service_ = nullptr;
   MarkCompleted();
   std::move(callback).Run(net_error);
 }

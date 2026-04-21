@@ -150,7 +150,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest, ResolveProxyCancelled) {
   // Make sure there would be a proxy result on success.
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS foopy:8443");
-  this->resolver()->add_server_to_proxy_list(proxy_server);
+  this->resolver()->AddServerToProxyList(proxy_server);
 
   ProxyInfo info;
   TestCompletionCallback callback;
@@ -184,7 +184,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS foopy:8443");
-  this->resolver()->add_server_to_proxy_list(proxy_server);
+  this->resolver()->AddServerToProxyList(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;
 
@@ -222,7 +222,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS foopy:8443");
-  this->resolver()->add_server_to_proxy_list(proxy_server);
+  this->resolver()->AddServerToProxyList(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;
 
@@ -421,7 +421,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
 
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS proxy.example.com:8080");
-  this->resolver()->add_server_to_proxy_list(proxy_server);
+  this->resolver()->AddServerToProxyList(proxy_server);
 
   ProxyInfo info;
   TestCompletionCallback callback;
@@ -544,7 +544,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
 
   const ProxyServer proxy_server =
       PacResultElementToProxyServer("HTTPS proxy.example.com:8080");
-  this->resolver()->add_server_to_proxy_list(proxy_server);
+  this->resolver()->AddServerToProxyList(proxy_server);
 
   ProxyInfo info;
   TestCompletionCallback callback;
@@ -575,7 +575,7 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   // Set up the resolver to return a specific proxy
   const ProxyServer original_proxy_server =
       PacResultElementToProxyServer("HTTPS original.example.com:8080");
-  this->resolver()->add_server_to_proxy_list(original_proxy_server);
+  this->resolver()->AddServerToProxyList(original_proxy_server);
 
   // Configure the delegate to override the result with a different proxy
   ProxyList override_proxy_list;

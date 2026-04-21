@@ -3201,6 +3201,7 @@ target(_test_target_type, "net_unittests") {
   if (is_mac) {
     sources += [
       "cert/internal/trust_store_mac_unittest.cc",
+      "proxy_resolution/mac/mac_system_proxy_resolution_service_unittest.cc",
       "socket/ephemeral_port_randomizer_mac_unittest.cc",
       "ssl/client_cert_store_mac_unittest.cc",
       "ssl/ssl_platform_key_mac_unittest.cc",
