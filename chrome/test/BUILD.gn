@@ -189,6 +189,7 @@ static_library("test_support") {
     "//chrome/test/data/webui:resources",
     "//components/activity_reporter",
     "//components/affiliations/core/browser:test_support",
+    "//components/record_replay/core/common",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:test_support",
     "//ui/base/unowned_user_data",
@@ -316,7 +317,6 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/app_service/publishers",
       "//components/record_replay/content/renderer",
-      "//components/record_replay/core/common",
       "//components/storage_monitor:test_support",
     ]
   }
@@ -10877,7 +10877,8 @@ test("unit_tests") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
-  fuzztests = [ "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash" ]
+  fuzztests =
+      [ "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash" ]
 }
 
 static_library("test_support_unit") {

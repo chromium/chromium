@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+assert(use_blink)
 
 static_library("browser") {
   sources = [
