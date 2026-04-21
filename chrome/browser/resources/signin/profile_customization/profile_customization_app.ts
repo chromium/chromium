@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '/strings.m.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
@@ -111,6 +112,7 @@ export class ProfileCustomizationAppElement extends
       ProfileCustomizationBrowserProxyImpl.getInstance();
 
   override firstUpdated() {
+    ColorChangeUpdater.forDocument().start();
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
     // set profileName_ for local profiles in friction reduction experiment.
