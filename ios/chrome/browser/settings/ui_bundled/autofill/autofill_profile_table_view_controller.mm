@@ -1337,13 +1337,30 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   _addProfileBottomSheetHandler = nil;
 }
 
-// Removes the item from the personal data manager model.
+// Performs a batch update to delete the selected items and clean up empty
+// sections.
+- (void)performDeletionAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  _deletionInProgress = YES;
+
+  __weak __typeof(self) weakSelf = self;
+
+  [self.tableView
+      performBatchUpdates:^{
+        [weakSelf willDeleteItemsAtIndexPaths:indexPaths];
+        [weakSelf removeEmptySections];
+      }
+      completion:^(BOOL finished) {
+        [weakSelf updateEditingStateAfterDeletion];
+      }];
+}
+
+// Removes the item from the personal data manager model or the entity data
+// manager model.
 - (void)willDeleteItemsAtIndexPaths:(NSArray*)indexPaths {
   if (_settingsAreDismissed) {
     return;
   }
 
-  _deletionInProgress = YES;
   for (NSIndexPath* indexPath in indexPaths) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     if ([item isKindOfClass:[AutofillProfileItem class]]) {
@@ -1360,14 +1377,29 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     }
   }
 
-  [self.tableView
-      performBatchUpdates:^{
-        [self removeFromModelItemAtIndexPaths:indexPaths];
-        [self.tableView
-            deleteRowsAtIndexPaths:indexPaths
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
-               completion:nil];
+  [self removeFromModelItemAtIndexPaths:indexPaths];
+  [self.tableView deleteRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+// Removes all the empty sections in the tableView.
+- (void)removeEmptySections {
+  // TODO(crbug.com/41277594) Generalize removing empty sections
+  [self removeSectionIfEmptyForSectionWithIdentifier:SectionIdentifierProfiles];
+  [self removeSectionIfEmptyForSectionWithIdentifier:
+            SectionIdentifierIdentityDocs];
+  [self removeSectionIfEmptyForSectionWithIdentifier:SectionIdentifierTravel];
+  [self removeSectionIfEmptyForSectionWithIdentifier:SectionIdentifierOther];
+}
+
+// Finalizes the view state after items have been deleted.
+- (void)updateEditingStateAfterDeletion {
+  // Editing mode is exited after each deletion.
+  if ([self.tableView isEditing]) {
+    [self setEditing:NO animated:YES];
+  }
+  [self updateUIForEditState];
+  self->_deletionInProgress = NO;
 }
 
 // Remove the section from the model and collectionView if there are no more
@@ -1376,46 +1408,17 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     (SectionIdentifier)sectionIdentifier {
   if (_settingsAreDismissed ||
       ![self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier]) {
-    _deletionInProgress = NO;
     return;
   }
-  NSInteger section =
-      [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
-  if ([self.tableView numberOfRowsInSection:section] == 0) {
-    // Avoid reference cycle in block.
-    __weak AutofillProfileTableViewController* weakSelf = self;
-    [self.tableView
-        performBatchUpdates:^{
-          // Obtain strong reference again.
-          AutofillProfileTableViewController* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
+  NSArray* items =
+      [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier];
+  if (items.count == 0) {
+    NSInteger section =
+        [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
 
-          // Remove section from model and collectionView.
-          [[strongSelf tableViewModel]
-              removeSectionWithIdentifier:sectionIdentifier];
-          [[strongSelf tableView]
-                deleteSections:[NSIndexSet indexSetWithIndex:section]
-              withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-        completion:^(BOOL finished) {
-          // Obtain strong reference again.
-          AutofillProfileTableViewController* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-
-          // Turn off edit mode if there is nothing to edit.
-          if (![strongSelf localProfilesExist] &&
-              [strongSelf.tableView isEditing]) {
-            [strongSelf setEditing:NO animated:YES];
-          }
-          [strongSelf updateUIForEditState];
-          strongSelf->_deletionInProgress = NO;
-        }];
-  } else {
-    _deletionInProgress = NO;
+    [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
+    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 }
 
@@ -1528,14 +1531,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [_deletionSheetCoordinator
       addItemWithTitle:confirmationButtonText
                 action:^{
-                  [weakSelf willDeleteItemsAtIndexPaths:indexPaths];
-                  // TODO(crbug.com/41277594) Generalize removing empty sections
-                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
-                                SectionIdentifierProfiles];
-                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
-                                SectionIdentifierIdentityDocs];
-                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
-                                SectionIdentifierTravel];
+                  [weakSelf performDeletionAtIndexPaths:indexPaths];
                   [weakSelf dismissDeletionSheet];
                 }
                  style:UIAlertActionStyleDestructive];
