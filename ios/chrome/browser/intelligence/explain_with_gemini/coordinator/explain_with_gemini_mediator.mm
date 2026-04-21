@@ -104,9 +104,11 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
       WebSelectionTabHelper::FromWebState(webState);
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
-    if (weakSelf && response.valid && response.selectedText.length) {
+    web::WebState* capturedWebState = weakWebState.get();
+    if (weakSelf && capturedWebState && response.valid &&
+        response.selectedText.length) {
       [weakSelf triggerExplainWithGeminiForText:response.selectedText
-                                       webState:webState];
+                                       webState:capturedWebState];
     }
   }));
 }
@@ -128,10 +130,11 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
-    if (weakSelf) {
+    web::WebState* capturedWebState = weakWebState.get();
+    if (weakSelf && capturedWebState) {
       [weakSelf addItemWithResponse:response
                          completion:completion
-                           webState:webState];
+                           webState:capturedWebState];
       return;
     }
     completion(@[]);
@@ -157,8 +160,12 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   }
 
   __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   UIAction* action = [self actionWithHandler:^(UIAction* a) {
-    [weakSelf triggerExplainWithGeminiForText:text webState:webState];
+    web::WebState* capturedWebState = weakWebState.get();
+    if (weakSelf && capturedWebState) {
+      [weakSelf triggerExplainWithGeminiForText:text webState:capturedWebState];
+    }
   }];
   RecordGeminiEntryPointAvailable(gemini::EntryPoint::EditMenu);
   completion(@[ action ]);
