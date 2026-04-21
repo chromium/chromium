@@ -143,7 +143,16 @@ TEST_F(PamAuthorizerUafTest,
   pam_authorizer->GetNextMessage();
 }
 
-TEST_F(PamAuthorizerUafTest, ProcessMessage_FreesThisDuringUnderlyingCall) {
+// TODO(crbug.com/504793694): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_ProcessMessage_FreesThisDuringUnderlyingCall \
+  DISABLED_ProcessMessage_FreesThisDuringUnderlyingCall
+#else
+#define MAYBE_ProcessMessage_FreesThisDuringUnderlyingCall \
+  ProcessMessage_FreesThisDuringUnderlyingCall
+#endif
+TEST_F(PamAuthorizerUafTest,
+       MAYBE_ProcessMessage_FreesThisDuringUnderlyingCall) {
   auto underlying = std::make_unique<TestUnderlyingAuthenticator>();
   TestUnderlyingAuthenticator* underlying_ptr = underlying.get();
   underlying_factory_ptr_->set_authenticator(std::move(underlying));
