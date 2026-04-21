@@ -251,8 +251,9 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
     return viz::FrameSinkId();
 
   PhysicalOffset local_point(ToRoundedPoint(result.LocalPoint()));
-  if (!To<LayoutBox>(object)->ComputedCSSContentBoxRect().Contains(local_point))
+  if (!To<LayoutBox>(object)->PhysicalContentBoxRect().Contains(local_point)) {
     return viz::FrameSinkId();
+  }
 
   return remote_frame->GetFrameSinkId();
 }
