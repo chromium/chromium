@@ -1,0 +1,2 @@
+# Ignore the directory where the CIPD package is installed
+/include/
