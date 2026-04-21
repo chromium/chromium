@@ -15,6 +15,11 @@
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/input_event_activation_protector.h"
+
+namespace ui {
+class Event;
+}
 
 // The views implementation of the `PasswordCrossDomainConfirmationPopupView`.
 class PasswordCrossDomainConfirmationPopupViewViews
@@ -24,6 +29,12 @@ class PasswordCrossDomainConfirmationPopupViewViews
                   autofill::PopupBaseView)
 
  public:
+  enum class PopupViewId {
+    kNone = 0,
+    kConfirmButton,
+    kCancelButton,
+  };
+
   PasswordCrossDomainConfirmationPopupViewViews(
       base::WeakPtr<PasswordCrossDomainConfirmationPopupControllerInterface>
           controller,
@@ -50,6 +61,10 @@ class PasswordCrossDomainConfirmationPopupViewViews
   }
 
  private:
+  void OnConfirm(const ui::Event& event);
+
+  base::OnceClosure confirmation_callback_;
+  views::InputEventActivationProtector input_protector_;
   base::WeakPtrFactory<PasswordCrossDomainConfirmationPopupViewViews>
       weak_factory_{this};
 };

@@ -16,6 +16,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -69,6 +72,13 @@ class PasswordCrossDomainConfirmationPopupViewBrowsertest
   PasswordCrossDomainConfirmationPopupViewBrowsertest() = default;
   ~PasswordCrossDomainConfirmationPopupViewBrowsertest() override = default;
 
+ public:
+  bool confirm_called() const { return confirm_called_; }
+  void OnConfirm() { confirm_called_ = true; }
+
+ protected:
+  bool confirm_called_ = false;
+
   void SetUpOnMainThread() override {
     PopupPixelTest::SetUpOnMainThread();
 
@@ -98,13 +108,55 @@ class PasswordCrossDomainConfirmationPopupViewBrowsertest
         views::Widget::GetWidgetForNativeWindow(
             browser()->window()->GetNativeWindow()),
         /*domain=*/GURL("https://a.com"),
-        /*password_hostname=*/u"b.com", base::DoNothing(), base::DoNothing());
+        /*password_hostname=*/u"b.com",
+        base::BindOnce(
+            &PasswordCrossDomainConfirmationPopupViewBrowsertest::OnConfirm,
+            base::Unretained(this)),
+        base::DoNothing());
   }
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordCrossDomainConfirmationPopupViewBrowsertest,
                        StaticUI) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordCrossDomainConfirmationPopupViewBrowsertest,
+                       InitialFocusOnCancelButton) {
+  ShowUi("InitialFocusOnCancelButton");
+
+  views::MdTextButton* cancel_button =
+      views::AsViewClass<views::MdTextButton>(view()->GetViewByID(
+          static_cast<int>(PasswordCrossDomainConfirmationPopupViewViews::
+                               PopupViewId::kCancelButton)));
+  ASSERT_THAT(cancel_button, testing::NotNull());
+
+  views::View* initially_focused_view = view()->GetInitiallyFocusedView();
+  ASSERT_THAT(initially_focused_view, testing::NotNull());
+  EXPECT_EQ(initially_focused_view, cancel_button);
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordCrossDomainConfirmationPopupViewBrowsertest,
+                       InputEventActivationProtectorWorks) {
+  ShowUi("InputProtectorWorks");
+
+  views::MdTextButton* confirm_button =
+      views::AsViewClass<views::MdTextButton>(view()->GetViewByID(
+          static_cast<int>(PasswordCrossDomainConfirmationPopupViewViews::
+                               PopupViewId::kConfirmButton)));
+  ASSERT_THAT(confirm_button, testing::NotNull());
+
+  ui::MouseEvent immediate_click(ui::EventType::kMousePressed, gfx::Point(),
+                                 gfx::Point(), base::TimeTicks::Now(),
+                                 ui::EF_LEFT_MOUSE_BUTTON, 0);
+  views::test::ButtonTestApi(confirm_button).NotifyClick(immediate_click);
+  EXPECT_FALSE(confirm_called());
+
+  ui::MouseEvent delayed_click(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks::Now() + base::Seconds(2), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  views::test::ButtonTestApi(confirm_button).NotifyClick(delayed_click);
+  EXPECT_TRUE(confirm_called());
 }
 
 INSTANTIATE_TEST_SUITE_P(
