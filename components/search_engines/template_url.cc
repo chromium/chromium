@@ -105,8 +105,8 @@ const size_t kMaxStringEncodeStringLength = 1'000'000;
 // |original_query| is always escaped as query. If |force_encode| is true
 // encoding ignores errors and function always returns true. Otherwise function
 // returns whether the encoding process succeeded.
-bool TryEncoding(const std::u16string& terms,
-                 const std::u16string& original_query,
+bool TryEncoding(std::u16string_view terms,
+                 std::u16string_view original_query,
                  const char* encoding,
                  bool is_in_query,
                  bool force_encode,
@@ -118,7 +118,7 @@ bool TryEncoding(const std::u16string& terms,
   // Both |base::UTF16ToCodepage()| and |net::Escape*()| invocations below
   // create strings longer than their inputs. To ensure doing so does not crash,
   // this truncates |terms| to |kMaxStringEncodeStringLength|.
-  const std::u16string& truncated_terms =
+  const std::u16string_view truncated_terms =
       terms.size() > kMaxStringEncodeStringLength
           ? terms.substr(0, kMaxStringEncodeStringLength)
           : terms;
@@ -459,7 +459,7 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     const SearchTermsArgs& search_terms_args,
     const SearchTermsData& search_terms_data,
     PostContent* post_content,
-    std::string url_override) const {
+    std::string_view url_override) const {
   ParseIfNecessary(search_terms_data, url_override);
   if (!valid_) {
     return std::string();
@@ -931,19 +931,19 @@ std::string TemplateURLRef::ParseURL(const std::string& url,
          base::SplitStringPiece(post_params_string, ",", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_ALL)) {
       // The '=' delimiter is required and the name must be not empty.
-      std::vector<std::string> parts = base::SplitString(
+      std::vector<std::string_view> parts = base::SplitStringPiece(
           cur, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       if ((parts.size() != 2U) || parts[0].empty()) {
         return std::string();
       }
 
-      std::string& value = parts[1];
+      std::string value(parts[1]);
       size_t replacements_size = replacements->size();
       if (IsTemplateParameterString(value)) {
         ParseParameter(0, value.length() - 1, &value, replacements);
       }
-      PostParam param = {parts[0], value};
-      post_params->push_back(param);
+      PostParam param = {std::string(parts[0]), std::move(value)};
+      post_params->push_back(std::move(param));
       // If there was a replacement added, points its index to last added
       // PostParam.
       if (replacements->size() > replacements_size) {
@@ -961,13 +961,14 @@ std::string TemplateURLRef::ParseURL(const std::string& url,
 }
 
 void TemplateURLRef::ParseIfNecessary(const SearchTermsData& search_terms_data,
-                                      std::string url_override) const {
+                                      std::string_view url_override) const {
   bool url_override_is_valid = GURL(url_override).is_valid();
   if (!parsed_ || url_override_is_valid) {
     InvalidateCachedValues();
     parsed_ = true;
-    parsed_url_ = ParseURL(url_override_is_valid ? url_override : GetURL(),
-                           &replacements_, &post_params_, &valid_);
+    parsed_url_ =
+        ParseURL(url_override_is_valid ? std::string(url_override) : GetURL(),
+                 &replacements_, &post_params_, &valid_);
     supports_replacements_ = false;
     if (valid_) {
       bool has_only_one_search_term = false;

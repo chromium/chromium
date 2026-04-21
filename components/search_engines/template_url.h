@@ -337,7 +337,7 @@ class TemplateURLRef {
   std::string ReplaceSearchTerms(const SearchTermsArgs& search_terms_args,
                                  const SearchTermsData& search_terms_data,
                                  PostContent* post_content,
-                                 std::string url_override = "") const;
+                                 std::string_view url_override = "") const;
 
   // TODO(jnd): remove the following ReplaceSearchTerms definition which does
   // not have `post_content` parameter once all reference callers pass
@@ -347,7 +347,7 @@ class TemplateURLRef {
   //  `StarterPackExpansion` feature launches/gets cleaned up.
   std::string ReplaceSearchTerms(const SearchTermsArgs& search_terms_args,
                                  const SearchTermsData& search_terms_data,
-                                 std::string url_override = "") const {
+                                 std::string_view url_override = "") const {
     return ReplaceSearchTerms(search_terms_args, search_terms_data, nullptr,
                               url_override);
   }
@@ -547,7 +547,7 @@ class TemplateURLRef {
   // TODO(crbug.com/41494524): Remove the `url_override` when the
   //  `StarterPackExpansion` feature launches/gets cleaned up.
   void ParseIfNecessary(const SearchTermsData& search_terms_data,
-                        std::string url_override = "") const;
+                        std::string_view url_override = "") const;
 
   // Parses a wildcard out of |path|, putting the parsed path in |path_prefix_|
   // and |path_suffix_| and setting |path_wildcard_present_| to true.
