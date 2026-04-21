@@ -380,6 +380,7 @@ if (!is_android && !is_chromeos_device) {
         "toolbar_action_hover_card_bubble_view_interactive_uitest.cc",
         "toolbar_controller_interactive_uitest.cc",
         "toolbar_view_interactive_uitest.cc",
+        "webui_toolbar_interactive_uitest.cc",
         "webui_toolbar_web_view_uitest.cc",
       ]
     }

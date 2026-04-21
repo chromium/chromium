@@ -47,9 +47,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 
-const WebContentsInteractionTestUtil::DeepQuery kReloadButtonDeepQuery = {
-    "toolbar-app", "reload-button"};
-
 // An observer for reload button tests that tracks completed and committed
 // navigations.
 class ReloadButtonTestNavigationObserver : public content::WebContentsObserver {
@@ -441,6 +438,9 @@ class WebUIToolbarViewsInteractiveUiTest
 
  private:
   static constexpr std::string_view kDelayedPath = "/delayed";
+
+  const WebContentsInteractionTestUtil::DeepQuery kReloadButtonDeepQuery = {
+      "toolbar-app", "reload-button"};
 
   // Number of steps with a particular description. Helps in debugging when
   // there are multiple identical steps, which is not uncommon in these tests.
