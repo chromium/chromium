@@ -17,34 +17,32 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
-  function createSecondTab() {
-    // Create and switch to a second tab that has an unload handler.
-    chrome.tabs.create({index: 1, active: true,
-                        url: pageUrl('unload-storage-1')},
-      (tab) => {
-        secondTabId = tab.id;
-        assertTrue(tab.active);
-        assertEq(1, tab.index);
-        chrome.tabs.onUpdated.addListener(function local(tabId,
-                                                         changeInfo,
-                                                         tab) {
-          // Wait for the second tab to finish loading before moving on.
-          if (tabId == secondTabId && changeInfo.status == 'complete') {
-            chrome.tabs.onUpdated.removeListener(local);
-            chrome.test.succeed();
-          }
-        });
-      });
-  },
-  function removeSecondTab() {
-    const onStoragePromise = new Promise(resolveOnStorageChanged);
-
-    const removePromise = new Promise((resolve) => {
-      chrome.tabs.remove(secondTabId, () => {
-      resolve();
-      });
+  async function createSecondTab() {
+    const tabReadyPromise = new Promise((resolve) => {
+      const onUpdatedListener = function(tabId, changeInfo, tab) {
+        if (changeInfo.status === 'complete' &&
+            tab.url.includes('unload-storage-1')) {
+          chrome.tabs.onUpdated.removeListener(onUpdatedListener);
+          resolve();
+        }
+      };
+      chrome.tabs.onUpdated.addListener(onUpdatedListener);
     });
 
-    Promise.all([onStoragePromise, removePromise]).then(chrome.test.succeed);
+    const tab = await chrome.tabs.create(
+                    {index: 1, active: true, url: pageUrl('unload-storage-1')});
+    secondTabId = tab.id;
+    assertTrue(tab.active);
+    assertEq(1, tab.index);
+
+    await tabReadyPromise;
+    chrome.test.succeed();
+  },
+
+  async function removeSecondTab() {
+    const onStoragePromise = new Promise(resolveOnStorageChanged);
+    const tabRemoved = chrome.tabs.remove(secondTabId);
+    await Promise.all([onStoragePromise, tabRemoved]);
+    chrome.test.succeed();
   }
 ])});
