@@ -192,10 +192,6 @@ class PopupViewViews : public PopupBaseView,
   // metadata.
   void ShowIPHFeaturePromos();
 
-  // Announces the title of the currently selected tab in `tabbed_pane_`, if it
-  // exists.
-  void MaybeAnnounceCurrentTab();
-
   // If the current suggestions are for password recovery, announces it to the
   // user.
   void MaybeAnnouncePasswordRecoveryPopup();
@@ -203,9 +199,10 @@ class PopupViewViews : public PopupBaseView,
   // If the current suggestions are for loading, announces it to the user.
   void MaybeAnnounceLoadingState();
 
-  // If the current suggestions contain a BNPL footnote, announces it to the
-  // user.
-  void MaybeAnnounceBnplFootnotePopup();
+  // Announces the title of the currently selected tab in `tabbed_pane_`, if it
+  // exists. If the current suggestions also contains a BNPL footnote, announces
+  // it to the user in the same message, separated by a comma.
+  void MaybeAnnounceCurrentTabAndFootnote();
 
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
