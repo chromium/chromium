@@ -205,6 +205,7 @@ android_resources("java_resources") {
     "java/res/drawable/chrome_extension.xml",
     "java/res/drawable/extension_request_access_button_bg.xml",
     "java/res/drawable/extensions_menu_button_bg.xml",
+    "java/res/drawable/extensions_request_access_bg.xml",
     "java/res/drawable/extensions_zero_state.xml",
     "java/res/drawable/ic_close.xml",
     "java/res/drawable/ic_more_vert.xml",

@@ -23,9 +23,7 @@ namespace {
 
 using base::android::ScopedJavaLocalRef;
 
-// TODO(crbug.com/471016915): Placeholder size. Replace with size provided from
-// Java.
-constexpr gfx::Size kActionIconSize = gfx::Size(40, 40);
+constexpr gfx::Size kActionIconSize = gfx::Size(20, 20);
 
 ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
     const ui::ImageModel& image_model) {

@@ -37,7 +37,9 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/extensions_menu_site_permissions_radio_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingBottom="10dp">
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/extensions_menu_site_permissions_on_click"
@@ -76,12 +78,14 @@ found in the LICENSE file.
         style="@style/ExtensionsMenuDivider" />
     <LinearLayout
         android:id="@+id/extensions_menu_show_requests_toggle_container"
-        style="@style/ExtensionsMenuControlRow">
+        style="@style/ExtensionsMenuControlRow"
+        android:paddingVertical="@dimen/extensions_menu_vertical_padding">
 
         <TextView
             android:id="@+id/extensions_menu_show_requests_toggle_text"
             style="@style/ExtensionsMenuControlText"
             android:text="Allowed to show requests in the toolbar"
+            android:layout_marginStart="8dp"
             tools:ignore="HardcodedText" />
             <!-- TODO(crbug.com/471016912): Use string from view model -->
 
@@ -101,12 +105,14 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/extensions_menu_manage_this_extension"
         style="@style/ExtensionsMenuControlRow"
+        android:paddingVertical="@dimen/extensions_menu_vertical_padding"
         tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/extensions_menu_manage_this_extension_text"
             style="@style/ExtensionsMenuControlText"
             android:text="Manage this extension"
+            android:layout_marginStart="8dp"
             tools:ignore="HardcodedText" />
             <!-- TODO(crbug.com/424010795): Use string from view model -->
 

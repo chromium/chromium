@@ -16,8 +16,9 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/extension_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:scaleType="fitCenter"
+        android:layout_width="@dimen/extensions_menu_icon_size"
+        android:layout_height="@dimen/extensions_menu_icon_size"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,7 +34,7 @@ found in the LICENSE file.
         app:layout_constraintEnd_toStartOf="@id/dismiss_button"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:maxLines="1"
         android:ellipsize="end" />
 

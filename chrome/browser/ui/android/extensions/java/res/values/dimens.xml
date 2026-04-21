@@ -8,13 +8,17 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Extensions Menu dimensions -->
     <dimen name="extension_menu_max_width">400dp</dimen>
-    <dimen name="extensions_menu_horizontal_padding">16dp</dimen>
+    <dimen name="extensions_menu_horizontal_padding">24dp</dimen>
+    <dimen name="extensions_menu_vertical_padding">14dp</dimen>
     <dimen name="extensions_menu_header_vertical_padding">16dp</dimen>
     <dimen name="extensions_menu_toggle_vertical_padding">8dp</dimen>
     <dimen name="extensions_menu_header_spacing">12dp</dimen>
+    <dimen name="extensions_menu_icon_size">20dp </dimen>
+    <dimen name="extensions_menu_request_access_padding">12dp</dimen>
+    <dimen name="extensions_menu_request_access_corner_radius">12dp</dimen>
     <dimen name="extensions_menu_header_icon_size">24dp</dimen>
     <dimen name="extensions_menu_header_button_size">24dp</dimen>
-    <dimen name="extensions_menu_divider_vertical_margin">4dp</dimen>
+    <dimen name="extensions_menu_divider_vertical_margin">0dp</dimen>
     <dimen name="extensions_menu_footer_min_height">40dp</dimen>
     <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
 

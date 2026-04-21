@@ -43,6 +43,7 @@ found in the LICENSE file.
 
             <LinearLayout
                 android:id="@+id/extensions_menu_site_settings_toggle_container"
+                android:paddingBottom="@dimen/extensions_menu_vertical_padding"
                 style="@style/ExtensionsMenuControlRow"
                 app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +51,9 @@ found in the LICENSE file.
 
                 <TextView
                     android:id="@+id/extensions_menu_site_settings_toggle_text"
-                    style="@style/ExtensionsMenuControlText" />
+                    android:layout_marginStart="0dp"
+                    style="@style/ExtensionsMenuControlText"
+                     />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/extensions_menu_site_settings_toggle"
@@ -122,23 +125,36 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingStart="@dimen/extensions_menu_horizontal_padding"
-                        android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
-                        android:paddingVertical="@dimen/extensions_menu_toggle_vertical_padding"
                         android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/extensions_request_access_section_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/extensions_menu_requests_access_section_title"
-                            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
                         <LinearLayout
-                            android:id="@+id/extensions_request_access_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical" />
+                            android:orientation="vertical"
+                            android:layout_margin="@dimen/extensions_menu_horizontal_padding"
+                            android:background="@drawable/extensions_request_access_bg">
+
+                            <TextView
+                                android:id="@+id/extensions_request_access_section_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/extensions_menu_request_access_padding"
+                                android:paddingEnd="@dimen/extensions_menu_request_access_padding"
+                                android:paddingTop="@dimen/extensions_menu_request_access_padding"
+                                android:text="@string/extensions_menu_requests_access_section_title"
+                                android:textAppearance="@style/TextAppearance.TextMediumThick.Secondary" />
+
+                            <LinearLayout
+                                android:id="@+id/extensions_request_access_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingStart="@dimen/extensions_menu_request_access_padding"
+                                android:paddingEnd="@dimen/extensions_menu_request_access_padding"
+                                android:paddingBottom="4dp"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+
+                        <View style="@style/ExtensionsMenuDivider" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -146,7 +162,7 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minWidth="320dp"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="@dimen/extensions_menu_vertical_padding" />
                 </LinearLayout>
 
                 <!-- Zero State: Mutually exclusive with the active state -->

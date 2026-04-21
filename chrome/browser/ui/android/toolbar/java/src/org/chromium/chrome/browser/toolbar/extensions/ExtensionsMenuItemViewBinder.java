@@ -31,10 +31,6 @@ public class ExtensionsMenuItemViewBinder {
             ImageView iconView = view.findViewById(R.id.extensions_menu_item_icon);
             @Nullable Bitmap bitmap = model.get(ExtensionsMenuItemProperties.ICON);
             iconView.setImageBitmap(bitmap);
-            if (bitmap != null) {
-                // TODO: Investigate the correct resizing method.
-                bitmap.setDensity(120);
-            }
         } else if (key == ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON) {
             ImageView contextMenuView = view.findViewById(R.id.extensions_menu_item_context_menu);
             contextMenuView.setImageResource(
