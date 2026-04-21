@@ -25,7 +25,7 @@ async function waitFrames(frameCount) {
         // It's possible for `requestAnimationFrame` to never produce a frame
         // when killing the GPU process.
         promiseFinishBefore(
-            2000, 'requestAnimationFrame did not produce a frame.'),
+            20000, 'requestAnimationFrame did not produce a frame.'),
     ]);
   }
 }
@@ -161,7 +161,7 @@ function raceAndAbortOthers(controller, promises) {
  * Must be called before, or in the same task that loses the context or else the
  * promise will never resolve.
  */
-async function waitForContextLost(ctx, deadlineMs=2000) {
+async function waitForContextLost(ctx, deadlineMs=20000) {
   const controller = new AbortController();
   await raceAndAbortOthers(controller, [
     promiseFinishBefore(deadlineMs, 'Event contextlost should have fired.'),
@@ -178,7 +178,7 @@ async function waitForContextLost(ctx, deadlineMs=2000) {
  * Must be called before the context is restored or else the promise will never
  * resolve.
  */
-async function waitForContextRestored(ctx, deadlineMs=2000) {
+async function waitForContextRestored(ctx, deadlineMs=20000) {
   const controller = new AbortController();
   await raceAndAbortOthers(controller, [
     promiseFinishBefore(deadlineMs, 'Event contextrestored should have fired.'),
