@@ -18,8 +18,8 @@ import java.lang.annotation.RetentionPolicy;
 /** Utility methods related to metrics collection for adaptive toolbar button. */
 @NullMarked
 public class AdaptiveToolbarStats {
-    // Please treat this list as append only and keep it in sync with
-    // AdaptiveToolbarRadioButtonState in enums.xml.
+    // Please treat this list as append only.
+    // LINT.IfChange(AdaptiveToolbarRadioButtonState)
     @IntDef({
         AdaptiveToolbarRadioButtonState.UNKNOWN,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_NEW_TAB,
@@ -34,8 +34,6 @@ public class AdaptiveToolbarStats {
         AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS,
         AdaptiveToolbarRadioButtonState.READ_ALOUD,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD,
-        AdaptiveToolbarRadioButtonState.PAGE_SUMMARY,
-        AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY,
         AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER,
         AdaptiveToolbarRadioButtonState.GLIC,
@@ -56,14 +54,16 @@ public class AdaptiveToolbarStats {
         int AUTO_WITH_ADD_TO_BOOKMARKS = 10;
         int READ_ALOUD = 11;
         int AUTO_WITH_READ_ALOUD = 12;
-        int PAGE_SUMMARY = 13;
-        int AUTO_WITH_PAGE_SUMMARY = 14;
+        // int PAGE_SUMMARY = 13;  // no longer used, experimental feature
+        // int AUTO_WITH_PAGE_SUMMARY = 14;  // no longer used, experimental feature
         int OPEN_IN_BROWSER = 15;
         int AUTO_WITH_OPEN_IN_BROWSER = 16;
         int GLIC = 17;
         int AUTO_WITH_GLIC = 18;
         int NUM_ENTRIES = 19;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AdaptiveToolbarRadioButtonState)
 
     /**
      * Called to record the selected radio button on the adaptive toolbar preference page.
@@ -122,8 +122,6 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.TRANSLATE;
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return AdaptiveToolbarRadioButtonState.READ_ALOUD;
-            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
-                return AdaptiveToolbarRadioButtonState.PAGE_SUMMARY;
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                 return AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER;
             case AdaptiveToolbarButtonVariant.GLIC:
@@ -142,8 +140,6 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE;
                     case AdaptiveToolbarButtonVariant.READ_ALOUD:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD;
-                    case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
-                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY;
                     case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER;
                     case AdaptiveToolbarButtonVariant.GLIC:

@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -96,10 +95,7 @@ import java.util.List;
 
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
-    DomDistillerFeatures.READER_MODE_IMPROVEMENTS
-})
+@DisableFeatures({DomDistillerFeatures.READER_MODE_IMPROVEMENTS})
 public class AppMenuPropertiesDelegateUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

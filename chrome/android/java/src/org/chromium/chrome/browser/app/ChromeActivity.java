@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
 import org.chromium.chrome.browser.actor.ActorTaskHelper;
-import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
@@ -2855,12 +2854,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     CallbackUtils.emptyCallback(),
                     PriceDropNotificationManagerFactory.create(currentTab.getProfile()));
             RecordUserAction.record("MobileMenuDisablePriceTracking");
-            return true;
-        }
-
-        if (id == R.id.ai_pdf_menu_id || id == R.id.ai_web_menu_id) {
-            var service = AiAssistantService.getInstance();
-            service.showAi(this, currentTab);
             return true;
         }
 

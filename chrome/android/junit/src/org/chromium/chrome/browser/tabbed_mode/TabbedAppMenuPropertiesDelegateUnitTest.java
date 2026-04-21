@@ -61,7 +61,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
@@ -89,7 +88,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -162,7 +160,6 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
     ChromeFeatureList.FEED_AUDIO_OVERVIEWS,
     ChromeFeatureList.TASK_MANAGER_CLANK,
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
@@ -2359,64 +2356,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.readaloud_menu_id));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
-    public void testAiWebMenuItem_shouldAppearOnWebPages() {
-        var aiAssistantService = mock(AiAssistantService.class);
-        AiAssistantService.setInstanceForTesting(aiAssistantService);
-        when(aiAssistantService.canShowAiForTab(any(), eq(mTab))).thenReturn(true);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        setUpMocksForPageMenu();
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        assertTrue(
-                "AI Web menu item should be visible",
-                isMenuVisible(modelList, R.id.ai_web_menu_id));
-        assertFalse(
-                "AI PDF menu item should not be visible",
-                isMenuVisible(modelList, R.id.ai_pdf_menu_id));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
-    public void testAiPdfMenuItem_shouldAppearOnPdfPages() {
-        var aiAssistantService = mock(AiAssistantService.class);
-        AiAssistantService.setInstanceForTesting(aiAssistantService);
-        when(aiAssistantService.canShowAiForTab(any(), eq(mTab))).thenReturn(true);
-
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1_WITH_PDF_PATH);
-        var pdfNativePage = mock(PdfPage.class);
-        when(mTab.getNativePage()).thenReturn(pdfNativePage);
-        when(mTab.isNativePage()).thenReturn(true);
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        assertFalse(
-                "AI Web menu item should not be visible",
-                isMenuVisible(modelList, R.id.ai_web_menu_id));
-        assertTrue(
-                "AI PDF menu item should be visible",
-                isMenuVisible(modelList, R.id.ai_pdf_menu_id));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
-    public void testAiMenuItems_shouldNotAppearIfDisabled() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        setUpMocksForPageMenu();
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        assertFalse(
-                "AI Web menu item should not be visible",
-                isMenuVisible(modelList, R.id.ai_web_menu_id));
-        assertFalse(
-                "AI PDF menu item should not be visible",
-                isMenuVisible(modelList, R.id.ai_pdf_menu_id));
     }
 
     @Test

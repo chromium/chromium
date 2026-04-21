@@ -299,7 +299,6 @@ if (_is_default_toolchain) {
       ":chrome_public_apk_template_resources",
       ":google_api_keys_java",
       ":java_overlay_resources",
-      ":system_ai_service_proto_java",
       ":usage_stats_proto_java",
       ":xr_java",
       "$google_play_services_package:google_play_services_auth_base_java",
@@ -1020,11 +1019,6 @@ if (_is_default_toolchain) {
   proto_java_library("usage_stats_proto_java") {
     proto_path = "../browser/android/usage_stats"
     sources = [ "$proto_path/website_event.proto" ]
-  }
-
-  proto_java_library("system_ai_service_proto_java") {
-    proto_path = "java/src/org/chromium/chrome/browser/ai/proto"
-    sources = [ "$proto_path/system_ai_provider_service.proto" ]
   }
 
   java_cpp_template("resource_id_javagen") {

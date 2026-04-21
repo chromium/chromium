@@ -156,11 +156,6 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
     }
 
-    public static boolean isAdaptiveToolbarPageSummaryEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY);
-    }
-
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
     }

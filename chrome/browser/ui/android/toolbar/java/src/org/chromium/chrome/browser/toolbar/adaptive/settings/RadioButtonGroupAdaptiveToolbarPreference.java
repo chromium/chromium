@@ -42,14 +42,12 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private @Nullable RadioButtonWithDescription mTranslateButton;
     private @Nullable RadioButtonWithDescription mAddToBookmarksButton;
     private @Nullable RadioButtonWithDescription mReadAloudButton;
-    private @Nullable RadioButtonWithDescription mPageSummaryButton;
     private @Nullable RadioButtonWithDescription mGlicButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @AdaptiveToolbarButtonVariant int mAutoButtonCaption;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseReadAloud;
-    private boolean mCanUsePageSummary;
     private boolean mCanUseTranslate = true;
     private boolean mCanUseGlic;
     private @Nullable Runnable mOnComponentUpdated;
@@ -92,8 +90,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                         holder.findViewById(R.id.adaptive_option_add_to_bookmarks);
         mReadAloudButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_read_aloud);
-        mPageSummaryButton =
-                (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_page_summary);
         mGlicButton = (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_glic);
 
         mIsBound = true;
@@ -182,7 +178,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
 
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
-        updatePageSummaryButtonVisibility();
         updateTranslateButtonVisibility();
         updateGlicButtonVisibility();
 
@@ -208,8 +203,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
             mSelected = AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS;
         } else if (mReadAloudButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.READ_ALOUD;
-        } else if (mPageSummaryButton.isChecked()) {
-            mSelected = AdaptiveToolbarButtonVariant.PAGE_SUMMARY;
         } else if (mGlicButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.GLIC;
         } else {
@@ -249,8 +242,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                 return mAddToBookmarksButton;
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return mReadAloudButton;
-            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
-                return mPageSummaryButton;
             case AdaptiveToolbarButtonVariant.GLIC:
                 return mGlicButton;
         }
@@ -278,9 +269,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 stringRes = R.string.adaptive_toolbar_button_preference_read_aloud;
                 break;
-            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
-                stringRes = R.string.adaptive_toolbar_button_preference_page_summary;
-                break;
             case AdaptiveToolbarButtonVariant.GLIC:
                 stringRes = R.string.glic_button_entrypoint_label;
                 break;
@@ -303,11 +291,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateReadAloudButtonVisibility();
     }
 
-    void setCanUsePageSummary(boolean canUsePageSummary) {
-        mCanUsePageSummary = canUsePageSummary;
-        updatePageSummaryButtonVisibility();
-    }
-
     void setCanUseTranslate(boolean canUseTranslate) {
         mCanUseTranslate = canUseTranslate;
         updateTranslateButtonVisibility();
@@ -324,10 +307,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
 
     private void updateReadAloudButtonVisibility() {
         updateButtonVisibility(mReadAloudButton, mCanUseReadAloud);
-    }
-
-    private void updatePageSummaryButtonVisibility() {
-        updateButtonVisibility(mPageSummaryButton, mCanUsePageSummary);
     }
 
     private void updateTranslateButtonVisibility() {

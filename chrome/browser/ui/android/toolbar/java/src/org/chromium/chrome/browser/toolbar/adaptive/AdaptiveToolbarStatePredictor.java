@@ -202,7 +202,6 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.TRANSLATE:
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
-            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
             case AdaptiveToolbarButtonVariant.GLIC:
                 return true;
@@ -268,8 +267,6 @@ public class AdaptiveToolbarStatePredictor {
                 return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
-            case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
-                return AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled();
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return AdaptiveToolbarFeatures.isTranslateEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.GLIC:

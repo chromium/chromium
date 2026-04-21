@@ -30,8 +30,7 @@ public interface AdaptiveToolbarBehavior {
                     AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                     AdaptiveToolbarButtonVariant.READER_MODE,
-                    AdaptiveToolbarButtonVariant.READ_ALOUD,
-                    AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+                    AdaptiveToolbarButtonVariant.READ_ALOUD);
 
     /** Default list of valid button variants used for BrApp. */
     Set<Integer> sValidButtons = new HashSet<>();

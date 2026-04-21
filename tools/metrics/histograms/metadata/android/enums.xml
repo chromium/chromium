@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Activity not found"/>
 </enum>
 
+<!-- LINT.IfChange(AdaptiveToolbarRadioButtonState) -->
+
 <enum name="AdaptiveToolbarRadioButtonState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Auto with new tab"/>
@@ -46,13 +48,15 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Auto with add to bookmarks"/>
   <int value="11" label="Read Aloud (Listen to this page)"/>
   <int value="12" label="Auto with Read Aloud (Listen to this page)"/>
-  <int value="13" label="Page summary"/>
-  <int value="14" label="Auto with Page summary"/>
+  <int value="13" label="Page summary (deprecated)"/>
+  <int value="14" label="Auto with Page summary (deprecated)"/>
   <int value="15" label="Open in browser"/>
   <int value="16" label="Auto with Open in browser"/>
   <int value="17" label="Glic"/>
   <int value="18" label="Auto with Glic"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java:AdaptiveToolbarRadioButtonState) -->
 
 <enum name="AgsaProcessName">
   <int value="0" label=":googleapp"/>

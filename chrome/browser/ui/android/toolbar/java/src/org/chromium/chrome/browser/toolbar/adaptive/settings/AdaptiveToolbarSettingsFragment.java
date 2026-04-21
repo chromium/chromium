@@ -77,8 +77,6 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
             mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
             mRadioButtonGroup.setCanUseReadAloud(
                     AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
-            mRadioButtonGroup.setCanUsePageSummary(
-                    AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled());
             mRadioButtonGroup.setCanUseTranslate(
                     AdaptiveToolbarFeatures.isTranslateEnabled(getProfile()));
             mRadioButtonGroup.setCanUseGlic(ChromeFeatureList.sGlic.isEnabled());

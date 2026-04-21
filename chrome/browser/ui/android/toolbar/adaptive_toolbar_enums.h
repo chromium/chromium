@@ -42,7 +42,7 @@ enum class AdaptiveToolbarButtonVariant {
   // Price Insights action.
   kPriceInsights = 12,
   // Page Summary button.
-  kPageSummary = 13,
+  kPageSummary [[deprecated]] = 13,
   // Discounts action.
   kDiscounts = 14,
   // Open In Browser action.

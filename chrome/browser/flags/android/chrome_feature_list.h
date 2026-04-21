@@ -27,7 +27,6 @@ namespace chrome::android {
 // go/keep-sorted start
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
-BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary);
 BASE_DECLARE_FEATURE(kAlwaysDrawCompositedToolbarHairline);
 BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInViz);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
