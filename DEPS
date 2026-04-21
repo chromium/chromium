@@ -3134,7 +3134,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_receiver_app/app',
-        'version': 'htDEtYncSo2ChfAnfpuTqgKmmEiEIUrF707P9z6Uw58C',
+        'version': 'Wbl_AizeR9sxVkYo3xuW8Qffx5LyUx15GWyiBVzjqpgC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
