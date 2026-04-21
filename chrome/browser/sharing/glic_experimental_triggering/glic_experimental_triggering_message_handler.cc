@@ -21,7 +21,8 @@ namespace {
 glic::GlicInvokeOptions CreateInvokeOptions(
     const components_sharing_message::GlicExperimentalTriggering& request,
     tabs::TabInterface* tab) {
-  glic::GlicInvokeOptions options{glic::mojom::InvocationSource::kUnsupported};
+  glic::GlicInvokeOptions options{
+      glic::mojom::InvocationSource::kExperimentalTriggering};
   options.target.surface = tab;
 
   if (request.has_request() &&
