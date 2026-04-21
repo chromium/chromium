@@ -52,7 +52,6 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/obfuscation/core/utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -960,18 +959,13 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
 class DownloadRestrictionsDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   DownloadRestrictionsDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(
-            /*connectors_machine_scope=*/std::get<0>(GetParam()),
+            /*connectors_machine_scope=*/GetParam(),
             /*is_consumer=*/false,
-            /*is_obfuscated=*/false) {
-    use_proto_format() ? enabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto)
-                       : disabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto);
-  }
+            /*is_obfuscated=*/false) {}
   ~DownloadRestrictionsDeepScanningBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -996,15 +990,13 @@ class DownloadRestrictionsDeepScanningBrowserTest
         connectors_machine_scope());
   }
 
-  bool use_proto_format() const { return std::get<1>(GetParam()); }
-
  private:
   base::test::ScopedFeatureList feature_list;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          DownloadRestrictionsDeepScanningBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
                        ReportsDownloadsBlockedByDownloadRestrictions) {
@@ -1032,67 +1024,41 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
   std::set<std::string> zip_types = {"application/zip",
                                      "application/x-zip-compressed"};
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
-        expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
+  chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+      expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("zipfile_two_archives.zip");
+  expected_event.set_file_name("zipfile_two_archives.zip");
 #else
-    connectors_machine_scope()
-        ? expected_event.set_file_name(main_file.AsUTF8Unsafe())
-        : expected_event.set_file_name("zipfile_two_archives.zip");
+  connectors_machine_scope()
+      ? expected_event.set_file_name(main_file.AsUTF8Unsafe())
+      : expected_event.set_file_name("zipfile_two_archives.zip");
 #endif
-    expected_event.set_content_size(276);
-    expected_event.set_download_digest_sha256("");
-    expected_event.set_threat_type(
-        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
-            DANGEROUS_FILE_TYPE);
+  expected_event.set_content_size(276);
+  expected_event.set_download_digest_sha256("");
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+          DANGEROUS_FILE_TYPE);
 
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
 
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event),
-                                           &zip_types);
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/
-        connectors_machine_scope() ? main_file.AsUTF8Unsafe()
-                                   : "zipfile_two_archives.zip",
-        // sha256sum chrome/test/data/safe_browsing/download_protection/\
-      // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
-        /*sha*/ "",
-        /*threat_type*/ "DANGEROUS_FILE_TYPE",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*mimetypes*/ &zip_types,
-        /*size*/ 276,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ std::nullopt);
-  }
+  validator.ExpectDangerousDownloadEvent(std::move(expected_event), &zip_types);
 
   WaitForDownloadToFinish();
 
@@ -1237,20 +1203,12 @@ class WaitForFinishObserver : public DeepScanningRequest::Observer {
 };
 
 class SavePackageDeepScanningBrowserTest
-    : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public DownloadDeepScanningBrowserTestBase {
  public:
   SavePackageDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
                                             /*is_consumer=*/false,
-                                            /*is_obfuscated=*/false) {
-    use_proto_format() ? enabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto)
-                       : disabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto);
-  }
-
-  bool use_proto_format() const { return GetParam(); }
+                                            /*is_obfuscated=*/false) {}
 
   base::FilePath GetSaveDir() {
     return DownloadPrefs(browser()->profile()).DownloadPath();
@@ -1261,9 +1219,7 @@ class SavePackageDeepScanningBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(, SavePackageDeepScanningBrowserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Allowed) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
   SetUpReporting();
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -1309,7 +1265,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Allowed) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1346,65 +1302,41 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("text.htm");
+  expected_event.set_file_name("text.htm");
 #else
-    expected_event.set_file_name(main_file.AsUTF8Unsafe());
+  expected_event.set_file_name(main_file.AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(54);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(54);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ main_file.AsUTF8Unsafe(),
-        // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *result,
-        /*mimetypes*/ &mimetypes,
-        /*size*/ 54,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   run_loop.Run();
 
@@ -1421,7 +1353,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
   validator_run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1457,65 +1389,42 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("text.htm");
+  expected_event.set_file_name("text.htm");
 #else
-    expected_event.set_file_name(main_file.AsUTF8Unsafe());
+  expected_event.set_file_name(main_file.AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(54);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(54);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ main_file.AsUTF8Unsafe(),
-        // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *result,
-        /*mimetypes*/ &mimetypes,
-        /*size*/ 54,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
   validator_run_loop.Run();
 
   // The warning has been received but neither "keep" or "discard" has been
@@ -1539,65 +1448,41 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   enterprise_connectors::test::EventReportValidator validator_warn(client());
   validator_warn.SetDoneClosure(validator_warn_run_loop.QuitClosure());
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event2;
+  expected_event2.set_url(url.spec());
+  expected_event2.set_tab_url(url.spec());
+  expected_event2.set_source("");
+  expected_event2.set_destination("");
+  expected_event2.set_download_digest_sha_256(
+      "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("text.htm");
+  expected_event2.set_file_name("text.htm");
 #else
-    expected_event.set_file_name(main_file.AsUTF8Unsafe());
+  expected_event2.set_file_name(main_file.AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(54);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
-    expected_event.set_clicked_through(true);
+  expected_event2.set_content_type("text/plain");
+  expected_event2.set_content_size(54);
+  expected_event2.set_scan_id(last_request().request_token());
+  expected_event2.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event2.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+  expected_event2.set_clicked_through(true);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule2;
+  triggered_rule2.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  *expected_event2.add_triggered_rule_info() = triggered_rule2;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers2;
+  referrers2.set_url(url.spec());
+  referrers2.set_ip(embedded_test_server()->base_url().host());
+  *expected_event2.add_referrers() = referrers2;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event2.set_profile_identifier(GetProfileIdentifier());
+  expected_event2.set_profile_user_name(kUserName);
 
-    validator_warn.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator_warn.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ main_file.AsUTF8Unsafe(),
-        // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *result,
-        /*mimetypes*/ &mimetypes,
-        /*size*/ 54,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator_warn.ExpectSensitiveDataEvent(std::move(expected_event2));
 
   DownloadItemModel model(item);
   DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
@@ -1614,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   validator_warn_run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
                        DiscardAfterWarning) {
   SetUpReporting();
 
@@ -1652,65 +1537,41 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
   std::set<std::string> mimetypes = {"text/plain"};
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("text.htm");
+  expected_event.set_file_name("text.htm");
 #else
-    expected_event.set_file_name(main_file.AsUTF8Unsafe());
+  expected_event.set_file_name(main_file.AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(54);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(54);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ main_file.AsUTF8Unsafe(),
-        // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *result,
-        /*mimetypes*/ &mimetypes,
-        /*size*/ 54,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   validator_run_loop.Run();
 
@@ -1739,7 +1600,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, OpenNow) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1771,65 +1632,41 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, OpenNow) {
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("text.htm");
+  expected_event.set_file_name("text.htm");
 #else
-    expected_event.set_file_name(main_file.AsUTF8Unsafe());
+  expected_event.set_file_name(main_file.AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(54);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(54);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ main_file.AsUTF8Unsafe(),
-        // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
-        "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ *result,
-        /*mimetypes*/ &mimetypes,
-        /*size*/ 54,
-        /*result*/
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
@@ -1856,8 +1693,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, OpenNow) {
 }
 
 class FileSystemAccessDeepScanningBrowserTest
-    : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public DownloadDeepScanningBrowserTestBase {
  public:
   FileSystemAccessDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
@@ -1865,13 +1701,7 @@ class FileSystemAccessDeepScanningBrowserTest
                                             /*is_obfuscated=*/false) {
     enabled_features_.push_back(
         safe_browsing::kEnterpriseFileSystemAccessDeepScan);
-    use_proto_format() ? enabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto)
-                       : disabled_features_.push_back(
-                             policy::kUploadRealtimeReportingEventsUsingProto);
   }
-
-  bool use_proto_format() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
@@ -1918,13 +1748,9 @@ class FileSystemAccessDeepScanningBrowserTest
   base::ScopedTempDir temp_dir_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FileSystemAccessDeepScanningBrowserTest,
-                         testing::Bool());
-
 // For FSA writes that trigger a block deep scan verdict, write should be
 // blocked and the destination file empty.
-IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   SetUpReporting();
 
   // Prepare the scan response with DLP block and successful malware scan.
@@ -1961,65 +1787,41 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   std::set<std::string> mimetypes = {"text/plain"};
 
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72");
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("test_fsa_file.txt");
+  expected_event.set_file_name("test_fsa_file.txt");
 #else
-    expected_event.set_file_name(GetTestFilePath().AsUTF8Unsafe());
+  expected_event.set_file_name(GetTestFilePath().AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(sizeof(kTestContent) - 1);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(sizeof(kTestContent) - 1);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ GetTestFilePath().AsUTF8Unsafe(),
-        // echo -n [kTestContent] | sha256sum | tr a-f A-F
-        /*sha*/
-        "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results(0),
-        /*mimetypes*/ &mimetypes,
-        /*size*/ sizeof(kTestContent) - 1,
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
@@ -2043,7 +1845,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
 
 // For FSA writes that trigger a safe deep scan verdict, write should be allowed
 // and the destination file populated appropriately.
-IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
   SetUpReporting();
 
   // Prepare the scan response with no DLP or malware rules triggered.
@@ -2087,7 +1889,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
 
 // For FSA writes that trigger a warn deep scan verdict, write should be allowed
 // and the destination file populated appropriately.
-IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
   SetUpReporting();
 
   // Prepare the scan response with warn DLP rule triggered.
@@ -2123,65 +1925,42 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
   std::set<std::string> mimetypes = {"text/plain"};
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
-    expected_event.set_url(url.spec());
-    expected_event.set_tab_url(url.spec());
-    expected_event.set_source("");
-    expected_event.set_destination("");
-    expected_event.set_download_digest_sha_256(
-        "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72");
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_download_digest_sha_256(
+      "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72");
 #if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("test_fsa_file.txt");
+  expected_event.set_file_name("test_fsa_file.txt");
 #else
-    expected_event.set_file_name(GetTestFilePath().AsUTF8Unsafe());
+  expected_event.set_file_name(GetTestFilePath().AsUTF8Unsafe());
 #endif
-    expected_event.set_content_type("text/plain");
-    expected_event.set_content_size(sizeof(kTestContent) - 1);
-    expected_event.set_scan_id(last_request().request_token());
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
-    expected_event.set_clicked_through(false);
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(sizeof(kTestContent) - 1);
+  expected_event.set_scan_id(last_request().request_token());
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  expected_event.set_clicked_through(false);
 
-    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_action(
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
-    *expected_event.add_triggered_rule_info() = triggered_rule;
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  *expected_event.add_triggered_rule_info() = triggered_rule;
 
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url(url.spec());
-    referrers.set_ip(embedded_test_server()->base_url().host());
-    *expected_event.add_referrers() = referrers;
+  ::chrome::cros::reporting::proto::UrlInfo referrers;
+  referrers.set_url(url.spec());
+  referrers.set_ip(embedded_test_server()->base_url().host());
+  *expected_event.add_referrers() = referrers;
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        /*url*/ url.spec(),
-        /*tab_url*/ url.spec(),
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/ GetTestFilePath().AsUTF8Unsafe(),
-        // echo -n [kTestContent] | sha256sum | tr a-f A-F
-        /*sha*/
-        "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
-        /*trigger*/
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-        /*dlp_verdict*/ response.results(0),
-        /*mimetypes*/ &mimetypes,
-        /*size*/ sizeof(kTestContent) - 1,
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::WARNED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ last_request().request_token(),
-        /*content_transfer_method*/ std::nullopt,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   validator_run_loop.Run();
 
@@ -2199,7 +1978,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
 }
 
 // Fail-open behavior for failed deep scan requests on FSA writes.
-IN_PROC_BROWSER_TEST_P(FileSystemAccessDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest,
                        DeepScanFailure) {
   SetUpReporting();
 
