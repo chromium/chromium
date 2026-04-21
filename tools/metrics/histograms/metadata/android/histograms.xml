@@ -9520,6 +9520,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Window.OcclusionExperimental.SavedRenderingPer5Minutes"
+    units="MP*s" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the total occluded pixels over time in megapixel*seconds since the
+    last emission. This metric gives an estimate of the saved rendering work due
+    to occlusion optimizations. Recorded periodically every 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.TimeToAcquireWindowBounds" units="ms"
     expires_after="2026-08-23">
   <owner>chominskib@google.com</owner>
