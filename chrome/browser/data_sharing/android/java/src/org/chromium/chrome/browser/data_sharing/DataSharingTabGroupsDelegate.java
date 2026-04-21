@@ -49,7 +49,7 @@ public interface DataSharingTabGroupsDelegate {
      * @param size The expected size in pixels of the preview bitmap.
      * @param onResult The callback to return the preview image.
      */
-    void getPreviewBitmap(String collaborationId, int size, Callback<Bitmap> onResult);
+    void getPreviewBitmap(String collaborationId, int size, Callback<@Nullable Bitmap> onResult);
 
     /**
      * Tries to discern the correct window id that contains a tab group. If the requested tab group

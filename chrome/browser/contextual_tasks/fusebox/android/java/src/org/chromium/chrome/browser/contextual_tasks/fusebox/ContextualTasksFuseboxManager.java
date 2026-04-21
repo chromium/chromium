@@ -12,6 +12,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -45,7 +46,7 @@ public class ContextualTasksFuseboxManager {
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
     private final CurrentTabObserver mCurrentTabObserver;
 
     // The fusebox instance. Shared across all tabs. Lazily initialized.
@@ -60,7 +61,7 @@ public class ContextualTasksFuseboxManager {
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            Supplier<SnackbarManager> snackbarManagerSupplier) {
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
         mActivity = activity;
         mFuseboxConfigSupplier = fuseboxConfigSupplier;
         mWindowAndroid = windowAndroid;
@@ -174,7 +175,7 @@ public class ContextualTasksFuseboxManager {
                         mWindowAndroid,
                         mLifecycleDispatcher,
                         /* loadUrlCallback= */ CallbackUtils.emptyCallback(),
-                        mSnackbarManagerSupplier.get(),
+                        SupplierUtils.asNonNull(mSnackbarManagerSupplier).get(),
                         mFuseboxDataProvider);
     }
 

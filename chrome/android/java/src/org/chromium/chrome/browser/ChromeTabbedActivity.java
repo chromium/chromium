@@ -45,7 +45,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
@@ -3043,7 +3042,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private boolean maybeLaunchDraggedTabGroupInWindow(
-            Intent intent, @NonNull TabGroupMetadata tabGroupMetadata) {
+            Intent intent, TabGroupMetadata tabGroupMetadata) {
         @UrlIntentSource
         int intentSource =
                 IntentUtils.safeGetIntExtra(
@@ -3323,25 +3322,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private EducationTipModuleActionDelegate createEducationTipModuleActionDelegate() {
         return new EducationTipModuleActionDelegate() {
-            @NonNull
             @Override
             public Context getContext() {
                 return ChromeTabbedActivity.this;
             }
 
-            @NonNull
             @Override
             public MonotonicObservableSupplier<Profile> getProfileSupplier() {
                 return mTabModelProfileSupplier;
             }
 
-            @NonNull
             @Override
             public TabModelSelector getTabModelSelector() {
                 return mTabModelSelector;
             }
 
-            @NonNull
             @Override
             public BottomSheetController getBottomSheetController() {
                 return mRootUiCoordinator.getBottomSheetController();
@@ -4445,7 +4440,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (tabToClose != null) closeTabUponMinimization(tabToClose);
     }
 
-    private void closeTabUponMinimization(@NonNull Tab tabToClose) {
+    private void closeTabUponMinimization(Tab tabToClose) {
         // In the case of closing a tab upon minimization, don't allow the close action to
         // happen until after our app is minimized to make sure we don't get a brief glimpse of
         // the newly active tab before we exit Chrome.
@@ -4463,7 +4458,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
     }
 
-    private void closeTabUponMinimizationInternalSync(@NonNull Tab tabToClose) {
+    private void closeTabUponMinimizationInternalSync(Tab tabToClose) {
         if (mTabModelSelector == null || tabToClose.isClosing() || tabToClose.isDestroyed()) {
             return;
         }

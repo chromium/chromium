@@ -94,7 +94,9 @@ public class TabSwitcherUtils {
      * @param tabId The ID of the tab that it should switch to.
      */
     public static void hideTabSwitcherAndShowTab(
-            int tabId, TabModelSelector tabModelSelector, LayoutManager layoutManager) {
+            int tabId,
+            @Nullable TabModelSelector tabModelSelector,
+            @Nullable LayoutManager layoutManager) {
         if (tabModelSelector == null) return;
 
         TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);

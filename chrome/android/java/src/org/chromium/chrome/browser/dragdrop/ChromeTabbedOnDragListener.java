@@ -48,7 +48,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
     private final MultiInstanceManager mMultiInstanceManager;
     private final TabModelSelector mTabModelSelector;
     private final Context mContext;
-    private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final Supplier<@Nullable LayoutStateProvider> mLayoutStateProviderSupplier;
     private @Nullable Tab mTabToEnableFakeBox;
 
     /**
@@ -63,7 +63,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
             MultiInstanceManager multiInstanceManager,
             TabModelSelector tabModelSelector,
             Context context,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier) {
         mMultiInstanceManager = multiInstanceManager;
         mTabModelSelector = tabModelSelector;
         mContext = context;

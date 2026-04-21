@@ -31,16 +31,15 @@ import java.util.function.Supplier;
 /* package */ class KeyboardFocusRowManager {
 
     // Alphabetical order by field name
-    private final Supplier</* @Nullable */ BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
+    private final Supplier<@Nullable BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
 
     @SuppressWarnings("unused")
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
 
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier</* Nullable */ StripLayoutHelperManager>
-            mStripLayoutHelperManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable StripLayoutHelperManager> mStripLayoutHelperManagerSupplier;
     private final TabObscuringHandler mTabObscuringHandler;
-    private final Supplier</* Nullable */ ToolbarManager> mToolbarManagerSupplier;
+    private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
 
     /**
      * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
@@ -65,12 +64,12 @@ import java.util.function.Supplier;
      *     not visible) that will be used to get/set keyboard focus on the toolbar.
      */
     KeyboardFocusRowManager(
-            Supplier</* @Nullable */ BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
+            Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier</* @Nullable */ StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
-            Supplier</* @Nullable */ ToolbarManager> toolbarManagerSupplier) {
+            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier) {
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -84,7 +83,9 @@ import java.util.function.Supplier;
         // If the toolbar is obscured, return early.
         var modalDialogManager = mModalDialogManagerSupplier.get();
         if (mTabObscuringHandler.isToolbarObscured()
-                || (modalDialogManager.isShowing() && modalDialogManager.getCurrentType() == APP)) {
+                || (modalDialogManager != null
+                        && modalDialogManager.isShowing()
+                        && modalDialogManager.getCurrentType() == APP)) {
             return;
         }
 
@@ -92,7 +93,7 @@ import java.util.function.Supplier;
         @KeyboardFocusRow int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow);
         switch (newKeyboardFocusRow) {
             case KeyboardFocusRow.NONE -> {
-                CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+                var compositorViewHolder = mCompositorViewHolderSupplier.get();
                 if (compositorViewHolder != null) {
                     compositorViewHolder.setFocusOnFirstContentViewItem();
                 }

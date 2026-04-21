@@ -109,7 +109,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             @FlowType int type,
             DataSharingTabManager tabManager,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
-            LoadingFullscreenCoordinator loadingFullscreenCoordinator,
+            @Nullable LoadingFullscreenCoordinator loadingFullscreenCoordinator,
             @Nullable Callback<Runnable> switchToTabSwitcherCallback,
             Callback<Callback<Boolean>> startAccountRefreshCallback) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
@@ -124,6 +124,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mStartAccountRefreshCallback = startAccountRefreshCallback;
 
         if (mFlowType == FlowType.JOIN) {
+            assert loadingFullscreenCoordinator != null;
             // The screen should not animate in order to hide all ongoing transitions immediately
             // after this call.
             loadingFullscreenCoordinator.startLoading(this::destroy, /* animate= */ false);
