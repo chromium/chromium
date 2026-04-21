@@ -40,7 +40,8 @@ async function TestLosingAndReusingCanvasInSameTask(test, canvas) {
   }
 
   // Check that the context usable again after it's restored.
-  await new Promise(resolve => { canvas.oncontextrestored = resolve; });
+  await waitForContextLost(ctx);
+  await waitForContextRestored(ctx);
 
   ctx.fillStyle = 'lime';
   ctx.fillRect(0, 0, 100, 100);

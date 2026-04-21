@@ -29,18 +29,18 @@ canvasPromiseTest(async (canvas) => {
 
   let contextLostEventInvoked = false;
   let contextRestoredEventInvoked = false;
-  let contextLost = new Promise(resolve => {
+  let contextLost = bindToPromise(ctx, new Promise(resolve => {
     canvas.oncontextlost = () => {
       contextLostEventInvoked = true;
       resolve();
     }
-  });
-  let contextRestored = new Promise(resolve => {
+  }));
+  let contextRestored = bindToPromise(ctx, new Promise(resolve => {
     canvas.oncontextrestored = () => {
       contextRestoredEventInvoked = true;
       resolve();
     }
-  });
+  }));
 
   // Make sure the canvas is fully initialized.
   drawAndReadBack(ctx);
@@ -99,12 +99,12 @@ canvasPromiseTest(async (canvas) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // `oncontextlost` blocks restoration by using `preventDefault`.
-  let contextLost = new Promise(resolve => {
+  let contextLost = bindToPromise(ctx, new Promise(resolve => {
     canvas.oncontextlost = (event) => {
       event.preventDefault();
       resolve();
     }
-  });
+  }));
   // `oncontextrestored` should never be called.
   canvas.oncontextrestored = () => {
     assert_unreached('The context should not have been restored.');
@@ -142,12 +142,12 @@ canvasPromiseTest(async (canvas) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // `oncontextlost` blocks restoration by using `preventDefault`.
-  let contextLost = new Promise(resolve => {
+  let contextLost = bindToPromise(ctx, new Promise(resolve => {
     canvas.oncontextlost = (event) => {
       event.preventDefault();
       resolve();
     }
-  });
+  }));
   // `oncontextrestored` should never be called.
   canvas.oncontextrestored = () => {
     assert_unreached('The context should not have been restored.');

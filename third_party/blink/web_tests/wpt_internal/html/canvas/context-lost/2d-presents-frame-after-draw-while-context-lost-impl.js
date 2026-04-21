@@ -7,19 +7,12 @@ async function TestDrawWhile2dContextLost(canvas,
     desynchronized: desynchronized,
   });
 
-  const contextLost = new Promise(resolve => {
-    canvas.oncontextlost = resolve;
-  });
-  const contextRestored = new Promise(resolve => {
-    canvas.oncontextrestored = resolve;
-  });
-
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
   chrome.gpuBenchmarking.terminateGpuProcessNormally();
-  await contextLost;
+  await waitForContextLost(ctx);
 
   // Draw a few frames while the context is lost. These should be no-op.
   for (let i = 0; i < 10; ++i) {
@@ -30,7 +23,7 @@ async function TestDrawWhile2dContextLost(canvas,
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
-  await contextRestored;
+  await waitForContextRestored(ctx);
 
   ctx.fillStyle = 'lime';
   ctx.fillRect(0, 0, 100, 100);

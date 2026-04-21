@@ -7,21 +7,14 @@ async function TestResizeInOnContextLost(canvas,
     desynchronized: desynchronized,
   });
 
-  const contextLost = new Promise(resolve => {
-    canvas.oncontextlost = resolve;
-  });
-  const contextRestored = new Promise(resolve => {
-    canvas.oncontextrestored = resolve;
-  });
-
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
   chrome.gpuBenchmarking.terminateGpuProcessNormally();
-  await contextLost;
+  await waitForContextLost(ctx);
   // Resize from within the oncontextlost task.
   canvas.width = 100;
-  await contextRestored;
+  await waitForContextRestored(ctx);
 
   ctx.fillStyle = 'lime';
   ctx.fillRect(0, 0, 50, 50);

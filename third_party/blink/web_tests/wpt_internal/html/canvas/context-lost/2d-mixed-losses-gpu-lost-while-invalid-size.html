@@ -36,7 +36,7 @@ function drawAndReadBack(ctx, fillStyle) {
   terminateGpuProcess(test);
 
   // The context should be lost and remain lost due to the invalid size.
-  await new Promise(resolve => canvas.oncontextlost = resolve);
+  await waitForContextLost(ctx);
 
   // Check that the context isn't automatically restored. That would normally
   // occur after 500ms, wait a whole second to be sure.
@@ -48,7 +48,7 @@ function drawAndReadBack(ctx, fillStyle) {
 
   // Specifying a valid canvas size will restore the context.
   canvas.width = 200;
-  await new Promise(resolve => canvas.oncontextrestored = resolve);
+  await waitForContextRestored(ctx);
   assert_false(ctx.isContextLost(), 'Context should be restored.');
   assert_array_equals(drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
                       `The canvas should be usable after it's restored.`);

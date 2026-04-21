@@ -27,7 +27,7 @@ canvasPromiseTest(async (canvas, {test}) => {
 
   // Lose the GPU context.
   terminateGpuProcess(test);
-  await new Promise(resolve => canvas.oncontextlost = resolve);
+  await waitForContextLost(ctx);
   assert_true(ctx.isContextLost(),
               'Context should be lost after the GPU process was terminated.');
 
@@ -45,7 +45,7 @@ canvasPromiseTest(async (canvas, {test}) => {
 
   // Specifying a valid canvas size will restore the context.
   canvas.width = 200;
-  await new Promise(resolve => canvas.oncontextrestored = resolve);
+  await waitForContextRestored(ctx);
   assert_false(ctx.isContextLost(), 'Context should be restored.');
   assert_array_equals(drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
                       `The canvas should be usable after it's restored.`);

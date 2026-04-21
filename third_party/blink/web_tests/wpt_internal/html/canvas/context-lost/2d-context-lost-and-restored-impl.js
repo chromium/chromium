@@ -11,13 +11,6 @@ async function Test2dContextLostAndRestored(test, canvas,
     desynchronized: desynchronized,
   });
 
-  const contextLost = new Promise(resolve => {
-    canvas.oncontextlost = resolve;
-  });
-  const contextRestored = new Promise(resolve => {
-    canvas.oncontextrestored = resolve;
-  });
-
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
@@ -25,7 +18,7 @@ async function Test2dContextLostAndRestored(test, canvas,
   terminateGpuProcess(test);
 
   assert_false(ctx.isContextLost());
-  await contextLost;
+  await waitForContextLost(ctx);
   assert_true(ctx.isContextLost());
 
   // The canvas should remain blank until it's restored.
@@ -36,7 +29,7 @@ async function Test2dContextLostAndRestored(test, canvas,
       'The canvas should remain blank while the context is lost.');
 
   assert_true(ctx.isContextLost());
-  await contextRestored;
+  await waitForContextRestored(ctx);
   assert_false(ctx.isContextLost());
 
   // Once restored, the canvas should be usable as if it's a new canvas.
