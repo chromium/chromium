@@ -897,7 +897,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the
   // window destruction and ensure that the map is cleaned up.
-  using FullscreenWindowMonitorMap = std::map<HMONITOR, HWNDMessageHandler*>;
+  using FullscreenWindowMonitorMap =
+      std::map<HMONITOR, raw_ptr<HWNDMessageHandler>>;
   static base::LazyInstance<FullscreenWindowMonitorMap>::DestructorAtExit
       fullscreen_monitor_map_;
 

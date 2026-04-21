@@ -442,6 +442,10 @@ HWNDMessageHandler::~HWNDMessageHandler() {
   // Clear pointer to this in `hwnd()`'s user data, to prevent installed hooks
   // from calling back into this after deletion.
   ClearUserData();
+
+  // If the window is a fullscreen window then remove its references from the
+  // full screen window map.
+  RemoveCurrentWindowFromFullscreenMonitorMap();
 }
 
 void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
@@ -1022,12 +1026,7 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 void HWNDMessageHandler::SetFullscreen(bool fullscreen,
                                        int64_t target_display_id) {
   // Erase any prior reference to this window in the fullscreen window map.
-  HMONITOR monitor = ::MonitorFromWindow(hwnd(), MONITOR_DEFAULTTOPRIMARY);
-  FullscreenWindowMonitorMap::iterator iter =
-      fullscreen_monitor_map_.Get().find(monitor);
-  if (iter != fullscreen_monitor_map_.Get().end()) {
-    fullscreen_monitor_map_.Get().erase(iter);
-  }
+  RemoveCurrentWindowFromFullscreenMonitorMap();
 
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
@@ -3909,12 +3908,8 @@ POINT HWNDMessageHandler::GetCursorPos() const {
 }
 
 void HWNDMessageHandler::RemoveCurrentWindowFromFullscreenMonitorMap() {
-  auto& map = fullscreen_monitor_map_.Get();
-  const auto i = std::ranges::find(
-      map, this, &FullscreenWindowMonitorMap::value_type::second);
-  if (i != map.end()) {
-    map.erase(i);
-  }
+  std::erase_if(fullscreen_monitor_map_.Get(),
+                [this](const auto& kv) { return kv.second == this; });
 }
 
 void HWNDMessageHandler::UpdateFullscreenMonitorMap() {
