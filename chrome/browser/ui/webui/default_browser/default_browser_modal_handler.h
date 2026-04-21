@@ -32,7 +32,7 @@ class DefaultBrowserModalHandler final
   // default_browser_modal::mojom::PageHandler:
   void Cancel() override;
   void Confirm() override;
-  void ContentReady(uint32_t content_height) override;
+  void ShowUI() override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;

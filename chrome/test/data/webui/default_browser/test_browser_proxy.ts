@@ -13,7 +13,7 @@ export class TestDefaultBrowserPageHandler extends TestBrowserProxy implements
     super([
       'cancel',
       'confirm',
-      'contentReady',
+      'showUi',
     ]);
   }
 
@@ -25,8 +25,9 @@ export class TestDefaultBrowserPageHandler extends TestBrowserProxy implements
     this.methodCalled('confirm');
   }
 
-  contentReady(contentHeight: number) {
-    this.methodCalled('contentReady', contentHeight);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  showUI() {
+    this.methodCalled('showUi');
   }
 }
 

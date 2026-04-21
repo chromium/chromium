@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ContextualTasks"/>
   <variant name=".CustomizeChrome"/>
   <variant name=".DataSharingBubble"/>
+  <variant name=".DefaultBrowserModal"/>
   <variant name=".Emoji"/>
   <variant name=".ExtensionsWebStoreZeroStatePromo"/>
   <variant name=".Feed"/>

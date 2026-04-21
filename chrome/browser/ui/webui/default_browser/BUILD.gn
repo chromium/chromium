@@ -25,6 +25,7 @@ source_set("default_browser_modal") {
     "//chrome/browser/resources/default_browser/default_browser_modal:resources",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/startup/default_browser_prompt",
+    "//chrome/browser/ui/views/web_dialogs",
     "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",

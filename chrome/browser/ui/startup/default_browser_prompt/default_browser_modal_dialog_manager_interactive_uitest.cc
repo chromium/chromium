@@ -73,14 +73,12 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
                        ShowAndIgnoreWithoutIllustration) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(/*use_settings_illustration=*/false); }),
-      InAnyContext(WaitForShow(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram("DefaultBrowser.ModalDialogWithoutSettingsIllustration."
                       "ShellIntegration.Shown",
                       1, 1),
       Do([this]() { CloseDialogs(); }),
-      InAnyContext(WaitForHide(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       Do([this]() { manager_.reset(); }),
       VerifyHistogram(
           "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
@@ -94,14 +92,12 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
                        ShowAndDismissWithoutIllustration) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(/*use_settings_illustration=*/false); }),
-      InAnyContext(WaitForShow(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram("DefaultBrowser.ModalDialogWithoutSettingsIllustration."
                       "ShellIntegration.Shown",
                       1, 1),
       Do([this]() { DismissDialogs(); }),
-      InAnyContext(WaitForHide(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram(
           "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
           "ShellIntegration.Interaction",
@@ -114,14 +110,12 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
                        ShowAndIgnoreWithIllustration) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(/*use_settings_illustration=*/true); }),
-      InAnyContext(WaitForShow(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram("DefaultBrowser.ModalDialogWithSettingsIllustration."
                       "ShellIntegration.Shown",
                       1, 1),
       Do([this]() { CloseDialogs(); }),
-      InAnyContext(WaitForHide(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       Do([this]() { manager_.reset(); }),
       VerifyHistogram(
           "DefaultBrowser.ModalDialogWithSettingsIllustration."
@@ -135,14 +129,12 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
                        ShowAndDismissWithIllustration) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(/*use_settings_illustration=*/true); }),
-      InAnyContext(WaitForShow(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram("DefaultBrowser.ModalDialogWithSettingsIllustration."
                       "ShellIntegration.Shown",
                       1, 1),
       Do([this]() { DismissDialogs(); }),
-      InAnyContext(WaitForHide(default_browser::DefaultBrowserModalDialog::
-                                   kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram(
           "DefaultBrowser.ModalDialogWithSettingsIllustration."
           "ShellIntegration.Interaction",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,18 +34,25 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
 
+  void TearDownOnMainThread() override {
+    dialog_widget_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   void ShowUi(bool use_settings_illustration, bool can_pin_to_taskbar = false) {
-    DefaultBrowserModalDialog::Show(browser()->profile(),
-                                    browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetTopLevelNativeWindow(),
-                                    use_settings_illustration,
-                                    can_pin_to_taskbar);
+    dialog_widget_ =
+        ::default_browser::Show(browser()->profile(),
+                                browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetTopLevelNativeWindow(),
+                                use_settings_illustration, can_pin_to_taskbar);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  std::unique_ptr<views::Widget> dialog_widget_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest,
@@ -53,10 +62,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshots not supported in all testing environments."),
       Do([this]() { ShowUi(/*use_settings_illustration=*/false); }),
-      InAnyContext(
-          WaitForShow(DefaultBrowserModalDialog::kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(kDefaultBrowserModalDialogId)),
       InSameContext(ScreenshotSurface(
-          DefaultBrowserModalDialog::kDefaultBrowserModalDialogId,
+          kDefaultBrowserModalDialogId,
           /*screenshot_name=*/"DefaultBrowserModalWithoutSettingsIllustration",
           kScreenshotBaselineCL)));
 }
@@ -68,10 +76,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalPixelTest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshots not supported in all testing environments."),
       Do([this]() { ShowUi(/*use_settings_illustration=*/true); }),
-      InAnyContext(
-          WaitForShow(DefaultBrowserModalDialog::kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(kDefaultBrowserModalDialogId)),
       InSameContext(ScreenshotSurface(
-          DefaultBrowserModalDialog::kDefaultBrowserModalDialogId,
+          kDefaultBrowserModalDialogId,
           /*screenshot_name=*/"DefaultBrowserModalWithSettingsIllustration",
           kScreenshotBaselineCL)));
 }

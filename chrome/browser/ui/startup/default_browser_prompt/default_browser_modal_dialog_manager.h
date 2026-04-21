@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_MODAL_DIALOG_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,8 +31,6 @@ namespace default_browser {
 // behavior.
 class DefaultBrowserModalDialogManager : public DefaultBrowserSurfaceManager {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultBrowserModalDialogId);
-
   explicit DefaultBrowserModalDialogManager(bool use_settings_illustration);
 
   DefaultBrowserModalDialogManager(const DefaultBrowserModalDialogManager&) =
@@ -55,7 +54,7 @@ class DefaultBrowserModalDialogManager : public DefaultBrowserSurfaceManager {
   const bool use_settings_illustration_;
 
   // A map of browser windows to the prompt modal widgets.
-  std::map<BrowserWindowInterface*, base::WeakPtr<views::Widget>>
+  std::map<BrowserWindowInterface*, std::unique_ptr<views::Widget>>
       dialog_widgets_;
 };
 

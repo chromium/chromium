@@ -19,10 +19,8 @@ interface PageHandler {
   // Invokes the C++ logic to close the dialog.
   Cancel();
 
-  // Passes the rendered content height of the WebUI to the C++ logic when the
-  // content is ready, allowing it to dynamically size and show the dialog
-  // widget.
-  ContentReady(uint32 height);
+  // Signals that the UI is ready to be shown.
+  ShowUI();
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication. This

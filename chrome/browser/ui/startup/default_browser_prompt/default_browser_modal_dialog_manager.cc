@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace default_browser {
@@ -37,19 +38,17 @@ void DefaultBrowserModalDialogManager::ShowForBrowser(
     parent_window = widget->GetNativeWindow();
   }
 
-  views::Widget* widget = DefaultBrowserModalDialog::Show(
-      browser->GetProfile(), parent_window, use_settings_illustration_,
-      can_pin_to_taskbar());
-  if (widget) {
-    dialog_widgets_[browser] = widget->GetWeakPtr();
-  }
+  dialog_widgets_[browser] =
+      ::default_browser::Show(browser->GetProfile(), parent_window,
+                              use_settings_illustration_, can_pin_to_taskbar());
 }
 
 void DefaultBrowserModalDialogManager::CloseForBrowser(
     BrowserWindowInterface* browser) {
-  if (auto widget = dialog_widgets_.extract(browser)) {
-    if (widget.mapped()) {
-      widget.mapped()->CloseWithReason(
+  if (auto entry = dialog_widgets_.extract(browser)) {
+    // The entry mapped value is a std::unique_ptr<views::Widget>.
+    if (entry.mapped()) {
+      entry.mapped()->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
     }
   }

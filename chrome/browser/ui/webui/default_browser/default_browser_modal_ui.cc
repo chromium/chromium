@@ -18,8 +18,19 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "ui/webui/webui_util.h"
+
+DefaultBrowserModalUIConfig::DefaultBrowserModalUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIDefaultBrowserModalHost) {}
+
+DefaultBrowserModalUIConfig::~DefaultBrowserModalUIConfig() = default;
+
+bool DefaultBrowserModalUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
 
 DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/false) {
