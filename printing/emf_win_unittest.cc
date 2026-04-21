@@ -36,11 +36,9 @@ class EmfPrintingTest : public testing::Test, public PrintingContext::Delegate {
   typedef testing::Test Parent;
   static bool IsTestCaseDisabled() {
     // It is assumed this printer is a HP Color LaserJet 4550 PCL or 4700.
-    HDC hdc = CreateDC(L"WINSPOOL", L"UnitTest Printer", nullptr, nullptr);
-    if (!hdc)
-      return true;
-    DeleteDC(hdc);
-    return false;
+    base::win::ScopedCreateDC hdc(
+        CreateDC(L"WINSPOOL", L"UnitTest Printer", nullptr, nullptr));
+    return !hdc.is_valid();
   }
 
   // PrintingContext::Delegate methods.
@@ -72,17 +70,17 @@ TEST(EmfTest, DC) {
   Emf emf;
   // TODO(thestig): Make `data` uint8_t and avoid the base::as_byte_span() call.
   EXPECT_TRUE(emf.InitFromData(base::as_byte_span(data)));
-  HDC hdc = CreateCompatibleDC(nullptr);
-  EXPECT_TRUE(hdc);
+  base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
+  ASSERT_TRUE(hdc.is_valid());
   RECT output_rect = {0, 0, 10, 10};
-  EXPECT_TRUE(emf.Playback(hdc, &output_rect));
-  EXPECT_TRUE(DeleteDC(hdc));
+  EXPECT_TRUE(emf.Playback(hdc.get(), &output_rect));
 }
 
 // Disabled if no "UnitTest printer" exist. Useful to reproduce bug 1186598.
 TEST_F(EmfPrintingTest, Enumerate) {
-  if (IsTestCaseDisabled())
-    return;
+  if (IsTestCaseDisabled()) {
+    GTEST_SKIP();
+  }
 
   auto settings = std::make_unique<PrintSettings>();
 
@@ -135,10 +133,12 @@ TEST_F(EmfPrintingTest, Enumerate) {
 
 // Disabled if no "UnitTest printer" exists.
 TEST_F(EmfPrintingTest, PageBreak) {
-  base::win::ScopedCreateDC dc(
+  base::win::ScopedCreateDC hdc(
       CreateDC(L"WINSPOOL", L"UnitTest Printer", nullptr, nullptr));
-  if (!dc.Get())
-    return;
+  if (!hdc.is_valid()) {
+    GTEST_SKIP();
+  }
+
   std::vector<char> data;
   {
     Emf emf;
@@ -163,12 +163,12 @@ TEST_F(EmfPrintingTest, PageBreak) {
   DOCINFO di = {0};
   di.cbSize = sizeof(DOCINFO);
   di.lpszDocName = L"Test Job";
-  int job_id = ::StartDoc(dc.Get(), &di);
+  int job_id = ::StartDoc(hdc.Get(), &di);
   Emf emf;
   // TODO(thestig): Make `data` uint8_t and avoid the base::as_byte_span() call.
   EXPECT_TRUE(emf.InitFromData(base::as_byte_span(data)));
-  EXPECT_TRUE(emf.SafePlayback(dc.Get()));
-  ::EndDoc(dc.Get());
+  EXPECT_TRUE(emf.SafePlayback(hdc.Get()));
+  ::EndDoc(hdc.Get());
   // Since presumably the printer is not real, let us just delete the job from
   // the queue.
   HANDLE printer = nullptr;
