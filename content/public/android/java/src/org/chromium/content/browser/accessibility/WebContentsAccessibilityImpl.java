@@ -626,10 +626,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // TODO(crbug.com/485227837): Rename experiment's methods
     public int @Nullable [] getChildIdsForExperiment(int virtualViewId) {
-        if (!isNativeInitialized()) return null;
-        assert isRootManagerConnected()
-                : "Accessibility root manager should be connected when the native object is"
-                        + " initialized.";
+        if (!isRootManagerConnected()) return null;
         return WebContentsAccessibilityImplJni.get()
                 .getChildIdsForExperiment(mNativeObj, virtualViewId);
     }
@@ -662,10 +659,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // TODO(crbug.com/485227837): Remove experiment's methods
     public long getAccessibilityTreeSizeForExperiment() {
-        if (!isNativeInitialized()) return 0;
-        assert isRootManagerConnected()
-                : "Accessibility root manager should be connected when the native object is"
-                        + " initialized.";
+        if (!isRootManagerConnected()) return 0;
         return WebContentsAccessibilityImplJni.get()
                 .getAccessibilityTreeSizeForExperiment(mNativeObj);
     }

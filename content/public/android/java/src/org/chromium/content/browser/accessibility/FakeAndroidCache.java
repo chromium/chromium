@@ -74,8 +74,11 @@ public class FakeAndroidCache {
     public void validateAccessibilityForExperiment() {
         if (mHistogramRecorder != null) {
             // We must first calculate the total number of nodes.
-            mHistogramRecorder.setTotalNodesCount(
-                    mWebContentsAccessibilityImpl.getAccessibilityTreeSizeForExperiment());
+            long treeSize = mWebContentsAccessibilityImpl.getAccessibilityTreeSizeForExperiment();
+            if (treeSize == 0) {
+                return;
+            }
+            mHistogramRecorder.setTotalNodesCount(treeSize);
             // Then the total number of nodes in the fake cache.
             mHistogramRecorder.setTotalFakeCacheNodesCount(mCache.size());
         }
