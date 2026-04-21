@@ -150,25 +150,30 @@ public class SnackbarTest {
     @Test
     @MediumTest
     public void testStackQueuePersistentOrder() {
-        SnackbarManager.setDurationForTesting(100);
+        Object stackbarActionData = new Object();
         final Snackbar stackbar =
                 Snackbar.make(
-                        "stack",
-                        mDefaultController,
-                        Snackbar.TYPE_ACTION,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "stack",
+                                mDefaultController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", stackbarActionData);
+        Object queuebarActionData = new Object();
         final Snackbar queuebar =
                 Snackbar.make(
-                        "queue",
-                        mDefaultController,
-                        Snackbar.TYPE_NOTIFICATION,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "queue",
+                                mDefaultController,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", queuebarActionData);
+        Object persistentActionData = new Object();
         final Snackbar persistent =
                 Snackbar.make(
-                        "persistent",
-                        mDefaultController,
-                        Snackbar.TYPE_PERSISTENT,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "persistent",
+                                mDefaultController,
+                                Snackbar.TYPE_PERSISTENT,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", persistentActionData);
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(stackbar));
         pollSnackbarCondition(
                 "First snackbar not shown",
@@ -192,12 +197,20 @@ public class SnackbarTest {
                             "Snackbars on stack should not be cancelled by persistent snackbars",
                             stackbar,
                             mManager.getCurrentSnackbarForTesting());
+                    // Simulate the stackbar being dismissed.
+                    mManager.dismissSnackbars(mDefaultController, stackbarActionData);
                 });
         pollSnackbarCondition(
                 "Snackbar on queue not shown",
                 () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == queuebar);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Simulate the queuebar being dismissed.
+                    mManager.dismissSnackbars(mDefaultController, queuebarActionData);
+                });
         pollSnackbarCondition(
-                "Snackbar on queue not timed out",
+                "Snackbar in queue not dismissed",
                 () ->
                         mManager.isShowing()
                                 && mManager.getCurrentSnackbarForTesting() == persistent);
@@ -209,25 +222,30 @@ public class SnackbarTest {
     @Test
     @SmallTest
     public void testPersistentQueueStackOrder() {
-        SnackbarManager.setDurationForTesting(100);
+        Object stackbarActionData = new Object();
         final Snackbar stackbar =
                 Snackbar.make(
-                        "stack",
-                        mDefaultController,
-                        Snackbar.TYPE_ACTION,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "stack",
+                                mDefaultController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", stackbarActionData);
+        Object queuebarActionData = new Object();
         final Snackbar queuebar =
                 Snackbar.make(
-                        "queue",
-                        mDefaultController,
-                        Snackbar.TYPE_NOTIFICATION,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "queue",
+                                mDefaultController,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", queuebarActionData);
+        Object persistentActionData = new Object();
         final Snackbar persistent =
                 Snackbar.make(
-                        "persistent",
-                        mDefaultController,
-                        Snackbar.TYPE_PERSISTENT,
-                        Snackbar.UMA_TEST_SNACKBAR);
+                                "persistent",
+                                mDefaultController,
+                                Snackbar.TYPE_PERSISTENT,
+                                Snackbar.UMA_TEST_SNACKBAR)
+                        .setAction("action", persistentActionData);
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(persistent));
         pollSnackbarCondition(
                 "First snackbar not shown",
@@ -242,11 +260,17 @@ public class SnackbarTest {
         pollSnackbarCondition(
                 "Snackbar on queue was not cleared by snackbar stack.",
                 () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == stackbar);
+
+        // Dismiss the stackbar.
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> mManager.dismissSnackbars(mDefaultController, stackbarActionData));
         pollSnackbarCondition(
-                "Snackbar did not time out",
+                "persistent was revealed by dismissal of stackbar (queuebar was replaced)",
                 () ->
                         mManager.isShowing()
                                 && mManager.getCurrentSnackbarForTesting() == persistent);
+
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.onClick(null));
         pollSnackbarCondition(
                 "Persistent snackbar did not get cleared", () -> !mManager.isShowing());
