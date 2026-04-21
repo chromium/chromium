@@ -84,6 +84,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
 // and navigates to it.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
                        MAYBE_MiddleClickPasteAndNavigate) {
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection) ||
+      !ui::Clipboard::IsMiddleClickPasteEnabled()) {
+    GTEST_SKIP() << "Middle click paste or kSelection not supported";
+  }
+
   const std::u16string kPasteText = u"https://www.google.com/";
   base::UserActionTester user_action_tester;
 
