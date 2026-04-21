@@ -126,12 +126,12 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, IncludeNTPs) {
   ASSERT_TRUE(AddTabAtIndexToBrowser(
-      browser(), 0, GURL(chrome::kChromeUINewTabPageURL),
+      browser(), 0, chrome::ChromeUINewTabPageURLAsGURL(),
       ui::PAGE_TRANSITION_LINK, false /* check_navigation_success */));
   auto* web_contents = GetActiveWebContents(browser());
   ASSERT_TRUE(web_contents);
-  EXPECT_STREQ(web_contents->GetLastCommittedURL().spec().c_str(),
-               chrome::kChromeUINewTabPageURL);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            chrome::ChromeUINewTabPageURLAsGURL());
 
   // Mobile-style Blink prefs should be applied to the NTP in tablet mode.
   EnterTabletMode();

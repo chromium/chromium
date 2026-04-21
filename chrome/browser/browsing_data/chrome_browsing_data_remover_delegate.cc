@@ -690,7 +690,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
       profile_->GetDefaultStoragePartition()->ClearDataForOrigin(
           content::StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
-          GURL(chrome::kChromeUINewTabPageURL), base::DoNothing());
+          chrome::ChromeUINewTabPageURLAsGURL(), base::DoNothing());
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

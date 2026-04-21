@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   content::WebContents* wc = agent_host->GetWebContents();
   ASSERT_TRUE(wc);
   ASSERT_TRUE(content::WaitForLoadStop(wc));
-  EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), wc->GetLastCommittedURL());
 
   // Should not crash by this point.
 }

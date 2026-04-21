@@ -1379,8 +1379,8 @@ bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
 bool ChromePasswordManagerClient::IsNewTabPage() const {
   auto origin = GetLastCommittedURL().DeprecatedGetOriginAsURL();
   return origin ==
-             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
-         origin == GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL();
+             chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL() ||
+         origin == chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL();
 }
 
 password_manager::WebAuthnCredentialsDelegate*

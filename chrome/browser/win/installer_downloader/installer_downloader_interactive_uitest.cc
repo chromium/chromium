@@ -37,7 +37,7 @@ class InstallerDownloaderInteractiveUiTest : public InteractiveBrowserTest {
 
   InteractiveTestApi::MultiStep ShowInfobarOnNewTab() {
     return Steps(AddInstrumentedTab(kSecondTabContents,
-                                    GURL(chrome::kChromeUINewTabURL)),
+                                    chrome::ChromeUINewTabURLAsGURL()),
                  WaitForShow(ConfirmInfoBar::kInfoBarElementId));
   }
 

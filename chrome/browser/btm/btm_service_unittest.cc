@@ -86,7 +86,7 @@ class BtmService3pcExceptionsTest : public testing::Test {
 // Verifies that redirect chains that start or end on embedder URLs do not
 // have 3PC exceptions.
 TEST_F(BtmService3pcExceptionsTest, EmbedderUrl_DoesNotHaveException) {
-  GURL non_web_url(chrome::kChromeUINewTabURL);
+  GURL non_web_url = chrome::ChromeUINewTabURLAsGURL();
   GURL redirect_url("https://redirect.com");
 
   EXPECT_FALSE(Has3pcException(GetProfile(), nullptr, redirect_url, non_web_url,

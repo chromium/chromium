@@ -174,7 +174,7 @@ std::string CreateReauthenticationInterstitialForYouTube(
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
-              GURL(chrome::kChromeUINewTabURL), request_url),
+              chrome::ChromeUINewTabURLAsGURL(), request_url),
           is_main_frame);
 
   std::string interstitial_html = blocking_page->GetHTMLContents();
@@ -204,7 +204,7 @@ std::string CreateReauthenticationInterstitialForBlockedSites(
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
-              GURL(chrome::kChromeUINewTabURL), request_url),
+              chrome::ChromeUINewTabURLAsGURL(), request_url),
           block_reason, is_main_frame, has_second_custodian);
 
   std::string interstitial_html = blocking_page->GetHTMLContents();

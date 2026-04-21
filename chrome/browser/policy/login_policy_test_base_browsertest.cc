@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
   Browser* browser = CreateBrowser(profile);
   EXPECT_EQ("fr", prefs->GetString(language::prefs::kApplicationLocale));
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser, GURL(chrome::kChromeUINewTabURL)));
+      ui_test_utils::NavigateToURL(browser, chrome::ChromeUINewTabURLAsGURL()));
   std::u16string french_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
   std::u16string title;
   EXPECT_TRUE(ui_test_utils::GetCurrentTabTitle(browser, &title));

@@ -1500,7 +1500,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
       base::RecordAction(
           base::UserMetricsAction("MostVisited_ClickedFromContextMenu"));
     } else if (doc_url.DeprecatedGetOriginAsURL() ==
-                   GURL(chrome::kChromeUINewTabPageURL) ||
+                   chrome::ChromeUINewTabPageURLAsGURL() ||
                doc_url.DeprecatedGetOriginAsURL() ==
                    GURL(chrome::kChromeUIUntrustedNewTabPageUrl)) {
       base::RecordAction(base::UserMetricsAction(

@@ -263,8 +263,8 @@ TEST_F(HostContentSettingsMapTest, DefaultValues) {
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::JAVASCRIPT));
   EXPECT_EQ(CONTENT_SETTING_ALLOW, host_content_settings_map->GetContentSetting(
-                                       GURL(chrome::kChromeUINewTabURL),
-                                       GURL(chrome::kChromeUINewTabURL),
+                                       chrome::ChromeUINewTabURLAsGURL(),
+                                       chrome::ChromeUINewTabURLAsGURL(),
                                        ContentSettingsType::JAVASCRIPT));
 
   host_content_settings_map->SetDefaultContentSetting(

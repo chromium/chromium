@@ -1612,11 +1612,11 @@ GURL ProfileImpl::GetHomePage() {
   }
 
   if (GetPrefs()->GetBoolean(prefs::kHomePageIsNewTabPage))
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   GURL home_page(
       url_formatter::FixupURL(GetPrefs()->GetString(prefs::kHomePage)));
   if (!home_page.is_valid())
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   return home_page;
 }
 
