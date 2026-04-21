@@ -355,6 +355,7 @@ source_set("unit_tests") {
     "session_authz_reauthorizer_unittest.cc",
     "spake2_authenticator_unittest.cc",
     "ssl_hmac_channel_authenticator_unittest.cc",
+    "stream_packet_socket_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
     "webrtc_video_renderer_adapter_unittest.cc",

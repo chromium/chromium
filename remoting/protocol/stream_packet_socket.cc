@@ -237,7 +237,7 @@ int StreamPacketSocket::GetOption(webrtc::Socket::Option option, int* value) {
 
 int StreamPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
   if (!socket_) {
-    NOTREACHED();
+    return -1;
   }
 
   switch (option) {
@@ -257,7 +257,8 @@ int StreamPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
 
     case webrtc::Socket::OPT_NODELAY:
       // Should call TCPClientSocket::SetNoDelay directly.
-      NOTREACHED();
+      NOTIMPLEMENTED();
+      return -1;
 
     case webrtc::Socket::OPT_IPV6_V6ONLY:
       NOTIMPLEMENTED();
