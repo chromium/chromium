@@ -8348,7 +8348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache"
-    enum="BooleanMatched" expires_after="2026-06-01">
+    enum="BooleanMatched" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8366,7 +8366,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.CallDuration"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8382,7 +8382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.Result"
-    enum="AndroidWebViewSupportedThreatTypesResult" expires_after="2026-06-01">
+    enum="AndroidWebViewSupportedThreatTypesResult" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -9222,7 +9222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
-    enum="WebViewClientTypeEnum" expires_after="2026-06-01">
+    enum="WebViewClientTypeEnum" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
