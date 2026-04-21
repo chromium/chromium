@@ -129,9 +129,10 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
                      color_gamut, transfer_function, key_system);
   }
 
-  std::string CanDecodeVideoWithKeySystem(std::string_view config_type,
-                                          std::string_view content_type,
-                                          std::string_view key_system) {
+  std::string CanDecodeVideoWithDolbyVisionAndKeySystem(
+      std::string_view config_type,
+      std::string_view content_type,
+      std::string_view key_system) {
     return CanDecode(config_type, content_type,
                      StreamType::kVideoWithDolbyVisionAndKeySystem,
                      /* spatialRendering */ false, "", "", "", key_system);
@@ -351,11 +352,11 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
 
-  EXPECT_EQ(kSupported, CanDecodeVideoWithKeySystem(
+  EXPECT_EQ(kSupported, CanDecodeVideoWithDolbyVisionAndKeySystem(
                             config_type, "'video/mp4; codecs=\"dvh1.05.06\"'",
                             media::kExternalClearKeyKeySystem));
 
-  EXPECT_EQ(kSupported, CanDecodeVideoWithKeySystem(
+  EXPECT_EQ(kSupported, CanDecodeVideoWithDolbyVisionAndKeySystem(
                             config_type, "'video/mp4; codecs=\"dvhe.08.07\"'",
                             media::kExternalClearKeyKeySystem));
 }
