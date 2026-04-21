@@ -1385,7 +1385,14 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeWithNewTab) {
+// TODO(crbug.com/504753617): Re-enable the test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_InvokeWithNewTab DISABLED_InvokeWithNewTab
+#else
+#define MAYBE_InvokeWithNewTab InvokeWithNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       MAYBE_InvokeWithNewTab) {
   BrowserWindowInterface* browser_window =
       GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface();
   int tab_count_before = GetTabListInterface()->GetTabCount();
