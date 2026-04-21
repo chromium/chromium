@@ -60,10 +60,26 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST(AccessTokenRestrictionTest, PrivilegedOAuth2Consumer) {
   EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer(
       signin::OAuthConsumerId::kExtensionsIdentityAPI));
-  EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer(
+  EXPECT_FALSE(signin::IsPrivilegedOAuth2Consumer(
       signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics));
   EXPECT_FALSE(signin::IsPrivilegedOAuth2Consumer(
       signin::OAuthConsumerId::kOptimizationGuideGetHints));
+}
+
+TEST(AccessTokenRestrictionTest, ConsumerAllowlistedForScope) {
+  EXPECT_TRUE(signin::IsConsumerAllowlistedForScope(
+      signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+      GaiaConstants::kChromeSyncOAuth2Scope));
+
+  // Same consumer, different scope.
+  EXPECT_FALSE(signin::IsConsumerAllowlistedForScope(
+      signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+      GaiaConstants::kGoogleUserInfoEmail));
+
+  // Different consumer, same scope.
+  EXPECT_FALSE(signin::IsConsumerAllowlistedForScope(
+      signin::OAuthConsumerId::kOptimizationGuideGetHints,
+      GaiaConstants::kChromeSyncOAuth2Scope));
 }
 
 }  // namespace

@@ -759,4 +759,55 @@ TEST_F(AccessTokenFetcherTest, FetcherWithSignedInClientAccessToPrivilegedAPI) {
       "You are attempting to access a privileged scope");
 }
 
+// Tests that a request with an allowlisted consumer accessing an OAuth2 API
+// that requires sign-in is fulfilled even if the user is not signed in as
+// primary.
+TEST_F(AccessTokenFetcherTest,
+       FetcherWithAllowlistedConsumerAccessToSignedInAPI) {
+  CoreAccountInfo account = AddAccount(kTestGaiaId, kTestEmail);
+  ASSERT_FALSE(primary_account_manager().HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  VerifyScopeAccess(account.account_id,
+                    OAuthConsumerId::kSyncDeviceStatisticsMetrics);
+
+  EXPECT_CHECK_DEATH_WITH(
+      VerifyScopeAccess(account.account_id,
+                        OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+                        OAuthConsumer("kSyncDeviceStatisticsMetrics",
+                                      {GaiaConstants::kOAuth1LoginScope})),
+      "requires user to be signed in to the browser");
+
+  EXPECT_CHECK_DEATH_WITH(
+      VerifyScopeAccess(account.account_id,
+                        OAuthConsumerId::kOptimizationGuideGetHints,
+                        GetOAuthConsumerFromId(
+                            OAuthConsumerId::kSyncDeviceStatisticsMetrics)),
+      "requires user to be signed in to the browser");
+}
+
+// Tests that a request with an allowlisted consumer accessing a mix of
+// allowlisted and unrestricted scopes is fulfilled, but failing if any
+// forbidden scope is requested.
+TEST_F(AccessTokenFetcherTest, FetcherWithMixedScopes) {
+  CoreAccountInfo account = AddAccount(kTestGaiaId, kTestEmail);
+  ASSERT_FALSE(primary_account_manager().HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Scenario 1: Allowlisted + Public scope. Should succeed.
+  VerifyScopeAccess(account.account_id,
+                    OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+                    OAuthConsumer("kSyncDeviceStatisticsMetrics",
+                                  {GaiaConstants::kChromeSyncOAuth2Scope,
+                                   GaiaConstants::kGoogleUserInfoEmail}));
+
+  // Scenario 2: Allowlisted + Forbidden scope. Should fail/crash.
+  EXPECT_CHECK_DEATH_WITH(
+      VerifyScopeAccess(account.account_id,
+                        OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+                        OAuthConsumer("kSyncDeviceStatisticsMetrics",
+                                      {GaiaConstants::kChromeSyncOAuth2Scope,
+                                       GaiaConstants::kOAuth1LoginScope})),
+      "requires user to be signed in to the browser");
+}
+
 }  // namespace signin

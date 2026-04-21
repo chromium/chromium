@@ -123,7 +123,14 @@ void AccessTokenFetcher::VerifyScopeAccess() {
   bool is_signed_in =
       primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
 
+  // A consumer is allowed to access the requested scopes if EVERY scope is
+  // either allowlisted for this consumer, unrestricted, or satisfies the
+  // sign-in requirements. A mix of allowlisted and unrestricted scopes is
+  // allowed, but any forbidden scope will trigger a CHECK or NOTREACHED.
   for (const std::string& scope : scopes_) {
+    if (IsConsumerAllowlistedForScope(oauth_consumer_id_, scope)) {
+      continue;
+    }
     OAuth2ScopeRestriction restriction = GetOAuth2ScopeRestriction(scope);
     switch (restriction) {
       case OAuth2ScopeRestriction::kNoRestriction:

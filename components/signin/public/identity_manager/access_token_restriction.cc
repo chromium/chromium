@@ -4,10 +4,8 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
-#include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_set.h"
 #include "build/build_config.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -30,10 +28,7 @@ bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // clang-format off
-
-  static const base::NoDestructor<base::flat_set<std::string_view>> scopes(
-    {
+  static constexpr auto kScopes = base::MakeFixedFlatSet<std::string_view>({
       GaiaConstants::kGoogleUserInfoEmail,
       GaiaConstants::kGoogleUserInfoProfile,
 
@@ -51,12 +46,10 @@ bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
       // Required by cloud policy.
       // On Android, cloud policies are fetched before sign in is completed.
       GaiaConstants::kDeviceManagementServiceOAuth,
-#endif // BUILDFLAG(IS_ANDROID)
-
+#endif  // BUILDFLAG(IS_ANDROID)
   });
-  // clang-format on
 
-  return scopes->contains(scope);
+  return kScopes.contains(scope);
 }
 
 // Returns true if `scope` is a Google OAuth2 API scopes that require privileged
@@ -82,8 +75,18 @@ OAuth2ScopeRestriction GetOAuth2ScopeRestriction(const std::string& scope) {
 }
 
 bool IsPrivilegedOAuth2Consumer(OAuthConsumerId oauth_consumer_id) {
-  return oauth_consumer_id == OAuthConsumerId::kExtensionsIdentityAPI ||
-         oauth_consumer_id == OAuthConsumerId::kSyncDeviceStatisticsMetrics;
+  return oauth_consumer_id == OAuthConsumerId::kExtensionsIdentityAPI;
+}
+
+bool IsConsumerAllowlistedForScope(OAuthConsumerId oauth_consumer_id,
+                                   const std::string& scope) {
+  static constexpr auto kAllowlist =
+      base::MakeFixedFlatSet<std::pair<OAuthConsumerId, std::string_view>>({
+          {OAuthConsumerId::kSyncDeviceStatisticsMetrics,
+           GaiaConstants::kChromeSyncOAuth2Scope},
+      });
+
+  return kAllowlist.contains({oauth_consumer_id, scope});
 }
 
 }  // namespace signin
