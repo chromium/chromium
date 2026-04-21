@@ -540,6 +540,49 @@ public class MultiWindowUtils implements ActivityStateListener {
         return intent;
     }
 
+    @VisibleForTesting
+    /* package */ static @Nullable Intent createNewWindowIntent(
+            Activity sourceActivity, boolean isIncognito, @NewWindowAppSource int source) {
+        boolean isInMultiWindowMode = getInstance().isInMultiWindowMode(sourceActivity);
+        boolean isInMultiDisplayMode = getInstance().isInMultiDisplayMode(sourceActivity);
+
+        if (isMultiInstanceApi31Enabled()) {
+            boolean openAdjacently =
+                    (canEnterMultiWindowMode() || isInMultiWindowMode || isInMultiDisplayMode)
+                            && shouldOpenInAdjacentWindow(sourceActivity);
+
+            Intent intent =
+                    createNewWindowIntent(
+                            sourceActivity,
+                            INVALID_WINDOW_ID,
+                            /* preferNew= */ true,
+                            openAdjacently,
+                            source);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
+            return intent;
+        }
+
+        assert !isIncognito : "Opening an incognito window isn't supported";
+        assert isInMultiWindowMode || isInMultiDisplayMode
+                : "Current windowing mode doesn't support opening a new window";
+
+        Class<? extends Activity> targetActivity =
+                getInstance().getOpenInOtherWindowActivity(sourceActivity);
+        if (targetActivity == null) return null;
+
+        Intent intent = new Intent(sourceActivity, targetActivity);
+        setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
+
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (shouldOpenInAdjacentWindow(sourceActivity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
+
+        return intent;
+    }
+
     /**
      * @param intent The {@link Intent} to determine whether creation of a new instance is
      *     preferred.

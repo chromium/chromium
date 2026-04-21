@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
@@ -84,7 +83,7 @@ import java.util.Set;
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions,
             @NewWindowAppSource int source) {
-        Intent intent = createNewWindowIntent(sourceActivity, isIncognito, source);
+        Intent intent = MultiWindowUtils.createNewWindowIntent(sourceActivity, isIncognito, source);
         if (intent == null) return;
 
         if (additionalIntentExtras != null) {
@@ -97,53 +96,6 @@ import java.util.Set;
         } else {
             sourceActivity.startActivity(intent, startActivityOptions);
         }
-    }
-
-    @VisibleForTesting
-    /* package */ static @Nullable Intent createNewWindowIntent(
-            Activity sourceActivity, boolean isIncognito, @NewWindowAppSource int source) {
-        boolean isInMultiWindowMode =
-                MultiWindowUtils.getInstance().isInMultiWindowMode(sourceActivity);
-        boolean isInMultiDisplayMode =
-                MultiWindowUtils.getInstance().isInMultiDisplayMode(sourceActivity);
-
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            boolean openAdjacently =
-                    (MultiWindowUtils.canEnterMultiWindowMode()
-                                    || isInMultiWindowMode
-                                    || isInMultiDisplayMode)
-                            && MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
-
-            Intent intent =
-                    MultiWindowUtils.createNewWindowIntent(
-                            sourceActivity,
-                            MultiInstanceManager.INVALID_WINDOW_ID,
-                            /* preferNew= */ true,
-                            openAdjacently,
-                            source);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
-            return intent;
-        }
-
-        assert !isIncognito : "Opening an incognito window isn't supported";
-        assert isInMultiWindowMode || isInMultiDisplayMode
-                : "Current windowing mode doesn't support opening a new window";
-
-        Class<? extends Activity> targetActivity =
-                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
-        if (targetActivity == null) return null;
-
-        Intent intent = new Intent(sourceActivity, targetActivity);
-        MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
-
-        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        if (MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
-
-        return intent;
     }
 
     @Override
