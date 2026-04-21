@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskPresent"
-    enum="BooleanPresent" expires_after="2026-05-17">
+    enum="BooleanPresent" expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdaterHealth.UpdaterValid" enum="BooleanValid"
-    expires_after="2026-05-17">
+    expires_after="2026-12-31">
   <owner>ganesh@chromium.org</owner>
   <owner>omaha-support@google.com</owner>
   <summary>
