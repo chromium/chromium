@@ -2612,12 +2612,11 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfElement(
   element.AddConsoleMessage(
       mojom::blink::ConsoleMessageSource::kRendering,
       mojom::blink::ConsoleMessageLevel::kError,
-      String::Format(
-          "Blocked aria-hidden on a <%s> element because it would hide the "
-          "entire accessibility tree from assistive technology users. For more "
-          "details, see the aria-hidden section of the WAI-ARIA specification "
-          "at https://w3c.github.io/aria/#aria-hidden.",
-          element.TagQName().ToString().Ascii().c_str()));
+      StrCat({"Blocked aria-hidden on a <", element.TagQName().ToString(),
+              "> element because it would hide the entire accessibility tree "
+              "from assistive technology users. For more details, see the "
+              "aria-hidden section of the WAI-ARIA specification at "
+              "https://w3c.github.io/aria/#aria-hidden."}));
 }
 
 void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
@@ -2646,19 +2645,18 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
     bad_aria_hidden_ancestor->GetElement()->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        String::Format(
-            "Blocked aria-hidden on an element because its descendant retained "
-            "focus. The focus must not be hidden from assistive technology "
-            "users. Avoid using aria-hidden on a focused element or its "
-            "ancestor. Consider using the inert attribute instead, which will "
-            "also prevent focus. For more details, see the aria-hidden section "
-            "of the WAI-ARIA specification at "
-            "https://w3c.github.io/aria/#aria-hidden.\n"
-            "Element with focus: %s\nAncestor with aria-hidden: %s",
-            AXObject::GetNodeString(&focused_element).Ascii().c_str(),
-            AXObject::GetNodeString(bad_aria_hidden_ancestor->GetElement())
-                .Ascii()
-                .c_str()));
+        StrCat(
+            {"Blocked aria-hidden on an element because its descendant "
+             "retained focus. The focus must not be hidden from assistive "
+             "technology users. Avoid using aria-hidden on a focused element "
+             "or its ancestor. Consider using the inert attribute instead, "
+             "which will also prevent focus. For more details, see the "
+             "aria-hidden section of the WAI-ARIA specification at "
+             "https://w3c.github.io/aria/#aria-hidden.\n"
+             "Element with focus: ",
+             AXObject::GetNodeString(&focused_element),
+             "\nAncestor with aria-hidden: ",
+             AXObject::GetNodeString(bad_aria_hidden_ancestor->GetElement())}));
 #if AX_FAIL_FAST_BUILD()
     LOG(ERROR) << "Parent chain for focused node's AXObject:\n"
                << ParentChainToStringHelper(&obj);

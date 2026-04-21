@@ -362,8 +362,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       result->options.manual_reference_buffer_control = true;
     } else {
       result->not_supported_error_message =
-          String::Format("Unsupported scalabilityMode: %s",
-                         config->scalabilityMode().Utf8().c_str());
+          StrCat({"Unsupported scalabilityMode: ", config->scalabilityMode()});
       return result;
     }
   }

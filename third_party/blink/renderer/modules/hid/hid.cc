@@ -153,12 +153,11 @@ void HID::AddedEventListener(const AtomicString& event_type,
   if (auto* service_worker_global_scope =
           DynamicTo<ServiceWorkerGlobalScope>(context)) {
     if (service_worker_global_scope->did_evaluate_script()) {
-      String message = String::Format(
-          "Event handler of '%s' event must be added on the initial evaluation "
-          "of worker script. More info: "
-          "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
-          "events/",
-          event_type.Utf8().c_str());
+      String message = StrCat({"Event handler of '", event_type,
+                               "' event must be added on the initial "
+                               "evaluation of worker script. More info: "
+                               "https://developer.chrome.com/docs/extensions/"
+                               "mv3/service_workers/events/"});
       GetExecutionContext()->AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning, message);

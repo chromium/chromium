@@ -864,12 +864,14 @@ bool MixedContentChecker::IsMixedFormAction(
   frame->GetLocalFrameHostRemote().DidContainInsecureFormAction();
 
   if (reporting_disposition == ReportingDisposition::kReport) {
-    String message = String::Format(
-        "Mixed Content: The page at '%s' was loaded over a secure connection, "
-        "but contains a form that targets an insecure endpoint '%s'. This "
-        "endpoint should be made available over a secure connection.",
-        MainResourceUrlForFrame(mixed_frame).ElidedString().Utf8().c_str(),
-        url.ElidedString().Utf8().c_str());
+    String message =
+        StrCat({"Mixed Content: The page at '",
+                MainResourceUrlForFrame(mixed_frame).ElidedString(),
+                "' was loaded over a secure connection, but contains a form "
+                "that targets an insecure endpoint '",
+                url.ElidedString(),
+                "'. This endpoint should be made available over a secure "
+                "connection."});
     frame->GetDocument()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kSecurity,
@@ -1047,14 +1049,14 @@ void MixedContentChecker::MixedContentFound(
 ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetchAutoupgrade(
     const KURL& main_resource_url,
     const KURL& mixed_content_url) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
-      "insecure element '%s'. This request was "
-      "automatically upgraded to HTTPS, For more information see "
-      "https://blog.chromium.org/2019/10/"
-      "no-more-mixed-messages-about-https.html",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      mixed_content_url.ElidedString().Utf8().c_str());
+  String message =
+      StrCat({"Mixed Content: The page at '", main_resource_url.ElidedString(),
+              "' was loaded over HTTPS, but requested an insecure element '",
+              mixed_content_url.ElidedString(),
+              "'. This request was automatically upgraded to HTTPS, For more "
+              "information see "
+              "https://blog.chromium.org/2019/10/"
+              "no-more-mixed-messages-about-https.html"});
   return MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kWarning, message);
@@ -1065,12 +1067,12 @@ ConsoleMessage*
 MixedContentChecker::CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
     const KURL& main_resource_url,
     const KURL& mixed_content_url) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
-      "insecure element '%s'. This request was "
-      "not upgraded to HTTPS because its URL's host is an IP address.",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      mixed_content_url.ElidedString().Utf8().c_str());
+  String message =
+      StrCat({"Mixed Content: The page at '", main_resource_url.ElidedString(),
+              "' was loaded over HTTPS, but requested an insecure element '",
+              mixed_content_url.ElidedString(),
+              "'. This request was not upgraded to HTTPS because its URL's "
+              "host is an IP address."});
   return MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kSecurity,
       mojom::blink::ConsoleMessageLevel::kWarning, message);
@@ -1081,12 +1083,12 @@ ConsoleMessage*
 MixedContentChecker::CreateConsoleMessageAboutFetchLocalNetworkNoAutoupgrade(
     const KURL& main_resource_url,
     const KURL& mixed_content_url) {
-  String message = String::Format(
-      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
-      "insecure element '%s'. This request was "
-      "not upgraded to HTTPS because it is a local network request.",
-      main_resource_url.ElidedString().Utf8().c_str(),
-      mixed_content_url.ElidedString().Utf8().c_str());
+  String message =
+      StrCat({"Mixed Content: The page at '", main_resource_url.ElidedString(),
+              "' was loaded over HTTPS, but requested an insecure element '",
+              mixed_content_url.ElidedString(),
+              "'. This request was not upgraded to HTTPS because it is a local "
+              "network request."});
   return MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kWarning, message);

@@ -50,17 +50,18 @@ base::expected<void, String> ValidateNamedMLTensors(
   }
   for (const auto& [name, tensor] : named_tensors) {
     if (!expected_named_descriptors.Contains(name)) {
-      return base::unexpected(String::Format(
-          "The name \"%s\" isn't part of the graph.", name.Utf8().c_str()));
+      return base::unexpected(
+          StrCat({"The name \"", name, "\" isn't part of the graph."}));
     }
     const auto& info = expected_named_descriptors.at(name);
     if (tensor->DataType() != info->data_type()) {
-      return base::unexpected(UNSAFE_TODO(String::Format(
-          "The data type \"%s\""
-          ", of the MLTensor with name \"%s\" "
-          "doesn't match the expected data type (%s).",
-          tensor->dataType().AsCStr(), name.Utf8().c_str(),
-          V8MLOperandDataType(ToBlinkDataType(info->data_type())).AsCStr())));
+      return base::unexpected(
+          StrCat({"The data type \"", tensor->dataType().AsStringView(),
+                  "\", of the MLTensor with name \"", name,
+                  "\" doesn't match the expected data type (",
+                  V8MLOperandDataType(ToBlinkDataType(info->data_type()))
+                      .AsStringView(),
+                  ")."}));
     }
     if (tensor->Shape() != info->shape()) {
       StringBuilder message;
@@ -74,10 +75,10 @@ base::expected<void, String> ValidateNamedMLTensors(
       return base::unexpected(message.ToString());
     }
     if (tensor->context() != context) {
-      return base::unexpected(String::Format(
-          "The context of MLGraph doesn't match the context of the MLTensor "
-          "with name \"%s\".",
-          name.Utf8().c_str()));
+      return base::unexpected(
+          StrCat({"The context of MLGraph doesn't match the context of the "
+                  "MLTensor with name \"",
+                  name, "\"."}));
     }
   }
   return base::ok();

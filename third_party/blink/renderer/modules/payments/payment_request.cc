@@ -1925,10 +1925,9 @@ void PaymentRequest::DispatchPaymentRequestUpdateEvent(
     // returns false if the merchant did not call event.updateWith() within
     // the event handler, which is optional, so the renderer sends a message
     // to the browser to re-enable UI interactions.
-    const String& message = String::Format(
-        "No updateWith() call in '%s' event handler. User may see outdated "
-        "line items and total.",
-        event->type().Ascii().c_str());
+    const String& message = StrCat(
+        {"No updateWith() call in '", event->type(),
+         "' event handler. User may see outdated line items and total."});
     GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,

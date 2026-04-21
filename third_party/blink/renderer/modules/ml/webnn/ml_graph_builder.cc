@@ -1116,9 +1116,8 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
     const auto& name = output.first;
     const auto& operand = output.second;
     if (operand->Kind() != blink_mojom::Operand::Kind::kOutput) {
-      return base::unexpected(String::Format(
-          "The operand with name \"%s\" is not an output operand.",
-          name.Utf8().c_str()));
+      return base::unexpected(StrCat(
+          {"The operand with name \"", name, "\" is not an output operand."}));
     }
     // Setup resource info for this output operand.
     output_constraints.insert(name, operand->Descriptor());
@@ -1145,9 +1144,8 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
           }
           visited_input_operands.insert(operand);
           if (input_constraints.Contains(operand->Name())) {
-            return base::unexpected(
-                String::Format("The input name \"%s\" is duplicated.",
-                               operand->Name().Utf8().c_str()));
+            return base::unexpected(StrCat(
+                {"The input name \"", operand->Name(), "\" is duplicated."}));
           }
           input_constraints.insert(operand->Name(), operand->Descriptor());
           break;

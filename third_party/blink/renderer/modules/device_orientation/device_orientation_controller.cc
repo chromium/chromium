@@ -209,12 +209,11 @@ ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
 void DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
     LocalFrame& frame,
     const AtomicString& event_name) {
-  const String& message = String::Format(
-      "The %s events are blocked by permissions policy. "
-      "See "
-      "https://github.com/w3c/webappsec-permissions-policy/blob/master/"
-      "features.md#sensor-features",
-      event_name.Ascii().c_str());
+  const String& message =
+      StrCat({"The ", event_name,
+              " events are blocked by permissions policy. See "
+              "https://github.com/w3c/webappsec-permissions-policy/blob/master/"
+              "features.md#sensor-features"});
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, std::move(message));
