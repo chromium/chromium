@@ -1208,6 +1208,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "bookmarks-bar-ntp",
+    "owners": ["mschillaci@google.com", "eleanorlee@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 156
+  },
+  {
     "name": "bookmarks-encryption",
     "owners": [ "arichiv@google.com", "mastiz@google.com", "plcoirier@google.com"],
     "expiry_milestone": 155

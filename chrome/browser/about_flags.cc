@@ -12978,6 +12978,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProfileDiscOnAllPagesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kProfileDiscOnAllPages)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"bookmarks-bar-ntp", flag_descriptions::kBookmarksBarNTPName,
+     flag_descriptions::kBookmarksBarNTPDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBookmarksBarNTP)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

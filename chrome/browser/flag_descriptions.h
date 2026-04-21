@@ -5392,6 +5392,11 @@ inline constexpr char kBookmarkPaneAndroidName[] = "Bookmark hub pane";
 inline constexpr char kBookmarkPaneAndroidDescription[] =
     "Enables a bookmark hub pane.";
 
+inline constexpr char kBookmarksBarNTPName[] = "Bookmarks Bar on New Tab Page";
+inline constexpr char kBookmarksBarNTPDescription[] =
+    "When enabled, the Bookmarks Bar will always show on the New Tab Page "
+    "regardless of Profile setting; matching Desktop feature.";
+
 inline constexpr char kBrowserControlsDebuggingName[] =
     "Browser controls debugging";
 inline constexpr char kBrowserControlsDebuggingDescription[] =
