@@ -32,6 +32,6 @@ const char kFindsOptInPromoShownCount[] = "finds.opt_in_promo.shown_count";
 // The timestamp of the last time the finds opt in promo was shown to the user.
 const char kFindsOptInPromoLastShownTimestamp[] =
     "finds.opt_in_promo.last_shown_timestamp";
-// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsUtils.java:FindsOptInPromoInteractionPrefs)
+// LINT.ThenChange(//chrome/browser/finds/android/java/src/org/chromium/chrome/browser/finds/FindsUtils.java:FindsOptInPromoInteractionPrefs)
 
 }  // namespace finds::prefs

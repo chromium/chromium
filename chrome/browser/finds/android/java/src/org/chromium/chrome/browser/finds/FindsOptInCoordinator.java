@@ -19,7 +19,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.finds.FindsUtils.FindsOptInState;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,7 +30,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
@@ -169,37 +167,31 @@ public class FindsOptInCoordinator {
     @VisibleForTesting
     void onOptInAccepted() {
         mUserInteractionType = FindsOptInUserInteraction.ACCEPTED;
-        FindsUtils.getOptInState(
-                (state) -> {
-                    if (state == FindsOptInState.FIRST_TIME) {
+        FindsUtils.isFindsChannelCreated(
+                (channelExists) -> {
+                    boolean firstTime = !channelExists;
+                    if (firstTime) {
                         // For first time opt-in, initialize the notification channel as enabled.
                         new ChannelsInitializer(
                                         BaseNotificationManagerProxyFactory.create(),
                                         ChromeChannelDefinitions.getInstance(),
                                         mContext.getResources())
                                 .ensureInitialized(ChannelId.CHROME_FINDS);
-
-                        // If app-level notifications are disabled, we must direct the user to
-                        // settings to enable them.
-                        if (!NotificationProxyUtils.areNotificationsEnabled()) {
-                            FindsUtils.launchFindsNotificationSettings(mContext);
-                        }
-                        FindsMetrics.recordOptInAccepted(/* firstTime= */ true);
-                    } else if (state == FindsOptInState.MANUALLY_DISABLED) {
-                        // Launch the notifications settings to direct the user to manually enable
-                        // since once the channel has already been created, we cannot
-                        // programmatically enable it.
-                        FindsUtils.launchFindsNotificationSettings(mContext);
-                        FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
-                    } else {
-                        // The only other remaining state is ENABLED, which in theory should never
-                        // occur but will be possible with always show opt-in enabled since the
-                        // opt-in bottom sheet should not be shown otherwise.
-                        FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
                     }
 
-                    FindsUtils.setOptInPromoInteracted(mProfile);
-                    dismiss();
+                    // Verify if notifications are fully enabled (both app-level and channel).
+                    // If not, redirect to settings so the user can finalize their opt-in.
+                    // This handles first-time users with app-level disabled and testing
+                    // configuration flow where app-level/channel notifications aren't enabled.
+                    FindsUtils.areFindsNotificationsEnabled(
+                            (enabled) -> {
+                                if (!enabled) {
+                                    FindsUtils.launchFindsNotificationSettings(mContext);
+                                }
+                                FindsMetrics.recordOptInAccepted(firstTime);
+                                FindsUtils.setOptInPromoInteracted(mProfile);
+                                dismiss();
+                            });
                 });
     }
 

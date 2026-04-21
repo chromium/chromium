@@ -30,7 +30,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.finds.FindsUtils.FindsOptInState;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
@@ -49,7 +48,7 @@ public class FindsUtilsUnitTest {
     }
 
     @Test
-    public void testGetOptInState_FirstTime() {
+    public void testIsFindsChannelCreated_ChannelDoesNotExist() {
         doAnswer(
                         invocation -> {
                             Callback<NotificationChannel> callback = invocation.getArgument(1);
@@ -59,14 +58,14 @@ public class FindsUtilsUnitTest {
                 .when(mNotificationManagerProxy)
                 .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
 
-        FindsUtils.getOptInState(
-                (state) -> {
-                    assertEquals(FindsOptInState.FIRST_TIME, state.intValue());
+        FindsUtils.isFindsChannelCreated(
+                (channelExists) -> {
+                    assertFalse(channelExists);
                 });
     }
 
     @Test
-    public void testGetOptInState_Enabled() {
+    public void testIsFindsChannelCreated_ChannelExists() {
         NotificationChannel channel =
                 new NotificationChannel(
                         ChannelId.CHROME_FINDS, "Finds", NotificationManager.IMPORTANCE_LOW);
@@ -81,14 +80,14 @@ public class FindsUtilsUnitTest {
 
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 
-        FindsUtils.getOptInState(
-                (state) -> {
-                    assertEquals(FindsOptInState.ENABLED, state.intValue());
+        FindsUtils.isFindsChannelCreated(
+                (channelExists) -> {
+                    assertTrue(channelExists);
                 });
     }
 
     @Test
-    public void testGetOptInState_ManuallyDisabled() {
+    public void testIsFindsChannelCreated_AlreadyExistsButDisabled() {
         NotificationChannel channel =
                 new NotificationChannel(
                         ChannelId.CHROME_FINDS, "Finds", NotificationManager.IMPORTANCE_NONE);
@@ -103,9 +102,9 @@ public class FindsUtilsUnitTest {
 
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 
-        FindsUtils.getOptInState(
-                (state) -> {
-                    assertEquals(FindsOptInState.MANUALLY_DISABLED, state.intValue());
+        FindsUtils.isFindsChannelCreated(
+                (channelExists) -> {
+                    assertTrue(channelExists);
                 });
     }
 

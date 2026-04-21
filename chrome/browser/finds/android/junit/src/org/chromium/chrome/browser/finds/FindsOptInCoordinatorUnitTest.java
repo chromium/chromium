@@ -211,52 +211,6 @@ public class FindsOptInCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnOptInAccepted_ReOptIn() {
-        // Mock notifications are enabled for the app.
-        NotificationProxyUtils.setNotificationEnabledForTest(true);
-
-        // Mock channel exists but is disabled.
-        NotificationChannel channel =
-                new NotificationChannel(
-                        ChannelId.CHROME_FINDS, "Finds", NotificationManager.IMPORTANCE_NONE);
-        doAnswer(
-                        invocation -> {
-                            Callback<NotificationChannel> callback = invocation.getArgument(1);
-                            callback.onResult(channel);
-                            return null;
-                        })
-                .when(mNotificationManagerProxy)
-                .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
-
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        FindsMetrics.OPT_IN_HISTOGRAM,
-                        FindsMetrics.FindsOptInEvent.ACCEPTED_RE_OPT_IN);
-
-        // Simulate positive button click.
-        ButtonCompat positiveButton =
-                mCoordinator.getContentViewForTesting().findViewById(R.id.opt_in_positive_button);
-        positiveButton.performClick();
-
-        assertEquals(
-                FindsOptInCoordinator.FindsOptInUserInteraction.ACCEPTED,
-                mCoordinator.getUserInteractionTypeForTesting());
-
-        // Simulate sheet closure as a result of opt-in.
-        simulateSheetClosed(StateChangeReason.NONE);
-
-        // Verify notification settings were launched.
-        Intent intent = shadowOf(mActivity).getNextStartedActivity();
-        assertNotNull(intent);
-        assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
-        // Verify snackbar is not shown.
-        verify(mSnackbarManager, never()).showSnackbar(any());
-        // Verify preference is set via UserPrefs
-        verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
-        watcher.assertExpected();
-    }
-
-    @Test
     public void testOnOptInDeclined() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         var watcher =

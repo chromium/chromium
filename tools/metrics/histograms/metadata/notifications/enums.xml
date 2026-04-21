@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ChromeFindsOptInEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="First time opt-in"/>
-  <int value="2" label="Re-opt-in accepted"/>
+  <int value="2" label="Re-opt-in accepted (deprecated)"/>
   <int value="3" label="Declined"/>
   <int value="4" label="Snackbar action clicked"/>
   <int value="5" label="Dismissed"/>

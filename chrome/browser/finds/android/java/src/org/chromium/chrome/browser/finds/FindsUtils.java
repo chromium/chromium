@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -22,9 +21,6 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /** Static utilities for Finds Notifications. */
 @NullMarked
@@ -44,42 +40,17 @@ public class FindsUtils {
 
     // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPrefs)
 
-    @IntDef({
-        FindsOptInState.FIRST_TIME,
-        FindsOptInState.ENABLED,
-        FindsOptInState.MANUALLY_DISABLED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface FindsOptInState {
-        /** The notification channel has not been created yet. */
-        int FIRST_TIME = 0;
-
-        /** The notification channel exists and is enabled (along with app-level notifications). */
-        int ENABLED = 1;
-
-        /** The notification channel exists but is disabled (or app-level notifications are). */
-        int MANUALLY_DISABLED = 2;
-    }
-
     /**
-     * Determine the current opt-in state for Finds notifications.
+     * Checks if the Finds notification channel has been created.
      *
-     * @param callback Callback to return the detected {@link FindsOptInState}.
+     * @param callback Callback to return true if the channel exists, false otherwise.
      */
-    public static void getOptInState(Callback<Integer> callback) {
+    public static void isFindsChannelCreated(Callback<Boolean> callback) {
         BaseNotificationManagerProxyFactory.create()
                 .getNotificationChannel(
                         ChannelId.CHROME_FINDS,
                         (channel) -> {
-                            if (channel == null) {
-                                callback.onResult(FindsOptInState.FIRST_TIME);
-                            } else if (NotificationProxyUtils.areNotificationsEnabled()
-                                    && channel.getImportance()
-                                            != NotificationManager.IMPORTANCE_NONE) {
-                                callback.onResult(FindsOptInState.ENABLED);
-                            } else {
-                                callback.onResult(FindsOptInState.MANUALLY_DISABLED);
-                            }
+                            callback.onResult(channel != null);
                         });
     }
 

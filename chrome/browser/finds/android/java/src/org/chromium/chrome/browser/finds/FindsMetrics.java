@@ -22,17 +22,10 @@ public class FindsMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
 
-    // ACCEPTED_RE_OPT_IN handles the case where the notification channel already exists and the
-    // user previously opted in, but then manually disabled it in the settings, and is prompted
-    // once more and accepts the opt-in. This is tracked differently in the metrics due to the
-    // fact that the re-opt-in accept does NOT mean that the finds notifications are turned on
-    // due to the manual action that the user must take in the settings page.
-
     // LINT.IfChange(ChromeFindsOptInEvent)
     @IntDef({
         FindsOptInEvent.SHOWN,
         FindsOptInEvent.ACCEPTED_FIRST_TIME,
-        FindsOptInEvent.ACCEPTED_RE_OPT_IN,
         FindsOptInEvent.DECLINED,
         FindsOptInEvent.SNACKBAR_ACTION_CLICKED,
         FindsOptInEvent.DISMISSED,
@@ -41,7 +34,7 @@ public class FindsMetrics {
     @interface FindsOptInEvent {
         int SHOWN = 0;
         int ACCEPTED_FIRST_TIME = 1;
-        int ACCEPTED_RE_OPT_IN = 2;
+        @Deprecated int ACCEPTED_RE_OPT_IN = 2;
         int DECLINED = 3;
         int SNACKBAR_ACTION_CLICKED = 4;
         int DISMISSED = 5;
@@ -61,10 +54,12 @@ public class FindsMetrics {
      * @param firstTime Whether this was the first time the user opted in.
      */
     public static void recordOptInAccepted(boolean firstTime) {
-        recordEvent(
-                firstTime
-                        ? FindsOptInEvent.ACCEPTED_FIRST_TIME
-                        : FindsOptInEvent.ACCEPTED_RE_OPT_IN);
+        // Only log if it is the first time (since we will never re-prompt
+        // unless it is a testing configuration feature param to always
+        // show opt-in bottom sheet).
+        if (firstTime) {
+            recordEvent(FindsOptInEvent.ACCEPTED_FIRST_TIME);
+        }
     }
 
     /** Record that the opt-out button was clicked. */

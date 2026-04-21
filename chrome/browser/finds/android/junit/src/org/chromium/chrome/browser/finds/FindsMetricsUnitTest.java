@@ -33,10 +33,11 @@ public class FindsMetricsUnitTest {
     }
 
     @Test
-    public void testRecordOptInAccepted_ReOptIn() {
+    public void testRecordOptInAccepted_NotFirstTime() {
         var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.ACCEPTED_RE_OPT_IN);
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FindsMetrics.OPT_IN_HISTOGRAM)
+                        .build();
         FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
         histogram.assertExpected();
     }
