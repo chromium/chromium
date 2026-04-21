@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums_utils.h"
 
 #define LOG_TAG "SidePanelCoordinatorAndroid"
 #define SPLOG(message)                                     \
@@ -72,8 +73,7 @@ void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
 void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
     JNIEnv* env,
     SidePanelType panel_type) {
-  SPLOG("NotifyOpenAnimationFinished - panel_type: "
-        << static_cast<int>(panel_type));
+  SPLOG("NotifyOpenAnimationFinished - panel_type: " << ToString(panel_type));
 
   CHECK(state_ == SidePanelState::kOpening)
       << "Should only receive open animation finished callback when side "
@@ -85,8 +85,7 @@ void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
 void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
     JNIEnv* env,
     SidePanelType panel_type) {
-  SPLOG("NotifyCloseAnimationFinished - panel_type: "
-        << static_cast<int>(panel_type));
+  SPLOG("NotifyCloseAnimationFinished - panel_type: " << ToString(panel_type));
 
   CHECK(IsClosing())
       << "Should only receive close animation finished callback when side "
@@ -157,8 +156,7 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
                                         SidePanelEntryHideReason hide_reason,
                                         bool suppress_animations) {
   SPLOG("Close - panel_type: "
-        << static_cast<int>(panel_type)
-        << ", hide_reason: " << static_cast<int>(hide_reason)
+        << ToString(panel_type) << ", hide_reason: " << ToString(hide_reason)
         << ", suppress_animations: " << suppress_animations);
   CHECK(state_ == SidePanelState::kOpening || state_ == SidePanelState::kShown)
       << "Close calls should only occur for opening or shown side panels. "
@@ -196,8 +194,8 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
 
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
                                          SidePanelOpenTrigger open_trigger) {
-  SPLOG("Toggle - key: " << key.ToString() << ", open_trigger: "
-                         << static_cast<int>(open_trigger));
+  SPLOG("Toggle - key: " << key.ToString()
+                         << ", open_trigger: " << ToString(open_trigger));
 
   // If an entry is already showing in the sidepanel, or is currently loading,
   // the sidepanel should be closed.
@@ -242,7 +240,7 @@ void SidePanelCoordinatorAndroid::Show(
     std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   SPLOG("Show - key: " << key << ", open_trigger: "
-                       << (open_trigger ? static_cast<int>(*open_trigger) : -1)
+                       << (open_trigger ? ToString(*open_trigger) : "nullopt")
                        << ", suppress_animations: " << suppress_animations);
   SidePanelEntry* entry = GetEntryForUniqueKey(key);
   if (!entry) {
@@ -433,7 +431,6 @@ void SidePanelCoordinatorAndroid::ClearCachedEntryViews(SidePanelType type) {
 
 ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
     const {
-  SPLOG("java_coordinator()");
   ScopedJavaLocalRef<jobject> local_ref =
       java_coordinator_.get(AttachCurrentThread());
 

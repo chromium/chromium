@@ -16,6 +16,7 @@ source_set("side_panel") {
     "side_panel_entry_scope.cc",
     "side_panel_entry_scope.h",
     "side_panel_enums.h",
+    "side_panel_enums_utils.h",
     "side_panel_native_view.h",
     "side_panel_prefs.cc",
     "side_panel_prefs.h",
