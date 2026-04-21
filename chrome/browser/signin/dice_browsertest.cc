@@ -1201,8 +1201,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
             // Some test flags (e.g. ForceWebRequestProxyForTest) can change
             // whether the reported NTP URL is chrome://newtab or
             // chrome://new-tab-page.
-            if (url == GURL(chrome::kChromeUINewTabPageURL) ||
-                url == GURL(chrome::kChromeUINewTabURL)) {
+            if (url == chrome::ChromeUINewTabPageURLAsGURL() ||
+                url == chrome::ChromeUINewTabURLAsGURL()) {
               ntp_run_loop.Quit();
             }
           }));
@@ -1278,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   SendRefreshTokenResponse();
 
   ui_test_utils::UrlLoadObserver ntp_url_observer(
-      (GURL(chrome::kChromeUINewTabURL)));
+      (chrome::ChromeUINewTabURLAsGURL()));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);

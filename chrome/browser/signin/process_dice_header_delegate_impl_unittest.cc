@@ -447,7 +447,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
   if (GetParam().signed_in) {
     AddAccount(/*is_primary=*/true);
   }
-  const GURL kNtpUrl(chrome::kChromeUINewTabURL);
+  const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
                                         /*redirect_url=*/kNtpUrl);
@@ -497,7 +497,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
   if (GetParam().signed_in) {
     AddAccount(/*is_primary=*/true);
   }
-  const GURL kNtpUrl(chrome::kChromeUINewTabURL);
+  const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
                                         /*redirect_url=*/kNtpUrl);
@@ -558,7 +558,8 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess,
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(
           GetParam().signin_tab,
-          /*redirect_url=*/GURL(chrome::kChromeUINewTabURL), GetParam().reason);
+          /*redirect_url=*/chrome::ChromeUINewTabURLAsGURL(),
+          GetParam().reason);
 
   EXPECT_CALL(
       *mock_interceptor(),
