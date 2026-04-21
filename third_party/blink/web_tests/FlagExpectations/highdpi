@@ -119,7 +119,6 @@ crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-ti
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-6.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-7.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-get-set-range.html [ Failure ]
-crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-sticky-block.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/view-timeline-sticky-inline.html [ Failure ]
