@@ -58,6 +58,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [ChromeCoordinatorAppInterface stopCoordinator];
   [ChromeEarlGreyUI waitForAppToIdle];
   [ChromeCoordinatorAppInterface startBookmarksCoordinator];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
 }
 
 // Test deleting grand parent is reflected in the bookmarks list UI. Regression
@@ -667,8 +669,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/483351045): Re-enable this flaky test.
-- (void)FLAKY_testCachePositionIsRecreatedWhenNodeIsMoved {
+- (void)testCachePositionIsRecreatedWhenNodeIsMoved {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [ChromeCoordinatorAppInterface startBookmarksCoordinator];
