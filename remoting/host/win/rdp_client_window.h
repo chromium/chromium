@@ -111,12 +111,19 @@ class RDP_WINDOW_EXPORT RdpClientWindow
                          0>
       RdpEventsSink;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
   // Handled window messages.
   BEGIN_MSG_MAP_EX(RdpClientWindow)
     MSG_WM_CLOSE(OnClose)
     MSG_WM_CREATE(OnCreate)
     MSG_WM_DESTROY(OnDestroy)
   END_MSG_MAP()
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
   // Requests the RDP ActiveX control to close the connection gracefully.
   void OnClose();
