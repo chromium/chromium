@@ -9,10 +9,13 @@
 
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace multistep_filter {
+namespace {
+constexpr char kTestNavId[] = "00000000-0000-4000-8000-000000000001";
 
 TEST(LogEntryTest, AllEventTypes) {
   struct {
@@ -39,7 +42,7 @@ TEST(LogEntryTest, AllEventTypes) {
   };
 
   for (const auto& test_case : test_cases) {
-    LogEntry entry("", test_case.event_type, "");
+    LogEntry entry(base::Uuid(), test_case.event_type, "");
     base::Value value_container = entry.ToValue();
     auto* event_type_str = value_container.GetDict().FindString("event_type");
     ASSERT_TRUE(event_type_str);
@@ -48,13 +51,13 @@ TEST(LogEntryTest, AllEventTypes) {
 }
 
 TEST(LogEntryTest, InvalidEventTypeDCHECKs) {
-  LogEntry entry("", static_cast<LogEventType>(999), "");
+  LogEntry entry(base::Uuid(), static_cast<LogEventType>(999), "");
   EXPECT_DCHECK_DEATH_WITH(entry.ToValue(), "NOTREACHED");
 }
 
 TEST(LogEntryTest, ToValueConversion) {
-  LogEntry entry("test-nav-id", LogEventType::kUrlEligibilityCheck,
-                 "example.com");
+  LogEntry entry(base::Uuid::ParseLowercase(kTestNavId),
+                 LogEventType::kUrlEligibilityCheck, "example.com");
   entry.timestamp = base::Time::FromMillisecondsSinceUnixEpoch(123456789LL);
   entry.details.Set("key", "value");
 
@@ -67,7 +70,7 @@ TEST(LogEntryTest, ToValueConversion) {
 
   auto* nav_id = dict.FindString("navigation_id");
   ASSERT_TRUE(nav_id);
-  EXPECT_EQ(*nav_id, "test-nav-id");
+  EXPECT_EQ(*nav_id, kTestNavId);
 
   auto* event_type = dict.FindString("event_type");
   ASSERT_TRUE(event_type);
@@ -84,4 +87,5 @@ TEST(LogEntryTest, ToValueConversion) {
   EXPECT_EQ(*key_val, "value");
 }
 
+}  // namespace
 }  // namespace multistep_filter

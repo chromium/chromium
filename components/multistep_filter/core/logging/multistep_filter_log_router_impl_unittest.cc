@@ -9,13 +9,20 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace multistep_filter {
+namespace {
+
+constexpr char kTestNav1[] = "00000000-0000-4000-8000-000000000001";
+constexpr char kTestNav2[] = "00000000-0000-4000-8000-000000000002";
+constexpr char kTestNav5[] = "00000000-0000-4000-8000-000000000005";
 
 class MockLogRouterObserver : public MultistepFilterLogRouter::Observer {
  public:
@@ -50,10 +57,13 @@ TEST_F(MultistepFilterLogRouterImplTest, ObserversNotifiedOnLogAdded) {
       scoped_observation(&observer);
   scoped_observation.Observe(&router_);
 
-  LogEntry entry("test-id", LogEventType::kNavigationStarted, "example.com");
+  LogEntry entry(base::Uuid::ParseLowercase(kTestNav1),
+                 LogEventType::kNavigationStarted, "example.com");
 
-  EXPECT_CALL(observer, OnLogEntryAdded(testing::Field(
-                            &LogEntry::navigation_id, testing::Eq("test-id"))));
+  EXPECT_CALL(observer,
+              OnLogEntryAdded(testing::Field(
+                  &LogEntry::navigation_id,
+                  testing::Eq(base::Uuid::ParseLowercase(kTestNav1)))));
   router_.RouteLogMessage(std::move(entry));
 }
 
@@ -69,8 +79,9 @@ TEST_F(MultistepFilterLogRouterImplTest, BufferManagement) {
   EXPECT_CALL(observer, OnLogEntryAdded(testing::_)).Times(kTotalLogs);
 
   for (int i = 0; i < kTotalLogs; ++i) {
-    LogEntry entry(base::NumberToString(i), LogEventType::kNavigationStarted,
-                   "example.com");
+    LogEntry entry(base::Uuid::ParseLowercase(
+                       base::StringPrintf("00000000-0000-4000-8000-%012d", i)),
+                   LogEventType::kNavigationStarted, "example.com");
     router_.RouteLogMessage(std::move(entry));
   }
 
@@ -79,10 +90,12 @@ TEST_F(MultistepFilterLogRouterImplTest, BufferManagement) {
 
   // First 100 entries should have been evicted. First buffered log should be
   // 100.
-  EXPECT_EQ(logs[0].navigation_id, "100");
+  EXPECT_EQ(logs[0].navigation_id.AsLowercaseString(),
+            "00000000-0000-4000-8000-000000000100");
   EXPECT_EQ(
-      logs[MultistepFilterLogRouterImpl::kMaxBufferSize - 1].navigation_id,
-      base::NumberToString(kTotalLogs - 1));
+      logs[MultistepFilterLogRouterImpl::kMaxBufferSize - 1]
+          .navigation_id.AsLowercaseString(),
+      base::StringPrintf("00000000-0000-4000-8000-%012d", kTotalLogs - 1));
 }
 
 TEST_F(MultistepFilterLogRouterImplTest, CallbackSafeAfterShutdown) {
@@ -99,8 +112,8 @@ TEST_F(MultistepFilterLogRouterImplTest, CallbackSafeAfterShutdown) {
 
   EXPECT_CALL(observer, OnLogEntryAdded(testing::_)).Times(0);
 
-  LogEntry entry("post-shutdown", LogEventType::kNavigationStarted,
-                 "example.com");
+  LogEntry entry(base::Uuid::ParseLowercase(kTestNav1),
+                 LogEventType::kNavigationStarted, "example.com");
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
@@ -128,7 +141,8 @@ TEST_F(MultistepFilterLogRouterImplTest, ShutdownNotifiesObservers) {
 
 TEST_F(MultistepFilterLogRouterImplTest, LogsIgnoredWhenLoggingDisabled) {
   EXPECT_FALSE(router_.IsLoggingEnabled());
-  LogEntry entry("test", LogEventType::kNavigationStarted, "test.com");
+  LogEntry entry(base::Uuid::ParseLowercase(kTestNav2),
+                 LogEventType::kNavigationStarted, "test.com");
   router_.RouteLogMessage(std::move(entry));
   EXPECT_TRUE(router_.GetBufferedLogs().empty());
 }
@@ -155,8 +169,9 @@ TEST_F(MultistepFilterLogRouterImplTest, ShutdownClearsBuffer) {
   router_.AddObserver(&observer);
 
   EXPECT_CALL(observer, OnLogEntryAdded(testing::_));
-  router_.RouteLogMessage(
-      LogEntry("test", LogEventType::kNavigationStarted, "test.com"));
+  router_.RouteLogMessage(LogEntry(base::Uuid::ParseLowercase(kTestNav2),
+                                   LogEventType::kNavigationStarted,
+                                   "test.com"));
   EXPECT_EQ(1u, router_.GetBufferedLogs().size());
 
   EXPECT_CALL(observer, OnLogRouterShutdown());
@@ -191,15 +206,18 @@ TEST_F(MultistepFilterLogRouterImplTest, LogsFromBackgroundThread) {
   scoped_observation.Observe(&router_);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLogEntryAdded(testing::Field(&LogEntry::navigation_id,
-                                                       testing::Eq("bg-id"))))
+  EXPECT_CALL(observer,
+              OnLogEntryAdded(testing::Field(
+                  &LogEntry::navigation_id,
+                  testing::Eq(base::Uuid::ParseLowercase(kTestNav5)))))
       .WillOnce([&](const LogEntry&) { run_loop.Quit(); });
 
   base::RepeatingCallback<void(LogEntry)> callback = router_.GetLogCallback();
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::RepeatingCallback<void(LogEntry)> cb) {
-                       LogEntry entry("bg-id", LogEventType::kNavigationStarted,
+                       LogEntry entry(base::Uuid::ParseLowercase(kTestNav5),
+                                      LogEventType::kNavigationStarted,
                                       "bg.example.com");
                        cb.Run(std::move(entry));
                      },
@@ -231,9 +249,11 @@ TEST_F(MultistepFilterLogRouterImplTest, ConcurrentLogsFromMultipleThreads) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::BindOnce(
                        [](base::RepeatingCallback<void(LogEntry)> cb, int id) {
-                         LogEntry entry(base::NumberToString(id),
-                                        LogEventType::kNavigationStarted,
-                                        "concurrent.example.com");
+                         LogEntry entry(
+                             base::Uuid::ParseLowercase(base::StringPrintf(
+                                 "00000000-0000-4000-8000-%012d", id)),
+                             LogEventType::kNavigationStarted,
+                             "concurrent.example.com");
                          cb.Run(std::move(entry));
                        },
                        callback, i));
@@ -246,4 +266,5 @@ TEST_F(MultistepFilterLogRouterImplTest, ConcurrentLogsFromMultipleThreads) {
   EXPECT_EQ(static_cast<size_t>(kNumConcurrentLogs), logs.size());
 }
 
+}  // namespace
 }  // namespace multistep_filter

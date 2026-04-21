@@ -22,9 +22,9 @@ class ScopedLogMessage {
 
  public:
   ScopedLogMessage(MultistepFilterLogRouter* logger,
-                   std::string nav_id,
+                   base::Uuid nav_id,
                    LogEventType type,
-                   std::string source_etld_plus_1);
+                   std::string_view source_etld_plus_1);
   ~ScopedLogMessage();
 
   // Access the details dictionary to add additional metadata to the log entry.

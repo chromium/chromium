@@ -53,21 +53,21 @@ constexpr std::string_view LogEventTypeToString(LogEventType type) {
 
 }  // namespace
 
-LogEntry::LogEntry(std::string nav_id,
+LogEntry::LogEntry(base::Uuid nav_id,
                    LogEventType type,
-                   std::string source_etld_plus_1)
+                   std::string_view source_etld_plus_1)
     : navigation_id(std::move(nav_id)),
       event_type(type),
-      source_etld_plus_1(std::move(source_etld_plus_1)) {}
+      source_etld_plus_1(source_etld_plus_1) {}
 
 LogEntry::LogEntry(base::Time time,
-                   std::string nav_id,
+                   base::Uuid nav_id,
                    LogEventType type,
-                   std::string source_etld_plus_1)
+                   std::string_view source_etld_plus_1)
     : timestamp(time),
       navigation_id(std::move(nav_id)),
       event_type(type),
-      source_etld_plus_1(std::move(source_etld_plus_1)) {}
+      source_etld_plus_1(source_etld_plus_1) {}
 
 LogEntry::LogEntry(LogEntry&& other) noexcept = default;
 
@@ -84,7 +84,7 @@ LogEntry LogEntry::Clone() const {
 base::Value LogEntry::ToValue() const {
   base::DictValue dict;
   dict.Set("timestamp", timestamp.InSecondsFSinceUnixEpoch());
-  dict.Set("navigation_id", navigation_id);
+  dict.Set("navigation_id", navigation_id.AsLowercaseString());
   dict.Set("event_type", LogEventTypeToString(event_type));
   dict.Set("source_etld_plus_1", source_etld_plus_1);
   dict.Set("details", details.Clone());
