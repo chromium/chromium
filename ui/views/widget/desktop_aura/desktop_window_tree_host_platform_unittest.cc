@@ -654,6 +654,39 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
       ->OnActivationChanged(false);
 }
 
+TEST_F(DesktopWindowTreeHostPlatformTest, OnPaintAsActiveChanged) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(host_platform);
+
+  auto* delegate = static_cast<ui::PlatformWindowDelegate*>(host_platform);
+
+  // Start with the widget input-inactive so paint-as-active is driven by
+  // the signal rather than by activation.
+  delegate->OnActivationChanged(false);
+  EXPECT_FALSE(widget->ShouldPaintAsActive());
+
+  // Signal flips on: frame paints as active despite input being elsewhere.
+  delegate->OnPaintAsActiveChanged(true);
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_TRUE(widget->ShouldPaintAsActive());
+
+  // Redundant true is idempotent.
+  delegate->OnPaintAsActiveChanged(true);
+  EXPECT_TRUE(widget->ShouldPaintAsActive());
+
+  // Signal flips off: paint follows activation again.
+  delegate->OnPaintAsActiveChanged(false);
+  EXPECT_FALSE(widget->ShouldPaintAsActive());
+
+  // Redundant false is a no-op.
+  delegate->OnPaintAsActiveChanged(false);
+  EXPECT_FALSE(widget->ShouldPaintAsActive());
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 class VisibilityObserver : public aura::WindowObserver {

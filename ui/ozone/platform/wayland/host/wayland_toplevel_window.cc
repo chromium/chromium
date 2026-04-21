@@ -497,7 +497,13 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
   // Update state before notifying delegate.
+  bool prev_xdg_active = is_xdg_active_;
   is_xdg_active_ = window_states.is_activated;
+  // xdg_toplevel::activated is a paint-only hint, separate from input
+  // activation which is driven by keyboard focus in UpdateActivationState.
+  if (prev_xdg_active != is_xdg_active_) {
+    delegate()->OnPaintAsActiveChanged(is_xdg_active_);
+  }
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 

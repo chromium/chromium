@@ -174,6 +174,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
   virtual void OnActivationChanged(bool active) = 0;
 
+  // Notifies the delegate that the compositor's paint-as-active hint changed.
+  // Distinct from OnActivationChanged, which includes input focus. Platforms
+  // that do not split the two signals drive paint state from
+  // OnActivationChanged and leave this as a no-op.
+  virtual void OnPaintAsActiveChanged(bool paint_as_active) {}
+
   // Requests size constraints for the PlatformWindow in DIP.
   virtual std::optional<gfx::Size> GetMinimumSizeForWindow() const;
   virtual std::optional<gfx::Size> GetMaximumSizeForWindow() const;

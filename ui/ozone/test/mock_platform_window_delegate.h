@@ -45,6 +45,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
+  MOCK_METHOD1(OnPaintAsActiveChanged, void(bool paint_as_active));
   MOCK_CONST_METHOD0(GetMinimumSizeForWindow, std::optional<gfx::Size>());
   MOCK_CONST_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,

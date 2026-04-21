@@ -2054,6 +2054,46 @@ TEST_P(WaylandWindowTest, OnActivationChanged) {
   SendConfigureEvent(surface_id_, {0, 0}, empty_state, ++serial);
 }
 
+TEST_P(WaylandWindowTest, OnPaintAsActiveChanged) {
+  uint32_t serial = 0;
+  wl::ScopedWlArray empty_state({});
+  wl::ScopedWlArray active_state = InitializeWlArrayWithActivatedState();
+
+  // SetUp has already activated the surface; redundant activated
+  // configure is not a transition and must not fire.
+  EXPECT_CALL(delegate_, OnPaintAsActiveChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, {0, 0}, active_state, ++serial);
+  VerifyAndClearExpectations();
+
+  // Compositor clears xdg_activated: paint-as-active fires false.
+  EXPECT_CALL(delegate_, OnPaintAsActiveChanged(Eq(false)));
+  SendConfigureEvent(surface_id_, {0, 0}, empty_state, ++serial);
+  VerifyAndClearExpectations();
+
+  // Redundant inactive configure: no fire.
+  EXPECT_CALL(delegate_, OnPaintAsActiveChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, {0, 0}, empty_state, ++serial);
+  VerifyAndClearExpectations();
+
+  // Compositor re-marks activated: paint-as-active fires true.
+  EXPECT_CALL(delegate_, OnPaintAsActiveChanged(Eq(true)));
+  SendConfigureEvent(surface_id_, {0, 0}, active_state, ++serial);
+  VerifyAndClearExpectations();
+
+  // Plug a keyboard and toggle focus. xdg_activated is unchanged, so
+  // paint-as-active must not fire even though OnActivationChanged does.
+  // This covers the interactive move/resize scenario where the compositor
+  // temporarily revokes device focus but keeps xdg_activated set.
+  EXPECT_CALL(delegate_, OnPaintAsActiveChanged(_)).Times(0);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_KEYBOARD);
+  });
+  SetKeyboardFocusedWindow(window_.get());
+  SetKeyboardFocusedWindow(nullptr);
+  VerifyAndClearExpectations();
+}
+
 TEST_P(WaylandWindowTest, OnAcceleratedWidgetDestroy) {
   window_.reset();
 }
