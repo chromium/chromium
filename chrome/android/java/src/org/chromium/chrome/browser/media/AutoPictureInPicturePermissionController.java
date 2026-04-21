@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -53,6 +55,10 @@ public class AutoPictureInPicturePermissionController {
     // view changes in the meantime.
     private @Nullable WeakReference<View> mObscuredViewWeakRef;
 
+    // Callback to be run when the permission prompt is dismissed with a positive result
+    // (Allow on every visit or Allow once). Used to revert window bounds.
+    @VisibleForTesting @Nullable Runnable mOnPromptDismissedCallback;
+
     /**
      * Shows the permission prompt for auto picture-in-picture if the content setting is "ASK".
      *
@@ -67,27 +73,54 @@ public class AutoPictureInPicturePermissionController {
         }
 
         WebContents webContents = tab.getWebContents();
+        if (!isPermissionPromptNeeded(webContents)) {
+            return;
+        }
+
         // When prompt is triggered, webContents is expected to be valid and can retrieve helper
         // from UserDataHost.
         AutoPictureInPictureTabHelper helper =
                 assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(webContents));
 
-        // If the user already selected "Allow Once" for this WebContents or the permission is not
-        // "ASK", we shouldn't create a controller at all.
-        if (helper.hasAllowOnce()
-                || AutoPictureInPicturePermissionControllerJni.get()
-                                .getPermissionStatus(webContents)
-                        != ContentSetting.ASK) {
-            return;
-        }
-
         // Create the controller and register it with the helper. This prevents "fire and forget"
         // by giving the controller a clear owner (the helper attached to the WebContents).
         AutoPictureInPicturePermissionController controller =
                 new AutoPictureInPicturePermissionController(webContents, closePipCallback);
+
+        // WebContents (which owns this controller) outlives the Activity, so a WeakReference
+        // is necessary to prevent a memory leak.
+        WeakReference<Activity> weakActivity = new WeakReference<>(activity);
+        controller.mOnPromptDismissedCallback =
+                () -> {
+                    Activity a = weakActivity.get();
+                    if (a instanceof DocumentPictureInPictureActivity pipActivity) {
+                        pipActivity.revertToRequestedBounds();
+                    }
+                };
         helper.setPermissionController(controller);
 
         controller.show(activity);
+    }
+
+    /**
+     * Returns true if a permission prompt is needed for auto picture-in-picture.
+     *
+     * @param webContents The WebContents to check.
+     * @return True if a prompt is needed, false otherwise.
+     */
+    public static boolean isPermissionPromptNeeded(WebContents webContents) {
+        if (!isAutoPictureInPictureInUse(webContents)) {
+            return false;
+        }
+
+        AutoPictureInPictureTabHelper helper =
+                assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(webContents));
+        if (helper.hasAllowOnce()) {
+            return false;
+        }
+
+        return AutoPictureInPicturePermissionControllerJni.get().getPermissionStatus(webContents)
+                == ContentSetting.ASK;
     }
 
     /**
@@ -180,6 +213,8 @@ public class AutoPictureInPicturePermissionController {
             mMaskView = null;
         }
 
+        mOnPromptDismissedCallback = null;
+
         // Ensure the helper releases its reference to this controller.
         if (!mWebContents.isDestroyed()) {
             restoreContentAccessibility();
@@ -257,7 +292,17 @@ public class AutoPictureInPicturePermissionController {
                 break;
         }
 
+        // mOnPromptDismissedCallback is cleared in dismiss()
+        Runnable callback = mOnPromptDismissedCallback;
+
         dismiss();
+
+        // Run the callback unconditionally. We want to revert bounds even on soft dismissals
+        // (like close button click) to ensure the PiP window doesn't stay permanently
+        // enlarged if the user doesn't make a choice.
+        if (callback != null) {
+            callback.run();
+        }
     }
 
     @NativeMethods

@@ -84,6 +84,8 @@ import org.chromium.url.GURL;
 public class DocumentPictureInPictureActivity extends AsyncInitializationActivity
         implements DocumentPictureInPictureHeaderDelegate {
     private static final String TAG = "DocumentPiPActivity";
+    // Tolerance in DP to filter out small rounding drifts and system snaps in PiP mode.
+    private static final int SIZE_TOLERANCE_DP = 3;
     public static final String WEB_CONTENTS_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WebContents";
     public static final String WINDOW_OPTIONS_KEY =
@@ -102,6 +104,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private boolean mIsFromActivityRecreation;
     private @MonotonicNonNull Configuration mConfig;
     private boolean mIsPinned;
+    private @Nullable Rect mPromptEnforcedBounds;
+    private @Nullable Integer mMinPromptWidthPx;
+    private @Nullable Integer mMinPromptHeightPx;
 
     private static @Nullable WebContents sWebContentsForTesting;
     private static @Nullable WebContents sParentWebContentsForTesting;
@@ -337,6 +342,10 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             }
         }
 
+        setupInitialBoundsListener(contentLayout);
+    }
+
+    private void setupInitialBoundsListener(View contentLayout) {
         if (mWindowOptions != null && mWindowOptions.windowBounds != null) {
             contentLayout
                     .getViewTreeObserver()
@@ -344,16 +353,74 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                             new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
                                 public void onGlobalLayout() {
-                                    resizeContents(
-                                            assumeNonNull(mWindowOptions.windowBounds).width(),
-                                            assumeNonNull(mWindowOptions.windowBounds).height());
-
+                                    applyInitialLayoutAndEnlargement();
                                     contentLayout
                                             .getViewTreeObserver()
                                             .removeOnGlobalLayoutListener(this);
                                 }
                             });
         }
+    }
+
+    /**
+     * Applies the initial layout bounds to the PiP window on startup.
+     *
+     * <p>If an Auto-PiP permission prompt is needed, this method ensures the window is large enough
+     * to fit the prompt comfortably by enlarging it to the minimum required dimensions if
+     * necessary.
+     */
+    private void applyInitialLayoutAndEnlargement() {
+        var windowOptions = assumeNonNull(mWindowOptions);
+        var windowBounds = assumeNonNull(windowOptions.windowBounds);
+        int width = windowBounds.width();
+        int height = windowBounds.height();
+
+        // Check if we need to show the permission prompt and thus might need to enlarge the window.
+        boolean isPermissionPromptNeeded = false;
+        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()) {
+            isPermissionPromptNeeded =
+                    AutoPictureInPicturePermissionController.isPermissionPromptNeeded(
+                            mParentWebContents);
+        }
+
+        // Enforce minimum dimensions if the prompt is needed and requested bounds are too small.
+        if (isPermissionPromptNeeded) {
+            DisplayAndroid display = getDisplayAndroid();
+
+            mMinPromptWidthPx =
+                    mMinPromptWidthPx == null
+                            ? getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen
+                                                    .document_picture_in_picture_min_width_with_prompt)
+                            : mMinPromptWidthPx;
+            mMinPromptHeightPx =
+                    mMinPromptHeightPx == null
+                            ? getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen
+                                                    .document_picture_in_picture_min_height_with_prompt)
+                            : mMinPromptHeightPx;
+
+            final int minWidthDp = DisplayUtil.pxToDp(display, mMinPromptWidthPx);
+            final int minHeightDp = DisplayUtil.pxToDp(display, mMinPromptHeightPx);
+
+            if (width < minWidthDp || height < minHeightDp) {
+                final int newWidth = Math.max(width, minWidthDp);
+                final int newHeight = Math.max(height, minHeightDp);
+                mPromptEnforcedBounds =
+                        new Rect(
+                                windowBounds.left,
+                                windowBounds.top,
+                                windowBounds.left + newWidth,
+                                windowBounds.top + newHeight);
+                width = newWidth;
+                height = newHeight;
+            }
+        }
+
+        // Apply the final calculated bounds (either site-requested or prompt-enforced).
+        resizeContents(width, height);
     }
 
     /**
@@ -404,6 +471,53 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         currentWindowBounds.top - heightDiffDp,
                         currentWindowBounds.right,
                         currentWindowBounds.bottom));
+    }
+
+    private static boolean areDimensionsApproximatelyEqual(
+            int width1, int height1, int width2, int height2) {
+        return Math.abs(width1 - width2) <= SIZE_TOLERANCE_DP
+                && Math.abs(height1 - height2) <= SIZE_TOLERANCE_DP;
+    }
+
+    /**
+     * Reverts the window size back to the originally requested bounds once the permission prompt is
+     * dismissed.
+     *
+     * <p>If the user has manually resized the window while the prompt was visible (determined by a
+     * {@value #SIZE_TOLERANCE_DP}dp tolerance check against the enforced bounds), the revert is
+     * skipped to respect the user's manual adjustment.
+     */
+    void revertToRequestedBounds() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        // If mPromptEnforcedBounds is null, the window wasn't enlarged for the prompt,
+        // so no reversion is needed.
+        if (mPromptEnforcedBounds == null) {
+            return;
+        }
+
+        if (mWindowOptions != null && mWindowOptions.windowBounds != null) {
+            DisplayAndroid display = getDisplayAndroid();
+            FrameLayout contentLayout = findViewById(R.id.document_picture_in_picture_content);
+            final int curContentWidth = DisplayUtil.pxToDp(display, contentLayout.getWidth());
+            final int curContentHeight = DisplayUtil.pxToDp(display, contentLayout.getHeight());
+
+            // Allow a small tolerance for density conversion rounding errors.
+            if (!areDimensionsApproximatelyEqual(
+                    curContentWidth,
+                    curContentHeight,
+                    mPromptEnforcedBounds.width(),
+                    mPromptEnforcedBounds.height())) {
+                return;
+            }
+
+            final int requestedWidth = mWindowOptions.windowBounds.width();
+            final int requestedHeight = mWindowOptions.windowBounds.height();
+
+            resizeContents(requestedWidth, requestedHeight);
+        }
     }
 
     @Override
@@ -503,6 +617,33 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
             Rect contentBounds =
                     DisplayUtil.convertLocalPxToGlobalDipCoordinates(display, contentBoundsPx);
+
+            if (mWindowOptions != null && mWindowOptions.windowBounds != null) {
+                final int requestedWidthDp = mWindowOptions.windowBounds.width();
+                final int requestedHeightDp = mWindowOptions.windowBounds.height();
+
+                // Avoid redundant caching if the size hasn't changed from the target bounds.
+                // We allow a small tolerance to prevent slow size creeps caused by density
+                // rounding drifts or system snaps.
+                if (areDimensionsApproximatelyEqual(
+                        contentBounds.width(),
+                        contentBounds.height(),
+                        requestedWidthDp,
+                        requestedHeightDp)) {
+                    return;
+                }
+
+                // Avoid caching the temporary prompt enlargement if the user closed the window
+                // before dismissing the prompt and without manually resizing it further.
+                if (mPromptEnforcedBounds != null
+                        && areDimensionsApproximatelyEqual(
+                                contentBounds.width(),
+                                contentBounds.height(),
+                                mPromptEnforcedBounds.width(),
+                                mPromptEnforcedBounds.height())) {
+                    return;
+                }
+            }
 
             PictureInPictureBoundsCacheBridge.updateCachedBounds(
                     mParentWebContents, contentBounds, openerDisplayId, pipDisplayId);
@@ -669,6 +810,14 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     public static void setIgnoreSdkVersionForTesting(boolean ignore) {
         sIgnoreSdkVersionForTesting = ignore;
         ResettersForTesting.register(() -> sIgnoreSdkVersionForTesting = false);
+    }
+
+    void setWindowOptionsForTesting(PictureInPictureWindowOptions windowOptions) {
+        mWindowOptions = windowOptions;
+    }
+
+    void setPromptEnforcedBoundsForTesting(Rect bounds) {
+        mPromptEnforcedBounds = bounds;
     }
 
     @NativeMethods

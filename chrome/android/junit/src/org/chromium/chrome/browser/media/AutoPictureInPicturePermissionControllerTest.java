@@ -78,6 +78,8 @@ public class AutoPictureInPicturePermissionControllerTest {
                         WebContents.class,
                         withSettings().extraInterfaces(WebContentsObserver.Observable.class));
 
+        lenient().when(mNativeMock.isAutoPictureInPictureInUse(mWebContents)).thenReturn(true);
+
         when(mTab.getWebContents()).thenReturn(mWebContents);
         lenient().when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -177,13 +179,7 @@ public class AutoPictureInPicturePermissionControllerTest {
                 mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
-        AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
-
-        ButtonCompat allowOnceButton =
-                findButton(view, mActivity.getString(R.string.permission_allow_this_time));
-        Assert.assertNotNull(allowOnceButton);
-        allowOnceButton.performClick();
-        shadowOf(Looper.getMainLooper()).idle();
+        clickButtonWithTextId(R.string.permission_allow_this_time);
 
         // Verify view is removed.
         Assert.assertEquals(0, rootView.getChildCount());
@@ -201,12 +197,7 @@ public class AutoPictureInPicturePermissionControllerTest {
                 mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
-        AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
-
-        ButtonCompat allowButton =
-                findButton(view, mActivity.getString(R.string.permission_allow_every_visit));
-        Assert.assertNotNull(allowButton);
-        allowButton.performClick();
+        clickButtonWithTextId(R.string.permission_allow_every_visit);
 
         verify(mNativeMock).setPermissionStatus(eq(mWebContents), eq(ContentSetting.ALLOW));
         Assert.assertEquals(0, rootView.getChildCount());
@@ -220,12 +211,7 @@ public class AutoPictureInPicturePermissionControllerTest {
                 mActivity, mTab, closePipCallback);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
-        AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
-
-        ButtonCompat blockButton =
-                findButton(view, mActivity.getString(R.string.permission_dont_allow));
-        Assert.assertNotNull(blockButton);
-        blockButton.performClick();
+        clickButtonWithTextId(R.string.permission_dont_allow);
 
         verify(mNativeMock).setPermissionStatus(eq(mWebContents), eq(ContentSetting.BLOCK));
         verify(closePipCallback).run();
@@ -328,6 +314,47 @@ public class AutoPictureInPicturePermissionControllerTest {
         AutoPictureInPicturePermissionController.handleWindowDestruction(mWebContents);
 
         verify(mNativeMock, org.mockito.Mockito.never()).onPictureInPictureDismissed(mWebContents);
+    }
+
+    @Test
+    public void testShowPrompt_WhenAutoPictureInPictureNotInUse_DoesNotDisplayPrompt() {
+        when(mNativeMock.isAutoPictureInPictureInUse(mWebContents)).thenReturn(false);
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+        Assert.assertEquals(0, rootView.getChildCount());
+    }
+
+    @Test
+    public void testOnUiResult_TriggersDismissedCallback() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        AutoPictureInPicturePermissionController controller = mTabHelper.getPermissionController();
+        Assert.assertNotNull(controller);
+
+        Runnable mockCallback = mock(Runnable.class);
+        controller.mOnPromptDismissedCallback = mockCallback;
+
+        // Simulate "Allow Once" click.
+        clickButtonWithTextId(R.string.permission_allow_this_time);
+
+        // Verify callback triggered
+        verify(mockCallback).run();
+    }
+
+    private void clickButtonWithTextId(int stringResId) {
+        ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+        AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
+        String text = mActivity.getString(stringResId);
+        ButtonCompat button = findButton(view, text);
+        Assert.assertNotNull("Button with text [" + text + "] not found", button);
+        button.performClick();
+        shadowOf(Looper.getMainLooper()).idle();
     }
 
     private ButtonCompat findButton(AutoPipPermissionDialogView view, String text) {

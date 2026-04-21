@@ -38,6 +38,7 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -200,6 +201,112 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         mActivity.saveBoundsToCache();
 
+        verifyNoInteractions(mMockNatives);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testRevertToRequestedBounds_RevertsSuccessfully() {
+        PictureInPictureWindowOptions windowOptions =
+                new PictureInPictureWindowOptions(new Rect(100, 100, 300, 300), false);
+        mActivity.setWindowOptionsForTesting(windowOptions);
+
+        // Enforced bounds were larger (340x280).
+        mActivity.setPromptEnforcedBoundsForTesting(new Rect(100, 100, 440, 380));
+
+        // Current content layout bounds match the enforced bounds.
+        when(mContentLayout.getWidth()).thenReturn(340);
+        when(mContentLayout.getHeight()).thenReturn(280);
+
+        // Mock current window bounds in pixels (from WindowMetrics).
+        Rect windowBoundsPx = new Rect(100, 100, 300, 300); // 200x200
+        when(mWindowMetrics.getBounds()).thenReturn(windowBoundsPx);
+
+        mActivity.revertToRequestedBounds();
+
+        // Calculations:
+        // curContentWidth = 340, requestedWidth = 200 => widthDiff = -140
+        // curContentHeight = 280, requestedHeight = 200 => heightDiff = -80
+        // newBounds.left = currentWindowBounds.left - widthDiff = 100 - (-140) = 240
+        // newBounds.top = currentWindowBounds.top - heightDiff = 100 - (-80) = 180
+        // newBounds.right = 300, newBounds.bottom = 300
+        verify(mAconfigFlaggedApiDelegate)
+                .moveTaskTo(eq(mAppTask), eq(0), eq(new Rect(240, 180, 300, 300)));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testRevertToRequestedBounds_SkipsIfUserManuallyResized() {
+        PictureInPictureWindowOptions windowOptions =
+                new PictureInPictureWindowOptions(new Rect(100, 100, 300, 300), false);
+        mActivity.setWindowOptionsForTesting(windowOptions);
+
+        // Enforced bounds were 340x280.
+        mActivity.setPromptEnforcedBoundsForTesting(new Rect(100, 100, 440, 380)); // 340x280
+
+        // Current bounds differ from enforced bounds by more than 2dp tolerance.
+        when(mContentLayout.getWidth()).thenReturn(400);
+        when(mContentLayout.getHeight()).thenReturn(400);
+
+        mActivity.revertToRequestedBounds();
+
+        // It should NOT revert.
+        verifyNoInteractions(mAconfigFlaggedApiDelegate);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testRevertToRequestedBounds_SkipsIfNoEnlargementNeeded() {
+        PictureInPictureWindowOptions windowOptions =
+                new PictureInPictureWindowOptions(new Rect(100, 100, 500, 500), false);
+        mActivity.setWindowOptionsForTesting(windowOptions);
+
+        // If no enlargement was needed (because requested bounds were large enough),
+        // production leaves this null.
+        mActivity.setPromptEnforcedBoundsForTesting(null);
+
+        // Current bounds match requested.
+        when(mContentLayout.getWidth()).thenReturn(500);
+        when(mContentLayout.getHeight()).thenReturn(500);
+
+        mActivity.revertToRequestedBounds();
+
+        // It should NOT revert since it was already large enough.
+        verifyNoInteractions(mAconfigFlaggedApiDelegate);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testSaveBoundsToCache_SkipsIfPromptEnlargementActive() {
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getTopLevelNativeWindow()).thenReturn(mActivityWindowAndroid);
+        mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
+
+        PictureInPictureWindowOptions windowOptions =
+                new PictureInPictureWindowOptions(
+                        new Rect(100, 100, 300, 300), false); // 200x200 requested
+        mActivity.setWindowOptionsForTesting(windowOptions);
+
+        // We enforced a larger window for the prompt.
+        mActivity.setPromptEnforcedBoundsForTesting(new Rect(100, 100, 440, 380)); // 340x280
+
+        // The user closed the window without interacting, so the bounds are still at the enforced
+        // size.
+        when(mContentLayout.getWidth()).thenReturn(340);
+        when(mContentLayout.getHeight()).thenReturn(280);
+        doAnswer(
+                        invocation -> {
+                            int[] loc = invocation.getArgument(0);
+                            loc[0] = 100;
+                            loc[1] = 100;
+                            return null;
+                        })
+                .when(mContentLayout)
+                .getLocationOnScreen(any(int[].class));
+
+        mActivity.saveBoundsToCache();
+
+        // It should NOT cache these bounds.
         verifyNoInteractions(mMockNatives);
     }
 }
