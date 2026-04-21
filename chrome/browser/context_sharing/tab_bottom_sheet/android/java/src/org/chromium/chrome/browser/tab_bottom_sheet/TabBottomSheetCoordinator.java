@@ -291,9 +291,6 @@ public class TabBottomSheetCoordinator {
     }
 
     void closeBottomSheet(boolean animate) {
-        if (!mIsShowingTabBottomSheet) {
-            return;
-        }
         mBottomSheetController.hideContent(mSheetContent, animate, StateChangeReason.NONE);
     }
 

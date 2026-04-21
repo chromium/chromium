@@ -194,7 +194,8 @@ public class TabBottomSheetManager implements Destroyable {
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
             return true;
         }
-        // Failed to show bottom sheet.
+        // Failed to show bottom sheet, remove it from queue.
+        mTabBottomSheetCoordinator.closeBottomSheet(/* animate= */ false);
         return false;
     }
 
