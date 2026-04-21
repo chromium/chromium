@@ -1,0 +1,9 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_HEADING name='Hotel Price Range (in USD )'
+++++ROLE_SYSTEM_STATICTEXT name='Hotel Price Range (in '
+++++IA2_ROLE_TEXT_FRAME name='United States Dollars'
+++++++ROLE_SYSTEM_STATICTEXT name='USD '
+++++ROLE_SYSTEM_STATICTEXT name=')'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_SLIDER name='Hotel Minimum Price in US dollars' value='100' FOCUSABLE IA2_STATE_HORIZONTAL
+++++ROLE_SYSTEM_SLIDER name='Hotel Maximum Price in US dollars' value='250' FOCUSABLE IA2_STATE_HORIZONTAL

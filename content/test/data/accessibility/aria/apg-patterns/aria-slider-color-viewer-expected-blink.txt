@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group name='Color Viewer'
+++++++++heading name='Color Viewer'
+++++++++++staticText name='Color Viewer'
+++++++++++++inlineTextBox name='Color Viewer'
+++++++++genericContainer
+++++++++++staticText name='Red'
+++++++++++++inlineTextBox name='Red'
+++++++++slider horizontal name='Red' valueForRange=128.00 minValueForRange=0.00 maxValueForRange=255.00
+++++++++heading name='Color View Box'
+++++++++++staticText name='Color View Box'
+++++++++++++inlineTextBox name='Color View Box'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++labelText
+++++++++++++staticText name='Color (HEX): '
+++++++++++++++inlineTextBox name='Color (HEX): '
+++++++++++++textField name='Color (HEX):' restriction=readOnly
+++++++++++++++genericContainer

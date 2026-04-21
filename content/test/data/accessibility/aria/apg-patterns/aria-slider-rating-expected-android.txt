@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView interesting name='Rate your satisfaction with the service you received'
+++android.widget.SeekBar clickable focusable range interesting state_description='Choose a rating from 1 to 3 where 3 is extremely satisfied' range_max=3

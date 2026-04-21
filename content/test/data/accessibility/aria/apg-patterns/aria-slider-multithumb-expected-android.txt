@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='heading 3' heading interesting name='Hotel Price Range (in USD )'
+++android.view.View
+++++android.widget.SeekBar clickable focusable range interesting name='Hotel Minimum Price in US dollars' item_index=40 item_count=100 range_max=250 range_current_value=100
+++++android.widget.SeekBar clickable focusable range interesting name='Hotel Maximum Price in US dollars' item_index=50 item_count=100 range_min=100 range_max=400 range_current_value=250

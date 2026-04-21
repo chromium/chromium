@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <!-- HTML snippet based on W3C ARIA Slider Pattern -->
+  <!-- https://www.w3.org/WAI/ARIA/apg/patterns/slider/examples/slider-color-viewer/-->
+  <!-- The HTML snippet is slightly modified to reduce noise -->
+  <div class="color-viewer-sliders"
+       role="group"
+       aria-labelledby="id-color-viewer">
+    <h3 id="id-color-viewer">
+      Color Viewer
+    </h3>
+    <div id="id-red" class="color-slider-label">
+      Red
+    </div>
+    <div class="color-slider red"
+         role="slider"
+         tabindex="0"
+         aria-valuemin="0"
+         aria-valuenow="128"
+         aria-valuemax="255"
+         aria-labelledby="id-red">
+      <svg width="0"
+           height="0"
+           aria-hidden="true">
+        <text class="value"
+              x="0"
+              y="0">
+          128
+        </text>
+        <rect class="rail"
+              x="0"
+              y="0"
+              rx="0"
+              width="0"
+              height="0"></rect>
+        <rect class="fill"
+              x="0"
+              y="0"
+              rx="0"
+              width="0"
+              height="0"></rect>
+        <rect class="thumb"
+              x="0"
+              y="0"
+              rx="0"
+              width="0"
+              height="0"></rect>
+        <rect class="focus"
+              x="0"
+              y="0"
+              rx="0"
+              width="0"
+              height="0"></rect>
+      </svg>
+    </div>
+    <h4>
+      Color View Box
+    </h4>
+    <div class="color-info">
+      <div class="color-box"></div>
+      <label>
+        Color (HEX):
+        <input type="text"
+               readonly=""
+               class="color-value-hex"
+               value="">
+      </label>
+    </div>
+  </div>
+</body>
+</html>

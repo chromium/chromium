@@ -1,0 +1,9 @@
+android.webkit.WebView focusable focused
+++android.view.View container_title='Color Viewer'
+++++android.widget.TextView role_description='heading 3' heading interesting name='Color Viewer'
+++++android.widget.TextView interesting name='Red'
+++++android.widget.SeekBar clickable focusable range interesting name='Red' item_index=50 item_count=100 range_max=255 range_current_value=128
+++++android.widget.TextView role_description='heading 4' heading interesting name='Color View Box'
+++++android.view.View
+++++++android.widget.TextView interesting name='Color (HEX): '
+++++++android.widget.EditText clickable editable_text focusable interesting hint='Color (HEX):' input_type=1

@@ -1,0 +1,20 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Hotel Price Range (in USD )'
+++++++++staticText name='Hotel Price Range (in '
+++++++++++inlineTextBox name='Hotel Price Range (in '
+++++++++abbr name='United States Dollars' nameFrom=title
+++++++++++staticText name='USD '
+++++++++++++inlineTextBox name='USD '
+++++++++staticText name=')'
+++++++++++inlineTextBox name=')'
+++++++genericContainer
+++++++++slider horizontal name='Hotel Minimum Price in US dollars' valueForRange=100.00 minValueForRange=0.00 maxValueForRange=250.00
+++++++++++genericContainer
+++++++++++++staticText name='0'
+++++++++++++++inlineTextBox name='0'
+++++++++slider horizontal name='Hotel Maximum Price in US dollars' valueForRange=250.00 minValueForRange=100.00 maxValueForRange=400.00
+++++++++++genericContainer
+++++++++++++staticText name='0'
+++++++++++++++inlineTextBox name='0'

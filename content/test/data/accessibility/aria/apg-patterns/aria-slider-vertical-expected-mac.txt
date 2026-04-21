@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='Temperature'
+++AXSlider AXTitle='Temperature' AXValue=25

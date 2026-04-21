@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <!-- HTML snippet based on W3C ARIA Slider Pattern -->
+  <!--https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb/examples/slider-multithumb/-->
+  <h3>
+    Hotel Price Range (in
+    <abbr title="United States Dollars">
+      USD
+    </abbr>
+    )
+  </h3>
+  <div class="slider-multithumb">
+    <svg role="none"
+         class="slider-group"
+         width="360"
+         height="60">
+      <g aria-hidden="true"
+         class="rail">
+        <rect height="0"
+              width="0"></rect>
+      </g>
+      <g aria-hidden="true"
+         class="range">
+        <rect height="0"
+              width="0"></rect>
+      </g>
+      <g class="minimum"
+         role="slider"
+         tabindex="0"
+         aria-valuemin="0"
+         aria-valuenow="100"
+         aria-valuemax="250"
+         aria-label="Hotel Minimum Price in US dollars">
+        <text class="value">
+          0
+        </text>
+        <rect class="focus-ring"
+              height="0"
+              width="0"></rect>
+        <polygon class="thumb"
+                 points="0,0 0,0"></polygon>
+      </g>
+      <g class="maximum"
+         role="slider"
+         tabindex="0"
+         aria-valuemin="100"
+         aria-valuenow="250"
+         aria-valuemax="400"
+         aria-label="Hotel Maximum Price in US dollars">
+        <text class="value">
+          0
+        </text>
+        <rect class="focus-ring"
+              height="0"
+              width="0"></rect>
+        <polygon class="thumb"
+                 points="0,0 0,0"></polygon>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

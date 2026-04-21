@@ -1309,12 +1309,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaQuantitySpinbutton() {
-        performApgPatternTest("aria-quantity-spinbutton.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaAccordion() {
         performApgPatternTest("aria-accordion.html");
     }
@@ -1347,6 +1341,36 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaListboxGrouped() {
         performApgPatternTest("aria-listbox-grouped.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaQuantitySpinbutton() {
+        performApgPatternTest("aria-quantity-spinbutton.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSliderColorViewer() {
+        performApgPatternTest("aria-slider-color-viewer.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSliderMultithumb() {
+        performApgPatternTest("aria-slider-multithumb.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSliderRating() {
+        performApgPatternTest("aria-slider-rating.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSliderVertical() {
+        performApgPatternTest("aria-slider-vertical.html");
     }
 
     @Test

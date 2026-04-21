@@ -1,0 +1,12 @@
+AXWebArea
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Color Viewer'
+++++AXHeading AXTitle='Color Viewer' AXValue=3
+++++++AXStaticText AXValue='Color Viewer'
+++++AXGroup
+++++++AXStaticText AXValue='Red'
+++++AXSlider AXTitle='Red' AXValue=128
+++++AXHeading AXTitle='Color View Box' AXValue=4
+++++++AXStaticText AXValue='Color View Box'
+++++AXGroup
+++++++AXStaticText AXValue='Color (HEX): '
+++++++AXTextField AXTitle='Color (HEX):'

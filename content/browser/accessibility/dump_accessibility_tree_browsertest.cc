@@ -1810,6 +1810,26 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaSlider) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaSliderColorViewer) {
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-slider-color-viewer.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaSliderMultithumb) {
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-slider-multithumb.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaSliderRating) {
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-slider-rating.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaSliderVertical) {
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-slider-vertical.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaSortOnAriaGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-sort-aria-grid.html"));
 }

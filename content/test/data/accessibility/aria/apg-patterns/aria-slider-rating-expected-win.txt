@@ -1,0 +1,4 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Rate your satisfaction with the service you received'
+++ROLE_SYSTEM_SLIDER name='Rate your satisfaction with the service you received' value='Choose a rating from 1 to 3 where 3 is extremely satisfied' FOCUSABLE IA2_STATE_HORIZONTAL

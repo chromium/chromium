@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- HTML snippet based on W3C ARIA Slider Pattern -->
+    <!--https://www.w3.org/WAI/ARIA/apg/patterns/slider/examples/slider-rating/-->
+    <!-- The HTML snippet is slightly modified to reduce noise -->
+  <div id="id-rating-label" class="label">
+    Rate your satisfaction with the service you received
+  </div>
+  <div id="id-rating"
+       class="rating-slider"
+       role="slider"
+       tabindex="0"
+       aria-valuemin="0"
+       aria-valuenow="0"
+       aria-valuemax="3"
+       aria-valuetext="Choose a rating from 1 to 3 where 3 is extremely satisfied"
+       aria-labelledby="id-rating-label">
+    <svg aria-hidden="true"
+         xmlns="http://www.w3.org/2000/svg"
+         width="200"
+         height="110">
+      <rect class="focus-ring"
+            x="23"
+            y="2"
+            width="54"
+            height="90"
+            rx="5"></rect>
+      <g class="rating" data-value="1">
+        <rect class="target"
+              height="24"
+              width="32"
+              x="13"
+              y="30"></rect>
+        <text class="label"
+              x="25"
+              y="47">
+          1
+        </text>
+        <text class="description"
+              x="13"
+              y="20">
+          Extremely Unsatisfied
+        </text>
+      </g>
+      <g class="rating" data-value="2">
+        <rect class="target"
+              height="24"
+              width="32"
+              x="45"
+              y="30"></rect>
+        <text class="label"
+              x="58"
+              y="47">
+          2
+        </text>
+      </g>
+      <g class="rating" data-value="3">
+        <rect class="target"
+              height="24"
+              width="32"
+              x="77"
+              y="30"></rect>
+        <text class="label"
+              x="91"
+              y="47">
+          3
+        </text>
+        <text class="description"
+              x="70"
+              y="20">
+          Extremely Satisfied
+        </text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

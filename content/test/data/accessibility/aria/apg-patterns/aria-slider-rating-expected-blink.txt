@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='Rate your satisfaction with the service you received'
+++++++++++inlineTextBox name='Rate your satisfaction with the service you received'
+++++++slider horizontal name='Rate your satisfaction with the service you received' value='Choose a rating from 1 to 3 where 3 is extremely satisfied' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=3.00
