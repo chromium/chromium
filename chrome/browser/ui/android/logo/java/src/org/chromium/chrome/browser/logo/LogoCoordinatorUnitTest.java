@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
@@ -58,7 +59,7 @@ import java.util.function.Supplier;
 public class LogoCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private LogoView mLogoView;
+    @Mock private LegacyLogoView mLogoView;
     @Mock private ViewGroup mParentView;
     @Mock private Callback<LoadUrlParams> mLogoClickedCallback;
     @Mock private Callback<Logo> mOnLogoAvailableCallback;
@@ -83,6 +84,8 @@ public class LogoCoordinatorUnitTest {
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
         when(mParentView.findViewById(R.id.search_provider_logo)).thenReturn(mLogoView);
         when(mIsInMultiWindowModeSupplier.get()).thenReturn(false);
+        ViewStub mockStub = mock(ViewStub.class);
+        when(mParentView.findViewById(R.id.logo_view_stub)).thenReturn(mockStub);
     }
 
     @Test

@@ -18,6 +18,18 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties required to build the logo on start surface or ntp. */
 @NullMarked
 interface LogoProperties {
+    // TODO(crbug.com/492453183): Move interface ClickHandler to LogoView when cleanup the feature
+    // flag LogoViewRefactor.
+    /** Handles tasks for the {@link LogoView} shown on an NTP. */
+    interface ClickHandler {
+        /**
+         * Called when the user clicks on the logo.
+         *
+         * @param isAnimatedLogoShowing Whether the animated GIF logo is playing.
+         */
+        void onLogoClicked(boolean isAnimatedLogoShowing);
+    }
+
     // TODO(crbug.com/40881870): It doesn't really make sense for those
     //  WritableObjectPropertyKey<Boolean> with skipEquality equals to true property keys;
     //  if we're not going to read the value out of this in the ViewBinder.
@@ -31,8 +43,7 @@ interface LogoProperties {
     //  enum if possible.
     WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey ANIMATION_ENABLED = new WritableBooleanPropertyKey();
-    WritableObjectPropertyKey<LogoView.ClickHandler> LOGO_CLICK_HANDLER =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<ClickHandler> LOGO_CLICK_HANDLER = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_SEARCH_PROVIDER_INITIAL_VIEW =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // TODO(crbug.com/40881870): Generate the LOGO, DEFAULT_GOOGLE_LOGO and ANIMATED_LOGO properties

@@ -37,9 +37,9 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Instrumentation tests for {@link LogoView}. */
+/** Instrumentation tests for {@link LegacyLogoView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class LogoViewTest {
+public class LegacyLogoViewTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -54,7 +54,7 @@ public class LogoViewTest {
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
     private static final String ALT_TEXT = "Hello World!";
 
-    private LogoView mView;
+    private LegacyLogoView mView;
     private Bitmap mBitmap;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mModel;
@@ -68,7 +68,7 @@ public class LogoViewTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            mView = new LogoView(activity, null);
+                            mView = new LegacyLogoView(activity, null);
                             LayoutParams params =
                                     new LayoutParams(
                                             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -76,7 +76,7 @@ public class LogoViewTest {
                             mModel = new PropertyModel(LogoProperties.ALL_KEYS);
                             mPropertyModelChangeProcessor =
                                     PropertyModelChangeProcessor.create(
-                                            mModel, mView, new LogoViewBinder());
+                                            mModel, mView, new LegacyLogoViewBinder());
                         });
     }
 

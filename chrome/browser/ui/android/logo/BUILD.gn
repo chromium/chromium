@@ -9,6 +9,8 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/logo/DoodleCache.java",
+    "java/src/org/chromium/chrome/browser/logo/LegacyLogoView.java",
+    "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewBinder.java",
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediator.java",
@@ -64,9 +66,11 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-sw600dp/ic_google_logo.xml",
     "java/res/drawable/ic_google_logo.xml",
+    "java/res/layout/legacy_logo_view_layout.xml",
     "java/res/layout/logo_view_layout.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
   ]
 
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
@@ -76,6 +80,8 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.logo"
   sources = [
     "java/src/org/chromium/chrome/browser/logo/DoodleCacheUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewBinderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoUtilsUnitTest.java",

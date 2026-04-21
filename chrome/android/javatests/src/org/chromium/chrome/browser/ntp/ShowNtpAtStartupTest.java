@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.logo.LegacyLogoView;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
@@ -331,24 +332,64 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    public void testNtpDoodleSize() {
+    @EnableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testNtpDoodleSize_logoViewRefactorFlagEnabled() {
         mActivityTestRule.startOnNtp();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
-        LogoView logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+        final int[] expectedValues = new int[3];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LogoView logoView =
+                            (LogoView) ntp.getView().findViewById(R.id.search_provider_logo);
                     Logo logo =
                             new Logo(Bitmap.createBitmap(1, 1, Config.ALPHA_8), null, null, null);
                     logoView.updateLogo(logo);
                     logoView.endAnimationsForTesting();
+
+                    Resources res = cta.getResources();
+                    expectedValues[0] = LogoUtils.getDoodleHeight(res);
+                    expectedValues[1] = LogoUtils.getTopMarginForDoodle(res);
+                    expectedValues[2] = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
                 });
 
-        Resources res = mActivityTestRule.getActivity().getResources();
-        int expectedLogoHeight = LogoUtils.getDoodleHeight(res);
-        int expectedTopMargin = LogoUtils.getTopMarginForDoodle(res);
-        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+        int expectedLogoHeight = expectedValues[0];
+        int expectedTopMargin = expectedValues[1];
+        int expectedBottomMargin = expectedValues[2];
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testNtpDoodleSize_logoViewRefactorFlagDisabled() {
+        mActivityTestRule.startOnNtp();
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
+        final int[] expectedValues = new int[3];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LegacyLogoView logoView =
+                            (LegacyLogoView) ntp.getView().findViewById(R.id.search_provider_logo);
+                    Logo logo =
+                            new Logo(Bitmap.createBitmap(1, 1, Config.ALPHA_8), null, null, null);
+                    logoView.updateLogo(logo);
+                    logoView.endAnimationsForTesting();
+
+                    Resources res = cta.getResources();
+                    expectedValues[0] = LogoUtils.getDoodleHeight(res);
+                    expectedValues[1] = LogoUtils.getTopMarginForDoodle(res);
+                    expectedValues[2] = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+                });
+
+        int expectedLogoHeight = expectedValues[0];
+        int expectedTopMargin = expectedValues[1];
+        int expectedBottomMargin = expectedValues[2];
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);

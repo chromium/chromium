@@ -123,4 +123,15 @@ public class LogoUtils {
         layoutParams.topMargin = logoTopMargin;
         logoView.setLayoutParams(layoutParams);
     }
+
+    /**
+     * Returns the total height of the logo view, including its top and bottom margins.
+     *
+     * @param logoView The view representing the logo.
+     * @return The total height of the logo view.
+     */
+    public static int getTotalLogoHeight(View logoView) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+        return layoutParams.height + layoutParams.topMargin + layoutParams.bottomMargin;
+    }
 }

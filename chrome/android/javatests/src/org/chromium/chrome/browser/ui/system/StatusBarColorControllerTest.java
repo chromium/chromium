@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -524,9 +526,12 @@ public class StatusBarColorControllerTest {
     private void scrollUpToolbarUntilPinnedAtTop(Activity activity) {
         Resources resources = activity.getResources();
         // Drag the Feed header title to scroll the toolbar to the top.
+        View logoView = activity.findViewById(R.id.search_provider_logo);
+        int totalLogoHeight = LogoUtils.getTotalLogoHeight(logoView);
+
         int toY =
                 -resources.getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
-                        - activity.findViewById(R.id.logo_holder).getHeight();
+                        - totalLogoHeight;
         TestTouchUtils.dragCompleteView(
                 InstrumentationRegistry.getInstrumentation(),
                 activity.findViewById(R.id.header_title),

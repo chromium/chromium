@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
@@ -19,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -42,7 +45,7 @@ public class LogoCoordinator {
     // This supplier is only used when the NTP surface is in tablet mode.
     private final Supplier<Boolean> mIsInMultiWindowModeSupplier;
     private LogoMediator mMediator;
-    private LogoView mLogoView;
+    private FrameLayout mLogoView;
     private boolean mIsInMultiWindowModeOnTablet;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
     // The current tint color of logo if the DSE is Google. It is null when the default colorful
@@ -76,9 +79,20 @@ public class LogoCoordinator {
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mContext = context;
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        mLogoView = parentView.findViewById(R.id.search_provider_logo);
         mIsInMultiWindowModeSupplier = isInMultiWindowModeSupplier;
-        PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
+
+        ViewStub stub = parentView.findViewById(R.id.logo_view_stub);
+        if (!ChromeFeatureList.sLogoViewRefactor.isEnabled()) {
+            stub.setLayoutResource(R.layout.legacy_logo_view_layout);
+        }
+        stub.inflate();
+        mLogoView = parentView.findViewById(R.id.search_provider_logo);
+
+        if (ChromeFeatureList.sLogoViewRefactor.isEnabled()) {
+            PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
+        } else {
+            PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LegacyLogoViewBinder());
+        }
 
         Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
         mLogoColor =
@@ -173,7 +187,11 @@ public class LogoCoordinator {
     @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
-        mLogoView.destroy();
+        if (mLogoView instanceof LogoView) {
+            ((LogoView) mLogoView).destroy();
+        } else if (mLogoView instanceof LegacyLogoView) {
+            ((LegacyLogoView) mLogoView).destroy();
+        }
         mLogoView = null;
         if (mHomepageStateListener != null) {
             NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);

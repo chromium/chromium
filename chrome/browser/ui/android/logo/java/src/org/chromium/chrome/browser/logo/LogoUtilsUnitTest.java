@@ -67,4 +67,16 @@ public class LogoUtilsUnitTest {
         Assert.assertEquals(logoHeight, layoutParams.height);
         Assert.assertEquals(logoTopMargin, layoutParams.topMargin);
     }
+
+    @Test
+    @SmallTest
+    public void testGetTotalLogoHeight() {
+        MarginLayoutParams layoutParams = new MarginLayoutParams(100, 200);
+        layoutParams.topMargin = 10;
+        layoutParams.bottomMargin = 20;
+        when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
+
+        int totalHeight = LogoUtils.getTotalLogoHeight(mLogoView);
+        Assert.assertEquals(230, totalHeight);
+    }
 }

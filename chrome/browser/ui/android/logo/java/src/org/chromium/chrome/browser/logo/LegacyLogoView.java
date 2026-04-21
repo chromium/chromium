@@ -44,7 +44,7 @@ import org.chromium.ui.widget.LoadingView;
  * this view and we have an animated GIF logo ready.
  */
 @NullMarked
-public class LogoView extends FrameLayout implements OnClickListener {
+public class LegacyLogoView extends FrameLayout implements OnClickListener {
     // Number of milliseconds for a new logo to fade in.
     private static final int LOGO_TRANSITION_TIME_MS = 400;
 
@@ -74,15 +74,15 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private @Nullable Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
     private int mDoodleSize;
 
-    private final FloatProperty<LogoView> mTransitionProperty =
+    private final FloatProperty<LegacyLogoView> mTransitionProperty =
             new FloatProperty<>("") {
                 @Override
-                public Float get(LogoView logoView) {
+                public Float get(LegacyLogoView logoView) {
                     return logoView.mTransitionAmount;
                 }
 
                 @Override
-                public void setValue(LogoView logoView, float amount) {
+                public void setValue(LegacyLogoView logoView, float amount) {
                     assert amount >= 0f;
                     assert amount <= 1f;
                     if (logoView.mTransitionAmount != amount) {
@@ -92,8 +92,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 }
             };
 
-    /** Constructor used to inflate a LogoView from XML. */
-    public LogoView(Context context, AttributeSet attrs) {
+    /** Constructor used to inflate a LegacyLogoView from XML. */
+    public LegacyLogoView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mLogoIsDefault = true;
@@ -115,7 +115,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         addView(mLoadingView);
     }
 
-    /** Clean up member variables when this view is no longer needed.*/
+    /** Clean up member variables when this view is no longer needed. */
     void destroy() {
         // Need to end the animation otherwise it can cause memory leaks since the AnimationHandler
         // has a reference to the animation callback which then can link back to the
@@ -347,7 +347,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                                                         * (animationValue - 0.5f)));
 
                         LogoUtils.setLogoViewLayoutParamsForDoodle(
-                                LogoView.this, logoHeight, logoTopMargin);
+                                LegacyLogoView.this, logoHeight, logoTopMargin);
                     }
                 });
         mFadeAnimation.addListener(
@@ -367,7 +367,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         mFadeAnimation = null;
                         if (newLogoHeight != oldLogoHeight) {
                             LogoUtils.setLogoViewLayoutParamsForDoodle(
-                                    LogoView.this, newLogoHeight, newLogoTopMargin);
+                                    LegacyLogoView.this, newLogoHeight, newLogoTopMargin);
                         }
                         setContentDescription(contentDescription);
                         setClickable(isClickable);
@@ -416,8 +416,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * Sets the matrix to scale and translate the image so that it will be centered in the LogoView
-     * and scaled to fit within the LogoView.
+     * Sets the matrix to scale and translate the image so that it will be centered in the
+     * LegacyLogoView and scaled to fit within the LegacyLogoView.
      *
      * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
      *     not fill the entire view but will still be centered.
@@ -441,7 +441,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     /**
      * Sets the logo bounds to scale and translate the image so that it will be centered in the
-     * LogoView and scaled to fit within the LogoView.
+     * LegacyLogoView and scaled to fit within the LegacyLogoView.
      *
      * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
      *     not fill the entire view but will still be centered.

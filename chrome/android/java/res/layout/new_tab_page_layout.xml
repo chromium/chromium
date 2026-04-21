@@ -20,13 +20,11 @@ found in the LICENSE file.
     android:visibility="gone" >
 
     <!-- Search provider logo -->
-    <FrameLayout
-        android:id="@+id/logo_holder"
+    <ViewStub
+        android:id="@+id/logo_view_stub"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <include layout="@layout/logo_view_layout"/>
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout="@layout/logo_view_layout" />
 
     <!-- Search box -->
     <include layout="@layout/fake_search_box_layout"/>

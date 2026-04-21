@@ -1707,6 +1707,7 @@ android_library("chrome_test_java_various") {
     "//base/test:leak_canary_java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/ntp_customization:java",
+    "//chrome/browser/ui/android/logo:utils_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",
