@@ -314,6 +314,13 @@ void RunSafetyCheckWithBrowser(Browser* browser) {
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
 
+// Starts voice search.
+void OpenVoiceSearchWithBrowser(Browser* browser) {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler startVoiceSearch];
+}
+
 // Navigates to the history UI.
 void OpenHistoryWithBrowser(Browser* browser) {
   id<SceneCommands> handler =
@@ -513,7 +520,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
           completion:base::BindOnce(&OpenTabGridWithBrowser)];
       break;
     case UserActivityType::kVoiceSearch:
-      // TODO(crbug.com/492115056): Add implementation.
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
       break;
     case UserActivityType::kOpenNewTab:
       [self openURLs:{GURL(kChromeUINewTabURL)}
