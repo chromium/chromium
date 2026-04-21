@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/version_info/version_info.h"
@@ -174,8 +175,10 @@ PolicyLogger::LogHelper::LogHelper(
       line_(line) {}
 
 PolicyLogger::LogHelper::~LogHelper() {
-  policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
-      log_severity_, log_source_, message_buffer_.str(), file_, line_));
+  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
+        log_severity_, log_source_, message_buffer_.str(), file_, line_));
+  }
   StreamLog();
 }
 
@@ -285,6 +288,14 @@ std::vector<policy::mojom::LogPtr> PolicyLogger::GetAsMojoList() {
   std::ranges::transform(logs_, std::back_inserter(all_logs_list),
                          &PolicyLogger::Log::GetAsMojoLog);
   return all_logs_list;
+}
+
+bool PolicyLogger::IsPolicyLoggingEnabled() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
 }
 
 void PolicyLogger::EnableLogDeletion() {

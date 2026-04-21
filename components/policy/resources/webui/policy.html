@@ -62,9 +62,11 @@
                   $i18n{uploadReport}
                 </button>
               </if>
-              <button id="view-logs" role="menuitem">
-                $i18n{viewLogs}
-              </button>
+              <if expr="not is_chromeos">
+                <button id="view-logs" role="menuitem">
+                  $i18n{viewLogs}
+                </button>
+              </if>
           </div>
         </div>
       </div>

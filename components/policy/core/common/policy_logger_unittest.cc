@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_logger.h"
+
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +23,11 @@ namespace policy {
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
   LOG_POLICY(INFO, POLICY_FETCHING) << "Element added: " << message;
 }
+#endif
 
 }  // namespace
 
@@ -48,6 +52,9 @@ class PolicyLoggerTest : public PlatformTest {
 // Checks that the logger is enabled by feature and that `GetAsList` returns an
 // updated list of logs.
 TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
   size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
@@ -58,10 +65,14 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
                   .GetDict()
                   .FindString("message")),
             "Element added: when the feature is enabled.");
+#endif
 }
 
 // Checks that the deletion of expired logs works as expected.
 TEST_F(PolicyLoggerTest, DeleteOldLogs) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
   policy_logger->EnableLogDeletion();
   size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
@@ -88,11 +99,15 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   task_environment.FastForwardBy(policy::PolicyLogger::kTimeToLive);
   task_environment.RunUntilIdle();
   EXPECT_EQ(policy_logger->GetAsList().size(), size_t(0));
+#endif
 }
 
 // Checks that the first log  added is deleted when `PolicyLogger::kMaxLogSize`
 // is exceeded.
 TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
   AddLogs("First log that will be removed.", policy_logger);
@@ -117,6 +132,7 @@ TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
 
   EXPECT_EQ(*(current_logs[current_size - 1].GetDict().FindString("message")),
             "Element added: Last log added and size is exceeded.");
+#endif
 }
 
 }  // namespace policy

@@ -181,8 +181,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   source->AddString("versionInfo",
                     base::WriteJson(GetVersionInfo()).value_or(""));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+#endif
 
   const bool allow_policy_test_page = PolicyUI::ShouldLoadTestPage(profile);
   if (allow_policy_test_page) {
@@ -240,8 +242,12 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  source->AddString("acceptedPaths", allow_policy_test_page ? "/|/test" : "/");
+#else
   source->AddString("acceptedPaths",
                     allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
+#endif
   webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);

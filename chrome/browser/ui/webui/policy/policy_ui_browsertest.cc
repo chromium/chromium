@@ -522,6 +522,26 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_P(PolicyUITest, LogsPageRedirectsOnChromeOS) {
+  // Verifies that navigating to chrome://policy/logs redirects to
+  // chrome://policy on ChromeOS, but stays on the logs page on other platforms.
+  content::WebContents* contents = web_contents();
+  GURL logs_url = GURL(chrome::kChromeUIPolicyURL).Resolve("logs");
+  GURL policy_url = GURL(chrome::kChromeUIPolicyURL);
+
+  // We use LoadURL and WaitForLoadStop to avoid NavigateToURL's strict URL
+  // check.
+  contents->GetController().LoadURL(logs_url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(contents->GetLastCommittedURL(), policy_url);
+#else
+  EXPECT_EQ(contents->GetLastCommittedURL(), logs_url);
+#endif
+}
+
 IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyNames) {
   // Verifies that the names of known policies are sent to the UI and processed
   // there correctly by checking that the policy table contains all policies in

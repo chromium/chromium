@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -44,6 +45,9 @@ class PolicyUILogsPageTest : public PlatformBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, LogsVisibleOnPage) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   static constexpr char test_message[] = "This is a test!";
   LOG_POLICY(ERROR, PLATFORM_POLICY) << test_message;
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
@@ -51,9 +55,13 @@ IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, LogsVisibleOnPage) {
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPageText().find(test_message) != std::string::npos; }));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, LogsRefresh) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   static constexpr char test_message[] = "This is a test!";
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
                                      GURL(chrome::kChromeUIPolicyLogsURL)));
@@ -64,9 +72,13 @@ IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, LogsRefresh) {
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPageText().find(test_message) != std::string::npos; }));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, DownloadLogs) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "Policy logging is disabled on ChromeOS.";
+#else
   static constexpr char test_message[] = "This is a test!";
   LOG_POLICY(ERROR, PLATFORM_POLICY) << test_message;
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
@@ -97,6 +109,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUILogsPageTest, DownloadLogs) {
     ASSERT_TRUE(base::ReadFileToString(downloaded_file, &file_contents));
   }
   EXPECT_NE(file_contents.find(test_message), std::string::npos);
+#endif
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolicyUILogsPageTest);
