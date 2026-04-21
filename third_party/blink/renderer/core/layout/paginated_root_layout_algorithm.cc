@@ -233,8 +233,13 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
                                &geometry, &margins);
 
   // Check if the resulting page area size is usable.
+  FragmentGeometry page_border_box_geometry;
+  ResolvePageBorderBoxGeometry(page_container_node, page_containing_block_size,
+                               CalculateSafePrintableInset(document),
+                               &page_border_box_geometry);
   LogicalSize desired_page_area_size =
-      geometry.border_box_size - geometry.border - geometry.padding;
+      page_border_box_geometry.border_box_size -
+      page_border_box_geometry.border - page_border_box_geometry.padding;
   bool ignore_author_page_style = false;
   if (desired_page_area_size.inline_size < LayoutUnit(1) ||
       desired_page_area_size.block_size < LayoutUnit(1)) {

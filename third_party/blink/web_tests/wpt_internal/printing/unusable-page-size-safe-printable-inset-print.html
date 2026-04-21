@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Large safe printable inset, making the CSS-derived page size unusable -> fall back to default size</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-page-3/#page-margin-safety">
+<link rel="match" href="unusable-page-size-safe-printable-inset-print-ref.html">
+<meta name="safe-printable-inset" content="100">
+<style>
+  @page {
+    size: 500px;
+    margin: 100px;
+    page-margin-safety: clamp;
+  }
+  body {
+    margin: 0;
+  }
+</style>
+<!-- Default page height is 3in. Default margins: 0.5 in on each side. -->
+<div style="height:2in;">Page 1</div>
+<div style="height:2in;">Page 2</div>
+<div style="height:2in;">Page 3</div>
