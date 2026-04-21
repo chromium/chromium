@@ -64,8 +64,12 @@
   _viewController = [[LocationBarBadgeViewController alloc] init];
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _dispatcher = self.browser->GetCommandDispatcher();
-  _locationBarBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      FullscreenController::FromBrowser(self.browser), self.viewController);
+  if (!IsFullscreenRefactoringEnabled()) {
+    _locationBarBadgeFullscreenUIUpdater =
+        std::make_unique<FullscreenUIUpdater>(
+            FullscreenController::FromBrowser(self.browser),
+            self.viewController);
+  }
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _prefService = self.browser->GetProfile()->GetPrefs();

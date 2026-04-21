@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -780,6 +781,14 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 }
 
 - (void)locationBarHideToolbarTapped {
+  if (IsFullscreenRefactoringEnabled()) {
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        FullscreenCommands)
+        enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::
+                                       kForcedByUser
+                          animated:YES];
+    return;
+  }
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
   fullscreenController->EnterForceFullscreenMode(
