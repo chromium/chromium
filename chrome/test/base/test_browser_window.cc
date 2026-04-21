@@ -344,21 +344,6 @@ TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
                                              bool show_back_button) {
   return nullptr;
 }
-
-SharingDialog* TestBrowserWindow::ShowSharingDialog(
-    content::WebContents* web_contents,
-    SharingDialogData data) {
-  return nullptr;
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-sharing_hub::ScreenshotCapturedBubble*
-TestBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
-                                                const gfx::Image& image) {
-  return nullptr;
-}
-#endif
-
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* contents) {
@@ -374,11 +359,6 @@ TestBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
 #if BUILDFLAG(IS_CHROMEOS)
 void TestBrowserWindow::ToggleMultitaskMenu() {
   return;
-}
-#else
-sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
-    share::ShareAttempt attempt) {
-  return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

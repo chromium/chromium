@@ -197,6 +197,12 @@ class SharedTabGroupFeedbackController;
 class MostRecentSharedTabUpdateStore;
 }  // namespace tab_groups
 
+class SharingWindowController;
+
+namespace sharing_hub {
+class SharingHubWindowController;
+}  // namespace sharing_hub
+
 namespace send_tab_to_self {
 class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
@@ -511,6 +517,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserInstantController> instant_controller_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarBubbleController>
       send_tab_to_self_toolbar_bubble_controller_;
+  std::unique_ptr<SharingWindowController> sharing_window_controller_;
+  std::unique_ptr<sharing_hub::SharingHubWindowController>
+      sharing_hub_window_controller_;
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_;
 
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;

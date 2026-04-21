@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/views/sharing/sharing_window_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/sharing_message/features.h"
@@ -25,12 +26,6 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
-
-BrowserWindow* GetWindowFromWebContents(content::WebContents* web_contents) {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
-}
 
 content::WebContents* GetCurrentWebContents(
     content::WebContents* web_contents) {
@@ -217,12 +212,15 @@ void SharingUiController::CloseDialog() {
 
 void SharingUiController::ShowNewDialog(SharingDialogData dialog_data) {
   CloseDialog();
-  BrowserWindow* window = GetWindowFromWebContents(web_contents_);
-  if (!window)
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  if (!browser) {
     return;
+  }
   bool has_devices = !dialog_data.devices.empty();
   bool has_apps = !dialog_data.apps.empty();
-  dialog_ = window->ShowSharingDialog(web_contents(), std::move(dialog_data));
+  dialog_ = SharingWindowController::From(browser)->ShowSharingDialog(
+      web_contents(), std::move(dialog_data));
   OnDialogShown(has_devices, has_apps);
 }
 

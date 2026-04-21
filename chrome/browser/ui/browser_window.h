@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
-#include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,9 +44,7 @@ class ExclusiveAccessContext;
 class FindBar;
 class GURL;
 class LocationBar;
-class SharingDialog;
 class StatusBubble;
-struct SharingDialogData;
 
 namespace autofill {
 class AutofillBubbleHandler;
@@ -70,11 +67,6 @@ class QRCodeGeneratorBubbleView;
 namespace send_tab_to_self {
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
-
-namespace sharing_hub {
-class ScreenshotCapturedBubble;
-class SharingHubBubbleView;
-}  // namespace sharing_hub
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -379,10 +371,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns whether the location bar is visible.
   virtual bool IsLocationBarVisible() const = 0;
 
-  // Shows the dialog for a sharing feature.
-  virtual SharingDialog* ShowSharingDialog(content::WebContents* contents,
-                                           SharingDialogData data) = 0;
-
   // Shows the Update Recommended dialog box.
   virtual void ShowUpdateChromeDialog() = 0;
 
@@ -405,11 +393,6 @@ class BrowserWindow : public ui::BaseWindow {
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
-  // Shows the Screenshot bubble.
-  virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
-      content::WebContents* contents,
-      const gfx::Image& image) = 0;
-
   // Shows the QR Code generator bubble. |url| is the URL for the initial code.
   virtual qrcode_generator::QRCodeGeneratorBubbleView*
   ShowQRCodeGeneratorBubble(content::WebContents* contents,
@@ -430,11 +413,6 @@ class BrowserWindow : public ui::BaseWindow {
 #if BUILDFLAG(IS_CHROMEOS)
   // Toggles the multitask menu on the browser frame size button.
   virtual void ToggleMultitaskMenu() = 0;
-#else
-  // Shows the Sharing Hub bubble. This must only be called as a direct result
-  // of user action.
-  virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      share::ShareAttempt attempt) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Shows the Full Page Translate bubble.

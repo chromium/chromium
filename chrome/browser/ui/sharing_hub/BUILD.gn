@@ -10,9 +10,9 @@ assert(toolkit_views)
 source_set("sharing_hub") {
   sources = [
     "screenshot/screenshot_captured_bubble_controller.h",
-    "sharing_hub_bubble_controller.cc",
     "sharing_hub_bubble_controller.h",
     "sharing_hub_bubble_view.h",
+    "sharing_hub_window_controller.h",
   ]
   public_deps = [
     "//base",
@@ -20,6 +20,7 @@ source_set("sharing_hub") {
     "//chrome/browser/sharing_hub",
     "//content/public/browser",
     "//ui/base/interaction",
+    "//ui/base/unowned_user_data",
   ]
 
   if (is_chromeos) {
@@ -36,12 +37,19 @@ source_set("sharing_hub") {
 }
 
 source_set("impl") {
-  sources = [ "screenshot/screenshot_captured_bubble_controller.cc" ]
+  sources = [
+    "screenshot/screenshot_captured_bubble_controller.cc",
+    "sharing_hub_bubble_controller.cc",
+    "sharing_hub_window_controller.cc",
+  ]
   deps = [
     ":sharing_hub",
     "//chrome/browser/image_editor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/toolbar",
+    "//ui/actions:actions_headers",
   ]
 
   if (is_chromeos) {

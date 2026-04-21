@@ -88,6 +88,7 @@ source_set("internal") {
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/sharing_hub",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs",

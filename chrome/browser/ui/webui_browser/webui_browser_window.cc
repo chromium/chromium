@@ -844,13 +844,6 @@ bool WebUIBrowserWindow::IsLocationBarVisible() const {
   return true;
 }
 
-SharingDialog* WebUIBrowserWindow::ShowSharingDialog(
-    content::WebContents* contents,
-    SharingDialogData data) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 void WebUIBrowserWindow::ShowUpdateChromeDialog() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -868,13 +861,6 @@ void WebUIBrowserWindow::ShowIntentPickerBubble(
 void WebUIBrowserWindow::ShowBookmarkBubble(const GURL& url,
                                             bool already_bookmarked) {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-sharing_hub::ScreenshotCapturedBubble*
-WebUIBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
-                                                 const gfx::Image& image) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
 }
 
 qrcode_generator::QRCodeGeneratorBubbleView*
@@ -902,12 +888,6 @@ WebUIBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
 #if BUILDFLAG(IS_CHROMEOS)
 void WebUIBrowserWindow::ToggleMultitaskMenu() {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-#else
-sharing_hub::SharingHubBubbleView* WebUIBrowserWindow::ShowSharingHubBubble(
-    share::ShareAttempt attempt) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

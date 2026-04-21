@@ -41,10 +41,6 @@ namespace send_tab_to_self {
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
-namespace sharing_hub {
-class SharingHubBubbleView;
-}  // namespace sharing_hub
-
 // WARNING WARNING WARNING WARNING
 // Do not use this class. See docs/chrome_browser_design_principles.md for
 // details.  Either write a browser test which provides both a "class Browser"
@@ -161,8 +157,6 @@ class TestBrowserWindow : public BrowserWindow,
   bool IsUnframedModeEnabled() const override;
   void ShowChromeLabs() override {}
   BrowserView* AsBrowserView() override;
-  SharingDialog* ShowSharingDialog(content::WebContents* contents,
-                                   SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override {}
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
@@ -170,9 +164,6 @@ class TestBrowserWindow : public BrowserWindow,
       const GURL& url,
       bool show_back_button) override;
 #if !BUILDFLAG(IS_ANDROID)
-  sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
-      content::WebContents* contents,
-      const gfx::Image& image) override;
   void ShowIntentPickerBubble(
       std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,
@@ -188,9 +179,6 @@ class TestBrowserWindow : public BrowserWindow,
       bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void ToggleMultitaskMenu() override;
-#else
-  sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      share::ShareAttempt attempt) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,

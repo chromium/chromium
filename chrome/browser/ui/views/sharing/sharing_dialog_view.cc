@@ -23,6 +23,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -336,3 +337,6 @@ std::unique_ptr<views::StyledLabel> SharingDialogView::CreateHelpText() {
 
   return label;
 }
+
+BEGIN_METADATA(SharingDialogView)
+END_METADATA

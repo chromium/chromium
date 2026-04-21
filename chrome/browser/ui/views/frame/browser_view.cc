@@ -3178,33 +3178,6 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
   return bubble;
 }
 
-sharing_hub::ScreenshotCapturedBubble*
-BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
-                                          const gfx::Image& image) {
-  auto* bubble = new sharing_hub::ScreenshotCapturedBubble(
-      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), contents, image,
-      browser_->GetProfile());
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble;
-}
-
-SharingDialog* BrowserView::ShowSharingDialog(
-    content::WebContents* web_contents,
-    SharingDialogData data) {
-  // TODO(crbug.com/40220302): Remove this altogether. This used to
-  // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
-  // now gone altogether.
-  auto* dialog_view = new SharingDialogView(
-      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), web_contents,
-      std::move(data));
-
-  views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
-
-  return dialog_view;
-}
-
 send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
@@ -3245,22 +3218,6 @@ void BrowserView::ToggleMultitaskMenu() {
   if (size_button && size_button->GetVisible()) {
     size_button->ToggleMultitaskMenu();
   }
-}
-#else
-sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
-    share::ShareAttempt attempt) {
-  auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
-      toolbar_button_provider()->GetBubbleAnchor(std::nullopt), attempt,
-      sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
-          attempt.web_contents.get()));
-  bubble->SetHighlightedElement(
-      sharing_hub::SharingHubBubbleController::kIconElementId);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  // This is always triggered due to a user gesture, c.f. method documentation.
-  bubble->ShowForReason(sharing_hub::SharingHubBubbleViewImpl::USER_GESTURE);
-
-  return bubble;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

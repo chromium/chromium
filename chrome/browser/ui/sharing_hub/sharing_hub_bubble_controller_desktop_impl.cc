@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
@@ -71,8 +72,8 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble(
           web_contents());
 
   sharing_hub_bubble_view_ =
-      browser->GetBrowserForMigrationOnly()->window()->ShowSharingHubBubble(
-          attempt);
+      sharing_hub::SharingHubWindowController::From(browser)
+          ->ShowSharingHubBubble(attempt);
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
