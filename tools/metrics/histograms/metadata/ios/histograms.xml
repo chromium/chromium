@@ -6917,7 +6917,9 @@ chromium-metrics-reviews@google.com.
   <owner>ameurhosni@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    Recorded each time the app is opened via a Spotlight intent.
+    Recorded each time the app is opened via a siri shortcut, which can be
+    triggered from Spotlight, the Shortcuts app, or Siri. Note that this list
+    does not contain all intent types but only the ones that can be donated.
   </summary>
 </histogram>
 
