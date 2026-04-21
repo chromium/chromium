@@ -665,11 +665,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 // Returns YES if the user can modify the Enhanced Autofill setting.
 - (BOOL)canModifyEnhancedAutofill {
   return autofill::CanPerformAutofillAiAction(
-      _browser->GetProfile(),
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiAvailableByDefault)
-          ? autofill::AutofillAiAction::kEnableOrDisable
-          : autofill::AutofillAiAction::kOptIn);
+      _browser->GetProfile(), autofill::AutofillAiAction::kOptIn);
 }
 
 // Configures the enhancedAutofillItem based on capability to modify the
