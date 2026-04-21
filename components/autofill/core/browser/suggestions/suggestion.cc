@@ -277,8 +277,8 @@ Suggestion::AtMemoryPayload::AtMemoryPayload() = default;
 
 Suggestion::AtMemoryPayload::AtMemoryPayload(
     std::u16string value,
-    base::RepeatingCallback<std::u16string()> reveal_callback)
-    : value(std::move(value)), reveal_callback(std::move(reveal_callback)) {}
+    accessibility_annotator::EntryType entry_type)
+    : value(std::move(value)), entry_type(entry_type) {}
 
 Suggestion::AtMemoryPayload::AtMemoryPayload(const AtMemoryPayload&) = default;
 
