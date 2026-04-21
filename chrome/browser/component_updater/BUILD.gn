@@ -192,6 +192,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/actor:impl",
+      "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
       "//components/live_caption:constants",

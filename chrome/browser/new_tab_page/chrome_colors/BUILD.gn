@@ -53,6 +53,8 @@ compiled_action("generate_chrome_colors_info") {
   visibility = [
     ":chrome_colors",
     "//chrome/browser",
+    "//chrome/browser/new_tab_page:browser_tests",
+    "//chrome/browser/new_tab_page:impl",
     "//chrome/browser/signin:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/profiles:impl",

@@ -548,6 +548,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/indigo",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/metrics/critical_user_journeys",
+      "//chrome/browser/new_tab_page",
       "//chrome/browser/private_ai",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/record_replay",

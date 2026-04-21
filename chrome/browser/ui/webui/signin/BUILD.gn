@@ -397,6 +397,7 @@ if (!is_chromeos) {
       "//chrome/browser:resources",
       "//chrome/browser/enterprise/browser_management:management_identity",
       "//chrome/browser/glic/resources:browser_resources",
+      "//chrome/browser/new_tab_page",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",

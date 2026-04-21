@@ -1,0 +1,219 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+# The public API target.
+source_set("new_tab_page") {
+  public = [
+    "chrome_colors/chrome_colors_factory.h",
+    "chrome_colors/chrome_colors_service.h",
+    "feature_promo_helper/new_tab_page_feature_promo_helper.h",
+    "microsoft_auth/microsoft_auth_service.h",
+    "microsoft_auth/microsoft_auth_service_factory.h",
+    "microsoft_auth/microsoft_auth_service_observer.h",
+    "modules/file_suggestion/drive_service.h",
+    "modules/file_suggestion/drive_service_factory.h",
+    "modules/file_suggestion/drive_suggestion_handler.h",
+    "modules/file_suggestion/microsoft_files_page_handler.h",
+    "modules/microsoft_modules_helper.h",
+    "modules/modules_constants.h",
+    "modules/modules_switches.h",
+    "modules/new_tab_page_modules.h",
+    "modules/v2/authentication/microsoft_auth_page_handler.h",
+    "modules/v2/calendar/calendar_fake_data_helper.h",
+    "modules/v2/calendar/google_calendar_page_handler.h",
+    "modules/v2/calendar/outlook_calendar_page_handler.h",
+    "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h",
+    "modules/v2/most_relevant_tab_resumption/url_visit_types_mojom_traits.h",
+    "modules/v2/tab_groups/tab_groups_page_handler.h",
+    "new_tab_page_util.h",
+    "one_google_bar/one_google_bar_data.h",
+    "one_google_bar/one_google_bar_loader.h",
+    "one_google_bar/one_google_bar_loader_impl.h",
+    "one_google_bar/one_google_bar_service.h",
+    "one_google_bar/one_google_bar_service_factory.h",
+    "one_google_bar/one_google_bar_service_observer.h",
+    "promos/promo_data.h",
+    "promos/promo_service.h",
+    "promos/promo_service_factory.h",
+    "promos/promo_service_observer.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
+    "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
+    "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
+    "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
+    "//chrome/browser/new_tab_page/modules/v2/tab_groups:mojo_bindings",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
+    "//chrome/common:constants",
+    "//components/ntp_tiles",
+    "//components/search",
+    "//components/segmentation_platform/public",
+    "//components/visited_url_ranking/public",
+    "//content/public/browser",
+    "//google_apis/calendar",
+    "//google_apis/common",
+    "//mojo/public/mojom/base",
+    "//services/data_decoder/public/cpp",
+    "//skia",
+  ]
+}
+
+# The implementation target.
+source_set("impl") {
+  sources = [
+    "chrome_colors/chrome_colors_factory.cc",
+    "chrome_colors/chrome_colors_service.cc",
+    "feature_promo_helper/new_tab_page_feature_promo_helper.cc",
+    "microsoft_auth/microsoft_auth_service.cc",
+    "microsoft_auth/microsoft_auth_service_factory.cc",
+    "modules/file_suggestion/drive_service.cc",
+    "modules/file_suggestion/drive_service_factory.cc",
+    "modules/file_suggestion/drive_suggestion_handler.cc",
+    "modules/file_suggestion/microsoft_files_page_handler.cc",
+    "modules/microsoft_modules_helper.cc",
+    "modules/modules_switches.cc",
+    "modules/new_tab_page_modules.cc",
+    "modules/v2/authentication/microsoft_auth_page_handler.cc",
+    "modules/v2/calendar/calendar_fake_data_helper.cc",
+    "modules/v2/calendar/google_calendar_page_handler.cc",
+    "modules/v2/calendar/outlook_calendar_page_handler.cc",
+    "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.cc",
+    "modules/v2/tab_groups/tab_groups_page_handler.cc",
+    "new_tab_page_util.cc",
+    "one_google_bar/one_google_bar_data.cc",
+    "one_google_bar/one_google_bar_loader_impl.cc",
+    "one_google_bar/one_google_bar_service.cc",
+    "one_google_bar/one_google_bar_service_factory.cc",
+    "promos/promo_data.cc",
+    "promos/promo_service.cc",
+    "promos/promo_service_factory.cc",
+  ]
+
+  public_deps = [
+    ":new_tab_page",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+    "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search",
+    "//chrome/browser/search/background",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//chrome/browser/user_education",
+    "//chrome/browser/visited_url_ranking",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/history_clusters/core",
+    "//components/keyed_service/core",
+    "//components/ntp_tiles:pref_names",
+    "//components/prefs",
+    "//components/search",
+    "//components/signin/core/browser",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "modules/test_support.cc",
+    "modules/test_support.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/search",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feature_promo_helper/new_tab_page_feature_promo_helper_unittest.cc",
+    "microsoft_auth/microsoft_auth_service_unittest.cc",
+    "modules/file_suggestion/drive_service_unittest.cc",
+    "modules/file_suggestion/microsoft_files_page_handler_unittest.cc",
+    "modules/new_tab_page_modules_unittest.cc",
+    "modules/v2/authentication/microsoft_auth_page_handler_unittest.cc",
+    "modules/v2/calendar/google_calendar_page_handler_unittest.cc",
+    "modules/v2/calendar/outlook_calendar_page_handler_unittest.cc",
+    "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler_unittest.cc",
+    "modules/v2/tab_groups/tab_groups_page_handler_unittest.cc",
+    "one_google_bar/one_google_bar_loader_impl_unittest.cc",
+    "one_google_bar/one_google_bar_service_unittest.cc",
+    "promos/promo_service_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":new_tab_page",
+    ":test_support",
+    "//chrome/browser",
+    "//chrome/browser/sync",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/browser/ui/views/user_education",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/user_education",
+    "//chrome/browser/visited_url_ranking",
+    "//chrome/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/prefs:test_support",
+    "//components/search",
+    "//components/segmentation_platform/public:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/visited_url_ranking/public:test_support",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "chrome_colors/chrome_colors_service_browsertest.cc",
+    "new_tab_page_util_browsertest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":new_tab_page",
+    "//chrome/browser",
+    "//chrome/browser/new_tab_page/chrome_colors",
+    "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//chrome/test:test_support",
+    "//components/ntp_tiles:pref_names",
+    "//components/variations/service",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+  ]
+}

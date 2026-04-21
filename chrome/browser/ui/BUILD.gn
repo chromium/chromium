@@ -781,7 +781,12 @@ static_library("ui") {
   # These are all-platform circular includes.
   if (!is_android) {
     # //chrome/browser/download:impl sources include headers from //chrome/browser/ui.
-    allow_circular_includes_from += [ "//chrome/browser/download:impl" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/download:impl",
+
+      # TODO(crbug.com/504627103): Remove this circular dependency.
+      "//chrome/browser/new_tab_page:impl",
+    ]
   }
 
   allow_circular_includes_from += [
@@ -918,6 +923,8 @@ static_library("ui") {
   if (!is_android) {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/profile_resetter",
     ]
   }

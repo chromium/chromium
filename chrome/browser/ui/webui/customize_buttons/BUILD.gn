@@ -11,6 +11,7 @@ source_set("customize_buttons") {
   public_deps = [
     ":mojo_bindings",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/new_tab_page",
     "//chrome/browser/resources/new_tab_shared:resources_grit",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common",

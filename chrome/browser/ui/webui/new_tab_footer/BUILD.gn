@@ -41,6 +41,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/extensions",
+    "//chrome/browser/new_tab_page",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
     "//chrome/browser/resources/new_tab_shared:resources_grit",

@@ -50,6 +50,7 @@ source_set("searchbox_impl") {
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/new_tab_page",
     "//chrome/browser/omnibox",
     "//chrome/browser/predictors",
     "//chrome/browser/preloading",
