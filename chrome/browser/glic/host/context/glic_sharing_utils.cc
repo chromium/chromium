@@ -35,7 +35,7 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
   static const base::NoDestructor<std::vector<GURL>> kUrlAllowList{
       {GURL(), GURL(url::kAboutBlankURL),
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
-       GURL(chrome::kChromeUINewTabPageURL), GURL(chrome::kChromeUINewTabURL),
+       chrome::ChromeUINewTabPageURLAsGURL(), chrome::ChromeUINewTabURLAsGURL(),
 #if BUILDFLAG(IS_ANDROID)
        GURL(chrome::kChromeUINativeNewTabURL),
 #endif

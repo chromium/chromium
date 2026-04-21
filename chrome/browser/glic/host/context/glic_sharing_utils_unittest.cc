@@ -47,7 +47,7 @@ TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_FileUrl) {
 
 TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_ChromeUINewTab) {
   content::WebContents* web_contents =
-      CreateWebContents(GURL(chrome::kChromeUINewTabURL));
+      CreateWebContents(chrome::ChromeUINewTabURLAsGURL());
   EXPECT_TRUE(IsTabValidForSharing(web_contents));
 }
 
