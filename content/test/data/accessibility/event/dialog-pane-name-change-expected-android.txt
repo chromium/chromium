@@ -1,0 +1,2 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.app.AlertDialog - [contentTypes=SUBTREE] [After]
+TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=PANE_TITLE]

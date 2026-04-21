@@ -1,1 +1,1 @@
-TYPE_VIEW_CLICKED
+TYPE_VIEW_CLICKED class_name=android.widget.TextView

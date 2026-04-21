@@ -1,3 +1,3 @@
-TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=SUBTREE] [Before]
-TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=SUBTREE] [After]
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView - [contentTypes=SUBTREE] [Before]
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView - [contentTypes=SUBTREE] [After]
 TYPE_ANNOUNCEMENT - [After]

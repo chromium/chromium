@@ -1,1 +1,1 @@
-TYPE_WINDOW_STATE_CHANGED - [contentTypes=16]
+TYPE_WINDOW_STATE_CHANGED - [contentTypes=PANE_APPEARED] text=[]

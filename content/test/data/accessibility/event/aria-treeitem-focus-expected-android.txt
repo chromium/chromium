@@ -1,0 +1,2 @@
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View
+TYPE_VIEW_FOCUSED class_name=android.view.View

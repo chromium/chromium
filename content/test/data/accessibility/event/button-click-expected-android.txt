@@ -1,7 +1,7 @@
-TYPE_VIEW_CLICKED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_ACCESSIBILITY_FOCUSED
+TYPE_VIEW_CLICKED class_name=android.widget.Button
+TYPE_VIEW_CLICKED class_name=android.widget.TextView
+TYPE_VIEW_CLICKED class_name=android.widget.TextView
+TYPE_VIEW_CLICKED class_name=android.view.View
+TYPE_VIEW_CLICKED class_name=android.widget.CheckBox
+TYPE_VIEW_CLICKED class_name=android.widget.ToggleButton
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.webkit.WebView

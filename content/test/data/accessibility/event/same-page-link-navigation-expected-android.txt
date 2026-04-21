@@ -1,5 +1,5 @@
-TYPE_VIEW_SCROLLED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_ACCESSIBILITY_FOCUSED
-TYPE_VIEW_CLICKED
-TYPE_VIEW_ACCESSIBILITY_FOCUSED
+TYPE_VIEW_SCROLLED class_name=android.webkit.WebView - [scrollDeltaX=-1, scrollDeltaY=-1]
+TYPE_VIEW_CLICKED class_name=android.view.View
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View
+TYPE_VIEW_CLICKED class_name=android.view.View
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View

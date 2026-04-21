@@ -1,4 +1,4 @@
-TYPE_VIEW_SCROLLED
-TYPE_VIEW_SCROLLED
-TYPE_VIEW_SCROLLED
-TYPE_VIEW_SCROLLED
+TYPE_VIEW_SCROLLED class_name=android.widget.SeekBar - [scrollDeltaX=-1, scrollDeltaY=-1]
+TYPE_VIEW_SCROLLED class_name=android.widget.SeekBar - [scrollDeltaX=-1, scrollDeltaY=-1]
+TYPE_VIEW_SCROLLED class_name=android.widget.SeekBar - [scrollDeltaX=-1, scrollDeltaY=-1]
+TYPE_VIEW_SCROLLED class_name=android.widget.SeekBar - [scrollDeltaX=-1, scrollDeltaY=-1]

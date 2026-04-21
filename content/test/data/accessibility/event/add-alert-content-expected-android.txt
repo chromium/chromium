@@ -1,1 +1,3 @@
 TYPE_ANNOUNCEMENT - [First alert]
+TYPE_ANNOUNCEMENT - [Second alert]
+TYPE_ANNOUNCEMENT - [Third alert]

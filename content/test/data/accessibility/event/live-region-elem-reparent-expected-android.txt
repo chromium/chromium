@@ -1,3 +1,3 @@
-TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=SUBTREE] [This is important!]
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView - [contentTypes=SUBTREE] [This is important!]
 TYPE_ANNOUNCEMENT - [This is important!]
-TYPE_VIEW_CLICKED
+TYPE_VIEW_CLICKED class_name=android.widget.Button

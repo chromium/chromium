@@ -1,2 +1,2 @@
 TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=STATE_DESCRIPTION]
-TYPE_VIEW_CLICKED
+TYPE_VIEW_CLICKED class_name=android.widget.RadioButton

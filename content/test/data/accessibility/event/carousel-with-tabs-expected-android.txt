@@ -1,1 +1,1 @@
-TYPE_VIEW_SCROLLED
+TYPE_VIEW_SCROLLED class_name=android.view.View - [scrollDeltaX=-1, scrollDeltaY=-1]

@@ -179,6 +179,7 @@ public class AccessibilityActionAndEventTracker {
      * Helper method to take an event and convert it to a string of useful information for testing.
      * For any events with significant info, we append this to the end of the string in square
      * braces. For example, for the TYPE_ANNOUNCEMENT events we append the announcement text.
+     * getSource(), getMaxScrollX(), and getMaxScrollY() properties are not included.
      *
      * @param event AccessibilityEvent event to get a string for.
      * @param WebContentsAccessibilityImpl The WebContentsAccessibilityImpl instance.
@@ -193,13 +194,19 @@ public class AccessibilityActionAndEventTracker {
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityEvent.eventTypeToString(event.getEventType()));
 
-        // Add extra information based on eventType.
+        if (event.getClassName() != null) {
+            builder.append(" class_name=");
+            builder.append(event.getClassName());
+        }
+
         switch (event.getEventType()) {
-                // For announcements, track the text announced to the user.
+            // For announcements, track the text announced to the user.
             case AccessibilityEvent.TYPE_ANNOUNCEMENT:
                 {
                     builder.append(" - [");
-                    builder.append(event.getText().get(0).toString());
+                    if (event.getText() != null) {
+                        builder.append(event.getText().get(0).toString());
+                    }
                     builder.append("]");
                     break;
                 }
@@ -224,25 +231,32 @@ public class AccessibilityActionAndEventTracker {
                     builder.append(event.getFromIndex());
                     builder.append(", ");
                     builder.append(event.getToIndex());
+                    builder.append(", granularity=").append(event.getMovementGranularity());
+                    builder.append(", action=").append(event.getAction());
                     builder.append("]");
+                    if (event.getText() != null) {
+                        builder.append(" text=").append(event.getText());
+                    }
                     break;
                 }
 
-                // For appearance of dialogs, track the content types.
+            // For appearance of dialogs, track the content types.
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                 {
                     builder.append(" - [contentTypes=");
-                    builder.append(event.getContentChangeTypes());
+                    builder.append(contentChangeTypeToString(event.getContentChangeTypes()));
                     builder.append("]");
+                    if (event.getText() != null) {
+                        builder.append(" text=").append(event.getText());
+                    }
                     break;
                 }
 
-            // Any TYPE_WINDOW_CONTENT_CHANGED event here has been
-            // designated as an important subtype to track.
+            // Any TYPE_WINDOW_CONTENT_CHANGED event here should have the
+            // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag.
             case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
                 {
-                    builder.append(" - [");
-                    builder.append("contentTypes=");
+                    builder.append(" - [contentTypes=");
                     builder.append(contentChangeTypeToString(event.getContentChangeTypes()));
                     builder.append("]");
 
@@ -272,27 +286,68 @@ public class AccessibilityActionAndEventTracker {
                     break;
                 }
 
-                // Events that do not add extra information for unit tests
-            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+            case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
+                {
+                    builder.append(" - [");
+                    builder.append(event.getFromIndex());
+                    builder.append(", ");
+                    builder.append(event.getAddedCount());
+                    builder.append(", ");
+                    builder.append(event.getRemovedCount());
+                    builder.append("]");
+                    if (event.getText() != null) {
+                        builder.append(" text=").append(event.getText());
+                    }
+                    if (event.getBeforeText() != null) {
+                        builder.append(" beforeText=").append(event.getBeforeText());
+                    }
+                    break;
+                }
+
+            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                {
+                    builder.append(" - [scrollDeltaX=").append(event.getScrollDeltaX());
+                    builder.append(", scrollDeltaY=").append(event.getScrollDeltaY());
+                    builder.append("]");
+                    break;
+                }
+
+            case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
+                {
+                    builder.append(" - [windowChanges=")
+                            .append(event.getWindowChanges())
+                            .append("]");
+                    break;
+                }
+
+            case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
+                {
+                    if (event.getText() != null) {
+                        builder.append(" - [text=").append(event.getText()).append("]");
+                    }
+                    if (event.getParcelableData() != null) {
+                        builder.append(" - [parcelableData=")
+                                .append(event.getParcelableData())
+                                .append("]");
+                    }
+                    break;
+                }
+
             case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
             case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
             case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
-            case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
             case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END:
             case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START:
             case AccessibilityEvent.TYPE_TOUCH_INTERACTION_END:
-            case AccessibilityEvent.TYPE_TOUCH_INTERACTION_START:
             case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
-            case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
             case AccessibilityEvent.TYPE_VIEW_FOCUSED:
             case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
             case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
             case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
-            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
             case AccessibilityEvent.TYPE_VIEW_SELECTED:
-            case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
-            case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
+            case AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL:
             default:
                 break;
         }
