@@ -48,7 +48,7 @@ NewTabPagePageLoadMetricsObserver::OnStart(
   // Observes chrome://new-tab-page and chrome-untrusted://new-tab-page
   // but not third-party NTPs.
   if (url::IsSameOriginWith(navigation_handle->GetURL(),
-                            GURL(chrome::kChromeUINewTabPageURL)) ||
+                            chrome::ChromeUINewTabPageURLAsGURL()) ||
       url::IsSameOriginWith(navigation_handle->GetURL(),
                             GURL(chrome::kChromeUIUntrustedNewTabPageUrl))) {
     return CONTINUE_OBSERVING;
