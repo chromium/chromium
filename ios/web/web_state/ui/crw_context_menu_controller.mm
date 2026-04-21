@@ -6,6 +6,7 @@
 
 #import "base/auto_reset.h"
 #import "base/feature_list.h"
+#import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/common/crw_viewport_adjustment.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
@@ -42,7 +43,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 
 @property(nonatomic, strong) WKWebView* webView;
 
-@property(nonatomic, assign) web::WebState* webState;
+@property(nonatomic) base::WeakPtr<web::WebState> webState;
 
 @property(nonatomic, strong) CRWContextMenuElementFetcher* elementFetcher;
 
@@ -73,7 +74,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
     // with the JS touch event. see crbug/351696381.
     [containerView addInteraction:_contextMenu];
 
-    _webState = webState;
+    _webState = webState ? webState->GetWeakPtr() : nullptr;
 
     _elementFetcher =
         [[CRWContextMenuElementFetcher alloc] initWithWebView:webView
@@ -132,6 +133,10 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
                        contextMenuConfigurationWithParams:params
                                                  location:location
                                               interaction:interaction];
+
+                   if (!strongSelf.webState) {
+                     return;
+                   }
 
                    strongSelf.webState->GetDelegate()
                        ->ContextMenuConfigurationLoaded(config, innerConfig);
@@ -198,7 +203,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
                                                     animator {
   if (self.webState && self.webState->GetDelegate()) {
     self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(
-        self.webState, animator);
+        self.webState.get(), animator);
   }
 }
 
@@ -232,7 +237,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   __block UIContextMenuConfiguration* configuration = nil;
   if (self.webState && self.webState->GetDelegate()) {
     self.webState->GetDelegate()->ContextMenuConfiguration(
-        self.webState, params, ^(UIContextMenuConfiguration* conf) {
+        self.webState.get(), params, ^(UIContextMenuConfiguration* conf) {
           configuration = conf;
         });
   }
@@ -321,6 +326,10 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   }
 
   isRunLoopComplete = YES;
+
+  if (!self.webState) {
+    return std::nullopt;
+  }
 
   return resultParams;
 }
