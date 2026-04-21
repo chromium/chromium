@@ -796,7 +796,9 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
       std::move(credential_id), rp_id_for_payment_extension,
       std::move(user_id_for_payment_extension),
       BindOnce(&OnSaveCredentialIdForPaymentExtension,
-               std::make_unique<ScopedPromiseResolver>(resolver),
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kPaymentConfirmation),
                std::move(scoped_abort_state), std::move(feature_handle),
                std::move(credential)));
 }
@@ -1567,7 +1569,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   credential_manager->Get(
       requirement, options->password(), std::move(providers),
       BindOnce(&OnGetComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver),
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kCredentialManager),
                required_origin_type, Mediation::MODAL));
 
   return promise;
@@ -1627,7 +1631,9 @@ ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
   credential_manager->Store(
       CredentialInfo::From(credential),
       BindOnce(&OnStoreComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kCredentialManager)));
 
   return promise;
 }
@@ -1944,11 +1950,14 @@ AuthenticationCredentialsContainer::create(
                             ->SecurePaymentConfirmationService();
     spc_service->MakePaymentCredential(
         std::move(mojo_options),
-        BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                 std::make_unique<ScopedPromiseResolver>(resolver),
-                 std::move(scoped_abort_state), std::move(feature_handle),
-                 rp_id_for_payment_extension,
-                 std::move(user_id_for_payment_extension)));
+        BindOnce(
+            &OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+            std::make_unique<ScopedPromiseResolver>(
+                resolver,
+                ScopedPromiseResolver::ConnectionType::kPaymentConfirmation),
+            std::move(scoped_abort_state), std::move(feature_handle),
+            rp_id_for_payment_extension,
+            std::move(user_id_for_payment_extension)));
   } else {
     Mediation mediation = Mediation::MODAL;
     if (options->mediation() ==
@@ -1960,7 +1969,9 @@ AuthenticationCredentialsContainer::create(
     authenticator->MakeCredential(
         std::move(mojo_options),
         BindOnce(&OnMakePublicKeyCredentialComplete,
-                 std::make_unique<ScopedPromiseResolver>(resolver),
+                 std::make_unique<ScopedPromiseResolver>(
+                     resolver,
+                     ScopedPromiseResolver::ConnectionType::kAuthenticator),
                  std::move(scoped_abort_state), std::move(feature_handle),
                  required_origin_type, is_rk_required, mediation));
   }
@@ -1990,7 +2001,9 @@ AuthenticationCredentialsContainer::preventSilentAccess(
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->PreventSilentAccess(
       BindOnce(&OnPreventSilentAccessComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kCredentialManager)));
 
   // TODO(https://crbug.com/1441075): Unify the implementation for
   // different CredentialTypes and avoid the duplication eventually.
@@ -1998,7 +2011,8 @@ AuthenticationCredentialsContainer::preventSilentAccess(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->PreventSilentAccess(
       BindOnce(&OnPreventSilentAccessComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver, ScopedPromiseResolver::ConnectionType::kFedCm)));
 
   return promise;
 }
@@ -2218,7 +2232,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
       std::move(get_credential_options),
       BindOnce(
           &OnAuthenticatorGetCredentialComplete,
-          std::make_unique<ScopedPromiseResolver>(resolver),
+          std::make_unique<ScopedPromiseResolver>(
+              resolver, ScopedPromiseResolver::ConnectionType::kAuthenticator),
           std::move(scoped_abort_state),
           ExecutionContext::From(script_state)
               ->GetScheduler()
@@ -2411,9 +2426,11 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->RequestToken(
       std::move(idp_get_params), mediation_requirement,
-      blink::BindOnce(&OnRequestToken,
-                      std::make_unique<ScopedPromiseResolver>(resolver),
-                      std::move(scoped_abort_state), WrapPersistent(&options)));
+      blink::BindOnce(
+          &OnRequestToken,
+          std::make_unique<ScopedPromiseResolver>(
+              resolver, ScopedPromiseResolver::ConnectionType::kFedCm),
+          std::move(scoped_abort_state), WrapPersistent(&options)));
 }
 
 }  // namespace blink

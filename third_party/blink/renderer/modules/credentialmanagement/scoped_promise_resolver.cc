@@ -11,8 +11,9 @@
 namespace blink {
 
 ScopedPromiseResolver::ScopedPromiseResolver(
-    ScriptPromiseResolverBase* resolver)
-    : resolver_(resolver) {}
+    ScriptPromiseResolverBase* resolver,
+    ConnectionType connection_type)
+    : resolver_(resolver), connection_type_(connection_type) {}
 
 ScopedPromiseResolver::~ScopedPromiseResolver() {
   if (resolver_)
@@ -24,11 +25,28 @@ ScriptPromiseResolverBase* ScopedPromiseResolver::Release() {
 }
 
 void ScopedPromiseResolver::OnConnectionError() {
-  // The only anticipated reason for a connection error is that the embedder
-  // does not implement mojom::AuthenticatorImpl.
-  resolver_->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError,
-      "The user agent does not support public key credentials."));
+  switch (connection_type_) {
+    case ConnectionType::kAuthenticator:
+      resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Error connecting to Web Authentication service."));
+      break;
+    case ConnectionType::kFedCm:
+      resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Error connecting to Federated Credential service."));
+      break;
+    case ConnectionType::kCredentialManager:
+      resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Error connecting to Credential Management service."));
+      break;
+    case ConnectionType::kPaymentConfirmation:
+      resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Error connecting to Secure Payment Confirmation service."));
+      break;
+  }
 }
 
 }  // namespace blink

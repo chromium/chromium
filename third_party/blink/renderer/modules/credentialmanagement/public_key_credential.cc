@@ -321,7 +321,9 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
   authenticator->Report(
       std::move(mojo_options),
       BindOnce(&OnSignalReportComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kAuthenticator)));
   return promise;
 }
 
@@ -360,7 +362,9 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
   authenticator->Report(
       std::move(mojo_options),
       BindOnce(&OnSignalReportComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kAuthenticator)));
   return promise;
 }
 
@@ -391,7 +395,9 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
   authenticator->Report(
       std::move(mojo_options),
       BindOnce(&OnSignalReportComplete,
-               std::make_unique<ScopedPromiseResolver>(resolver)));
+               std::make_unique<ScopedPromiseResolver>(
+                   resolver,
+                   ScopedPromiseResolver::ConnectionType::kAuthenticator)));
   return promise;
 }
 

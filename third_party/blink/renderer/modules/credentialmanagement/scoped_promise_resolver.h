@@ -16,7 +16,15 @@ class ScopedPromiseResolver {
   USING_FAST_MALLOC(ScopedPromiseResolver);
 
  public:
-  explicit ScopedPromiseResolver(ScriptPromiseResolverBase* resolver);
+  enum class ConnectionType {
+    kAuthenticator,
+    kFedCm,
+    kCredentialManager,
+    kPaymentConfirmation,
+  };
+
+  explicit ScopedPromiseResolver(ScriptPromiseResolverBase* resolver,
+                                 ConnectionType connection_type);
 
   ScopedPromiseResolver(const ScopedPromiseResolver&) = delete;
   ScopedPromiseResolver& operator=(const ScopedPromiseResolver&) = delete;
@@ -35,6 +43,7 @@ class ScopedPromiseResolver {
   void OnConnectionError();
 
   Persistent<ScriptPromiseResolverBase> resolver_;
+  ConnectionType connection_type_;
 };
 
 }  // namespace blink

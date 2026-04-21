@@ -913,9 +913,11 @@ PaymentRequest::securePaymentConfirmationAvailability(
 
   CredentialManagerProxy::From(script_state)
       ->SecurePaymentConfirmationService()
-      ->SecurePaymentConfirmationAvailability(
-          BindOnce(&OnSecurePaymentConfirmationAvailabilityResponse,
-                   std::make_unique<ScopedPromiseResolver>(resolver)));
+      ->SecurePaymentConfirmationAvailability(BindOnce(
+          &OnSecurePaymentConfirmationAvailabilityResponse,
+          std::make_unique<ScopedPromiseResolver>(
+              resolver,
+              ScopedPromiseResolver::ConnectionType::kPaymentConfirmation)));
 
   return promise;
 }
@@ -956,9 +958,11 @@ PaymentRequest::getSecurePaymentConfirmationCapabilities(
 
   CredentialManagerProxy::From(script_state)
       ->SecurePaymentConfirmationService()
-      ->GetSecurePaymentConfirmationCapabilities(
-          BindOnce(&OnGetSecurePaymentConfirmationCapabilitiesComplete,
-                   std::make_unique<ScopedPromiseResolver>(resolver)));
+      ->GetSecurePaymentConfirmationCapabilities(BindOnce(
+          &OnGetSecurePaymentConfirmationCapabilitiesComplete,
+          std::make_unique<ScopedPromiseResolver>(
+              resolver,
+              ScopedPromiseResolver::ConnectionType::kPaymentConfirmation)));
 
   return promise;
 }
