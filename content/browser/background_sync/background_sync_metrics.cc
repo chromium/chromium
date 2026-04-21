@@ -56,19 +56,10 @@ void BackgroundSyncMetrics::RecordEventStarted(
 }
 
 // static
-void BackgroundSyncMetrics::RecordRegistrationComplete(
-    bool event_succeeded,
-    int num_attempts_required) {
+void BackgroundSyncMetrics::RecordRegistrationComplete(bool event_succeeded) {
   base::UmaHistogramBoolean(
       "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion",
       event_succeeded);
-
-  if (!event_succeeded)
-    return;
-
-  base::UmaHistogramExactLinear(
-      "BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent",
-      num_attempts_required, 50);
 }
 
 // static

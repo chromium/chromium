@@ -2473,7 +2473,7 @@ TEST_F(BackgroundSyncManagerTest, EventsLoggedForPeriodicSyncRegistration) {
   }
 }
 
-TEST_F(BackgroundSyncManagerTest, UkmRecordedAtCompletion) {
+TEST_F(BackgroundSyncManagerTest, HistogramsRecordedAtCompletion) {
   InitSyncEventTest();
   {
     base::HistogramTester histogram_tester;
@@ -2486,9 +2486,6 @@ TEST_F(BackgroundSyncManagerTest, UkmRecordedAtCompletion) {
 
     histogram_tester.ExpectBucketCount(
         "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion", true,
-        1);
-    histogram_tester.ExpectBucketCount(
-        "BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent", 1,
         1);
   }
 
@@ -2506,9 +2503,6 @@ TEST_F(BackgroundSyncManagerTest, UkmRecordedAtCompletion) {
     histogram_tester.ExpectBucketCount(
         "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion", false,
         1);
-    histogram_tester.ExpectBucketCount(
-        "BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent", 1,
-        0);
   }
 }
 

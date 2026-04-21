@@ -182,17 +182,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent"
-    units="attempts" expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the number of times a sync event was dispatched for a one-shot
-    Background Sync registration before it succeeded.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Registration.Periodic"
     enum="BackgroundSyncStatus" expires_after="2024-06-30">
   <owner>nator@chromium.org</owner>

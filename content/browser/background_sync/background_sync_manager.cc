@@ -2248,8 +2248,7 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
   }
 
   if (registration_completed) {
-    BackgroundSyncMetrics::RecordRegistrationComplete(
-        succeeded, registration->num_attempts());
+    BackgroundSyncMetrics::RecordRegistrationComplete(succeeded);
 
     if (ShouldLogToDevTools(registration->sync_type())) {
       devtools_context_->LogBackgroundServiceEvent(

@@ -52,9 +52,8 @@ class CONTENT_EXPORT BackgroundSyncMetrics {
                                 bool finished_in_foreground);
 
   // Records, at the completion of a one-shot sync registration, whether the
-  // sync event was successful, and how many attempts it took to get there.
-  static void RecordRegistrationComplete(bool event_succeeded,
-                                         int num_attempts_required);
+  // sync event was successful.
+  static void RecordRegistrationComplete(bool event_succeeded);
 
   // Records the result of running a batch of sync events, including the total
   // time spent, the batch size, and whether the operation originated from a

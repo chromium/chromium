@@ -39,12 +39,9 @@ TEST_F(BackgroundSyncMetricsTest, RecordEventStarted) {
 
 TEST_F(BackgroundSyncMetricsTest, RecordRegistrationComplete) {
   BackgroundSyncMetrics::RecordRegistrationComplete(
-      /* event_succeeded= */ true, /* num_attempts_required= */ 3);
+      /* event_succeeded= */ true);
   histogram_tester_.ExpectBucketCount(
       "BackgroundSync.Registration.OneShot.EventSucceededAtCompletion", true,
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent", 3,
       1);
 }
 
