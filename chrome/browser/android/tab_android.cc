@@ -351,6 +351,12 @@ void TabAndroid::Destroy() {
   delete this;
 }
 
+void TabAndroid::AttachWebContentsToContentLayer(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  GetContentLayer()->InsertChild(web_contents->GetNativeView()->GetLayer(), 0);
+}
+
 bool TabAndroid::HasParentCollection() {
   return parent_collection_ != nullptr;
 }

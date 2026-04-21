@@ -45,6 +45,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.process_launcher.ScopedServiceBindingBatch;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
@@ -70,6 +72,9 @@ import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.SelectionStateSupplier;
+import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -294,6 +299,9 @@ class TabImpl implements Tab {
     private boolean mIsViewAttachedToWindow;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
+
+    private final SettableNonNullObservableSupplier<Boolean> mIsOffscreenRenderingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mIsDestroyed;
 
@@ -1571,6 +1579,7 @@ class TabImpl implements Tab {
     }
 
     void updateWindowAndroid(@Nullable WindowAndroid windowAndroid) {
+        assert !getIsOffscreenRenderingSupplier().get();
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
         }
@@ -2959,6 +2968,28 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public NonNullObservableSupplier<Boolean> getIsOffscreenRenderingSupplier() {
+        return mIsOffscreenRenderingSupplier;
+    }
+
+    @Override
+    public void startOffscreenRendering() {
+        assert !mIsOffscreenRenderingSupplier.get();
+        assert mWebContents != null : "WebContents must exist to start offscreen rendering";
+        mIsOffscreenRenderingSupplier.set(true);
+    }
+
+    @Override
+    public void stopOffscreenRendering() {
+        if (!mIsOffscreenRenderingSupplier.get()) return;
+        mIsOffscreenRenderingSupplier.set(false);
+        if (mWebContents != null && mNativeTabAndroid != 0) {
+            TabImplJni.get().attachWebContentsToContentLayer(mNativeTabAndroid, mWebContents);
+            mWebContents.setTopLevelNativeWindow(mWindowAndroid);
+        }
+    }
+
+    @Override
     @CalledByNative
     public boolean isMultiSelected() {
         if (mSelectionStateSupplier == null) return false;
@@ -3004,6 +3035,9 @@ class TabImpl implements Tab {
         TabImpl fromWebContents(@Nullable WebContents webContents);
 
         void init(TabImpl caller, @JniType("Profile*") Profile profile, int id);
+
+        void attachWebContentsToContentLayer(
+                long nativeTabAndroid, @JniType("content::WebContents*") WebContents webContents);
 
         void destroy(long nativeTabAndroid);
 

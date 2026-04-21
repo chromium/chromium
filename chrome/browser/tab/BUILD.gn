@@ -86,6 +86,7 @@ android_library("java") {
     ":critical_persisted_tab_data_proto_java",
     ":java_resources",
     "//base:base_java",
+    "//base:supplier_java",
     "//build/android:build_java",
     "//cc:cc_java",
     "//chrome/browser/android/crypto:java",

@@ -196,6 +196,8 @@ class TabAndroid : public tabs::TabInterface,
   // Methods called from Java via JNI -----------------------------------------
 
   void Destroy();
+  void AttachWebContentsToContentLayer(JNIEnv* env,
+                                       content::WebContents* web_contents);
   bool HasParentCollection();
   void InitWebContents(
       JNIEnv* env,

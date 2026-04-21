@@ -33,6 +33,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -246,4 +247,39 @@ public class TabImplTest {
         // Title will be updated asynchronously.
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testOffscreenRendering() {
+        TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+        WindowAndroid originalWindow = tab.getWindowAndroid();
+        assertNotNull(originalWindow);
+        assertFalse(tab.getIsOffscreenRenderingSupplier().get());
+
+        WindowAndroid testWindow =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new WindowAndroid(
+                                        mActivityTestRule.getActivity(),
+                                        /* occlusionTrackingAllowed= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.startOffscreenRendering();
+                    tab.getWebContents().setTopLevelNativeWindow(testWindow);
+                });
+
+        assertTrue(tab.getIsOffscreenRenderingSupplier().get());
+        assertEquals(testWindow, tab.getWebContents().getTopLevelNativeWindow());
+        assertEquals(originalWindow, tab.getWindowAndroid());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.stopOffscreenRendering());
+
+        assertFalse(tab.getIsOffscreenRenderingSupplier().get());
+
+        assertEquals(originalWindow, tab.getWebContents().getTopLevelNativeWindow());
+        assertEquals(originalWindow, tab.getWindowAndroid());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> testWindow.destroy());
+    }
 }
