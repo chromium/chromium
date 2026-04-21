@@ -3398,7 +3398,7 @@ if (!is_android) {
 
     data = [
       "data/",
-      "//chromeos/ash/experiences/arc/test/data/icons",
+      "//chromeos/ash/experiences/arc/test/data/icons/",
       "//chrome/browser/page_load_metrics/integration_tests/data/",
       "//chrome/renderer/resources/extensions/",
       "//chrome/test/data/cart/",
