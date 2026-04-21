@@ -27,7 +27,6 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -222,48 +221,6 @@ class RealtimeReportingClientUmaTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
-// Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_profile_reporting()) {
-    return;
-  }
-#endif
-
-  // Disable proto-based reporting, since this test case uses deprecated
-  // reporting methods.
-  scoped_feature_list_.InitAndDisableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
-
-  is_profile_reporting()
-      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
-      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
-
-  ReportingSettings settings;
-  settings.per_profile = is_profile_reporting();
-  base::DictValue event;
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::DictValue&& report,
-                    policy::CloudPolicyClient::ResultCallback callback) {
-        upload_callback_ = std::move(callback);
-        run_loop.Quit();
-      });
-  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
-                                         std::move(settings), std::move(event));
-  run_loop.Run();
-
-  ASSERT_TRUE(upload_callback_);
-  std::move(upload_callback_)
-      .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
-
-  histogram_.ExpectUniqueSample(
-      "Enterprise.ReportingEventUploadSuccess",
-      EnterpriseReportingEventType::kExtensionInstallEvent, 1);
-  histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
-}
-
 TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
 // Profile reporting is not supported on Ash.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -271,9 +228,6 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
     return;
   }
 #endif
-
-  scoped_feature_list_.InitAndEnableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
 
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
@@ -315,48 +269,6 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadFailure", 0);
 }
 
-TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
-// Profile reporting is not supported on Ash.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (is_profile_reporting()) {
-    return;
-  }
-#endif
-
-  // Disable proto-based reporting, since this test case uses deprecated
-  // reporting methods.
-  scoped_feature_list_.InitAndDisableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
-
-  is_profile_reporting()
-      ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
-      : reporting_client_->SetBrowserCloudPolicyClientForTesting(client_.get());
-
-  ReportingSettings settings;
-  settings.per_profile = is_profile_reporting();
-  base::DictValue event;
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::DictValue&& report,
-                    policy::CloudPolicyClient::ResultCallback callback) {
-        upload_callback_ = std::move(callback);
-        run_loop.Quit();
-      });
-  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
-                                         std::move(settings), std::move(event));
-  run_loop.Run();
-
-  ASSERT_TRUE(upload_callback_);
-  std::move(upload_callback_)
-      .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
-
-  histogram_.ExpectUniqueSample(
-      "Enterprise.ReportingEventUploadFailure",
-      EnterpriseReportingEventType::kExtensionInstallEvent, 1);
-  histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
-}
-
 TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
 // Profile reporting is not supported on Ash.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -364,9 +276,6 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
     return;
   }
 #endif
-
-  scoped_feature_list_.InitAndEnableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
 
   is_profile_reporting()
       ? reporting_client_->SetProfileCloudPolicyClientForTesting(client_.get())
@@ -528,11 +437,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 class RealtimeReportingClientUrlTruncationTest
     : public RealtimeReportingClientTestBase,
-      public testing::WithParamInterface<Event::EventCase> {
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      policy::kUploadRealtimeReportingEventsUsingProto};
-};
+      public testing::WithParamInterface<Event::EventCase> {};
 
 TEST_P(RealtimeReportingClientUrlTruncationTest, TestUrlTruncation) {
   RealtimeReportingClient* reporting_client =
