@@ -4185,6 +4185,48 @@ void MediaStreamManager::OnCaptureConfigurationChanged(
   }
 }
 
+void MediaStreamManager::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback =
+      base::BindPostTask(
+          GetIOThreadTaskRunner({}),
+          base::BindOnce(&MediaStreamManager::StopAudioForPickerSessionId,
+                         weak_ptr_factory_.GetWeakPtr()));
+
+  video_capture_manager()->OpenNativeScreenCapturePicker(
+      type, std::move(created_callback), std::move(picker_callback),
+      std::move(cancel_callback), std::move(error_callback),
+      std::move(stop_audio_callback));
+}
+
+void MediaStreamManager::StopAudioForPickerSessionId(
+    DesktopMediaID::Id picker_session_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  for (const auto& [label, request] : requests_) {
+    for (const auto& stream_devices_ptr :
+         request->stream_devices_set.stream_devices) {
+      if (stream_devices_ptr->video_device.has_value() &&
+          blink::IsDesktopCaptureMediaType(
+              stream_devices_ptr->video_device->type) &&
+          DesktopMediaID::Parse(stream_devices_ptr->video_device->id).id ==
+              picker_session_id) {
+        if (stream_devices_ptr->audio_device.has_value()) {
+          StopDevice(stream_devices_ptr->audio_device->type,
+                     stream_devices_ptr->audio_device->session_id());
+        }
+        return;
+      }
+    }
+  }
+}
+
 void MediaStreamManager::OnRegionCaptureRectChanged(
     const base::UnguessableToken& session_id,
     const std::optional<gfx::Rect>& region_capture_rect) {
