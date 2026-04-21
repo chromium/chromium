@@ -1071,6 +1071,7 @@ html element script
     property async
     property attributionSrc
     property blocking
+    property cacheHint
     property charset
     property crossOrigin
     property defer

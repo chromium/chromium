@@ -4883,6 +4883,7 @@ interface HTMLScriptElement : HTMLElement
     getter async
     getter attributionSrc
     getter blocking
+    getter cacheHint
     getter charset
     getter crossOrigin
     getter defer
@@ -4902,6 +4903,7 @@ interface HTMLScriptElement : HTMLElement
     setter async
     setter attributionSrc
     setter blocking
+    setter cacheHint
     setter charset
     setter crossOrigin
     setter defer

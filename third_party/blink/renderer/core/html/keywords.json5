@@ -274,5 +274,10 @@
     // https://wicg.github.io/PEPC/permission-elements.html#element-attrdef-permission-type
     "camera",
     "microphone",
+
+    // Values of cachehint attribute for <script> element (under proposal).
+    // https://github.com/explainers-by-googlers/inline-script-cache-hint
+    "never",
+    "default",
   ],
 }

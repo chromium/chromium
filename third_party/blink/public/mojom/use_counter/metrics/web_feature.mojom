@@ -5191,6 +5191,7 @@ enum WebFeature {
   kFocusWithoutUserActivationAllowedByDescendant = 5874,
   kFocusWithoutUserActivationBlocked = 5875,
   kFocusWithoutUserActivationPolicySet = 5876,
+  kCacheHintAttributeOnScript = 5877,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
