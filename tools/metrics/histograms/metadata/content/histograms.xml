@@ -1692,17 +1692,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show"
-    enum="WebFeedPostFollowDialogPresentation" expires_after="2024-04-28">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports which presentation of the post-follow dialog is shown.
-    Reported when the post-follow dialog is displayed, after the user follows a
-    Web Feed.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.QueryResult"
     enum="WebFeedQueryRequestStatus" expires_after="2024-07-28">
   <owner>jeffreycohen@chromium.org</owner>

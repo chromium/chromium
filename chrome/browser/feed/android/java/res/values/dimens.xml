@@ -6,15 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Dialog dimens. -->
-    <dimen name="web_feed_dialog_illustration_margin_top">24dp</dimen>
-    <dimen name="web_feed_dialog_illustration_margin_start">14.5dp</dimen>
-    <dimen name="web_feed_dialog_illustration_height">113dp</dimen>
-    <dimen name="web_feed_dialog_title_padding_top">24dp</dimen>
-    <dimen name="web_feed_dialog_details_padding_top">16dp</dimen>
-    <dimen name="web_feed_dialog_details_padding_bottom">8dp</dimen>
-    <dimen name="web_feed_dialog_text_horizontal_padding">16dp</dimen>
-
     <!-- No content dimensions. -->
     <dimen name="no_content_padding">16dp</dimen>
     <dimen name="no_content_text_padding">8dp</dimen>

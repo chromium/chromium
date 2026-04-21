@@ -84,10 +84,6 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kTappedRefollowAfterUnfollowOnSnackbar";
     case FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar:
       return out << "kTappedUnfollowTryAgainOnSnackbar";
-    case FeedUserActionType::kTappedGoToFeedPostFollowActiveHelp:
-      return out << "kTappedGoToFeedPostFollowActiveHelp";
-    case FeedUserActionType::kTappedDismissPostFollowActiveHelp:
-      return out << "kTappedDismissPostFollowActiveHelp";
     case FeedUserActionType::kTappedDiscoverFeedPreview:
       return out << "kTappedDiscoverFeedPreview";
     case FeedUserActionType::kOpenedAutoplaySettings:
@@ -112,8 +108,6 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kFollowingFeedSelectedSortByLatest";
     case FeedUserActionType::kTappedFollowOnRecommendationFollowAccelerator:
       return out << "kTappedFollowOnRecommendationFollowAccelerator";
-    case FeedUserActionType::kTappedGotItFeedPostFollowActiveHelp:
-      return out << "kTappedGotItFeedPostFollowActiveHelp";
     case FeedUserActionType::kTappedRefreshFollowingFeedOnSnackbar:
       return out << "kTappedRefreshFollowingFeedOnSnackbar";
     case FeedUserActionType::kNonSwipeManualRefresh:

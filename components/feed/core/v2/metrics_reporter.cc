@@ -732,8 +732,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kTappedFollowTryAgainOnSnackbar:
     case FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar:
     case FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar:
-    case FeedUserActionType::kTappedGoToFeedPostFollowActiveHelp:
-    case FeedUserActionType::kTappedDismissPostFollowActiveHelp:
     case FeedUserActionType::kTappedDiscoverFeedPreview:
     case FeedUserActionType::kOpenedAutoplaySettings:
     case FeedUserActionType::kTappedUnfollowButton:
@@ -741,7 +739,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kFollowingFeedSelectedGroupByPublisher:
     case FeedUserActionType::kFollowingFeedSelectedSortByLatest:
     case FeedUserActionType::kTappedFollowOnRecommendationFollowAccelerator:
-    case FeedUserActionType::kTappedGotItFeedPostFollowActiveHelp:
     case FeedUserActionType::kTappedRefreshFollowingFeedOnSnackbar:
     case FeedUserActionType::kNonSwipeManualRefresh:
       // Nothing additional for these actions. Note that some of these are iOS

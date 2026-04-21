@@ -50,12 +50,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/Stream.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogContents.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogMediator.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogProperties.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogViewBinder.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcher.java",
   ]
   deps = [
     ":feed_java_resources",
@@ -140,14 +134,12 @@ android_resources("feed_java_resources") {
     "java/res/drawable/home_surface_ui_background_top_rounded.xml",
     "java/res/drawable/home_surface_ui_background_topleft_rounded.xml",
     "java/res/drawable/home_surface_ui_background_topright_rounded.xml",
-    "java/res/drawable/web_feed_post_follow_illustration.xml",
     "java/res/layout/feed_placeholder_layout.xml",
     "java/res/layout/feed_spinner.xml",
     "java/res/layout/following_empty_state.xml",
     "java/res/layout/new_tab_page_feed_header.xml",
     "java/res/layout/no_connection.xml",
     "java/res/layout/no_content_v2.xml",
-    "java/res/layout/web_feed_dialog.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
@@ -243,9 +235,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/SingleWebFeedStreamTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogMediatorTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcherTest.java",
   ]
 
   deps = [

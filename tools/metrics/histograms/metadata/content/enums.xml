@@ -360,11 +360,11 @@ chromium-metrics-reviews@google.com.
   <int value="36"
       label="User tapped to unfollow using the snackbar 'try again' option."/>
   <int value="37"
-      label="After following an active web feed, the user tapped to go to
-             feed using the post-follow help dialog."/>
+      label="(obsolete) After following an active web feed, the user tapped
+             to go to feed using the post-follow help dialog."/>
   <int value="38"
-      label="After following an active web feed, the user tapped to dismiss
-             the post-follow help dialog."/>
+      label="(obsolete) After following an active web feed, the user tapped
+             to dismiss the post-follow help dialog."/>
   <int value="39"
       label="After long-pressing on the feed and seeing the preview, the user
              tapped on the preview."/>
@@ -413,8 +413,8 @@ chromium-metrics-reviews@google.com.
   <int value="60"
       label="User selected the 'Sort by Latest' Following feed sort type."/>
   <int value="61"
-      label="After following an active web feed, the user tapped on 'got it'
-             to close the post-follow help dialog."/>
+      label="(obsolete) After following an active web feed, the user tapped
+             on 'got it' to close the post-follow help dialog."/>
   <int value="62"
       label="User tapped the follow accelerator which is presented after a
              user taps on a recommendation that is in the feed."/>
@@ -579,13 +579,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Menu Item Presentation">
     The Follow menu item state needs to reflect the current web page.
   </int>
-</enum>
-
-<enum name="WebFeedPostFollowDialogPresentation">
-  <int value="0"
-      label="Available - Post-follow dialog for an available web feed"/>
-  <int value="1"
-      label="Unavailable - Post-follow dialog for an unavailable web feed"/>
 </enum>
 
 <enum name="WebFeedQueryRequestStatus">
