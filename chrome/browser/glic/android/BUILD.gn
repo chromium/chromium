@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
@@ -105,6 +106,7 @@ source_set("jni_bridges") {
 
 source_set("android") {
   sources = [
+    "glic_enabling_android.cc",
     "glic_keyed_service_android.cc",
     "glic_keyed_service_android.h",
     "glic_keyed_service_factory_android.cc",
