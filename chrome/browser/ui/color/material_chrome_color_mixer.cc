@@ -442,4 +442,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorGlicInactiveTabUnderlineGradient3] = {
       ui::kColorGlicTabUnderline3};
   mixer[kColorGlicSelectionOverlayToast] = {ui::kColorSysInverseSurfacePrimary};
+  mixer[kColorGlicSelectionOverlayToastCancelButton] = {
+      ui::kColorSysInversePrimary};
 }

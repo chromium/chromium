@@ -206,6 +206,7 @@
   E_CPONLY(kColorGlicInactiveTabUnderlineGradient2) \
   E_CPONLY(kColorGlicInactiveTabUnderlineGradient3) \
   E_CPONLY(kColorGlicSelectionOverlayToast) \
+  E_CPONLY(kColorGlicSelectionOverlayToastCancelButton) \
   /* Hover Button colors */ \
   E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \

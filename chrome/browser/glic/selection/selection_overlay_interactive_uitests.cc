@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
                   auto* button = static_cast<views::MdTextButton*>(view);
                   return button->GetCurrentTextColor() ==
                          button->GetColorProvider()->GetColor(
-                             ui::kColorSysInversePrimary);
+                             kColorGlicSelectionOverlayToastCancelButton);
                 }));
 }
 
