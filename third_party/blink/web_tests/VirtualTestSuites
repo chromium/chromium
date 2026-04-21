@@ -1819,7 +1819,7 @@
   {
     "prefix": "javascript-source-phase-imports",
     "owners": [
-      "lpardosixtos@microsoft.com"
+      "olivf@chromium.org"
     ],
     "platforms": [
       "Linux",
@@ -1841,7 +1841,7 @@
     "args": [
       "--enable-features=JavaScriptSourcePhaseImports"
     ],
-    "expires": "Apr 4, 2026"
+    "expires": "Apr 15, 2027"
   },
   {
     "prefix": "javascript-defer-phase-imports",
