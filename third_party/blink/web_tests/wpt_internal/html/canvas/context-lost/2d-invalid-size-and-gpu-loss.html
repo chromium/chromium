@@ -24,6 +24,8 @@
 <script src="/common/subset-tests.js"></script>
 <script src="./2d-context-lost-utils.js"></script>
 <script>
+assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+            'This test requires chrome.gpuBenchmarking.');
 
 var desynchronized = false;
 (function parseVariants() {

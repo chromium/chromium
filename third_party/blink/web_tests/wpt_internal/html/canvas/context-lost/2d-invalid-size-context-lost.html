@@ -79,6 +79,7 @@ canvasPromiseTest(async (canvas) => {
   await contextRestored;
   assert_true(contextRestoredEventInvoked,
               'oncontextrestored should be invoked in the next task.');
+  assert_false(ctx.isContextLost(), 'Contest should not longer be lost.');
 
   ctx.fillStyle = 'lime';
   ctx.fillRect(0, 0, 100, 100);

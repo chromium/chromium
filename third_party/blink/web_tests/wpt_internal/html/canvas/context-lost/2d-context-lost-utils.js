@@ -145,7 +145,6 @@ async function waitForContextLost(ctx, deadlineMs=2000) {
     promiseContextLost(ctx, controller.signal),
     promiseContextNotRestored(ctx, controller.signal),
   ]);
-  assert_true(ctx.isContextLost(), 'GPU context should be lost.');
 }
 
 /**
@@ -163,7 +162,6 @@ async function waitForContextRestored(ctx, deadlineMs=2000) {
     promiseContextNotLost(ctx, controller.signal),
     promiseContextRestored(ctx, controller.signal),
   ]);
-  assert_false(ctx.isContextLost(), 'GPU context should be restored.');
 }
 
 /**
@@ -213,8 +211,6 @@ function promiseGpuProcessRestored() {
  * completes.
  */
 function terminateGpuProcess(test) {
-  assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
-              'This test requires chrome.gpuBenchmarking.');
   const gpuRestoredPromise = promiseGpuProcessRestored();
   test.add_cleanup(() => gpuRestoredPromise);
   chrome.gpuBenchmarking.terminateGpuProcessNormally();
