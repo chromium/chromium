@@ -444,7 +444,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             mSignOutPreference.initialize(
                     requireContext(),
                     profile,
-                    getActivity().getSupportFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
         }
         mSignOutPreference.setSnackbarManagerSupplier(assumeNonNull(mSnackbarManagerSupplier));

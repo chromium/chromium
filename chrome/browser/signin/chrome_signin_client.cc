@@ -114,9 +114,6 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
     // Allowed, for tests.
     signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
-    // Allowed, because access to this entry point is controlled to only be
-    // enabled if the user may turn off sync.
-    signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
     // Allowed, because the dialog offers the option to the user to sign out.
     // Note that the dialog is only shown on iOS and isn't planned to be shown
     // on the other platforms since they already support user policies (no need

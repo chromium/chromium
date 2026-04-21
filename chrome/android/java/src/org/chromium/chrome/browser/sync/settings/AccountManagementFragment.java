@@ -239,7 +239,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                         SignOutCoordinator.startSignOutFlow(
                                 requireContext(),
                                 getProfile(),
-                                getActivity().getSupportFragmentManager(),
                                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                                 assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,

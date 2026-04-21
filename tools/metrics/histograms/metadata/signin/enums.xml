@@ -1252,7 +1252,8 @@ chromium-metrics-reviews@google.com.
     Sign-out forced because the account was removed from the device after a
     device restore. iOS only.
   </int>
-  <int value="16" label="User clicked turn off sync">
+  <int value="16"
+      label="(Obsolete) User clicked turn off sync. Deprecated as of 04/2026.">
     User clicked the 'Turn off sync' option within settings. Android only.
   </int>
   <int value="17" label="User clicked signout From profile menu">

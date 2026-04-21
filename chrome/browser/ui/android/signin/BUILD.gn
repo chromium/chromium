@@ -76,7 +76,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/MinorModeHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/PersonalizedSigninPromoView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncActivityLauncher.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncBundleHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAndHistorySyncCoordinator.java",
@@ -181,7 +180,6 @@ android_resources("java_resources") {
     "java/res/layout/signin_promo_view_new_tab_page.xml",
     "java/res/layout/signin_settings_card_view.xml",
     "java/res/layout/signout_button_view.xml",
-    "java/res/layout/signout_wipe_storage_dialog.xml",
     "java/res/layout/sync_promo_view.xml",
     "java/res/layout/sync_promo_view_bookmarks.xml",
     "java/res/layout/sync_promo_view_content_suggestions.xml",
@@ -329,8 +327,6 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogTest.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogRenderTest.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/UMADialogTest.java",
   ]

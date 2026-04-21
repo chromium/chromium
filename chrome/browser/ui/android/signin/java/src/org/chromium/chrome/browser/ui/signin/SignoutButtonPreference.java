@@ -11,7 +11,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -33,7 +32,6 @@ import org.chromium.ui.widget.ButtonCompat;
 public class SignoutButtonPreference extends Preference implements ContainmentItem {
     private Context mContext;
     private Profile mProfile;
-    private FragmentManager mFragmentManager;
     private ModalDialogManager mDialogManager;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
@@ -43,14 +41,9 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
     }
 
     @Initializer
-    public void initialize(
-            Context context,
-            Profile profile,
-            FragmentManager fragmentManager,
-            ModalDialogManager dialogManager) {
+    public void initialize(Context context, Profile profile, ModalDialogManager dialogManager) {
         mContext = context;
         mProfile = profile;
-        mFragmentManager = fragmentManager;
         mDialogManager = dialogManager;
     }
 
@@ -79,7 +72,6 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                     SignOutCoordinator.startSignOutFlow(
                             mContext,
                             mProfile,
-                            mFragmentManager,
                             mDialogManager,
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,

@@ -192,7 +192,6 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kMovePrimaryAccount:
     // Allow signout for tests that want to force it.
     case signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest:
-    case signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings:
     case signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog:
     case signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion:
@@ -263,7 +262,6 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,
     signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
     signin_metrics::ProfileSignout::kIosAccountRemovedFromDeviceAfterRestore,
-    signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings,
     signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
     signin_metrics::ProfileSignout::kSigninRetriggered,
     signin_metrics::ProfileSignout::
@@ -301,7 +299,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
 
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
-const int kNumberOfObsoleteSignoutSources = 6;
+const int kNumberOfObsoleteSignoutSources = 7;
 static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
                   static_cast<int>(signin_metrics::ProfileSignout::kMaxValue) +
                       1,
