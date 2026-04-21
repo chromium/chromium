@@ -1587,7 +1587,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCacheCount" units="count" expires_after="2026-08-16">
+<histogram name="V8.WasmCacheCount" units="count" expires_after="2026-10-18">
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
   <summary>
@@ -1600,7 +1600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCodeCaching" enum="WasmCodeCaching"
-    expires_after="2026-08-16">
+    expires_after="2026-10-18">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1987,7 +1987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmStreamingInputType" enum="WasmStreamingInputType"
-    expires_after="2026-08-16">
+    expires_after="2026-10-18">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>

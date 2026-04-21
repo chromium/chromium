@@ -418,7 +418,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
-    enum="UnknownCountryIdStored" expires_after="2026-08-19">
+    enum="UnknownCountryIdStored" expires_after="2026-10-18">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
