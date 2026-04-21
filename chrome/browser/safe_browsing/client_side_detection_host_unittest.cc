@@ -725,6 +725,7 @@ class ClientSideDetectionHostIncognitoTest
 struct ClientSideDetectionHostOnlyESBTestParams {
   bool is_esb_enabled;
   bool is_feature_enabled;
+  bool is_new_observers_enabled;
 };
 
 class ClientSideDetectionHostOnlyESBTest
@@ -739,13 +740,22 @@ class ClientSideDetectionHostOnlyESBTest
     ClientSideDetectionHostTestBase::SetUp();
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(),
                                       GetParam().is_esb_enabled);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
     if (GetParam().is_feature_enabled) {
-      feature_list_.InitAndEnableFeature(
-          kClientSideDetectionOnlyESBClassification);
+      enabled_features.push_back(kClientSideDetectionOnlyESBClassification);
     } else {
-      feature_list_.InitAndDisableFeature(
-          kClientSideDetectionOnlyESBClassification);
+      disabled_features.push_back(kClientSideDetectionOnlyESBClassification);
     }
+
+    if (GetParam().is_new_observers_enabled) {
+      enabled_features.push_back(kClientSideDetectionNewObservers);
+    } else {
+      disabled_features.push_back(kClientSideDetectionNewObservers);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 };
 
@@ -762,7 +772,7 @@ TEST_P(ClientSideDetectionHostOnlyESBTest,
     NavigateAndCommit(url);
     base::RunLoop().RunUntilIdle();
     fake_phishing_detector_.CheckMessage(nullptr);
-  } else {
+  } else if (GetParam().is_feature_enabled && GetParam().is_esb_enabled) {
     // Should trigger classification.
     ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
                                   &kFalse);
@@ -775,15 +785,38 @@ TEST_P(ClientSideDetectionHostOnlyESBTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClientSideDetectionHostOnlyESBTest,
-    testing::Values(
-        ClientSideDetectionHostOnlyESBTestParams{/*is_esb_enabled=*/false,
-                                                 /*is_feature_enabled=*/false},
-        ClientSideDetectionHostOnlyESBTestParams{/*is_esb_enabled=*/false,
-                                                 /*is_feature_enabled=*/true},
-        ClientSideDetectionHostOnlyESBTestParams{/*is_esb_enabled=*/true,
-                                                 /*is_feature_enabled=*/false},
-        ClientSideDetectionHostOnlyESBTestParams{/*is_esb_enabled=*/true,
-                                                 /*is_feature_enabled=*/true}));
+    testing::Values(ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/false,
+                        /*is_feature_enabled=*/false,
+                        /*is_new_observers_enabled=*/false},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/false,
+                        /*is_feature_enabled=*/false,
+                        /*is_new_observers_enabled=*/true},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/false,
+                        /*is_feature_enabled=*/true,
+                        /*is_new_observers_enabled=*/false},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/false,
+                        /*is_feature_enabled=*/true,
+                        /*is_new_observers_enabled=*/true},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/true,
+                        /*is_feature_enabled=*/false,
+                        /*is_new_observers_enabled=*/false},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/true,
+                        /*is_feature_enabled=*/false,
+                        /*is_new_observers_enabled=*/true},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/true,
+                        /*is_feature_enabled=*/true,
+                        /*is_new_observers_enabled=*/false},
+                    ClientSideDetectionHostOnlyESBTestParams{
+                        /*is_esb_enabled=*/true,
+                        /*is_feature_enabled=*/true,
+                        /*is_new_observers_enabled=*/true}));
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
   // Case 0: renderer sends an invalid protobuf that we're unable to

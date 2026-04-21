@@ -1031,6 +1031,11 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
 }
 
 void ClientSideDetectionHost::DidFirstVisuallyNonEmptyPaint() {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification) &&
+      !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     did_first_visually_non_empty_paint_ = true;
     if (on_first_contentful_paint_) {
@@ -1047,6 +1052,11 @@ void ClientSideDetectionHost::DidFirstVisuallyNonEmptyPaint() {
 }
 
 void ClientSideDetectionHost::OnFirstContentfulPaintInPrimaryMainFrame() {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification) &&
+      !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     on_first_contentful_paint_ = true;
     if (did_first_visually_non_empty_paint_) {

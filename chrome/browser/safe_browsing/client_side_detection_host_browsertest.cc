@@ -368,6 +368,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
     GTEST_SKIP();
   }
 
+  if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
+    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+  }
+
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());
 
@@ -428,6 +433,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
                        SamePageNavigationShouldNotAffectClientSideDetection) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
+    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
   FakeClientSideDetectionService fake_csd_service;
@@ -493,6 +503,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
                        ClassifyPrerenderedPageAfterActivation) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
+    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                         SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
   FakeClientSideDetectionService fake_csd_service;
