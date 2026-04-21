@@ -844,6 +844,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="PWA.uninstall from devtools"/>
   <int value="24" label="Via IWA blocklist"/>
   <int value="25" label="source app is policy installed"/>
+  <int value="26" label="Via toolbar after launch"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/webapps/browser/installable/installable_metrics.h:WebappUninstallSource) -->

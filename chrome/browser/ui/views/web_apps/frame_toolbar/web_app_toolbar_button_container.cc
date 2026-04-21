@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -32,8 +33,13 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -49,7 +55,36 @@ namespace {
 
 bool g_animation_disabled_for_testing = false;
 
+// Button to trigger uninstallation for the web app. Abstracts the theme update
+// behavior for itself.
+class WebAppUninstallToolbarButton : public ToolbarButton {
+  METADATA_HEADER(WebAppUninstallToolbarButton, ToolbarButton)
+ public:
+  explicit WebAppUninstallToolbarButton(PressedCallback callback)
+      : ToolbarButton(std::move(callback)) {}
+  WebAppUninstallToolbarButton(const WebAppUninstallToolbarButton&) = delete;
+  WebAppUninstallToolbarButton& operator=(const WebAppUninstallToolbarButton&) =
+      delete;
+  ~WebAppUninstallToolbarButton() override = default;
+
+  void SetUninstallText(std::u16string_view text) {
+    ToolbarButton::SetText(text);
+  }
+
+  // Ensure that the theme for both the text and the vector icon are updated at
+  // the same time during theme changes etc.
+  void UpdateIcon() override {
+    ToolbarButton::UpdateIcon();
+    SetTextColor(STATE_NORMAL, GetForegroundColor(STATE_NORMAL));
+    SetTextColor(STATE_HOVERED, GetForegroundColor(STATE_HOVERED));
+    SetTextColor(STATE_PRESSED, GetForegroundColor(STATE_PRESSED));
+  }
+};
+
 }  // namespace
+
+BEGIN_METADATA(WebAppUninstallToolbarButton)
+END_METADATA
 
 constexpr base::TimeDelta WebAppToolbarButtonContainer::kTitlebarAnimationDelay;
 constexpr base::TimeDelta WebAppToolbarButtonContainer::kOriginFadeInDuration;
@@ -75,7 +110,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   app_shim_registry_observation_ =
       AppShimRegistry::Get()->RegisterAppChangedCallback(
           base::BindRepeating(&WebAppToolbarButtonContainer::AppShimChanged,
-                              base::Unretained(this)));
+                              weak_ptr_factory_.GetWeakPtr()));
 #endif
 
   views::FlexLayout* const layout =
@@ -104,6 +139,29 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
       !browser_view_->IsUnframedModeEnabled()) {
     web_app_origin_text_ = AddChildView(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
+  }
+
+  // Add the uninstall button to the web app frame toolbar if this was a first
+  // launch after installing, next to the origin display.
+  if (base::FeatureList::IsEnabled(features::kWebAppInstallDialog) &&
+      app_controller->CanUserUninstall() &&
+      app_controller->IsFirstLaunchAfterInstall()) {
+    auto* button = AddChildView(
+        std::make_unique<WebAppUninstallToolbarButton>(base::BindRepeating(
+            &WebAppToolbarButtonContainer::OnUninstallButtonClicked,
+            weak_ptr_factory_.GetWeakPtr())));
+    button->SetUninstallText(
+        l10n_util::GetStringUTF16(IDS_WEB_APP_UNINSTALL_BUTTON_FRAME));
+    button->SetVectorIcon(kDeleteIcon);
+    button->SetImageLabelSpacing(
+        views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));
+    ConfigureWebAppToolbarButton(button, toolbar_button_provider_);
+    button->SetLayoutInsets(GetLayoutInsets(WEB_APP_UNINSTALL_BUTTON_PADDING));
+    button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+    button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_WEB_APP_UNINSTALL_BUTTON_FRAME_TOOLTIP));
+    uninstall_button_ = button;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -296,6 +354,10 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   if (content_settings_container_) {
     content_settings_container_->SetIconColor(foreground_color_);
   }
+
+  if (uninstall_button_) {
+    uninstall_button_->SetEnabledTextColors(foreground_color_);
+  }
   page_action_icon_controller_->SetIconColor(foreground_color_);
 }
 
@@ -389,6 +451,11 @@ void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
   if (content_settings_container_) {
     content_settings_container_->FadeIn();
   }
+}
+
+void WebAppToolbarButtonContainer::OnUninstallButtonClicked() {
+  browser_view_->browser()->app_controller()->Uninstall(
+      webapps::WebappUninstallSource::kToolbarPostInstall);
 }
 
 void WebAppToolbarButtonContainer::ChildPreferredSizeChanged(

@@ -446,6 +446,10 @@ AppBrowserController::GetTitleBarPageActionTypes() const {
 }
 
 bool AppBrowserController::IsInstalled() const {
+  return true;
+}
+
+bool AppBrowserController::IsFirstLaunchAfterInstall() const {
   return false;
 }
 

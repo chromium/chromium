@@ -303,6 +303,10 @@ enum LayoutInset {
   // The padding around the app menu chip in a web app browser window.
   WEB_APP_APP_MENU_CHIP_PADDING,
 
+  // The padding around the uninstall chip in the web app browser window,
+  // showing up after first launch.
+  WEB_APP_UNINSTALL_BUTTON_PADDING,
+
   // The padding around the profile menu chip.
   AVATAR_CHIP_PADDING,
 

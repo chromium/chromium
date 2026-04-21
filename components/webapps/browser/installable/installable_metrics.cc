@@ -152,6 +152,8 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
       return os << "Isolated Web App Blocklisted";
     case webapps::WebappUninstallSource::kAppMigration:
       return os << "AppMigration";
+    case webapps::WebappUninstallSource::kToolbarPostInstall:
+      return os << "ToolbarPostFirstInstall";
   }
 }
 
@@ -184,6 +186,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
     case webapps::WebappUninstallSource::kExternalLockScreen:
     case webapps::WebappUninstallSource::kDevtools:
     case webapps::WebappUninstallSource::kAppMigration:
+    case webapps::WebappUninstallSource::kToolbarPostInstall:
       return true;
   }
 }

@@ -96,6 +96,8 @@ class WebAppToolbarButtonContainer : public views::View,
     return extensions_toolbar_coordinator_.get();
   }
 
+  ToolbarButton* uninstall_button() { return uninstall_button_; }
+
   WebAppMenuButton* web_app_menu_button() { return web_app_menu_button_; }
 
   WindowControlsOverlayToggleButton* window_controls_overlay_toggle_button() {
@@ -129,6 +131,8 @@ class WebAppToolbarButtonContainer : public views::View,
   void StartTitlebarAnimation();
 
   void FadeInContentSettingIcons();
+
+  void OnUninstallButtonClicked();
 
   void ChildPreferredSizeChanged(views::View* child) override;
 
@@ -187,9 +191,12 @@ class WebAppToolbarButtonContainer : public views::View,
   raw_ptr<ExtensionsToolbarDesktop> extensions_container_ = nullptr;
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
+  raw_ptr<ToolbarButton> uninstall_button_ = nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
   raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_button_ = nullptr;
+
+  base::WeakPtrFactory<WebAppToolbarButtonContainer> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_

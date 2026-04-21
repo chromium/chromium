@@ -69,6 +69,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/layout/layout_provider.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -721,7 +722,7 @@ bool WebAppBrowserController::CanUserUninstall() const {
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   provider_->ui_manager().PresentUserUninstallDialog(
-      app_id(), webapps::WebappUninstallSource::kAppMenu, browser()->window(),
+      app_id(), webapp_uninstall_source, browser()->window(),
       base::DoNothing());
 }
 
@@ -730,6 +731,10 @@ bool WebAppBrowserController::IsInstalled() const {
   // different more restrictive filter should likely be used instead.
   return registrar().AppMatches(app_id(),
                                 WebAppFilter::IsAppSurfaceableToUser());
+}
+
+bool WebAppBrowserController::IsFirstLaunchAfterInstall() const {
+  return !registrar().GetAppLastLaunchTime(app_id()).has_value();
 }
 
 void WebAppBrowserController::SetIconLoadCallbackForTesting(

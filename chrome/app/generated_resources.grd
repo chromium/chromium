@@ -6790,6 +6790,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No thanks
       </message>
 
+      <message name="IDS_WEB_APP_UNINSTALL_BUTTON_FRAME_TOOLTIP" desc="The tooltip text for the uninstall button in the web app frame toolbar.">
+        Uninstall App
+      </message>
+      <message name="IDS_WEB_APP_UNINSTALL_BUTTON_FRAME" desc="The text for the uninstall button in the web app frame toolbar.">
+        Uninstall
+      </message>
       <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP" desc="The tooltip to show for the three-dot menu in a web app window">
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
       </message>

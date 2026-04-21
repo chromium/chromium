@@ -263,8 +263,12 @@ enum class WebappUninstallSource {
   // `kUninstallAndReplaceMigration` listed above instead.
   kAppMigration = 25,
 
+  // Uninstalled from the button on the web app's frame toolbar during a launch
+  // after the first install.
+  kToolbarPostInstall = 26,
+
   // Add any new values above this one.
-  kMaxValue = kAppMigration,
+  kMaxValue = kToolbarPostInstall,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebappUninstallSource)
