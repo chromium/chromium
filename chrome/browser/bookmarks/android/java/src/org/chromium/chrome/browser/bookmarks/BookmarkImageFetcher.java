@@ -161,10 +161,18 @@ public class BookmarkImageFetcher {
 
         if (mImageServiceBridge.hasConsentToFetchImages(item.isAccountBookmark())) {
             mFaviconHelper.getForeignFaviconImageForURL(
-                    mProfile, faviconUrl, faviconDisplaySize, faviconCallback);
+                    mProfile,
+                    faviconUrl,
+                    faviconDisplaySize,
+                    /* fallbackToHost= */ true,
+                    faviconCallback);
         } else {
             mFaviconHelper.getLocalFaviconImageForURL(
-                    mProfile, faviconUrl, faviconDisplaySize, faviconCallback);
+                    mProfile,
+                    faviconUrl,
+                    faviconDisplaySize,
+                    /* fallbackToHost= */ true,
+                    faviconCallback);
         }
     }
 

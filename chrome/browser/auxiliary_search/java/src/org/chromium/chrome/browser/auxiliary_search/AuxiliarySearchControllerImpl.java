@@ -251,6 +251,7 @@ public class AuxiliarySearchControllerImpl
                     mProfile,
                     entryUrl,
                     mDefaultFaviconSize,
+                    /* fallbackToHost= */ true,
                     (image, url) -> {
                         mTaskFinishedCount++;
                         if (image != null) {

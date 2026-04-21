@@ -130,7 +130,11 @@ class NavigationSheetMediator {
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
                 if (!pageUrl.getSpec().equals(getOriginalNativeHistoryUrl())) {
                     mFaviconHelper.getLocalFaviconImageForURL(
-                            mProfile, pageUrl, mFaviconSize, imageCallback);
+                            mProfile,
+                            pageUrl,
+                            mFaviconSize,
+                            /* fallbackToHost= */ true,
+                            imageCallback);
                     requestedUrls.add(pageUrl);
                 } else {
                     mModelList.get(i).model.set(ItemProperties.ICON, mHistoryIcon);

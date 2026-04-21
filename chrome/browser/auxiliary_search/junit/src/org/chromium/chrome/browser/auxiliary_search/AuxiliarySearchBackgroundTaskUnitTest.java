@@ -184,12 +184,14 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
                         eq(mProfile),
                         eq(URL_1),
                         eq(faviconSize),
+                        anyBoolean(),
                         mFaviconImageCallbackCaptor.capture());
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
                         eq(URL_2),
                         eq(faviconSize),
+                        anyBoolean(),
                         mFaviconImageCallbackCaptor.capture());
 
         mFakeTime.advanceMillis(timeDelta);
@@ -262,12 +264,14 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
                         eq(mProfile),
                         eq(URL_1),
                         eq(faviconSize),
+                        anyBoolean(),
                         mFaviconImageCallbackCaptor.capture());
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
                         eq(URL_2),
                         eq(faviconSize),
+                        anyBoolean(),
                         mFaviconImageCallbackCaptor.capture());
 
         // Verifies that AuxiliarySearchController#onBackgroundTaskStart() isn't called since there

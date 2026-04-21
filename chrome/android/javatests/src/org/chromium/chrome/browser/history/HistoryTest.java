@@ -148,7 +148,11 @@ public class HistoryTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     helper.getLocalFaviconImageForURL(
-                            ProfileManager.getLastUsedRegularProfile(), pageUrl, 0, waiter);
+                            ProfileManager.getLastUsedRegularProfile(),
+                            pageUrl,
+                            0,
+                            /* fallbackToHost= */ true,
+                            waiter);
                 });
         return waiter.waitForFavicon();
     }

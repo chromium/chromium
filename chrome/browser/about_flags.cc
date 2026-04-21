@@ -12924,11 +12924,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"logo-view-refactor", flag_descriptions::kLogoViewRefactorName,
      flag_descriptions::kLogoViewRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kLogoViewRefactor)},
-
     {"enforce-incognito-isolation",
      flag_descriptions::kEnforceIncognitoIsolationName,
      flag_descriptions::kEnforceIncognitoIsolationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnforceIncognitoIsolation)},
+    {"favicon-disable-host-fallback",
+     flag_descriptions::kFaviconDisableHostFallbackName,
+     flag_descriptions::kFaviconDisableHostFallbackDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kFaviconDisableHostFallback)},
 #endif
 
     {"migrate-enhanced-sb-user-to-enhanced-bundle",

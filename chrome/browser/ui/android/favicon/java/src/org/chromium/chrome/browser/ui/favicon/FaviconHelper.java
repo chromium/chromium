@@ -181,6 +181,7 @@ public class FaviconHelper {
         mNativeFaviconHelper = 0;
     }
 
+    // TODO:(crbug.com/468979189) Remove this method once updated the internal caller.
     /**
      * Get Favicon bitmap for the requested arguments. Retrieves favicons only for pages the user
      * has visited on the current device.
@@ -203,22 +204,59 @@ public class FaviconHelper {
                         profile,
                         pageUrl,
                         desiredSizeInPixel,
+                        /* fallbackToHost= */ true,
+                        faviconImageCallback);
+    }
+
+    /**
+     * Get Favicon bitmap for the requested arguments. Retrieves favicons only for pages the user
+     * has visited on the current device.
+     *
+     * @param profile Profile used for the FaviconService construction.
+     * @param pageUrl The target Page URL to get the favicon.
+     * @param desiredSizeInPixel The size of the favicon in pixel we want to get.
+     * @param fallbackToHost Whether the favicon database should fall back to matching only the
+     *     hostname to have the best chance of finding a favicon. Use false if high accuracy
+     *     (URL-specific icons) is required (e.g. tab switcher or tab strip).
+     * @param faviconImageCallback A method to be called back when the result is available. Note
+     *     that this callback is not called if this method returns false.
+     * @return True if GetLocalFaviconImageForURL is successfully called.
+     */
+    public boolean getLocalFaviconImageForURL(
+            Profile profile,
+            GURL pageUrl,
+            int desiredSizeInPixel,
+            boolean fallbackToHost,
+            FaviconImageCallback faviconImageCallback) {
+        assert mNativeFaviconHelper != 0;
+        return FaviconHelperJni.get()
+                .getLocalFaviconImageForURL(
+                        mNativeFaviconHelper,
+                        profile,
+                        pageUrl,
+                        desiredSizeInPixel,
+                        fallbackToHost,
                         faviconImageCallback);
     }
 
     /**
      * Get foreign Favicon bitmap for the requested arguments.
+     *
      * @param profile Profile used for the FaviconService construction.
      * @param pageUrl The target Page URL to get the favicon.
      * @param desiredSizeInPixel The size of the favicon in pixel we want to get.
+     * @param fallbackToHost Whether the favicon database should fall back to matching only the
+     *     hostname to have the best chance of finding a favicon. Use false if high accuracy
+     *     (URL-specific icons) is required (e.g. tab switcher or tab strip).
      * @param faviconImageCallback A method to be called back when the result is available. Note
-     *         that this callback is not called if this method returns false.
-     * @return favicon Bitmap corresponding to the pageUrl.
+     *     that this callback is not called if this method returns false.
+     * @return True if getForeignFaviconImageForURL is successfully called.
      */
     public boolean getForeignFaviconImageForURL(
             Profile profile,
             GURL pageUrl,
             int desiredSizeInPixel,
+            boolean fallbackToHost,
             FaviconImageCallback faviconImageCallback) {
         assert mNativeFaviconHelper != 0;
         return FaviconHelperJni.get()
@@ -227,6 +265,7 @@ public class FaviconHelper {
                         profile,
                         pageUrl,
                         desiredSizeInPixel,
+                        fallbackToHost,
                         faviconImageCallback);
     }
 
@@ -242,6 +281,7 @@ public class FaviconHelper {
                 @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
+                boolean fallbackToHost,
                 FaviconImageCallback faviconImageCallback);
 
         boolean getForeignFaviconImageForURL(
@@ -249,6 +289,7 @@ public class FaviconHelper {
                 @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
+                boolean fallbackToHost,
                 FaviconImageCallback faviconImageCallback);
     }
 }

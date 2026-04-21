@@ -285,7 +285,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
                         (bitmap, iconUrl) ->
                                 NavigationPopup.this.onFaviconAvailable(pageUrl, bitmap);
                 mFaviconHelper.getLocalFaviconImageForURL(
-                        mProfile, pageUrl, mFaviconSize, imageCallback);
+                        mProfile, pageUrl, mFaviconSize, /* fallbackToHost= */ true, imageCallback);
                 requestedUrls.add(pageUrl);
             }
         }

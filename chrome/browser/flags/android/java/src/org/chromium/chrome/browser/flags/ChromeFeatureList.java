@@ -468,6 +468,7 @@ public abstract class ChromeFeatureList {
     public static final String ESC_CANCEL_DRAG = "EscCancelDrag";
     public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =
             "FacilitatedPaymentsEnableA2APayment";
+    public static final String FAVICON_DISABLE_HOST_FALLBACK = "FaviconDisableHostFallback";
     public static final String FEED_AUDIO_OVERVIEWS = "FeedAudioOverviews";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
@@ -986,6 +987,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
+    public static final CachedFlag sFaviconDisableHostFallback =
+            newCachedFlag(FAVICON_DISABLE_HOST_FALLBACK, false);
     public static final CachedFlag sFluidResize =
             newCachedFlag(FLUID_RESIZE, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
@@ -1312,6 +1315,7 @@ public abstract class ChromeFeatureList {
                     sEnableExclusiveAccessManager,
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,
+                    sFaviconDisableHostFallback,
                     sFluidResize,
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,

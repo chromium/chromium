@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/compose_bitmaps_helper.h"
@@ -63,6 +64,7 @@ bool FaviconHelper::GetLocalFaviconImageForURL(
     Profile* profile,
     const GURL& page_url,
     int32_t j_desired_size_in_pixel,
+    bool fallback_to_host,
     const JavaRef<jobject>& j_favicon_image_callback) {
   DCHECK(profile);
   if (!profile) {
@@ -77,14 +79,14 @@ bool FaviconHelper::GetLocalFaviconImageForURL(
     return false;
   }
 
-  favicon_base::FaviconRawBitmapCallback callback_runner =
-      base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback));
+  favicon_base::FaviconRawBitmapCallback callback_runner = base::BindOnce(
+      &FaviconHelper::OnFaviconBitmapResultAvailable,
+      weak_ptr_factory_.GetWeakPtr(),
+      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback), fallback_to_host);
 
-  GetLocalFaviconImageForURLInternal(favicon_service, page_url,
-                                     static_cast<int>(j_desired_size_in_pixel),
-                                     std::move(callback_runner));
+  GetLocalFaviconImageForURLInternal(
+      favicon_service, page_url, static_cast<int>(j_desired_size_in_pixel),
+      fallback_to_host, std::move(callback_runner));
 
   return true;
 }
@@ -93,20 +95,13 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
     favicon::FaviconService* favicon_service,
     GURL url,
     int desired_size_in_pixel,
+    bool fallback_to_host,
     favicon_base::FaviconRawBitmapCallback callback_runner) {
   DCHECK(favicon_service);
   if (!favicon_service) {
     return;
   }
 
-  // |j_page_url| is an origin, and it may not have had a favicon associated
-  // with it. A trickier case is when |j_page_url| only has domain-scoped
-  // cookies, but visitors are redirected to HTTPS on visiting. Then
-  // |j_page_url| defaults to a HTTP scheme, but the favicon will be associated
-  // with the HTTPS URL and hence won't be found if we include the scheme in the
-  // lookup. Set |fallback_to_host|=true so the favicon database will fall back
-  // to matching only the hostname to have the best chance of finding a favicon.
-  const bool fallback_to_host = true;
   favicon_service->GetRawFaviconForPageURL(
       url,
       {favicon_base::IconType::kFavicon, favicon_base::IconType::kTouchIcon,
@@ -121,6 +116,7 @@ bool FaviconHelper::GetForeignFaviconImageForURL(
     Profile* profile,
     const GURL& page_url,
     int32_t j_desired_size_in_pixel,
+    bool fallback_to_host,
     const base::android::JavaRef<jobject>& j_favicon_image_callback) {
   if (!profile) {
     return false;
@@ -132,12 +128,13 @@ bool FaviconHelper::GetForeignFaviconImageForURL(
   if (!history_ui_favicon_request_handler) {
     return false;
   }
+
   history_ui_favicon_request_handler->GetRawFaviconForPageURL(
-      page_url, static_cast<int>(j_desired_size_in_pixel),
-      /*fallback_to_host=*/true,
+      page_url, static_cast<int>(j_desired_size_in_pixel), fallback_to_host,
       base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)));
+                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback),
+                     fallback_to_host));
   return true;
 }
 
@@ -145,8 +142,17 @@ FaviconHelper::~FaviconHelper() = default;
 
 void FaviconHelper::OnFaviconBitmapResultAvailable(
     const JavaRef<jobject>& j_favicon_image_callback,
+    bool original_fallback_to_host,
     const favicon_base::FaviconRawBitmapResult& result) {
   JNIEnv* env = AttachCurrentThread();
+
+  if (original_fallback_to_host) {
+    ::base::UmaHistogramBoolean(
+        "Favicons.AndroidHostFallbackFetchResult.Enabled", result.is_valid());
+  } else {
+    ::base::UmaHistogramBoolean(
+        "Favicons.AndroidHostFallbackFetchResult.Disabled", result.is_valid());
+  }
 
   // Convert favicon_image_result to java objects.
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;
