@@ -385,6 +385,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Command.LaunchOrReparentResult"
+    enum="WebAppLaunchOrReparentResult" expires_after="2027-04-16">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of the LaunchOrReparentWebContentsIntoAppCommand, which
+    reparents a WebContents into an app window or launches the app. Logged when
+    the command completes. This command is currently scheduled in the web app
+    installation UX, where the option to launch the app is presented to the user
+    after installation completes.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.CreateWebApp.ManifestIdMatch" enum="BooleanSuccess"
     expires_after="2027-04-29">
   <owner>dmurph@chromium.org</owner>

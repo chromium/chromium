@@ -82,6 +82,7 @@ enum class ApplyPendingManifestUpdateResult;
 enum class FallbackBehavior;
 enum class InstallableCheckResult;
 enum class IsolatedInstallabilityCheckResult;
+enum class LaunchOrReparentResult;
 enum class LaunchWebAppWindowSetting;
 enum class RunOnOsLoginMode;
 enum class ManifestSilentUpdateCheckResult;
@@ -378,6 +379,13 @@ class WebAppCommandScheduler {
           callback,
       const base::Location& location = FROM_HERE);
 
+  // Decoupled post-install action to reparent or launch the app.
+  void LaunchOrReparentWebContentsIntoApp(
+      const webapps::AppId& app_id,
+      base::WeakPtr<content::WebContents> web_contents,
+      base::OnceCallback<void(LaunchOrReparentResult)> callback,
+      const base::Location& location = FROM_HERE);
+
   // Installs a web app using data from a sync update. It first tries to fetch a
   // live manifest from the app's start URL. If that fails, it falls back to
   // using the information from the sync data to ensure the app is installed.
@@ -564,6 +572,7 @@ class WebAppCommandScheduler {
   void LaunchApp(const webapps::AppId& app_id,
                  const std::optional<GURL>& url,
                  LaunchWebAppCallback callback,
+                 std::optional<apps::LaunchSource> launch_source = std::nullopt,
                  const base::Location& location = FROM_HERE);
 
   // Used to launch apps with a custom launch params. This does not respect the

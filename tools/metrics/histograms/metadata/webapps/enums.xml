@@ -609,6 +609,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FocusExisting"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppLaunchOrReparentResult) -->
+
+<enum name="WebAppLaunchOrReparentResult">
+  <int value="0" label="Reparented"/>
+  <int value="1" label="Launched"/>
+  <int value="2" label="Web contents gone"/>
+  <int value="3" label="App not installed as dedicated window"/>
+  <int value="4" label="Shutdown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/scheduler/launch_or_reparent_result.h:LaunchOrReparentResult) -->
+
 <enum name="WebAppManifestIdParseResult">
   <int value="0" label="Success"/>
   <int value="1" label="Invalid Manifest Id"/>
