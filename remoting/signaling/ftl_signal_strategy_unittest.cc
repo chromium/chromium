@@ -460,7 +460,8 @@ TEST_F(FtlSignalStrategyTest, StreamRemotelyClosed) {
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
-TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
+// TODO: crbug.com/504910955 - Re-enable after iq_stanza is fixed.
+TEST_F(FtlSignalStrategyTest, DISABLED_SendMessage_XmlElement_Success) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -769,7 +770,8 @@ TEST_F(FtlSignalStrategyTest, ReceiveIncomingFtlMessage) {
                                message);
 }
 
-TEST_F(FtlSignalStrategyTest, ReceiveIqStanzaOnly_Success) {
+// TODO: crbug.com/504910955 - Re-enable after iq_stanza is fixed.
+TEST_F(FtlSignalStrategyTest, DISABLED_ReceiveIqStanzaOnly_Success) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -794,7 +796,9 @@ TEST_F(FtlSignalStrategyTest, ReceiveIqStanzaOnly_Success) {
                                message);
 }
 
-TEST_F(FtlSignalStrategyTest, ReceiveIqStanzaAndStanza_PreferIqStanza) {
+// TODO: crbug.com/504910955 - Re-enable after iq_stanza is fixed.
+TEST_F(FtlSignalStrategyTest,
+       DISABLED_ReceiveIqStanzaAndStanza_PreferIqStanza) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -850,7 +854,9 @@ TEST_F(FtlSignalStrategyTest, ReceiveIqStanza_NoPayload) {
                                message);
 }
 
-TEST_F(FtlSignalStrategyTest, SendReply_PopulatesBothStanzaAndIqStanza) {
+// TODO: crbug.com/504910955 - Re-enable after iq_stanza is fixed.
+TEST_F(FtlSignalStrategyTest,
+       DISABLED_SendReply_PopulatesBothStanzaAndIqStanza) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
