@@ -4217,6 +4217,29 @@ chromium-metrics-reviews@google.com.
       variants="ContentAnalysisRequestType"/>
 </histogram>
 
+<histogram name="Enterprise.{FileUploadEvent}.Cancelled.BatchSize"
+    units="units" expires_after="2027-05-04">
+  <owner>domfc@chromium.org</owner>
+  <owner>chrome-enterprise-data-protection@google.com</owner>
+  <summary>
+    Number of files in {FileUploadEvent} that was cancelled. Recorded every time
+    files were cancelled before scan completion.
+  </summary>
+  <token key="FileUploadEvent" variants="FileUploadEvent"/>
+</histogram>
+
+<histogram name="Enterprise.{FileUploadEvent}.Cancelled.Duration" units="ms"
+    expires_after="2027-05-04">
+  <owner>domfc@chromium.org</owner>
+  <owner>chrome-enterprise-data-protection@google.com</owner>
+  <summary>
+    Duration of the scan from the moment files were selected until the scan was
+    cancelled in {FileUploadEvent}. Recorded every time files were cancelled
+    before scan completion.
+  </summary>
+  <token key="FileUploadEvent" variants="FileUploadEvent"/>
+</histogram>
+
 <histogram
     name="Enterprise.{LocalOrCloud}ContentAnalysis.{DeepScanAccessPoint}.{FinalResult}.Duration"
     units="ms" expires_after="2026-10-04">

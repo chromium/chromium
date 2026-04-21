@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -367,6 +368,7 @@ class FilesRequestHandlerTest : public BaseTest {
         {safe_browsing::kEnhancedFieldsForSecOps,
          enterprise_connectors::kEnableCancelUploadOnContentAnalysis},
         {});
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void FakeFileUploadCallback(
@@ -443,6 +445,7 @@ class FilesRequestHandlerTest : public BaseTest {
   bool upload_performed_ = false;
 
  protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::WeakPtrFactory<FilesRequestHandlerTest> weak_ptr_factory_{this};
 };
 
@@ -953,6 +956,11 @@ TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled) {
   fake_files_request_handler_.reset();
 
   run_loop.Run();
+
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.OnFileAttach.Cancelled.BatchSize", 2, 1);
+  histogram_tester_->ExpectTotalCount(
+      "Enterprise.OnFileAttach.Cancelled.Duration", 1);
 }
 
 TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled_FileDeleted) {
@@ -1023,6 +1031,11 @@ TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled_FileDeleted) {
   fake_files_request_handler_.reset();
 
   run_loop.Run();
+
+  histogram_tester_->ExpectUniqueSample(
+      "Enterprise.OnFileAttach.Cancelled.BatchSize", 2, 1);
+  histogram_tester_->ExpectTotalCount(
+      "Enterprise.OnFileAttach.Cancelled.Duration", 1);
 }
 
 TEST_F(FilesRequestHandlerTest, NoDelay) {

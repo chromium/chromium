@@ -141,6 +141,8 @@ class FilesRequestHandler : public RequestHandlerBase {
   // reported yet, cancel them and report the cancellation.
   void MaybeCancelAndReport();
 
+  void MaybeTrackCancellation();
+
   void CreateFileOpeningJob(
       std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks,
       file_access::ScopedFileAccess file_access);

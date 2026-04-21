@@ -201,7 +201,23 @@ void FilesRequestHandler::ResetFactoryForTesting() {
 }
 
 FilesRequestHandler::~FilesRequestHandler() {
+  MaybeTrackCancellation();
   MaybeCancelAndReport();
+}
+
+void FilesRequestHandler::MaybeTrackCancellation() {
+  if (file_result_count_ >= paths_.size()) {
+    return;
+  }
+
+  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+      !prefix.empty()) {
+    base::UmaHistogramMediumTimes(base::StrCat({prefix, ".Cancelled.Duration"}),
+                                  base::TimeTicks::Now() - upload_start_time_);
+    base::UmaHistogramCustomCounts(
+        base::StrCat({prefix, ".Cancelled.BatchSize"}), paths_.size(), 1, 1000,
+        100);
+  }
 }
 
 void FilesRequestHandler::MaybeCancelAndReport() {
