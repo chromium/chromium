@@ -113,6 +113,7 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -423,13 +424,19 @@ void ToolbarView::Init() {
         base::BindRepeating(callback, browser_, IDC_FORWARD), browser_));
   }
 
-  if (features::IsWebUIToolbarEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebUIToolbarProcessOverheadExperiment)) {
+    detached_toolbar_webview_ = std::make_unique<WebUIToolbarWebView>(
+        browser_, browser_->command_controller(), /*location_bar=*/nullptr);
+  } else if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
         browser_, browser_->command_controller(),
         std::move(webui_location_bar)));
   }
 
-  if (!features::IsWebUIReloadButtonEnabled()) {
+  if (!features::IsWebUIReloadButtonEnabled() ||
+      base::FeatureList::IsEnabled(
+          features::kWebUIToolbarProcessOverheadExperiment)) {
     reload_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->profile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));

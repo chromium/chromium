@@ -229,6 +229,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   }
   if (pre_created_contents) {
     is_preloaded_ = true;
+    SetInitializationState(InitializationState::kPending);
     // When preload is not enabled, the `WebUIToolbarUI` init is done in
     // `WebUIToolbarWebView::DidFinishNavigation()`. Here since the
     // `WebContents` is pre-created, it might finish navigation before we
@@ -559,7 +560,9 @@ void WebUIToolbarWebView::SetInitializationState(
           {State::kPending, {State::kInitialized}},
           {State::kInitialized, {State::kPending}},
       }));
-  CHECK(transitions->IsTransitionValid(initialization_state_, new_state));
+  CHECK(transitions->IsTransitionValid(initialization_state_, new_state))
+      << "from " << static_cast<int>(initialization_state_) << " to "
+      << static_cast<int>(new_state);
   initialization_state_ = new_state;
 }
 

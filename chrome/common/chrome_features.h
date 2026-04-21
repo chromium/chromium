@@ -1237,6 +1237,13 @@ BASE_DECLARE_FEATURE(kInitialWebUIMetrics);
 // components.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIReloadButton);
+// When `kWebUIToolbarProcessOverheadExperiment` is enabled, the
+// WebUIToolbar will always be initialized and never added into the view
+// hierarchy. i.e. it overrides other WebUIToolbar checks.
+// TODO(crbug.com/503575910): remove this flag and all the related checking
+// logic once we have collected enough data from the experiment.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kWebUIToolbarProcessOverheadExperiment);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
 COMPONENT_EXPORT(CHROME_FEATURES)

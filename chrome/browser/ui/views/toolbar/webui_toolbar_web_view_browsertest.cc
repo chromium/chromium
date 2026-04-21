@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
@@ -3314,3 +3315,34 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<DragTestParam>& info) {
       return info.param.test_name;
     });
+
+class WebUIToolbarProcessOverheadExperimentBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  WebUIToolbarProcessOverheadExperimentBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kWebUIToolbarProcessOverheadExperiment},
+        {features::kWebUIReloadButton});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarProcessOverheadExperimentBrowserTest,
+                       Basic) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ToolbarView* toolbar_view = browser_view->toolbar();
+
+  // Verify that the C++ reload button is visible.
+  views::View* reload_button = toolbar_view->reload_button();
+  ASSERT_TRUE(reload_button);
+  EXPECT_TRUE(reload_button->GetVisible());
+
+  // Verify that the WebUIToolbarWebView is NOT in the view hierarchy.
+  ToolbarButtonProvider* provider = toolbar_view;
+  EXPECT_EQ(provider->GetWebUIToolbarViewForTesting(), nullptr);
+
+  // Verify that the detached WebUIToolbarWebView IS created.
+  EXPECT_NE(toolbar_view->detached_toolbar_webview_for_testing(), nullptr);
+}

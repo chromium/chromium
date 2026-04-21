@@ -690,7 +690,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
-  if (features::IsWebUIToolbarEnabled()) {
+  if (features::IsWebUIToolbarEnabled() || base::FeatureList::IsEnabled(
+          features::kWebUIToolbarProcessOverheadExperiment)) {
     registry.ForWebUI<WebUIToolbarUI>()
         .Add<browser_controls_api::mojom::BrowserControlsService>()
         .Add<toolbar_ui_api::mojom::ToolbarUIService>()

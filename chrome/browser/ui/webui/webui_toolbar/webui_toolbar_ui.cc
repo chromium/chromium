@@ -110,7 +110,9 @@ WebUIToolbarConfig::WebUIToolbarConfig()
 
 bool WebUIToolbarConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsWebUIToolbarEnabled();
+  return features::IsWebUIToolbarEnabled() ||
+         base::FeatureList::IsEnabled(
+             features::kWebUIToolbarProcessOverheadExperiment);
 }
 
 bool WebUIToolbarConfig::ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() {

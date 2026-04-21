@@ -27,11 +27,16 @@ void InitializePageLoadMetricsForWebContents(
 DEFINE_USER_DATA(InitialWebUIManager);
 
 InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
-    : is_initial_web_ui_pending_(features::IsWebUIToolbarEnabled()),
+    : is_initial_web_ui_pending_(
+          features::IsWebUIToolbarEnabled() ||
+          base::FeatureList::IsEnabled(
+              features::kWebUIToolbarProcessOverheadExperiment)),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
       metrics_manager_(InitialWebUIWindowMetricsManager::From(browser)) {
-  if (features::IsWebUIToolbarEnabled() &&
-      features::kWebUIReloadButtonPrewarmWebUI.Get()) {
+  if ((features::IsWebUIToolbarEnabled() &&
+       features::kWebUIReloadButtonPrewarmWebUI.Get()) ||
+      base::FeatureList::IsEnabled(
+          features::kWebUIToolbarProcessOverheadExperiment)) {
     Profile* profile = browser->GetProfile();
     scoped_refptr<content::SiteInstance> site_instance =
         content::SiteInstance::CreateForURL(

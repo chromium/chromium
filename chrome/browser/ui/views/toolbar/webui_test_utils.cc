@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -25,7 +26,9 @@
 
 void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
     BrowserWindowInterface* browser) {
-  if (!browser || !features::IsWebUIToolbarEnabled()) {
+  if (!browser || (!features::IsWebUIToolbarEnabled() &&
+                   !base::FeatureList::IsEnabled(
+                       features::kWebUIToolbarProcessOverheadExperiment))) {
     return;
   }
 
