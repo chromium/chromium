@@ -48,7 +48,7 @@ String TextEncoding::Decode(base::span<const uint8_t> data,
 
   std::unique_ptr<TextCodec> codec = NewTextCodec(*this);
   CHECK(codec);
-  return codec->Decode(data, FlushBehavior::kDataEOF, stop_on_error, saw_error);
+  return codec->Decode(data, FlushBehavior::kDataEof, stop_on_error, saw_error);
 }
 
 std::string TextEncoding::Encode(const StringView& string,

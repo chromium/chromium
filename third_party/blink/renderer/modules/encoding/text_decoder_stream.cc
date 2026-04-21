@@ -73,7 +73,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   ScriptPromise<IDLUndefined> Flush(
       TransformStreamDefaultController* controller,
       ExceptionState& exception_state) override {
-    DecodeAndEnqueue({}, FlushBehavior::kDataEOF, controller, exception_state);
+    DecodeAndEnqueue({}, FlushBehavior::kDataEof, controller, exception_state);
 
     return ToResolvedUndefinedPromise(script_state_.Get());
   }

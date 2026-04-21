@@ -51,7 +51,7 @@ TEST(TextCodecUTF8, DecodeAscii) {
   bool saw_error = false;
   const auto input = base::byte_span_from_cstring("HelloWorld");
   const String& result =
-      codec->Decode(input, FlushBehavior::kDataEOF, false, saw_error);
+      codec->Decode(input, FlushBehavior::kDataEof, false, saw_error);
   EXPECT_FALSE(saw_error);
   ASSERT_EQ(input.size(), result.length());
   for (wtf_size_t i = 0; i < input.size(); ++i) {
@@ -69,7 +69,7 @@ TEST(TextCodecUTF8, DecodeChineseCharacters) {
   bool saw_error = false;
   const String& result =
       codec->Decode(base::byte_span_from_cstring(kTestCase),
-                    FlushBehavior::kDataEOF, false, saw_error);
+                    FlushBehavior::kDataEof, false, saw_error);
   EXPECT_FALSE(saw_error);
   ASSERT_EQ(2u, result.length());
   EXPECT_EQ(0x6f22U, result[0]);
@@ -83,7 +83,7 @@ TEST(TextCodecUTF8, Decode0xFF) {
   bool saw_error = false;
   const String& result =
       codec->Decode(base::byte_span_from_cstring("\xff"),
-                    FlushBehavior::kDataEOF, false, saw_error);
+                    FlushBehavior::kDataEof, false, saw_error);
   EXPECT_TRUE(saw_error);
   ASSERT_EQ(1u, result.length());
   EXPECT_EQ(0xFFFDU, result[0]);
@@ -103,7 +103,7 @@ TEST(TextCodecUTF8, DecodeOverflow) {
       // SAFETY: Unsafe operation for a death test.
       codec->Decode(base::as_bytes(UNSAFE_BUFFERS(base::span(
                         "", std::numeric_limits<wtf_size_t>::max()))),
-                    FlushBehavior::kDataEOF, false, saw_error),
+                    FlushBehavior::kDataEof, false, saw_error),
       "");
 }
 
@@ -131,7 +131,7 @@ TEST(TextCodecUTF8, DecodeMultiplePartialsAfterError) {
     EXPECT_TRUE(saw_error);
   }
   {
-    String s = codec->Decode({}, FlushBehavior::kDataEOF, false, saw_error);
+    String s = codec->Decode({}, FlushBehavior::kDataEof, false, saw_error);
     EXPECT_TRUE(s.empty());
     EXPECT_TRUE(saw_error);
   }

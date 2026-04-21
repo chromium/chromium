@@ -35,7 +35,7 @@ TEST(TextCodecReplacement, DecodesToFFFD) {
 
   const String result =
       codec->Decode(base::byte_span_from_cstring("hello world"),
-                    FlushBehavior::kDataEOF, false, saw_error);
+                    FlushBehavior::kDataEof, false, saw_error);
   EXPECT_TRUE(saw_error);
   ASSERT_EQ(1u, result.length());
   EXPECT_EQ(0xFFFDU, result[0]);

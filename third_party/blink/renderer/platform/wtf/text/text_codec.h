@@ -65,10 +65,10 @@ enum class FlushBehavior {
 
   // A fetch has hit EOF. Some codecs handle fetches differently, for compat
   // reasons.
-  kFetchEOF,
+  kFetchEof,
 
   // Do a full flush of the codec.
-  kDataEOF
+  kDataEof
 };
 
 class WTF_EXPORT TextCodec {

@@ -81,8 +81,8 @@ String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,
                               bool,
                               bool& saw_error) {
   // For compatibility reasons, ignore flush from fetch EOF.
-  const bool really_flush = flush != FlushBehavior::kDoNotFlush &&
-                            flush != FlushBehavior::kFetchEOF;
+  const bool really_flush =
+      flush != FlushBehavior::kDoNotFlush && flush != FlushBehavior::kFetchEof;
 
   if (bytes.empty()) {
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {

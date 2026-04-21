@@ -461,7 +461,7 @@ String TextResourceDecoder::Flush() {
   }
 
   String result = codec_->Decode(
-      base::as_byte_span(buffer_), FlushBehavior::kFetchEOF,
+      base::as_byte_span(buffer_), FlushBehavior::kFetchEof,
       options_.GetContentType() == TextResourceDecoderOptions::kXMLContent &&
           !options_.GetUseLenientXMLDecoding(),
       saw_error_);
