@@ -4706,6 +4706,7 @@
 <translation id="4241224519481557898">类别</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242245038391716252">由以下扩展程序下载：&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">现在，您只需将光标悬停在标签页上，即可展开标签页。如需开启此功能，请在此处右键点击。</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
@@ -6385,6 +6386,7 @@
 <translation id="5423753908060469325">创建快捷方式(&amp;S)…</translation>
 <translation id="5423829801105537712">基本拼写检查</translation>
 <translation id="5425042808445046667">继续下载</translation>
+<translation id="542570217857307910">现在，您只需将光标悬停在标签页上，即可展开标签页。如需关闭此功能，请在此处右键点击。</translation>
 <translation id="5425863515030416387">在所有设备上轻松登录</translation>
 <translation id="5427278936122846523">一律翻译</translation>
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>

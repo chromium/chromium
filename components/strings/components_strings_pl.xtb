@@ -3625,7 +3625,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6655085656059574817">Dzięki połączeniu konta możesz płacić szybciej przez <ph name="BNPL_ISSUER_NAME" />, ale możesz je odłączyć na stronie <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Zawiera informacje takie jak rezerwacje lotów i dane pojazdu</translation>
 <translation id="6657585470893396449">Hasło</translation>
-<translation id="6659156657345021268">Twoje informacje zostały zapisane tylko na urządzeniu. Przy następnym wypełnianiu odpowiedniego formularza będziesz mieć możliwość zapisania ich w Portfelu.</translation>
 <translation id="6659246032834639189">To niska cena</translation>
 <translation id="6660413144148052430">lokalizacja</translation>
 <translation id="6662457027866368246">Rolka 1</translation>
@@ -3748,7 +3747,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6850286078059909152">Kolor tekstu</translation>
 <translation id="6852204201400771460">Załadować ponownie aplikację?</translation>
 <translation id="6854691830678097752">Aby płacić szybciej, zapisz ten kod CVC na swoim koncie <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Wyczyść formularz, aby użyć opcji płatności odroczonej</translation>
 <translation id="6857776781123259569">Zarządzaj hasłami…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Może prosić o włączenie obrazu w obrazie</translation>

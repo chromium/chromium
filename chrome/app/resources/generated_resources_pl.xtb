@@ -4696,6 +4696,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4241224519481557898">Kategoria</translation>
 <translation id="4242145785130247982">Funkcja nie obsługuje wielu certyfikatów klienta</translation>
 <translation id="4242245038391716252">Pobrane przez rozszerzenie: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Teraz możesz rozwijać karty, najeżdżając na nie kursorem. Aby włączyć tę funkcję, kliknij tutaj prawym przyciskiem myszy.</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4242577469625748426">Instalacja ustawień zasad na urządzeniu nie powiodła się: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Twoją <ph name="BEGIN_LINK" />przeglądarką i profilem zarządza<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6374,6 +6375,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5423753908060469325">Utwórz &amp;skrót…</translation>
 <translation id="5423829801105537712">Podstawowe sprawdzanie pisowni</translation>
 <translation id="5425042808445046667">Pobieraj dalej</translation>
+<translation id="542570217857307910">Teraz możesz rozwijać karty, najeżdżając na nie kursorem. Aby wyłączyć tę funkcję, kliknij tutaj prawym przyciskiem myszy.</translation>
 <translation id="5425863515030416387">Łatwo loguj się na różnych urządzeniach</translation>
 <translation id="5427278936122846523">Zawsze tłumacz</translation>
 <translation id="5427459444770871191">Obróć w &amp;prawo</translation>

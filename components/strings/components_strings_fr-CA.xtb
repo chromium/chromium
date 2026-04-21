@@ -3625,7 +3625,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6655085656059574817">Si votre compte est associé, vous pouvez payer plus rapidement avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en accédant à <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Comprend des informations telles que les réservations de vols et les informations sur les véhicules</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
-<translation id="6659156657345021268">Vos informations sont enregistrées uniquement sur votre appareil. Vous aurez la possibilité de les enregistrer dans Portefeuille la prochaine fois que vous remplirez un formulaire pertinent.</translation>
 <translation id="6659246032834639189">Ce prix est bas</translation>
 <translation id="6660413144148052430">Position</translation>
 <translation id="6662457027866368246">Premier rouleau</translation>
@@ -3748,7 +3747,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6852204201400771460">Actualiser l'application?</translation>
 <translation id="6854691830678097752">Pour un paiement plus rapide, enregistrez ce code CVC dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Effacer le formulaire pour utiliser l'option de paiement différé</translation>
 <translation id="6857776781123259569">Gérer les mots de passe…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Peut demander à entrer l'Incrustation d'image</translation>

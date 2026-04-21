@@ -1054,6 +1054,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2627847595568876492">S'està extraient el text del PDF...</translation>
 <translation id="2628025184666666186">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè utilitza un certificat de seguretat que Chrome o la configuració del sistema per a l'encriptació del trànsit web no consideren de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que ha interceptat la teva connexió.</translation>
 <translation id="2628224721443278970">Inicia la sessió a Microsoft OneDrive</translation>
+<translation id="2631059741268498165">El teu administrador ha localitzat aquest dispositiu mentre estava desactivat. S'ha tornat a activar i ja es pot utilitzar.</translation>
 <translation id="2631387782019878060">Codi de verificació: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">No s'ha trobat l'adreça IP del servidor de l'amfitrió <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escriu @ per cercar a <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -2918,6 +2919,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5543564889050342791">Zoològics, aquaris i reserves naturals</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5544836308113951378">Creuers i xàrters</translation>
+<translation id="5546252337258681768">Dispositiu desbloquejat</translation>
 <translation id="5547939254150808298">Premsa i editorials</translation>
 <translation id="554815783948612276">Proveïdors de xats i fòrums</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
@@ -3623,7 +3625,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6655085656059574817">Si mantens el compte enllaçat, podràs pagar més ràpidament amb <ph name="BNPL_ISSUER_NAME" />, però pots desenllaçar-lo a <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inclou informació com ara les reserves de vols i les dades dels vehicles</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
-<translation id="6659156657345021268">La teva informació només es desa al dispositiu. Tindràs l'oportunitat de desar-la a Wallet la propera vegada que emplenis un formulari rellevant.</translation>
 <translation id="6659246032834639189">Aquest preu és baix</translation>
 <translation id="6660413144148052430">ubicació</translation>
 <translation id="6662457027866368246">Primer corró</translation>
@@ -3746,7 +3747,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6850286078059909152">Color del text</translation>
 <translation id="6852204201400771460">Vols tornar a carregar l'aplicació?</translation>
 <translation id="6854691830678097752">Per pagar ràpidament, desa aquest CVC al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Esborra el formulari a fi d'utilitzar l'opció per pagar més tard</translation>
 <translation id="6857776781123259569">Gestiona les contrasenyes...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pot demanar permís per entrar al mode d'imatge sobre imatge</translation>

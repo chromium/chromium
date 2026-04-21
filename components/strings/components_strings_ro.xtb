@@ -3625,7 +3625,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6655085656059574817">Dacă menții contul conectat, vei plăti mai rapid cu <ph name="BNPL_ISSUER_NAME" />, dar îl poți deconecta accesând <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Include informații cum ar fi rezervările de zboruri și informațiile despre vehicule</translation>
 <translation id="6657585470893396449">Parolă</translation>
-<translation id="6659156657345021268">Informațiile tale sunt salvate doar pe dispozitiv. Vei avea ocazia să le salvezi în Portofel data viitoare când vei completa un formular relevant.</translation>
 <translation id="6659246032834639189">Acest preț este scăzut</translation>
 <translation id="6660413144148052430">Locație</translation>
 <translation id="6662457027866368246">Prima rolă</translation>
@@ -3748,7 +3747,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6850286078059909152">Culoarea textului</translation>
 <translation id="6852204201400771460">Reîncarci aplicația?</translation>
 <translation id="6854691830678097752">Pentru finalizarea mai rapidă a achizițiilor, salvează codul CVC în contul <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Golește formularul ca să folosești opțiunea Plătește mai târziu</translation>
 <translation id="6857776781123259569">Gestionează parolele…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Poate solicita permisiunea de a intra în modul picture-in-picture</translation>

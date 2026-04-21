@@ -3626,7 +3626,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6655085656059574817">Susieję paskyrą galėsite greičiau mokėti naudodamiesi „<ph name="BNPL_ISSUER_NAME" />“ paslaugomis (galite ją atsieti adresu <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Apima tokią informaciją kaip skrydžių užsakymai ir transporto priemonės informacija</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
-<translation id="6659156657345021268">Jūsų informacija išsaugota įrenginyje. Turėsite galimybę išsaugoti ją „Wallet“ kitą kartą, kai užpildysite atitinkamą formą.</translation>
 <translation id="6659246032834639189">Tai yra maža kaina</translation>
 <translation id="6660413144148052430">vietovė</translation>
 <translation id="6662457027866368246">Pirmas ritinėlis</translation>
@@ -3749,7 +3748,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6850286078059909152">Teksto spalva</translation>
 <translation id="6852204201400771460">Įkelti programą iš naujo?</translation>
 <translation id="6854691830678097752">Kad galėtumėte sparčiau atsiskaityti, išsaugokite šį kortelės saugos kodą (CVC) paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Išvalykite formą, kad galėtumėte naudoti mokėjimo vėliau parinktį</translation>
 <translation id="6857776781123259569">Tvarkykite slaptažodžius...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Gali būti prašoma įjungti vaizdą vaizde</translation>

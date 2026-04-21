@@ -3625,7 +3625,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6655085656059574817">Održavanje računa povezanim vam pomaže da brže plaćate putem usluge <ph name="BNPL_ISSUER_NAME" />, ali možete prekinuti povezanost odlaskom na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Uključuje informacije kao što su informacije o rezervacijama letova i vozilu</translation>
 <translation id="6657585470893396449">Lozinka</translation>
-<translation id="6659156657345021268">Vaše informacije će se sačuvati samo na uređaju. Imat ćete priliku da ih sačuvate u Novčaniku sljedeći put kada budete popunjavali relevantan obrazac.</translation>
 <translation id="6659246032834639189">Ova cijena je niska</translation>
 <translation id="6660413144148052430">lokacija</translation>
 <translation id="6662457027866368246">Prva rolna</translation>
@@ -3748,7 +3747,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6850286078059909152">Boja teksta</translation>
 <translation id="6852204201400771460">Ponovo učitati aplikaciju?</translation>
 <translation id="6854691830678097752">Radi bržeg plaćanja sačuvajte ovaj CVC na računu <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Obrišite obrazac da koristite opciju kasnijeg plaćanja</translation>
 <translation id="6857776781123259569">Upravljajte lozinkama…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Može tražiti odobrenje da unosi sliku u slici</translation>

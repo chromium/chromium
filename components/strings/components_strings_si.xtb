@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">ඔබේ ගිණුම සම්බන්ධ කර තබා ගැනීම ඔබට <ph name="BNPL_ISSUER_NAME" /> සමග වේගයෙන් ගෙවීමට උපකාරී වේ, නමුත් ඔබට <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> වෙත යාමෙන් එය විසන්ධි කළ හැක</translation>
 <translation id="6656935431494847393">ගුවන් ගමන් වෙන් කිරීම් සහ වාහන තතු වැනි තොරතුරු ඇතුළත් වේ</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
-<translation id="6659156657345021268">ඔබේ තතු ඔබේ උපාංගයට පමණක් සුරකින ලදි. ඔබ අදාළ පෝරමයක් පුරවන මීළඟ වතාවේ එය Wallet වෙත සුරැකීමට ඔබට අවස්ථාව ලැබෙනු ඇත.</translation>
 <translation id="6659246032834639189">මෙම මිල අඩු ය</translation>
 <translation id="6660413144148052430">ස්ථානය</translation>
 <translation id="6662457027866368246">First Roll</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">පාඨ වර්ණය</translation>
 <translation id="6852204201400771460">යෙදුම නැවත පූරණය කරන්න ද?</translation>
 <translation id="6854691830678097752">වේගවත් ගෙවා පිටවීම සඳහා, මෙම CVC එක ඔබේ ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> සුරකින්න</translation>
-<translation id="6855951327659224749">පසුව ගෙවීමේ විකල්පය භාවිතා කිරීමට පෝරමය හිස් කරන්න</translation>
 <translation id="6857776781123259569">මුරපද කළමනාකරණය කරන්න...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">පින්තූරය-තුළ-පින්තූරයට ඇතුළු වීමට විමසිය හැක</translation>

@@ -4712,6 +4712,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4241224519481557898">Kategorie</translation>
 <translation id="4242145785130247982">Mehrere Clientzertifikate werden nicht unterstützt</translation>
 <translation id="4242245038391716252">Von Erweiterung heruntergeladen: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Du kannst jetzt deine Tabs maximieren, indem du den Mauszeiger darauf bewegst. Wenn du diese Funktion aktivieren möchtest, klicke hier mit der rechten Maustaste.</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4242577469625748426">Fehler beim Installieren der Richtlinieneinstellungen auf dem Gerät: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Dein <ph name="BEGIN_LINK" />Browser und Profil werden verwaltet<ph name="END_LINK" /> von <ph name="DOMAIN" /></translation>
@@ -6391,6 +6392,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5423753908060469325">&amp;Verknüpfung erstellen…</translation>
 <translation id="5423829801105537712">Einfache Rechtschreibprüfung</translation>
 <translation id="5425042808445046667">Download fortsetzen</translation>
+<translation id="542570217857307910">Du kannst jetzt deine Tabs maximieren, indem du den Mauszeiger darauf bewegst. Wenn du diese Funktion deaktivieren möchtest, klicke hier mit der rechten Maustaste.</translation>
 <translation id="5425863515030416387">Einfach auf verschiedenen Geräten anmelden</translation>
 <translation id="5427278936122846523">Immer übersetzen</translation>
 <translation id="5427459444770871191">Im &amp;Uhrzeigersinn drehen</translation>

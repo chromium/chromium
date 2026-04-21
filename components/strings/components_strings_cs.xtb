@@ -3620,7 +3620,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6655085656059574817">Když účet necháte připojený, budete moct pomocí služby <ph name="BNPL_ISSUER_NAME" /> platit rychleji, ale na stránce <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> ho můžete odpojit</translation>
 <translation id="6656935431494847393">Obsahuje informace, jako jsou rezervace letenek a informace o vozidlech</translation>
 <translation id="6657585470893396449">Heslo</translation>
-<translation id="6659156657345021268">Vaše údaje jsou uložené jen v zařízení. Až budete příslušný formulář vyplňovat příště, budete si je moct uložit do Peněženky.</translation>
 <translation id="6659246032834639189">Tato cena je nízká</translation>
 <translation id="6660413144148052430">poloha</translation>
 <translation id="6662457027866368246">První role</translation>
@@ -3743,7 +3742,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6850286078059909152">Barva textu</translation>
 <translation id="6852204201400771460">Načíst aplikaci znovu?</translation>
 <translation id="6854691830678097752">Pokud chcete platit rychleji, uložte si tento kód CVC do svého účtu <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Pokud chcete použít možnost Zaplatit později, vymažte formulář</translation>
 <translation id="6857776781123259569">Spravovat hesla…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Může požádat o aktivaci režimu obrazu v obraze</translation>

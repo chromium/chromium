@@ -4707,6 +4707,7 @@
 <translation id="4241224519481557898">品詞</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242245038391716252">拡張機能によってダウンロードされました: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">タブにカーソルを合わせるとタブが展開されるようになりました。この機能をオンにするには、ここを右クリックします。</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">お使いの<ph name="BEGIN_LINK" />ブラウザとプロフィールは <ph name="DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
@@ -6382,6 +6383,7 @@
 <translation id="5423753908060469325">ショートカットを作成(&amp;S)...</translation>
 <translation id="5423829801105537712">基本スペルチェック</translation>
 <translation id="5425042808445046667">ダウンロードを続行</translation>
+<translation id="542570217857307910">タブにカーソルを合わせるとタブが展開されるようになりました。この機能をオフにするには、ここを右クリックします。</translation>
 <translation id="5425863515030416387">すべてのデバイスで簡単ログイン</translation>
 <translation id="5427278936122846523">常に翻訳する</translation>
 <translation id="5427459444770871191">時計回りに回転(&amp;C)</translation>

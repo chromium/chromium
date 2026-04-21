@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">অ্যাকাউন্ট লিঙ্ক করা থাকলে <ph name="BNPL_ISSUER_NAME" />-এর সাহায্যে দ্রুত পেমেন্ট করা যাবে, তবে <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> থেকে আপনি এটি আনলিঙ্ক করতে পারবেন</translation>
 <translation id="6656935431494847393">ফ্লাইট বুকিং ও গাড়ির তথ্যের মতো বিভিন্ন তথ্য অন্তর্ভুক্ত</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
-<translation id="6659156657345021268">আপনার তথ্য কেবল আপনার ডিভাইসেই সেভ করা হয়। পরেরবার কোনও প্রাসঙ্গিক ফর্ম পূরণ করার সময়, আপনি এটি Wallet-এ সেভ করার সুযোগ পাবেন।</translation>
 <translation id="6659246032834639189">দাম কম আছে</translation>
 <translation id="6660413144148052430">লোকেশন</translation>
 <translation id="6662457027866368246">First Roll</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">টেক্সটের রঙ</translation>
 <translation id="6852204201400771460">আবার অ্যাপ লোড করতে চান?</translation>
 <translation id="6854691830678097752">ঝটপট চেকআউট করার জন্য আপনার অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ এই CVC সেভ করুন</translation>
-<translation id="6855951327659224749">'পরে পেমেন্ট করুন' বিকল্প ব্যবহার করতে ফর্মের সব ডেটা মুছুন</translation>
 <translation id="6857776781123259569">পাসওয়ার্ড ম্যানেজ করুন…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করার জন্য বলা হতে পারে</translation>

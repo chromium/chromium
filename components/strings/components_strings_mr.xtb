@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">तुमचे खाते लिंक केलेले ठेवल्याने, तुम्हाला <ph name="BNPL_ISSUER_NAME" /> वापरून अधिक जलद पेमेंट करण्यात मदत होते, पण तुम्ही <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> वर जाऊन ते अनलिंक करू शकता</translation>
 <translation id="6656935431494847393">फ्लाइट बुकिंग आणि वाहनासंबंधित माहिती यांसारख्या माहितीचा समावेश आहे</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6659156657345021268">तुमची माहिती फक्त तुमच्या डिव्हाइसवर सेव्ह केली जाते. तुम्ही पुढील वेळी सुसंबद्ध फॉर्म भरता, तेव्हा तुम्हाला ती Wallet मध्ये सेव्ह करण्याची संधी मिळेल.</translation>
 <translation id="6659246032834639189">ही किंमत कमी आहे</translation>
 <translation id="6660413144148052430">स्थान</translation>
 <translation id="6662457027866368246">पहिला रोल</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">मजकुराचा रंग</translation>
 <translation id="6852204201400771460">ॲप रीलोड करायचे?</translation>
 <translation id="6854691830678097752">अधिक जलद चेकआउट करण्यासाठी, तुमच्या खात्यामध्ये हा CVC सेव्ह करा, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">नंतर पेमेंट करा हा पर्याय वापरण्यासाठी फॉर्म क्लियर करा</translation>
 <translation id="6857776781123259569">पासवर्ड व्यवस्थापित करा…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">चित्रात-चित्र यामध्ये प्रवेश करण्याची विनंती करू शकते</translation>

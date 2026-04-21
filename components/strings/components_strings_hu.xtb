@@ -3622,7 +3622,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6655085656059574817">Összekapcsolt fiók esetén gyorsabban fizethet a(z) <ph name="BNPL_ISSUER_NAME" /> segítségével, de le is választhatja a fiókját a <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> webhelyen.</translation>
 <translation id="6656935431494847393">Olyan információkat tartalmaz, mint a repülőjegy-foglalások és a járműadatok</translation>
 <translation id="6657585470893396449">Jelszó</translation>
-<translation id="6659156657345021268">Adatait csak az eszközre menti a rendszer. A következő alkalommal, amikor egy releváns űrlapot tölt ki, lehetősége lesz a Walletbe elmenteni.</translation>
 <translation id="6659246032834639189">Ez az ár alacsony</translation>
 <translation id="6660413144148052430">helyadatok</translation>
 <translation id="6662457027866368246">1. tekercs</translation>
@@ -3745,7 +3744,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6850286078059909152">Szöveg színe</translation>
 <translation id="6852204201400771460">Újratölti az alkalmazást?</translation>
 <translation id="6854691830678097752">A gyorsabb fizetés érdekében mentheti ezt a CVC-kódot a fiókjába (<ph name="ACCOUNT_EMAIL" />).</translation>
-<translation id="6855951327659224749">A későbbi fizetési lehetőség használatához törölje ki az űrlapot</translation>
 <translation id="6857776781123259569">Jelszavak kezelése…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Engedélyt kérhet a kép a képben mód használatára</translation>

@@ -3624,7 +3624,6 @@
 <translation id="6655085656059574817">Аккаунтуңузду байланыштырылган бойдон калтыруу <ph name="BNPL_ISSUER_NAME" /> менен тезирээк төлөөгө жардам берет, бирок <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> дарегине өтүп, аны ажырата аласыз</translation>
 <translation id="6656935431494847393">Ага аба каттамдары жана унаа тууралуу маалымат сыяктуу нерселер кирет</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
-<translation id="6659156657345021268">Маалыматыңыз түзмөгүңүзгө гана сакталат. Кийинки жолу тиешелүү форманы толтурганда аны Капчыкка сактай аласыз.</translation>
 <translation id="6659246032834639189">Бул арзан баа</translation>
 <translation id="6660413144148052430">жайгашкан жер</translation>
 <translation id="6662457027866368246">Биринчи барабан</translation>
@@ -3747,7 +3746,6 @@
 <translation id="6850286078059909152">Тексттин түсү</translation>
 <translation id="6852204201400771460">Колдонмо кайра жүктөлсүнбү?</translation>
 <translation id="6854691830678097752">Тез төлөө үчүн бул картанын CVC кодун <ph name="ACCOUNT_EMAIL" />аккаунтуңузга сактап коюңуз</translation>
-<translation id="6855951327659224749">Кийинчерээк төлөө параметрин колдонуу үчүн форманы тазалаңыз</translation>
 <translation id="6857776781123259569">Сырсөздөрдү башкаруу…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Сүрөттөгү сүрөт режимине кирүү үчүн уруксат сурай алат</translation>

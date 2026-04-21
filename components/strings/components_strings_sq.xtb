@@ -3624,7 +3624,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6655085656059574817">Mbajtja e llogarisë të lidhur të ndihmon të paguash më shpejt me <ph name="BNPL_ISSUER_NAME" />, por mund ta shkëputësh atë duke shkuar në <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Përfshin informacione si rezervimet e fluturimeve dhe informacionet e automjetit</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
-<translation id="6659156657345021268">Informacionet e tua ruhen vetëm në pajisjen tënde. Do të kesh mundësinë që t'i ruash ato te "Portofoli" herën tjetër kur të plotësosh një formular përkatës.</translation>
 <translation id="6659246032834639189">Ky çmim është i ulët</translation>
 <translation id="6660413144148052430">vendndodhja</translation>
 <translation id="6662457027866368246">Ruli i parë</translation>
@@ -3747,7 +3746,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
 <translation id="6854691830678097752">Për përfundim më të shpejtë të blerjes, ruaje këtë kod CVC në llogarinë tënde, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Pastro formularin për të përdorur opsionin e "Paguaj më vonë"</translation>
 <translation id="6857776781123259569">Menaxho fjalëkalimet...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Mund të kërkojë të kalojë në modalitetin "figurë brenda figurës"</translation>

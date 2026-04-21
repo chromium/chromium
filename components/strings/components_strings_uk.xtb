@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">Зі зв’язаним обліковим записом ви зможете швидше оплачувати покупки через <ph name="BNPL_ISSUER_NAME" />. Щоб від’єднати його, перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Містить інформацію про бронювання авіаквитків і транспортні засоби</translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6659156657345021268">Ваша інформація зберігається лише на пристрої. Ви зможете зберегти її в Гаманці наступного разу, коли заповнюватимете відповідну форму.</translation>
 <translation id="6659246032834639189">Це низька ціна</translation>
 <translation id="6660413144148052430">геодані</translation>
 <translation id="6662457027866368246">Перший рулон</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">Колір тексту</translation>
 <translation id="6852204201400771460">Перезапустити додаток?</translation>
 <translation id="6854691830678097752">Щоб розраховуватися швидше, збережіть цей код CVC у своєму обліковому записі <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Очистьте форму, щоб скористатися варіантом оплати пізніше</translation>
 <translation id="6857776781123259569">Керувати паролями…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Може просити дозвіл ввімкнути режим "Картинка в картинці"</translation>

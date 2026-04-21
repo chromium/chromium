@@ -3625,7 +3625,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6655085656059574817">Hesabınız bağlı olduğunda <ph name="BNPL_ISSUER_NAME" /> ile daha hızlı ödeme yapabilirsiniz, ancak bağlantısını kaldırmak isterseniz <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> adresine gidebilirsiniz.</translation>
 <translation id="6656935431494847393">Uçuş rezervasyonları ve araç bilgileri gibi bilgiler içerir</translation>
 <translation id="6657585470893396449">Şifre</translation>
-<translation id="6659156657345021268">Bilgileriniz yalnızca cihazınıza kaydedilir. Bir dahaki sefere ilgili bir formu doldururken bu bilgileri Cüzdan'a kaydedebileceksiniz.</translation>
 <translation id="6659246032834639189">Bu fiyat düşük</translation>
 <translation id="6660413144148052430">konum</translation>
 <translation id="6662457027866368246">Birinci Rulo</translation>
@@ -3748,7 +3747,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6850286078059909152">Metin rengi</translation>
 <translation id="6852204201400771460">Uygulama yeniden yüklensin mi?</translation>
 <translation id="6854691830678097752">Daha hızlı ödeme yapmak için bu CVC'yi <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydedin</translation>
-<translation id="6855951327659224749">Sonra öde seçeneğini kullanmak için formu temizleyin</translation>
 <translation id="6857776781123259569">Şifreleri Yönet...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pencere içinde pencere moduna girmek isteyebilir</translation>

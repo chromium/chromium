@@ -3621,7 +3621,6 @@
 <translation id="6655085656059574817">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଲିଙ୍କଯୁକ୍ତ ରଖିବା ଫଳରେ ଏହା ଆପଣଙ୍କୁ <ph name="BNPL_ISSUER_NAME" /> ମାଧ୍ୟମରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବାରେ ସାହାଯ୍ୟ କରେ, କିନ୍ତୁ ଆପଣ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />କୁ ଯାଇ ଏହାକୁ ଅନଲିଙ୍କ କରିପାରିବେ</translation>
 <translation id="6656935431494847393">ଫ୍ଲାଇଟ ବୁକିଂ ଏବଂ ଗାଡ଼ି ସୂଚନା ପରି ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରେ</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
-<translation id="6659156657345021268">ଆପଣଙ୍କ ସୂଚନା କେବଳ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ ହୋଇଛି। ପରବର୍ତ୍ତୀ ଥର ଏକ ପ୍ରାସଙ୍ଗିକ ଫର୍ମକୁ ଆପଣ ପୂରଣ କରିବା ସମୟରେ ଏହାକୁ Walletରେ ସେଭ କରିବାର ଏକ ସୁଯୋଗ ପାଇବେ।</translation>
 <translation id="6659246032834639189">ଏହି ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="6660413144148052430">ଲୋକେସନ୍</translation>
 <translation id="6662457027866368246">ପ୍ରଥମ ରୋଲ୍</translation>
@@ -3744,7 +3743,6 @@
 <translation id="6850286078059909152">ଟେକ୍ସଟ୍ ରଙ୍ଗ</translation>
 <translation id="6852204201400771460">ଆପ୍‌କୁ ରିଲୋଡ୍ କରିବେ କି?</translation>
 <translation id="6854691830678097752">ଶୀଘ୍ର ଚେକଆଉଟ ପାଇଁ, ଏହି CVCକୁ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="ACCOUNT_EMAIL" />ରେ ସେଭ କରନ୍ତୁ</translation>
-<translation id="6855951327659224749">ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବିକଳ୍ପ ବ୍ୟବହାର କରିବାକୁ ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6857776781123259569">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">ପିକଚର-ଇନ-ପିକଚର ମୋଡରେ ପ୍ରବେଶ କରିବାକୁ ପଚାରିପାରିବ</translation>

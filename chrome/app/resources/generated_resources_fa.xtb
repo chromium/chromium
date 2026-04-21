@@ -697,7 +697,7 @@
 <translation id="1468571364034902819">نمی‌توان از این نمایه استفاده کرد</translation>
 <translation id="1469702495092129863">میکروفونتان را بررسی کنید</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{افزودن زبانه به گروه جدید}one{افزودن زبانه‌ها به گروه جدید}other{افزودن زبانه‌ها به گروه جدید}}</translation>
-<translation id="1470946456740188591">‏برای روشن یا خاموش کردن مرور با نشانگر نوشتار، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
+<translation id="1470946456740188591">‏برای روشن یا خاموش کردن «مرور با هشتک»، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
 <translation id="1471034383866732283">حالت خواندن نمی‌تواند محتوای اصلی را در این صفحه پیدا کند</translation>
 <translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473223074251193484">تنظیم پیکربندی اشتراک‌گذاری اینترنت</translation>
@@ -1013,7 +1013,7 @@
 <translation id="1682195225331129001">اکنون امتحان کردن</translation>
 <translation id="1682548588986054654">پنجره جدید ناشناس</translation>
 <translation id="1682696837763999627">مکان‌نمای موشواره بزرگ</translation>
-<translation id="1682867089915960590">«مرور با نشانگر نوشتار» روشن شود؟</translation>
+<translation id="1682867089915960590">«مرور با هشتک» روشن شود؟</translation>
 <translation id="1686550358074589746">فعال کردن تایپ لغزشی</translation>
 <translation id="1686684082159608623">سرپرستتان به‌روزرسانی این برنامه را مسدود کرده است و ممکن است برنامه درست کار نکند</translation>
 <translation id="1686785653877010442">سایت‌ها معمولاً اعلان ارسال می‌کنند تا شما را از اخبار فوری یا پیام‌های گپ مطلع کنند.</translation>
@@ -4727,6 +4727,7 @@
 <translation id="4241224519481557898">دسته</translation>
 <translation id="4242145785130247982">چند مورد از گواهینامه‌های کارخواه پشتیبانی نمی‌شوند</translation>
 <translation id="4242245038391716252">‏بارگیری‌شده توسط افزونه: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">اکنون می‌توانید با روی زبانه‌ها نگه داشتن، آن‌ها را ازهم باز کنید. برای روشن کردن این ویژگی، اینجا کلیک راست کنید.</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4242577469625748426">تنظیمات خط‌مشی روی دستگاه نصب نشد: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />مرورگر و نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="DOMAIN" /> هستند</translation>
@@ -6408,6 +6409,7 @@
 <translation id="5423753908060469325">ایجاد میان‌بر…</translation>
 <translation id="5423829801105537712">غلط‌گیر املایی پایه</translation>
 <translation id="5425042808445046667">ادامه بارگیری</translation>
+<translation id="542570217857307910">اکنون می‌توانید با روی زبانه‌ها نگه داشتن، آن‌ها را ازهم باز کنید. برای خاموش کردن این ویژگی، اینجا کلیک راست کنید.</translation>
 <translation id="5425863515030416387">ورود به سیستم آسان در همه دستگاه‌ها</translation>
 <translation id="5427278936122846523">همیشه ترجمه شود</translation>
 <translation id="5427459444770871191">چرخاندن در جهت &amp;عقربه‌های ساعت</translation>

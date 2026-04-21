@@ -4733,6 +4733,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4241224519481557898">Categori</translation>
 <translation id="4242145785130247982">Ni chefnogir mwy nag un dystysgrif cleient</translation>
 <translation id="4242245038391716252">Wedi'i lawrlwytho gan estyniad: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Gallwch bellach ehangu'ch tabiau trwy hofran drostynt. I droi hyn ymlaen, de-gliciwch yma.</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
 <translation id="4242577469625748426">Wedi methu â gosod y gosodiadau polisi ar y ddyfais: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Mae'ch <ph name="BEGIN_LINK" />porwr a'ch proffil yn cael eu rheoli<ph name="END_LINK" /> gan <ph name="DOMAIN" /></translation>
@@ -6414,6 +6415,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5423753908060469325">Creu &amp;Llwybr Byr...</translation>
 <translation id="5423829801105537712">Gwirio sillafu sylfaenol</translation>
 <translation id="5425042808445046667">Parhau i lawrlwytho</translation>
+<translation id="542570217857307910">Gallwch bellach ehangu'ch tabiau trwy hofran drostynt. I ddiffodd hyn, de-gliciwch yma.</translation>
 <translation id="5425863515030416387">Mewngofnodi'n hawdd ar draws dyfeisiau</translation>
 <translation id="5427278936122846523">Cyfieithu Bob Amser</translation>
 <translation id="5427459444770871191">Cylchdroi yn &amp;Glocwedd</translation>

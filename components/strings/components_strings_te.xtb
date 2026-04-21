@@ -3620,7 +3620,6 @@
 <translation id="6655085656059574817">మీ ఖాతాను లింక్ చేసి ఉంచడం వలన మీరు <ph name="BNPL_ISSUER_NAME" /> ద్వారా వేగంగా పే చేయవచ్చు, కానీ మీరు <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />‌కు వెళ్లడం ద్వారా దానిని అన్‌లింక్ చేయవచ్చు</translation>
 <translation id="6656935431494847393">విమాన బుకింగ్‌లు, వాహన సమాచారం వంటి సమాచారాన్ని కలిగి ఉంటుంది</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
-<translation id="6659156657345021268">మీ సమాచారం మీ డివైజ్‌లోనే సేవ్ అయ్యింది. తర్వాతిసారి మీరు సంబంధిత ఫారమ్‌ను పూరించినప్పుడు దీన్ని Walletలో సేవ్ చేసే అవకాశం మీకు లభిస్తుంది.</translation>
 <translation id="6659246032834639189">ఈ ధర తక్కువగా ఉంది</translation>
 <translation id="6660413144148052430">లొకేషన్</translation>
 <translation id="6662457027866368246">ఫస్ట్ రోల్</translation>
@@ -3743,7 +3742,6 @@
 <translation id="6850286078059909152">వచన రంగు</translation>
 <translation id="6852204201400771460">యాప్‌ను మళ్లీ లోడ్ చేయాలా?</translation>
 <translation id="6854691830678097752">వేగంగా చెక్ అవుట్ చేయడం కోసం, ఈ CVCని మీ <ph name="ACCOUNT_EMAIL" /> ఖాతాలో సేవ్ చేయండి</translation>
-<translation id="6855951327659224749">తర్వాత పేమెంట్ చేయడానికి వీలు కల్పించే ఆప్షన్‌ను ఉపయోగించడానికి ఫారమ్‌ను క్లియర్ చేయండి</translation>
 <translation id="6857776781123259569">పాస్‌వర్డ్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">పిక్చర్-ఇన్-పిక్చర్ మోడ్‌కు వెళ్లడానికి అనుమతిని అడగవచ్చు</translation>

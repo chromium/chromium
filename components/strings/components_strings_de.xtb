@@ -3623,7 +3623,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6655085656059574817">Wenn du dein Konto verknüpft lässt, kannst du schneller mit <ph name="BNPL_ISSUER_NAME" /> bezahlen. Du kannst die Verknüpfung jedoch unter <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> aufheben.</translation>
 <translation id="6656935431494847393">Enthält Informationen wie Flugbuchungen und Fahrzeugdaten</translation>
 <translation id="6657585470893396449">Passwort</translation>
-<translation id="6659156657345021268">Deine Informationen werden nur auf deinem Gerät gespeichert. Du kannst sie in Wallet speichern, wenn du das nächste Mal ein entsprechendes Formular ausfüllst.</translation>
 <translation id="6659246032834639189">Dieser Preis ist niedrig</translation>
 <translation id="6660413144148052430">Standort</translation>
 <translation id="6662457027866368246">Erste Rolle</translation>
@@ -3746,7 +3745,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6850286078059909152">Schriftfarbe</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6854691830678097752">Du kannst diesen CVC in deinem Konto <ph name="ACCOUNT_EMAIL" /> speichern, um schneller zu bezahlen</translation>
-<translation id="6855951327659224749">Formular löschen, um die Option „Später bezahlen“ zu verwenden</translation>
 <translation id="6857776781123259569">Passwörter verwalten…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Darf nachfragen, ob der Bild-im-Bild-Modus aktiviert werden soll</translation>

@@ -3620,7 +3620,6 @@
 <translation id="6655085656059574817">আপোনাৰ একাউণ্টটো লিংক কৰি ৰাখিলে <ph name="BNPL_ISSUER_NAME" />ক দ্ৰুতভাৱে পৰিশোধ কৰাত সহায় হয়, কিন্তু আপুনি <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />লৈ গৈ সেইটো আনলিংক কৰিব পাৰে</translation>
 <translation id="6656935431494847393">বিমানৰ বুকিং আৰু বাহনৰ তথ্যৰ দৰে তথ্য অন্তৰ্ভুক্ত কৰে</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
-<translation id="6659156657345021268">আপোনাৰ তথ্য আপোনাৰ ডিভাইচত ছেভ কৰা হয়। আপুনি পৰৱৰ্তী সময়ত কোনো প্ৰাসংগিক ফৰ্ম পূৰ কৰোঁতে এই তথ্যখিনি Walletত ছেভ কৰাৰ সুযোগ পাব।</translation>
 <translation id="6659246032834639189">এয়া কম মূল্যৰ</translation>
 <translation id="6660413144148052430">অৱস্থান</translation>
 <translation id="6662457027866368246">প্ৰথম ৰোল</translation>
@@ -3743,7 +3742,6 @@
 <translation id="6850286078059909152">পাঠৰ ৰং</translation>
 <translation id="6852204201400771460">এপ্ পুনৰ ল’ড কৰিবনে?</translation>
 <translation id="6854691830678097752">দ্ৰুতভাৱে চেকআউট কৰিবলৈ, এইটো CVC একাউণ্টত <ph name="ACCOUNT_EMAIL" /> ছেভ কৰক</translation>
-<translation id="6855951327659224749">পাছত পৰিশোধ কৰাৰ বিকল্প ব্যৱহাৰ কৰিবলৈ ফৰ্মখন মচক</translation>
 <translation id="6857776781123259569">পাছৱৰ্ডসমূহ পৰিচালনা কৰক...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">picture-in-picture ম’ডৰ বাবে সুধিব পাৰে</translation>

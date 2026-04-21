@@ -3625,7 +3625,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6655085656059574817">Ef þú hefur reikninginn þinn áfram tengdan geturðu greitt hraðar með <ph name="BNPL_ISSUER_NAME" /> en þú getur aftengt hann á <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> hvenær sem er</translation>
 <translation id="6656935431494847393">Inniheldur upplýsingar á borð við flugbókanir og upplýsingar um ökutæki</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
-<translation id="6659156657345021268">Upplýsingarnar þínar eru eingöngu vistaðar í tækinu þínu Þú færð tækifæri til að vista þær í Veski næst þegar þú fyllir út viðeigandi eyðublað.</translation>
 <translation id="6659246032834639189">Þetta er lágt verð</translation>
 <translation id="6660413144148052430">staðsetningu</translation>
 <translation id="6662457027866368246">Fyrsta rúlla</translation>
@@ -3748,7 +3747,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6850286078059909152">Textalitur</translation>
 <translation id="6852204201400771460">Viltu endurhlaða forritið?</translation>
 <translation id="6854691830678097752">Vistaðu þetta CVC-númer á reikningnum þínum, <ph name="ACCOUNT_EMAIL" />, til að flýta fyrir greiðslu</translation>
-<translation id="6855951327659224749">Hreinsa eyðublað til að nota greiðslufrestun</translation>
 <translation id="6857776781123259569">Stjórna aðgangsorðum...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Getur beðið um að fara í mynd í mynd</translation>

@@ -3624,7 +3624,6 @@
 <translation id="6655085656059574817">保持連結帳戶有助加快 <ph name="BNPL_ISSUER_NAME" /> 付款流程，你也可前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> 解除連結</translation>
 <translation id="6656935431494847393">包括機票預訂和車輛資料等詳情</translation>
 <translation id="6657585470893396449">密碼</translation>
-<translation id="6659156657345021268">資料只會儲存至裝置。下次填寫相關表格時，你可以選擇將資料儲存至「錢包」。</translation>
 <translation id="6659246032834639189">此價格屬低價位</translation>
 <translation id="6660413144148052430">位置</translation>
 <translation id="6662457027866368246">第一卷</translation>
@@ -3747,7 +3746,6 @@
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6854691830678097752">在帳戶 <ph name="ACCOUNT_EMAIL" /> 中儲存此 CVC 可加快結帳速度</translation>
-<translation id="6855951327659224749">清除表格以使用「稍後付款」選項</translation>
 <translation id="6857776781123259569">管理密碼…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">可要求進入畫中畫</translation>

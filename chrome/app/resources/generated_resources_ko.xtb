@@ -4730,6 +4730,7 @@
 <translation id="4241224519481557898">카테고리</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
 <translation id="4242245038391716252">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; 확장 프로그램에서 다운로드됨</translation>
+<translation id="4242344119782070019">이제 탭 위로 마우스를 가져가 탭을 펼칠 수 있습니다. 이 기능을 사용 설정하려면 여기를 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4242577469625748426">기기에 정책 설정을 설치하지 못함: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" />에서 <ph name="BEGIN_LINK" />브라우저와 프로필을 관리<ph name="END_LINK" />합니다.</translation>
@@ -6411,6 +6412,7 @@
 <translation id="5423753908060469325">바로가기 만들기(&amp;S)...</translation>
 <translation id="5423829801105537712">기본 맞춤법 검사</translation>
 <translation id="5425042808445046667">다운로드 계속</translation>
+<translation id="542570217857307910">이제 탭 위로 마우스를 가져가 탭을 펼칠 수 있습니다. 이 기능을 사용 중지하려면 여기를 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="5425863515030416387">모든 기기에서 간편하게 로그인</translation>
 <translation id="5427278936122846523">항상 번역</translation>
 <translation id="5427459444770871191">시계 방향으로 회전(&amp;C)</translation>

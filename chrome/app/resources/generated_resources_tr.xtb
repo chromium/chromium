@@ -4713,6 +4713,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4241224519481557898">Kategori</translation>
 <translation id="4242145785130247982">Birden fazla istemci sertifikası desteklenmiyor</translation>
 <translation id="4242245038391716252">Uzantı tarafından indirildi: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Artık sekmelerinizin üzerine gelerek onları genişletebilirsiniz. Bu özelliği etkinleştirmek için burayı sağ tıklayın.</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4242577469625748426">Politika ayarları cihaza yüklenemedi: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Tarayıcınız ve profiliniz<ph name="END_LINK" /> <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
@@ -6393,6 +6394,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5423753908060469325">&amp;Kısayol Oluştur...</translation>
 <translation id="5423829801105537712">Temel yazım denetimi</translation>
 <translation id="5425042808445046667">İndirmeye devam et</translation>
+<translation id="542570217857307910">Artık sekmelerinizin üzerine gelerek onları genişletebilirsiniz. Bu özelliği devre dışı bırakmak için burayı sağ tıklayın.</translation>
 <translation id="5425863515030416387">Cihazlarda kolayca oturum açın</translation>
 <translation id="5427278936122846523">Her Zaman Çevir</translation>
 <translation id="5427459444770871191">Saat &amp;Yönünde Döndür</translation>

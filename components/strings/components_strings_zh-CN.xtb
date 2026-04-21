@@ -3620,7 +3620,6 @@
 <translation id="6655085656059574817">让账号保持关联状态有助于您更快地通过<ph name="BNPL_ISSUER_NAME" />付款，不过您可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> 解除关联</translation>
 <translation id="6656935431494847393">包括航班预订和车辆信息等</translation>
 <translation id="6657585470893396449">密码</translation>
-<translation id="6659156657345021268">您的信息仅会保存到您的设备上。下次您填写相关表单时，可选择将其保存到 Google 钱包中。</translation>
 <translation id="6659246032834639189">此价格较低</translation>
 <translation id="6660413144148052430">位置权限</translation>
 <translation id="6662457027866368246">第 1 卷</translation>
@@ -3743,7 +3742,6 @@
 <translation id="6850286078059909152">文字颜色</translation>
 <translation id="6852204201400771460">要重新加载应用吗？</translation>
 <translation id="6854691830678097752">若要加快结账速度，可将此银行卡验证码 (CVC) 保存到账号 <ph name="ACCOUNT_EMAIL" /> 中</translation>
-<translation id="6855951327659224749">清除表单才能使用先买后付选项</translation>
 <translation id="6857776781123259569">管理密码…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">可以请求进入画中画模式</translation>

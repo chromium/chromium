@@ -3634,7 +3634,6 @@
 <translation id="6655085656059574817"><ph name="BNPL_ISSUER_NAME" /> ծառայության կապված հաշիվը թույլ կտա ավելի արագ վճարել գնումների համար։ Եթե ուզեք չեղարկել կապը, անցեք <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> էջ</translation>
 <translation id="6656935431494847393">Ներառում է այնպիսի տեղեկություններ, ինչպիսիք են ավիատոմսերի ամրագրումները և տրանսպորտային միջոցների մասին տվյալները</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
-<translation id="6659156657345021268">Տեղեկությունները պահվում են միայն ձեր սարքում։ Հաջորդ անգամ, երբ համապատասխան ձև լրացնեք, կկարողանաք պահել այս տեղեկությունները Wallet-ում։</translation>
 <translation id="6659246032834639189">Սա ցածր գին է</translation>
 <translation id="6660413144148052430">տեղորոշում</translation>
 <translation id="6662457027866368246">Առաջին գլանափաթեթ</translation>
@@ -3757,7 +3756,6 @@
 <translation id="6850286078059909152">Տեքստի գույնը</translation>
 <translation id="6852204201400771460">Կրկին բեռնե՞լ հավելվածը</translation>
 <translation id="6854691830678097752">Ավելի արագ վճարելու համար պահեք այս CVC-ն ձեր հաշվում։ <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Մաքրեք ձևը՝ ապառիկ գնման տարբերակն օգտագործելու համար</translation>
 <translation id="6857776781123259569">Կառավարել գաղտնաբառերը…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Կարող է թույլտվություն խնդրել՝ «Նկար նկարի մեջ» պատուհանները բացելու համար</translation>

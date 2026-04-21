@@ -3625,7 +3625,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6655085656059574817">As jy jou rekening gekoppel hou, help dit jou om vinniger met <ph name="BNPL_ISSUER_NAME" /> te betaal, maar jy kan dit ontkoppel deur na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> toe te gaan</translation>
 <translation id="6656935431494847393">Sluit inligting soos vlugbesprekings en voertuiginligting in</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
-<translation id="6659156657345021268">Jou inligting word net op jou toestel gestoor. Jy sal die kans kry om dit in Wallet te stoor wanneer jy weer ’n toepaslike vorm invul.</translation>
 <translation id="6659246032834639189">Hierdie prys is laag</translation>
 <translation id="6660413144148052430">ligging</translation>
 <translation id="6662457027866368246">Eerste rol</translation>
@@ -3748,7 +3747,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6850286078059909152">Tekskleur</translation>
 <translation id="6852204201400771460">Herlaai app?</translation>
 <translation id="6854691830678097752">Stoor hierdie CVC in jou rekening, <ph name="ACCOUNT_EMAIL" />, sodat jy vinniger kan betaal</translation>
-<translation id="6855951327659224749">Maak vorm skoon om Betaal Later-opsie te gebruik</translation>
 <translation id="6857776781123259569">Bestuur wagwoorde …</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Kan vra om prent-in-prent in te gaan</translation>

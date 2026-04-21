@@ -3625,7 +3625,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6655085656059574817">Se mantés a túa conta vinculada, poderás pagar máis rápido con <ph name="BNPL_ISSUER_NAME" />. Podes desvinculala en <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inclúe información como reservas de voos e datos de vehículos</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
-<translation id="6659156657345021268">A túa información gárdase no teu dispositivo. Terás a oportunidade de gardala en Wallet a próxima vez que completes un formulario relevante.</translation>
 <translation id="6659246032834639189">Este prezo é baixo</translation>
 <translation id="6660413144148052430">localización</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
@@ -3748,7 +3747,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar as compras máis rápido, garda este CVC na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
-<translation id="6855951327659224749">Borrar formulario para usar a opción de pago aprazado</translation>
 <translation id="6857776781123259569">Xestiona os contrasinais…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir permiso para acceder ao modo de pantalla superposta</translation>

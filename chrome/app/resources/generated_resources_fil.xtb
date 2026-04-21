@@ -4731,6 +4731,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4241224519481557898">Kategorya</translation>
 <translation id="4242145785130247982">Hindi sinusuportahan ang maraming certificate ng client</translation>
 <translation id="4242245038391716252">Na-download ng extension na: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Puwede mo nang i-expand ang iyong mga tab sa pamamagitan ng pag-hover sa mga ito. Para i-on ito, mag-right click dito.</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4242577469625748426">Nabigong i-install ang mga setting ng patakaran sa device: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Ang iyong <ph name="BEGIN_LINK" />browser at profile ay pinapamahalaan<ph name="END_LINK" /> ng <ph name="DOMAIN" /></translation>
@@ -6412,6 +6413,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5423753908060469325">Gumawa ng &amp;Shortcut...</translation>
 <translation id="5423829801105537712">Pangunahing spell check</translation>
 <translation id="5425042808445046667">Ituloy ang pag-download</translation>
+<translation id="542570217857307910">Puwede mo nang i-expand ang iyong mga tab sa pamamagitan ng pag-hover sa mga ito. Para i-off ito, mag-right click dito.</translation>
 <translation id="5425863515030416387">Mag-sign in nang madali sa lahat ng device</translation>
 <translation id="5427278936122846523">Palaging Isalin</translation>
 <translation id="5427459444770871191">I-rotate &amp;Pakanan</translation>

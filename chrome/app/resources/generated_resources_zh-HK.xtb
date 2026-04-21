@@ -4727,6 +4727,7 @@
 <translation id="4241224519481557898">類別</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242245038391716252">由擴充程式下載：&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">現在只要懸停在分頁上就可以展開分頁。如要開啟此功能，請在這裡按一下右鍵。</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">你的<ph name="BEGIN_LINK" />瀏覽器和個人檔案<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
@@ -6406,6 +6407,7 @@
 <translation id="5423753908060469325">建立捷徑(&amp;S)…</translation>
 <translation id="5423829801105537712">基本拼字檢查</translation>
 <translation id="5425042808445046667">繼續下載</translation>
+<translation id="542570217857307910">現在只要懸停在分頁上就可以展開分頁。如要關閉此功能，請在這裡按一下右鍵。</translation>
 <translation id="5425863515030416387">輕鬆登入所有裝置上的帳戶</translation>
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>

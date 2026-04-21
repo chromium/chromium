@@ -3624,7 +3624,6 @@
 <translation id="6655085656059574817">መለያዎን እንደተገናኘ ማቆየት በ<ph name="BNPL_ISSUER_NAME" /> ይበልጥ በፍጥነት እንዲከፍሉ ያግዝዎታል፣ ነገር ግን ወደ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> በመሄድ ግንኙነቱን ማቋረጥ ይችላሉ</translation>
 <translation id="6656935431494847393">እንደ የበረራ ቦታ ማስያዞች እና የተሽከርካሪ መረጃ ያሉ መረጃዎችን ያካትታል</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
-<translation id="6659156657345021268">መረጃዎ ወደ መሣሪያዎ ብቻ ይቀመጣል። አግባብነት ያለው ቅጽ በሚሞሉበት በሚቀጥለው ጊዜ ይህን መረጃ ወደ የኪስ ቦርሳ የማስቀመጥ ዕድል ይኖርዎታል።</translation>
 <translation id="6659246032834639189">ይህ ዋጋ ዝቅተኛ ነው</translation>
 <translation id="6660413144148052430">አካባቢ</translation>
 <translation id="6662457027866368246">አንደኛ ጥቅልል</translation>
@@ -3747,7 +3746,6 @@
 <translation id="6850286078059909152">የጽሑፍ ቀለም</translation>
 <translation id="6852204201400771460">መተግበሪያ ዳግም ይጫን?</translation>
 <translation id="6854691830678097752">ለፈጣን ክፍያ ማጠናቀቅ ይህን ካርድ ማረጋገጫ ኮድ በመለያዎ፣ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጡ</translation>
-<translation id="6855951327659224749">በኋላ የመክፈል አማራጭን ለመጠቀም ቅጹን ያጽዱ</translation>
 <translation id="6857776781123259569">የይለፍ ቃላትን ያቀናብሩ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">ስዕል-ላይ-ስዕል ውስጥ እንዲገቡ መጠየቅ ይችላሉ</translation>

@@ -4731,6 +4731,7 @@
 <translation id="4241224519481557898">বিভাগ</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েন্ট সার্টিফিকেট কাজ করে না</translation>
 <translation id="4242245038391716252">এক্সটেনশনের মাধ্যমে ডাউনলোড করা হয়েছে: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">আপনি এখন ট্যাবের উপর হোভার করে সেগুলি বড় করতে পারবেন। এটি চালু করতে, এখানে ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4242577469625748426">ডিভাইসে নীতি সেটিংস ইনস্টল করা যায়নি: <ph name="VALIDATION_ERROR" />৷</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> আপনার <ph name="BEGIN_LINK" />ব্রাউজার ও প্রোফাইল ম্যানেজ করে<ph name="END_LINK" /></translation>
@@ -6412,6 +6413,7 @@
 <translation id="5423753908060469325">&amp;শর্টকাট তৈরি করুন...</translation>
 <translation id="5423829801105537712">প্রাথমিক বানান পরীক্ষা</translation>
 <translation id="5425042808445046667">ডাউনলোড চালিয়ে যান</translation>
+<translation id="542570217857307910">আপনি এখন ট্যাবের উপর হোভার করে সেগুলি বড় করতে পারবেন। এটি বন্ধ করতে, এখানে ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="5425863515030416387">ডিভাইস জুড়ে সহজে সাইন-ইন করুন</translation>
 <translation id="5427278936122846523">সর্বদা অনুবাদ করুন</translation>
 <translation id="5427459444770871191">&amp;ঘড়ির কাঁটার দিকে ঘোরান</translation>

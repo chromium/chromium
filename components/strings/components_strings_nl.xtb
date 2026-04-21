@@ -3618,7 +3618,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6655085656059574817">Als je je account gekoppeld houdt, kun je sneller betalen met <ph name="BNPL_ISSUER_NAME" />. Je kunt je account ontkoppelen door naar <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> te gaan.</translation>
 <translation id="6656935431494847393">Bevat informatie zoals vluchtboekingen en voertuiggegevens</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
-<translation id="6659156657345021268">Je informatie wordt alleen opgeslagen op je apparaat. Je krijgt de volgende keer dat je een relevant formulier invult de kans om deze informatie op te slaan in Wallet.</translation>
 <translation id="6659246032834639189">Deze prijs is laag</translation>
 <translation id="6660413144148052430">locatie</translation>
 <translation id="6662457027866368246">1e rol</translation>
@@ -3741,7 +3740,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6854691830678097752">Sla deze CVC op in je account, <ph name="ACCOUNT_EMAIL" />, om sneller te betalen</translation>
-<translation id="6855951327659224749">Formulier wissen om de optie voor later betalen te gebruiken</translation>
 <translation id="6857776781123259569">Wachtwoorden beheren…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Kan vragen om scherm-in-scherm te openen</translation>

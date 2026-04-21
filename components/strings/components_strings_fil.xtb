@@ -3625,7 +3625,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6655085656059574817">Kapag pinanatili mong naka-link ang iyong account, matutulungan ka nitong makapagbayad nang mas mabilis gamit ang <ph name="BNPL_ISSUER_NAME" />, pero puwede mo itong i-unlink sa pamamagitan ng pagpunta sa <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">May impormasyong tulad ng mga booking ng flight at impormasyon ng sasakyan</translation>
 <translation id="6657585470893396449">Password</translation>
-<translation id="6659156657345021268">Sine-save lang sa iyong device ang impormasyon mo. Magkakaroon ka ng pagkakataong i-save ito sa Wallet sa susunod na pagkakataong magsagot ka ng nauugnay na form.</translation>
 <translation id="6659246032834639189">Mababa ang presyong ito</translation>
 <translation id="6660413144148052430">lokasyon</translation>
 <translation id="6662457027866368246">Unang Rolyo</translation>
@@ -3748,7 +3747,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6850286078059909152">Kulay ng text</translation>
 <translation id="6852204201400771460">I-reload ang app?</translation>
 <translation id="6854691830678097752">Para sa mas mabilis na pag-checkout, i-save ang CVC na ito sa iyong account na <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">I-clear ang form para magamit ang opsyon sa pay later</translation>
 <translation id="6857776781123259569">Pamahalaan ang Mga Password...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Puwedeng humiling na pumasok sa picture-in-picture</translation>

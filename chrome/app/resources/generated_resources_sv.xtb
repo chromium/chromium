@@ -4730,6 +4730,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4241224519481557898">Kategori</translation>
 <translation id="4242145785130247982">Flera klientcertifikat stöds inte</translation>
 <translation id="4242245038391716252">Laddades ned av tillägget &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Nu kan du utöka flikarna genom att hålla muspekaren över dem. Högerklicka här om du vill aktivera detta.</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4242577469625748426">Det gick inte att installera policyinställningar på enheten: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Din <ph name="BEGIN_LINK" />webbläsare och profil hanteras<ph name="END_LINK" /> av <ph name="DOMAIN" /></translation>
@@ -6411,6 +6412,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5423753908060469325">Skapa &amp;genväg …</translation>
 <translation id="5423829801105537712">Grundläggande stavningskontroll</translation>
 <translation id="5425042808445046667">Fortsätt nedladdning</translation>
+<translation id="542570217857307910">Nu kan du utöka flikarna genom att hålla muspekaren över dem. Högerklicka här om du vill inaktivera detta.</translation>
 <translation id="5425863515030416387">Logga in enkelt på flera enheter</translation>
 <translation id="5427278936122846523">Översätt alltid</translation>
 <translation id="5427459444770871191">Rotera &amp;medurs</translation>

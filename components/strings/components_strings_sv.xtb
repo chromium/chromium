@@ -3625,7 +3625,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6655085656059574817">Genom att ha kontot länkat kan du betala snabbare med <ph name="BNPL_ISSUER_NAME" />, men du kan ta bort länken på <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inkluderar information som flygbokningar och fordonsuppgifter</translation>
 <translation id="6657585470893396449">Lösenord</translation>
-<translation id="6659156657345021268">Din information sparas bara på enheten. Du får möjlighet att spara den i Wallet nästa gång du fyller i ett relevant formulär.</translation>
 <translation id="6659246032834639189">Det här priset är lågt</translation>
 <translation id="6660413144148052430">plats</translation>
 <translation id="6662457027866368246">Första rullen</translation>
@@ -3748,7 +3747,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6850286078059909152">Textfärg</translation>
 <translation id="6852204201400771460">Vill du läsa in appen igen?</translation>
 <translation id="6854691830678097752">Spara CVC-koden i kontot <ph name="ACCOUNT_EMAIL" /> så att det går snabbare i kassan</translation>
-<translation id="6855951327659224749">Rensa formuläret om du vill använda alternativet Betala senare</translation>
 <translation id="6857776781123259569">Hantera lösenord …</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Kan begära åtkomst till bild-i-bild</translation>

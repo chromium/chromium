@@ -3624,7 +3624,6 @@
 <translation id="6655085656059574817">Аккаунтыңызды байланыстырып қойсаңыз, <ph name="BNPL_ISSUER_NAME" /> арқылы жылдам төлей аласыз. Бірақ ажырату үшін <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> сайтына өтуіңіз керек.</translation>
 <translation id="6656935431494847393">Рейс брондау және көлік туралы ақпарат сияқты мәліметтер кіреді.</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
-<translation id="6659156657345021268">Ақпаратыңыз тек құрылғыңызға сақталады. Келесі жолы тиісті үлгіні толтырған кезде, оны Wallet-ке сақтай аласыз.</translation>
 <translation id="6659246032834639189">Бұл баға төмен.</translation>
 <translation id="6660413144148052430">орын</translation>
 <translation id="6662457027866368246">Бірінші орам</translation>
@@ -3747,7 +3746,6 @@
 <translation id="6850286078059909152">Мәтін түсі</translation>
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
 <translation id="6854691830678097752">Жылдамырақ төлеу үшін осы CVC кодын <ph name="ACCOUNT_EMAIL" /> аккаунтыңызға сақтаңыз.</translation>
-<translation id="6855951327659224749">Кейін төлеу опциясын пайдалану үшін үлгіні тазалаңыз</translation>
 <translation id="6857776781123259569">Құпия сөздерді басқару...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">"Суреттегі сурет" режимін ашу туралы сұрай алады</translation>

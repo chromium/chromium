@@ -3625,7 +3625,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6655085656059574817">Manter a conta associada ajuda a pagar mais rapidamente com a <ph name="BNPL_ISSUER_NAME" />, mas pode desassociá-la em <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inclui informações como reservas de voos e informações do veículo</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
-<translation id="6659156657345021268">As informações são guardadas no seu dispositivo Vai ter a oportunidade de as guardar na Carteira da próxima vez que preencher um formulário relevante.</translation>
 <translation id="6659246032834639189">Este preço é baixo</translation>
 <translation id="6660413144148052430">localização</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
@@ -3748,7 +3747,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Quer atualizar a aplicação?</translation>
 <translation id="6854691830678097752">Para um pagamento mais rápido, guarde este Código de Segurança/CVC na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Limpe o formulário para usar a opção Pagar depois</translation>
 <translation id="6857776781123259569">Faça a gestão das palavras-passe…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir para entrar no modo ecrã no ecrã</translation>

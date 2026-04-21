@@ -4717,6 +4717,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4241224519481557898">Kategorija</translation>
 <translation id="4242145785130247982">Vairāku klienta sertifikātu lietošana netiek atbalstīta</translation>
 <translation id="4242245038391716252">Lejupielādēts, izmantojot šo paplašinājumu: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Tagad varat izvērst cilnes, virzot virs tām kursoru. Lai ieslēgtu šo funkciju, ar peles labo pogu noklikšķiniet šeit.</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4242577469625748426">Neizdevās ierīcē instalēt politikas iestatījumus: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Jūsu <ph name="BEGIN_LINK" />pārlūku un profilu pārvalda<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6397,6 +6398,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5423753908060469325">Izveidot &amp;saīsni…</translation>
 <translation id="5423829801105537712">Vienkāršs pareizrakstības pārbaudītājs</translation>
 <translation id="5425042808445046667">Turpināt lejupielādi</translation>
+<translation id="542570217857307910">Tagad varat izvērst cilnes, virzot virs tām kursoru. Lai izslēgtu šo funkciju, ar peles labo pogu noklikšķiniet šeit.</translation>
 <translation id="5425863515030416387">Ērta pierakstīšanās vairākās ierīcēs</translation>
 <translation id="5427278936122846523">Vienmēr tulkot</translation>
 <translation id="5427459444770871191">Pagriezt &amp;pulksteņrādītāju kustības virzienā</translation>

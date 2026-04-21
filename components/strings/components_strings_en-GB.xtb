@@ -3625,7 +3625,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6655085656059574817">Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME" />, but you can unlink it by going to <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Includes information such as flight bookings and vehicle info</translation>
 <translation id="6657585470893396449">Password</translation>
-<translation id="6659156657345021268">Your info is saved only to your device. You'll have the chance to save it to Wallet the next time that you fill in a relevant form.</translation>
 <translation id="6659246032834639189">This price is low</translation>
 <translation id="6660413144148052430">location</translation>
 <translation id="6662457027866368246">First roll</translation>
@@ -3748,7 +3747,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6852204201400771460">Reload app?</translation>
 <translation id="6854691830678097752">For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Clear form to use pay later option</translation>
 <translation id="6857776781123259569">Manage Passwords…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Can ask to enter picture-in-picture</translation>

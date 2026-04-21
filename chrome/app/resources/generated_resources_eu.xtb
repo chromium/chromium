@@ -4714,6 +4714,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4241224519481557898">Kategoria</translation>
 <translation id="4242145785130247982">Ezin dira erabili bezero-ziurtagiri bat baino gehiago</translation>
 <translation id="4242245038391716252">Luzapenak deskargatu du: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Orain, fitxak zabaltzeko, pasatu kurtsorea haien gainetik. Aktibatzeko, egin klik eskuineko botoiarekin hemen.</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4242577469625748426">Ezin izan dira instalatu gidalerroaren ezarpenak gailuan: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> domeinuak <ph name="BEGIN_LINK" />kudeatzen ditu zure arakatzailea eta profila<ph name="END_LINK" /></translation>
@@ -6393,6 +6394,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5423753908060469325">Sortu lasterbide bat…</translation>
 <translation id="5423829801105537712">Oinarrizko ortografia-zuzentzailea</translation>
 <translation id="5425042808445046667">Jarraitu deskargatzen</translation>
+<translation id="542570217857307910">Orain, fitxak zabaltzeko, pasatu kurtsorea haien gainetik. Desaktibatzeko, egin klik eskuineko botoiarekin hemen.</translation>
 <translation id="5425863515030416387">Hasi saioa erraz gailu guztietan</translation>
 <translation id="5427278936122846523">Itzuli beti</translation>
 <translation id="5427459444770871191">Biratu &amp;eskuinera</translation>

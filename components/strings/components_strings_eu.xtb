@@ -3620,7 +3620,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6655085656059574817">Kontua lotuta mantentzen baduzu, bizkorrago ordaindu ahalko duzu <ph name="BNPL_ISSUER_NAME" /> erabilita. Lotura kentzeko, joan <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> helbidera.</translation>
 <translation id="6656935431494847393">Hegaldien erreserbak, ibilgailuei buruzko informazioa eta antzekoak sartzen dira</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
-<translation id="6659156657345021268">Gailuan soilik gordetzen da informazioa. Hurrengoan, inprimaki egoki bat betetzen duzunean, Diru-zorroa zerbitzuan gordetzeko aukera izango duzu.</translation>
 <translation id="6659246032834639189">Merkea da prezioa</translation>
 <translation id="6660413144148052430">kokapena</translation>
 <translation id="6662457027866368246">Lehenengo arrabola</translation>
@@ -3743,7 +3742,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6850286078059909152">Testuaren kolorea</translation>
 <translation id="6852204201400771460">Berriro kargatu nahi duzu aplikazioa?</translation>
 <translation id="6854691830678097752">Ordainketa-prozesua bizkortzeko, gorde CVC hau zure kontuan (<ph name="ACCOUNT_EMAIL" />)</translation>
-<translation id="6855951327659224749">Geroago ordaintzeko aukera erabiltzeko, garbitu inprimakia</translation>
 <translation id="6857776781123259569">Kudeatu pasahitzak…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pantaila txiki gainjarriak irekitzeko eska dezake</translation>

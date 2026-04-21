@@ -4716,6 +4716,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4241224519481557898">Catégorie</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242245038391716252">Téléchargé par l'extension : &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Vous pouvez désormais développer vos onglets en pointant dessus. Pour activer cette option, effectuez un clic droit ici.</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4242577469625748426">Échec de l'installation des paramètres des règles sur l'appareil : <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Votre navigateur et votre profil sont gérés<ph name="END_LINK" /> par <ph name="DOMAIN" /></translation>
@@ -6395,6 +6396,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5423753908060469325">Créer un &amp;raccourci…</translation>
 <translation id="5423829801105537712">Correcteur orthographique de base</translation>
 <translation id="5425042808445046667">Continuer le téléchargement</translation>
+<translation id="542570217857307910">Vous pouvez désormais développer vos onglets en pointant dessus. Pour désactiver cette option, effectuez un clic droit ici.</translation>
 <translation id="5425863515030416387">Se connecter facilement sur tous les appareils</translation>
 <translation id="5427278936122846523">Toujours traduire</translation>
 <translation id="5427459444770871191">Rotation &amp;horaire</translation>

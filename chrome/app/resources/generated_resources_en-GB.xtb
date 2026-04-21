@@ -4730,6 +4730,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4241224519481557898">Category</translation>
 <translation id="4242145785130247982">Multiple client certificates are not supported</translation>
 <translation id="4242245038391716252">Downloaded by extension: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">You can now expand your tabs by hovering over them. To turn this on, right-click here.</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4242577469625748426">Failed to install policy settings on the device: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Your <ph name="BEGIN_LINK" />browser and profile are managed<ph name="END_LINK" /> by <ph name="DOMAIN" /></translation>
@@ -6411,6 +6412,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5423753908060469325">Create &amp;Shortcut...</translation>
 <translation id="5423829801105537712">Basic spell check</translation>
 <translation id="5425042808445046667">Continue downloading</translation>
+<translation id="542570217857307910">You can now expand your tabs by hovering over them. To turn this off, right-click here.</translation>
 <translation id="5425863515030416387">Sign in easily across devices</translation>
 <translation id="5427278936122846523">Always Translate</translation>
 <translation id="5427459444770871191">Rotate &amp;Clockwise</translation>

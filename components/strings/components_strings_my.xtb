@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">သင့်အကောင့်ကို လင့်ခ်ချိတ်ထားခြင်းဖြင့် <ph name="BNPL_ISSUER_NAME" /> သုံးပြီး အမြန်ပေးချေနိုင်သည်။ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> သို့ သွားခြင်းဖြင့်လည်း လင့်ခ်ဖြုတ်နိုင်သည်</translation>
 <translation id="6656935431494847393">လေယာဉ်ခရီးစဉ် ကြိုတင်စာရင်းသွင်းမှုနှင့် ယာဉ်အချက်အလက်ကဲ့သို့သော အချက်အလက်များ ပါဝင်သည်</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
-<translation id="6659156657345021268">သင့်အချက်အလက်ကို သင့်စက်တွင်သာ သိမ်းသည်။ သက်ဆိုင်ရာဖောင်ကို နောက်တစ်ကြိမ်ဖြည့်သည့်အခါ ၎င်းကို Wallet တွင် သိမ်းခွင့်ရပါမည်။</translation>
 <translation id="6659246032834639189">ဤဈေးက နည်းသည်</translation>
 <translation id="6660413144148052430">တည်နေရာ</translation>
 <translation id="6662457027866368246">ပထမအလိပ်</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">စာသားအရောင်</translation>
 <translation id="6852204201400771460">အက်ပ်ကို ပြန်လည်စတင်လိုပါသလား။</translation>
 <translation id="6854691830678097752">အမြန်ငွေရှင်းနိုင်ရန် ဤ CVC နံပါတ်ကို သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် သိမ်းပါ</translation>
-<translation id="6855951327659224749">‘နောက်မှပေး’ ရွေးစရာ သုံးရန် ဖောင်ကို ရှင်းထုတ်ပါ</translation>
 <translation id="6857776781123259569">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">နှစ်ခုထပ်၍ကြည့်ခြင်း ထည့်ရန် တောင်းဆိုနိုင်သည်</translation>

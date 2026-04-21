@@ -3624,7 +3624,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6655085656059574817">Ako vaš račun ostane povezan, moći ćete brže plaćati putem usluge <ph name="BNPL_ISSUER_NAME" />, no tu vezu možete prekinuti na stranici <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Uključuje informacije kao što su rezervacije letova i podaci o vozilu</translation>
 <translation id="6657585470893396449">Zaporka</translation>
-<translation id="6659156657345021268">Vaši se podaci spremaju samo na vaš uređaj. Prilikom sljedećeg ispunjavanja relevantnog obrasca imat ćete priliku spremiti ih u Wallet.</translation>
 <translation id="6659246032834639189">Ova je cijena niska</translation>
 <translation id="6660413144148052430">lokacija</translation>
 <translation id="6662457027866368246">Prvi kolut</translation>
@@ -3747,7 +3746,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6850286078059909152">Boja teksta</translation>
 <translation id="6852204201400771460">Ponovo učitati aplikaciju?</translation>
 <translation id="6854691830678097752">Za bržu naplatu spremite ovaj CVC na svoj račun, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Očistite obrazac da biste upotrijebili opciju plaćanja kasnije</translation>
 <translation id="6857776781123259569">Upravljanje zaporkama...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Može tražiti dopuštenje za unos slike u slici</translation>

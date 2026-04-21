@@ -3627,7 +3627,6 @@
 <translation id="6655085656059574817">Διατηρώντας τον λογαριασμό σας συνδεδεμένο θα μπορείτε να πληρώνετε πιο γρήγορα με το <ph name="BNPL_ISSUER_NAME" />. Μπορείτε να τον αποσυνδέσετε μεταβαίνοντας στη διεύθυνση <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Περιλαμβάνει πληροφορίες όπως κρατήσεις πτήσεων και πληροφορίες οχήματος</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
-<translation id="6659156657345021268">Οι πληροφορίες αποθηκεύονται μόνο στη συσκευή σας. Θα έχετε την ευκαιρία να τις αποθηκεύσετε στο Πορτοφόλι την επόμενη φορά που θα συμπληρώσετε μια σχετική φόρμα.</translation>
 <translation id="6659246032834639189">Αυτή η τιμή είναι χαμηλή</translation>
 <translation id="6660413144148052430">τοποθεσία</translation>
 <translation id="6662457027866368246">Πρώτο ρολό</translation>
@@ -3750,7 +3749,6 @@
 <translation id="6850286078059909152">Χρώμα κειμένου</translation>
 <translation id="6852204201400771460">Επανάληψη φόρτωσης εφαρμογής;</translation>
 <translation id="6854691830678097752">Για πιο γρήγορη ολοκλήρωση αγορών, αποθηκεύστε αυτό το CVC στον λογαριασμό <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Διαγράψτε τη φόρμα για να χρησιμοποιήσετε την επιλογή πληρωμής αργότερα</translation>
 <translation id="6857776781123259569">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Μπορεί να ζητήσει να εισέλθει στη λειτουργία picture-in-picture</translation>

@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">Ако ви е поврзана сметката, може да плаќате побрзо со <ph name="BNPL_ISSUER_NAME" />, но може да ја прекинете врската преку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Опфаќа податоци како резервации на летови и податоци за возила</translation>
 <translation id="6657585470893396449">Лозинка</translation>
-<translation id="6659156657345021268">Вашите податоци ќе се зачуваат само на вашиот уред. Ќе имате можност да ги зачувате во Wallet следниот пат кога ќе пополнувате соодветен формулар.</translation>
 <translation id="6659246032834639189">Оваа цена е ниска</translation>
 <translation id="6660413144148052430">локација</translation>
 <translation id="6662457027866368246">Прва ролна</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">Боја на текст</translation>
 <translation id="6852204201400771460">Дали да се вчита апликацијата повторно?</translation>
 <translation id="6854691830678097752">За побрзо плаќање, зачувајте го овој CVC во вашата сметка (<ph name="ACCOUNT_EMAIL" />)</translation>
-<translation id="6855951327659224749">Избришете го формуларот за да ја користите опцијата за плаќање подоцна</translation>
 <translation id="6857776781123259569">Управувајте со лозинките…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Може да побара да влезе во „Слика во слика“</translation>

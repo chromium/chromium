@@ -3625,7 +3625,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6655085656059574817">Hvis du beholder tilknytningen til kontoen din, kan du betale raskere med <ph name="BNPL_ISSUER_NAME" />. Du kan fjerne tilknytningen ved å gå til <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Inkluderer informasjon som flyreservasjoner og kjøretøyinformasjon</translation>
 <translation id="6657585470893396449">Passord</translation>
-<translation id="6659156657345021268">Informasjonen din lagres bare på enheten din. Du får mulighet til å lagre den i Wallet neste gang du fyller ut et relevant skjema.</translation>
 <translation id="6659246032834639189">Denne prisen er lav</translation>
 <translation id="6660413144148052430">posisjon</translation>
 <translation id="6662457027866368246">Første rull</translation>
@@ -3748,7 +3747,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6850286078059909152">Tekstfarge</translation>
 <translation id="6852204201400771460">Vil du laste inn appen på nytt?</translation>
 <translation id="6854691830678097752">For å betale raskere, lagre denne verifiseringskoden i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Tøm skjemaet for å bruke alternativet for betaling senere</translation>
 <translation id="6857776781123259569">Administrer passord…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Kan be om å få bruke bilde-i-bilde</translation>

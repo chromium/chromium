@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">ການລິ້ງບັນຊີຂອງທ່ານໄວ້ຈະຊ່ວຍໃຫ້ທ່ານຈ່າຍເງິນດ້ວຍ <ph name="BNPL_ISSUER_NAME" />, ໄດ້ໄວຂຶ້ນ, ແຕ່ທ່ານກໍສາມາດຍົກເລີກການລິ້ງໄດ້ໂດຍເຂົ້າໄປ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">ຮວມທັງຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ການຈອງຖ້ຽວບິນ ແລະ ຂໍ້ມູນພາຫະນະ</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
-<translation id="6659156657345021268">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໃສ່ໃນອຸປະກອນຂອງທ່ານເທົ່ານັ້ນ. ທ່ານຈະມີໂອກາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Wallet ເມື່ອທ່ານຕື່ມຂໍ້ມູນໃສ່ແບບຟອມທີ່ກ່ຽວຂ້ອງໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="6659246032834639189">ລາຄານີ້ແມ່ນຕ່ຳ</translation>
 <translation id="6660413144148052430">ສະຖານທີ່</translation>
 <translation id="6662457027866368246">ມ້ວນທຳອິດ</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">ສີຂໍ້ຄວາມ</translation>
 <translation id="6852204201400771460">ໂຫຼດແອັບຄືນໃໝ່ບໍ?</translation>
 <translation id="6854691830678097752">ບັນທຶກ CVC ນີ້ໄວ້ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" />, ເພື່ອໃຫ້ຈ່າຍເງິນໄດ້ໄວຂຶ້ນ</translation>
-<translation id="6855951327659224749">ລຶບລ້າງແບບຟອມເພື່ອໃຊ້ຕົວເລືອກຈ່າຍພາຍຫຼັງ</translation>
 <translation id="6857776781123259569">ຈັດການລະຫັດຜ່ານ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">ສາມາດຂໍເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໄດ້</translation>

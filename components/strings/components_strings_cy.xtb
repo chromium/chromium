@@ -3625,7 +3625,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6655085656059574817">Mae cadw'ch cyfrif yn gysylltiedig yn eich helpu i dalu'n gyflymach gyda <ph name="BNPL_ISSUER_NAME" />, ond gallwch ei ddatgysylltu trwy fynd i <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Yn cynnwys gwybodaeth megis archebion hedfan a gwybodaeth cerbyd</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
-<translation id="6659156657345021268">Mae eich gwybodaeth wedi'i chadw i'ch dyfais yn unig. Byddwch yn cael cyfle i'w gadw i Wallet y tro nesaf y byddwch yn llenwi ffurflen berthnasol.</translation>
 <translation id="6659246032834639189">Mae'r pris hwn yn isel</translation>
 <translation id="6660413144148052430">lleoliad</translation>
 <translation id="6662457027866368246">Rôl Gyntaf</translation>
@@ -3748,7 +3747,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6850286078059909152">Lliw'r testun</translation>
 <translation id="6852204201400771460">Ail-lwytho'r ap?</translation>
 <translation id="6854691830678097752">I dalu'n gyflymach, cadwch y CVC hwn yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Ffurflen glir i ddefnyddio'r opsiwn talu'n ddiweddarach</translation>
 <translation id="6857776781123259569">Rheoli Cyfrineiriau...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Yn gallu gofyn i gyrchu llun mewn llun</translation>

@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">Когато профилът ви е свързан, можете да плащате по-бързо чрез <ph name="BNPL_ISSUER_NAME" />. Имате възможност да прекратите връзката с услугата, като посетите <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Включва информация като резервации на полети и данни за превозното средство</translation>
 <translation id="6657585470893396449">Парола</translation>
-<translation id="6659156657345021268">Информацията ви се запазва само на устройството ви. Ще имате възможност да я запазите в Wallet следващия път, когато попълвате формуляр, за който е приложима.</translation>
 <translation id="6659246032834639189">Тази цена е ниска</translation>
 <translation id="6660413144148052430">местоположение</translation>
 <translation id="6662457027866368246">Първа ролка</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">Цвят на текста</translation>
 <translation id="6852204201400771460">Искате ли да презаредите приложението?</translation>
 <translation id="6854691830678097752">С цел по-бързо плащане запазете този код за проверка в профила си <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Изчистете формуляра, за да използвате опцията за плащане по-късно</translation>
 <translation id="6857776781123259569">Управление на паролите…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Може да извежда запитвания за преминаване в режим „картина в картината“</translation>

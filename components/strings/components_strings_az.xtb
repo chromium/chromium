@@ -3621,7 +3621,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6655085656059574817">Hesabınızı əlaqələndirilmiş formada saxlamaq <ph name="BNPL_ISSUER_NAME" /> ilə daha sürətli ödəniş etməyinizə kömək edir, lakin <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> bölməsinə keçərək əlaqəni sonlandıra bilərsiniz</translation>
 <translation id="6656935431494847393">Uçuş rezervasiyaları və nəqliyyat vasitəsi məlumatları kimi məlumatlar daxildir</translation>
 <translation id="6657585470893396449">Parol</translation>
-<translation id="6659156657345021268">Məlumatınız yalnız cihazda yadda saxlanılır. Növbəti dəfə müvafiq formanı doldurduğunuz zaman onu Pulqabıda yadda saxlamaq fürsətiniz olacaq.</translation>
 <translation id="6659246032834639189">Bu qiymət aşağıdır</translation>
 <translation id="6660413144148052430">məkan</translation>
 <translation id="6662457027866368246">Birinci Rulon</translation>
@@ -3744,7 +3743,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6850286078059909152">Mətn rəngi</translation>
 <translation id="6852204201400771460">Tətbiq yenidən yüklənilsin?</translation>
 <translation id="6854691830678097752">Daha sürətli ödəmə üçün bu CVC-ni hesabınızda yadda saxlayın, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Sonra ödəyin seçimindən istifadə etmək üçün formanı silin</translation>
 <translation id="6857776781123259569">Parolları idarə edin...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Şəkildə şəkil rejiminə daxil olmaq istəyə bilər</translation>

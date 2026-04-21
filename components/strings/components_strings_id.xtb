@@ -3625,7 +3625,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6655085656059574817">Menautkan akun membantu Anda membayar lebih cepat dengan <ph name="BNPL_ISSUER_NAME" />, tetapi Anda dapat membatalkan tautan ini dengan membuka <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Termasuk informasi seperti pemesanan penerbangan dan info kendaraan</translation>
 <translation id="6657585470893396449">Sandi</translation>
-<translation id="6659156657345021268">Info Anda disimpan hanya ke perangkat Anda. Anda akan memiliki kesempatan untuk menyimpannya ke Wallet saat Anda mengisi formulir terkait lagi.</translation>
 <translation id="6659246032834639189">Harganya rendah</translation>
 <translation id="6660413144148052430">lokasi</translation>
 <translation id="6662457027866368246">Rol Pertama</translation>
@@ -3748,7 +3747,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6850286078059909152">Warna teks</translation>
 <translation id="6852204201400771460">Muat ulang aplikasi?</translation>
 <translation id="6854691830678097752">Untuk checkout yang lebih cepat, simpan CVC ini di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Hapus formulir untuk menggunakan opsi bayar nanti</translation>
 <translation id="6857776781123259569">Kelola Sandi ...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Dapat meminta untuk masuk ke mode picture-in-picture</translation>

@@ -4728,6 +4728,7 @@
 <translation id="4241224519481557898">वर्गवारी</translation>
 <translation id="4242145785130247982">एकाहून अधिक क्लायंट सर्टिफिकेटना सपोर्ट करत नाही</translation>
 <translation id="4242245038391716252">एक्स्टेंशनद्वारे डाउनलोड केलेली: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">तुम्ही आता तुमच्या टॅबवर कर्सर फिरवून त्यांचा विस्तार करू शकता. हे सुरू करण्यासाठी, इथे राइट-क्लिक करा.</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4242577469625748426">डिव्हाइसवर धोरण सेटिंग्ज इंस्टॉल करण्यात अयशस्वी: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> तुमचा <ph name="BEGIN_LINK" />ब्राउझर आणि प्रोफाइल व्यवस्थापित करणे<ph name="END_LINK" /> हे करते</translation>
@@ -6409,6 +6410,7 @@
 <translation id="5423753908060469325">शॉर्टकट तयार करा...</translation>
 <translation id="5423829801105537712">साधारण स्पेल चेक</translation>
 <translation id="5425042808445046667">डाउनलोड करायला सुरुवात करा</translation>
+<translation id="542570217857307910">तुम्ही आता तुमच्या टॅबवर कर्सर फिरवून त्यांचा विस्तार करू शकता. हे बंद करण्यासाठी, इथे राइट-क्लिक करा.</translation>
 <translation id="5425863515030416387">डिव्हाइसेसवर स्वयंचलितपणे साइन इन करा</translation>
 <translation id="5427278936122846523">नेहमी भाषांतर करा</translation>
 <translation id="5427459444770871191">&amp;घड्याळाच्या दिशेने फिरवा</translation>

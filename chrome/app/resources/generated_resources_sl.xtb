@@ -4732,6 +4732,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4241224519481557898">Kategorija</translation>
 <translation id="4242145785130247982">Več potrdil odjemalca ni podprtih</translation>
 <translation id="4242245038391716252">Prenesla razširitev: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Zavihke lahko zdaj razširite tako, da premaknete miškin kazalec nanje. Če želite to vklopiti, kliknite z desnim gumbom tukaj.</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4242577469625748426">Namestitev nastavitev pravilnika v napravi ni uspela: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Vaš <ph name="BEGIN_LINK" />brskalnik in profil upravlja<ph name="END_LINK" /> domena <ph name="DOMAIN" /></translation>
@@ -6413,6 +6414,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5423753908060469325">Ustvari &amp;bližnjico ...</translation>
 <translation id="5423829801105537712">Osnovno preverjanje črkovanja</translation>
 <translation id="5425042808445046667">Nadaljuj prenašanje</translation>
+<translation id="542570217857307910">Zavihke lahko zdaj razširite tako, da premaknete miškin kazalec nanje. Če želite to izklopiti, kliknite z desnim gumbom tukaj.</translation>
 <translation id="5425863515030416387">Preprosta prijava v napravah</translation>
 <translation id="5427278936122846523">Vedno prevedi</translation>
 <translation id="5427459444770871191">&amp;Zasukaj v smeri urinega kazalca</translation>

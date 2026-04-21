@@ -4725,6 +4725,7 @@
 <translation id="4241224519481557898">Ангилал</translation>
 <translation id="4242145785130247982">Олон клиентийн гэрчилгээг дэмждэггүй</translation>
 <translation id="4242245038391716252">Өргөтгөл уг файлыг татсан: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Та табуудынхаа дээгүүр курсор зөөж тэдгээрийг дэлгэх боломжтой боллоо. Үүнийг асаахын тулд энд хулганын баруун талыг товшино уу.</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4242577469625748426">Төхөөрөмж дээр холбогдох бодлогын тохиргоог суурьлуулах үйлдэл амжилтгүй болсон байна: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Таны <ph name="BEGIN_LINK" />хөтөч болон профайлыг<ph name="END_LINK" /> <ph name="DOMAIN" /> удирддаг</translation>
@@ -6406,6 +6407,7 @@
 <translation id="5423753908060469325">&amp;Товчлол үүсгэх...</translation>
 <translation id="5423829801105537712">Зөв бичгийн алдаа шалгах энгийн онцлог</translation>
 <translation id="5425042808445046667">Үргэлжлүүлэн татах</translation>
+<translation id="542570217857307910">Та табуудынхаа дээгүүр курсор зөөж тэдгээрийг дэлгэх боломжтой боллоо. Үүнийг унтраахын тулд энд хулганын баруун талыг товшино уу.</translation>
 <translation id="5425863515030416387">Төхөөрөмжүүд хооронд хялбарханаар нэвтрэх</translation>
 <translation id="5427278936122846523">Үргэлж орчуулах</translation>
 <translation id="5427459444770871191">Эргэлдэх &amp; Цагийн зүүний дагуу</translation>

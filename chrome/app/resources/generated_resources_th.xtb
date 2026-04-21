@@ -4715,6 +4715,7 @@
 <translation id="4241224519481557898">หมวดหมู่</translation>
 <translation id="4242145785130247982">ไม่รองรับใบรับรองไคลเอ็นต์หลายรายการ</translation>
 <translation id="4242245038391716252">ดาวน์โหลดโดยส่วนขยาย: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">ตอนนี้คุณขยายแท็บได้โดยการวางเมาส์เหนือแท็บ หากต้องการเปิดตัวเลือกนี้ ให้คลิกขวาที่นี่</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4242577469625748426">ไม่สามารถติดตั้งการตั้งค่านโยบายบนอุปกรณ์: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />เบราว์เซอร์และโปรไฟล์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="DOMAIN" /></translation>
@@ -6394,6 +6395,7 @@
 <translation id="5423753908060469325">สร้างทางลัด...</translation>
 <translation id="5423829801105537712">การตรวจตัวสะกดพื้นฐาน</translation>
 <translation id="5425042808445046667">ดาวน์โหลดต่อ</translation>
+<translation id="542570217857307910">ตอนนี้คุณขยายแท็บได้โดยการวางเมาส์เหนือแท็บ หากต้องการปิดตัวเลือกนี้ ให้คลิกขวาที่นี่</translation>
 <translation id="5425863515030416387">ลงชื่อเข้าใช้อุปกรณ์ทุกเครื่องได้ง่ายๆ</translation>
 <translation id="5427278936122846523">แปลทุกครั้ง</translation>
 <translation id="5427459444770871191">หมุน&amp;ตามเข็มนาฬิกา</translation>

@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Advertiment</translation>
 <translation id="1056980582064308040">En canviar la configuració, es reiniciarà el punt d'accés Wi‐Fi. Els dispositius que utilitzen el punt d'accés Wi‐Fi es desconnectaran.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">S'ha interromput la tasca</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Introdueix el PIN nou. Els PIN han de tenir 1 caràcter com a mínim i poden contenir lletres, números i altres caràcters.}other{Introdueix el PIN nou. Els PIN han de tenir # caràcters com a mínim i poden contenir lletres, números i altres caràcters.}}</translation>
 <translation id="1059484610606223931">Protocol segur de transferència d'hipertext (HTTPS)</translation>
 <translation id="1059944192885972544">S'han trobat <ph name="NUM" /> pestanyes per a "<ph name="SEARCH_TEXT" />"</translation>
@@ -1724,6 +1725,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2175384018164129879">&amp;Gestiona els motors de cerca i les cerques al lloc web</translation>
 <translation id="2175526076681939329">Utilitza les tecles primàries</translation>
 <translation id="217576141146192373">No es pot afegir la impressora. Comprova'n la configuració i torna-ho a provar.</translation>
+<translation id="2175773164573457310">Selecciona el text o la imatge que vulguis per preguntar a Gemini</translation>
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2177950615300672361">Pestanya d'incògnit: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -4712,6 +4714,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4241224519481557898">Categoria</translation>
 <translation id="4242145785130247982">No s'admet l'ús de diversos certificats de client</translation>
 <translation id="4242245038391716252">Baixat per l'extensió: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Ara pots ampliar les pestanyes passant-hi el cursor per sobre. Per activar aquesta funció, fes clic amb el botó dret aquí.</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4242577469625748426">No s'ha pogut instal·lar la configuració de la política al dispositiu: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> <ph name="BEGIN_LINK" />gestiona el navegador i el perfil<ph name="END_LINK" /></translation>
@@ -6392,6 +6395,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5423753908060469325">Crea una &amp;drecera...</translation>
 <translation id="5423829801105537712">Corrector ortogràfic bàsic</translation>
 <translation id="5425042808445046667">Continua la baixada</translation>
+<translation id="542570217857307910">Ara pots ampliar les pestanyes passant-hi el cursor per sobre. Per desactivar aquesta funció, fes clic amb el botó dret aquí.</translation>
 <translation id="5425863515030416387">Inicieu la sessió fàcilment en tots els dispositius</translation>
 <translation id="5427278936122846523">Tradueix sempre</translation>
 <translation id="5427459444770871191">Gira en el sentit de les &amp;agulles del rellotge</translation>
@@ -6411,6 +6415,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5436211819997237281">Extensió actual que gestiona la teva pàgina Pestanya nova</translation>
 <translation id="5436492226391861498">S'està esperant un túnel de servidor intermediari...</translation>
 <translation id="5436510242972373446">Cerca <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini ha aturat la tasca. Torna a Chrome per revisar-ho.</translation>
 <translation id="5438014818441491616">Ara, la finestra <ph name="WINDOW_SIDE" /> té una amplada d'un <ph name="WINDOW_SIZE_PERCENT" /> i la subfinestra <ph name="PANE_SIDE" /> una amplada d'un <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Cerca &amp;extensions</translation>
 <translation id="5440425659852470030">Tanca el tauler lateral</translation>
@@ -7607,6 +7612,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="628705218210359422">Fes un seguiment de les teves contrasenyes i gestiona-les en un sol lloc.</translation>
 <translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="6287288864483377583">Només s'admet la importació d'un sol certificat</translation>
+<translation id="6287713404380454515">Per motius de seguretat, l'administrador ha desactivat el PIN i la contrasenya del dispositiu. A partir d'ara, utilitza la contrasenya de <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Telèfon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">No hi ha cap dispositiu disponible a prop per compartir contingut. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">No es pot dur a terme la restauració perquè no hi ha prou espai d'emmagatzematge.</translation>
@@ -8868,6 +8874,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7189234443051076392">Comprova que hi hagi prou espai al dispositiu</translation>
 <translation id="7189451821249468368">No tens prou actualitzacions per inscriure aquest dispositiu. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
+<translation id="7189558282078169397">Pestanyes d'altres dispositius</translation>
 <translation id="7189965711416741966">S'ha afegit l'empremta digital.</translation>
 <translation id="7190921792980745354">Vols bloquejar <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i en <ph name="NUMBER_OF_OTHER_APPS" /> aplicacions més.</translation>
@@ -9684,6 +9691,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 Prem un interruptor o una tecla assignats per suprimir una assignació.</translation>
 <translation id="7745554356330788383">Torna a carregar aquesta pàgina perquè la configuració actualitzada de l'extensió <ph name="EXTENSION_NAME" /> s'apliqui en aquest lloc web</translation>
 <translation id="7745677556280361868">Vols suprimir aquesta xarxa de la pàgina de subscripció de Passpoint?</translation>
+<translation id="7745849183714722618">Per potenciar funcions com la detecció d'estafes, Chrome pot utilitzar models d'IA que s'executen directament al dispositiu. Si aquesta opció està desactivada, és possible que aquestes funcions no s'activin. <ph name="BEGIN_LINK" />Més informació sobre la IA al dispositiu<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Amplia o redueix els elements de la pantalla, inclòs el text. També pots fer-ho més tard anant a Configuració &gt; Dispositiu &gt; Pantalles.</translation>
 <translation id="7750228210027921155">Imatge sobre imatge</translation>
 <translation id="7751260505918304024">Mostra-ho tot</translation>
@@ -9965,6 +9973,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="794250392403348719">Exemple: simplifica aquest concepte per a un nen de 8 anys. Utilitza un llenguatge senzill i una analogia que pugui entendre. L'explicació en conjunt ha de ser concisa, inferior a 150 paraules.</translation>
 <translation id="7942846369224063421">Renderitzador de la IU precarregat</translation>
 <translation id="7943271960579497371">Aplicacions instal·lades</translation>
+<translation id="7943311690198910993">S'ha actualitzat el mètode d'inici de sessió</translation>
 <translation id="7943368935008348579">Baixa els fitxers PDF</translation>
 <translation id="7943837619101191061">Afegeix una ubicació...</translation>
 <translation id="7944173382284143968">El lloc web requereix la confirmació d'OTP abans de desar la contrasenya nova. Assumeix el procés manualment per completar el canvi.</translation>

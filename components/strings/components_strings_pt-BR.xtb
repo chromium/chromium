@@ -3625,7 +3625,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6655085656059574817">Manter sua conta vinculada ajuda a pagar mais rapidamente com o <ph name="BNPL_ISSUER_NAME" />, mas você pode desvincular a conta em <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Inclui informações como reservas de voos e dados do veículo</translation>
 <translation id="6657585470893396449">Senha</translation>
-<translation id="6659156657345021268">Suas informações são salvas apenas no dispositivo. Você poderá salvar essas informações na Carteira na próxima vez que preencher um formulário relevante.</translation>
 <translation id="6659246032834639189">Esse preço está baixo</translation>
 <translation id="6660413144148052430">local</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
@@ -3748,7 +3747,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
 <translation id="6854691830678097752">Para agilizar a finalização de compras, salve este CVC na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Limpe o formulário para usar a opção de pagar depois</translation>
 <translation id="6857776781123259569">Gerenciar senhas…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir para entrar no picture-in-picture</translation>

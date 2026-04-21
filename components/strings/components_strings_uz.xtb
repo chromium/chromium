@@ -3619,7 +3619,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6655085656059574817">Hisob ulanganidan keyin <ph name="BNPL_ISSUER_NAME" /> bilan tezroq toʻlash mumkin. Hisobni <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> sahifasi orqali uzish mumkin.</translation>
 <translation id="6656935431494847393">Parvoz bandlovlari va transport vositasi haqidagi maʼlumotlar kabi axborotlarni oʻz ichiga oladi</translation>
 <translation id="6657585470893396449">Parol</translation>
-<translation id="6659156657345021268">Maʼlumotlar faqat qurilmangizga saqlandi. Keyingi safar tegishli shaklni toʻldirganingizda uni Walletga saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="6659246032834639189">Bu past narx</translation>
 <translation id="6660413144148052430">joylashuv</translation>
 <translation id="6662457027866368246">Birinchi oʻram</translation>
@@ -3742,7 +3741,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6850286078059909152">Matn rangi</translation>
 <translation id="6852204201400771460">Ilova qayta yuklansinmi?</translation>
 <translation id="6854691830678097752">Tezroq hisob-kitob qilish uchun ushbu CVC kodini hisobingizga (<ph name="ACCOUNT_EMAIL" />) saqlang.</translation>
-<translation id="6855951327659224749">Keyinroq toʻlash variantidan foydalanish uchun shaklni tozalang</translation>
 <translation id="6857776781123259569">Parollarni boshqarish...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Tasvir ustida tasvir rejimiga kirishni soʻrashi mumkin</translation>

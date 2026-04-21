@@ -4731,6 +4731,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4241224519481557898">Categoria</translation>
 <translation id="4242145785130247982">Múltiplos certificados de clientes não são aceitos.</translation>
 <translation id="4242245038391716252">Baixado pela extensão: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Agora você pode expandir as guias ao passar o cursor sobre elas. Para ativar essa função, clique com o botão direito aqui.</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4242577469625748426">Falha ao instalar configurações da política no dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Seu navegador e seu perfil são gerenciados<ph name="END_LINK" /> por <ph name="DOMAIN" /></translation>
@@ -6412,6 +6413,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5423753908060469325">Criar atalho…</translation>
 <translation id="5423829801105537712">Verificação ortográfica básica</translation>
 <translation id="5425042808445046667">Continuar o download</translation>
+<translation id="542570217857307910">Agora você pode expandir as guias ao passar o cursor sobre elas. Para desativar essa função, clique com o botão direito aqui.</translation>
 <translation id="5425863515030416387">Fazer login de forma fácil em todos os dispositivos</translation>
 <translation id="5427278936122846523">Sempre traduzir</translation>
 <translation id="5427459444770871191">Girar no &amp;sentido horário</translation>

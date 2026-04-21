@@ -4721,6 +4721,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4241224519481557898">Kategooria</translation>
 <translation id="4242145785130247982">Mitme kliendisertifikaadi kasutamist ei toetata</translation>
 <translation id="4242245038391716252">Laienduse abil alla laaditud: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Nüüd saate vahelehti laiendada, hõljutades kursorit nende kohal. Selle sisselülitamiseks paremklõpsake siin.</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4242577469625748426">Reegli seadeid ei õnnestunud seadmesse installida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Teie <ph name="BEGIN_LINK" />brauserit ja profiili haldab<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6402,6 +6403,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5423753908060469325">&amp;Otsetee loomine ...</translation>
 <translation id="5423829801105537712">Lihtne õigekirjakontroll</translation>
 <translation id="5425042808445046667">Jätka allalaadimist</translation>
+<translation id="542570217857307910">Nüüd saate vahelehti laiendada, hõljutades kursorit nende kohal. Selle väljalülitamiseks paremklõpsake siin.</translation>
 <translation id="5425863515030416387">Lihtne sisselogimine kõigis seadmetes</translation>
 <translation id="5427278936122846523">Tõlgi alati</translation>
 <translation id="5427459444770871191">Pööra &amp;päripäeva</translation>

@@ -4727,6 +4727,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4241224519481557898">Szófaj</translation>
 <translation id="4242145785130247982">Több ügyféltanúsítvány sem támogatott</translation>
 <translation id="4242245038391716252">A következő bővítmény töltötte le: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Mostantól kibonthatja a lapokat úgy, hogy az egérrel rájuk mutat. A funkció bekapcsolásához kattintson ide jobb egérgombbal.</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4242577469625748426">Az irányelv-beállítások telepítése az eszközre sikertelen: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Profilját és böngészőjét a következő kezeli:<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6408,6 +6409,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5423753908060469325">Paranc&amp;sikon létrehozása…</translation>
 <translation id="5423829801105537712">Egyszerű helyesírás-ellenőrzés</translation>
 <translation id="5425042808445046667">Letöltés folytatása</translation>
+<translation id="542570217857307910">Mostantól kibonthatja a lapokat úgy, hogy az egérrel rájuk mutat. A funkció kikapcsoláshoz kattintson ide jobb egérgombbal.</translation>
 <translation id="5425863515030416387">Könnyedén bejelentkezhet a különböző eszközein</translation>
 <translation id="5427278936122846523">Mindig fordítsa le</translation>
 <translation id="5427459444770871191">Forgatás &amp;jobbra</translation>

@@ -4729,6 +4729,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4241224519481557898">Kategorija</translation>
 <translation id="4242145785130247982">Višestruke potvrde klijenta nisu podržane</translation>
 <translation id="4242245038391716252">Preuzela je ekstenzija: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Sada možete proširiti kartice postavljanjem pokazivača miša iznad njih. Da uključite ovo, kliknite desnim klikom ovdje.</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4242577469625748426">Instaliranje postavki pravila na uređaj nije uspjelo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Vašim <ph name="BEGIN_LINK" />preglednikom i profilom upravlja<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6410,6 +6411,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5423753908060469325">Kreiranje &amp;prečice…</translation>
 <translation id="5423829801105537712">Osnovna provjera pravopisa</translation>
 <translation id="5425042808445046667">Nastavi preuzimati</translation>
+<translation id="542570217857307910">Sada možete proširiti kartice postavljanjem pokazivača miša iznad njih. Da isključite ovo, kliknite desnim klikom ovdje.</translation>
 <translation id="5425863515030416387">Prijavite se jednostavno na svim uređajima</translation>
 <translation id="5427278936122846523">Uvijek prevodi</translation>
 <translation id="5427459444770871191">Rotiraj u smjeru kretanja kazaljki na satu</translation>

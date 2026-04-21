@@ -3625,7 +3625,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6655085656059574817">Če je vaš račun povezan, lahko hitreje plačujete s ponudnikom <ph name="BNPL_ISSUER_NAME" />, vendar lahko povezavo prekinete na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Vključuje podatke, kot so rezervacije letov in podatki o vozilu</translation>
 <translation id="6657585470893396449">Geslo</translation>
-<translation id="6659156657345021268">Vaši podatki so shranjeni samo v napravi. Te podatke boste lahko shranili v Denarnico, ko boste naslednjič izpolnili ustrezen obrazec.</translation>
 <translation id="6659246032834639189">Ta cena je nizka</translation>
 <translation id="6660413144148052430">lokacija</translation>
 <translation id="6662457027866368246">Kolut 1</translation>
@@ -3748,7 +3747,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6850286078059909152">Barva besedila</translation>
 <translation id="6852204201400771460">Želite znova naložiti aplikacijo?</translation>
 <translation id="6854691830678097752">Za hitrejši zaključek nakupa shranite to kodo CVC v računu, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Počistite obrazec, če želite uporabiti možnost poznejšega plačila</translation>
 <translation id="6857776781123259569">Upravljanje gesel …</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Lahko zahteva odpiranje načina slike v sliki</translation>

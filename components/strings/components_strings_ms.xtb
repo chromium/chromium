@@ -3626,7 +3626,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6655085656059574817">Tindakan memastikan akaun anda dipautkan membantu anda membayar dengan lebih pantas menggunakan <ph name="BNPL_ISSUER_NAME" />. Walau bagaimanapun anda boleh menyahpautkan akaun tersebut dengan mengakses <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Termasuk maklumat seperti tempahan penerbangan dan maklumat kenderaan</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
-<translation id="6659156657345021268">Maklumat anda hanya disimpan pada peranti anda. Anda akan berpeluang menyimpan maklumat ini pada Wallet apabila anda mengisi borang yang berkaitan pada masa hadapan.</translation>
 <translation id="6659246032834639189">Harga ini ialah harga rendah</translation>
 <translation id="6660413144148052430">lokasi</translation>
 <translation id="6662457027866368246">Gulungan Pertama</translation>
@@ -3749,7 +3748,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6850286078059909152">Warna teks</translation>
 <translation id="6852204201400771460">Muat semula apl?</translation>
 <translation id="6854691830678097752">Untuk semak keluar yang lebih pantas, simpan CVC ini dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Kosongkan borang untuk menggunakan pilihan bayar kemudian</translation>
 <translation id="6857776781123259569">Urus Kata Laluan...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Boleh meminta untuk memasukkan gambar dalam gambar</translation>

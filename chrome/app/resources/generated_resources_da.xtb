@@ -4732,6 +4732,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4241224519481557898">Kategori</translation>
 <translation id="4242145785130247982">Flere klientcertifikater understøttes ikke</translation>
 <translation id="4242245038391716252">Downloadet af udvidelsen: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Du kan nu udvide dine faner ved at holde markøren over dem. Højreklik her for at aktivere dette.</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4242577469625748426">Det lykkedes ikke at installere politikindstillinger på enheden: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Din <ph name="BEGIN_LINK" />browser og profil administreres<ph name="END_LINK" /> af <ph name="DOMAIN" /></translation>
@@ -6413,6 +6414,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5423753908060469325">Opret genvej...</translation>
 <translation id="5423829801105537712">Grundlæggende stavekontrol</translation>
 <translation id="5425042808445046667">Fortsæt download</translation>
+<translation id="542570217857307910">Du kan nu udvide dine faner ved at holde markøren over dem. Højreklik her for at deaktivere dette.</translation>
 <translation id="5425863515030416387">Du kan nemt logge ind på alle enheder</translation>
 <translation id="5427278936122846523">Oversæt altid</translation>
 <translation id="5427459444770871191">Roter med &amp;uret</translation>

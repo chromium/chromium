@@ -3626,7 +3626,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6655085656059574817">Pidä tili linkitettynä, niin voit maksaa nopeammin palvelun <ph name="BNPL_ISSUER_NAME" /> avulla. Voit halutessasi poistaa linkityksen osoitteessa <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Sisältää tietoja, kuten lentovaraukset ja ajoneuvotiedot</translation>
 <translation id="6657585470893396449">Salasana</translation>
-<translation id="6659156657345021268">Tiedot tallennetaan vain laitteelle. Voit tallentaa sen Walletiin seuraavan kerran, kun täytät asiaankuuluvan lomakkeen.</translation>
 <translation id="6659246032834639189">Tämä hinta on edullinen</translation>
 <translation id="6660413144148052430">sijainti</translation>
 <translation id="6662457027866368246">Ensimmäinen rulla</translation>
@@ -3749,7 +3748,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6850286078059909152">Tekstin väri</translation>
 <translation id="6852204201400771460">Ladataanko sovellus uudelleen?</translation>
 <translation id="6854691830678097752">Tallenna CVC tilille (<ph name="ACCOUNT_EMAIL" />) nopeampaa maksamista varten</translation>
-<translation id="6855951327659224749">Tyhjennä lomake, jotta voit käyttää maksa myöhemmin ‑vaihtoehtoa</translation>
 <translation id="6857776781123259569">Muuta salasana-asetuksia…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Saa pyytää pääsyä pikkuruututilaan</translation>

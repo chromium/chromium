@@ -3625,7 +3625,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6655085656059574817">Nếu tiếp tục liên kết tài khoản, bạn sẽ thanh toán nhanh hơn bằng <ph name="BNPL_ISSUER_NAME" />, tuy nhiên, bạn có thể huỷ liên kết bằng cách truy cập vào <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Bao gồm thông tin như việc đặt vé máy bay và thông tin về xe</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
-<translation id="6659156657345021268">Thông tin sẽ chỉ được lưu vào thiết bị của bạn Lần tới khi điền vào biểu mẫu liên quan, bạn sẽ có thể lưu thông tin này vào Wallet.</translation>
 <translation id="6659246032834639189">Đây là mức giá thấp</translation>
 <translation id="6660413144148052430">vị trí</translation>
 <translation id="6662457027866368246">Cuộn đầu tiên</translation>
@@ -3748,7 +3747,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6850286078059909152">Màu văn bản</translation>
 <translation id="6852204201400771460">Tải lại ứng dụng?</translation>
 <translation id="6854691830678097752">Để thanh toán nhanh hơn, hãy lưu mã CVC này vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
-<translation id="6855951327659224749">Xoá biểu mẫu để sử dụng lựa chọn thanh toán sau</translation>
 <translation id="6857776781123259569">Quản lý mật khẩu...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Có thể yêu cầu chuyển sang chế độ hình trong hình</translation>

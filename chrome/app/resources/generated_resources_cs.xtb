@@ -4716,6 +4716,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4241224519481557898">Kategorie</translation>
 <translation id="4242145785130247982">Více certifikátů klientů není podporováno</translation>
 <translation id="4242245038391716252">Staženo rozšířením: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Karty teď můžete rozbalovat tak, že na ně najedete myší. Pokud tuto funkci chcete zapnout, klikněte sem pravým tlačítkem.</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4242577469625748426">Instalace nastavení zásady v zařízení se nezdařila: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Váš <ph name="BEGIN_LINK" />prohlížeč a profil spravuje<ph name="END_LINK" /> doména <ph name="DOMAIN" /></translation>
@@ -6395,6 +6396,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5423753908060469325">Vytvořit &amp;zástupce…</translation>
 <translation id="5423829801105537712">Základní kontrola pravopisu</translation>
 <translation id="5425042808445046667">Pokračovat ve stahování</translation>
+<translation id="542570217857307910">Karty teď můžete rozbalovat tak, že na ně najedete myší. Pokud tuto funkci chcete vypnout, klikněte sem pravým tlačítkem.</translation>
 <translation id="5425863515030416387">Snadné přihlášení v různých zařízeních</translation>
 <translation id="5427278936122846523">Vždy překládat</translation>
 <translation id="5427459444770871191">Otočit &amp;ve směru hodinových ručiček</translation>

@@ -4717,6 +4717,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4241224519481557898">Categorie</translation>
 <translation id="4242145785130247982">Nu se acceptă mai multe certificate de client</translation>
 <translation id="4242245038391716252">Descărcat de extensia: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Acum poți extinde filele dacă plasezi cursorul peste ele. Pentru a activa opțiunea, dă clic dreapta aici.</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4242577469625748426">Setările de politică nu au putut fi instalate pe gadget: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Browserul și profilul tău sunt gestionate<ph name="END_LINK" /> de <ph name="DOMAIN" /></translation>
@@ -6396,6 +6397,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5423753908060469325">Creează o &amp;comandă rapidă...</translation>
 <translation id="5423829801105537712">Verificarea de bază a ortografiei</translation>
 <translation id="5425042808445046667">Continuă descărcarea</translation>
+<translation id="542570217857307910">Acum poți extinde filele dacă plasezi cursorul peste ele. Pentru a dezactiva opțiunea, dă clic dreapta aici.</translation>
 <translation id="5425863515030416387">Conectează-te cu ușurință pe toate dispozitivele</translation>
 <translation id="5427278936122846523">Tradu întotdeauna</translation>
 <translation id="5427459444770871191">Rotiți în sensul acelor de &amp;ceasornic</translation>
@@ -6551,7 +6553,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, se instalează</translation>
 <translation id="5527822190489075064">Încărcare optimizată</translation>
 <translation id="5529554942700688235">Rezumat privind economiile de memorie, memorie eliberată: <ph name="MEMORY_VALUE" /></translation>
-<translation id="5529693968082667490">Afișează butonul Căutarea filelor</translation>
+<translation id="5529693968082667490">Afișează butonul de căutare a filelor</translation>
 <translation id="5530977410273748884">Pentru a salva parola în Managerul de parole Google, dă clic pe cheie</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dorește să</translation>

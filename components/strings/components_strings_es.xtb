@@ -3625,7 +3625,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6655085656059574817">Si mantienes vinculada tu cuenta, podrás pagar más rápido con <ph name="BNPL_ISSUER_NAME" />. Puedes desvincularla en <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Incluye información como reservas de vuelos y datos de vehículos</translation>
 <translation id="6657585470893396449">Contraseña</translation>
-<translation id="6659156657345021268">Tu información se guarda solo en tu dispositivo. Podrás guardarla en Wallet la próxima vez que rellenes un formulario pertinente.</translation>
 <translation id="6659246032834639189">Este precio es bajo</translation>
 <translation id="6660413144148052430">ubicación</translation>
 <translation id="6662457027866368246">Primer rollo</translation>
@@ -3748,7 +3747,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6850286078059909152">Color del texto</translation>
 <translation id="6852204201400771460">¿Quieres volver a cargar la aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar las compras más rápido, guarda este CVC en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
-<translation id="6855951327659224749">Borra el formulario para usar la opción de pago aplazado</translation>
 <translation id="6857776781123259569">Gestionar contraseñas...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Puede solicitar activar la función de imagen en imagen</translation>

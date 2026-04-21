@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">खाता लिंक करके, <ph name="BNPL_ISSUER_NAME" /> की मदद से फटाफट पेमेंट किया जा सकता है. हालांकि, आपके पास <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> पर जाकर अपने खाते को अनलिंक करने का विकल्प होता है</translation>
 <translation id="6656935431494847393">इसमें फ़्लाइट की बुकिंग और वाहन की जानकारी शामिल है</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6659156657345021268">आपकी जानकारी डिवाइस में सेव हो गई है. अगली बार किसी फ़ॉर्म को भरते समय, आपको अपनी जानकारी Wallet में सेव करने का विकल्प मिलेगा.</translation>
 <translation id="6659246032834639189">यह कीमत कम है</translation>
 <translation id="6660413144148052430">जगह की जानकारी</translation>
 <translation id="6662457027866368246">पहला रोल</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">टेक्स्ट का रंग</translation>
 <translation id="6852204201400771460">ऐप्लिकेशन फिर लोड करें?</translation>
 <translation id="6854691830678097752">तेज़ी से चेकआउट करने के लिए, इस सीवीसी को अपने खाते, <ph name="ACCOUNT_EMAIL" /> में सेव करें</translation>
-<translation id="6855951327659224749">'बाद में पेमेंट करें' विकल्प का इस्तेमाल करने के लिए, फ़ॉर्म में भरी गई जानकारी मिटाएं</translation>
 <translation id="6857776781123259569">पासवर्ड मैनेज करें...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">'पिक्चर में पिक्चर' मोड में जाने की अनुमति ली जा सकती है</translation>

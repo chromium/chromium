@@ -4727,6 +4727,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4241224519481557898">Категория</translation>
 <translation id="4242145785130247982">Не се поддържа използването на няколко клиентски сертификата</translation>
 <translation id="4242245038391716252">Изтеглено от разширението: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">Вече можете да разгъвате разделите си, като задържите курсора на мишката върху тях. За да включите тази функция, кликнете с десния бутон тук.</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4242577469625748426">Настройките за правила не бяха инсталирани успешно на устройството: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Браузърът и потребителският ви профил<ph name="END_LINK" /> се управляват от <ph name="DOMAIN" /></translation>
@@ -6408,6 +6409,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5423753908060469325">Създаване на &amp;пряк път...</translation>
 <translation id="5423829801105537712">Основна проверка на правописа</translation>
 <translation id="5425042808445046667">Продължаване на изтеглянето</translation>
+<translation id="542570217857307910">Вече можете да разгъвате разделите си, като задържите курсора на мишката върху тях. За да изключите тази функция, кликнете с десния бутон тук.</translation>
 <translation id="5425863515030416387">Лесно влизане във всички устройства</translation>
 <translation id="5427278936122846523">Винаги да се превежда</translation>
 <translation id="5427459444770871191">Завъртане &amp;по часовниковата стрелка</translation>

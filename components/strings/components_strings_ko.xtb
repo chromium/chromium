@@ -3625,7 +3625,6 @@
 <translation id="6655085656059574817">계정을 연결한 상태로 유지하면 <ph name="BNPL_ISSUER_NAME" /> 서비스를 통해 더 빠르게 결제할 수 있으며, <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />에서 연결을 해제할 수도 있습니다.</translation>
 <translation id="6656935431494847393">항공편 예약 및 차량 정보와 같은 정보가 포함됩니다.</translation>
 <translation id="6657585470893396449">비밀번호</translation>
-<translation id="6659156657345021268">정보는 기기에만 저장됩니다. 다음에 관련 양식을 작성할 때 월렛에 저장할 수 있습니다.</translation>
 <translation id="6659246032834639189">낮은 가격</translation>
 <translation id="6660413144148052430">위치</translation>
 <translation id="6662457027866368246">1번째 롤</translation>
@@ -3748,7 +3747,6 @@
 <translation id="6850286078059909152">텍스트 색상</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
 <translation id="6854691830678097752">더 빠르게 결제하려면 계정(<ph name="ACCOUNT_EMAIL" />)에 이 CVC를 저장하세요.</translation>
-<translation id="6855951327659224749">후불 결제 옵션을 사용하려면 양식을 지우세요.</translation>
 <translation id="6857776781123259569">비밀번호 관리...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">PIP 모드 입력을 요청할 수 있습니다</translation>

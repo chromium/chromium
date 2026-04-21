@@ -3625,7 +3625,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6655085656059574817">Garder votre compte lié vous permet de payer plus vite avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en vous rendant sur <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6656935431494847393">Inclut des informations telles que les réservations de vols et les informations sur les véhicules</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
-<translation id="6659156657345021268">Vos informations sont uniquement enregistrées sur votre appareil. Vous aurez la possibilité de les enregistrer dans Wallet la prochaine fois que vous remplirez un formulaire de ce type.</translation>
 <translation id="6659246032834639189">Ce prix est bas</translation>
 <translation id="6660413144148052430">position</translation>
 <translation id="6662457027866368246">1er rouleau</translation>
@@ -3748,7 +3747,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6852204201400771460">Actualiser l'application ?</translation>
 <translation id="6854691830678097752">Pour payer plus rapidement, enregistrez ce code CVC dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Effacez le formulaire pour utiliser l'option de paiement différé</translation>
 <translation id="6857776781123259569">Gérer les mots de passe…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Peut demander à passer en Picture-in-picture</translation>
