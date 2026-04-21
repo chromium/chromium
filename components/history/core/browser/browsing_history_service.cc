@@ -858,7 +858,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
     }
   }
 
-  RecordResultsMetrics(results, has_remote_results);
+  RecordResultsMetrics(results);
 
   QueryResultsInfo info;
   info.search_text = state->search_text;
@@ -875,8 +875,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
 }
 
 void BrowsingHistoryService::RecordResultsMetrics(
-    const std::vector<HistoryEntry>& results,
-    bool has_remote_results) {
+    const std::vector<HistoryEntry>& results) {
   // Count the number of local, remote, and combined entries, each split by
   // entries before vs after the local expiry threshold (90 days).
   const base::Time local_expiry_threshold =
@@ -912,34 +911,6 @@ void BrowsingHistoryService::RecordResultsMetrics(
   base::UmaHistogramCustomCounts(
       "History.BrowsingHistoryResult.Combined.PostExpiryThreshold",
       post_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
-
-  // The "WebHistoryMergeResult" histograms are only recorded if there were any
-  // remote results, i.e. an actual merge happened.
-  // TODO(crbug.com/456079210): Clean up these histograms once the
-  // "History.BrowsingHistoryResult.*" ones are established.
-  if (has_remote_results) {
-    // Note: The histogram max of 150 is chosen to match `RESULTS_PER_PAGE` from
-    // chrome/browser/resources/history/constants.ts and `kMaxQueryCount` from
-    // chrome/browser/android/history/browsing_history_bridge.cc.
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.LocalOnly.PreExpiryThreshold",
-        pre_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.LocalOnly.PostExpiryThreshold",
-        post_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.RemoteOnly.PreExpiryThreshold",
-        pre_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.RemoteOnly.PostExpiryThreshold",
-        post_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.Combined.PreExpiryThreshold",
-        pre_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
-    base::UmaHistogramCustomCounts(
-        "History.WebHistoryMergeResult.Combined.PostExpiryThreshold",
-        post_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
-  }
 
   RecordDuplicateVisitsCount(results);
 }

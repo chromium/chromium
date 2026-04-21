@@ -250,8 +250,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // BrowsingHistoryDriver.
   void ReturnResultsToDriver(scoped_refptr<QueryHistoryState> state);
 
-  void RecordResultsMetrics(const std::vector<HistoryEntry>& results,
-                            bool has_remote_results);
+  void RecordResultsMetrics(const std::vector<HistoryEntry>& results);
 
   // Records the number of duplicate visits removed from a history query.
   static void RecordDuplicateVisitsCount(

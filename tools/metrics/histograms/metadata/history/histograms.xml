@@ -2976,30 +2976,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.WebHistoryMergeResult.{LocalOrRemote}.{VisitAge}"
-    units="visits" expires_after="2026-08-30">
-  <owner>treib@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <component>1456716</component>
-  <summary>
-    Recorded whenever remote history data is queried for display on
-    chrome://history (i.e. when the page is opened, when the user scrolls to the
-    bottom of the available list, and when the user changes the search terms).
-    Records the number of {LocalOrRemote} visits from {VisitAge}. See also
-    History.BrowsingHistoryResult.*, which gets recorded independently of the
-    existence of remote data.
-  </summary>
-  <token key="LocalOrRemote">
-    <variant name="Combined" summary="combined (local and remote)"/>
-    <variant name="LocalOnly" summary="local-only"/>
-    <variant name="RemoteOnly" summary="remote-only"/>
-  </token>
-  <token key="VisitAge">
-    <variant name="PostExpiryThreshold" summary="at most 90 days ago"/>
-    <variant name="PreExpiryThreshold" summary="more than 90 days ago"/>
-  </token>
-</histogram>
-
 <histogram name="History.WebHistoryRequestOutcome.{RequestType}"
     enum="WebHistoryRequestOutcome" expires_after="2026-09-01">
   <owner>treib@chromium.org</owner>
