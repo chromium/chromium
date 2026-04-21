@@ -1276,7 +1276,7 @@ crbug.com/495458814 [ Linux ] external/wpt/css/css-masking/mask-image/mask-image
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-auto-scrolling-with-margin-and-transform.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/overflow-body-propagation-013.html [ Pass Timeout ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/scroll-markers/root-scroll-button-activation.html [ Pass Timeout ]
-crbug.com/492790879 external/wpt/css/css-overflow/scroll-markers/scroll-marker-navigation-cycles.html [ Pass Failure ]
+crbug.com/492790879 external/wpt/css/css-overflow/scroll-markers/scroll-marker-navigation-cycles.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-pseudo/text-selection.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Failure Pass ]
@@ -2746,7 +2746,7 @@ crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]
+crbug.com/505118033 virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]
 crbug.com/504767674 [ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-change.tentative.window.html [ Pass Timeout ]
 crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-classic-data.meta/unset/websocket.https.html [ Skip Timeout ]
 crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-classic.http-rp/unset/websocket.https.html [ Skip Timeout ]
