@@ -204,6 +204,7 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     case SendTabToSelfResult::kFailureCommitAttemptError:
     case SendTabToSelfResult::kFailureSyncDisabled:
     case SendTabToSelfResult::kFailureEntryRemoved:
+    case SendTabToSelfResult::kFailureCommitTimeout:
       OnSendFailed(url);
       break;
   }

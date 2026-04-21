@@ -275,6 +275,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
     return &mock_processor_;
   }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
   SendTabToSelfBridge* bridge() { return bridge_.get(); }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
@@ -294,8 +296,9 @@ class SendTabToSelfBridgeTest : public testing::Test {
  private:
   base::SimpleTestClock clock_;
 
-  // In memory data type store needs to be able to post tasks.
-  base::test::TaskEnvironment task_environment_;
+  // Required for in-memory DataTypeStore to post tasks and mock time.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<syncer::DataTypeStore> store_;
 
@@ -798,6 +801,20 @@ TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnAllHistoryDeletion) {
 
   bridge()->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
   EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureEntryRemoved);
+}
+
+// Tests that the pending commit callback is fired with a timeout error
+// when the sync server doesn't respond in time.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnTimeout) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  task_environment().FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureCommitTimeout);
 }
 
 TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {

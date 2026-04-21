@@ -53,6 +53,8 @@ const base::TimeDelta kDedupeTime = base::Seconds(5);
 
 const base::TimeDelta kDeviceExpiration = base::Days(10);
 
+const base::TimeDelta kCommitTimeout = base::Seconds(3);
+
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_t) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_t));
@@ -417,6 +419,17 @@ void SendTabToSelfBridge::NotifySuccessForPendingCommits() {
   });
 }
 
+void SendTabToSelfBridge::HandleCommitTimeout(
+    const syncer::ClientTagHash& client_tag_hash) {
+  auto it = pending_commits_.find(client_tag_hash);
+  if (it != pending_commits_.end()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(it->second.callback),
+                                  SendTabToSelfResult::kFailureCommitTimeout));
+    pending_commits_.erase(it);
+  }
+}
+
 std::vector<std::string> SendTabToSelfBridge::GetAllGuids() const {
   std::vector<std::string> keys;
   for (const auto& it : entries_) {
@@ -498,9 +511,15 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
                           batch->GetMetadataChangeList());
 
   if (commit_confirmation) {
+    syncer::ClientTagHash client_tag_hash =
+        syncer::ClientTagHash::FromUnhashed(syncer::SEND_TAB_TO_SELF, guid);
     pending_commits_.emplace(
-        syncer::ClientTagHash::FromUnhashed(syncer::SEND_TAB_TO_SELF, guid),
-        PendingCommit{guid, std::move(commit_confirmation)});
+        client_tag_hash, PendingCommit{guid, std::move(commit_confirmation)});
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SendTabToSelfBridge::HandleCommitTimeout,
+                       weak_ptr_factory_.GetWeakPtr(), client_tag_hash),
+        kCommitTimeout);
   }
 
   for (SendTabToSelfModelObserver& observer : observers_) {
