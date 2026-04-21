@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -98,7 +98,7 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
       prefs->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&owner_locale);
   if (!owner_locale.empty()) {
-    local_state_->SetString(prefs::kOwnerLocale, owner_locale);
+    local_state_->SetString(ash::prefs::kOwnerLocale, owner_locale);
   }
 }
 
@@ -128,7 +128,8 @@ void LocaleChangeGuard::Check() {
     return;
   }
 
-  std::string from_locale = prefs->GetString(prefs::kApplicationLocaleBackup);
+  std::string from_locale =
+      prefs->GetString(ash::prefs::kApplicationLocaleBackup);
 
   if (!RequiresUserConfirmation(from_locale, to_locale)) {
     // If the locale changed during login (e.g. from the owner's locale), just
@@ -181,8 +182,8 @@ void LocaleChangeGuard::AcceptLocaleChange() {
   if (prefs->GetString(language::prefs::kApplicationLocale) != to_locale_)
     return;
   base::RecordAction(UserMetricsAction("LanguageChange_Accept"));
-  prefs->SetString(prefs::kApplicationLocaleBackup, to_locale_);
-  prefs->SetString(prefs::kApplicationLocaleAccepted, to_locale_);
+  prefs->SetString(ash::prefs::kApplicationLocaleBackup, to_locale_);
+  prefs->SetString(ash::prefs::kApplicationLocaleAccepted, to_locale_);
 }
 
 void LocaleChangeGuard::PrepareChangingLocale(std::string_view from_locale,
@@ -201,7 +202,7 @@ bool LocaleChangeGuard::RequiresUserConfirmation(
     return false;
 
   // The target locale is already accepted.
-  if (profile_->GetPrefs()->GetString(prefs::kApplicationLocaleAccepted) ==
+  if (profile_->GetPrefs()->GetString(ash::prefs::kApplicationLocaleAccepted) ==
       to_locale) {
     return false;
   }

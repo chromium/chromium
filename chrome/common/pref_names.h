@@ -164,47 +164,6 @@ inline constexpr char kUserFeedbackAllowed[] = "feedback_allowed";
 inline constexpr char kRlzPingDelaySeconds[] = "rlz_ping_delay";
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
-#if BUILDFLAG(IS_CHROMEOS)
-
-// Locale preference of device' owner.  ChromeOS device appears in this locale
-// after startup/wakeup/signout.
-inline constexpr char kOwnerLocale[] = "intl.owner_locale";
-// Locale accepted by user.  Non-syncable.
-// Used to determine whether we need to show Locale Change notification.
-inline constexpr char kApplicationLocaleAccepted[] = "intl.app_locale_accepted";
-// Non-syncable item.
-// It is used in two distinct ways.
-// (1) Used for two-step initialization of locale in ChromeOS
-//     because synchronization of kApplicationLocale is not instant.
-// (2) Used to detect locale change.  Locale change is detected by
-//     LocaleChangeGuard in case values of kApplicationLocaleBackup and
-//     kApplicationLocale are both non-empty and differ.
-// Following is a table showing how state of those prefs may change upon
-// common real-life use cases:
-//                                  AppLocale Backup Accepted
-// Initial login                       -        A       -
-// Sync                                B        A       -
-// Accept (B)                          B        B       B
-// -----------------------------------------------------------
-// Initial login                       -        A       -
-// No sync and second login            A        A       -
-// Change options                      B        B       -
-// -----------------------------------------------------------
-// Initial login                       -        A       -
-// Sync                                A        A       -
-// Locale changed on login screen      A        C       -
-// Accept (A)                          A        A       A
-// -----------------------------------------------------------
-// Initial login                       -        A       -
-// Sync                                B        A       -
-// Revert                              A        A       -
-inline constexpr char kApplicationLocaleBackup[] = "intl.app_locale_backup";
-
-// List of locales the UI is allowed to be displayed in by policy. The list is
-// empty if no restriction is being enforced.
-inline constexpr char kAllowedLanguages[] = "intl.allowed_languages";
-#endif
-
 // The default character encoding to assume for a web page in the
 // absence of MIME charset specification
 inline constexpr char kDefaultCharset[] = "intl.charset_default";
@@ -2436,9 +2395,6 @@ inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
     "device_robot_refresh_token_v2.any-api";
 inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
     "device_refresh_token_is_v3_used.any-api";
-
-// A string pref with initial locale set in VPD or manifest.
-inline constexpr char kInitialLocale[] = "intl.initial_locale";
 
 // Pref name for whether we should show the Getting Started module in the Help
 // app.

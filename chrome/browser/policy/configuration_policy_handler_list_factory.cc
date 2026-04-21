@@ -1494,7 +1494,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kDeviceExternalPrintServersAllowlist,
     base::Value::Type::LIST },
   { key::kAllowedLanguages,
-    prefs::kAllowedLanguages,
+    ash::prefs::kAllowedLanguages,
     base::Value::Type::LIST },
   { key::kAllowedInputMethods,
     ash::prefs::kLanguageAllowedInputMethods,

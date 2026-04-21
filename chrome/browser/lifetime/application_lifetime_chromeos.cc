@@ -15,7 +15,6 @@
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -151,7 +150,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   }
 
   // Login screen should show up in owner's locale.
-  std::string owner_locale = local_state->GetString(prefs::kOwnerLocale);
+  std::string owner_locale = local_state->GetString(ash::prefs::kOwnerLocale);
   std::string pref_locale =
       local_state->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&pref_locale);

@@ -2891,6 +2891,53 @@ inline constexpr char kNewWindowsInKioskAllowed[] =
     "new_windows_in_kiosk_allowed";
 
 //-----------------------------------------------------------------------------
+// Internationalization/locale related Prefs
+//-----------------------------------------------------------------------------
+
+// List of locales the UI is allowed to be displayed in by policy. The list is
+// empty if no restriction is being enforced.
+inline constexpr char kAllowedLanguages[] = "intl.allowed_languages";
+
+// Locale accepted by user.  Non-syncable.
+// Used to determine whether we need to show Locale Change notification.
+inline constexpr char kApplicationLocaleAccepted[] = "intl.app_locale_accepted";
+
+// Non-syncable item.
+// It is used in two distinct ways.
+// (1) Used for two-step initialization of locale in ChromeOS
+//     because synchronization of kApplicationLocale is not instant.
+// (2) Used to detect locale change.  Locale change is detected by
+//     LocaleChangeGuard in case values of kApplicationLocaleBackup and
+//     kApplicationLocale are both non-empty and differ.
+// Following is a table showing how state of those prefs may change upon
+// common real-life use cases:
+//                                  AppLocale Backup Accepted
+// Initial login                       -        A       -
+// Sync                                B        A       -
+// Accept (B)                          B        B       B
+// -----------------------------------------------------------
+// Initial login                       -        A       -
+// No sync and second login            A        A       -
+// Change options                      B        B       -
+// -----------------------------------------------------------
+// Initial login                       -        A       -
+// Sync                                A        A       -
+// Locale changed on login screen      A        C       -
+// Accept (A)                          A        A       A
+// -----------------------------------------------------------
+// Initial login                       -        A       -
+// Sync                                B        A       -
+// Revert                              A        A       -
+inline constexpr char kApplicationLocaleBackup[] = "intl.app_locale_backup";
+
+// A string pref with initial locale set in VPD or manifest.
+inline constexpr char kInitialLocale[] = "intl.initial_locale";
+
+// Locale preference of device' owner.  ChromeOS device appears in this locale
+// after startup/wakeup/signout.
+inline constexpr char kOwnerLocale[] = "intl.owner_locale";
+
+//-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
 

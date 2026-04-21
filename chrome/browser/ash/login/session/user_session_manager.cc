@@ -307,7 +307,7 @@ void InitLocaleAndInputMethodsForNewUser(
     prefs->SetString(language::prefs::kApplicationLocale, locale);
 
     // Suppress the locale change dialog.
-    prefs->SetString(::prefs::kApplicationLocaleAccepted, locale);
+    prefs->SetString(ash::prefs::kApplicationLocaleAccepted, locale);
   } else {
     // Otherwise, assume that the session will use the current UI locale.
     locale = application_locale;
@@ -1021,7 +1021,7 @@ bool UserSessionManager::RespectLocalePreference(
   const std::string pref_app_locale =
       prefs->GetString(language::prefs::kApplicationLocale);
   const std::string pref_bkup_locale =
-      prefs->GetString(::prefs::kApplicationLocaleBackup);
+      prefs->GetString(ash::prefs::kApplicationLocaleBackup);
 
   pref_locale = pref_app_locale;
 
@@ -1038,7 +1038,7 @@ bool UserSessionManager::RespectLocalePreference(
 
   const std::string* account_locale = nullptr;
   if (pref_locale.empty() && user->has_gaia_account() &&
-      prefs->GetList(::prefs::kAllowedLanguages).empty()) {
+      prefs->GetList(ash::prefs::kAllowedLanguages).empty()) {
     if (user->GetAccountLocale() == nullptr)
       return false;  // wait until Account profile is loaded.
     account_locale = user->GetAccountLocale();

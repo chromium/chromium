@@ -26,8 +26,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "chrome/common/pref_names.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -46,7 +46,7 @@ extern void InitializeLocalState(
     PrefService* local_state = chrome_feature_list_creator->local_state();
     DCHECK(local_state);
 
-    std::string owner_locale = local_state->GetString(prefs::kOwnerLocale);
+    std::string owner_locale = local_state->GetString(ash::prefs::kOwnerLocale);
     // Ensure that we start with owner's locale.
     if (!owner_locale.empty() &&
         local_state->GetString(language::prefs::kApplicationLocale) !=

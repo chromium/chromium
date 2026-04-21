@@ -181,6 +181,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
@@ -1292,7 +1293,7 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                std::string());
 #if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterStringPref(prefs::kOwnerLocale, std::string());
+  registry->RegisterStringPref(ash::prefs::kOwnerLocale, std::string());
   registry->RegisterStringPref(prefs::kHardwareKeyboardLayout, std::string());
   registry->RegisterBooleanPref(
       password_manager::prefs::kPinAuthenticationAvailableOnChromeOS, false);

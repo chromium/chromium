@@ -277,7 +277,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterListPref(ash::prefs::kLanguageAllowedInputMethods);
   registry->RegisterBooleanPref(
       ash::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
-  registry->RegisterListPref(::prefs::kAllowedLanguages);
+  registry->RegisterListPref(ash::prefs::kAllowedLanguages);
   registry->RegisterStringPref(ash::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
   registry->RegisterStringPref(ash::prefs::kLanguageEnabledImes, "");
@@ -746,7 +746,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                               callback);
   allowed_input_methods_force_enabled_.Init(
       ash::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
-  allowed_languages_.Init(::prefs::kAllowedLanguages, prefs, callback);
+  allowed_languages_.Init(ash::prefs::kAllowedLanguages, prefs, callback);
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs,
                             callback);
   ime_menu_activated_.Init(ash::prefs::kLanguageImeMenuActivated, prefs,
@@ -1216,7 +1216,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kAllowedLanguages) {
+      pref_name == ash::prefs::kAllowedLanguages) {
     locale_util::RemoveDisallowedLanguagesFromPreferred(prefs_);
   }
 

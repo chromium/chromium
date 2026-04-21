@@ -48,6 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -389,8 +390,9 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(
       language::prefs::kApplicationLocale, std::string(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
-  registry->RegisterStringPref(prefs::kApplicationLocaleBackup, std::string());
-  registry->RegisterStringPref(prefs::kApplicationLocaleAccepted,
+  registry->RegisterStringPref(ash::prefs::kApplicationLocaleBackup,
+                               std::string());
+  registry->RegisterStringPref(ash::prefs::kApplicationLocaleAccepted,
                                std::string());
 #endif
 

@@ -30,7 +30,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/common/extensions/api/language_settings_private.h"
-#include "chrome/common/pref_names.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
@@ -82,7 +81,7 @@ base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
 // Returns the set of allowed UI locales.
 base::flat_set<std::string> GetAllowedLanguages(PrefService* prefs) {
   const auto& allowed_languages_values =
-      prefs->GetList(prefs::kAllowedLanguages);
+      prefs->GetList(ash::prefs::kAllowedLanguages);
   return base::MakeFlatSet<std::string>(
       allowed_languages_values, {},
       [](const auto& locale_value) { return locale_value.GetString(); });
