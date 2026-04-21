@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
@@ -41,7 +42,10 @@ import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.Desk
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -66,23 +70,47 @@ public class PopupCreatorImpl implements PopupCreator {
     private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
 
     @Override
-    public void createPopupWindow(
+    public boolean createNewPopup(
             Context context,
             boolean isIncognito,
             @Nullable WindowFeatures windowFeatures,
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions) {
-        final Intent intent = initializePopupIntent(windowFeatures, isIncognito);
-        IntentUtils.addTrustedIntentExtras(intent);
+        Bundle optionsBundle =
+                resolveStartActivityOptions(
+                        startActivityOptions, windowFeatures, /* sourceWindow= */ null);
 
-        if (additionalIntentExtras != null) {
-            intent.putExtras(additionalIntentExtras);
+        final Intent intent =
+                createTrustedPopupIntent(windowFeatures, isIncognito, additionalIntentExtras);
+
+        return tryStartActivity(context, intent, optionsBundle);
+    }
+
+    @Override
+    public boolean createNewPopupFromWebContents(
+            Context context,
+            Profile profile,
+            WebContents webContents,
+            @Nullable WindowFeatures windowFeatures,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions) {
+        TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
+        Tab tab = TabBuilder.createDetachedSpareTab(context, delegateFactory, profile, webContents);
+
+        Bundle optionsBundle =
+                resolveStartActivityOptions(
+                        startActivityOptions, windowFeatures, tab.getWindowAndroid());
+
+        final Intent intent =
+                createTrustedPopupIntent(
+                        windowFeatures, tab.isIncognitoBranded(), additionalIntentExtras);
+
+        boolean success =
+                getReparentingTask(tab).begin(tab.getContext(), intent, optionsBundle, null);
+        if (!success) {
+            tab.destroy();
         }
-        if (startActivityOptions == null) {
-            context.startActivity(intent);
-        } else {
-            context.startActivity(intent, startActivityOptions);
-        }
+        return success;
     }
 
     @Override
@@ -91,17 +119,16 @@ public class PopupCreatorImpl implements PopupCreator {
             return sMoveTabToNewPopupResultForTesting;
         }
 
-        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
-        final ActivityOptions activityOptions =
-                createPopupActivityOptions(windowBounds, tab.getWindowAndroid());
-        if (activityOptions == null) {
+        Bundle optionsBundle =
+                resolveStartActivityOptions(null, windowFeatures, tab.getWindowAndroid());
+
+        if (optionsBundle == null) {
             return false;
         }
 
         final Intent intent = initializePopupIntent(windowFeatures, tab.isIncognitoBranded());
 
-        return getReparentingTask(tab)
-                .begin(tab.getContext(), intent, activityOptions.toBundle(), null);
+        return getReparentingTask(tab).begin(tab.getContext(), intent, optionsBundle, null);
     }
 
     @Override
@@ -439,6 +466,19 @@ public class PopupCreatorImpl implements PopupCreator {
         ResettersForTesting.register(() -> sSetMovableTaskRequiredForPopupsForTesting = null);
     }
 
+    private static Intent createTrustedPopupIntent(
+            @Nullable WindowFeatures windowFeatures,
+            boolean isIncognito,
+            @Nullable Bundle additionalIntentExtras) {
+        Intent intent = initializePopupIntent(windowFeatures, isIncognito);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        if (additionalIntentExtras != null) {
+            intent.putExtras(additionalIntentExtras);
+        }
+        return intent;
+    }
+
     private static Intent initializePopupIntent(
             @Nullable WindowFeatures windowFeatures, boolean isIncognito) {
         Intent intent = new Intent();
@@ -469,6 +509,18 @@ public class PopupCreatorImpl implements PopupCreator {
         intent.setAction(Intent.ACTION_VIEW);
 
         return intent;
+    }
+
+    private static @Nullable Bundle resolveStartActivityOptions(
+            @Nullable Bundle startActivityOptions,
+            @Nullable WindowFeatures windowFeatures,
+            @Nullable WindowAndroid sourceWindow) {
+        if (startActivityOptions != null) return startActivityOptions;
+
+        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
+        final ActivityOptions activityOptions =
+                createPopupActivityOptions(windowBounds, sourceWindow);
+        return activityOptions != null ? activityOptions.toBundle() : null;
     }
 
     private static @Nullable ActivityOptions createPopupActivityOptions(
@@ -532,8 +584,11 @@ public class PopupCreatorImpl implements PopupCreator {
         return activityOptions;
     }
 
-    private static @Nullable Rect getWindowBoundsFromWindowFeatures(WindowFeatures windowFeatures) {
-        if (windowFeatures.width == null || windowFeatures.height == null) {
+    private static @Nullable Rect getWindowBoundsFromWindowFeatures(
+            @Nullable WindowFeatures windowFeatures) {
+        if (windowFeatures == null
+                || windowFeatures.width == null
+                || windowFeatures.height == null) {
             return null;
         }
 

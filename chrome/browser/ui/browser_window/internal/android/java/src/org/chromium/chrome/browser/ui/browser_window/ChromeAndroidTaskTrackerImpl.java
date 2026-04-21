@@ -382,7 +382,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         ActivityOptions options = getStartActivityOptions(context, bounds);
 
         PopupCreatorFactory.getInstance()
-                .createPopupWindow(
+                .createNewPopup(
                         context,
                         createParams.getProfile().isIncognitoBranded(),
                         features,

@@ -63,7 +63,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -170,6 +172,49 @@ public class PopupCreatorImplUnitTest {
                 .setMovableTaskRequired(any());
 
         doReturn(mWindow).when(mWebContents).getTopLevelNativeWindow();
+    }
+
+    @Test
+    public void testCreateNewPopupFromWebContents() {
+        TabBuilder.setTabForTesting(mTab);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        Profile profile = mock(Profile.class);
+
+        Bundle extras = new Bundle();
+        extras.putInt("extra", 1);
+        Bundle options = new Bundle();
+        options.putInt("option", 2);
+
+        mPopupCreator.createNewPopupFromWebContents(
+                mContext, profile, mWebContents, windowFeatures, extras, options);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Bundle> optionsCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), optionsCaptor.capture(), any());
+        Intent sentIntent = captor.getValue();
+        Bundle sentOptions = optionsCaptor.getValue();
+
+        Assert.assertEquals(
+                "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
+                new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
+                sentIntent.getComponent());
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
+                CustomTabsUiType.POPUP,
+                sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
+                Intent.FLAG_ACTIVITY_NEW_TASK,
+                sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
+                        + " window features",
+                windowFeatures,
+                new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
+        Assert.assertEquals("The extra is not in intent", 1, sentIntent.getIntExtra("extra", 0));
+        Assert.assertEquals(
+                "The option is not in options bundle", 2, sentOptions.getInt("option", 0));
     }
 
     @Test

@@ -158,7 +158,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         var extrasCaptor = ArgumentCaptor.forClass(Bundle.class);
         verify(PopupCreatorFactory.getInstance())
-                .createPopupWindow(any(), anyBoolean(), any(), extrasCaptor.capture(), any());
+                .createNewPopup(any(), anyBoolean(), any(), extrasCaptor.capture(), any());
 
         Bundle extras = extrasCaptor.getValue();
         assertNotNull(extras);

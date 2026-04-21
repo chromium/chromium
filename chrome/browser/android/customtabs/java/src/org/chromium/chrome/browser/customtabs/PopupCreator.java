@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -28,10 +29,30 @@ public interface PopupCreator {
      * @param windowFeatures The requested window features.
      * @param additionalIntentExtras Additional extras to add to the intent.
      * @param startActivityOptions Options to pass to startActivity.
+     * @return true if the popup was successfully created, false otherwise.
      */
-    void createPopupWindow(
+    boolean createNewPopup(
             Context context,
             boolean isIncognito,
+            @Nullable WindowFeatures windowFeatures,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions);
+
+    /**
+     * Creates a new Custom Tab popup window from a given {@link WebContents}.
+     *
+     * @param context The context to use.
+     * @param profile The {@link Profile} associated with the new popup window.
+     * @param webContents The {@link WebContents} to use for the new Custom Tab popup window.
+     * @param windowFeatures The {@link WindowFeatures} to use for the new Custom Tab popup window.
+     * @param additionalIntentExtras Additional extras to add to the intent.
+     * @param startActivityOptions Options to pass to startActivity.
+     * @return true if the tab was successfully reparented to a new movable Task, false otherwise.
+     */
+    boolean createNewPopupFromWebContents(
+            Context context,
+            Profile profile,
+            WebContents webContents,
             @Nullable WindowFeatures windowFeatures,
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions);
