@@ -113,6 +113,8 @@
     AddSameConstraints(_appContentContainerView, view);
   }
 
+  view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
   [self
       registerForTraitChanges:
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
@@ -399,8 +401,6 @@
     return;
   }
 
-  UIView* view = self.view;
-
   if (_assistantContainerViewController) {
     UIView* assistantView = _assistantContainerViewController.view;
     ApplyAssistantSidePanelAesthetics(assistantView, _assistantShadowView,
@@ -409,8 +409,6 @@
 
   ApplyAssistantSidePanelAesthetics(_appContentView, _appContentContainerView,
                                     active);
-  view.backgroundColor =
-      active ? [UIColor colorNamed:kSecondaryBackgroundColor] : nil;
 }
 
 // Updates the layout of the scene views depending on the active layout strategy

@@ -23,7 +23,7 @@ constexpr CGFloat kAssistantSidePanelBorderAlpha = 0.46;
 
 // Constants used for the floating card shadow.
 const CGSize kAssistantSidePanelShadowOffset = {0, 13};
-constexpr CGFloat kAssistantSidePanelShadowRadius = 125.0;
+constexpr CGFloat kAssistantSidePanelShadowRadius = 8.0;
 constexpr CGFloat kAssistantSidePanelShadowOpacity = 0.16;
 
 }  // namespace
@@ -62,7 +62,6 @@ void ApplyAssistantSidePanelAesthetics(UIView* content_view,
   if (!active) {
     content_view.layer.cornerRadius = 0.0;
     content_view.layer.borderWidth = 0.0;
-    content_view.layer.borderColor = nil;
     shadow_view.layer.shadowOpacity = 0.0;
     shadow_view.backgroundColor = [UIColor clearColor];
     return;
