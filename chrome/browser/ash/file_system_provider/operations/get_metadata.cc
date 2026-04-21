@@ -110,9 +110,13 @@ bool ValidateIDLEntryMetadata(
     return false;
   }
 
-  if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE &&
-      !metadata.size) {
-    return false;
+  if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE) {
+    if (!metadata.size) {
+      return false;
+    }
+    if (!base::IsValueInRangeForNumericType<int64_t>(*metadata.size)) {
+      return false;
+    }
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
