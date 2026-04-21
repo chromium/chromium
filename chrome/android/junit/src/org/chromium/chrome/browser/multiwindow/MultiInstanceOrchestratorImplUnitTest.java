@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -508,7 +507,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         var reparentingTabsTask = mock(ReparentingTabsTask.class);
         ReparentingTabsTask.setReparentingTabsTaskForTesting(reparentingTabsTask);
-        doNothing().when(reparentingTabsTask).begin(any(), any(), any(), any());
+        when(reparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(true);
 
         mMultiInstanceOrchestrator.moveTabsToOtherWindow(
                 List.of(mTab1, mTab2), NewWindowAppSource.MENU);

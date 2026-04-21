@@ -107,7 +107,7 @@ public class TabReparentingDelegateUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         ReparentingTabsTask.setReparentingTabsTaskForTesting(mReparentingTabsTask);
-        doNothing().when(mReparentingTabsTask).begin(any(), any(), any(), any());
+        when(mReparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(true);
         ReparentingTabGroupTask.setReparentingTabGroupTaskForTesting(mReparentingTabGroupTask);
         doNothing().when(mReparentingTabGroupTask).begin(any(), any());
 
