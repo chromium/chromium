@@ -61,7 +61,21 @@ public class TabBottomSheetWebUiTest {
                         R.style.Theme_BrowserUI_DayNight);
         mWebUi =
                 new TabBottomSheetWebUi(
-                        context, mWindowAndroid, mContextMenuPopulatorFactory, Color.WHITE);
+                        context,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        Color.WHITE,
+                        new CoBrowseViewsZoomControl() {
+                            @Override
+                            public boolean zoomIn(WebContents webContents) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean zoomOut(WebContents webContents) {
+                                return false;
+                            }
+                        });
         TabBottomSheetWebUi.setInTestModeForTesting();
     }
 

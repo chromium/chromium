@@ -56,6 +56,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewFactory.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViews.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewsZoomControl.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
@@ -127,6 +128,7 @@ robolectric_library("junit") {
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:web_contents_delegate_java",
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
     "//content/public/android:content_java",

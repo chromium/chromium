@@ -39,6 +39,7 @@ public class TabBottomSheetWebUi {
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
+    private final CoBrowseViewsZoomControl mZoomControl;
 
     private ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -47,11 +48,13 @@ public class TabBottomSheetWebUi {
             Context context,
             WindowAndroid windowAndroid,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @ColorInt int backgroundColor) {
+            @ColorInt int backgroundColor,
+            CoBrowseViewsZoomControl zoomControl) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mBackgroundColor = backgroundColor;
+        mZoomControl = zoomControl;
         mWebViewResizingHelper = new WebViewResizingHelper(context, backgroundColor);
         resetThinWebView();
     }
@@ -96,7 +99,7 @@ public class TabBottomSheetWebUi {
                     mWebContents,
                     contentView,
                     new ThinWebViewAttachParams.Builder()
-                            .setWebContentsDelegate(new WebContentsDelegateAndroid() {})
+                            .setWebContentsDelegate(createWebContentsDelegate())
                             .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
                             .setSupportTheming(true)
                             .build());
@@ -122,6 +125,20 @@ public class TabBottomSheetWebUi {
 
     View getWebUiView() {
         return mWebViewResizingHelper.getResizingContainer();
+    }
+
+    private WebContentsDelegateAndroid createWebContentsDelegate() {
+        return new WebContentsDelegateAndroid() {
+            @Override
+            public void contentsZoomChange(boolean zoomIn) {
+                if (mWebContents == null) return;
+                if (zoomIn) {
+                    mZoomControl.zoomIn(mWebContents);
+                } else {
+                    mZoomControl.zoomOut(mWebContents);
+                }
+            }
+        };
     }
 
     private void resetThinWebView() {
