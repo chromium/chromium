@@ -17,7 +17,7 @@ void LogNumberOfNamesMigratedDuringCleanup(size_t num_names);
 void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
 
 void LogNumberOfProfilesConsideredForDedupePerCountryCode(
-    const std::vector<AddressDataCleaner::ProfileWithAction>& profiles);
+    const absl::flat_hash_map<std::string, int>& profile_count_by_country_code);
 
 void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);
 

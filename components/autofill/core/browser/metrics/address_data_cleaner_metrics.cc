@@ -31,27 +31,20 @@ void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles) {
 }
 
 void LogNumberOfProfilesConsideredForDedupePerCountryCode(
-    const std::vector<AddressDataCleaner::ProfileWithAction>& profiles) {
+    const absl::flat_hash_map<std::string, int>&
+        profile_count_by_country_code) {
   // TODO(b/496153767): Remove these metrics once enough data to evaluate the
   // bucketing optimization impact on deduplication is available.
-  absl::flat_hash_map<std::string, int> profile_count_by_country_code;
-  for (const auto& [profile, action] : profiles) {
-    if (action != AddressDataCleaner::ProfileAction::kRemove) {
-      const std::string country_code = profile.GetAddressCountryCode().value();
-      ++profile_count_by_country_code[country_code];
-    }
-  }
-  if (auto it = profile_count_by_country_code.find("");
-      it != profile_count_by_country_code.end()) {
-    base::UmaHistogramCounts1000(
-        "Autofill.NumberOfProfilesWithMissingCountryCodeConsideredForDedupe",
-        it->second);
-    profile_count_by_country_code.erase(it);
-  }
   for (const auto& [country_code, count] : profile_count_by_country_code) {
-    base::UmaHistogramCounts1000(
-        "Autofill.NumberOfProfilesPerValidCountryCodeConsideredForDedupe",
-        count);
+    if (country_code.empty()) {
+      base::UmaHistogramCounts1000(
+          "Autofill.NumberOfProfilesWithMissingCountryCodeConsideredForDedupe",
+          count);
+    } else {
+      base::UmaHistogramCounts1000(
+          "Autofill.NumberOfProfilesPerValidCountryCodeConsideredForDedupe",
+          count);
+    }
   }
 }
 

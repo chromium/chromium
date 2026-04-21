@@ -31,15 +31,6 @@ namespace autofill {
 class AddressDataCleaner : public AddressDataManager::Observer,
                            public syncer::SyncServiceObserver {
  public:
-  // Specifies the deferred database operation to execute for a given profile
-  // once all cleanup phases have finished.
-  enum class ProfileAction { kNone = 0, kUpdate = 1, kRemove = 2 };
-
-  struct ProfileWithAction {
-    AutofillProfile profile;
-    ProfileAction action = ProfileAction::kNone;
-  };
-
   AddressDataCleaner(
       AddressDataManager& address_data_manager,
       syncer::SyncService* sync_service,
@@ -75,6 +66,19 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       base::span<const AutofillProfile* const> existing_profiles,
       const AutofillProfileComparator& comparator);
 
+ protected:
+  // Specifies the deferred database operation to execute for a given profile
+  // once all cleanup phases have finished.
+  enum class ProfileAction { kNone = 0, kUpdate = 1, kRemove = 2 };
+
+  // Represents an AutofillProfile paired with a deferred database operation.
+  // Used to accumulate local updates and removals during cleanup routines (e.g.
+  // disused profiles and deduplication).
+  struct ProfileWithAction {
+    AutofillProfile profile;
+    ProfileAction action = ProfileAction::kNone;
+  };
+
  private:
   friend class AddressDataCleanerTestApi;
 
@@ -107,6 +111,28 @@ class AddressDataCleaner : public AddressDataManager::Observer,
   // Iterates over `profiles` and executes the pending database
   // operations (Update/Remove) through the AddressDataManager.
   void ApplyProfileActions(const std::vector<ProfileWithAction>& profiles);
+
+  // Merges mergeable profiles in `profiles_with_action`. This supports both
+  // local and account profiles and preserves the `initial_creator_id`. The
+  // algorithm proceeds in two steps, such that the amount of retained
+  // information is maximized without sending the data to the account if it was
+  // stored locally. Note that due to normalisation, etc, even if `IsSubsetOf()`
+  // is true, the information present in the subset can still look slightly
+  // different from the superset and is therefore not silently merged.
+  // 1) Marks all profiles that are subsets of another profile for removal.
+  //    If a profile is a subset of multiple other profiles, its usage history
+  //    is merged with all of them and they are marked for update. The silent
+  //    updates that the subset may have contained are intentionally dropped,
+  //    such that this information is not uploaded to the account without
+  //    consent. For exact duplicates, keeping the account profile is preferred.
+  // 2) Merges pairs of mergeable profiles into each other.
+  //    To prevent silently introducing new information into the account,
+  //    local profiles are never merged into account profiles. The subsumed
+  //    profile is marked for removal and the merged profile is marked for
+  //    update.
+  void DeduplicateProfiles(
+      const AutofillProfileComparator& comparator,
+      std::vector<ProfileWithAction>& profiles_with_action);
 
   // Used to ensure that cleanups are only performed once per profile startup.
   bool are_cleanups_pending_ = true;
