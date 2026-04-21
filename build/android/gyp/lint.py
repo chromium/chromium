@@ -44,6 +44,7 @@ _DISABLED_ALWAYS = [
     "PrivateResource",  # Triggers on our own R.java files.
     "StringFormatCount",  # Has false-positives.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
+    "ThreadConstraint",  # Disabled to avoid false positives (b/496928954).
     "Typos",  # Strings are committed in English first and later translated.
     "VisibleForTests",  # Does not recognize "ForTesting" methods.
     "UniqueConstants",  # Chromium enums allow aliases.
