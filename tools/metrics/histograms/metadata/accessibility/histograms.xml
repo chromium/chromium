@@ -3463,7 +3463,9 @@ even if they fit the naming pattern. -->
     feature is hidden or closed (capped at 24 hours). Difference with
     SidePanel.ReadAnything.ShownDuration is that this metric records sessions
     for immersive view also (Only records if
-    read-anything-immersive-reading-mode is enabled).
+    read-anything-immersive-reading-mode is enabled). If
+    read-anything-immersive-reading-mode is disabled use
+    SidePanel.ReadAnything.ShownDurationMax1Day instead.
   </summary>
 </histogram>
 
