@@ -13,13 +13,14 @@ export class LineFocusModel {
   // The max y position allowed for the line focus element.
   private maxY_: number = 0;
 
-  // The y position of the line focus element. If the element is a line, this is
-  // where the top of the line should go. If the element is a window, this is
-  // where the center of the window should go.
-  private y_: number = 0;
+  // The focal point y position of the line focus element. If the element is a
+  // line, this is where the top of the line should go. If the element is a
+  // window, this is where the center of the window should go.
+  private focalPoint_: number = 0;
 
   // The top value of the line focus element. If the element is a line, this is
-  // equal to y_. If the element is a window, this is the top of the window.
+  // equal to focalPoint_. If the element is a window, this is the top of the
+  // window.
   private top_: number = 0;
 
   // The height of the line focus element if it is a window. This should be 0
@@ -34,6 +35,9 @@ export class LineFocusModel {
   // line focus with the last used line focus mode.
   private lastEnabledLineFocusStyle_: LineFocusStyle =
       LineFocusStyle.defaultValue();
+
+  // Whether a line focus session is currently active.
+  private isSessionActive_: boolean = false;
 
   // The index of the current line in textLineBottoms_ being focused. Null if
   // line focus is moving continuously with the mouse instead of discretely.
@@ -63,12 +67,12 @@ export class LineFocusModel {
     this.maxY_ = y;
   }
 
-  getY(): number {
-    return this.y_;
+  getFocalPoint(): number {
+    return this.focalPoint_;
   }
 
-  setY(y: number): void {
-    this.y_ = y;
+  setFocalPoint(focalPoint: number): void {
+    this.focalPoint_ = focalPoint;
   }
 
   getTop(): number {
@@ -113,6 +117,14 @@ export class LineFocusModel {
     this.lastEnabledLineFocusStyle_ = style;
   }
 
+  isSessionActive(): boolean {
+    return this.isSessionActive_;
+  }
+
+  setSessionActive(active: boolean): void {
+    this.isSessionActive_ = active;
+  }
+
   getCurrentLineIndex(): number|null {
     return this.currentLineIndex_;
   }
@@ -143,5 +155,19 @@ export class LineFocusModel {
 
   setInitiatedScroll(initiated: boolean) {
     this.initiatedScroll_ = initiated;
+  }
+
+  // Resets the model to its initial state.
+  reset(): void {
+    this.minY_ = 0;
+    this.maxY_ = 0;
+    this.focalPoint_ = 0;
+    this.top_ = 0;
+    this.windowHeight_ = 0;
+    this.textBounds_ = [];
+    this.currentLineIndex_ = null;
+    this.lastScrollTop_ = 0;
+    this.initiatedScroll_ = false;
+    this.isSessionActive_ = false;
   }
 }

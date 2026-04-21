@@ -28,7 +28,7 @@ suite('LineFocusStyleMode', () => {
 
     test('calculateHeight sets top with no height', () => {
       const y = 100;
-      model.setY(y);
+      model.setFocalPoint(y);
 
       mode.calculateHeight();
 

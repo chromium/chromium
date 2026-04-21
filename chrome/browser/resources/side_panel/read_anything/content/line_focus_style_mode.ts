@@ -53,7 +53,7 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
   }
 
   calculateHeight(): void {
-    this.model_.setTop(this.model_.getY());
+    this.model_.setTop(this.model_.getFocalPoint());
     this.model_.setWindowHeight(0);
   }
 
@@ -99,7 +99,8 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     }
 
     const currentLineIndex = this.model_.getCurrentLineIndex() ??
-        getRectIndexAtY(this.model_.getY(), this.model_.getTextBounds(), true);
+        getRectIndexAtY(this.model_.getFocalPoint(),
+                        this.model_.getTextBounds(), true);
     const numLines = this.style_.lines;
     const topIndex = currentLineIndex - ((numLines - 1) / 2);
     const maxTopIndex = bounds.length - numLines;

@@ -34,6 +34,7 @@ build_webui_tests("build") {
     "letter_spacing_test.ts",
     "line_focus_controller_test.ts",
     "line_focus_style_mode_test.ts",
+    "line_focus_move_mode_test.ts",
     "line_focus_menu_test.ts",
     "line_spacing_test.ts",
     "movement_test.ts",

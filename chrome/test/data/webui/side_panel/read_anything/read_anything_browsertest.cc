@@ -273,6 +273,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusStyleMode) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusMoveMode) {
+  RunSidePanelTest("side_panel/read_anything/line_focus_move_mode_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DomQueries) {
   RunSidePanelTest("side_panel/read_anything/dom_queries_test.js",
                    "mocha.run()");

@@ -303,55 +303,6 @@ suite('LineFocusController', () => {
     assertNotEquals(height2, height3);
   });
 
-  test('onStyleChange to different mode does not restart session', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, container, defaultHeight);
-    let started = false;
-    chrome.readingMode.startLineFocusSession = () => started = true;
-    metrics.reset();
-
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-    assertTrue(started);
-
-    started = false;
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, defaultHeight);
-    assertFalse(started);
-
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, container, defaultHeight);
-    assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
-  });
-
-  test('onMovementChange to different mode does not restart session', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, defaultHeight);
-    let started = false;
-    chrome.readingMode.startLineFocusSession = () => started = true;
-    metrics.reset();
-
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    assertFalse(started);
-  });
-
-  test('onStyleChange to off resets position and height', () => {
-    const container = createShortContainer();
-
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, container, defaultHeight);
-
-    assertEquals(0, lineFocusController.getTop());
-    assertFalse(!!lineFocusController.getHeight());
-  });
-
   test('onStyleChange to off after it was enabled logs session', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
