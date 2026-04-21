@@ -16,11 +16,12 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
@@ -167,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
   // Set locale to en-US.
   ScopedBrowserLocale scoped_locale{"en-US"};
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
 
   // Returns true when server eligibility checking is disabled, the flag is
   // enabled, and locale is en-US.
@@ -303,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(
   } else {
     // If not using the AIM service, the result depends on kLensSearchAimM3. In
     // this test fixture, we have it enabled.
-    SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+    SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                                /*is_server_eligible=*/false,
                                /*server_eligibility_enabled=*/false);
     EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));

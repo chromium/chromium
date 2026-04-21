@@ -127,8 +127,6 @@ class AimEligibilityService
       Configuration configuration);
   ~AimEligibilityService() override;
 
-  // Checks if the application country matches the given country.
-  bool IsCountry(const std::string& country) const;
   // Checks if the application language matches the given language.
   bool IsLanguage(const std::string& language) const;
 

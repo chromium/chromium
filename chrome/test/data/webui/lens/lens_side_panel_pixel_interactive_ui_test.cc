@@ -6,6 +6,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/webui/webui_composebox_pixel_test.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 
 // Test fixture for ComposeBox pixel tests.
 class LensSidePanelComposeBoxPixelTest
@@ -18,8 +19,9 @@ class LensSidePanelComposeBoxPixelTest
          {lens::features::kLensSearchAimM3,
           {{"use-aim-eligibility-service", "false"},
            {"enable-client-side-header", "true"},
-          {"contextualize-on-focus", "false"}}}},
-        /*disabled_features=*/{});
+           {"contextualize-on-focus", "false"}}},
+         {omnibox::kAimEnabled, {}}},
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
     WebUIComposeBoxPixelTest::SetUp();
   }
 
