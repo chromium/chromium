@@ -16,6 +16,10 @@
 #include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "build/buildflag.h"
 
+namespace content::internal {
+class ProcessCpuTimeMetrics;
+}
+
 namespace tracing {
 class TraceEventDataSource;
 class CustomEventRecorder;
@@ -81,6 +85,7 @@ class BASE_EXPORT CurrentProcess {
    private:
     TypeKey() = default;
     friend class ::base::test::CurrentProcessForTest;
+    friend class ::content::internal::ProcessCpuTimeMetrics;
     friend class ::tracing::TraceEventDataSource;
     friend class ::tracing::CustomEventRecorder;
     friend class ::tracing::TrackNameRecorder;
@@ -130,9 +135,7 @@ class BASE_EXPORT CurrentProcess {
 
   // Sets the name and type of the process for the metrics and tracing. This
   // function should be called as early as possible in the process's lifetime
-  // before starting any threads, typically in *Main() function. Provide
-  // process_name as an argument if it can't be trivially derived from the
-  // process type.
+  // before starting any threads, typically in *Main() function.
   void SetProcessType(CurrentProcessType process_type);
 
   // `delegate` might racily be invoked after resetting, thus its lifetime must

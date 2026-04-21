@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/process/current_process.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,27 +21,6 @@
 
 namespace content {
 namespace internal {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Histogram macros expect an enum class with kMaxValue. Because
-// content::ProcessType cannot be migrated to this style at the moment, we
-// specify a separate version here. Keep in sync with content::ProcessType.
-// TODO(eseckler): Replace with content::ProcessType after its migration.
-enum class ProcessTypeForUma {
-  kUnknown = 1,
-  kBrowser,
-  kRenderer,
-  kPluginDeprecated,
-  kWorkerDeprecated,
-  kUtility,
-  kZygote,
-  kSandboxHelper,
-  kGpu,
-  kPpapiPlugin,  // deprecated
-  kPpapiBroker,  // deprecated
-  kMaxValue = kPpapiBroker,
-};
 
 // Samples the process's CPU time after a specific number of task were executed
 // on the current thread (process main). The number of tasks is a crude proxy
@@ -103,7 +83,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   SEQUENCE_CHECKER(thread_pool_);
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
   std::optional<bool> is_foregrounded_;
-  ProcessTypeForUma process_type_;
+  base::ShortProcessType process_type_;
   base::TimeDelta reported_cpu_time_;
   base::TimeDelta cpu_time_on_last_load_report_;
   base::TimeTicks cpu_load_report_time_;

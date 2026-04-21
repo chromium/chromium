@@ -1106,7 +1106,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </summary>
 </histogram>
 
-<histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
+<histogram name="Power.CpuTimeSecondsPerProcessType2" enum="ShortProcessType"
     expires_after="2026-09-27">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
@@ -1124,8 +1124,8 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </summary>
 </histogram>
 
-<histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
-    enum="ProcessType2" expires_after="2026-09-06">
+<histogram name="Power.CpuTimeSecondsPerProcessType2.{Visibility}"
+    enum="ShortProcessType" expires_after="2026-09-06">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

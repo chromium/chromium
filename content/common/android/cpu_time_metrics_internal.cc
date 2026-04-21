@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/functional/callback_helpers.h"
@@ -20,7 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
+#include "base/process/current_process.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -34,7 +33,6 @@
 #include "base/types/expected.h"
 #include "content/common/process_priority_tracker.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/process_type.h"
 
 namespace content {
 namespace internal {
@@ -42,34 +40,14 @@ namespace {
 
 bool g_ignore_histogram_allocator_for_testing = false;
 
-static_assert(static_cast<int>(ProcessTypeForUma::kMaxValue) ==
-                  PROCESS_TYPE_PPAPI_BROKER_DEPRECATED,
-              "ProcessTypeForUma and CurrentProcessType() require updating");
-
-ProcessTypeForUma CurrentProcessType() {
-  std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
-  if (process_type.empty())
-    return ProcessTypeForUma::kBrowser;
-  if (process_type == switches::kRendererProcess)
-    return ProcessTypeForUma::kRenderer;
-  if (process_type == switches::kUtilityProcess)
-    return ProcessTypeForUma::kUtility;
-  if (process_type == switches::kSandboxIPCProcess)
-    return ProcessTypeForUma::kSandboxHelper;
-  if (process_type == switches::kGpuProcess)
-    return ProcessTypeForUma::kGpu;
-  NOTREACHED() << "Unexpected process type: " << process_type;
-}
-
-const char* GetPerThreadHistogramNameForProcessType(ProcessTypeForUma type) {
+const char* GetPerThreadHistogramNameForProcessType(
+    base::ShortProcessType type) {
   switch (type) {
-    case ProcessTypeForUma::kBrowser:
+    case base::ShortProcessType::kBrowser:
       return "Power.CpuTimeSecondsPerThreadType.Browser";
-    case ProcessTypeForUma::kRenderer:
+    case base::ShortProcessType::kRenderer:
       return "Power.CpuTimeSecondsPerThreadType.Renderer";
-    case ProcessTypeForUma::kGpu:
+    case base::ShortProcessType::kGpu:
       return "Power.CpuTimeSecondsPerThreadType.GPU";
     default:
       return "Power.CpuTimeSecondsPerThreadType.Other";
@@ -77,13 +55,13 @@ const char* GetPerThreadHistogramNameForProcessType(ProcessTypeForUma type) {
 }
 
 const char* GetPerThreadHistogramNameForProcessTypeForeground(
-    ProcessTypeForUma type) {
+    base::ShortProcessType type) {
   switch (type) {
-    case ProcessTypeForUma::kBrowser:
+    case base::ShortProcessType::kBrowser:
       return "Power.CpuTimeSecondsPerThreadType.Browser.Foreground";
-    case ProcessTypeForUma::kRenderer:
+    case base::ShortProcessType::kRenderer:
       return "Power.CpuTimeSecondsPerThreadType.Renderer.Foreground";
-    case ProcessTypeForUma::kGpu:
+    case base::ShortProcessType::kGpu:
       return "Power.CpuTimeSecondsPerThreadType.GPU.Foreground";
     default:
       return "Power.CpuTimeSecondsPerThreadType.Other.Foreground";
@@ -91,13 +69,13 @@ const char* GetPerThreadHistogramNameForProcessTypeForeground(
 }
 
 const char* GetPerThreadHistogramNameForProcessTypeBackground(
-    ProcessTypeForUma type) {
+    base::ShortProcessType type) {
   switch (type) {
-    case ProcessTypeForUma::kBrowser:
+    case base::ShortProcessType::kBrowser:
       return "Power.CpuTimeSecondsPerThreadType.Browser.Background";
-    case ProcessTypeForUma::kRenderer:
+    case base::ShortProcessType::kRenderer:
       return "Power.CpuTimeSecondsPerThreadType.Renderer.Background";
-    case ProcessTypeForUma::kGpu:
+    case base::ShortProcessType::kGpu:
       return "Power.CpuTimeSecondsPerThreadType.GPU.Background";
     default:
       return "Power.CpuTimeSecondsPerThreadType.Other.Background";
@@ -105,26 +83,27 @@ const char* GetPerThreadHistogramNameForProcessTypeBackground(
 }
 
 const char* GetPerThreadHistogramNameForProcessTypeUnattributed(
-    ProcessTypeForUma type) {
+    base::ShortProcessType type) {
   switch (type) {
-    case ProcessTypeForUma::kBrowser:
+    case base::ShortProcessType::kBrowser:
       return "Power.CpuTimeSecondsPerThreadType.Browser.Unattributed";
-    case ProcessTypeForUma::kRenderer:
+    case base::ShortProcessType::kRenderer:
       return "Power.CpuTimeSecondsPerThreadType.Renderer.Unattributed";
-    case ProcessTypeForUma::kGpu:
+    case base::ShortProcessType::kGpu:
       return "Power.CpuTimeSecondsPerThreadType.GPU.Unattributed";
     default:
       return "Power.CpuTimeSecondsPerThreadType.Other.Unattributed";
   }
 }
 
-const char* GetAvgCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
+const char* GetAvgCpuLoadHistogramNameForProcessType(
+    base::ShortProcessType type) {
   switch (type) {
-    case ProcessTypeForUma::kBrowser:
+    case base::ShortProcessType::kBrowser:
       return "Power.AvgCpuLoad.Browser";
-    case ProcessTypeForUma::kRenderer:
+    case base::ShortProcessType::kRenderer:
       return "Power.AvgCpuLoad.Renderer";
-    case ProcessTypeForUma::kGpu:
+    case base::ShortProcessType::kGpu:
       return "Power.AvgCpuLoad.GPU";
     default:
       return "Power.AvgCpuLoad.Other";
@@ -240,7 +219,7 @@ CpuTimeMetricsThreadType GetThreadTypeFromName(const char* const thread_name) {
 class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
  public:
   DetailedCpuTimeMetrics(base::ProcessMetrics* process_metrics,
-                         ProcessTypeForUma process_type)
+                         base::ShortProcessType process_type)
       : process_metrics_(process_metrics),
         process_type_(process_type),
         // DetailedCpuTimeMetrics is created on the main thread of the process
@@ -387,7 +366,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
   raw_ptr<base::ProcessMetrics> process_metrics_;
-  ProcessTypeForUma process_type_;
+  base::ShortProcessType process_type_;
   uint32_t current_cycle_ = 0;
   base::PlatformThreadId main_thread_id_;
   base::TimeDelta reported_cpu_time_;
@@ -409,7 +388,7 @@ ProcessCpuTimeMetrics::ProcessCpuTimeMetrics()
            // desktop to reduce metric data loss.
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()),
-      process_type_(CurrentProcessType()),
+      process_type_(base::CurrentProcess::GetInstance().GetShortType({})),
       detailed_metrics_(
           std::make_unique<DetailedCpuTimeMetrics>(process_metrics_.get(),
                                                    process_type_)) {
@@ -418,8 +397,8 @@ ProcessCpuTimeMetrics::ProcessCpuTimeMetrics()
   // Browser and GPU processes have a longer lifetime (don't disappear between
   // navigations), and typically execute a large number of small main-thread
   // tasks. For these processes, choose a higher reporting interval.
-  if (process_type_ == ProcessTypeForUma::kBrowser ||
-      process_type_ == ProcessTypeForUma::kGpu) {
+  if (process_type_ == base::ShortProcessType::kBrowser ||
+      process_type_ == base::ShortProcessType::kGpu) {
     reporting_interval_ = kReportAfterEveryNTasksPersistentProcess;
   } else {
     reporting_interval_ = kReportAfterEveryNTasksOtherProcess;
@@ -504,25 +483,25 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
   if (process_cpu_time_delta.is_positive()) {
     const base::TimeDelta cumulative_cpu_time = cumulative_cpu_usage.value();
 
-    UMA_HISTOGRAM_SCALED_ENUMERATION("Power.CpuTimeSecondsPerProcessType",
+    UMA_HISTOGRAM_SCALED_ENUMERATION("Power.CpuTimeSecondsPerProcessType2",
                                      process_type_,
                                      process_cpu_time_delta.InMicroseconds(),
                                      base::Time::kMicrosecondsPerSecond);
     if (is_foregrounded_.has_value()) {
       if (*is_foregrounded_) {
         UMA_HISTOGRAM_SCALED_ENUMERATION(
-            "Power.CpuTimeSecondsPerProcessType.Foreground", process_type_,
+            "Power.CpuTimeSecondsPerProcessType2.Foreground", process_type_,
             process_cpu_time_delta.InMicroseconds(),
             base::Time::kMicrosecondsPerSecond);
       } else {
         UMA_HISTOGRAM_SCALED_ENUMERATION(
-            "Power.CpuTimeSecondsPerProcessType.Background", process_type_,
+            "Power.CpuTimeSecondsPerProcessType2.Background", process_type_,
             process_cpu_time_delta.InMicroseconds(),
             base::Time::kMicrosecondsPerSecond);
       }
     } else {
       UMA_HISTOGRAM_SCALED_ENUMERATION(
-          "Power.CpuTimeSecondsPerProcessType.Unattributed", process_type_,
+          "Power.CpuTimeSecondsPerProcessType2.Unattributed", process_type_,
           process_cpu_time_delta.InMicroseconds(),
           base::Time::kMicrosecondsPerSecond);
     }
