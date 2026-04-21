@@ -537,32 +537,45 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (shouldUseCompactLayout) {
     UIView* view = self.view;
 
-    [view insertSubview:_topToolbarBackground belowSubview:_topToolbar];
-    [NSLayoutConstraint activateConstraints:@[
-      [_topToolbarBackground.leadingAnchor
-          constraintEqualToAnchor:view.leadingAnchor],
-      [_topToolbarBackground.trailingAnchor
-          constraintEqualToAnchor:view.trailingAnchor],
-      [_topToolbarBackground.topAnchor constraintEqualToAnchor:view.topAnchor],
-      [_topToolbarBackground.bottomAnchor
-          constraintEqualToAnchor:topToolbar.bottomAnchor],
-    ]];
+    if (!_topToolbarBackground.superview) {
+      _topToolbarBackground = [[TabGridToolbarBackgroundView alloc]
+          initWithPosition:TabGridToolbarBackgroundPosition::kTop];
+      _topToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
+      [view insertSubview:_topToolbarBackground belowSubview:_topToolbar];
+      [NSLayoutConstraint activateConstraints:@[
+        [_topToolbarBackground.leadingAnchor
+            constraintEqualToAnchor:view.leadingAnchor],
+        [_topToolbarBackground.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [_topToolbarBackground.topAnchor
+            constraintEqualToAnchor:view.topAnchor],
+        [_topToolbarBackground.bottomAnchor
+            constraintEqualToAnchor:topToolbar.bottomAnchor],
+      ]];
+    }
 
-    [view insertSubview:_bottomToolbarBackground belowSubview:_bottomToolbar];
-    [NSLayoutConstraint activateConstraints:@[
-      [_bottomToolbarBackground.leadingAnchor
-          constraintEqualToAnchor:view.leadingAnchor],
-      [_bottomToolbarBackground.trailingAnchor
-          constraintEqualToAnchor:view.trailingAnchor],
-      [_bottomToolbarBackground.topAnchor
-          constraintEqualToAnchor:bottomToolbar.topAnchor],
-      [_bottomToolbarBackground.bottomAnchor
-          constraintEqualToAnchor:view.bottomAnchor],
-    ]];
+    if (!_bottomToolbarBackground.superview) {
+      _bottomToolbarBackground = [[TabGridToolbarBackgroundView alloc]
+          initWithPosition:TabGridToolbarBackgroundPosition::kBottom];
+      _bottomToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
+      [view insertSubview:_bottomToolbarBackground belowSubview:_bottomToolbar];
+      [NSLayoutConstraint activateConstraints:@[
+        [_bottomToolbarBackground.leadingAnchor
+            constraintEqualToAnchor:view.leadingAnchor],
+        [_bottomToolbarBackground.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [_bottomToolbarBackground.topAnchor
+            constraintEqualToAnchor:bottomToolbar.topAnchor],
+        [_bottomToolbarBackground.bottomAnchor
+            constraintEqualToAnchor:view.bottomAnchor],
+      ]];
+    }
 
   } else {
     [_topToolbarBackground removeFromSuperview];
+    _topToolbarBackground = nil;
     [_bottomToolbarBackground removeFromSuperview];
+    _bottomToolbarBackground = nil;
   }
 }
 
@@ -840,12 +853,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
-
-  if (@available(iOS 26, *)) {
-    _topToolbarBackground = [[TabGridToolbarBackgroundView alloc]
-        initWithPosition:TabGridToolbarBackgroundPosition::kTop];
-    _topToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  }
 }
 
 // Adds the bottom toolbar and sets constraints.
@@ -881,12 +888,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
-
-  if (@available(iOS 26, *)) {
-    _bottomToolbarBackground = [[TabGridToolbarBackgroundView alloc]
-        initWithPosition:TabGridToolbarBackgroundPosition::kBottom];
-    _bottomToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  }
 }
 
 // Adds the PinnedTabsViewController and sets constraints.
