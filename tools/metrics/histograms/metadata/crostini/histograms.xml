@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RecoverySource" enum="CrostiniUISurface"
-    expires_after="2026-07-01">
+    expires_after="2026-10-18">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

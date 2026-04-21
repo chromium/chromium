@@ -8778,7 +8778,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Source"
-    enum="TouchToFill.LoyaltyCard.Source" expires_after="2026-08-09">
+    enum="TouchToFill.LoyaltyCard.Source" expires_after="2026-10-18">
   <owner>vizcay@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>

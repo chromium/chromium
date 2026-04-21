@@ -1362,7 +1362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.StartupTabs.IsWelcomePageSkipped"
-    enum="BooleanSkipped" expires_after="2026-08-02">
+    enum="BooleanSkipped" expires_after="2026-10-18">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

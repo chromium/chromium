@@ -2274,7 +2274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.GetCachedFirstRectResult"
-    enum="GetCachedFirstRectResult" expires_after="2026-08-16">
+    enum="GetCachedFirstRectResult" expires_after="2026-10-18">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

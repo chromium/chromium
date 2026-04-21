@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Mac.SuccessAfterPreviousError"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-08-16">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-18">
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <owner>wfh@chromium.org</owner>

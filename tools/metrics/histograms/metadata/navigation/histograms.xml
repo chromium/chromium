@@ -910,7 +910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.BrowserInitiated.DuplicateNavCookieStatus"
-    enum="DuplicateNavsCookieStatus" expires_after="2026-08-19">
+    enum="DuplicateNavsCookieStatus" expires_after="2026-10-18">
   <owner>annasato@google.com</owner>
   <owner>rakina@google.com</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -1341,7 +1341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.ScreenshotCacheSize" units="MB"
-    expires_after="2026-08-16">
+    expires_after="2026-10-18">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -2184,7 +2184,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.ProcessSwap.V8Optimizer.WouldSwapRendererInitiatedAboutBlankNavigation"
-    enum="BooleanOccurred" expires_after="2026-06-20">
+    enum="BooleanOccurred" expires_after="2026-10-18">
   <owner>tiffanysong@google.com</owner>
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -3213,7 +3213,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.URLLoader.OnAcceptCHFrameReceived.EnabledClientHintsMatch"
-    enum="BooleanMatched" expires_after="2026-08-17">
+    enum="BooleanMatched" expires_after="2026-10-18">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
