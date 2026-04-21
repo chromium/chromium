@@ -50,32 +50,42 @@ void SVGStringListBase::Replace(uint32_t index, const String& new_item) {
   values_[index] = new_item;
 }
 
-template <typename CharType>
-void SVGStringListBase::ParseInternal(const base::span<const CharType> chars,
-                                      char list_delimiter) {
-  size_t position = 0;
-  while (position < chars.size()) {
-    auto token = TokenUntilSvgSpaceOrDelimiter(chars, position, list_delimiter);
-    if (token.empty()) {
-      break;
-    }
-    values_.push_back(String(token));
-    position = SkipOptionalSVGSpacesOrDelimiter(chars, position + token.size(),
-                                                list_delimiter);
+void SVGStringListBase::ParseCommaSeparated(const StringView& data) {
+  Vector<StringView> tokens = data.Split(',');
+  for (const StringView& token : tokens) {
+    values_.emplace_back(StripLeadingAndTrailingHtmlSpaces(token).ToString());
   }
+}
+
+void SVGStringListBase::ParseSpaceSeparated(const StringView& data) {
+  VisitCharacters(data, [&](auto chars) {
+    size_t position = 0;
+    while (SkipOptionalSVGSpaces(chars, position)) {
+      auto token = TokenUntilSvgSpaceOrDelimiter(chars, position, ' ');
+      position += token.size();
+      values_.emplace_back(token);
+    }
+  });
 }
 
 SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
     const String& data,
     char list_delimiter) {
-  // FIXME: Add more error checking and reporting.
   values_.clear();
 
-  if (data.empty())
+  if (!data) {
     return SVGParseStatus::kNoError;
-
-  VisitCharacters(data,
-                  [&](auto chars) { ParseInternal(chars, list_delimiter); });
+  }
+  switch (list_delimiter) {
+    case ',':
+      ParseCommaSeparated(data);
+      break;
+    case ' ':
+      ParseSpaceSeparated(data);
+      break;
+    default:
+      NOTREACHED();
+  }
   return SVGParseStatus::kNoError;
 }
 

@@ -91,9 +91,8 @@ class SVGStringListBase : public SVGPropertyBase {
                                                 char list_delimiter);
   String ValueAsStringWithDelimiter(char list_delimiter) const;
 
-  template <typename CharType>
-  void ParseInternal(const base::span<const CharType> chars,
-                     char list_delimiter);
+  void ParseCommaSeparated(const StringView&);
+  void ParseSpaceSeparated(const StringView&);
 
   Vector<String> values_;
 };
