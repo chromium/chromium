@@ -14,11 +14,12 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 class QuitRunLoopOnPowerStateChangeObserver
     : public performance_manager::user_tuning::BatterySaverModeManager::
@@ -50,7 +51,7 @@ constexpr char kUsingBatteryPowerKey[] = "device_using_battery_power";
 constexpr char kBatteryPercentage[] = "device_battery_percentage";
 #endif
 
-class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
+class PerformanceLogSourceTest : public testing::Test {
  public:
   PerformanceLogSourceTest() = default;
 
@@ -112,6 +113,7 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
         ->RemoveObserver(observer.get());
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
 };
