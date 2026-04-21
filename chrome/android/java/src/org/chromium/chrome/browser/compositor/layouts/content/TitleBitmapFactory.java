@@ -28,7 +28,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -134,7 +134,8 @@ public class TitleBitmapFactory {
         mButtonTextPaint.density = density;
         float maxButtonTextHeight =
                 tabStripHeightPx
-                        - (StripLayoutHelperManager.GLIC_BUTTON_MARGIN_HEIGHT_DP * density);
+                        - (StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_MARGIN_HEIGHT_DP
+                                * density);
         enforceMaxTextHeight(mButtonTextPaint, maxButtonTextHeight);
 
         FontMetrics buttonTextFontMetrics = mButtonTextPaint.getFontMetrics();

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.app.Activity;
@@ -54,7 +53,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -79,7 +77,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
-import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -711,6 +708,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         eq(0f),
                         eq(selectedTabId),
                         eq(hoveredTabId),
@@ -772,6 +770,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -788,6 +787,7 @@ public class StripLayoutHelperManagerTest {
                 new RectF(), new RectF(), mResourceManager);
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -951,6 +951,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
                         anyInt(),
                         anyInt(),
@@ -978,6 +979,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -994,6 +996,7 @@ public class StripLayoutHelperManagerTest {
                 new RectF(), new RectF(), mResourceManager);
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -1317,109 +1320,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testGlicButtonDisabled() {
-        initializeTest();
-        assertNull("Glic button should not be created.", mStripLayoutHelperManager.getGlicButton());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testGlicButtonEnabled() {
-        initializeTest();
-        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
-
-        StripLayoutHelper standardHelper = mStripLayoutHelperManager.getStripLayoutHelper(false);
-        assertNonNull(standardHelper.getGlicButtonForTesting());
-
-        StripLayoutHelper incognitoHelper = mStripLayoutHelperManager.getStripLayoutHelper(true);
-        assertNull(incognitoHelper.getGlicButtonForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testSetGlicButtonText() {
-        initializeTest();
-        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
-
-        float initialWidth = mStripLayoutHelperManager.getGlicButton().getWidth();
-        when(mLayerTitleCache.getUpdatedGlicButtonText(any())).thenReturn(123);
-        when(mLayerTitleCache.getTitleWidth(anyBoolean(), any())).thenReturn(100);
-
-        mStripLayoutHelperManager.setGlicButtonText("Glic Text");
-
-        verify(mLayerTitleCache).getUpdatedGlicButtonText("Glic Text");
-        assertTrue(
-                "Glic button width should increase to accommodate text.",
-                mStripLayoutHelperManager.getGlicButton().getWidth() > initialWidth);
-
-        mStripLayoutHelperManager.setGlicButtonText(null);
-
-        assertEquals(
-                "Glic button width should return to original singular icon width.",
-                initialWidth,
-                mStripLayoutHelperManager.getGlicButton().getWidth(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    @Config(sdk = 30)
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testGlicButtonUnfocusedOpacity() {
-        var appHeaderState =
-                new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        initializeTest();
-        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
-
-        // Focused state
-        mStripLayoutHelperManager.onTopResumedActivityChanged(true);
-        assertEquals(
-                "Glic button opacity should be 1.0 when focused in desktop windowing mode.",
-                1.0f,
-                mStripLayoutHelperManager.getGlicButton().getOpacity(),
-                MathUtils.EPSILON);
-
-        // Unfocused state
-        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
-        assertEquals(
-                "Glic button opacity should be 0.65 when unfocused in desktop windowing mode.",
-                0.65f,
-                mStripLayoutHelperManager.getGlicButton().getOpacity(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testGlicPressedState_GlicUiShowHide() {
-        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
-
-        ArgumentCaptor<GlobalShowHideObserver> observerCaptor =
-                ArgumentCaptor.forClass(GlobalShowHideObserver.class);
-        Mockito.verify(mGlicKeyedService).addGlobalShowHideObserver(observerCaptor.capture());
-
-        // Verify initial state: button is not pressed.
-        assertFalse(
-                "Glic button should not be pressed initially.",
-                mStripLayoutHelperManager.getGlicButton().isPressed());
-
-        // Simulate Glic UI opening event.
-        observerCaptor.getValue().onGlobalShowHide(true);
-
-        // Verify button is in pressed state.
-        assertTrue(
-                "Glic button should be pressed when UI is shown globally.",
-                mStripLayoutHelperManager.getGlicButton().isPressed());
-
-        // Simulate Glic UI hiding event.
-        observerCaptor.getValue().onGlobalShowHide(false);
-
-        // Verify button returns to non-pressed state.
-        assertFalse(
-                "Glic button should not be pressed when UI is hidden globally.",
-                mStripLayoutHelperManager.getGlicButton().isPressed());
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testIncognitoSwitcherDisabled() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
@@ -1571,6 +1471,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -1587,6 +1488,7 @@ public class StripLayoutHelperManagerTest {
         // When visibility is forced, use the provided offset.
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -1692,6 +1594,7 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
@@ -1711,6 +1614,7 @@ public class StripLayoutHelperManagerTest {
                 new RectF(), new RectF(), mResourceManager);
         verify(mTabStripTreeProvider)
                 .pushAndUpdateStrip(
+                        any(),
                         any(),
                         any(),
                         any(),

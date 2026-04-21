@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
@@ -72,6 +73,7 @@ public class TabStripSceneLayerTest {
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
     @Mock private TintedCompositorButton mCloseButton;
     @Mock private StripLayoutGroupTitle mStripGroupTitle;
+    @Mock private StripLayoutTrailingButtonsCoordinator mTrailingButtonsCoordinator;
 
     private static final float DP_TO_PX = 1.f;
 
@@ -164,7 +166,7 @@ public class TabStripSceneLayerTest {
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};
         mStripGroupTitles = new StripLayoutGroupTitle[] {mStripGroupTitle};
         when(mStripLayoutHelperManager.getNewTabButton()).thenReturn(mNewTabButton);
-        when(mStripLayoutHelperManager.getGlicButton()).thenReturn(mGlicButton);
+        when(mTrailingButtonsCoordinator.getGlicButton()).thenReturn(mGlicButton);
         when(mStripLayoutHelperManager.getModelSelectorButton()).thenReturn(mModelSelectorButton);
         when(mStripLayoutHelperManager.getContext()).thenReturn(mContext);
         when(mStripLayoutTab.getCloseButton()).thenReturn(mCloseButton);
@@ -196,6 +198,7 @@ public class TabStripSceneLayerTest {
         // Call the method being tested.
         mTabStripSceneLayer.pushAndUpdateStrip(
                 mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
                 mLayerTitleCache,
                 mResourceManager,
                 mStripLayoutTabs,
@@ -631,7 +634,14 @@ public class TabStripSceneLayerTest {
     public void testUpdateNewTabButton() {
         mNewTabButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
-                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                0,
+                0,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f);
         verify(mTabStripSceneMock, times(1))
                 .updateNewTabButton(
                         eq(1L),
@@ -656,7 +666,14 @@ public class TabStripSceneLayerTest {
     public void testUpdateGlicButton() {
         mGlicButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
-                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                0,
+                0,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f);
         verify(mTabStripSceneMock, times(1))
                 .updateGlicButton(
                         eq(1L),
@@ -686,7 +703,14 @@ public class TabStripSceneLayerTest {
     public void testUpdateModelSelectorButton() {
         mModelSelectorButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
-                mStripLayoutHelperManager, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                0,
+                0,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f);
         verify(mTabStripSceneMock, times(1))
                 .updateModelSelectorButton(
                         eq(1L),

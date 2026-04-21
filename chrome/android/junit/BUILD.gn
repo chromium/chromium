@@ -629,6 +629,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperManagerTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTabTest.java",
+      "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTrailingButtonsCoordinatorTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripStackerUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabHoverCardViewUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabModelActionListenerUnitTest.java",
