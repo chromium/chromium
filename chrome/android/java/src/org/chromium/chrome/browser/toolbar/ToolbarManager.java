@@ -1243,6 +1243,19 @@ public class ToolbarManager
 
         tabObscuringHandler.addObserver(this);
 
+        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        View scrimTarget = mCompositorViewHolder;
+        mLocationBarFocusHandler =
+                new LocationBarFocusScrimHandler(
+                        scrimManager,
+                        new TabObscuringCallback(tabObscuringHandler),
+                        /* context= */ activity,
+                        mLocationBarModel,
+                        clickDelegate,
+                        scrimTarget,
+                        mTabStripTopControlLayer.getSupplier(),
+                        mBottomControlsStacker);
+
         if (mIsCustomTab) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) mToolbarLayout);
             mLocationBar =
@@ -1327,25 +1340,13 @@ public class ToolbarManager
                             TabFavicon::getBitmap,
                             snackbarManager,
                             bottomContainerView,
-                            omniboxChipManager);
+                            omniboxChipManager,
+                            mLocationBarFocusHandler);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
         }
-
-        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-        View scrimTarget = mCompositorViewHolder;
-        mLocationBarFocusHandler =
-                new LocationBarFocusScrimHandler(
-                        scrimManager,
-                        new TabObscuringCallback(tabObscuringHandler),
-                        /* context= */ activity,
-                        mLocationBarModel,
-                        clickDelegate,
-                        scrimTarget,
-                        mTabStripTopControlLayer.getSupplier(),
-                        mBottomControlsStacker);
 
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
@@ -1353,7 +1354,6 @@ public class ToolbarManager
             omnibox.addUrlFocusChangeListener(this);
             omnibox.addUrlFocusChangeListener(mStatusBarColorController);
         }
-        mLocationBar.setScrimHandler(mLocationBarFocusHandler);
         mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =

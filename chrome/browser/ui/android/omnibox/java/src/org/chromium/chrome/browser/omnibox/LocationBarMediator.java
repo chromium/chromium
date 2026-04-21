@@ -224,7 +224,7 @@ class LocationBarMediator
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
-    private @Nullable LocationBarFocusScrimHandler mScrimHandler;
+    private final @Nullable LocationBarFocusScrimHandler mScrimHandler;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedWithoutAnimations;
@@ -292,7 +292,8 @@ class LocationBarMediator
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
             LocationBarEmbedder locationBarEmbedder,
-            @Nullable OmniboxChipManager omniboxChipManager) {
+            @Nullable OmniboxChipManager omniboxChipManager,
+            @Nullable LocationBarFocusScrimHandler scrimHandler) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -323,6 +324,8 @@ class LocationBarMediator
                     () -> updateZoomButtonVisibility(/* notifyEmbedder= */ true));
         }
         AppBannerManager.addObserver(this);
+        mScrimHandler = scrimHandler;
+        if (mScrimHandler != null) addUrlFocusChangeListener(mScrimHandler);
 
         mBookmarkButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
@@ -398,11 +401,6 @@ class LocationBarMediator
         updateSearchEngineStatusIconShownState();
     }
 
-    /*package */ void setScrimHandler(LocationBarFocusScrimHandler scrimHandler) {
-        mScrimHandler = scrimHandler;
-        addUrlFocusChangeListener(mScrimHandler);
-    }
-
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
         mCallbackController.destroy();
@@ -423,7 +421,6 @@ class LocationBarMediator
         mLocationBarDataProvider.removeObserver(this);
         if (mScrimHandler != null) {
             removeUrlFocusChangeListener(mScrimHandler);
-            mScrimHandler = null;
         }
         mUrlFocusChangeListeners.clear();
         if (mPageZoomIndicatorCoordinator != null) {

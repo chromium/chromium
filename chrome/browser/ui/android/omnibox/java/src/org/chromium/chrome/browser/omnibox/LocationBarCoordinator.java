@@ -235,7 +235,8 @@ public class LocationBarCoordinator
             Function<Tab, @Nullable Bitmap> tabFaviconFunction,
             SnackbarManager snackbarManager,
             View bottomContainerView,
-            @Nullable OmniboxChipManager omniboxChipManager) {
+            @Nullable OmniboxChipManager omniboxChipManager,
+            @Nullable LocationBarFocusScrimHandler scrimHandler) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -325,7 +326,8 @@ public class LocationBarCoordinator
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         locationBarEmbedder,
-                        omniboxChipManager);
+                        omniboxChipManager,
+                        scrimHandler);
         mBackButton = mLocationBarLayout.findViewById(R.id.omnibox_back_button);
         if (mBackButton != null) {
             mBackButton.setOnClickListener(v -> mLocationBarMediator.onBackButtonClicked());
@@ -600,11 +602,6 @@ public class LocationBarCoordinator
     @Override
     public void setShowTitle(boolean showTitle) {
         mLocationBarMediator.setShowTitle(showTitle);
-    }
-
-    @Override
-    public void setScrimHandler(LocationBarFocusScrimHandler scrimHandler) {
-        mLocationBarMediator.setScrimHandler(scrimHandler);
     }
 
     @Override

@@ -128,7 +128,8 @@ public class ContextualTasksFusebox {
                         /* tabFaviconFunction= */ (tab) -> null,
                         snackbarManager,
                         bottomContainer,
-                        /* omniboxChipManager= */ null);
+                        /* omniboxChipManager= */ null,
+                        /* scrimHandler= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.setShouldShowLensButtonWhenUnfocused(true);

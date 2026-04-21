@@ -207,6 +207,7 @@ public class LocationBarMediatorTest {
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
+    @Mock private LocationBarFocusScrimHandler mScrimHandler;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -324,7 +325,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
-                        /* omniboxChipManager= */ null);
+                        /* omniboxChipManager= */ null,
+                        mScrimHandler);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -363,7 +365,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
-                        /* omniboxChipManager= */ null);
+                        /* omniboxChipManager= */ null,
+                        /* scrimHandler= */ null);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         return tabletMediator;
@@ -1286,7 +1289,8 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
-                        /* omniboxChipManager= */ null);
+                        /* omniboxChipManager= */ null,
+                        mScrimHandler);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mProfileSupplier.set(mProfile);

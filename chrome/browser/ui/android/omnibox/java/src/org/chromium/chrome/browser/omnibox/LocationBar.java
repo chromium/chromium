@@ -146,11 +146,4 @@ public interface LocationBar {
 
     /** Destroys the LocationBar. */
     void destroy();
-
-    /**
-     * Set the LocationBarFocusScrimHandler.
-     *
-     * @param scrimHandler The handler for the focus scrim.
-     */
-    default void setScrimHandler(LocationBarFocusScrimHandler scrimHandler) {}
 }
