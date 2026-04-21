@@ -60,6 +60,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Whether the loading state is currently shown.
   BOOL _loadingState;
+
+  // Whether `setEditItems:` has completed.
+  BOOL _setEditItemsCompleted;
 }
 
 #pragma mark - UIViewController
@@ -199,6 +202,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self.tableView reloadData];
   }
   [self validateFields];
+  _setEditItemsCompleted = YES;
 }
 
 - (void)setEditingAllowed:(BOOL)editingAllowed {
@@ -486,6 +490,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
       BOOL itemIsValid = !missingFields.contains(
           autofill::AttributeType(editItem.attributeType));
+      if (!_setEditItemsCompleted) {
+        itemIsValid = YES;
+      }
       if (editItem.hasValidValueStatus != itemIsValid) {
         editItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:editItem];
@@ -495,6 +502,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
       BOOL itemIsValid = !missingFields.contains(
           autofill::AttributeType(countryItem.attributeType));
+      if (!_setEditItemsCompleted) {
+        itemIsValid = YES;
+      }
       if (countryItem.hasValidValueStatus != itemIsValid) {
         countryItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:countryItem];
