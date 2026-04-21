@@ -184,7 +184,8 @@ def ci_builder(
     )
 
 def browser_builder(
-        max_concurrent_invocations = 4,
+        # Increasing this could overload the remote workers for build, so don't increase it much.
+        max_concurrent_invocations = 3,
         build_config = None,
         clusterfuzz_archive_name_prefix = None,
         clusterfuzz_archive_subdir = None,
