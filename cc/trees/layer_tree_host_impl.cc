@@ -5563,7 +5563,8 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
                       /*viewport_point=*/gfx::Point(),
                       /*is_direct_manipulation=*/false,
                       /*affect_browser_controls=*/false,
-                      /*scroll_outer_viewport=*/true);
+                      /*scroll_outer_viewport=*/true,
+                      /*is_inertial=*/false);
 
   // If the viewport has scroll snap styling, we may need to snap after
   // scrolling it. Browser controls animations may happen after scrollend, so

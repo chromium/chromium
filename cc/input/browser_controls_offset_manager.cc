@@ -600,7 +600,8 @@ float BrowserControlsOffsetManager::MaximumShownRatioDeltaPerFrame(
 }
 
 gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
-    const gfx::Vector2dF& pending_delta) {
+    const gfx::Vector2dF& pending_delta,
+    bool is_inertial) {
   // If one or both of the top/bottom controls are showing, the shown ratio
   // needs to be computed.
   if (!TopControlsHeight() && !BottomControlsHeight())
@@ -616,7 +617,7 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
     return pending_delta;
 
   if (use_snap_animation_) {
-    ScrollBySnap(pending_delta);
+    ScrollBySnap(pending_delta, is_inertial);
     return pending_delta;
   }
 
@@ -731,7 +732,8 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollByPrecise(
 }
 
 void BrowserControlsOffsetManager::ScrollBySnap(
-    const gfx::Vector2dF& pending_delta) {
+    const gfx::Vector2dF& pending_delta,
+    bool is_inertial) {
   accumulated_scroll_delta_ += pending_delta.y();
 
   float velocity_y = scroll_velocity_tracker_.CurrentVelocity().y();
@@ -748,8 +750,10 @@ void BrowserControlsOffsetManager::ScrollBySnap(
   AnimationDirection direction = pending_delta.y() >= 0
                                      ? AnimationDirection::kHidingControls
                                      : AnimationDirection::kShowingControls;
+  // Prevent the hide animation from running more than once per scroll until the
+  // user lifts their finger.
   if (direction == AnimationDirection::kHidingControls &&
-      did_hide_this_scroll_) {
+      did_hide_this_scroll_ && !is_inertial) {
     return;
   }
   SetupSnapAnimation(direction, pending_delta);

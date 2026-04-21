@@ -145,7 +145,16 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void OnBrowserControlsParamsChanged(bool animate_changes);
 
   void ScrollBegin();
-  gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta);
+  // Scrolls the browser controls by the given `pending_delta` and returns the
+  // remaining scroll delta that was not applied. `is_inertial` indicates
+  // whether the scroll update received from the browser process corresponds to
+  // a scroll that continues after the user lifts their finger off the screen
+  // (e.g. fling).
+  //
+  // TODO(anandrv): Remove the default value for the `is_inertial` parameter
+  // once snap animation is always enabled.
+  gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
+                          bool is_inertial = false);
   void ScrollEnd(
       const gfx::Vector2dF& compensated_scroll_delta = gfx::Vector2dF());
 
@@ -205,7 +214,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   bool IsAnimatingHeightChange();
 
   gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
-  void ScrollBySnap(const gfx::Vector2dF& pending_delta);
+  void ScrollBySnap(const gfx::Vector2dF& pending_delta, bool is_inertial);
 
   // Returns the magnitude of scroll delta in a single scroll sequence required
   // to trigger the snap animation.

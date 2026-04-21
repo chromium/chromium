@@ -830,7 +830,8 @@ void InputHandler::SetSynchronousInputHandlerRootScrollOffset(
                     /*viewport_point=*/gfx::Point(),
                     /*is_direct_manipulation=*/false,
                     /*affect_browser_controls=*/false,
-                    /*scroll_outer_viewport=*/true)
+                    /*scroll_outer_viewport=*/true,
+                    /*is_inertial=*/false)
           .consumed_delta;
   if (consumed_delta.IsZero()) {
     return;
@@ -2176,7 +2177,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
       ViewportScrollResult result = GetViewport().ScrollBy(
           delta, viewport_point, scroll_state.is_direct_manipulation(),
           latched_scroll_type_ != ui::ScrollInputType::kWheel,
-          scroll_node.scrolls_outer_viewport);
+          scroll_node.scrolls_outer_viewport,
+          scroll_state.is_in_inertial_phase());
 
       applied_delta = result.consumed_delta;
       delta_applied_to_content = result.content_scrolled_delta;

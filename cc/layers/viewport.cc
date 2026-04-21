@@ -42,7 +42,8 @@ Viewport::ScrollResult Viewport::ScrollBy(const gfx::Vector2dF& physical_delta,
                                           const gfx::Point& viewport_point,
                                           bool is_direct_manipulation,
                                           bool affect_browser_controls,
-                                          bool scroll_outer_viewport) {
+                                          bool scroll_outer_viewport,
+                                          bool is_inertial) {
   if (!OuterScrollNode())
     return ScrollResult();
 
@@ -50,7 +51,7 @@ Viewport::ScrollResult Viewport::ScrollBy(const gfx::Vector2dF& physical_delta,
 
   if (affect_browser_controls &&
       ShouldBrowserControlsConsumeScroll(physical_delta))
-    scroll_node_delta -= ScrollBrowserControls(physical_delta);
+    scroll_node_delta -= ScrollBrowserControls(physical_delta, is_inertial);
 
   gfx::Vector2dF pending_scroll_node_delta = scroll_node_delta;
 
@@ -120,7 +121,9 @@ void Viewport::SnapIfNeeded() {
   gfx::Vector2dF delta = snap.position - current_position;
   delta.Scale(host_impl_->active_tree()->page_scale_factor_for_scroll());
 
-  ScrollBy(delta, gfx::Point(), false, false, true);
+  ScrollBy(delta, /*viewport_point=*/gfx::Point(),
+           /*is_direct_manipulation=*/false, /*affect_browser_controls=*/false,
+           /*scroll_outer_viewport=*/true, /*is_inertial=*/false);
 }
 
 gfx::Vector2dF Viewport::ComputeClampedDelta(
@@ -329,9 +332,10 @@ bool Viewport::ShouldScroll(const ScrollNode& scroll_node) const {
          scroll_node.scrolls_outer_viewport;
 }
 
-gfx::Vector2dF Viewport::ScrollBrowserControls(const gfx::Vector2dF& delta) {
+gfx::Vector2dF Viewport::ScrollBrowserControls(const gfx::Vector2dF& delta,
+                                               bool is_inertial) {
   gfx::Vector2dF excess_delta =
-      host_impl_->browser_controls_manager()->ScrollBy(delta);
+      host_impl_->browser_controls_manager()->ScrollBy(delta, is_inertial);
 
   return delta - excess_delta;
 }
