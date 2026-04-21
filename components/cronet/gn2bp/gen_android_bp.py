@@ -1277,7 +1277,7 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target):
         blueprint, gn, _find_cxx_bridge_binary(target.deps), target.type,
         is_test_target)[0].name
     modules = []
-    for (i, src) in enumerate(target.sources):
+    for (i, src) in enumerate(sorted(target.sources)):
         header_genrule = Module(
             "cc_genrule", f"{label_to_module_name(target.name)}_header_{i}",
             target.name)

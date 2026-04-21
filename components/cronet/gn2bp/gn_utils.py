@@ -668,7 +668,11 @@ class GnParser:
                 # While the arguments might differ, an action should always use the same script for every
                 # architecture. (gen_android_bp's get_action_sanitizer actually relies on this fact.
                 target.script = desc['script']
-                target.arch[arch].args = desc['args']
+                # Soong treats '$' as a special character for substitutions.
+                # Escape it to ensure it is handled as a literal.
+                target.arch[arch].args = [
+                    arg.replace('$', '$$') for arg in desc['args']
+                ]
             target.arch[
                 arch].response_file_contents = self._get_response_file_contents(
                     desc)
