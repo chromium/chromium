@@ -2019,6 +2019,38 @@ TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Aim) {
   run_loop.Run();
 }
 
+// It's possible for aim to get into a state where there is a thread ID but no
+// turn ID (mstk). The most common case is shared links where a "share" turn ID
+// (smstk) is used instead.
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Aim_NoTurnId) {
+  ContextualTask task = service_->CreateTask();
+
+  const std::string server_id = "1234";
+  const std::string title = "title";
+  service_->UpdateThreadForTask(task.GetTaskId(), ThreadType::kAiMode,
+                                server_id, std::nullopt, title);
+
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task.GetTaskId(), "en-us",
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce(
+          [](const std::string& server_id, GURL url) {
+            ASSERT_TRUE(base::StartsWith(url.host(), "www.google.com"));
+            ASSERT_EQ("/search", url.path());
+
+            std::string mstk;
+            ASSERT_FALSE(net::GetValueForKeyInQuery(url, "mstk", &mstk));
+
+            std::string mtid;
+            net::GetValueForKeyInQuery(url, "mtid", &mtid);
+            ASSERT_EQ(mtid, server_id);
+          },
+          server_id)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Gemini) {
   ContextualTask task = service_->CreateTask();
 
