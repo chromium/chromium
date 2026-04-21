@@ -210,7 +210,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   NotifyOnSyncStarted();
 }
 
-// Regression test for crbug.com/1213109.
+// Regression test for crbug.com/40183501.
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
        ShouldNotShowWhenSyncGetsCustomColorBeforeStarting) {
   base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;

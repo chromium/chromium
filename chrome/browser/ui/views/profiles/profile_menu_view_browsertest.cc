@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, RootViewAccessibleName) {
 }
 
 // Make sure nothing bad happens when the browser theme changes while the
-// ProfileMenuView is visible. Regression test for crbug.com/737470
+// ProfileMenuView is visible. Regression test for crbug.com/41327671
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
 }
 
 // Profile chooser view should close when a tab is added.
-// Regression test for http://crbug.com/792845
+// Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
 }
 
 // Profile chooser view should close when active tab is changed.
-// Regression test for http://crbug.com/792845
+// Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabChanged) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 }
 
 // Profile chooser view should close when active tab is closed.
-// Regression test for http://crbug.com/792845
+// Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabClosed) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 }
 
 // Profile chooser view should close when the last tab is closed.
-// Regression test for http://crbug.com/792845
+// Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnLastTabClosed) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 }
 
 // Opening the profile menu dismisses any existing IPH.
-// Regression test for crbug.com/1205901 (Profile Switch IPH)
+// Regression test for crbug.com/40180664 (Profile Switch IPH)
 // and for crbug.com/378449081 (Supervised User IPH).
 class ProfileMenuViewExtensionsIphDismissTest
     : public ProfileMenuViewExtensionsTest,

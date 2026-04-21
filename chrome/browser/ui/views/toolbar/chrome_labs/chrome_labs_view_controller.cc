@@ -178,7 +178,7 @@ void ChromeLabsViewController::RestartToApplyFlags() {
 #endif
   // During the restart process some situations may cause previously active
   // bubbles to deactivate. Since the restart action itself is not binded to any
-  // state, run the restart asynchronously. See crbug.com/1310212 where
+  // state, run the restart asynchronously. See crbug.com/40830238 where
   // deactivation of bubbles is caused by the modal for downloads in progress
   // being shown.
   content::GetUIThreadTaskRunner({})->PostTask(

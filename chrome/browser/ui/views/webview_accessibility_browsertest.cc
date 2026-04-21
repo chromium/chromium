@@ -83,7 +83,7 @@ class WebViewBrowserTest : public InProcessBrowserTest {
       scoped_accessibility_mode_;
 };
 
-// Flaky. https://crbug.com/1013805
+// Flaky. https://crbug.com/40652843
 IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/fixed_size_document.html")));

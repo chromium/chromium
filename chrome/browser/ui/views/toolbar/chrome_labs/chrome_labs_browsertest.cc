@@ -145,7 +145,7 @@ class ChromeLabsUiTest : public DialogBrowserTest {
   }
   void ShowUi(const std::string& name) override {
     // Bubble bounds may exceed display's work area.
-    // https://crbug.com/893292
+    // https://crbug.com/41419544
     set_should_verify_dialog_bounds(false);
     helper_->ShowChromeLabsBubble(browser());
   }
@@ -190,7 +190,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
   }
   void ShowUi(const std::string& name) override {
     // Bubble bounds may exceed display's work area.
-    // https://crbug.com/893292
+    // https://crbug.com/41419544
     set_should_verify_dialog_bounds(false);
     helper_->ShowChromeLabsBubble(browser());
 

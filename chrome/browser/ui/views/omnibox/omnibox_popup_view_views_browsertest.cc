@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
 }
 
-// TODO(tapted): https://crbug.com/905508 Fix and enable on Mac.
+// TODO(tapted): https://crbug.com/40602507 Fix and enable on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ClickOmnibox DISABLED_ClickOmnibox
 #else
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
   EXPECT_TRUE(GetPopupWidget()->IsClosed());
 }
 
-// Flaky on Mac: https://crbug.com/1140153.
+// Flaky on Mac: https://crbug.com/40726476.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEvents DISABLED_EmitAccessibilityEvents
 #else
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
             u"FooBarBazCom https://foobarbaz.com location from history");
 }
 
-// Flaky on Mac: https://crbug.com/1146627.
+// Flaky on Mac: https://crbug.com/40730186.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint \
   DISABLED_EmitAccessibilityEventsOnButtonFocusHint
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   EXPECT_EQ(OmniboxPopupSelection(1), edit_model()->GetPopupSelection());
 }
 
-// Flaky on Mac: https://crbug.com/1511356
+// Flaky on Mac: https://crbug.com/41483942
 // Flaky on Win and Linux: https://crbug.com/365250293
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode

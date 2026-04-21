@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   EXPECT_FALSE(GetDialog());
 }
 
-// Tests crash scenario from crbug.com/1473691.
+// Tests crash scenario from crbug.com/40069834.
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ClosedBrowser) {
   PreShow();
   ui_test_utils::BrowserDestroyedObserver observer(browser());

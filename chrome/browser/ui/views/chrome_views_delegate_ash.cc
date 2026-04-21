@@ -62,7 +62,8 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     views::internal::NativeWidgetDelegate* delegate) {
   // The context should be associated with a root window. If the context has a
   // null root window (e.g. the context window has no parent) it will trigger
-  // the fallback case below. https://crbug.com/828626 https://crrev.com/230793
+  // the fallback case below. https://crbug.com/40569961
+  // https://crrev.com/230793
   if (params->context) {
     params->context = params->context->GetRootWindow();
   }

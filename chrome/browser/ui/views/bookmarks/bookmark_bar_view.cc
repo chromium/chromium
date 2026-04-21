@@ -263,7 +263,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     if (event.IsOnlyLeftMouseButton()) {
       // TODO(bruthig): The ACTION_PENDING triggering logic should be in
       // MenuButton::OnPressed() however there is a bug with the pressed state
-      // logic in MenuButton. See http://crbug.com/567252.
+      // logic in MenuButton. See http://crbug.com/41227327.
       views::InkDrop::Get(this)->AnimateToState(
           views::InkDropState::ACTION_PENDING, &event);
     }
@@ -1869,7 +1869,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       if (ui::TouchUiController::Get()->touch_ui() && cp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
-        // See https://crbug/814447
+        // See https://crbug.com/41371804
         const gfx::ImageSkia icon =
             gfx::CreateVectorIcon(kDefaultTouchFaviconIcon, text_color);
         // The color used in `mask` is not relevant as long it is opaque; Only

@@ -11,10 +11,10 @@ void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
                                         gfx::NativeWindow parent,
                                         net::X509Certificate* cert) {
   // The certificate viewer on macOS uses the OS viewer rather than the Views
-  // implementation (see https://crbug.com/953425), so go through a Mojo
+  // implementation (see https://crbug.com/41453265), so go through a Mojo
   // interface. This calls the platform APIs from the right process in PWAs.
-  // See https://crbug.com/916815. If this dialog is switched to Views, the Mojo
-  // call will no longer be needed.
+  // See https://crbug.com/41432724. If this dialog is switched to Views, the
+  // Mojo call will no longer be needed.
   remote_cocoa::mojom::NativeWidgetNSWindow* mojo_window =
       remote_cocoa::GetWindowMojoInterface(parent);
   if (!mojo_window) {

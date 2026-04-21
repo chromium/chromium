@@ -578,12 +578,13 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // For renderer initiated focuses (like NTP or about:blank page load finish):
   //  - If the omnibox was not already focused, select-all. This handles the
   //    about:blank homepage case, where the location bar has initial focus.
-  //    It annoys users if the URL is not pre-selected. https://crbug.com/45260.
+  //    It annoys users if the URL is not pre-selected.
+  //    https://crbug.com/40402896.
   //  - If the omnibox is already focused, DO NOT select-all. This can happen
   //    if the user starts typing before the NTP finishes loading. If the NTP
   //    finishes loading and then does a renderer-initiated focus, performing
   //    a select-all here would surprisingly overwrite the user's first few
-  //    typed characters. https://crbug.com/924935.
+  //    typed characters. https://crbug.com/40610912.
   if (is_user_initiated || !omnibox_already_focused) {
     SelectAll(true);
   }
@@ -1488,7 +1489,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       // the elided URL is selected prior to the double click. Unelision happens
       // between the first and second click, causing the wrong word to be
       // selected because it's based on the click position in the newly unelided
-      // URL. See https://crbug.com/1084406.
+      // URL. See https://crbug.com/40693090.
       if (IsSelectAll()) {
         SelectWordAt(event.location());
         const std::u16string shown_url = GetText();
@@ -2268,7 +2269,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   }
 
   if (is_mouse_pressed_ && select_all_on_mouse_release_) {
-    // https://crbug.com/1063161 If the user presses the mouse button down and
+    // https://crbug.com/40123188 If the user presses the mouse button down and
     // begins to type without releasing the mouse button, the subsequent release
     // will delete any newly typed characters due to the SelectAll happening on
     // mouse-up. If we detect this state, do the select-all immediately.

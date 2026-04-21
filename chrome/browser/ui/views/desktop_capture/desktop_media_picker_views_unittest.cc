@@ -274,7 +274,7 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
   EXPECT_EQ(kFakeId, WaitForPickerResult());
 }
 
-// Regression test for https://crbug.com/1102153
+// Regression test for https://crbug.com/40052774
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {
   const DesktopMediaID kFakeId(DesktopMediaID::TYPE_SCREEN, 222);
 
@@ -975,12 +975,12 @@ class DesktopMediaPickerViewsSingleTabPaneTest
 };
 
 // Validates that the tab list's preferred size is not zero.
-// (https://crbug.com/965408).
+// (https://crbug.com/41460157).
 TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListPreferredSizeNotZero) {
   EXPECT_GT(test_api_.GetSelectedListView()->height(), 0);
 }
 
-// Validates that the tab list has a fixed height (https://crbug.com/998485).
+// Validates that the tab list has a fixed height (https://crbug.com/41478575).
 TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListHasFixedHeight) {
   auto GetDialogHeight = [&]() {
     return GetPickerDialogView()->GetPreferredSize().height();
@@ -1017,7 +1017,7 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListHasFixedHeight) {
   EXPECT_EQ(GetDialogHeight(), initial_size);
 }
 
-// Regression test for https://crbug.com/1042976.
+// Regression test for https://crbug.com/40668785.
 TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
        CannotAcceptTabWithoutSelection) {
   AddTabSource();
@@ -1030,8 +1030,8 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
       ui::mojom::DialogButton::kOk));
 
   // Send the tab list a Return key press, to make sure it doesn't try to accept
-  // with no selected source. If the fix to https://crbug.com/1042976 regresses,
-  // this test will crash here.
+  // with no selected source. If the fix to https://crbug.com/40668785
+  // regresses, this test will crash here.
   test_api_.PressKeyOnSourceAtIndex(
       0, ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0));
 }
@@ -1173,7 +1173,7 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_pair(DesktopMediaList::Type::kWebContents,
                                    DesktopMediaID::TYPE_WEB_CONTENTS)));
 
-// Regression test for https://crbug.com/1102153 and https://crbug.com/1127496
+// Regression test for https://crbug.com/40052774 and https://crbug.com/40053331
 TEST_P(DesktopMediaPickerDoubleClickTest, DoneCallbackNotCalledOnDoubleClick) {
   const DesktopMediaList::Type media_list_type = std::get<0>(GetParam());
   const DesktopMediaID::Type media_type = std::get<1>(GetParam());

@@ -572,7 +572,8 @@ bool ShouldShowWindowIcon(const Browser* browser,
                           bool app_uses_tabbed) {
 #if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
-  // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
+  // window icon, crbug.com/40175496. Child windows (i.e. popups) do show an
+  // icon.
   if (browser->is_trusted_source() || app_uses_window_controls_overlay) {
     return false;
   }
@@ -790,7 +791,7 @@ class BrowserView::ExclusiveAccessContextImpl
 
       // Perform the destroy async. State updates in the exclusive access bubble
       // view may call back into this method. This otherwise results in
-      // premature deletion of the bubble view and UAFs. See crbug.com/1426521.
+      // premature deletion of the bubble view and UAFs. See crbug.com/40063714.
       exclusive_access_bubble_destruction_task_id_ =
           exclusive_access_bubble_cancelable_task_tracker_.PostTask(
               base::SingleThreadTaskRunner::GetCurrentDefault().get(),
@@ -2561,7 +2562,7 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
   if (!window_controls_overlay_enabled_) {
     content::WebContents* web_contents = GetActiveWebContents();
     // `web_contents` can be null while the window is closing, but possibly
-    // also at other times. See https://crbug.com/1467247.
+    // also at other times. See https://crbug.com/40924318.
     if (web_contents) {
       web_contents->UpdateWindowControlsOverlay(gfx::Rect());
     }
@@ -2616,7 +2617,7 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
   // bar, and toolbar) are attached to a separate NSView that slides down from
   // the top of the screen, independent of, and overlapping the WebContents.
   // Disable WCO when in fullscreen, because this space is inaccessible to
-  // WebContents. https://crbug.com/915110.
+  // WebContents. https://crbug.com/41431787.
   if (browser_widget_ && IsFullscreen()) {
     should_show = false;
   }
@@ -2942,7 +2943,7 @@ bool BrowserView::GetCanResize() {
   return CanResize();
 }
 
-// TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
+// TODO(laurila, crbug.com/40276534): Map into new `ui::DisplayState` enum
 // instead of `ui::mojom::WindowShowState`.
 ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
   if (IsMaximized()) {
@@ -3721,7 +3722,7 @@ void BrowserView::OnTabStripModelChanged(
   for ([[maybe_unused]] const auto& contents : change.GetInsert()->contents) {
 #if defined(USE_AURA)
     // WebContents inserted in tabs might not have been added to the root
-    // window yet. Per http://crbug/342672 add them now since drawing the
+    // window yet. Per http://crbug.com/41089037 add them now since drawing the
     // WebContents requires root window specific data - information about
     // the screen the WebContents is drawn on, for example.
     if (!contents.contents->GetNativeView()->GetRootWindow()) {
@@ -3806,7 +3807,7 @@ bool BrowserView::CanActivate() const {
   // If another browser is app modal, flash and activate the modal browser. This
   // has to be done in a post task, otherwise if the user clicked on a window
   // that doesn't have the modal dialog the windows keep trying to get the focus
-  // from each other on Windows. http://crbug.com/141650.
+  // from each other on Windows. http://crbug.com/40256884.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BrowserView::ActivateAppModalDialog,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -4072,7 +4073,7 @@ views::View* BrowserView::GetInitiallyFocusedView() {
 bool BrowserView::ShouldShowWindowTitle() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
-  // title, crbug.com/119411. Child windows (i.e. popups) do show a title.
+  // title, crbug.com/40175496. Child windows (i.e. popups) do show a title.
   if (browser_->is_trusted_source() || AppUsesWindowControlsOverlay()) {
     return false;
   }
@@ -5126,7 +5127,7 @@ void BrowserView::AddedToWidget() {
 
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
-  // to hit web apps. See https://crbug.com/1267781.
+  // to hit web apps. See https://crbug.com/40803038.
   auto* const side_panel_coordinator = SidePanelCoordinator::From(browser_);
   contents_height_side_panel_->AddObserver(side_panel_coordinator);
   toolbar_height_side_panel_->AddObserver(side_panel_coordinator);

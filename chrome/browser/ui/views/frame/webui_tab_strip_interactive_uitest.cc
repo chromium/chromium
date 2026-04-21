@@ -67,7 +67,7 @@ class WebUITabStripInteractiveTest : public InProcessBrowserTest {
   WebUITabStripTestHelper helper_;
 };
 
-// Regression test for crbug.com/1027375.
+// Regression test for crbug.com/40108728.
 IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
                        CanTypeInOmniboxAfterTabStripClose) {
   BrowserView* const browser_view =
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// Regression test for crbug.com/1112028
+// Regression test for crbug.com/40709494
 IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -235,7 +235,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          testing::Values(false));
 #endif
 
-// Regression test for crbug.com/1286203.
+// Regression test for crbug.com/40058468.
 //
 // The original bug was a UAF that happened when a tab closed itself (e.g. via
 // javascript) during a drag from the WebUI tabstrip; not all references to the

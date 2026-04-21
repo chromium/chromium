@@ -285,8 +285,8 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
           ProfileMetrics::ProfileSignedInFlowOutcome::kEnterpriseSyncDisabled);
       // SYNC_WITH_DEFAULT_SETTINGS encodes that the user wants to continue
       // (despite sync being disabled).
-      // TODO (crbug.com/1141341): Split the enum for sync disabled / rename the
-      // entries to better match the situation.
+      // TODO (crbug.com/40727110): Split the enum for sync disabled / rename
+      // the entries to better match the situation.
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:

@@ -132,7 +132,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(IS_MAC)
-// Focusing or input is not completely working on Mac: http://crbug.com/824418
+// Focusing or input is not completely working on Mac: http://crbug.com/41378108
 #define MAYBE_SadTabKeyboardAccessibility DISABLED_SadTabKeyboardAccessibility
 #else
 #define MAYBE_SadTabKeyboardAccessibility SadTabKeyboardAccessibility

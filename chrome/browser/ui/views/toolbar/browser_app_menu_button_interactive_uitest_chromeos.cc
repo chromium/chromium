@@ -92,7 +92,7 @@ class BrowserAppMenuButtonVirtualKeyboardBrowserTest
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
-// Regression test for crbug.com/1334994.
+// Regression test for crbug.com/40846803.
 IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonVirtualKeyboardBrowserTest,
                        ShowMenuDismissesVirtualKeyboard) {
   {

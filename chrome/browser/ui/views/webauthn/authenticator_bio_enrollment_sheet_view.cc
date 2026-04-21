@@ -28,8 +28,8 @@ AuthenticatorBioEnrollmentSheetView::AuthenticatorBioEnrollmentSheetView(
   // Override the DialogClientView (i.e. this view's parent) handling of the
   // escape key to avoid closing the dialog when we want to cancel instead,
   // since cancelling might do something different.
-  // This is a workaround to fix crbug.com/1145724.
-  // TODO(nsatragno): remove this workaround once crbug.com/1147927 is fixed.
+  // This is a workaround to fix crbug.com/40155990.
+  // TODO(nsatragno): remove this workaround once crbug.com/40156827 is fixed.
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 

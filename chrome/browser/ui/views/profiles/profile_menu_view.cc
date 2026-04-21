@@ -931,7 +931,7 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile().GetPath());
   if (!entry) {
-    // May happen if the profile is being deleted. https://crbug.com/1040079
+    // May happen if the profile is being deleted. https://crbug.com/40667165
     return;
   }
 

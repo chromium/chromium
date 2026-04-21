@@ -841,7 +841,7 @@ TEST_F(PopupViewViewsTest, ShowsWidePopup_ElementAtRightEdge) {
   EXPECT_TRUE(dropdown_shown);
 }
 
-// This is a regression test for crbug.com/1113255.
+// This is a regression test for crbug.com/40710172.
 TEST_F(PopupViewViewsTest, ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.
   std::vector<SuggestionType> suggestion_ids = {SuggestionType::kUndoOrClear};
@@ -1500,8 +1500,8 @@ TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
-// This is a regression test for crbug.com/1309431 to ensure that we don't crash
-// when we press tab before a line is selected.
+// This is a regression test for crbug.com/40829763 to ensure that we don't
+// crash when we press tab before a line is selected.
 TEST_F(PopupViewViewsTest, TabBeforeSelectingALine) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
                      SuggestionType::kManageAddress});

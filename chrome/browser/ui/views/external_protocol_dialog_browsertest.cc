@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
       ExternalProtocolHandler::LAUNCH, 1);
 }
 
-// Regression test for http://crbug.com/835216. The OS owns the dialog, so it
+// Regression test for http://crbug.com/41384592. The OS owns the dialog, so it
 // may may outlive the WebContents it is attached to.
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
                        TestAcceptAfterCloseTab) {

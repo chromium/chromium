@@ -271,7 +271,7 @@ using BrowserUserEducationServiceBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
                        FeatureConfigurationConsistencyCheck) {
   // Exceptions to the consistency checks. All of those with crbug.com IDs
-  // should ideally be fixed. See tracking bug at crbug.com/1442977
+  // should ideally be fixed. See tracking bug at crbug.com/40267189
   const std::vector<IPHException> exceptions({
       // Known weird/old/test-only IPH.
       {&feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature,
@@ -281,39 +281,39 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       {&feature_engagement::kIPHGMCCastStartStopFeature,
        IPHFailureReason::kLegacyPromoNoScreenReader, "Known legacy promo."},
       {&feature_engagement::kIPHDesktopPwaInstallFeature,
-       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/1443016"},
+       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/40910901"},
       {&feature_engagement::kIPHReadingListDiscoveryFeature,
-       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/1443020"},
+       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/40910904"},
       {&feature_engagement::kIPHDesktopSharedHighlightingFeature,
-       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/1443071"},
+       IPHFailureReason::kLegacyPromoNoScreenReader, "crbug.com/40910932"},
 
       // Toast IPH that probably need session impact updated.
       {&feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1442979"},
+       IPHFailureReason::kWrongSessionImpact, "crbug.com/40267191"},
       {&feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1442979"},
+       IPHFailureReason::kWrongSessionImpact, "crbug.com/40267191"},
       {&feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1442979"},
+       IPHFailureReason::kWrongSessionImpact, "crbug.com/40267191"},
       {&feature_engagement::kIPHProfileSwitchFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1442979"},
+       IPHFailureReason::kWrongSessionImpact, "crbug.com/40267191"},
       {&feature_engagement::kIPHTabAudioMutingFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1442979"},
+       IPHFailureReason::kWrongSessionImpact, "crbug.com/40267191"},
 
       // IPH that limit session rate in other ways. These should probably be
       // revisited in the future.
       {&feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
-       IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
+       IPHFailureReason::kWrongSessionRate, "crbug.com/40910929"},
       {&feature_engagement::kIPHMemorySaverModeFeature,
-       IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
+       IPHFailureReason::kWrongSessionRate, "crbug.com/40910929"},
       {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, std::nullopt,
-       "crbug.com/1443063"},
+       "crbug.com/40910929"},
       {&feature_engagement::kIPHPowerBookmarksSidePanelFeature,
        IPHFailureReason::kWrongSessionRate,
-       "crbug.com/1443067, crbug.com/1443063"},
+       "crbug.com/40910930, crbug.com/40910929"},
 
       // Deprecated; should probably be removed.
       {&feature_engagement::kIPHReadingListInSidePanelFeature, std::nullopt,
-       "crbug.com/1443078"},
+       "crbug.com/40910936"},
   });
 
   // Fetch the list of known IPH from the Feature Engagement system; it is an

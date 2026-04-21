@@ -147,7 +147,7 @@ void ExtensionsMenuView::Populate() {
   auto extension_buttons = CreateExtensionButtonsContainer();
 
   // This is set so that the extensions menu doesn't fall outside the monitor in
-  // a maximized window in 1024x768. See https://crbug.com/1096630.
+  // a maximized window in 1024x768. See https://crbug.com/40700838.
   // TODO(pbos): Consider making this dynamic and handled by views. Ideally we
   // wouldn't ever pop up so that they pop outside the screen.
   constexpr int kMaxExtensionButtonsHeightDp = 448;

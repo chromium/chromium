@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 // This is an end-to-end test that verifies that a permission prompt bubble will
 // not be shown because of the empty address bar. Under the normal conditions
 // such a test should be placed in PermissionsSecurityModelInteractiveUITest but
-// due to dependency issues (see crbug.com/1112591) `//chrome/browser` is not
+// due to dependency issues (see crbug.com/40709781) `//chrome/browser` is not
 // allowed to have dependencies on `//chrome/browser/ui/views/*`.
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        PermissionRequestIsAutoIgnored) {

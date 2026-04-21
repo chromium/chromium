@@ -103,7 +103,7 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
   info_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   info_label->SetMultiLine(true);
 
-  // As noted in https://crbug.com/1340937#c3, the layout
+  // As noted in https://crbug.com/40230500#c3, the layout
   // seems to have an issue with multi-line labels. As a workaround, give the
   // label the fixed size width.
   const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();

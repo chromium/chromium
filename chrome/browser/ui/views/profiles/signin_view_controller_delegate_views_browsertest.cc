@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Opens and closes the dialog immediately. This is a basic test at the
 // `SigninViewController` API level, but does not test all the edge cases.
-// Regression test for https://crbug.com/1233030.
+// Regression test for https://crbug.com/40191339.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        CloseImmediately) {
   SigninViewController* controller =
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Similar to SigninViewControllerDelegateViewsBrowserTest.CloseImmediately but
 // specifically tests the case where the dialog is not shown at creation.
-// Regression test for https://crbug.com/1233030.
+// Regression test for https://crbug.com/40191339.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        CloseBeforeDisplay) {
   SigninViewControllerDelegateViews* delegate =
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Similar to SigninViewControllerDelegateViewsBrowserTest.CloseImmediately but
 // specifically tests the case where the dialog is shown at creation.
-// Regression test for https://crbug.com/1233030.
+// Regression test for https://crbug.com/40191339.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        CloseAfterDisplay) {
   SigninViewControllerDelegateViews* delegate =

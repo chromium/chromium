@@ -213,7 +213,8 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
 // Tests that when focus is in the omnibox and the user types a url and
 // presses enter, no focus events are sent on the old document.
 // Disabled due to flaky CHECK failures in
-// WinAccessibilityEventMonitor::WaitForNextEvent; see https://crbug.com/791981.
+// WinAccessibilityEventMonitor::WaitForNextEvent; see
+// https://crbug.com/40553207.
 IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
                        DISABLED_TestNavigateToNewUrl) {
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);

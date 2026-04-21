@@ -86,7 +86,7 @@ class ToolbarActionView : public views::MenuButton,
   // Returns the reference button for the extension action's popup. Rather than
   // relying on the button being a MenuButton, the button returned should have a
   // MenuButtonController. This is part of the ongoing work from
-  // http://crbug.com/901183 to simplify the button hierarchy by migrating
+  // http://crbug.com/41423998 to simplify the button hierarchy by migrating
   // controller logic into a separate class leaving MenuButton as an empty class
   // to be deprecated.
   views::BubbleAnchor GetReferenceButtonForPopup();

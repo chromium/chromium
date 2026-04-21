@@ -584,7 +584,7 @@ class FullscreenButton : public ImageButton {
         // mode on most ChromeOS devices which cannot be specified in the
         // standard way here, so omit the accelerator to avoid providing
         // misleading or confusing information to screen reader users.
-        // See crbug.com/1110468 for more context.
+        // See crbug.com/40708624 for more context.
         /*add_accelerator_text=*/false
 #else
         /*add_accelerator_text=*/true
@@ -1128,7 +1128,7 @@ std::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // the content view for the menu's widget. The root MenuItemView itself is not
   // a member of a Widget hierarchy and thus does not have the necessary context
   // to correctly determine the label color as this requires querying the View's
-  // hosting widget (crbug.com/1233392).
+  // hosting widget (crbug.com/40780847).
   return GetLabelFontList(command_id)
              ? std::make_optional(
                    root_->GetSubmenu()->GetColorProvider()->GetColor(

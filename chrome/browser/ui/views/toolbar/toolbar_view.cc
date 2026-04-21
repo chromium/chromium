@@ -318,7 +318,7 @@ void ToolbarView::Init() {
   // Avoid generating too many occlusion tracking calculation events before this
   // function returns. The occlusion status will be computed only once once this
   // function returns.
-  // See crbug.com/1183894#c2
+  // See crbug.com/40171404#c2
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 #endif
 
@@ -1349,9 +1349,9 @@ gfx::Size ToolbarView::CalculatePreferredSize(
     case DisplayMode::kNormal:
       size = AccessiblePaneView::CalculatePreferredSize(available_size);
       // Because there are odd cases where something causes one of the views in
-      // the toolbar to report an unreasonable height (see crbug.com/985909), we
-      // cap the height at the size of known child views (location bar and back
-      // button) plus margins.
+      // the toolbar to report an unreasonable height (see crbug.com/41471763),
+      // we cap the height at the size of known child views (location bar and
+      // back button) plus margins.
       // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
       if (layout_manager_ && location_bar_->IsVisible()) {
@@ -1377,9 +1377,9 @@ gfx::Size ToolbarView::GetMinimumSize() const {
     case DisplayMode::kNormal:
       size = AccessiblePaneView::GetMinimumSize();
       // Because there are odd cases where something causes one of the views in
-      // the toolbar to report an unreasonable height (see crbug.com/985909), we
-      // cap the height at the size of known child views (location bar and back
-      // button) plus margins.
+      // the toolbar to report an unreasonable height (see crbug.com/41471763),
+      // we cap the height at the size of known child views (location bar and
+      // back button) plus margins.
       // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
       if (layout_manager_ && location_bar_->IsVisible()) {

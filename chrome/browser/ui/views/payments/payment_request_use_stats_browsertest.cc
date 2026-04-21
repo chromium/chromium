@@ -35,7 +35,7 @@ using PaymentRequestShippingAddressUseStatsTest = PaymentRequestBrowserTestBase;
 
 // Tests that use stats for the shipping address used in a Payment Request are
 // properly updated upon completion.
-// Flaky. https://crbug.com/1495539.
+// Flaky. https://crbug.com/40937744.
 IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
                        DISABLED_RecordUse) {
   std::string payment_method_name;
@@ -82,7 +82,7 @@ using PaymentRequestContactAddressUseStatsTest = PaymentRequestBrowserTestBase;
 
 // Tests that use stats for the contact address used in a Payment Request are
 // properly updated upon completion.
-// Flaky. https://crbug.com/1495539.
+// Flaky. https://crbug.com/40937744.
 IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
                        DISABLED_RecordUse) {
   std::string payment_method_name;
@@ -129,7 +129,7 @@ using PaymentRequestSameShippingAndContactAddressUseStatsTest =
 
 // Tests that use stats for an address that was used both as a shipping and
 // contact address in a Payment Request are properly updated upon completion.
-// Flaky. https://crbug.com/1495539.
+// Flaky. https://crbug.com/40937744.
 IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
                        DISABLED_RecordUse) {
   std::string payment_method_name;

@@ -154,7 +154,7 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Align the body label with the left edge of the dialog's title.
-  // TODO(bsep): Remove this when fixing https://crbug.com/810970.
+  // TODO(bsep): Remove this when fixing https://crbug.com/40562382.
   const int title_offset =
       2 * provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).left() +
       provider->GetDistanceMetric(

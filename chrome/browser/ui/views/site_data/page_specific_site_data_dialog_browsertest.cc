@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 // Closing the widget asynchronously destroys the CollectedCookiesViews object,
 // but synchronously removes it from the WebContentsModalDialogManager. Make
 // sure there's no crash when trying to re-open the dialog right
-// after closing it. Regression test for https://crbug.com/989888
+// after closing it. Regression test for https://crbug.com/40638525
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        CloseDialogAndReopen) {
   auto* dialog = OpenDialog();
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        SameOriginNavigationDeletion) {
-  // Regression test for crbug.com/1421521. As the dialog remains open during
+  // Regression test for crbug.com/40896298. As the dialog remains open during
   // same-origin navigations, it mustn't cache any pointers owned by the
   // PageSpecificContentSettings, which is _page_ specific, and so changes even
   // on same-origin navigations. Attempting a deletion is sufficient to access

@@ -64,7 +64,7 @@ void ToolbarIconContainerView::RoundRectBorder::OnDeviceScaleFactorChanged(
 
 // Watches for widget restore (or first show) and resets the animation so icons
 // don't spuriously "animate in" when a window is shown or restored. See
-// crbug.com/1106506 for more details.
+// crbug.com/40706372 for more details.
 //
 // There is currently no signal that is consistent across platforms and
 // accessible from the View hierarchy that can tell us if, e.g., a window has
@@ -254,7 +254,7 @@ void ToolbarIconContainerView::OnMouseExited(const ui::MouseEvent& event) {
 
 void ToolbarIconContainerView::AddedToWidget() {
   // Add an observer to reset the animation if the browser window is restored,
-  // preventing spurious animation. (See crbug.com/1106506)
+  // preventing spurious animation. (See crbug.com/40706372)
   restore_observer_ = std::make_unique<WidgetRestoreObserver>(this);
 }
 

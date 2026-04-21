@@ -243,7 +243,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
   }
 };
 
-// Regression test for crbug.com/1425161.
+// Regression test for crbug.com/40898569.
 IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
                        CloseTabWithTutorialBubble) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
       PressButton(kTabCloseButtonId), WaitForHide(kNewTabPageId));
 }
 
-// Regression test for a possible cause of crbug.com/1474307.
+// Regression test for a possible cause of crbug.com/40070061.
 IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
                        CancelTutorialClosesBubble) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
       StartTutorial(kNewTabPageId), CheckWebUIHelpBubbleIsShowing(true));
 }
 
-// Regression test for a possible cause of crbug.com/1474307.
+// Regression test for a possible cause of crbug.com/40070061.
 IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
                        StartTutorialTwiceInARow) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);

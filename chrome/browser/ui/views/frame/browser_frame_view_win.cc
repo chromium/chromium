@@ -232,7 +232,7 @@ BrowserLayoutParams BrowserFrameViewWin::GetBrowserLayoutParams() const {
 bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
   // Because we don't set WS_EX_LAYOUTRTL (which would conflict with Chrome's
   // own RTL layout logic), Windows always draws the caption buttons on the
-  // right, even when we want to be RTL. See crbug.com/560619.
+  // right, even when we want to be RTL. See crbug.com/41222096.
   return !ShouldBrowserCustomDrawTitlebar(GetBrowserView()) &&
          base::i18n::IsRTL();
 }
@@ -971,7 +971,7 @@ void BrowserFrameViewWin::StopThrobber() {
 
     // This will reset the icon which we set in the throbber code.
     // WM_SETICON with null icon restores the icon for title bar but not
-    // for taskbar. See http://crbug.com/29996
+    // for taskbar. See http://crbug.com/40334833
     SendMessage(views::HWNDForWidget(browser_widget()), WM_SETICON,
                 static_cast<WPARAM>(ICON_SMALL),
                 reinterpret_cast<LPARAM>(small_icon));

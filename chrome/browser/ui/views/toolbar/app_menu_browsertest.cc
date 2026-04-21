@@ -201,7 +201,7 @@ void AppMenuBrowserTest::WaitForUserDismissal() {
 // TabRestoreService. This is a regression test to ensure menu code handles this
 // properly (this was triggering a crash in AppMenu where it was trying to make
 // use of RecentTabsMenuModelDelegate before created). See
-// https://crbug.com/1249741 for more.
+// https://crbug.com/40197719 for more.
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   // Create an additional browser, close it, and ensure it is added to the
   // TabRestoreService.

@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, FrameMinSizeIsUpdated) {
 }
 
 // This is a regression test that session restore minimized browser should
-// re-layout the header (https://crbug.com/827444).
+// re-layout the header (https://crbug.com/40569439).
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        RestoreMinimizedBrowserUpdatesCaption) {
   // Enable session service.
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ContentSettingIcons) {
   EXPECT_TRUE(geolocation_icon->IsBubbleShowing());
 }
 
-// Regression test for https://crbug.com/839955
+// Regression test for https://crbug.com/40574975
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        ActiveStateOfButtonMatchesWidget) {
   SetUpWebApp();
@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
 
-// Regression test for https://crbug.com/879851.
+// Regression test for https://crbug.com/41411260.
 // Tests that we don't accidentally change the color of app frame title bars.
 // Update expectation if change is intentional.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, AppFrameColor) {

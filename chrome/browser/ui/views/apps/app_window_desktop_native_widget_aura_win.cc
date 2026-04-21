@@ -29,7 +29,8 @@ void AppWindowDesktopNativeWidgetAuraWin::InitNativeWidget(
 
 void AppWindowDesktopNativeWidgetAuraWin::Maximize() {
   // Maximizing on Windows causes the window to be shown. Call Show() first to
-  // ensure the content view is also made visible. See http://crbug.com/436867.
+  // ensure the content view is also made visible. See
+  // http://crbug.com/41144994.
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Maximize() does not also show the window.
   if (tree_host_ && !tree_host_->IsVisible()) {
@@ -41,7 +42,8 @@ void AppWindowDesktopNativeWidgetAuraWin::Maximize() {
 
 void AppWindowDesktopNativeWidgetAuraWin::Minimize() {
   // Minimizing on Windows causes the window to be shown. Call Show() first to
-  // ensure the content view is also made visible. See http://crbug.com/436867.
+  // ensure the content view is also made visible. See
+  // http://crbug.com/41144994.
   // TODO(jackhou): Make this behavior the same as other platforms, i.e. calling
   // Minimize() does not also show the window.
   if (tree_host_ && !tree_host_->IsVisible()) {

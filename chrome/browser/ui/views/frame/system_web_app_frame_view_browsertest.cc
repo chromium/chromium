@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
                          ->GetAppMenuControl());
 }
 
-// Regression test for https://crbug.com/1090169.
+// Regression test for https://crbug.com/40133634.
 IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
                        HideFileSystemAccessPageAction) {
   HideFileSystemAccessPageAction();

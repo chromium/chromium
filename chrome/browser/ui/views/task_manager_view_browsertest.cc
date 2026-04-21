@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {
             FindRowForTab(browser()->tab_strip_model()->GetWebContentsAt(0)));
 }
 
-// Test is flaky. https://crbug.com/998403
+// Test is flaky. https://crbug.com/41478531
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, DISABLED_SelectionConsistency) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
 
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, RestoreBounds) {
             GetView()->GetWidget()->GetWindowBoundsInScreen());
 
   // Also make sure that the task manager is not restored off-screen.
-  // This is a regression test for https://crbug.com/308606
+  // This is a regression test for https://crbug.com/41066496
   display::Display display =
       display::Screen::Get()->GetDisplayMatching(non_default_bounds);
   const gfx::Rect offscreen_bounds =

@@ -227,7 +227,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Animates the view in and disables highlighting for hover and focus. If a
   // |string_id| is provided it also sets/changes the label to that string.
-  // TODO(bruthig): See https://crbug.com/669253. Since the ink drop highlight
+  // TODO(bruthig): See https://crbug.com/41288467. Since the ink drop highlight
   // currently cannot handle host resizes, the highlight needs to be disabled
   // when the animation is running.
   void AnimateIn(std::optional<int> string_id);

@@ -262,7 +262,7 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
   // Ideally, the browser UI's event system would notify ExternalProtocolHandler
   // that a user action occurred and we are OK to open the dialog, but for some
   // reason that isn't happening every time the reload button is clicked. See
-  // http://crbug.com/1206456
+  // http://crbug.com/40180927
   ExternalProtocolHandler::PermitLaunchUrl();
 
   ClearPendingMenu();

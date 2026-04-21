@@ -87,7 +87,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   // An obvious solution might be to change the primary accelerator to the
   // fullscreen key, but since translation to a function key is done at system
   // level we can't actually do that. Instead we provide specific messaging for
-  // the platform here. (See crbug.com/1110468 for details.)
+  // the platform here. (See crbug.com/40708624 for details.)
   browser_fullscreen_exit_accelerator_ =
       l10n_util::GetStringUTF16(IDS_APP_FULLSCREEN_KEY);
 #else
@@ -118,7 +118,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   //
   // On some platforms, pages can put themselves into fullscreen and then
   // trigger other elements to cover up this bubble, elements that aren't fully
-  // under Chromium's control. See https://crbug.com/927150 for an example.
+  // under Chromium's control. See https://crbug.com/40093908 for an example.
   popup_->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);
   view_->SetBounds(0, 0, size.width(), size.height());
   popup_->AddObserver(this);

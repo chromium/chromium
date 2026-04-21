@@ -117,7 +117,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
       scoped_accessibility_mode_;
 };
 
-// The test is flaky on Windows. See https://crbug.com/1221273
+// The test is flaky on Windows. See https://crbug.com/40773399
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AutofillPopupControllerFor DISABLED_AutofillPopupControllerFor
 #else

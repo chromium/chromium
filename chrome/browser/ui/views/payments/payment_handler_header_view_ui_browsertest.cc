@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
 
 // Test that the header and dialog heights are consistent with when there is no
 // title.
-// Flakily failing: https://crbug.com/1430351
+// Flakily failing: https://crbug.com/40901693
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
                        DISABLED_ConsistentHeaderHeight) {
   // Install a payment app that will open a window.

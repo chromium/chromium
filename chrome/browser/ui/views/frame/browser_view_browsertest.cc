@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
 
 // Launch the app, navigate to a page with a title, check that the tab title
 // is set before load finishes and the throbber state updates when the title
-// changes. Regression test for crbug.com/752266
+// changes. Regression test for crbug.com/40533493
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   const std::u16string test_title(u"Title Of Awesomeness");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();

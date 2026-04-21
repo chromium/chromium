@@ -208,7 +208,7 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
   // Sets the top inset only when the top-of-window views is fully visible. This
   // means some gesture may not be recognized well during the animation, but
   // that's fine since a complicated gesture wouldn't be involved during the
-  // animation duration. See: https://crbug.com/901544.
+  // animation duration. See: https://crbug.com/41424205.
   if (browser_view_->GetSupportsTabStrip()) {
     if (visible_fraction == 1.0) {
       std::vector<ContentsWebView*> contents_views =

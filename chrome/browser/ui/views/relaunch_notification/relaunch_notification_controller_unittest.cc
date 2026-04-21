@@ -1379,7 +1379,7 @@ class RelaunchNotificationControllerPlatformImplTest
   std::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
-// Flaky on all platforms: https://crbug.com/1294032
+// Flaky on all platforms: https://crbug.com/40820313
 TEST_F(RelaunchNotificationControllerPlatformImplTest,
        DISABLED_SynchronousNotification) {
   // Make the UX visible to the user so that no delay will be incurred

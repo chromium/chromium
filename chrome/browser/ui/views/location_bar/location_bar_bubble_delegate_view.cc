@@ -31,18 +31,18 @@ namespace {
 ax::mojom::Role GetAccessibleRoleForReason(
     LocationBarBubbleDelegateView::DisplayReason reason) {
   if (reason == LocationBarBubbleDelegateView::USER_GESTURE) {
-    // crbug.com/1132318: The bubble appears as a direct result of a user
+    // crbug.com/40721894: The bubble appears as a direct result of a user
     // action and will get focused. If we used an alert-like role, it would
     // produce an event that would cause double-speaking the bubble.
     return ax::mojom::Role::kDialog;
   }
 
-  // crbug.com/1079320, crbug.com/1119367, crbug.com/1119734: The bubble
+  // crbug.com/40689838, crbug.com/40714136, crbug.com/40714323: The bubble
   // appears spontaneously over the course of the user's interaction with
   // Chrome and doesn't get focused. We need an alert-like role so the
   // corresponding event is triggered and ATs announce the bubble.
 #if BUILDFLAG(IS_WIN)
-  // crbug.com/1125118: Windows ATs only announce these bubbles if the alert
+  // crbug.com/40717636: Windows ATs only announce these bubbles if the alert
   // role is used, despite it not being the most appropriate choice.
   // TODO(accessibility): review the role mappings for alerts and dialogs,
   // making sure they are translated to the best candidate in each flatform

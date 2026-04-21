@@ -537,7 +537,7 @@ TEST_F(ChromeLabsViewControllerTest, RestartPromptShows) {
 // This test checks that the restart prompt does not show when the lab state has
 // not changed.
 // TODO(elainechien): This currently only works for default. This will be
-// changed to work for all states. See design doc in crbug/1145666.
+// changed to work for all states. See design doc in crbug.com/1145666.
 TEST_F(ChromeLabsViewControllerTest, SelectDefaultTwiceNoRestart) {
   std::unique_ptr<ChromeLabsViewController> view_controller =
       CreateViewController();

@@ -78,7 +78,7 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() = default;
 void AuthenticatorRequestDialogView::Show() {
   if (web_contents_hidden_) {
     // Calling Widget::Show() while the tab is not in foreground shows the
-    // dialog on the foreground tab (https://crbug.com/969153). Instead, wait
+    // dialog on the foreground tab (https://crbug.com/40630135). Instead, wait
     // for OnVisibilityChanged() to signal the tab going into foreground again,
     // and then show the widget.
     return;

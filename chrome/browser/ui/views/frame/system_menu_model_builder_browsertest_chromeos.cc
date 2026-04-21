@@ -124,7 +124,7 @@ class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-// Regression test for https://crbug.com/1023043
+// Regression test for https://crbug.com/40657933
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
                        MultiUserSettingsWindowFrameMenu) {
   // Log in 2 users.

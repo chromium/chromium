@@ -111,7 +111,7 @@ namespace autofill {
 namespace {
 
 // The minimum width should exceed the maximum size of a cursor, which is 128
-// (see crbug.com/1434330).
+// (see crbug.com/40064089).
 constexpr int kAutofillPopupMinWidth = 156;
 static_assert(kAutofillPopupMinWidth > 128);
 
@@ -1508,7 +1508,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
   // The pip surface is given the most preference while rendering. So, the
   // autofill popup should not be shown when the picture in picture window
   // hides the autofill form behind it.
-  // For more details on how this can happen, see crbug.com/1358647.
+  // For more details on how this can happen, see crbug.com/40060742.
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
     controller_->Hide(
         SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);

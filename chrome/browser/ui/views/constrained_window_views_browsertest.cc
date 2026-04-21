@@ -89,7 +89,7 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 }  // namespace
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Unexpected multiple focus managers on MacViews: http://crbug.com/824551
+// Unexpected multiple focus managers on MacViews: http://crbug.com/41378179
 // TODO(crbug.com/41481774):  Enable for Linux after resolving failure.
 #define MAYBE_FocusTest DISABLED_FocusTest
 #else
@@ -168,9 +168,9 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 
 // Tests that the tab-modal window is hidden when an other tab is selected and
 // shown when its tab is selected again.
-// Flaky on ASAN builds (https://crbug.com/997634)
-// Flaky on Mac (https://crbug.com/1385896)
-// Fails on Linux (https://crbug.com/1509135)
+// Flaky on ASAN builds (https://crbug.com/40096099)
+// Flaky on Mac (https://crbug.com/40879459)
+// Fails on Linux (https://crbug.com/41481750)
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TabSwitchTest DISABLED_TabSwitchTest
 #else

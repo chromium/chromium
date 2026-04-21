@@ -195,7 +195,7 @@ BrowserRootView::~BrowserRootView() {
   // It's possible to destroy the browser while a drop is active.  In this case,
   // |drop_info_| will be non-null, but its |target| likely points to an
   // already-deleted child.  Clear the target so ~DropInfo() will not try and
-  // notify it of the drag ending. http://crbug.com/1001942
+  // notify it of the drag ending. http://crbug.com/40050082
   if (drop_info_) {
     drop_info_->target = nullptr;
   }

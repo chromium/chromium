@@ -652,7 +652,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)
-          // See: crbug.com/1494923
+          // See: crbug.com/40075441
           .OverrideFocusOnShow(false)
           .SetMetadata(143, "rsult@google.com",
                        "Intro for the Customize Chrome Tutorial. Triggered "

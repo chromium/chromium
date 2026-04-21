@@ -29,7 +29,7 @@ class TooltipAuraUiaTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
 
-// Flakily tests: http://crbug.com/990214
+// Flakily tests: http://crbug.com/41474224
 IN_PROC_BROWSER_TEST_F(TooltipAuraUiaTest, DISABLED_TooltipUiaEvents) {
   // Setup accessibility waiter
   HWND window_handle = GetDesktopWindow();

@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_FocusRestore) {
 
       // Focus the location bar, open and close the find box, focus should
       // return to the location bar (same as before, just checking that
-      // http://crbug.com/23599 is fixed).
+      // http://crbug.com/41009575 is fixed).
       Focus(kOmniboxElementId),
       // Show the Find bar.
       ShowFindBar(), CheckHasFocus(FindBarView::kTextField),
@@ -697,10 +697,10 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
 
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.
 #if !BUILDFLAG(IS_MAC) && !defined(USE_AURA)
-// Flaky because the test server fails to start? See: http://crbug.com/96594.
+// Flaky because the test server fails to start? See: http://crbug.com/40628598.
 // This tests that whenever you clear values from the Find box and close it that
 // it respects that and doesn't show you the last search, as reported in bug:
-// http://crbug.com/40121. For Aura see bug http://crbug.com/292299.
+// http://crbug.com/41124530. For Aura see bug http://crbug.com/40333035.
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
               testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))));
 }
 
-// Slow flakiness on Linux. crbug.com/803743
+// Slow flakiness on Linux. crbug.com/41365845
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CtrlEnter DISABLED_CtrlEnter
 #else
@@ -935,12 +935,12 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_SelectionDuringFind) {
   find_in_page::FindNotificationDetails details = WaitForFindResult();
   // We don't ever want the page to (potentially) scroll just from opening the
   // find bar, so the active match should always be 0 at this point.
-  // See http://crbug.com/1043550
+  // See http://crbug.com/40669090
   EXPECT_EQ(0, details.active_match_ordinal());
   EXPECT_EQ(5, details.number_of_matches());
 
   // Make sure pressing an arrow key doesn't result in a find request.
-  // See https://crbug.com/1127666
+  // See https://crbug.com/40719158
   auto* helper = find_in_page::FindTabHelper::FromWebContents(web_contents);
   int find_request_id = helper->current_find_request_id();
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_SelectionDuringFind) {
   // Make sure calling Show while the findbar is already showing doesn't result
   // in a find request. It's wasted work, could cause some flicker in the
   // results, and was previously triggering another bug that caused an endless
-  // loop of searching and flickering results. See http://crbug.com/1129756
+  // loop of searching and flickering results. See http://crbug.com/40720370
   find_bar_controller->Show(false /*find_next*/);
   EXPECT_EQ(find_request_id, helper->current_find_request_id());
 
@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, DISABLED_SelectionDuringFind) {
   EXPECT_EQ(5, details.number_of_matches());
 
   // Start a new find without a selection and verify we still get find results.
-  // See https://crbug.com/1124605
+  // See https://crbug.com/40717358
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
   // Wait until the focus settles.
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest,
   EXPECT_TRUE(IsFindBarVisible());
 }
 
-// See http://crbug.com/1142027
+// See http://crbug.com/40154511
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MatchOrdinalStableWhileTyping) {
   const GURL page_foo =
       embedded_test_server()->GetURL("/find_in_page/foo.html");

@@ -649,7 +649,7 @@ class ProfileManagementCounter : public ProfileManagerObserver,
 
 class ProfilePickerViewBrowserTest : public ProfilePickerTestBase {};
 
-// Regression test for crbug.com/1442159.
+// Regression test for crbug.com/40910391.
 IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
                        ShowScreen_DoesNotFinishForErrorOnInternalNavigation) {
   GURL bad_target_url{"chrome://unregistered-host"};
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
   EXPECT_FALSE(navigation_finished_future.IsReady());
 }
 
-// Regression test for crbug.com/1442159.
+// Regression test for crbug.com/40910391.
 IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
                        ShowScreen_FinishesForErrorOnStandardNavigation) {
   // URL intended to simulate an https navigation that fails because the host
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #else
 #define MAYBE_CreateSignedInProfileClosePicker CreateSignedInProfileClosePicker
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-// Regression test for https://crbug.com/1431342
+// Regression test for https://crbug.com/40902259
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateSignedInProfileClosePicker) {
   // Closes the picker at the same time the new browser is created.
@@ -2065,7 +2065,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
-// Regression test for crbug.com/1266415.
+// Regression test for crbug.com/40802113.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncEncryptionKeys) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -2079,7 +2079,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       nullptr);
 }
 
-// Regression test for crbug.com/1196290.
+// Regression test for crbug.com/40176394.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileAfterCancellingFirstAttempt) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -2168,7 +2168,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(entry, nullptr);
 }
 
-// Regression test for crbug.com/1278726.
+// Regression test for crbug.com/40810381.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CancelWhileSigningInBeforeProfileCreated) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -2376,7 +2376,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                     new_browser->GetTabStripModel()->GetActiveWebContents());
 }
 
-// Regression test for crbug.com/1219980.
+// Regression test for crbug.com/40772584.
 // TODO(crbug.com/40772284): Re-implement the test bases on the final fix.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileSecurityInterstitials) {
@@ -2580,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                    .has_value());
 }
 
-// Regression test for crash https://crbug.com/1195784.
+// Regression test for crash https://crbug.com/40759222.
 // Crash requires specific conditions to be reproduced. Browser should have 2
 // profiles with the same GAIA account name and the first profile should use
 // default local name. This is set up specifically in order to trigger
@@ -2643,7 +2643,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   StartDiceSignIn();
 }
 
-// Regression test for https://crbug.com/1467483
+// Regression test for https://crbug.com/40276801
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        DiceSigninFailure) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -2667,7 +2667,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForPickerClosed();
 }
 
-// Regression test for https://crbug.com/1205147.
+// Regression test for https://crbug.com/40764426.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenPickerWhileClosing) {
   // Open the first picker.
@@ -2864,7 +2864,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForPickerClosed();
 }
 
-// Regression test for https://crbug.com/1199035
+// Regression test for https://crbug.com/40177639
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenProfile_Guest) {
   auto scoped_iph_delay =
@@ -2892,7 +2892,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 // Closes the default browser window before creating a new profile in the
 // profile picker.
-// Regression test for https://crbug.com/1144092.
+// Regression test for https://crbug.com/40053746.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CloseBrowserBeforeCreatingNewProfile) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -3051,7 +3051,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
   waiter.Wait();
 }
 
-// Regression test for https://crbug.com/1488267
+// Regression test for https://crbug.com/40934491
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        DeleteProfileFromOwnTab) {
   // Open the picker in a tab.
@@ -3900,7 +3900,7 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-// Flaky on Windows: https://crbug.com/1247530.
+// Flaky on Windows: https://crbug.com/40196889.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_Signin DISABLED_PRE_Signin
 #define MAYBE_Signin DISABLED_Signin
@@ -3972,7 +3972,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   EXPECT_TRUE(OriginalProfileExists());
 }
 
-// Flaky on Windows: https://crbug.com/1247530.
+// Flaky on Windows: https://crbug.com/40196889.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_ExitDuringSignin DISABLED_PRE_ExitDuringSignin
 #define MAYBE_ExitDuringSignin DISABLED_ExitDuringSignin

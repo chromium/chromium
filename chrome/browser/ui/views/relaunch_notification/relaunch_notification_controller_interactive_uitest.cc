@@ -172,7 +172,7 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
 
 // Tests that reactivating a browser window after the deadline has passed does
 // not show a negative delta.
-// Fails on mac64; see https://crbug.com/1462892.
+// Fails on mac64; see https://crbug.com/40067034.
 IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
                        ReactivateAfterDeadline) {
   // Make sure a browser window is active.

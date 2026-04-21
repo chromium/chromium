@@ -46,7 +46,7 @@ FadeLabelViewData GetTabTitleLabel(const tabs::TabGroupTabData& tab_data) {
   } else {
     // Most of the time we want our standard (tail-elided) formatting for web
     // pages, but when viewing an image in the browser, many users want to
-    // view the image dimensions (see crbug.com/1222984) so for titles that
+    // view the image dimensions (see crbug.com/40774391) so for titles that
     // "look" like images (i.e. that end with a dimension) we instead switch
     // to middle-elide.
     if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {

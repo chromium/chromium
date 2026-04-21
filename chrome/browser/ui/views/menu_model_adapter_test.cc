@@ -270,5 +270,5 @@ class MenuModelAdapterTest : public ViewEventTestBase {
   raw_ptr<views::MenuItemView> menu_ = nullptr;
 };
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuModelAdapterTest, RebuildMenu)

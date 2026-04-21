@@ -230,7 +230,7 @@ int AppInfoPermissionsPanel::GetRetainedFileCount() const {
           extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles. See
-    // http://crbug.com/467795.
+    // http://crbug.com/41163071.
     if (service) {
       return service->GetAllFileEntries(app_->id()).size();
     }

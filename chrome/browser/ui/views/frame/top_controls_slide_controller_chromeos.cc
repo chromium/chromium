@@ -285,7 +285,7 @@ class TopControlsSlideTabObserver
   // sliding is in progress. It is updated only once right before sliding begins
   // and remains unchanged until sliding ends, at which point it is updated
   // right before the final layout of the BrowserView.
-  // https://crbug.com/885223.
+  // https://crbug.com/41414489.
   bool shrink_renderer_size_ = true;
 };
 
@@ -665,7 +665,7 @@ void TopControlsSlideControllerChromeOS::OnEnabledStateChanged(bool new_state) {
     // we get called by the renderer to set the shown ratio to 1.f. Otherwise
     // we will layout the page to a smaller height before the renderer gets
     // to know that it needs to update the shown ratio to 1.f.
-    // https://crbug.com/884453.
+    // https://crbug.com/40593842.
     is_enabled_ = true;
     defer_disabling_ = true;
   } else {

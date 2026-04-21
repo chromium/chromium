@@ -49,7 +49,7 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
 };
 
 // Invokes a dialog that shows details of an installed extension.
-// Flaky on ChromeOS. See https://crbug.com/1485666
+// Flaky on ChromeOS. See https://crbug.com/40933370
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-// Flaky on ChromeOS. See https://crbug.com/1484928
+// Flaky on ChromeOS. See https://crbug.com/40932992
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CreateShortcutsAfterExtensionUnloaded \
   DISABLED_CreateShortcutsAfterExtensionUnloaded

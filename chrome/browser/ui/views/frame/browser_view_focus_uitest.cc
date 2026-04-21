@@ -236,7 +236,7 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
 };
 
 // Switching tabs does not focus views unexpectedly.
-// (bug http://crbug.com/791757, bug http://crbug.com/777051)
+// (bug http://crbug.com/41359257, bug http://crbug.com/41351034)
 IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -211,7 +211,7 @@ void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
                            : views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
-  // the UI thread during command buffer creation. See http://crbug.com/125248
+  // the UI thread during command buffer creation. See http://crbug.com/40198772
   params.force_software_compositing = true;
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

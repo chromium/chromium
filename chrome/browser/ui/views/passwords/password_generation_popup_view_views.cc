@@ -266,7 +266,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   // Make sure we only receive enter/exit events when the mouse enters the whole
   // view, even if it is entering/exiting a child view. This is needed to
   // prevent the background highlight of the password box disappearing when
-  // entering the key icon view (see crbug.com/1393991).
+  // entering the key icon view (see crbug.com/40248414).
   SetNotifyEnterExitOnChild(true);
 
   controller_ = controller;

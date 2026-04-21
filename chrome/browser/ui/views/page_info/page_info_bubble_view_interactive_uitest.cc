@@ -193,7 +193,7 @@ class PageInfoBubbleViewFocusInteractiveUiTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1029882
+// https://crbug.com/40661590
 #define MAYBE_FocusReturnsToContentOnClose DISABLED_FocusReturnsToContentOnClose
 #else
 #define MAYBE_FocusReturnsToContentOnClose FocusReturnsToContentOnClose
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1029882
+// https://crbug.com/40661590
 #define MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt \
   DISABLED_FocusDoesNotReturnToContentsOnReloadPrompt
 #else
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
 // Test that when the PageInfo bubble is closed and a reload prompt is
 // displayed, focus is NOT returned to the web contents pane, but rather returns
 // to the location bar so accessibility users must tab through the reload prompt
-// before getting back to web contents (see https://crbug.com/910067).
+// before getting back to web contents (see https://crbug.com/41428907).
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
                        MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt) {
   WebContentsFocusTracker web_contents_focus_tracker(web_contents());

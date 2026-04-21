@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       // P5. Select revert.
       // Note: The revert means revert the page to its original language,
       // but the source tab are still showing the source language we
-      // selected in P4. See https://crbug.com/1222050.
+      // selected in P4. See https://crbug.com/40773783.
       DoDefaultAction(TranslateBubbleView::kSourceLanguageTab),
       // V3. Verify that the page should revert to original language and source
       // language tab is selected.

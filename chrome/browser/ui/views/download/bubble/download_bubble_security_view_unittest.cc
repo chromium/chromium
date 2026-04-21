@@ -668,7 +668,7 @@ TEST_F(DownloadBubbleSecurityViewTest, ReturnToPrimaryDialogNoSubpage) {
 }
 
 // Test validating a dangerous download, such that it goes from having
-// a UI info subpage to not having one. See crbug.com/1478390.
+// a UI info subpage to not having one. See crbug.com/40071190.
 TEST_F(DownloadBubbleSecurityViewTest, ValidateDangerousDownload) {
   security_view_info_->InitializeForDownload(*row1_model_);
   ASSERT_TRUE(security_view_info_->HasSubpage());

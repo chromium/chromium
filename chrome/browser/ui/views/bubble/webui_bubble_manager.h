@@ -140,7 +140,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
       bubble_widget_observation_{this};
 
   // This is necessary to prevent a bug closing the active tab in the bubble.
-  // See https://crbug.com/1139028.
+  // See https://crbug.com/40153251.
   std::unique_ptr<CloseBubbleOnTabActivationHelper> close_bubble_helper_;
 
   // Controls whether `close_bubble_helper_` is set when ShowBubble() is called.

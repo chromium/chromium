@@ -1033,7 +1033,7 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
                                    account.browser_trusted_login_state));
 
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
-  // See https://crbug.com/1393650 for details.
+  // See https://crbug.com/40248291 for details.
   return static_cast<bool>(weak_ptr);
 }
 

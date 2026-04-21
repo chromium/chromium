@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, NativeClose) {
 
 // Tests that creating an exclusive access bubble for a download does not crash,
 // despite the type being EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE. See
-// crbug.com/1472150.
+// crbug.com/40278531.
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
   ExclusiveAccessBubbleViews bubble(GetContext(), {.has_download = true},
                                     base::NullCallback());

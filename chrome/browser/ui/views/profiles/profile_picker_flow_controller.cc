@@ -718,7 +718,8 @@ void ProfilePickerFlowController::PickProfile(
     base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   if (args.should_record_startup_metrics &&
       // Avoid overriding the picked time if already recorded. This can happen
-      // for example if multiple profiles are picked: https://crbug.com/1277466.
+      // for example if multiple profiles are picked:
+      // https://crbug.com/40207781.
       profile_picked_time_on_startup_.is_null()) {
     profile_picked_time_on_startup_ = base::TimeTicks::Now();
   }

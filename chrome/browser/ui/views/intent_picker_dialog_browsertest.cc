@@ -71,7 +71,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
 };
 
 #if BUILDFLAG(IS_MAC)
-// Flaky on Mac. See https://crbug.com/1330302.
+// Flaky on Mac. See https://crbug.com/40227125.
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default

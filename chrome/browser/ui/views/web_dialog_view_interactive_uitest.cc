@@ -126,7 +126,7 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 }
 
 // Windows has some issues resizing windows. An off by one problem, and a
-// minimum size that seems too big. See http://crbug.com/52602.
+// minimum size that seems too big. See http://crbug.com/41198181.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SizeWindow DISABLED_SizeWindow
 #else

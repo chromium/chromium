@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
 
 // Tests that the embedded relationship is set on the main web contents when
 // the DevTools is opened.
-// This fails on Linux : http://crbug.com/1223047
+// This fails on Linux : http://crbug.com/40187459
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_EmbeddedRelationshipWithDevTools \
   DISABLED_EmbeddedRelationshipWithDevTools

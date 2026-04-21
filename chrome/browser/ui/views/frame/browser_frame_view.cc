@@ -383,7 +383,7 @@ views::View::Views BrowserFrameView::GetChildrenInZOrder() {
 // Sending the WM_NCPOINTERDOWN, WM_NCPOINTERUPDATE, and WM_NCPOINTERUP to the
 // default window proc does not bring up the system menu on long press, so we
 // use the gesture recognizer to turn it into a LONG_TAP gesture and handle it
-// here. See https://crbug.com/1327506 for more info.
+// here. See https://crbug.com/40841210 for more info.
 void BrowserFrameView::OnGestureEvent(ui::GestureEvent* event) {
   gfx::Point event_loc = event->location();
   // This opens the title bar system context menu on long press in the titlebar.

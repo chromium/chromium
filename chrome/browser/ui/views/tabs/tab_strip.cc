@@ -622,7 +622,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     // Ensure that the tab strip and its parent views are correctly re-laid out
     // after repositioning dragged tabs. This avoids visual/layout issues such
-    // as https://crbug.com/1151092.
+    // as https://crbug.com/40732823.
     PreferredSizeChanged();
 
     // Reset the layout size as we've effectively laid out a different size.
@@ -665,7 +665,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
         // Make sure the bounds of the group views are up to date right now
         // instead of waiting for subsequent drag events - if we are dragging a
         // window by a group header, we won't get any more events. See
-        // https://crbug.com/1344774.
+        // https://crbug.com/40853154.
         tab_strip_->tab_container_->UpdateTabGroupVisuals(
             header->group().value());
       }
@@ -2149,7 +2149,7 @@ void TabStrip::Layout(PassKey) {
   } else {
     // We still need to layout in this case, as the available width may have
     // changed, which can change layout outcomes (e.g. affecting tab
-    // visibility). See https://crbug.com/1370459.
+    // visibility). See https://crbug.com/40869772.
     // TODO(crbug.com/40870361): TabContainer should observe available width
     // changes and invalidate its layout when needed.
     tab_container_->DeprecatedLayoutImmediately();

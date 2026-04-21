@@ -224,7 +224,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   GURL test_url_ = GURL("https://example.com");
 };
 
-// Flaky on Mac: http://crbug.com/1502621
+// Flaky on Mac: http://crbug.com/40942996
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
 #else
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   permission_request_manager->UpdateAnchor();
 }
 
-// crbug.com/989858
+// crbug.com/41474037
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest \
   DISABLED_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
 #define MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest \
   ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest
 #endif
-// Regression test for https://crbug.com/933321.
+// Regression test for https://crbug.com/40614480.
 IN_PROC_BROWSER_TEST_F(
     PermissionPromptBubbleBaseViewBrowserTest,
     MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest) {

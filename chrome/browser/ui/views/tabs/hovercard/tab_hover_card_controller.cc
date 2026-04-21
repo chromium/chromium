@@ -690,7 +690,7 @@ void TabHoverCardController::ShowHoverCard(
   // throughout the HoverCard creation process. The doc mentioned at
   // crbug.com/40865488#comment23 discusses proper fixes for this. Until then,
   // early-return after vulnerable calls here if `target_tab_` has become null.
-  // See also: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
+  // See also: crbug.com/40821222, crbug.com/40837791, crbug.com/40855586
   CreateHoverCard(target_tab_);
   if (!TargetTabIsValid()) {
     HideHoverCard();
@@ -773,7 +773,7 @@ bool TabHoverCardController::TargetTabIsValid() const {
   // There are a bunch of conditions under which a tab may no longer be valid,
   // including no longer belonging to the same tabstrip, being dragged or
   // detached, or just not being visible. We need to be vigilant about invalid
-  // tabs due to e.g. crbug.com/1295601.
+  // tabs due to e.g. crbug.com/40821222.
   return target_tab_ && target_tab_->IsValidHoverCardTarget();
 }
 
@@ -796,7 +796,7 @@ void TabHoverCardController::OnFadeAnimationEnded(
     views::WidgetFadeAnimator::FadeType fade_type) {
   // There's a potential race condition where we get the fade in complete signal
   // just as we've decided to fade out, so check for null.
-  // See: crbug.com/1192451
+  // See: crbug.com/40174890
   if (target_tab_ &&
       fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn) {
     OnCardFullyVisible();

@@ -41,7 +41,7 @@ class CertificateSelector : public views::DialogDelegateView,
  public:
   // Indicates if the dialog can be successfully shown.
   // TODO(davidben): Remove this when the certificate selector prompt is moved
-  // to the WebContentsDelegate. https://crbug.com/456255.
+  // to the WebContentsDelegate. https://crbug.com/40404657.
   static bool CanShow(content::WebContents* web_contents);
 
   // |web_contents| must not be null.

@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   ActivateSecondBrowserWindow();
 
   // Hide the widget. This would typically cause a space switch to the
-  // fullscreen space in macOS 13+. http://crbug.com/1454606 stops the space
+  // fullscreen space in macOS 13+. http://crbug.com/40272387 stops the space
   // switch from happening on macOS 13+.
   HideWidget();
 
@@ -409,9 +409,10 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
 // Tests that an -orderOut: or a -close result in an ordering group rebuild of
 // the parent. The rebuild behavior is relied upon by a workaround to
-// http://crbug.com/1454606. If this test starts failing, the workaround for
+// http://crbug.com/40272387. If this test starts failing, the workaround for
 // issue 1454606 will need to be revisited.
-// TODO(http://crbug.com/1454606): Remove this test when Apple fixes FB13529873.
+// TODO(http://crbug.com/40272387): Remove this test when Apple fixes
+// FB13529873.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        RebuildOrderingGroup) {
   // This test only applies to macOS 13 or greater.

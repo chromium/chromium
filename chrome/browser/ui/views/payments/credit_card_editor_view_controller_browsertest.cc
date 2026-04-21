@@ -42,7 +42,7 @@ const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 }  // namespace
 
-// This test suite is flaky on desktop platforms (crbug.com/1073972) and tests
+// This test suite is flaky on desktop platforms (crbug.com/40686589) and tests
 // UI that is soon to be deprecated, so it is disabled.
 using DISABLED_PaymentRequestCreditCardEditorTest =
     PaymentRequestBrowserTestBase;

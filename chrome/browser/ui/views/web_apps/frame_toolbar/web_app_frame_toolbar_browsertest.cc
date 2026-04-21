@@ -1479,7 +1479,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
 // TODO(crbug.com/40827841): Enable for mac/win when flakiness has been fixed.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-// Test to ensure crbug.com/1298226 won't reproduce.
+// Test to ensure crbug.com/40822808 won't reproduce.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        PopupFromWcoAppToItself) {
   InstallAndLaunchWebApp();
@@ -1506,7 +1506,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                   .ExtractBool());
 }
 
-// Test to ensure crbug.com/1298237 won't reproduce.
+// Test to ensure crbug.com/40822812 won't reproduce.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        PopupFromWcoAppToAnyOtherWebsite) {
   InstallAndLaunchWebApp();
@@ -1552,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(bounds.IsEmpty());
 }
 
-// Test to ensure crbug.com/1353133 won't reproduce. It casts the frame_view to
+// Test to ensure crbug.com/40858241 won't reproduce. It casts the frame_view to
 // the ChromeOS's frame_view to have access to the caption_button_container_ so
 // it cannot be run on any other platform.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1719,7 +1719,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   helper()->TestDraggableRegions();
 }
 
-// Regression test for https://crbug.com/1448878.
+// Regression test for https://crbug.com/40914522.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DraggableRegionsIgnoredForOwnedWidgets) {
   // TODO(https://crbug.com/329235190): In case accelerated widget is used for
@@ -1895,7 +1895,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(browser_view->IsWindowControlsOverlayEnabled());
 }
 
-// Regression test for https://crbug.com/1239443.
+// Regression test for https://crbug.com/40784780.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        OpenWithOverlayEnabled) {
   webapps::AppId app_id = InstallAndLaunchWebApp();
@@ -1984,7 +1984,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
 // Extensions in  ChromeOS are not in the titlebar.
 #if !BUILDFLAG(IS_CHROMEOS)
-// Regression test for https://crbug.com/1351566.
+// Regression test for https://crbug.com/40857235.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        ExtensionsIconVisibility) {
   webapps::AppId app_id = InstallAndLaunchWebApp();
@@ -2153,7 +2153,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(draggable_region.value().isEmpty());
 }
 
-// Regression test for https://crbug.com/1516830.
+// Regression test for https://crbug.com/41489813.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DragAfterNavigation) {
   InstallAndLaunchWebApp();

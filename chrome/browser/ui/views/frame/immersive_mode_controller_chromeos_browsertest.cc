@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // In immersive mode but not revealed, the app menu button is placed off screen
 // but still drawn. In this case, we should have a null anchor view so that the
 // bubble gets placed in the default top left corner. Regression test for
-// https://crbug.com/1087143.
+// https://crbug.com/40694686.
 // TODO(crbug.com/454621319): Debug and figure out why this started failing
 // after the changes in https://crrev.com/c/7064537.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,

@@ -76,7 +76,7 @@ class BrowserNativeWidget {
   // Causes the screen reader to announce |text| against the remote window. If
   // the current user is not using a screen reader or if there is no remote
   // window, has no effect. This enables screen reader announcements for
-  // installed web apps (PWAs) on Mac. See crbug.com/1266922.
+  // installed web apps (PWAs) on Mac. See crbug.com/40802438.
   virtual void AnnounceTextInInProcessWindow(const std::u16string& text) {}
 #endif
 

@@ -50,7 +50,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   Profile* profile = browser->profile();
 
   // Set the app user model id for this application to that of the application
-  // name. See http://crbug.com/7028.
+  // name. See http://crbug.com/41308099.
   std::wstring app_id =
       browser->is_type_app() || browser->is_type_app_popup() ||
               browser->is_type_devtools()

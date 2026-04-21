@@ -55,7 +55,7 @@ class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
 BEGIN_METADATA(TestContentSettingBubbleContents)
 END_METADATA
 
-// Regression test for http://crbug.com/1050801 .
+// Regression test for http://crbug.com/40673356 .
 TEST_F(ContentSettingBubbleContentsTest, NullDeref) {
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories;

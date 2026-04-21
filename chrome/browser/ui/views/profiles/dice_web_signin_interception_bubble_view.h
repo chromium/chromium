@@ -169,7 +169,7 @@ class DiceWebSigninInterceptionBubbleView
   void ApplyAvatarButtonEffects();
 
   // This bubble can outlive the Browser, in particular on Mac (see
-  // https://crbug.com/1302729). Retain the profile to prevent use-after-free.
+  // https://crbug.com/40217096). Retain the profile to prevent use-after-free.
   ScopedProfileKeepAlive profile_keep_alive_;
 
   base::WeakPtr<Browser> browser_;

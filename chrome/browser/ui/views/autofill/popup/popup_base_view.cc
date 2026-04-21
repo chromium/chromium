@@ -339,7 +339,7 @@ void PopupBaseView::DoHide() {
   if (GetWidget()) {
     // Don't call CloseNow() because some of the functions higher up the stack
     // assume the the widget is still valid after this point.
-    // http://crbug.com/229224
+    // http://crbug.com/40312043
     // NOTE: This deletes |this|.
     GetWidget()->Close();
   } else {

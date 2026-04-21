@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
 }
 
 // Ensure a page that has an EV certificate *and* is blocked by Safe Browsing
-// shows the correct PageInfo UI. Regression test for crbug.com/1014240.
+// shows the correct PageInfo UI. Regression test for crbug.com/40653067.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, MalwareAndEvCert) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(

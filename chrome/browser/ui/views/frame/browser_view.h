@@ -1223,7 +1223,7 @@ class BrowserView : public BrowserWindow,
   // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
   std::optional<size_t> horizontal_tab_strip_region_insertion_index_;
 
-  // The webui based tabstrip, when applicable. see https://crbug.com/989131.
+  // The webui based tabstrip, when applicable. see https://crbug.com/40638200.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
 
   // Allows us to react to changes in accessibility mode. Having an observer

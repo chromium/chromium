@@ -677,11 +677,11 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     AssertTestPageIsLoaded();
 
     // Waiting until the mousemove and mousedown events reach the right renderer
-    // is needed to avoid flakiness reported in https://crbug.com/671445 (which
-    // has its root cause in https://crbug.com/647378).  Once the latter bug
-    // is fixed, we should no longer need to wait for these events (because
-    // fixing https://crbug.com/647378 should guarantee that events arrive
-    // to the renderer in the right order).
+    // is needed to avoid flakiness reported in https://crbug.com/40496668
+    // (which has its root cause in https://crbug.com/40485104).  Once the
+    // latter bug is fixed, we should no longer need to wait for these events
+    // (because fixing https://crbug.com/40485104 should guarantee that events
+    // arrive to the renderer in the right order).
     DOMDragEventWaiter mouse_move_event_waiter("mousemove", GetLeftFrame());
     DOMDragEventWaiter mouse_down_event_waiter("mousedown", GetLeftFrame());
 
@@ -854,7 +854,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 // Scenario: drag text from outside the browser and drop to the right frame.
 // Test coverage: dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<double>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragAndDropVirtualFiles) {
 #endif  // BUILDFLAG(IS_WIN)
 
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
-// https://crbug.com/670123.
+// https://crbug.com/40496018.
 // TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots and
 // consistently failing on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1248,7 +1248,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
   // a URL that:
   // 1. Passes RenderWidgetHostImpl::FilterDropData checks.
   // 2. Fails CanDisplay checks in Blink (e.g. in RemoteFrame::Navigate).
-  //    - This condition trigger the crash from https://crbug.com/1003169
+  //    - This condition trigger the crash from https://crbug.com/40647076
   // 3. Passes BeginNavigation checks
   //    - This rules out "chrome-error://blah".
   GURL dragged_url("blob:null/some-guid");
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
   ASSERT_TRUE(SimulateDropInRightFrame());
 
   // Verify that the right frame is still responsive (this is a regression test
-  // for https://crbug.com/1003169.
+  // for https://crbug.com/40647076.
   ASSERT_TRUE(GetRightFrame()->GetProcess()->IsInitializedAndNotDead());
   EXPECT_EQ(123, content::EvalJs(GetRightFrame(), "123"));
 
@@ -1346,7 +1346,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
 #define MAYBE_DragSameOriginImageBetweenFrames \
   DISABLED_DragSameOriginImageBetweenFrames
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Failing to receive final drop event on linux crbug.com/1268407.
+// Failing to receive final drop event on linux crbug.com/40803504.
 // TODO(crbug.com/442927728): Fix failing test on ChromeOS
 #define MAYBE_DragSameOriginImageBetweenFrames \
   DISABLED_DragSameOriginImageBetweenFrames
@@ -1370,7 +1370,7 @@ struct DragAndDropBrowserTest::DragImageBetweenFrames_TestState {
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragSameOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCorsSameOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -1411,10 +1411,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Scenario: drag a cross-orign image from the left into the right frame. Image
 // should not be accessible to the drag/drop events.
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
-// Regression test for https://crbug.com/1264873.
+// Regression test for https://crbug.com/40057769.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCrossOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -1427,7 +1427,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Start(
     bool image_crossorigin_attr) {
   // Note that drag and drop will not expose data across cross-site frames on
   // the same page - this is why the same |frame_site| is used below both for
-  // the left and the right frame.  See also https://crbug.com/59081.
+  // the left and the right frame.  See also https://crbug.com/40083787.
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site,
@@ -1615,9 +1615,9 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
   // Verify dragend DOM event.
   {
     // Different values of DataTransfer.dropEffect is observed and is
-    // being tracked by https://crbug.com/1470718.
+    // being tracked by https://crbug.com/40068941.
     // Different values of DataTransfer.types is seen due to
-    // https://crbug.com/394955. This causes certain File objects to be
+    // https://crbug.com/41120809. This causes certain File objects to be
     // mapped to text/plain in `DataObject::ToWebDragData()` and thus
     // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
     // events. While dragend doesn't use WebDragData object and that is why
@@ -1626,7 +1626,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
     state->expected_dom_event_data.set_expected_mime_types(
         "Files,text/html,text/uri-list");
 
-    // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
+    // TODO: https://crbug.com/41297989: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.
     state->expected_dom_event_data.set_expected_client_position(
         "<no expectation>");
@@ -1660,7 +1660,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-// Also disable the test on Linux due to flaky: crbug.com/1164442
+// Also disable the test on Linux due to flaky: crbug.com/40163536
 // TODO(crbug.com/40876472): Enable on ChromeOS once flakiness is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragImageFromDisappearingFrame \
@@ -1679,11 +1679,11 @@ struct DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState {
 
 // Scenario: drag an image from the left into the right frame and delete the
 // left frame during the drag.  This is a regression test for
-// https://crbug.com/670123.
+// https://crbug.com/40496018.
 // Test coverage: dragenter, dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragImageFromDisappearingFrame) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -1720,7 +1720,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 
 void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState* state) {
-  // Delete the left frame in an attempt to repro https://crbug.com/670123.
+  // Delete the left frame in an attempt to repro https://crbug.com/40496018.
   content::RenderFrameDeletedObserver frame_deleted_observer(GetLeftFrame());
   ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                      "frame = document.getElementById('left');\n"
@@ -1812,7 +1812,7 @@ struct DragAndDropBrowserTest::CrossSiteDrag_TestState {
 
 // Scenario: drag an image from the left into the right frame when the
 // left-vs-right frames are cross-site.  This is a regression test for
-// https://crbug.com/59081.
+// https://crbug.com/40083787.
 //
 // Test coverage: absence of dragenter, dragover, drop DOM events
 // + presence of dragstart, dragleave and dragend.
@@ -1920,7 +1920,7 @@ struct DragAndDropBrowserTest::CrossNavCrossSiteDrag_TestState {
 };
 
 // Scenario: drag from a cross-site frame, navigate the main frame, then drop.
-// This is a regression test for https://crbug.com/1485266.
+// This is a regression test for https://crbug.com/40072936.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossNavCrossSiteDrag) {
   std::string left_frame_site = "b.test";  // Always cross-site VS main frame.
   ASSERT_TRUE(NavigateToTestPage("a.test"));
@@ -2016,7 +2016,7 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
 // a drag-and-drop loop run by Windows OS.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/442927728): Fix failing test on Linux and ChromeOS
-// https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
+// https://crbug.com/40248270: Flaky at ChromeOS ASAN and Debug builds
 #define MAYBE_CrossTabDrag DISABLED_CrossTabDrag
 #else
 #define MAYBE_CrossTabDrag CrossTabDrag
@@ -2042,7 +2042,7 @@ struct DragAndDropBrowserTest::CrossTabDrag_TestState {
 //
 // Test coverage: dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
-  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  // TODO (crbug.com/41494066): Test fails since 2023 refresh.
   if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
@@ -2221,9 +2221,9 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
   // Verify dragend DOM event.
   {
     // Different values of DataTransfer.dropEffect is observed and is
-    // being tracked by https://crbug.com/1470718.
+    // being tracked by https://crbug.com/40068941.
     // Different values of DataTransfer.types is seen due to
-    // https://crbug.com/394955. This causes certain File objects to be
+    // https://crbug.com/41120809. This causes certain File objects to be
     // mapped to text/plain in `DataObject::ToWebDragData()` and thus
     // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
     // events. While dragend doesn't use WebDragData object and that is why
@@ -2232,7 +2232,7 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
     state->expected_dom_event_data.set_expected_mime_types(
         "Files,text/html,text/uri-list");
 
-    // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
+    // TODO: https://crbug.com/41297989: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.
     state->expected_dom_event_data.set_expected_client_position(
         "<no expectation>");
@@ -2263,7 +2263,7 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
 }
 
 // Test that screenX/screenY for drag updates are in screen coordinates.
-// See https://crbug.com/600402 where we mistook the root window coordinate
+// See https://crbug.com/40463544 where we mistook the root window coordinate
 // space for the screen coordinate space.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
   // Reposition the window so that the root window coordinate space and the
@@ -2381,7 +2381,7 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
   }
 };
 
-// https://crbug.com/1312505
+// https://crbug.com/40059276
 // TODO(crbug.com/441134573): Fix and reenable the test.
 IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam,
                        DISABLED_CloseTabDuringDrag) {

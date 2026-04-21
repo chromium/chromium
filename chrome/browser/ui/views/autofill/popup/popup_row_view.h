@@ -186,11 +186,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // has been moved into the item's screen bounds. For example, if the item is
   // hovered by the mouse at the time it's first shown, we want to ignore clicks
   // until the mouse has left and re-entered the bounds of the item
-  // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
+  // (crbug.com/40056900, crbug.com/40056936, crbug.com/40058496).
   // This is particularly relevant because mouse click interactions may be
   // processed with a delay, making it seem as if the two click interactions of
   // a double click were executed at intervals larger than the threshold (500ms)
-  // checked in the controller (crbug.com/1418837).
+  // checked in the controller (crbug.com/40063230).
   bool mouse_observed_outside_item_bounds_ = false;
 
   // Whether the `mouse_observed_outside_item_bounds_` will be ignored or not.

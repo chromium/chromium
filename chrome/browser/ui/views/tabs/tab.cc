@@ -697,7 +697,7 @@ void Tab::OnMouseMoved(const ui::MouseEvent& event) {
   // subsequently moves the mouse, we need to then hover the tab.
   //
   // Either way, this is effectively a no-op if the tab is already in a hovered
-  // state (crbug.com/1326272).
+  // state (crbug.com/40840442).
   MaybeUpdateHoverStatus(event);
 }
 

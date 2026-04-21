@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
 
 // Test that if the side panel is closed while the extension's side panel view
 // is still loading, there will not be a crash. Regression for
-// crbug.com/1403168.
+// crbug.com/40062350.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
   // Load an extension and verify that its SidePanelEntry is registered.
   scoped_refptr<const extensions::Extension> extension = LoadExtension(

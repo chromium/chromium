@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AyncDropCallback) {
       browser()->tab_strip_model()->GetActiveWebContents()->IsLoading());
 }
 
-// Flaky: https://crbug.com/915591.
+// Flaky: https://crbug.com/41432033.
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectAllOnClick) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
   EXPECT_EQ(18U, omnibox_view_views->GetCursorPosition());
 }
 
-// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+// No touch on desktop Mac. Tracked in http://crbug.com/41150204.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTap) {
@@ -904,9 +904,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   EXPECT_FALSE(popup_node_data_2.HasState(ax::mojom::State::kInvisible));
 }
 
-// Flaky: https://crbug.com/1143630.
+// Flaky: https://crbug.com/40728392.
 // Omnibox returns to clean state after chrome://kill and reload.
-// https://crbug.com/993701 left the URL and icon as chrome://kill after reload.
+// https://crbug.com/41475973 left the URL and icon as chrome://kill after
+// reload.
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_ReloadAfterKill) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
@@ -1249,8 +1250,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
 
 // ClickOnView(VIEW_ID_OMNIBOX) does not set focus to omnibox on Mac.
 // Looks like the same problem as in the SelectAllOnClick().
-// Tracked in: https://crbug.com/915591
-// Test is also flaky on Linux: https://crbug.com/1157250
+// Tracked in: https://crbug.com/41432033
+// Test is also flaky on Linux: https://crbug.com/40160762
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HandleExternalProtocolURLs DISABLED_HandleExternalProtocolURLs
 #else
@@ -1258,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
 #endif
 
 // Checks that focusing on the omnibox allows the page to open external protocol
-// URLs. Regression test for https://crbug.com/1143632
+// URLs. Regression test for https://crbug.com/40155157
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
@@ -1324,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
 
   set_text_and_perform_navigation();
 
-// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+// No touch on desktop Mac. Tracked in http://crbug.com/41150204.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
   // Set focus to omnibox by tap.
@@ -1342,7 +1343,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
 #endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 }
 
-// SendKeyPressSync times out on Mac, probably due to https://crbug.com/824418.
+// SendKeyPressSync times out on Mac, probably due to
+// https://crbug.com/41378108.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade \
   DISABLED_DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade
@@ -1354,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
 // Test that triggers a zero suggest autocomplete request by clicking on the
 // omnibox. These should never attempt an HTTPS upgrade or involve the typed
 // navigation upgrade throttle.
-// This is a regression test for https://crbug.com/1251065
+// This is a regression test for https://crbug.com/40057320
 IN_PROC_BROWSER_TEST_F(
     OmniboxViewViewsTest,
     MAYBE_DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade) {

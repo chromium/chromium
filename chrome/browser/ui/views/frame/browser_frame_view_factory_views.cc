@@ -45,7 +45,7 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
   // Ignore the toolkit theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073. Also ignore the toolkit theme for web apps with
+  // https://crbug.com/40771982. Also ignore the toolkit theme for web apps with
   // borderless as there's no surface left to apply the theme for.
   bool app_uses_wco_or_borderless =
       app_controller && (app_controller->AppUsesWindowControlsOverlay() ||

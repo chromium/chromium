@@ -62,7 +62,8 @@ void VerifyColorsForFrameType(const Browser* browser, bool use_custom_frame) {
 // Tests that BrowserNativeWidgetAuraLinux::UseCustomFrame() returns the correct
 // value that respects 1) the current value of the user preference and
 // 2) capabilities of the platform.
-// Also tests the regressions found in crbug.com/1243937 and crbug.com/1329756.
+// Also tests the regressions found in crbug.com/40195646 and
+// crbug.com/40842778.
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame) {
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -114,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame) {
 
 // Tests that the new browser window restores the bounds properly: its size must
 // be the same as the already existing window has.
-// The regression was found in https://crbug.com/1287212.
+// The regression was found in https://crbug.com/40816088.
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, NewWindowSize) {
   // Ensure the first window is active before creating the second one.
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();

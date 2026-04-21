@@ -81,7 +81,7 @@ void PermissionPromptBubble::OnWidgetDestroying(views::Widget* widget) {
 
 void PermissionPromptBubble::OnWidgetActivationChanged(views::Widget* widget,
                                                        bool active) {
-  // This logic prevents clickjacking. See https://crbug.com/1160485
+  // This logic prevents clickjacking. See https://crbug.com/40054242
   if (active && !parent_was_visible_when_activation_changed_) {
     // If the widget is active and the primary window wasn't active the last
     // time activation changed, we know that the window just came to the

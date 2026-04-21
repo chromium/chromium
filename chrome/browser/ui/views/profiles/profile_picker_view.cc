@@ -126,7 +126,7 @@ class ProfilePickerWidget : public views::Widget {
 // Returns whether the current flow is part of the classic profile picker flow.
 // Checking this should become eventually unnecessary as flows move away from
 // using static calls and global variables, and keep calls to native contained
-// within their own steps. See crbug.com/1359352.
+// within their own steps. See crbug.com/40237338.
 bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
   switch (params.entry_point()) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
@@ -335,14 +335,14 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
     // Don't notify if the URL for the finishing navigation does not match.
     // The navigation may have been replaced by a new one. We are mindful to
     // allow redirections, which are necessary for example for Gaia sign-in
-    // pages (see crbug.com/1430681).
+    // pages (see crbug.com/40901873).
     return;
   }
 
   if (navigation_handle->IsErrorPage() &&
       requested_url_.SchemeIs(content::kChromeUIScheme)) {
     // We observed some cases where the navigation to the intended page fails
-    // (see crbug.com/1442159).
+    // (see crbug.com/40910391).
     // Loading the wrong URL may lead to crashes if we are expecting a certain
     // WebUI page to be loaded in the web contents. For these cases we will not
     // notify of the finished navigation to avoid crashing, but this negatively

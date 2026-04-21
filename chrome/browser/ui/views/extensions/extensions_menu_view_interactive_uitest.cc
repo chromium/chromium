@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 }
 
-// Test for crbug.com/1099456.
+// Test for crbug.com/40702475.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        RemoveMultipleExtensionsWhileShowingPopup) {
   auto& id1 = LoadTestExtension("extensions/simple_with_popup")->id();
@@ -371,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   DismissUi();
 }
 
-// Failing on Mac. https://crbug.com/1176703
-// Flaky on Linux. https://crbug.com/1202112
+// Failing on Mac. https://crbug.com/40748082
+// Flaky on Linux. https://crbug.com/40762721
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PinningDisabledInIncognito DISABLED_PinningDisabledInIncognito
 #else

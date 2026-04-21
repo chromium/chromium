@@ -119,7 +119,7 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 // On macOS if the parent widget is the overlay widget we are in immersive
 // fullscreen. Don't walk any higher up the tree. The overlay or tab widget will
 // handle the event.
-// TODO(http://crbug.com/1462791): Remove custom event handling.
+// TODO(http://crbug.com/40066999): Remove custom event handling.
 #if BUILDFLAG(IS_MAC)
   views::Widget* top_level =
       GetImmersiveFullscreenWidgetForEvent(this_view, this_event)
@@ -200,7 +200,8 @@ class TopBackgroundView : public views::View {
     }
 
     // If the original event isn't marked as "handled" then it will propagate up
-    // the view hierarchy and might be double-handled. https://crbug.com/870341
+    // the view hierarchy and might be double-handled.
+    // https://crbug.com/41405642
     event->SetHandled();
   }
 

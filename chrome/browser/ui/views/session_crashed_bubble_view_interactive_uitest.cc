@@ -49,8 +49,8 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
   ShowAndVerifyUi();
 }
 
-// Regression test for https://crbug.com/1042010, it should be possible to focus
-// the bubble with the "focus dialog" hotkey combination (Alt+Shift+A).
+// Regression test for https://crbug.com/40668249, it should be possible to
+// focus the bubble with the "focus dialog" hotkey combination (Alt+Shift+A).
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
                        CanFocusBubbleWithFocusDialogHotkey) {
   ShowUi("SessionCrashedBubble");
@@ -66,8 +66,8 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
   EXPECT_TRUE(bubble_focused_view->HasFocus());
 }
 
-// Regression test for https://crbug.com/1042010, it should be possible to focus
-// the bubble with the "rotate pane focus" (F6) hotkey.
+// Regression test for https://crbug.com/40668249, it should be possible to
+// focus the bubble with the "rotate pane focus" (F6) hotkey.
 // TODO(crbug.com/40852599): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, AlertAccessibleEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
-// Regression test for https://crbug.com/1081393.
+// Regression test for https://crbug.com/40130503.
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, HasCloseButton) {
   ShowUi("SessionCrashedBubble");
   EXPECT_TRUE(crash_bubble_->ShouldShowCloseButton());

@@ -250,7 +250,7 @@ TEST_F(ToolbarButtonUITest, TestBorderUpdateColorChange) {
 // Ensures ToolbarButton updates its border on touch mode changes to
 // match layout constants.
 //
-// Regression test for crbug.com/1163451: ToolbarButton updates its
+// Regression test for crbug.com/40740165: ToolbarButton updates its
 // border on bounds change, which usually happens during layout.
 // Updating the border itself invalidates layout if the border change
 // results in a new preferred size. But View::SetBoundsRect() sets

@@ -89,7 +89,7 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// Clear drop info after performing drop. http://crbug.com/838791
+// Clear drop info after performing drop. http://crbug.com/41386560
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
   data.SetURL(GURL("http://www.chromium.org/"), std::u16string());
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   EXPECT_FALSE(browser_root_view()->drop_info_);
 }
 
-// Make sure plain string is droppable. http://crbug.com/838794
+// Make sure plain string is droppable. http://crbug.com/41386563
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
   ui::OSExchangeData data;
   data.SetString(u"Plain string");
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
 }
 
 // Clear drop target when the widget is being destroyed.
-// http://crbug.com/1001942
+// http://crbug.com/40050082
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropTarget) {
   ui::OSExchangeData data;
   data.SetURL(GURL("http://www.chromium.org/"), std::u16string());

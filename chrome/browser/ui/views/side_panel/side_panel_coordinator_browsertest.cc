@@ -2018,7 +2018,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
 // Test that a crash does not occur when the browser is closed when the side
 // panel view is shown but before the entry to be displayed has finished
-// loading. Regression for crbug.com/1408947.
+// loading. Regression for crbug.com/40888772.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        BrowserClosedBeforeEntryLoaded) {
   Init();

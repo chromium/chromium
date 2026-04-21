@@ -108,7 +108,7 @@ void RelaunchRecommendedBubbleView::Init() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Align the body label with the left edge of the bubble's title.
-  // TODO(bsep): Remove this when fixing https://crbug.com/810970.
+  // TODO(bsep): Remove this when fixing https://crbug.com/40562382.
   // Note: BubbleDialogDelegate applies INSETS_DIALOG_TITLE either side of the
   // icon.
   const int title_offset = 2 * views::LayoutProvider::Get()

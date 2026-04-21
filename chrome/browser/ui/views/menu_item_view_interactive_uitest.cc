@@ -57,7 +57,7 @@ class MenuItemViewTestBasic : public MenuTestBase {
 using MenuItemViewTestBasic0 = MenuItemViewTestBasic<0>;
 using MenuItemViewTestBasic1 = MenuItemViewTestBasic<1>;
 using MenuItemViewTestBasic2 = MenuItemViewTestBasic<2>;
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestBasic0, SelectItem0)
 VIEW_TEST(MenuItemViewTestBasic1, SelectItem1)
 VIEW_TEST(MenuItemViewTestBasic2, SelectItem2)
@@ -134,7 +134,7 @@ using MenuItemViewTestInsert12 = MenuItemViewTestInsert<1, 2>;
 using MenuItemViewTestInsert20 = MenuItemViewTestInsert<2, 0>;
 using MenuItemViewTestInsert22 = MenuItemViewTestInsert<2, 2>;
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_InsertItem00 DISABLED_InsertItem00
 #else
@@ -143,7 +143,7 @@ using MenuItemViewTestInsert22 = MenuItemViewTestInsert<2, 2>;
 VIEW_TEST(MenuItemViewTestInsert00, MAYBE_InsertItem00)
 
 // TODO(b/523255): Test is failing consistently on "Linux Tests (Wayland)".
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // #if defined(MEMORY_SANITIZER)
 // #define MAYBE_InsertItem02 DISABLED_InsertItem02
 // #else
@@ -151,10 +151,10 @@ VIEW_TEST(MenuItemViewTestInsert00, MAYBE_InsertItem00)
 // #endif
 VIEW_TEST(MenuItemViewTestInsert02, DISABLED_InsertItem02)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestInsert10, InsertItem10)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_InsertItem12 DISABLED_InsertItem12
 #else
@@ -162,7 +162,7 @@ VIEW_TEST(MenuItemViewTestInsert10, InsertItem10)
 #endif
 VIEW_TEST(MenuItemViewTestInsert12, MAYBE_InsertItem12)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_InsertItem20 DISABLED_InsertItem20
 #else
@@ -170,7 +170,7 @@ VIEW_TEST(MenuItemViewTestInsert12, MAYBE_InsertItem12)
 #endif
 VIEW_TEST(MenuItemViewTestInsert20, MAYBE_InsertItem20)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestInsert22, InsertItem22)
 
 // Test class for inserting a menu item while a submenu is open.
@@ -238,10 +238,10 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
 using MenuItemViewTestInsertWithSubmenu0 = MenuItemViewTestInsertWithSubmenu<0>;
 using MenuItemViewTestInsertWithSubmenu1 = MenuItemViewTestInsertWithSubmenu<1>;
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestInsertWithSubmenu0, InsertItemWithSubmenu0)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, InsertItemWithSubmenu1)
 
 // Test class for removing a menu item while the menu is open.
@@ -300,10 +300,10 @@ using MenuItemViewTestRemove10 = MenuItemViewTestRemove<1, 0>;
 using MenuItemViewTestRemove11 = MenuItemViewTestRemove<1, 1>;
 using MenuItemViewTestRemove20 = MenuItemViewTestRemove<2, 0>;
 using MenuItemViewTestRemove21 = MenuItemViewTestRemove<2, 1>;
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestRemove00, RemoveItem00)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // Super flaky on Wayland.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_RemoveItem01 DISABLED_RemoveItem01
@@ -312,10 +312,10 @@ VIEW_TEST(MenuItemViewTestRemove00, RemoveItem00)
 #endif
 VIEW_TEST(MenuItemViewTestRemove01, MAYBE_RemoveItem01)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestRemove10, RemoveItem10)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // Flaky on Wayland.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_RemoveItem11 DISABLED_RemoveItem11
@@ -324,10 +324,10 @@ VIEW_TEST(MenuItemViewTestRemove10, RemoveItem10)
 #endif
 VIEW_TEST(MenuItemViewTestRemove11, MAYBE_RemoveItem11)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuItemViewTestRemove20, RemoveItem20)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // Flaky on Wayland.
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RemoveItem21 DISABLED_RemoveItem21
@@ -397,7 +397,7 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
 using MenuItemViewTestRemoveWithSubmenu0 = MenuItemViewTestRemoveWithSubmenu<0>;
 using MenuItemViewTestRemoveWithSubmenu1 = MenuItemViewTestRemoveWithSubmenu<1>;
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // Flaky on Wayland.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_RemoveItemWithSubmenu0 DISABLED_RemoveItemWithSubmenu0
@@ -406,7 +406,7 @@ using MenuItemViewTestRemoveWithSubmenu1 = MenuItemViewTestRemoveWithSubmenu<1>;
 #endif
 VIEW_TEST(MenuItemViewTestRemoveWithSubmenu0, MAYBE_RemoveItemWithSubmenu0)
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // TODO(crbug.com/40244484): Flaky on Wayland.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_RemoveItemWithSubmenu1 DISABLED_RemoveItemWithSubmenu1

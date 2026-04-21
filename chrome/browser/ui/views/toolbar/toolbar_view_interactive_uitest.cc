@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, MAYBE_BackButtonMenu) {
       NavigateWebContents(kWebContentsId, url3),
       // Show the context menu.
       MoveMouseTo(kToolbarBackButtonElementId), ClickMouse(ui_controls::RIGHT),
-      Log("Logging to probe crbug.com/1489499. Waiting for back button menu."),
+      Log("Logging to probe crbug.com/40074126. Waiting for back button menu."),
       // Dismiss the context menu by clicking on it.
       Log("Moving mouse to menu."),
       MoveMouseTo(kToolbarBackButtonMenuElementId),

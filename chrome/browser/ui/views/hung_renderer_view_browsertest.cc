@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-// This is a regression test for https://crbug.com/855369.
+// This is a regression test for https://crbug.com/41396098.
 IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 

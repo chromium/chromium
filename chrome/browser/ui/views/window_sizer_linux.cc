@@ -41,7 +41,7 @@ void WindowSizerLinux::AdjustWorkAreaForPlatform(gfx::Rect& work_area) {
   // inflate window bounds.  To adjust the window size to the work area
   // properly, we first check if the window is going to have CSD, and if yes,
   // we add the appropriate margins to the work area.
-  // See https://crbug.com/1260832
+  // See https://crbug.com/40202001
   if (browser() && (!ui::OzonePlatform::GetInstance()
                          ->GetPlatformRuntimeProperties()
                          .supports_server_side_window_decorations ||

@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-// crbug.com/1194950.
+// crbug.com/40175841.
 // Test that the automatic save bubble ignores the browser activation and
 // deactivation events.
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-// crbug.com/1194950.
+// crbug.com/40175841.
 // Test that the automatic save bubble ignores the focus lost event.
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   SetupPendingPassword();
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   views::test::WidgetDestroyedWaiter(password_bubble).Wait();
 }
 
-// This is a regression test for crbug.com/1335418
+// This is a regression test for crbug.com/40228526
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 

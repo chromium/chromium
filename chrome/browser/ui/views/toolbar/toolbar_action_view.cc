@@ -145,7 +145,7 @@ bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
 // an enter event and fail to hover the button. This is effectively a no-op if
-// the button is already showing the hover card (crbug.com/1326272).
+// the button is already showing the hover card (crbug.com/40840442).
 void ToolbarActionView::OnMouseMoved(const ui::MouseEvent& event) {
   MaybeUpdateHoverCardStatus(event);
 }
@@ -215,7 +215,7 @@ bool ToolbarActionView::OnMousePressed(const ui::MouseEvent& event) {
       // This event is likely to trigger the MenuButton action.
       // TODO(bruthig): The ACTION_PENDING triggering logic should be in
       // MenuButton::OnPressed() however there is a bug with the pressed state
-      // logic in MenuButton. See http://crbug.com/567252.
+      // logic in MenuButton. See http://crbug.com/41227327.
       views::InkDrop::Get(this)->AnimateToState(
           views::InkDropState::ACTION_PENDING, &event);
     }

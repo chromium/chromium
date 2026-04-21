@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
 }
 
 // Check that the script blocked icon shows up when user disables javascript.
-// Regression test for http://crbug.com/35011
+// Regression test for http://crbug.com/41093462
 IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, ScriptBlockedIcon) {
   const char kHtml[] =
       "<html>"

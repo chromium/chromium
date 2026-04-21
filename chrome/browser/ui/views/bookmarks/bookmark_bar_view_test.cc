@@ -646,7 +646,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
 
 #if !BUILDFLAG(IS_MAC)
 // The following tests were not enabled on Mac before. Consider enabling those
-// that are able to run on Mac (https://crbug.com/845342).
+// that are able to run on Mac (https://crbug.com/41390354).
 
 // Clicks on first menu, makes sure button is depressed. Moves mouse to first
 // child, clicks it and makes sure a navigation occurs.
@@ -959,13 +959,13 @@ class BookmarkBarViewTest6 : public BookmarkBarViewEventTestBase {
 };
 
 #if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
-// TODO (crbug/1523247): This test is failing under wayland and Windows. This
-// skips it until it can be fixed.
+// TODO (crbug.com/41496199): This test is failing under wayland and Windows.
+// This skips it until it can be fixed.
 #define MAYBE_OpenMenuOnClickAndHold DISABLED_OpenMenuOnClickAndHold
 #else
 #define MAYBE_OpenMenuOnClickAndHold OpenMenuOnClickAndHold
 #endif  // BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(BookmarkBarViewTest6, MAYBE_OpenMenuOnClickAndHold)
 
 // Tests drag and drop to different menu.
@@ -1916,8 +1916,8 @@ BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit)
 END_METADATA
 
 // TODO(crbug.com/40947483): Flaky on Windows.
-// TODO (crbug/1523247): This test is failing under wayland and Windows. This
-// skips it until it can be fixed.
+// TODO (crbug.com/41496199): This test is failing under wayland and Windows.
+// This skips it until it can be fixed.
 #if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
 #else
@@ -1985,7 +1985,7 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenusForEmptyFolder DISABLED_ContextMenusForEmptyFolder
@@ -2165,8 +2165,8 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// Fails on latest versions of Windows. (https://crbug.com/1108551).
-// Flaky on Linux (https://crbug.com/1193137).
+// Fails on latest versions of Windows. (https://crbug.com/40141353).
+// Flaky on Linux (https://crbug.com/40757658).
 VIEW_TEST(BookmarkBarViewTest24, DISABLED_ContextMenusKeyboardEscape)
 
 #if BUILDFLAG(IS_WIN)

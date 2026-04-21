@@ -108,7 +108,7 @@ void MediaToolbarButtonView::Enable() {
   // Have to check for browser window because this can be called during setup,
   // before there is a valid widget to anchor anything to. Previously any
   // attempt to display an IPH at this point would have simply failed, so this
-  // is not a behavioral change (see crbug.com/1291170).
+  // is not a behavioral change (see crbug.com/40212637).
   if (captions::IsLiveCaptionFeatureSupported()) {
     BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHLiveCaptionFeature);

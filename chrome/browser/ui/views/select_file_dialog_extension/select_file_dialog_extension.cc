@@ -398,9 +398,9 @@ GURL SelectFileDialogExtension::MakeDialogURL(
           profile, selection_path, file_manager::util::GetFileManagerURL(),
           &selection_url)) {
     // Due to the current design, an invalid temporal cache file path may passed
-    // as |default_path| (crbug.com/178013 #9-#11). In such a case, we use the
+    // as |default_path| (crbug.com/40302893 #9-#11). In such a case, we use the
     // last selected directory as a workaround. Real fix is tracked at
-    // crbug.com/110119.
+    // crbug.com/40138234.
     base::FilePath base_name = default_path.BaseName();
     if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
             profile,

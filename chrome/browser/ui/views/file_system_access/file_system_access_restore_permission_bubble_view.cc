@@ -48,8 +48,8 @@ FileSystemAccessRestorePermissionBubbleView::
   SetProperty(views::kElementIdentifierKey,
               kFileSystemAccessBubbleElementIdentifier);
   // To prevent permissions being accepted accidentally, and as a security
-  // measure against crbug.com/619429, permission prompts should not be accepted
-  // as the default action.
+  // measure against crbug.com/40084558, permission prompts should not be
+  // accepted as the default action.
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseOnMainFrameOriginNavigation(true);
   DialogDelegate::SetCloseCallback(base::BindOnce(

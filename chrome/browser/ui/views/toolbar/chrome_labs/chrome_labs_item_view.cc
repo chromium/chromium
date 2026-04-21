@@ -164,7 +164,7 @@ ChromeLabsItemView::ChromeLabsItemView(
 
   // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
   // does not announce the accessible description for groups
-  // (crbug.com/1197159). The MacOS specific code here provides a temporary
+  // (crbug.com/40760006). The MacOS specific code here provides a temporary
   // mitigation for screen reader users and moves announcing the description
   // to when the user interacts with the combobox of that experiment. Don’t
   // add an accessible description for now to prevent the screen reader from

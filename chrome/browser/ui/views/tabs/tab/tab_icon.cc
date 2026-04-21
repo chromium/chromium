@@ -427,7 +427,7 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
                         gfx::kFaviconSize;
     // Translating to/from bounds offset is done to scale around the center
     // point. This fixes RTL issues where bounds.x() is non-zero. See
-    // https://crbug.com/1147408
+    // https://crbug.com/40730696
     canvas->Translate(gfx::Vector2d(bounds.x(), bounds.y()));
     canvas->Translate(gfx::Vector2d(offset, offset));
     canvas->Scale(scale, scale);

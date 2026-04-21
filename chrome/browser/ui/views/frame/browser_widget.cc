@@ -160,7 +160,7 @@ void BrowserWidget::InitBrowserWidget() {
     // On all platforms, except for Windows, this doesn't change anything
     // visually. If this is set for the Windows platform, the UI will be
     // affected. Specifically, the title bar will not render correctly, see
-    // https://crbug.com/1456231 for more details.
+    // https://crbug.com/40273014 for more details.
     params.remove_standard_frame = true;
 #endif  // !BUILDFLAG(IS_WIN)
   }
@@ -310,7 +310,7 @@ const ui::ThemeProvider* BrowserWidget::GetThemeProvider() const {
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/40771982.
   if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
@@ -330,7 +330,7 @@ ui::ColorProviderKey::ThemeInitializerSupplier* BrowserWidget::GetCustomTheme()
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/40771982.
   if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();
@@ -376,7 +376,7 @@ void BrowserWidget::ShowContextMenuForViewImpl(
     return;
   }
 
-  // Don't show a menu if a tab drag is active. https://crbug.com/1517709
+  // Don't show a menu if a tab drag is active. https://crbug.com/41490687
   if (tab_drag_kind_ != TabDragKind::kNone) {
     return;
   }
@@ -544,7 +544,7 @@ void BrowserWidget::SelectNativeTheme() {
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/40771982.
   const auto* linux_ui_theme =
       ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
   SetNativeTheme(linux_ui_theme &&
@@ -559,7 +559,7 @@ void BrowserWidget::OnTouchUiChanged() {
 
   // For standard browser frame, if we do not invalidate the FrameView
   // the client window bounds will not be properly updated which could cause
-  // visual artifacts. See crbug.com/1035959 for details.
+  // visual artifacts. See crbug.com/40112464 for details.
   if (non_client_view()->frame_view()) {
     // Note that invalidating a view invalidates all of its ancestors, so it is
     // not necessary to also invalidate the NonClientView or RootView here.
@@ -582,7 +582,7 @@ bool BrowserWidget::RegenerateFrameOnThemeChange(
 #if BUILDFLAG(IS_WIN)
   // On Windows, DWM transition does not performed for a frame regeneration in
   // fullscreen mode, so do a lighweight theme change to refresh a bookmark bar
-  // on new tab. (see crbug/1002480)
+  // on new tab. (see crbug.com/40646694)
   // With Mica, toggling titlebar accent colors in the native theme needs a
   // frame regen to switch between the system-drawn and custom-drawn titlebars.
   need_regenerate |=

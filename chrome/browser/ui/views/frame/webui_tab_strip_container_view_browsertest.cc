@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripContainerViewTest,
 
 using WebUITabStripDevToolsTest = WebUITabStripContainerViewTest;
 
-// Regression test for crbug.com/1010247, crbug.com/1090208.
+// Regression test for crbug.com/40101393, crbug.com/40697057.
 IN_PROC_BROWSER_TEST_F(WebUITabStripDevToolsTest, DevToolsWindowHasNoTabStrip) {
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);

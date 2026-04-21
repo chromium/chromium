@@ -88,7 +88,7 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
 #endif
 
   // TODO(pkasting): Try to move ViewsDelegate creation here as well;
-  // see https://crbug.com/691894#c1
+  // see https://crbug.com/41301678#c1
   if (!views::LayoutProvider::Get()) {
     layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
   }

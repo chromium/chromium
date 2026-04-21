@@ -292,7 +292,7 @@ class ImmersiveModeControllerChromeosWebUITabStripTest
 };
 
 // Ensures the WebUI tab strip can be opened during immersive reveal.
-// Regression test for crbug.com/1096569 where it couldn't be opened.
+// Regression test for crbug.com/40136260 where it couldn't be opened.
 TEST_F(ImmersiveModeControllerChromeosWebUITabStripTest, CanOpen) {
   AddTab(browser(), GURL("about:blank"));
 

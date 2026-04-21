@@ -74,8 +74,8 @@ std::u16string GetAccessibleWindowTitleInternal(
   //   "Use your camera"
   //
   // There are three separate internationalized messages used, one for each
-  // format of title, to provide for accurate i18n. See https://crbug.com/434574
-  // for more details.
+  // format of title, to provide for accurate i18n. See
+  // https://crbug.com/41143728 for more details.
 
   DCHECK(!visible_requests.empty());
 

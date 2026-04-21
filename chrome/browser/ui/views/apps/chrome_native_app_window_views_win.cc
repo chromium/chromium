@@ -87,7 +87,7 @@ ChromeNativeAppWindowViewsWin::CreateStandardDesktopAppFrame() {
 
 bool ChromeNativeAppWindowViewsWin::CanMinimize() const {
   // Resizing on Windows breaks translucency if the window also has shape.
-  // See http://crbug.com/417947.
+  // See http://crbug.com/40386447.
   return ChromeNativeAppWindowViewsAura::CanMinimize() &&
          !(WidgetHasHitTestMask() && is_translucent_);
 }

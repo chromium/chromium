@@ -218,7 +218,7 @@ TabSharingUIViews::TabSharingUIViews(
 TabSharingUIViews::~TabSharingUIViews() {
   // Unconditionally call StopSharing(), to ensure all clean-up has been
   // performed if tasks race (e.g., OnStarted() is called after
-  // OnInfoBarRemoved()). See: https://crbug.com/1155426
+  // OnInfoBarRemoved()). See: https://crbug.com/40054066
   StopSharing("TabSharingUIViews destroyed");
 }
 

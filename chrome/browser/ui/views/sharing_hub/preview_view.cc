@@ -66,7 +66,7 @@ END_METADATA
 //       Label (URL)
 PreviewView::PreviewView(share::ShareAttempt attempt) {
   // These values are all directly from the Figma redlines. See
-  // https://crbug.com/1314486 and https://crbug.com/1316473.
+  // https://crbug.com/40832894 and https://crbug.com/40834138.
   constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(8, 8);
   constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
   constexpr gfx::Size kImageSize{16, 16};

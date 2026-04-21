@@ -138,7 +138,7 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 };
 
 // This test is specifically to guard against this regression
-// (crbug.com/1428606).
+// (crbug.com/40900604).
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   GURL second_tab_url("https://test.com");

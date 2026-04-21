@@ -153,7 +153,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
     // Prevent hover cards from appearing when the mouse is over the tab. Tests
     // don't typically account for this possibly, so it can cause unrelated
-    // tests to fail due to tab data not being set. See crbug.com/1050012.
+    // tests to fail due to tab data not being set. See crbug.com/40672885.
     Tab::SetShowHoverCardOnMouseHoverForTesting(false);
   }
 
@@ -414,7 +414,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
 }
 
 // The active tab should always be at least as wide as its minimum width.
-// http://crbug.com/587688
+// http://crbug.com/40457423
 TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   // The bug was caused when it's animating. Therefore we should make widget
   // visible so that animation can be triggered.
@@ -450,7 +450,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
 }
 
 // Inactive tabs shouldn't shrink during mouse-based tab closure.
-// http://crbug.com/850190
+// http://crbug.com/40579617
 TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   SetMaxTabStripWidth(200);
 
@@ -483,7 +483,7 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
 }
 
 // When dragged tabs are moving back to their position, changes to ideal bounds
-// should be respected. http://crbug.com/848016
+// should be respected. http://crbug.com/40578598
 TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   SetMaxTabStripWidth(200);
 
@@ -584,7 +584,7 @@ TEST_P(TabStripTest, EventsOnClosingTab) {
   EXPECT_TRUE(second_tab->closing());
 }
 
-// TODO (crbug.com/1520595): Disabled for now due to test failing when CR2023
+// TODO (crbug.com/41493572): Disabled for now due to test failing when CR2023
 // enabled.
 TEST_P(TabStripTest, DISABLED_ChangingLayoutTypeResizesTabs) {
   SetMaxTabStripWidth(1000);
@@ -610,7 +610,7 @@ TEST_P(TabStripTest, DISABLED_ChangingLayoutTypeResizesTabs) {
 // the first tab in a group was animating closed, attempting to close the next
 // tab could result in a crash. This was due to TabStripLayoutHelper mistakenly
 // mapping the next tab's model index to the closing tab's slot. See
-// https://crbug.com/1138748 for a related crash.
+// https://crbug.com/40725628 for a related crash.
 TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   controller_->AddTab(0, TabActive::kActive);
   controller_->AddTab(1, TabActive::kInactive);
@@ -719,7 +719,7 @@ struct SizeChangeObserver : public views::ViewObserver {
 }  // namespace
 
 // When dragged tabs' bounds are modified through TabDragContext, both tab strip
-// and its parent view must get re-laid out http://crbug.com/1151092.
+// and its parent view must get re-laid out http://crbug.com/40732823.
 TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   SetMaxTabStripWidth(400);
 

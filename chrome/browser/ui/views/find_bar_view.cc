@@ -375,7 +375,7 @@ void FindBarView::UpdateForResult(
   bool have_valid_range =
       result.number_of_matches() != -1 && result.active_match_ordinal() != -1;
 
-  // http://crbug.com/34970: some IMEs get confused if we change the text
+  // http://crbug.com/41093231: some IMEs get confused if we change the text
   // composed by them. To avoid this problem, we should check the IME status and
   // update the text only when the IME is not composing text.
   //
@@ -528,7 +528,7 @@ void FindBarView::OnAfterUserAction(views::Textfield* sender) {
 void FindBarView::OnAfterPaste() {
   // Clear the last search text so we always search for the user input after
   // a paste operation, even if the pasted text is the same as before.
-  // See http://crbug.com/79002
+  // See http://crbug.com/40552385
   last_searched_text_.clear();
 }
 

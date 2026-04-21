@@ -96,7 +96,7 @@ bool ChromeViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   // On Ubuntu Unity, the system always provides a title bar for
   // maximized windows.
   //
-  // TODO(thomasanderson,crbug.com/784010): Consider using the
+  // TODO(thomasanderson,crbug.com/40549424): Consider using the
   // _UNITY_SHELL wm hint when support for Ubuntu Trusty is dropped.
   if (!maximized) {
     return false;

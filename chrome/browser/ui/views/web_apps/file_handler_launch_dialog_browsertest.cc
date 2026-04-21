@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, AcceptDoNotRemember) {
   ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 }
 
-// Regression test for crbug.com/1205528
+// Regression test for crbug.com/40180518
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, UnhandledType) {
   // One normal browser window exists.
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());

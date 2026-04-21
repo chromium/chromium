@@ -242,7 +242,7 @@ class GuestStateProvider : public PrivateBaseStateProvider {
     // On ChromeOS all windows are either Guest or not Guest and the Guest
     // avatar button is not actionable. Showing the number of open windows is
     // not as helpful as on other desktop platforms. Please see
-    // crbug.com/1178520.
+    // crbug.com/40169175.
     const int guest_window_count = 1;
 #else
     const int guest_window_count =
@@ -678,7 +678,7 @@ class ShowIdentityNameStateProvider
       //  that case, |OnRefreshTokensLoaded| will be called twice, once from
       //  AvatarToolbarButtonDelegate` constructor and another time from the
       //  `IdentityManager`. This happens for new signed in profiles. See
-      //  https://crbug.com/1035480
+      //  https://crbug.com/40664285
       return;
     }
 
@@ -724,7 +724,7 @@ class ShowIdentityNameStateProvider
     // Trigger a new animation, even if the IPH is being removed. This keeps the
     // pill open a little more and avoids jankiness caused by the two animations
     // (IPH and identity pill) happening concurrently.
-    // See https://crbug.com/1198907
+    // See https://crbug.com/40177559
     ShowIdentityName();
   }
 
@@ -750,7 +750,7 @@ class ShowIdentityNameStateProvider
       return;
     }
 
-    // Check that the user is still signed in. See https://crbug.com/1025674
+    // Check that the user is still signed in. See https://crbug.com/40107959
     if (!IdentityManagerFactory::GetForProfile(&profile())
              ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       Clear();

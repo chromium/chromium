@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
 }
 
 // Verifies that dragging extension icons is disabled in incognito windows.
-// https://crbug.com/1203833.
+// https://crbug.com/40763731.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
                        IncognitoDraggingIsDisabled) {
   // Load an extension, pin it, and enable it in incognito.
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
 }
 
 // Tests unloading an extension while the action is being slid out prior to the
-// popup being shown. Regression test for https://crbug.com/1345477.
+// popup being shown. Regression test for https://crbug.com/40853587.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
                        UnloadingExtensionWhileAboutToShowPopup) {
   // Load an extension.

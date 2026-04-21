@@ -129,7 +129,7 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
     }
   } else {
     // Close the bubble first to ensure focus is not lost when SetVisible(false)
-    // is called. See crbug.com/913829.
+    // is called. See crbug.com/41431117.
     if (HasAssociatedBubble()) {
       zoom_bubble_coordinator->Hide();
     }

@@ -194,7 +194,7 @@ class TouchEventsViewTest : public ViewEventTestBase {
 };
 
 #if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
-                       // https://crbug.com/1108551.
+                       // https://crbug.com/40141353.
 #define MAYBE_CheckWindowsNativeMessageForTouchEvents \
   DISABLED_CheckWindowsNativeMessageForTouchEvents
 #else
@@ -235,7 +235,7 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
 };
 
 #if BUILDFLAG(IS_WIN)  // Fails on latest versions of Windows.
-                       // https://crbug.com/1108551.
+                       // https://crbug.com/40141353.
 #define MAYBE_CheckWindowsRecursiveHandler DISABLED_CheckWindowsRecursiveHandler
 #else
 #define MAYBE_CheckWindowsRecursiveHandler CheckWindowsRecursiveHandler

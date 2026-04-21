@@ -178,7 +178,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     const std::string& name =
@@ -598,7 +598,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     ASSERT_TRUE(
@@ -644,7 +644,7 @@ class PageInfoBubbleViewPrivacySandboxTestBase : public DialogBrowserTest {
  protected:
   void SetupAndOpenBubble() {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl("a.test")));
@@ -752,7 +752,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     PageInfoUI::CookiesInfo cookie_info;
@@ -868,7 +868,7 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     Browser* iwa_browser =
@@ -902,7 +902,7 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
 
 // Test renamed, as currently Skia Gold doesn't support resetting test
 // expectation for tests run on windows.
-// crbug.com/1403038
+// crbug.com/40251389
 // Flaky on Win10 Tests x64 (crbug.com/40261456)
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_AppNameIsDisplayedInsteadOfOriginForIsolatedWebApps_REV2 \
@@ -969,7 +969,7 @@ class PageInfoBubbleViewWebAppBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     const std::string& name =
@@ -1070,7 +1070,7 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
+    // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
     if (name == "MerchantTrustMainPage" || name == "MerchantTrustSubpage") {

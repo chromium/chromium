@@ -290,7 +290,7 @@ void PopupRowView::OnMouseExited(const ui::MouseEvent& event) {
   // `OnMouseExited()` does not imply that the mouse has left the item's screen
   // bounds: `OnMouseExited()` fires (on Windows, at least) when another popup
   // overlays this item and the mouse is above the new popup
-  // (crbug.com/1287364).
+  // (crbug.com/40058496).
   mouse_observed_outside_item_bounds_ |= !IsMouseHovered();
 }
 

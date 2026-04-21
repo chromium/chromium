@@ -212,7 +212,7 @@ void ExtensionSidePanelCoordinator::OnViewDestroying() {
   // When the extension's view inside the side panel is destroyed, reset
   // the ExtensionViewHost so it cannot try to notify a view that no longer
   // exists when its event listeners are triggered. Otherwise, a use after free
-  // could occur as documented in crbug.com/1403168.
+  // could occur as documented in crbug.com/40062350.
   host_.reset();
   scoped_view_observation_.Reset();
 }

@@ -189,7 +189,7 @@ class BaseSelectFileDialogExtensionBrowserTest
                                        downloads_dir_);
 
     // The test resources are setup: enable and add default ChromeOS component
-    // extensions now and not before: crbug.com/831074, crbug.com/804413.
+    // extensions now and not before: crbug.com/41382159, crbug.com/40559198.
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
 

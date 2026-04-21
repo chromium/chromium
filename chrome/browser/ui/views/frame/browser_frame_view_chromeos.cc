@@ -743,7 +743,7 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
 
     // The client view (in particular the tab strip) has different layout in
     // restored vs. maximized/fullscreen. Invalidate the layout because the
-    // window bounds may not have changed. https://crbug.com/1342414
+    // window bounds may not have changed. https://crbug.com/40230996
     if (browser_widget()->client_view()) {
       browser_widget()->client_view()->InvalidateLayout();
     }
@@ -752,7 +752,7 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
   if (key == chromeos::kWindowStateTypeKey) {
     // Update window controls when window state changes as whether or not these
     // are shown can depend on the window state (e.g. hiding the caption buttons
-    // in non-immersive full screen mode, see crbug.com/1336470).
+    // in non-immersive full screen mode, see crbug.com/40228932).
     ResetWindowControls();
 
     // Update the window controls if we are entering or exiting float state.
@@ -808,7 +808,7 @@ void BrowserFrameViewChromeOS::OnImmersiveRevealStarted() {
   // However, BrowserFrameViewChromeOS is a sibling of TopContainerView
   // not a child. As a result, when the frame caption buttons are set to
   // paint_to_layer as a result of an ink drop effect, they will disappear.
-  // https://crbug.com/840242. To fix this, we'll make the caption buttons
+  // https://crbug.com/40575107. To fix this, we'll make the caption buttons
   // temporarily children of the TopContainerView while they're all painting to
   // their layers.
   auto* container = GetBrowserView()->top_container();
@@ -1053,7 +1053,7 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // TODO(http://crbug.com/1059514): This check shouldn't be necessary.  Provide
+  // TODO(http://crbug.com/40121645): This check shouldn't be necessary. Provide
   // an appropriate affordance for the profile icon with the webUI tabstrip and
   // remove this block.
   if (!GetBrowserView()->GetTabStripVisible()) {
@@ -1190,7 +1190,7 @@ void BrowserFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // view so that repainting of the web contents (which is janky) is hidden from
   // user. Note that opacity is set just above `0.f` to pass a DCHECK that
   // exists in `aura::Window` that might otherwise be tripped when changing
-  // window visibility (see https://crbug.com/351553).
+  // window visibility (see https://crbug.com/41094269).
   layer->SetOpacity(std::nextafter(0.f, 1.f));
 
   // Cache a callback to invoke to animate the layer back in. Note that because

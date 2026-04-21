@@ -492,8 +492,8 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   }
 }
 
-// Regression test for http://crbug.com/226253. Performing layout more than once
-// shouldn't change the insets of the close button.
+// Regression test for http://crbug.com/40310973. Performing layout more than
+// once shouldn't change the insets of the close button.
 TEST_F(TabTest, CloseButtonLayout) {
   FakeTabSlotController tab_slot_controller;
   Tab tab(tabs::TabHandle(1), &tab_slot_controller);
@@ -508,7 +508,7 @@ TEST_F(TabTest, CloseButtonLayout) {
   EXPECT_EQ(close_button_insets.right(), close_button_insets_2.right());
 }
 
-// Regression test for http://crbug.com/609701. Ensure TabCloseButton does not
+// Regression test for http://crbug.com/40468176. Ensure TabCloseButton does not
 // get focus on right click.
 TEST_F(TabTest, CloseButtonFocus) {
   auto controller = std::make_unique<FakeTabSlotController>();

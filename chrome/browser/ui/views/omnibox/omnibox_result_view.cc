@@ -480,7 +480,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   }
 
   // We must reapply colors for all the text fields here. If we don't, we can
-  // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
+  // break theme changes for ZeroSuggest. See https://crbug.com/40135721.
   //
   // TODO(crbug.com/430318151): We should finish migrating this logic to live
   // entirely within OmniboxTextView, which should keep track of its own

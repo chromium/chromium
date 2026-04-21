@@ -120,8 +120,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};
 
-  // Use to track down potential UaF. See https://crbug.com/1304280. Remove this
-  // code when issue is fixed.
+  // Use to track down potential UaF. See https://crbug.com/40217661. Remove
+  // this code when issue is fixed.
   base::WeakPtr<FullscreenController> fullscreen_controller_;
 
   // A flag controlling bubble closure when the main frame navigates to a

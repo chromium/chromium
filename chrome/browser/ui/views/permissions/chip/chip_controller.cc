@@ -228,7 +228,7 @@ void ChipController::OnWidgetDestroyed(views::Widget* widget) {
 
 void ChipController::OnWidgetActivationChanged(views::Widget* widget,
                                                bool active) {
-  // This logic prevents clickjacking. See https://crbug.com/1160485
+  // This logic prevents clickjacking. See https://crbug.com/40054242
   auto* prompt_bubble_widget = GetBubbleWidget();
   if (active && !parent_was_visible_when_activation_changed_) {
     // If the widget is active and the primary window wasn't active the last

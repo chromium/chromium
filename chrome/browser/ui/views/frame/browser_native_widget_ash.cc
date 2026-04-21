@@ -164,7 +164,7 @@ void BrowserNativeWidgetAsh::GetWindowPlacement(
   }
 
   // Session restore might be unable to correctly restore other states.
-  // For the record, https://crbug.com/396272
+  // For the record, https://crbug.com/40375827
   if (*show_state != ui::mojom::WindowShowState::kMaximized &&
       *show_state != ui::mojom::WindowShowState::kMinimized) {
     *show_state = ui::mojom::WindowShowState::kNormal;

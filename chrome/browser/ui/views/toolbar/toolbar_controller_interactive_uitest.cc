@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
 
-// TODO(crbug/361296257): ActionItemsOverflowAndReappear is flaky on
+// TODO(crbug.com/361296257): ActionItemsOverflowAndReappear is flaky on
 // linux64-rel-ready.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_ActionItemsOverflowAndReappear \

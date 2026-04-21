@@ -382,7 +382,7 @@ TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
 }
 
 // Tests that the pin/unpin button is focused after unpinning/pinning. This is
-// to verify regression in crbug.com/428704 is fixed.
+// to verify regression in crbug.com/41140316 is fixed.
 TEST_F(AppInfoDialogViewsTest, PinButtonsAreFocusedAfterPinUnpin) {
   ShowAppInfo(kTestExtensionId);
   AppInfoFooterPanel* dialog_footer =

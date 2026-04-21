@@ -409,11 +409,11 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
   ASSERT_EQ(1, menu_listener.menu_open_count());
 }
 
-// http://crbug.com/62310.
+// http://crbug.com/41260780.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
-// No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
+// No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/41377766
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
 #else
 #define MAYBE_TestMenuKeyboardAccess TestMenuKeyboardAccess
@@ -423,11 +423,11 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestMenuKeyboardAccess) {
   TestMenuKeyboardAccess(false, false, false);
 }
 
-// http://crbug.com/62310.
+// http://crbug.com/41260780.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
-// No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
+// No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/41377766
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
 #else
 #define MAYBE_TestAltMenuKeyboardAccess TestAltMenuKeyboardAccess
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestAltMenuKeyboardAccess) {
   TestMenuKeyboardAccess(true, false, false);
 }
 
-// If this flakes, use http://crbug.com/62311.
+// If this flakes, use http://crbug.com/40474299.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TestShiftAltMenuKeyboardAccess \
   DISABLED_TestShiftAltMenuKeyboardAccess
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, TestMenuKeyboardOpenDismiss) {
 // ctrl-t to open a new tab or ctrl-f4 to close a tab.
 // TODO(isherman): This test times out on ChromeOS.  We should merge it with
 // BrowserKeyEventsTest.ReservedAccelerators, but just disable for now.
-// If this flakes, use http://crbug.com/62311.
+// If this flakes, use http://crbug.com/40474299.
 IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
   const std::string kBadPage =
       "<html><script>"

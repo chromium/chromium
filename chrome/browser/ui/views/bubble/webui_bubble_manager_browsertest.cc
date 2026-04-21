@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 }
 
 // Ensures that the WebUI bubble is destroyed synchronously with the manager.
-// This guards against a potential UAF crash (see crbug.com/1345546).
+// This guards against a potential UAF crash (see crbug.com/40060325).
 IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
                        ManagerDestructionClosesBubble) {
   EXPECT_EQ(nullptr, bubble_manager()->GetBubbleWidget());

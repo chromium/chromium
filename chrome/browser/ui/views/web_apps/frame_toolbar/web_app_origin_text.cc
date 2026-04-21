@@ -52,7 +52,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
   label_->SetSubpixelRenderingEnabled(false);
   // Disable Label's auto readability to ensure consistent colors in the title
-  // bar (see http://crbug.com/814121#c2).
+  // bar (see http://crbug.com/40563850#c2).
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);

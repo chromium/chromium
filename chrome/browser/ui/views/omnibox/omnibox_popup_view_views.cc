@@ -119,7 +119,7 @@ class OmniboxPopupViewViews::PopupWidget final : public ThemeCopyingWidget {
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. We can revert this change
-    // once http://crbug.com/125248 is fixed.
+    // once http://crbug.com/40198772 is fixed.
     params.force_software_compositing = !base::FeatureList::IsEnabled(
         kOmniboxRemovePopupWidgetSoftwareCompositing);
 #endif
@@ -333,7 +333,7 @@ bool OmniboxPopupViewViews::IsOpen() const {
 }
 
 void OmniboxPopupViewViews::InvalidateLine(size_t line) {
-  // TODO(tommycli): This is weird, but https://crbug.com/1063071 shows that
+  // TODO(tommycli): This is weird, but https://crbug.com/40680508 shows that
   // crashes like this have happened, so we add this to avoid it for now.
   if (line >= row_views_.size()) {
     return;
@@ -427,7 +427,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
     // be expensive to create due to loading font data, this saves time and
-    // memory during browser startup. https://crbug.com/1021323
+    // memory during browser startup. https://crbug.com/40657008
     // If the row group view is created, it should not be counted in the number
     // of children.
     if (children().size() - contextual_group_view_count == i) {
@@ -567,7 +567,7 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
 void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
                                                   const gfx::Rect& new_bounds) {
   // Because we don't directly control the lifetime of the widget, gracefully
-  // handle "stale" notifications by ignoring them. https://crbug.com/1108762
+  // handle "stale" notifications by ignoring them. https://crbug.com/40707636
   if (!widget_ || widget_.get() != widget) {
     return;
   }
@@ -692,7 +692,7 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
   // Add space at the bottom for aesthetic reasons. It's expected that this
   // space is dead unclickable/unhighlightable space. This extra padding is not
   // added if the results section has no height (result set is empty or all
-  // results are hidden). See https://crbug.com/1076646 for additional context.
+  // results are hidden). See https://crbug.com/40128770 for additional context.
   if (popup_height != 0) {
     // The amount of extra space is dependent on whether the last match is the
     // toolbelt or not. The toolbelt doesn't have an icon or image on the left

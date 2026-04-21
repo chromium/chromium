@@ -115,7 +115,7 @@ TEST_F(LayoutProviderTest, EnsuresDefaultSystemSettings) {
 // Check legacy font sizes. No new code should be using these constants, but if
 // these tests ever fail it probably means something in the old UI will have
 // changed by mistake.
-// https://crbug.com/961938
+// https://crbug.com/41458130
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LegacyFontSizeConstants DISABLED_LegacyFontSizeConstants
 #else

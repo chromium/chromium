@@ -124,7 +124,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Regression test for crbug.com/983961.
+// Regression test for crbug.com/40636026.
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabAndDeleteGroup) {
   ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
 

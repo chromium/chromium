@@ -222,7 +222,7 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
 
   // TODO(tapted): These statics should be cleared out when something invokes
   // ui::ResourceBundle::ReloadFonts(). Currently that only happens on ChromeOS.
-  // See http://crbug.com/708943.
+  // See http://crbug.com/41311615.
   static const int title_height =
       GetFont(views::style::CONTEXT_DIALOG_TITLE, kTemplateStyle).GetHeight() -
       kTitlePlatformHeight + kTitleHeight;

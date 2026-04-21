@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 }
 
 // Ensure same-document navigations don't close the Safety Tip.
-// Regression test for crbug.com/1137661
+// Regression test for crbug.com/40724906
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        StillShowAfterSameDocNav) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
@@ -615,8 +615,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
 // If the user clicks 'leave site', the warning should re-appear when the user
 // re-visits the page.
-// Flaky on Mac: https://crbug.com/1139955
-// Flaky in general, test depends on subtle timing, https://crbug.com/1142769
+// Flaky on Mac: https://crbug.com/40726304
+// Flaky in general, test depends on subtle timing, https://crbug.com/40727927
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_LeaveSiteStillWarnsAfter) {
   const GURL kNavigatedUrl = GetURL("accounts-google.com");
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
 // Background tabs shouldn't open a bubble initially, but should when they
 // become visible.
-// Fails on Mac for one parameter. https://crbug.com/1285242
+// Fails on Mac for one parameter. https://crbug.com/40814875
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_BubbleWaitsForVisible DISABLED_BubbleWaitsForVisible
 #else
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 }
 
 // Background tabs that are errors shouldn't open a tip initially, and shouldn't
-// open when they become visible, either.  Test for crbug.com/1019228.
+// open when they become visible, either.  Test for crbug.com/40655830.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoBubbleOnErrorEvenAfterVisible) {
   const GURL kNavigatedUrl =
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 }
 
 // Tests that the SafetyTipShown histogram triggers correctly.
-// Flaky on all platforms: https://crbug.com/1139955
+// Flaky on all platforms: https://crbug.com/40726304
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_SafetyTipShownHistogram) {
   base::HistogramTester histograms;
@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 }
 
 // Ensure that a metrics-only heuristic doesn't show up in PageInfo. Also
-// a regression test for crbug/1061244.
+// a regression test for crbug.com/40122365.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        MetricsOnlyHeuristicDoesntShowInPageInfo) {
   // This URL will trigger Combo Squatting. Combo Squatting UI is disabled by
@@ -1317,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
 // Tests that UKM data is only recorded after the safety tip warning is
 // dismissed or accepted, for the blocklist heuristic.
-// Flaky on all platforms: https://crbug.com/1139955
+// Flaky on all platforms: https://crbug.com/40726304
 IN_PROC_BROWSER_TEST_F(
     SafetyTipPageInfoBubbleViewBrowserTest,
     DISABLED_WarningDismissalCausesUkmRecordingForBlocklist) {

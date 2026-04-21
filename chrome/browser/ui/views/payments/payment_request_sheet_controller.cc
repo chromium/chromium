@@ -590,7 +590,7 @@ bool PaymentRequestSheetController::DisplayDynamicBorderForHiddenContents() {
 
 bool PaymentRequestSheetController::ShouldAccelerateEnterKey() {
   // Subclasses must explicitly opt-into this behavior. Be aware of the risks of
-  // enabling click-jacking of the Enter key; see https://crbug.com/1403539
+  // enabling click-jacking of the Enter key; see https://crbug.com/40062377
   return false;
 }
 

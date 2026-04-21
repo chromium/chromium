@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonIn
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
-  // bounds size. https://crbug.com/814105.
+  // bounds size. https://crbug.com/40563841.
   auto* button = static_cast<TabStripControlButton*>(
       tab_strip_region_view()->new_tab_button_for_testing());
   for (int i = 0; i < 10; ++i) {

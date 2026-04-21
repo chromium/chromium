@@ -140,7 +140,7 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     // initialization parameters, force the use of a non toplevel window,
     // as the native window manager has no concept of elevation based shadows.
     // TODO: This may no longer be needed if we get proper elevation-based
-    // shadows on toplevel windows. See https://crbug.com/838667.
+    // shadows on toplevel windows. See https://crbug.com/40574410.
     native_widget_type = NativeWidgetType::kNativeWidgetAura;
   } else {
     // Otherwise, we can use a toplevel window (they get blended via
@@ -175,7 +175,7 @@ int ChromeViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
   // that we retrieve the taskbar state in a worker thread.
   if (monitor && !in_autohide_edges_callback_) {
     // TODO(robliao): Annotate this task with .WithCOM() once supported.
-    // https://crbug.com/662122
+    // https://crbug.com/40491987
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,

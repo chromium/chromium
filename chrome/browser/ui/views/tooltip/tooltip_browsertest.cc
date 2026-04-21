@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel and other linux bots.
+// https://crbug.com/40768202. Flaky on linux-chromeos-rel and other linux bots.
 #define MAYBE_ShowTooltipFromWebContentWithKeyboard \
   DISABLED_ShowTooltipFromWebContentWithKeyboard
 #else
@@ -219,8 +219,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
-// https://crbug.com/1241736. Flaky on Win.
+// https://crbug.com/40768202. Flaky on linux-chromeos-rel.
+// https://crbug.com/40786199. Flaky on Win.
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        DISABLED_ShowTooltipFromIFrameWithKeyboard) {
   // There are two tooltips in this file: one above the iframe and one inside
@@ -263,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
-// https://crbug.com/1241736. Flaky on Win.
+// https://crbug.com/40768202. Flaky on linux-chromeos-rel.
+// https://crbug.com/40786199. Flaky on Win.
 #define MAYBE_HideTooltipOnKeyPressTriggeredByCursor \
   DISABLED_HideTooltipOnKeyPressTriggeredByCursor
 #else
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
-// https://crbug.com/1241736. Flaky on Win.
+// https://crbug.com/40768202. Flaky on linux-chromeos-rel.
+// https://crbug.com/40786199. Flaky on Win.
 #define MAYBE_HideTooltipOnKeyPressTriggeredByKeyboard \
   DISABLED_HideTooltipOnKeyPressTriggeredByKeyboard
 #else
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel, windows, linux.
+// https://crbug.com/40768202. Flaky on linux-chromeos-rel, windows, linux.
 #define MAYBE_ScriptFocusHidesKeyboardTriggeredTooltip \
   DISABLED_ScriptFocusHidesKeyboardTriggeredTooltip
 #else

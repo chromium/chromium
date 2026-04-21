@@ -498,7 +498,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
     gfx::Insets reload_button_margins,
     gfx::Insets menu_entries_margins) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
-  // a maximized window in 1024x768. See https://crbug.com/1096630.
+  // a maximized window in 1024x768. See https://crbug.com/40700838.
   // TODO(crbug.com/40891805): Consider making the height dynamic.
   constexpr int kMaxExtensionButtonsHeightDp = 448;
 

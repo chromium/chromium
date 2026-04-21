@@ -250,7 +250,7 @@ void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
   if (GetWidget()->GetNativeWindow()->GetProperty(
           chromeos::kIsShowingInOverviewKey)) {
     // Prevent this from closing while starting overview mode for better UX.
-    // See crbug.com/972015.
+    // See crbug.com/40631180.
     return;
   }
 #endif

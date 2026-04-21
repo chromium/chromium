@@ -55,7 +55,7 @@ constexpr base::Time kJanuary2017 =
 
 }  // namespace
 
-// This test suite is flaky on desktop platforms (crbug.com/1073972) and tests
+// This test suite is flaky on desktop platforms (crbug.com/40686589) and tests
 // UI that is soon to be deprecated, so it is disabled.
 class DISABLED_PaymentRequestShippingAddressEditorTest
     : public PaymentRequestBrowserTestBase {
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                /*accept_empty_phone_number=*/false);
 }
 
-// Disabled for flakiness: crbug.com/799028
+// Disabled for flakiness: crbug.com/40556740
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        DISABLED_EnterAcceleratorSyncData) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             request->state()->selected_shipping_option_error_profile());
 }
 
-// Flaky on ozone: https://crbug.com/1216184
+// Flaky on ozone: https://crbug.com/40184706
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_FocusFirstField_Name DISABLED_FocusFirstField_Name
 #else
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_TRUE(textfield->HasFocus());
 }
 
-// Flaky on ozone: https://crbug.com/1216184
+// Flaky on ozone: https://crbug.com/40184706
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_FocusFirstInvalidField_NotName \
   DISABLED_FocusFirstInvalidField_NotName

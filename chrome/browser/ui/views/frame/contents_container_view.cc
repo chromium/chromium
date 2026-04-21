@@ -489,7 +489,7 @@ void ContentsContainerView::UpdateCaptureContentsBorderLocation() {
   gfx::Point contents_top_left;
 #if BUILDFLAG(IS_CHROMEOS)
   // On Ash placing the border widget on top of the contents container
-  // does not require an offset -- see crbug.com/1030925.
+  // does not require an offset -- see crbug.com/40110215.
   const gfx::Rect bounds_in_browser =
       views::View::ConvertRectToTarget(this, browser_view_, GetLocalBounds());
   contents_top_left = gfx::Point(bounds_in_browser.x(), bounds_in_browser.y());
@@ -510,7 +510,7 @@ void ContentsContainerView::UpdateCaptureContentsBorderLocation() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Immersive top container might overlap with the blue border in fullscreen
-  // mode - see crbug.com/1392733. By insetting the bounds rectangle we ensure
+  // mode - see crbug.com/40880524. By insetting the bounds rectangle we ensure
   // that the blue border is always placed below the top container.
   if (ImmersiveModeController::From(browser_view_->browser())->IsRevealed()) {
     const int delta =

@@ -527,7 +527,7 @@ TabDragController::Liveness TabDragController::Init(
 
   // Start listening for tabs to be closed or replaced in `source_context_`, in
   // case this happens before the mouse is moved enough to fully start the drag.
-  // See crbug/1445776.
+  // See crbug.com/40912628.
   ref->attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           ref->source_context_->GetTabStripModel(), this);
@@ -542,8 +542,8 @@ TabDragController::Liveness TabDragController::Init(
   if (event_source == ui::mojom::DragEventSource::kTouch) {
     // Taking capture involves OS calls which may reentrantly call back into
     // Chrome. This may result in the drag ending, destroying `this`. This
-    // behavior has been observed on Windows in https://crbug.com/964322 and
-    // ChromeOS in https://crbug.com/1431369.
+    // behavior has been observed on Windows in https://crbug.com/41459475 and
+    // ChromeOS in https://crbug.com/40902272.
     if (SetCapture(ref->source_context_) == Liveness::kDeleted) {
       return Liveness::kDeleted;
     }
@@ -686,7 +686,7 @@ TabDragController::Liveness TabDragController::Drag(
     }
 
     // If any of the tabs have disappeared (e.g. closed or discarded), cancel
-    // the drag session. See crbug.com/1445776.
+    // the drag session. See crbug.com/40912628.
     if (GetViewsMatchingDraggedContents(source_context_).empty()) {
       EndDrag(EndDragReason::kCancel);
       return Liveness::kDeleted;
@@ -847,7 +847,7 @@ void TabDragController::OnWidgetBoundsChanged(views::Widget* widget,
   // WidgetBoundsChanged happens as a step of ending a drag, but Drag() doesn't
   // have to be called -- GetCursorScreenPoint() may return an incorrect
   // location in such case and causes a weird effect. See
-  // https://crbug.com/914527 for the details.
+  // https://crbug.com/40606256 for the details.
   if (!env->IsMouseButtonDown() && !env->is_touch_down()) {
     return;
   }
@@ -1052,7 +1052,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     // done, leading to all sorts of flicker. So, on non-ash Windows, instead
     // we process the move after the loop completes. But on ChromeOS Ash, we
     // can do tab swapping now to avoid the tab flashing issue
-    // (crbug.com/116329).
+    // (crbug.com/40740059).
     if (can_release_capture_) {
       tab_strip_to_attach_to_after_exit_ = target_context;
       current_state_ = DragState::kWaitingToDragTabs;
@@ -1435,7 +1435,7 @@ void TabDragController::AttachImpl() {
   ResetSelection(attached_context_->GetTabStripModel());
 
   // This should be called after ResetSelection() in order to generate
-  // bounds correctly. http://crbug.com/836004
+  // bounds correctly. http://crbug.com/40573140
   OnContextStartedDragging(views);
 
   // Make sure the window has capture. This is important so that if activation
@@ -1597,7 +1597,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 
     // If `attached_context_` received a gesture end event, it will have ended
     // the drag, destroying `this`. This shouldn't ever happen (preventing this
-    // scenario is why we pass kDontCancel above) - https://crbug.com/1350564.
+    // scenario is why we pass kDontCancel above) - https://crbug.com/40060514.
     CHECK(ref) << "Drag session was ended as part of transferring events to "
                   "the new browser. This should not happen.";
   }
@@ -1830,7 +1830,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
       // After the drag ends, sometimes it shouldn't restore the focus, because
       // - Some dragging gesture (like fling down) minimizes the window, but the
       //   window activation cancels minimized status. See
-      //   https://crbug.com/902897
+      //   https://crbug.com/40601420
       if (!attached_context_->GetWidget()->IsMinimized()) {
         RestoreFocus();
       }
@@ -2260,7 +2260,7 @@ void TabDragController::CompleteDrag() {
     // If source window was maximized - maximize the new window as well.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
     // Keeping maximized state breaks snap to Grid on Windows when dragging
-    // tabs from maximized windows. TODO:(crbug.com/727051) Explore doing this
+    // tabs from maximized windows. TODO:(crbug.com/41321838) Explore doing this
     // for other desktop OS's. kMaximizedStateRetainedOnTabDrag in
     // tab_drag_controller_interactive_uitest.cc will need to be initialized
     // to false on each desktop OS that changes this behavior.
@@ -2602,7 +2602,7 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not copy attached window's restore id as this will cause Full Restore to
   // restore the newly created browser using the original browser's stored data.
-  // See crbug.com/1208923 and crbug.com/1333562 for details.
+  // See crbug.com/40181917 and crbug.com/40227947 for details.
   create_params.restore_id = Browser::kDefaultRestoreId;
 
   // Open the window in the same display.
@@ -2613,7 +2613,7 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   // Do not copy attached window's show state as the attached window might be a
   // maximized or fullscreen window and we do not want the newly created browser
   // window is a maximized or fullscreen window since it will prevent window
-  // moving/resizing on Chrome OS. See crbug.com/1023871 for details.
+  // moving/resizing on Chrome OS. See crbug.com/40107205 for details.
   create_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
 
   // Don't copy the initial workspace since the *current* workspace might be
@@ -2698,7 +2698,7 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   // These windows can be returned in the Linux Aura port because the browser
   // window which was used for dragging is not hidden once all of its tabs are
   // attached to another browser window in DragBrowserToNewTabStrip().
-  // TODO(pkotwicz): Fix this properly (crbug.com/358482)
+  // TODO(pkotwicz): Fix this properly (crbug.com/41098538)
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&exclude](BrowserWindowInterface* browser) {
         if (browser->GetTabStripModel()->empty()) {
@@ -2741,7 +2741,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   Browser* other_browser = other_browser_view->browser();
 
   // Do not allow dragging into a window with a modal dialog, it causes a
-  // weird behavior.  See crbug.com/336691
+  // weird behavior.  See crbug.com/40348569
 #if defined(USE_AURA)
   if (wm::GetModalTransient(window)) {
     return false;

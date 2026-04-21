@@ -145,7 +145,7 @@ FindBarHost::FindBarHost(FindBarOwner* find_bar_owner)
       find_bar_owner_(find_bar_owner) {
   auto find_bar_view = std::make_unique<FindBarView>(this);
   // The |clip_view| exists to paint to a layer so that it can clip descendent
-  // Views which also paint to a Layer. See http://crbug.com/589497
+  // Views which also paint to a Layer. See http://crbug.com/41240976
   auto clip_view = std::make_unique<views::View>();
   clip_view->SetPaintToLayer();
   clip_view->layer()->SetFillsBoundsOpaquely(false);

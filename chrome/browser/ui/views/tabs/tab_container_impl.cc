@@ -524,7 +524,7 @@ void TabContainerImpl::UpdateHoverCard(
   // Some operations (including e.g. starting a drag) can cause the tab focus
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
-  // See crbug.com/1220840 for an example case.
+  // See crbug.com/40773156 for an example case.
   if (controller_->IsAnimatingInTabStrip()) {
     anchor_target = nullptr;
     update_type = TabSlotController::HoverCardUpdateType::kAnimating;

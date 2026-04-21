@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadViewTimeout) {
 IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_NoReload) {
   // Test that opening the bubble making a change, then changing tabs while
   // the bubble is open, then re-opening the bubble on the new tab and closing
-  // _doesn't_ reload the page. Regression test for crbug.com/1470275.
+  // _doesn't_ reload the page. Regression test for crbug.com/40068793.
   BlockThirdPartyCookies();
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView_TabChanged_Reload) {
   // while the bubble is open, then re-opening the bubble on the new tab and
   // making a change _does_ reload the page, and that on page reload the
   // reload view should be closed.
-  // Regression test for crbug.com/1470275.
+  // Regression test for crbug.com/40068793.
   BlockThirdPartyCookies();
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest,
   // Test that loading a page with cookies allowed, then swapping to a tab
   // where cookies are disabled, then opening and closing the bubble without
   // making a change _does not_ reload the page.
-  // Regression test for crbug.com/1470275.
+  // Regression test for crbug.com/40068793.
   BlockThirdPartyCookies();
   const GURL third_party_cookie_page_url_one = third_party_cookie_page_url();
   const GURL third_party_cookie_page_url_two =

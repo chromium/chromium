@@ -968,7 +968,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // The content starts below the infobar, but is not affected by the
       // extra offset from the toolbar reveal animation. The infobar slides
       // down to stay visible below the revealed toolbar, while the content
-      // stays in place. See https://crbug.com/1473068.
+      // stays in place. See https://crbug.com/40278831.
       infobar_bounds =
           gfx::Rect(params.visual_client_area.x(),
                     params.visual_client_area.y() + additional_offset,

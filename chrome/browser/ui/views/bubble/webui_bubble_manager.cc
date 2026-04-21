@@ -34,7 +34,7 @@ WebUIBubbleManager::WebUIBubbleManager()
 WebUIBubbleManager::~WebUIBubbleManager() {
   // The bubble manager may be destroyed before the bubble in certain
   // situations. Ensure we forcefully close the managed bubble during
-  // destruction to mitigate the risk of UAFs (see crbug.com/1345546).
+  // destruction to mitigate the risk of UAFs (see crbug.com/40060325).
   if (bubble_view_) {
     DCHECK(bubble_view_->GetWidget());
     bubble_view_->GetWidget()->CloseNow();

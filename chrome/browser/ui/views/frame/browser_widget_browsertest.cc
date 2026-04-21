@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, ChildWidgetsReceiveThemeUpdates) {
       ->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
-// Regression test for crbug.com/1476462. Ensures that browser theme change
+// Regression test for crbug.com/40070763. Ensures that browser theme change
 // notifications are always propagated correctly by the BrowserWidget with a
 // default frame type.
 IN_PROC_BROWSER_TEST_F(BrowserWidgetTest,

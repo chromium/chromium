@@ -41,7 +41,7 @@ BrowserWindow::CreateBrowserWindow(Browser* browser,
   // Avoid generating too many occlusion tracking calculation events before this
   // function returns. The occlusion status will be computed only once once this
   // function returns.
-  // See crbug.com/1183894#c4
+  // See crbug.com/40171404#c4
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 #endif
   // Create the view and the frame. The frame will attach itself via the view

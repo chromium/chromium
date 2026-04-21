@@ -415,7 +415,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
 }
 
 // Test that an in-menu drag asks the delegate to stay open.
-// TODO(pkasting): https://crbug.com/939621 Fails on Mac.
+// TODO(pkasting): https://crbug.com/41445629 Fails on Mac.
 // TODO(crbug.com/40911016): Re-enable this test for linux.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestInMenuDrag DISABLED_TestInMenuDrag
@@ -602,7 +602,7 @@ void MenuViewDragAndDropTestNestedDrag::StartDrag() {
 // Test that a nested drag (i.e. one via a child view, and not entirely
 // implemented in menu code) will consult the delegate before closing the view
 // after the drag.
-// TODO(pkasting): https://crbug.com/939621 Fails on Mac.
+// TODO(pkasting): https://crbug.com/41445629 Fails on Mac.
 // TODO(crbug.com/41496561): Test is failing under ChromeRefresh2023 on wayland.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_MenuViewDragAndDropNestedDrag \
@@ -641,7 +641,7 @@ void MenuViewDragAndDropForDropStayOpen::DoTestWithMenuOpen() {
 
 // Test that if a menu is opened for a drop which is handled by a child view
 // that the menu does not immediately try to close.
-// If this flakes, disable and log details in http://crbug.com/523255.
+// If this flakes, disable and log details in http://crbug.com/40432443.
 VIEW_TEST(MenuViewDragAndDropForDropStayOpen, MenuViewStaysOpenForNestedDrag)
 
 class MenuViewDragAndDropForDropCancel : public MenuViewDragAndDropTest {

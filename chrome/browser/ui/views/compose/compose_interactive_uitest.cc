@@ -246,7 +246,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
       identity_test_environment_adaptor_;
 };
 
-// Flaky on all platforms: https://crbug.com/1517430
+// Flaky on all platforms: https://crbug.com/41490408
 IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest,
                        DISABLED_OpenAndCloseCompose) {
   RunTestSequence(

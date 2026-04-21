@@ -96,8 +96,8 @@ PermissionPromptBaseView::PermissionPromptBaseView(
       record_browser_always_active_value_(browser && browser->IsActive()),
       browser_(browser) {
   // To prevent permissions being accepted accidentally, and as a security
-  // measure against crbug.com/619429, permission prompts should not be accepted
-  // as the default action.
+  // measure against crbug.com/40084558, permission prompts should not be
+  // accepted as the default action.
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   // `browser` can be null in tests.
   if (browser) {

@@ -100,7 +100,7 @@ void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::ShowUi(
     const std::string& extension_id) {
 #if BUILDFLAG(IS_LINUX)
   // The extensions menu can appear offscreen on Linux, so verifying bounds
-  // makes the tests flaky (crbug.com/1050012).
+  // makes the tests flaky (crbug.com/40672885).
   set_should_verify_dialog_bounds(false);
 #endif
 

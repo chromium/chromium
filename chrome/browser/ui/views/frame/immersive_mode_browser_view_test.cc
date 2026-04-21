@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_FALSE(app_browser->window()->IsFullscreen());
 }
 
-// Regression test for crbug.com/796171.  Make sure that going from regular
+// Regression test for crbug.com/40555351.  Make sure that going from regular
 // fullscreen to locked fullscreen does not cause a crash.
 // Also test that the immersive mode is disabled afterwards (and the shelf is
 // hidden, and the fullscreen control popup doesn't show up).
@@ -267,8 +267,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_FALSE(fullscreen_control_host->IsVisible());
 }
 
-// Regression test for crbug.com/883104.  Make sure that immersive fullscreen is
-// disabled in locked fullscreen mode (also the shelf is hidden, and the
+// Regression test for crbug.com/41413209.  Make sure that immersive fullscreen
+// is disabled in locked fullscreen mode (also the shelf is hidden, and the
 // fullscreen control popup doesn't show up).
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        LockedFullscreenDisablesImmersive) {

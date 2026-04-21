@@ -265,7 +265,7 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     // top container's bounds. In this case, the top container is
     // occluding the web content so we shouldn't close. This happens in
     // immersive mode while the top container is revealed. For more info see
-    // https://crbug.com/1112028
+    // https://crbug.com/40709494
     if (top_container_->GetBoundsInScreen().Contains(
             event_location_in_screen)) {
       return;
@@ -497,7 +497,7 @@ bool WebUITabStripContainerView::SupportsTouchableTabStrip(
 
 // static
 bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
-  // TODO(crbug.com/1136185, crbug.com/1136236): We currently do not switch to
+  // TODO(crbug.com/40724073, crbug.com/40724098): We currently do not switch to
   // touchable tabstrip in Screen Reader mode due to the touchable tabstrip
   // being less accessible than the traditional tabstrip.
   if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
@@ -792,7 +792,7 @@ TabStripUILayout WebUITabStripContainerView::GetLayout() {
   // the image in some cases, but a very slight crop is preferable to constantly
   // changing thumbnail sizes.
   //
-  // See: crbug.com/1066652 for more info
+  // See: crbug.com/40682577 for more info
   const int max_bookmark_height =
       GetLayoutConstant(LayoutConstant::kBookmarkBarHeight);
   const views::View* bookmarks = browser_view_->bookmark_bar();

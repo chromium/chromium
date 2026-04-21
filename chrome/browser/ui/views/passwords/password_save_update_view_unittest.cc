@@ -180,7 +180,7 @@ TEST_P(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
   CreateViewAndShow();
 }
 
-// This is a regression test for crbug.com/1093290
+// This is a regression test for crbug.com/40698799
 TEST_P(PasswordSaveUpdateViewTest,
        OnThemesChangedShouldNotCrashForFederatedCredentials) {
   GURL kURL("https://example.com");
@@ -196,7 +196,7 @@ TEST_P(PasswordSaveUpdateViewTest,
   CreateViewAndShow();
 }
 
-// This is a regression test for crbug.com/1475021
+// This is a regression test for crbug.com/40927721
 TEST_P(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
   CreateViewAndShow();
   const PasswordSaveUpdateView* save_bubble =

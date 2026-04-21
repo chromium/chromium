@@ -67,8 +67,8 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  // TODO (crbug/1267403): This is hideous. We have to tell the TableLayout to
-  // ignore the child views created by the LabelButton ancestor. They're not
+  // TODO (crbug.com/40802760): This is hideous. We have to tell the TableLayout
+  // to ignore the child views created by the LabelButton ancestor. They're not
   // used but must exist to keep things happy. This view should be refactored to
   // descend from views::Button directly.
   for (views::View* child : children()) {

@@ -1881,7 +1881,7 @@ bool SubtreeShouldBeExplored(aura::Window* window,
 }
 
 // The logic to find the target tabstrip should take the window mask into
-// account. This test hangs without the fix. crbug.com/473080.
+// account. This test hangs without the fix. crbug.com/40412236.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragWithMaskedWindows) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -1971,9 +1971,9 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-// Flaky. https://crbug.com/1176998
+// Flaky. https://crbug.com/40748225
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 #define MAYBE_DragToSeparateWindow DISABLED_DragToSeparateWindow
 #else
 #define MAYBE_DragToSeparateWindow DragToSeparateWindow
@@ -2045,7 +2045,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
 
-// Test is based on DragToSeparateWindow. https://crbug.com/1176998
+// Test is based on DragToSeparateWindow. https://crbug.com/40748225
 #if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragToSeparateWindowDuringDragEnd \
   DISABLED_DragToSeparateWindowDuringDragEnd
@@ -3096,7 +3096,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
         chrome::CloseTab(detached_browser);
         // Ensure that the newly created tab strip is "closeable" just after
         // requesting to close it, even if we are still waiting for the nested
-        // move loop to exit. Regression test for https://crbug.com/1309461.
+        // move loop to exit. Regression test for https://crbug.com/40059182.
         EXPECT_TRUE(
             GetTabStripForBrowser(detached_browser)->IsTabStripCloseable());
       }),
@@ -3451,7 +3451,7 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 }  // namespace
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
+// Flaky on Mac10.14 and Linux: https://crbug.com/40768700
 #define MAYBE_DragPinnedAndUnpinnedToSeparateWindow \
   DISABLED_DragPinnedAndUnpinnedToSeparateWindow
 #else
@@ -3500,7 +3500,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
+// Flaky on Mac10.14 and Linux: https://crbug.com/40768700
 #define MAYBE_DragSplitTabToSeparateWindow DISABLED_DragSplitTabToSeparateWindow
 #else
 #define MAYBE_DragSplitTabToSeparateWindow DragSplitTabToSeparateWindow
@@ -3543,11 +3543,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       2u);
 }
 
-// Flaky. http://crbug.com/1128774
+// Flaky. http://crbug.com/40719820
 #if BUILDFLAG(IS_MAC)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 // These were flaking on all macs, so commented out ARCH_ above for
-// crbug.com/1160917 too.
+// crbug.com/40738482 too.
 #define MAYBE_DragAllToSeparateWindow DISABLED_DragAllToSeparateWindow
 #else
 #define MAYBE_DragAllToSeparateWindow DragAllToSeparateWindow
@@ -3731,7 +3731,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 #define MAYBE_DragWindowIntoGroup DISABLED_DragWindowIntoGroup
 #else
 #define MAYBE_DragWindowIntoGroup DragWindowIntoGroup
@@ -3780,8 +3780,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
+// Flaky on Mac10.14 and Linux: https://crbug.com/40768700
 #define MAYBE_DragGroupHeaderToSeparateWindow \
   DISABLED_DragGroupHeaderToSeparateWindow
 #else
@@ -3823,8 +3823,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // TODO(crbug.com/500937645): Re-enable the test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
+// Flaky on Mac10.14 and Linux: https://crbug.com/40768700
 #define MAYBE_DragGroupHeaderWithSplitToSeparateWindow \
   DISABLED_DragGroupHeaderWithSplitToSeparateWindow
 #else
@@ -4210,8 +4210,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-// Test is flaky on Mac: https://crbug.com/1167249
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
+// Test is flaky on Mac: https://crbug.com/40742603
 #define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
   DISABLED_DragCollapsedGroupHeaderToSeparateWindow
 #else
@@ -4528,9 +4528,9 @@ void DragAllToSeparateWindowAndCancelStep2(
 }  // namespace
 
 #if BUILDFLAG(IS_MAC) /* && defined(ARCH_CPU_ARM64) */
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 // These were flaking on all macs, so commented out ARCH_ above for
-// crbug.com/1160917 too.
+// crbug.com/40738482 too.
 #define MAYBE_DragAllToSeparateWindowAndCancel \
   DISABLED_DragAllToSeparateWindowAndCancel
 #else
@@ -4582,9 +4582,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 #if BUILDFLAG(IS_MAC) /* && defined(ARCH_CPU_ARM64) */
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 // These were flaking on all macs, so commented out ARCH_ above for
-// crbug.com/1160917 too.
+// crbug.com/40738482 too.
 #define MAYBE_DragAllToSeparateWindowWithPinnedTabs \
   DISABLED_DragAllToSeparateWindowWithPinnedTabs
 #else
@@ -4648,7 +4648,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // no detaching should happen.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragDirectlyToSecondWindow) {
-  // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/918733
+  // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/41433817
   if (input_source() == InputSource::INPUT_SOURCE_TOUCH) {
     VLOG(1) << "Test is DISABLED for touch input.";
     return;
@@ -4710,9 +4710,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             browser2->window()->GetBounds().ToString());
 }
 
-// Flaky. https://crbug.com/1176998
+// Flaky. https://crbug.com/40748225
 #if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_LINUX)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 #define MAYBE_DragSingleTabToSeparateWindow \
   DISABLED_DragSingleTabToSeparateWindow
 #else
@@ -4816,7 +4816,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   WebContents* web_contents = nullptr;
   // Add another tab. This should trigger exiting the nested loop. Add at the
   // beginning to exercise past crash when model/tabstrip got out of sync.
-  // crbug.com/474082
+  // crbug.com/40081794
   AsyncBrowserWaiter waiter(
       base::BindLambdaForTesting([&](BrowserWindowInterface* new_browser) {
         CancelOnNewTabWhenDraggingStep2(this, new_browser,
@@ -5272,7 +5272,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   EXPECT_EQ(BrowserWindowInterface::Type::TYPE_APP, new_browser->GetType());
 }
 
-// TODO (crbug.com/1521327): Test fails after migrating to ChromeRefresh2023.
+// TODO (crbug.com/41494298): Test fails after migrating to ChromeRefresh2023.
 // Move tab from TYPE_APP Browser to another TYPE_APP Browser.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
                        DISABLED_DragAppToAppWindow) {
@@ -5485,7 +5485,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
-// Crashes on ChromeOS. crbug.com/1003288
+// Crashes on ChromeOS. crbug.com/40647142
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserInSeparateDisplayTabDragControllerTest,
     DISABLED_DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay) {
@@ -5695,7 +5695,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 
 // Drags from a restored browser to an immersive fullscreen browser on a
 // second display and releases input.
-// TODO(pkasting) https://crbug.com/910782 Hangs.
+// TODO(pkasting) https://crbug.com/41429340 Hangs.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
                        DISABLED_DragTabToImmersiveBrowserOnSeparateDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -5848,13 +5848,13 @@ void CursorDeviceScaleFactorStep(
 }  // namespace
 
 // Verifies cursor's device scale factor is updated when a tab is moved across
-// displays with different device scale factors (http://crbug.com/154183).
+// displays with different device scale factors (http://crbug.com/40951059).
 // TODO(pkasting): In interactive_ui_tests, scale factor never changes to 2.
-// https://crbug.com/918731
+// https://crbug.com/41433816
 // TODO(pkasting): In non_single_process_mash_interactive_ui_tests, pointer is
 // warped during the drag (which results in changing to scale factor 2 early),
 // and scale factor doesn't change back to 1 at the end.
-// https://crbug.com/918732
+// https://crbug.com/40608081
 IN_PROC_BROWSER_TEST_P(DifferentDeviceScaleFactorDisplayTabDragControllerTest,
                        DISABLED_CursorDeviceScaleFactor) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -6101,7 +6101,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   AddTabsAndResetBrowser(browser(), 1);
 
   // Set the last mouse location at the center of tab 0. This shouldn't affect
-  // the touch behavior below. See https://crbug.com/914527#c1 for the details
+  // the touch behavior below. See https://crbug.com/40606256#c1 for the details
   // of how this can affect the result.
   gfx::Point tab_0_center(GetCenterInScreenCoordinates(tab_strip->tab_at(0)));
   base::RunLoop run_loop;
@@ -6132,7 +6132,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
                        FlingDownAtEndOfDrag) {
   // Reduce the minimum fling velocity for this specific test case to cause the
   // fling-down gesture in the middle of tab-dragging. This should end up with
-  // minimizing the window. See https://crbug.com/902897 for the details.
+  // minimizing the window. See https://crbug.com/40601420 for the details.
   SetMinFlingVelocity(1);
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -6166,7 +6166,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   EXPECT_FALSE(browser()->window()->IsVisible());
 }
 
-// TODO(http://crbug/343503164) This test seems to be attempting to induce a
+// TODO(http://crbug.com/343503164) This test seems to be attempting to induce a
 // fling gesture event, but it currently fails to do so. If a fling gesture
 // event was produced, the detached window should end up minimized.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
@@ -6226,7 +6226,7 @@ class SelectTabDuringDragObserver : public TabStripModelObserver {
 
 }  // namespace
 
-// Bug fix for crbug.com/1196309. Don't change tab selection while dragging.
+// Bug fix for crbug.com/40055468. Don't change tab selection while dragging.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        SelectTabDuringDrag) {
   TabStripModel* model = browser()->tab_strip_model();

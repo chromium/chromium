@@ -61,7 +61,7 @@ class OmniboxRowView : public views::View {
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.
-  // Lazily creating these speeds up browser startup: https://crbug.com/1021323
+  // Lazily creating these speeds up browser startup: https://crbug.com/40657008
   raw_ptr<OmniboxHeaderView> header_view_ = nullptr;
 
   // Non-owning pointer to the result view for this row. This is never nullptr.

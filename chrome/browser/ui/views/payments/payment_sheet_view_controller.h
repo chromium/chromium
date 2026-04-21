@@ -81,7 +81,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
   // Used to mitigate against accidental clicks on the primary button if a user
   // e.g., double-clicks on a web-content button that then launches
-  // PaymentRequest. See https://crbug.com/1403493
+  // PaymentRequest. See https://crbug.com/40062366
   void PossiblyIgnorePrimaryButtonPress(ButtonCallback callback,
                                         const ui::Event& event);
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;

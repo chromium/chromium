@@ -85,9 +85,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
 // Uninstalling with no browser window open can cause the view to be destroyed
 // before the views object. Test that this does not cause a UAF. See
-// https://crbug.com/1150798.
+// https://crbug.com/40053916.
 // Also tests that we don't crash when uninstalling a web app from a web app
-// window in Ash. See https://crbug.com/825554.
+// window in Ash. See https://crbug.com/40568607.
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionBeforeViewCreation) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(

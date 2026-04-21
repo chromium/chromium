@@ -180,7 +180,7 @@ TEST_F(SharingDialogViewTest, ThemeChangedEmptyList) {
 
   EXPECT_EQ(SharingDialogType::kErrorDialog, dialog()->GetDialogType());
 
-  // Regression test for crbug.com/1001112
+  // Regression test for crbug.com/40097563
   dialog()->GetWidget()->ThemeChanged();
 }
 

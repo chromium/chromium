@@ -261,7 +261,7 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ShowUi(
     const std::string& name) {
 #if BUILDFLAG(IS_LINUX)
   // The extensions menu can appear offscreen on Linux, so verifying bounds
-  // makes the tests flaky (crbug.com/1050012).
+  // makes the tests flaky (crbug.com/40672885).
   set_should_verify_dialog_bounds(false);
 #endif
 
@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
 // Tests that removing multiple extensions while one of the extension's action
 // is showing a popup removes such action from the toolbar.
-// Test for crbug.com/1099456.
+// Test for crbug.com/40702475.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        RemoveMultipleExtensionsWhileShowingPopup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);

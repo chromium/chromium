@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       Cleanup());
 }
 
-// Regression test for item (1) in crbug.com/1422875.
+// Regression test for item (1) in crbug.com/40897167.
 // TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
@@ -357,7 +357,7 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
 
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
-// This is a regression test for crbug.com/1425487.
+// This is a regression test for crbug.com/40898739.
 // TODO(https://crbug.com/463379523): This test is flaky on CI on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate

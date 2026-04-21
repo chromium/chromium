@@ -453,7 +453,7 @@ void ExtensionInstallDialogView::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
-  // Extra checks for https://crbug.com/1259043.
+  // Extra checks for https://crbug.com/40797383.
   // TODO(devlin): Remove these when we've validated there's no longer a crash.
   CHECK(extension);
   CHECK(prompt_);

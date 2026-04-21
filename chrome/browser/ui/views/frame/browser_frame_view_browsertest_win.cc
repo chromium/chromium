@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }
 
-// Regression test for https://crbug.com/1286896.
+// Regression test for https://crbug.com/40815899.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        TitlebarLayoutAfterUpdateWindowTitle) {
   InstallAndLaunchWebAppWithWindowControlsOverlay();

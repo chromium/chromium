@@ -16,7 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.  This is the new version of
-// the cookie controls (https://crbug.com/1446230).
+// the cookie controls (https://crbug.com/40064612).
 class CookieControlsIconView : public PageActionIconView,
                                public content_settings::CookieControlsObserver {
   METADATA_HEADER(CookieControlsIconView, PageActionIconView)

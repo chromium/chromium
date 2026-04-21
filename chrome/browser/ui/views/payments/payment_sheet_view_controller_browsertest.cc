@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
 }
 
 // The 'Continue' or 'Cancel' buttons should not be auto-focused; see
-// https://crbug.com/1403539
+// https://crbug.com/40062377
 IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
                        ContinueIsNotAutoFocused) {
   // Installs two apps so that the Payment Request UI will be shown.
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
 }
 
 // The Enter key should not be accelerated for the main payment sheet; see
-// https://crbug.com/1403539
+// https://crbug.com/40062377
 IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest, EnterDoesNotContinue) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;

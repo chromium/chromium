@@ -423,7 +423,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // The upper and lower bounds of |current_size_|. These are determined by the
   // size of the primary display work area when Picture-in-Picture is initiated.
   // TODO(apacible): Update these bounds when the display the window is on
-  // changes. http://crbug.com/819673
+  // changes. http://crbug.com/40566075
   gfx::Size min_size_;
   gfx::Size max_size_;
 

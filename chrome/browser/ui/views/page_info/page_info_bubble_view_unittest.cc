@@ -1172,7 +1172,7 @@ TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
             api_->GetCertificateButtonSubtitleText());
 }
 
-// Regression test for crbug.com/1069113. Test cert includes country and state
+// Regression test for crbug.com/40683846. Test cert includes country and state
 // but not locality.
 TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
   ChromeSecurityStateTabHelper::CreateForWebContents(

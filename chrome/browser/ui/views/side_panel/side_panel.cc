@@ -921,7 +921,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
   // Make sure the border visibility matches the side panel. Also dynamically
   // create and destroy the layer to reclaim memory and avoid painting and
   // compositing this border when it's not showing. See
-  // https://crbug.com/1269090.
+  // https://crbug.com/40803982.
   // TODO(pbos): Should layer visibility/painting be automatically tied to
   // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
   bool side_panel_open_or_closing = GetVisible() || should_be_open;

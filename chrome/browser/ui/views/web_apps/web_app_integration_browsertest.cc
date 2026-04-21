@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckWindowDisplayTabbed();
 }
 
-// Disabled on Mac due to flakiness: https://crbug.com/1478373.
+// Disabled on Mac due to flakiness: https://crbug.com/40280544.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WAI_32TabbedWithShortcutWindowedWebApp_12Tabbed_143_34Tabbed_144 \
   DISABLED_WAI_32TabbedWithShortcutWindowedWebApp_12Tabbed_143_34Tabbed_144
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckWindowDisplayTabbed();
 }
 
-// Disabled on Mac due to flakiness: https://crbug.com/1478373.
+// Disabled on Mac due to flakiness: https://crbug.com/40280544.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WAI_32TabbedNoShortcutWindowedWebApp_12Tabbed_143_34Tabbed_144 \
   DISABLED_WAI_32TabbedNoShortcutWindowedWebApp_12Tabbed_143_34Tabbed_144

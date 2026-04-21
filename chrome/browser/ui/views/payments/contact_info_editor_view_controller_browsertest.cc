@@ -34,7 +34,7 @@ std::string GetLocale() {
 }  // namespace
 
 #if BUILDFLAG(IS_MAC)
-// Entire test suite is flaky on MacOS: https://crbug.com/1164438
+// Entire test suite is flaky on MacOS: https://crbug.com/40740752
 #define MAYBE_PaymentRequestContactInfoEditorTest \
   DISABLED_PaymentRequestContactInfoEditorTest
 #else

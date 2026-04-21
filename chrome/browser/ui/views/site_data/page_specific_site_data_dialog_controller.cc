@@ -48,7 +48,7 @@ void PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
   // closing. In this case, the modal dialog manager will have removed the
   // dialog from its list of tracked dialogs, and therefore might not have any
   // active dialog. This should be rare enough that it's not worth trying to
-  // re-open the dialog. See https://crbug.com/989888
+  // re-open the dialog. See https://crbug.com/40638525
   if (instance->GetWidget()->IsClosed()) {
     return;
   }

@@ -555,7 +555,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, TestMovePinnedActionBy) {
 
 // ToolbarActionsModel::MovePinnedAction crashes if pinned extensions changes
 // while the drop callback isn't invalidated. This test makes sure this doesn't
-// happen anymore. https://crbug.com/1268239.
+// happen anymore. https://crbug.com/40803390.
 TEST_F(ExtensionsToolbarDesktopUnitTest, InvalidateDropCallbackOnPrefChange) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);

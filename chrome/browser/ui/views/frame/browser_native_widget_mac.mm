@@ -74,12 +74,12 @@ bool UsesRemoteCocoaApplicationHost(Browser* browser) {
 
 bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
   // |event.skip_if_unhandled| is true when it shouldn't be handled by the
-  // browser if it was ignored by the renderer. See http://crbug.com/25000.
+  // browser if it was ignored by the renderer. See http://crbug.com/41018016.
   if (event.skip_if_unhandled) {
     return false;
   }
 
-  // Ignore synthesized keyboard events. See http://crbug.com/23221.
+  // Ignore synthesized keyboard events. See http://crbug.com/41007517.
   if (event.GetType() == input::NativeWebKeyboardEvent::Type::kChar) {
     return false;
   }
@@ -428,7 +428,7 @@ bool BrowserNativeWidgetMac::WillExecuteCommand(
     // If a command is reserved, then we also have it bypass the main menu.
     // This is based on the rough approximation that reserved commands are
     // also the ones that we want to be quickly repeatable.
-    // https://crbug.com/836947.
+    // https://crbug.com/41385540.
     // The function IsReservedCommandOrKey does not examine its event argument
     // on macOS.
     input::NativeWebKeyboardEvent dummy_event(

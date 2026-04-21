@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
   run_loop.Run();
 
   // Close the tab while the bubble is opened.
-  // Regression test for http://crbug.com/1000934.
+  // Regression test for http://crbug.com/40050060.
   sessions_helper::CloseTab(/*browser_index=*/0, /*tab_index=*/0);
 }
 
