@@ -982,7 +982,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, FetchAccessTokenFailure) {
       future.GetCallback(), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+          GoogleServiceAuthError::FromServiceUnavailable(""));
 
   EXPECT_EQ(NetworkRequestError::kAuthenticationError, future.Get());
 }
