@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 #include "chrome/browser/android/omnibox/chrome_omnibox_navigation_observer_android.h"
 #include "chrome/browser/android/tab_android.h"
@@ -353,6 +354,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     int32_t completed_length,
     const JavaRef<jobject>& j_web_contents,
     int64_t omnibox_action_ptr) {
+  TRACE_EVENT("omnibox", "AutocompleteControllerAndroid::OnSuggestionSelected");
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   const GURL current_url = GURL(url);
   const base::TimeTicks& now(base::TimeTicks::Now());
@@ -362,12 +364,15 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   const auto* executed_action =
       reinterpret_cast<OmniboxAction*>(omnibox_action_ptr);
   const auto& result = autocomplete_controller_->result();
-  size_t index = 0;
-  for (const auto& match : result) {
-    for (const auto& action : match.actions) {
-      action->RecordActionShown(index, action.get() == executed_action);
+  {
+    TRACE_EVENT("omnibox", "OnSuggestionSelected.RecordActionShown");
+    size_t index = 0;
+    for (const auto& match : result) {
+      for (const auto& action : match.actions) {
+        action->RecordActionShown(index, action.get() == executed_action);
+      }
+      index++;
     }
-    index++;
   }
 
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
@@ -383,7 +388,10 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
                           profile_->IsOffTheRecord());
   }
 
-  RecordClipboardMetrics(match.type);
+  {
+    TRACE_EVENT("omnibox", "OnSuggestionSelected.RecordClipboardMetrics");
+    RecordClipboardMetrics(match.type);
+  }
   HistoryFuzzyProvider::RecordOpenMatchMetrics(
       autocomplete_controller_->result(), match);
 
@@ -414,12 +422,21 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       profile_->IsOffTheRecord(), input_.IsZeroSuggest(), match.session);
   autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
-  OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
+  {
+    TRACE_EVENT("omnibox",
+                "OnSuggestionSelected.OmniboxEventGlobalTracker.OnURLOpened");
+    OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
+  }
 
   if (web_contents) {
-    if (auto* search_prefetch_service =
-            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnURLOpenedFromOmnibox(&log);
+    {
+      TRACE_EVENT(
+          "omnibox",
+          "OnSuggestionSelected.SearchPrefetchService.OnOmniboxOpenedUrl");
+      if (auto* search_prefetch_service =
+              SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+        search_prefetch_service->OnURLOpenedFromOmnibox(&log);
+      }
     }
 
     // Record the value if prerender for search suggestion was not started.
@@ -433,8 +450,13 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
           PrerenderPredictionStatus::kNotStarted);
     }
   }
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->OnOmniboxOpenedUrl(log);
+  {
+    TRACE_EVENT(
+        "omnibox",
+        "OnSuggestionSelected.AutocompleteActionPredictor.OnOmniboxOpenedUrl");
+    predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+        ->OnOmniboxOpenedUrl(log);
+  }
 }
 
 bool AutocompleteControllerAndroid::OnSuggestionTouchDown(
