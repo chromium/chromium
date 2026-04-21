@@ -3,50 +3,243 @@
 # found in the LICENSE file.
 
 source_set("webauthn") {
-  sources = [
+  public = [
+    "credential_sorter.h",
+    "password_credential_fetcher.h",
     "shared_types.h",
+    "touch_to_fill_credential_receiver.h",
     "webauthn_metrics_util.h",
-    "webauthn_pref_names.cc",
     "webauthn_pref_names.h",
     "webauthn_switches.h",
   ]
-  public_deps = []
+  sources = [ "webauthn_pref_names.cc" ]
+  public_deps = [
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//content/public/browser",
+    "//device/fido",
+  ]
+
+  if (is_android) {
+    public += [
+      "android/cable_registration_state.h",
+      "android/chrome_webauthn_client_android.h",
+      "android/credential_sorter_android.h",
+    ]
+    public_deps += [
+      "//chrome/browser/touch_to_fill/password_manager:public",
+      "//components/webauthn/android",
+      "//device/fido:cablev2_registration",
+    ]
+  }
 
   if (!is_android) {
-    sources += [
+    public += [
+      "authenticator_list_observer.h",
+      "authenticator_reference.h",
+      "authenticator_request_dialog_controller.h",
       "authenticator_request_dialog_model.h",
+      "authenticator_request_scheduler.h",
       "authenticator_transport.h",
+      "cablev2_devices.h",
+      "change_pin_controller.h",
+      "change_pin_controller_impl.h",
+      "chrome_authenticator_request_delegate.h",
+      "credential_sorter_desktop.h",
       "enclave_manager.h",
       "enclave_manager_factory.h",
       "enclave_manager_interface.h",
       "gpm_enclave_controller.h",
       "gpm_enclave_transaction.h",
+      "immediate_request_rate_limiter_factory.h",
       "local_authentication_token.h",
+      "observable_authenticator_list.h",
       "passkey_model_factory.h",
+      "passkey_unlock_manager.h",
+      "passkey_unlock_manager_factory.h",
+      "password_credential_ui_controller.h",
+      "ui_readiness_barrier.h",
     ]
     public_deps += [
       "//base",
       "//build:buildflag_header_h",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/trusted_vault",
       "//chrome/common",
       "//chrome/common:version_header",
       "//components/keyed_service/core",
       "//components/os_crypt/async/common",
       "//components/trusted_vault",
       "//components/webauthn/core/browser:passkey_model",
-      "//content/public/browser",
       "//crypto",
-      "//device/fido",
       "//google_apis",
     ]
   }
 }
 
-source_set("chrome_web_authentication_delegate") {
+source_set("impl") {
   sources = [
-    "chrome_web_authentication_delegate_base.cc",
-    "chrome_web_authentication_delegate_base.h",
+    "password_credential_fetcher.cc",
+    "webauthn_metrics_util.cc",
+    "webauthn_switches.cc",
   ]
+
+  public_deps = [
+    ":webauthn",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/profiles:profile",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/cable_module_android.cc",
+      "android/cable_registration_state.cc",
+      "android/credential_sorter_android.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/gcm",
+      "//chrome/browser/net",
+      "//chrome/browser/password_manager/android:utils",
+      "//chrome/browser/password_manager/android/grouped_affiliations:public",
+      "//chrome/browser/sync",
+      "//chrome/browser/webauthn/android:jni_headers",
+      "//components/cbor",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/webauthn/android",
+      "//components/webauthn/core/browser",
+      "//components/webauthn/json",
+      "//device/fido:cablev2_registration",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "authenticator_reference.cc",
+      "authenticator_request_dialog_controller.cc",
+      "authenticator_request_dialog_model.cc",
+      "authenticator_request_scheduler.cc",
+      "cablev2_devices.cc",
+      "change_pin_controller.cc",
+      "change_pin_controller_impl.cc",
+      "chrome_authenticator_request_delegate.cc",
+      "credential_sorter_desktop.cc",
+      "enclave_manager.cc",
+      "enclave_manager_factory.cc",
+      "enclave_manager_interface.cc",
+      "gpm_enclave_controller.cc",
+      "gpm_enclave_transaction.cc",
+      "immediate_request_rate_limiter_factory.cc",
+      "observable_authenticator_list.cc",
+      "passkey_model_factory.cc",
+      "passkey_unlock_manager.cc",
+      "passkey_unlock_manager_factory.cc",
+      "password_credential_ui_controller.cc",
+      "ui_readiness_barrier.cc",
+    ]
+    deps += [
+      ":chrome_web_authentication_delegate",
+      ":unexportable_key_utils",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/affiliations",
+      "//chrome/browser/net",
+      "//chrome/browser/profiles",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/webauthn",
+      "//components/cbor",
+      "//components/device_event_log",
+      "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+      "//components/password_manager/core/common",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/signin/public/identity_manager",
+      "//components/sync/service",
+      "//components/trusted_vault",
+      "//components/trusted_vault/proto",
+      "//components/user_prefs",
+      "//components/vector_icons",
+      "//components/webauthn/content/browser",
+      "//components/webauthn/core/browser",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//ui/base",
+      "//ui/gfx",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "chrome_authenticator_request_delegate_mac.mm" ]
+  }
+
+  if (is_win) {
+    deps += [ ":local_credential_management" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chromeos/components/webauthn",
+    ]
+  }
+}
+
+if (is_android) {
+  source_set("webauthn_request_delegate_android") {
+    public = [ "android/webauthn_request_delegate_android.h" ]
+
+    public_deps = [
+      ":webauthn",
+      "//base",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:password_form",
+      "//components/webauthn/android",
+      "//content/public/browser",
+      "//device/fido",
+    ]
+  }
+
+  source_set("webauthn_request_delegate_android_impl") {
+    sources = [
+      "android/chrome_webauthn_client_android.cc",
+      "android/webauthn_request_delegate_android.cc",
+    ]
+
+    public_deps = [
+      ":webauthn_request_delegate_android",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+
+    deps = [
+      ":webauthn",
+      "//chrome/browser/password_manager",
+      "//chrome/browser/password_manager/android/grouped_affiliations:public",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/touch_to_fill/password_manager:impl",
+      "//components/password_manager/content/browser",
+      "//components/webauthn/android",
+      "//components/webauthn/core/browser",
+    ]
+  }
+}
+
+source_set("chrome_web_authentication_delegate") {
+  public = [ "chrome_web_authentication_delegate_base.h" ]
+  sources = [ "chrome_web_authentication_delegate_base.cc" ]
 
   public_deps = [
     "//base",
@@ -66,10 +259,8 @@ source_set("chrome_web_authentication_delegate") {
   }
 
   if (!is_android) {
-    sources += [
-      "chrome_web_authentication_delegate.cc",
-      "chrome_web_authentication_delegate.h",
-    ]
+    public += [ "chrome_web_authentication_delegate.h" ]
+    sources += [ "chrome_web_authentication_delegate.cc" ]
 
     deps += [
       ":unexportable_key_utils",
@@ -91,10 +282,8 @@ source_set("chrome_web_authentication_delegate") {
 
 if (!is_android) {
   source_set("local_credential_management") {
-    sources = [
-      "local_credential_management.cc",
-      "local_credential_management.h",
-    ]
+    public = [ "local_credential_management.h" ]
+    sources = [ "local_credential_management.cc" ]
 
     public_deps = [
       "//base",
@@ -110,10 +299,8 @@ if (!is_android) {
     ]
 
     if (is_win) {
-      sources += [
-        "local_credential_management_win.cc",
-        "local_credential_management_win.h",
-      ]
+      public += [ "local_credential_management_win.h" ]
+      sources += [ "local_credential_management_win.cc" ]
       deps += [
         "//components/pref_registry",
         "//components/user_prefs",
@@ -121,19 +308,15 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      sources += [
-        "local_credential_management_mac.cc",
-        "local_credential_management_mac.h",
-      ]
+      public += [ "local_credential_management_mac.h" ]
+      sources += [ "local_credential_management_mac.cc" ]
       deps += [ ":chrome_web_authentication_delegate" ]
     }
   }
 
   source_set("unexportable_key_utils") {
-    sources = [
-      "unexportable_key_utils.cc",
-      "unexportable_key_utils.h",
-    ]
+    public = [ "unexportable_key_utils.h" ]
+    sources = [ "unexportable_key_utils.cc" ]
 
     public_deps = [
       "//base",
@@ -165,6 +348,8 @@ if (!is_android) {
       "enclave_keys_waiter.h",
       "fake_magic_arch.cc",
       "fake_magic_arch.h",
+      "fake_password_credential_fetcher.cc",
+      "fake_password_credential_fetcher.h",
       "fake_recovery_key_store.cc",
       "fake_recovery_key_store.h",
       "fake_security_domain_service.cc",
@@ -184,10 +369,8 @@ if (!is_android) {
       ":unexportable_key_utils",
       ":webauthn",
       "//base",
-      "//chrome/browser",
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync:test_support",

@@ -14,6 +14,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "chrome/browser/webauthn/shared_types.h"
+#include "chrome/browser/webauthn/touch_to_fill_credential_receiver.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace content {
@@ -38,28 +39,7 @@ class TouchToFillControllerWebAuthnDelegate
           std::vector<TouchToFillView::Credential>,
           bool)>;
 
-  class CredentialReceiver {
-   public:
-    // Tells the WebAuthn Java implementation that the user has selected a Web
-    // Authentication credential from a dialog, and provides the credential ID
-    // for the selected credential.
-    virtual void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id) = 0;
-
-    // Provides a password credential that the user has selected.
-    virtual void OnPasswordCredentialSelected(
-        const PasswordCredentialPair& password_credential) = 0;
-
-    // Called when the user dismisses the sheet in immediate mode without
-    // having selected a credential.
-    virtual void OnCredentialSelectionDeclined() = 0;
-
-    // Tells the WebAuthn Java implementation the the user has selected the
-    // option for hybrid sign-in, which should be handled by the platform.
-    virtual void OnHybridSignInSelected() = 0;
-
-    // Return the WebContents associated with the current WebAuthn request.
-    virtual content::WebContents* web_contents() = 0;
-  };
+  using CredentialReceiver = TouchToFillCredentialReceiver;
 
   TouchToFillControllerWebAuthnDelegate(
       CredentialReceiver* receiver,

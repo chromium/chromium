@@ -37,6 +37,8 @@ source_set("webauthn") {
       "//ui/base",
       "//ui/views",
     ]
+
+    allow_circular_includes_from = [ "//chrome/browser/webauthn" ]
   }
 }
 

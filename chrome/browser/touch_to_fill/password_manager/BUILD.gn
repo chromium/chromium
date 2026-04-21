@@ -100,6 +100,7 @@ if (is_android) {
       "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/webauthn",
+      "//chrome/browser/webauthn:webauthn_request_delegate_android",
       "//chrome/test:test_support",
       "//components/autofill/core/common",
       "//components/password_manager/content/browser",

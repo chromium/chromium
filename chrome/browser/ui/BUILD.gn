@@ -399,6 +399,7 @@ static_library("ui") {
     "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
+    "//chrome/browser/trusted_vault:impl",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/ui/autofill/payments",
@@ -465,6 +466,7 @@ static_library("ui") {
     "//chrome/browser/vr",
     "//chrome/browser/vr:impl",
     "//chrome/browser/webauthn",
+    "//chrome/browser/webauthn:impl",
     "//chrome/browser/webnn",
     "//chrome/common",
     "//chrome/common/net",
@@ -884,6 +886,10 @@ static_library("ui") {
     # vr_tab_helper.cc includes //c/b/ui/browser.h, browser_finder.h,
     # browser_window_interface.h, and tab_strip_model.h.
     "//chrome/browser/vr:impl",
+
+    # webauthn:impl includes headers from //chrome/browser/ui that can't be
+    # split out yet.
+    "//chrome/browser/webauthn:impl",
   ]
 
   if (enable_vr && is_win) {

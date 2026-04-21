@@ -498,11 +498,6 @@ static_library("browser") {
     "unexpire_flags.h",
     "universal_web_contents_observers.cc",
     "universal_web_contents_observers.h",
-    "webauthn/credential_sorter.h",
-    "webauthn/password_credential_fetcher.cc",
-    "webauthn/password_credential_fetcher.h",
-    "webauthn/webauthn_metrics_util.cc",
-    "webauthn/webauthn_switches.cc",
   ]
 
   configs += [
@@ -733,6 +728,10 @@ static_library("browser") {
     # - account_password_store_factory.h"
     # - profile_password_store_factory.h"
     "//chrome/browser/ui/webauthn:impl",
+
+    # webauthn:impl includes headers from //chrome/browser that can't be
+    # split out yet (e.g. browser_process.h, chrome/browser/ui headers).
+    "//chrome/browser/webauthn:impl",
 
     # TODO(crbug.com/432421124): Remove this circular dependency when
     # task_tab_helper.h and supervised_user_navigation_observer.h get componentized.
@@ -1182,6 +1181,7 @@ static_library("browser") {
     "//chrome/browser/translate",
     "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
+    "//chrome/browser/trusted_vault:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
@@ -1248,6 +1248,7 @@ static_library("browser") {
     "//chrome/browser/webapps/installable:impl",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
+    "//chrome/browser/webauthn:impl",
     "//chrome/browser/webdata_services",
     "//chrome/browser/webdata_services:impl",
     "//chrome/browser/webid",
@@ -1849,6 +1850,8 @@ static_library("browser") {
       "//chrome/browser/webapps/installable:android",
       "//chrome/browser/webapps/installable:android_impl",
       "//chrome/browser/webapps/installable:impl",
+      "//chrome/browser/webauthn:webauthn_request_delegate_android",
+      "//chrome/browser/webauthn:webauthn_request_delegate_android_impl",
     ]
 
     sources += [
@@ -2304,15 +2307,6 @@ static_library("browser") {
       "supervised_user/android/website_parent_approval.h",
       "supervised_user/child_accounts/child_account_service_android.cc",
       "supervised_user/child_accounts/child_account_service_android.h",
-      "webauthn/android/cable_module_android.cc",
-      "webauthn/android/cable_registration_state.cc",
-      "webauthn/android/cable_registration_state.h",
-      "webauthn/android/chrome_webauthn_client_android.cc",
-      "webauthn/android/chrome_webauthn_client_android.h",
-      "webauthn/android/credential_sorter_android.cc",
-      "webauthn/android/credential_sorter_android.h",
-      "webauthn/android/webauthn_request_delegate_android.cc",
-      "webauthn/android/webauthn_request_delegate_android.h",
     ]
     sources += [
       # TODO(crbug.com/40071344): Fold into "keyboard_accessory/android".
@@ -2870,42 +2864,6 @@ static_library("browser") {
       "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       "supervised_user/supervised_user_verification_controller_client.cc",
       "supervised_user/supervised_user_verification_controller_client.h",
-      "webauthn/authenticator_list_observer.h",
-      "webauthn/authenticator_reference.cc",
-      "webauthn/authenticator_reference.h",
-      "webauthn/authenticator_request_dialog_controller.cc",
-      "webauthn/authenticator_request_dialog_controller.h",
-      "webauthn/authenticator_request_dialog_model.cc",
-      "webauthn/authenticator_request_scheduler.cc",
-      "webauthn/authenticator_request_scheduler.h",
-      "webauthn/cablev2_devices.cc",
-      "webauthn/cablev2_devices.h",
-      "webauthn/change_pin_controller.cc",
-      "webauthn/change_pin_controller.h",
-      "webauthn/change_pin_controller_impl.cc",
-      "webauthn/change_pin_controller_impl.h",
-      "webauthn/chrome_authenticator_request_delegate.cc",
-      "webauthn/chrome_authenticator_request_delegate.h",
-      "webauthn/credential_sorter_desktop.cc",
-      "webauthn/credential_sorter_desktop.h",
-      "webauthn/enclave_manager.cc",
-      "webauthn/enclave_manager_factory.cc",
-      "webauthn/enclave_manager_interface.cc",
-      "webauthn/gpm_enclave_controller.cc",
-      "webauthn/gpm_enclave_transaction.cc",
-      "webauthn/immediate_request_rate_limiter_factory.cc",
-      "webauthn/immediate_request_rate_limiter_factory.h",
-      "webauthn/observable_authenticator_list.cc",
-      "webauthn/observable_authenticator_list.h",
-      "webauthn/passkey_model_factory.cc",
-      "webauthn/passkey_unlock_manager.cc",
-      "webauthn/passkey_unlock_manager.h",
-      "webauthn/passkey_unlock_manager_factory.cc",
-      "webauthn/passkey_unlock_manager_factory.h",
-      "webauthn/password_credential_ui_controller.cc",
-      "webauthn/password_credential_ui_controller.h",
-      "webauthn/ui_readiness_barrier.cc",
-      "webauthn/ui_readiness_barrier.h",
     ]
 
     sources += [
@@ -4747,7 +4705,6 @@ static_library("browser") {
       "platform_util_mac.mm",
       "process_singleton_mac.mm",
       "shell_integration_mac.mm",
-      "webauthn/chrome_authenticator_request_delegate_mac.mm",
     ]
     deps += [
       "//chrome/app_shim",
@@ -6244,8 +6201,6 @@ static_library("test_support") {
     "ssl/ssl_browsertest_util.h",
     "ssl/ssl_client_auth_requestor_mock.cc",
     "ssl/ssl_client_auth_requestor_mock.h",
-    "webauthn/fake_password_credential_fetcher.cc",
-    "webauthn/fake_password_credential_fetcher.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -6265,6 +6220,7 @@ static_library("test_support") {
     "//chrome/browser/sessions",
     "//chrome/browser/translate:test_support",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/webauthn",
   ]
   deps = [
     ":browser_process",
