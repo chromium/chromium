@@ -5276,7 +5276,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance"
     enum="AutofillEmailOrLoyaltyCardAcceptanceMetricValue"
-    expires_after="2026-06-13">
+    expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>piotrwrotniak@google.com</owner>
   <summary>
@@ -5288,7 +5288,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.LoyaltyCard.FillingAcceptance.Affiliated"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2026-09-06">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5304,7 +5304,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.LoyaltyCard.FillingAssistance.Affiliated"
-    enum="BooleanAutofillFillingAssistance" expires_after="2026-06-01">
+    enum="BooleanAutofillFillingAssistance" expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5321,7 +5321,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.LoyaltyCard.FillingCorrectness.{Category}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2026-10-04">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5344,7 +5344,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.LoyaltyCard.FillingReadinessAffiliationCategory"
     enum="AutofillLoyaltyCardAffiliationCategoryFillingReadiness"
-    expires_after="2026-08-30">
+    expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5360,7 +5360,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.LoyaltyCard.StoredCardsCount" units="units"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -8718,7 +8718,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Affiliated.SelectedIndex"
-    units="index" expires_after="2026-06-01">
+    units="index" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8730,7 +8730,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.All.SelectedIndex"
-    units="index" expires_after="2026-06-01">
+    units="index" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8743,7 +8743,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown"
-    units="loyalty cards" expires_after="2026-06-01">
+    units="loyalty cards" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8754,7 +8754,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.NumberOfLoyaltyCardsShown"
-    units="loyalty cards" expires_after="2026-06-01">
+    units="loyalty cards" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8767,7 +8767,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Outcome"
-    enum="TouchToFill.LoyaltyCard.Outcome" expires_after="2026-08-09">
+    enum="TouchToFill.LoyaltyCard.Outcome" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8778,7 +8778,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.Source"
-    enum="TouchToFill.LoyaltyCard.Source" expires_after="2026-10-18">
+    enum="TouchToFill.LoyaltyCard.Source" expires_after="2027-06-01">
   <owner>vizcay@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -8789,7 +8789,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.LoyaltyCard.TriggerOutcome"
-    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2026-10-04">
+    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2027-06-01">
   <owner>tchudakov@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
