@@ -44,12 +44,6 @@
     case IntentType::kSearchInChrome: {
       SearchInChromeIntent* searchInChromeIntent =
           [[SearchInChromeIntent alloc] init];
-
-      // SiriKit requires the intent parameter to be set to a non-empty
-      // string in order to accept the intent donation. Set it to a single
-      // space, to be later trimmed by the intent handler, which will result
-      // in the shortcut being treated as if no search phrase was supplied.
-      searchInChromeIntent.searchPhrase = @" ";
       searchInChromeIntent.suggestedInvocationPhrase = l10n_util::GetNSString(
           IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
       INInteraction* interaction =
