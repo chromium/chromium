@@ -2262,12 +2262,11 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 
 // This test is flaky on Linux MSAN.
 // TODO(https://crbug.com/463490299): Enable the test.
-// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) ||         \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||         \
     BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                                 \
     BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_CanGetFileResourceWithFileAccess \
   DISABLED_CanGetFileResourceWithFileAccess
 #else
@@ -2279,11 +2278,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
-    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccess \
   DISABLED_CantGetFileResourceWithoutFileAccess
 #else
@@ -2296,11 +2293,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
-    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccessNoSlashes \
   DISABLED_CantGetFileResourceWithoutFileAccessNoSlashes
 #else
@@ -2313,11 +2308,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
-// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
-    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
 #define MAYBE_CantGetFileResourceWithoutFileAccessMixedCase \
   DISABLED_CantGetFileResourceWithoutFileAccessMixedCase
 #else
