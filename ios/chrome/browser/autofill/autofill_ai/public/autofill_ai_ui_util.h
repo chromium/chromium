@@ -15,7 +15,8 @@ namespace autofill {
 
 // Returns the default icon for the Autofill AI entity type.
 UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
-                                            CGFloat symbol_point_size);
+                                            CGFloat symbol_point_size,
+                                            UIColor* tint_color);
 
 // Returns the display name for the given Autofill AI attribute type. For most
 // attribute types, the display name is the same as the attribute type name.
@@ -51,6 +52,10 @@ GURL GetManageYourInfoURL();
 
 // Returns the URL for Google Wallet passes.
 GURL GetGoogleWalletPassesURL();
+
+// Returns the logo for Google Wallet. When branded assets are not available,
+// a placeholder symbol is returned instead.
+UIImage* GetWalletLogo(CGFloat point_size, UIColor* tint_color);
 
 // Returns a view for use as the title on surfaces where the user is about to
 // save (update, etc) an entity in Google Wallet. Should not be used for local

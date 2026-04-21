@@ -162,8 +162,8 @@ UIImage* DefaultIconForType(FormSuggestion* suggestion,
         return nil;
       }
 
-      return autofill::DefaultIconForAutofillAiEntityType(entity->type().name(),
-                                                          kSymbolPointSize);
+      return autofill::DefaultIconForAutofillAiEntityType(
+          entity->type().name(), kSymbolPointSize, /*tint_color=*/nil);
     }
     case autofill::SuggestionType::kAutocompleteEntry:
     default:
