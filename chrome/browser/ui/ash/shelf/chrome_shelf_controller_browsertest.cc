@@ -1273,8 +1273,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
       web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
+  ui_test_utils::BrowserCreatedObserver browser_observer;
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
   const webapps::AppId app_id = install_observer.Wait();
+  browser_observer.Wait();
 
   // Find the native window for the app.
   gfx::NativeWindow native_window = gfx::NativeWindow();
@@ -2500,8 +2502,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
+  ui_test_utils::BrowserCreatedObserver browser_observer;
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
   const webapps::AppId app_id = install_observer.Wait();
+  browser_observer.Wait();
 
   ash::ShelfID shelf_id(app_id);
   EXPECT_FALSE(ChromeShelfController::instance()->IsPinned(shelf_id));
@@ -2524,8 +2528,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   web_app::SetAutoAcceptWebAppDialogForTesting(true, true);
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
+  ui_test_utils::BrowserCreatedObserver browser_observer;
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
   const webapps::AppId app_id = install_observer.Wait();
+  browser_observer.Wait();
   web_app::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   ash::ShelfID shelf_id(app_id);

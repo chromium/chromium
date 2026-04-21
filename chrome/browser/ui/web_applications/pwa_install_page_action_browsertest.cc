@@ -607,7 +607,9 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   OpenTabResult result = OpenTab(GetInstallableAppURL());
   EXPECT_TRUE(result.installable);
   EXPECT_NE(first_tab, GetCurrentTab());
+  ui_test_utils::BrowserCreatedObserver browser_observer;
   StartPwaInstallFromPageActionViewAndGetInstalledApp();
+  browser_observer.Wait();
   EXPECT_EQ(first_tab, GetCurrentTab());
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 }
