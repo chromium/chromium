@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./2d-context-lost-and-reused-in-same-task-impl.js"></script>
+<script src="./2d-context-lost-utils.js"></script>
 <canvas id="canvas"></canvas>
 <script>
 /**
@@ -9,10 +10,10 @@
  * placeholder in the same task, before the canvas realizes that the
  * context is lost.
  */
-promise_test(async () => {
+promise_test(async (test) => {
   const placeholder = document.getElementById('canvas');
   const canvas = placeholder.transferControlToOffscreen();
-  await TestLosingAndReusingCanvasInSameTask(canvas);
+  await TestLosingAndReusingCanvasInSameTask(test, canvas);
 }, 'OffscreenCanvas with a placeholder can be used in the same task the GPU ' +
    'process died.');
 </script>

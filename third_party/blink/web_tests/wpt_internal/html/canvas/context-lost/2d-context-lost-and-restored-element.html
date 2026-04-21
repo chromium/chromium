@@ -2,12 +2,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./2d-context-lost-and-restored-impl.js"></script>
+<script src="./2d-context-lost-utils.js"></script>
 <canvas id="canvas"></canvas>
 <script>
 
-promise_test(async () => {
+promise_test(async (test) => {
   const canvas = document.getElementById('canvas');
-  await Test2dContextLostAndRestored(canvas);
+  await Test2dContextLostAndRestored(test, canvas);
 }, 'HTMLCanvasElement should lose and restore 2d context when the GPU process' +
    'is terminated.');
 

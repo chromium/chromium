@@ -5,7 +5,7 @@ assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
  * Test losing the GPU context and keep using the canvas in the same task,
  * before the canvas realizes that the context is lost.
  */
-async function TestLosingAndReusingCanvasInSameTask(canvas) {
+async function TestLosingAndReusingCanvasInSameTask(test, canvas) {
   const ctx = canvas.getContext('2d',
                                 // Stay on GPU acceleration despite read-backs.
                                 {willReadFrequently: false});
@@ -17,7 +17,7 @@ async function TestLosingAndReusingCanvasInSameTask(canvas) {
 
   // Lose context in the next frame.
   await new Promise(resolve => requestAnimationFrame(resolve));
-  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  terminateGpuProcess(test);
 
   // Reading back an accelerated canvas requires a roundtrip to the GPU process,
   // causing the implementation to realize it's no longer there.

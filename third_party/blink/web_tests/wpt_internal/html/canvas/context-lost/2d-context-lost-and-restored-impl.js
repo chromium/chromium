@@ -3,7 +3,7 @@ assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
 
 // Test that a canvas loses and restores a 2D context after the GPU process is
 // terminated.
-async function Test2dContextLostAndRestored(canvas,
+async function Test2dContextLostAndRestored(test, canvas,
                                             {desynchronized = false} = {}) {
   const ctx = canvas.getContext('2d', {
     // Stay on GPU acceleration despite read-backs.
@@ -22,7 +22,7 @@ async function Test2dContextLostAndRestored(canvas,
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
-  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  terminateGpuProcess(test);
 
   assert_false(ctx.isContextLost());
   await contextLost;
@@ -52,7 +52,7 @@ async function Test2dContextLostAndRestored(canvas,
 }
 
 // Tests that the canvas is not lost after the GPU process is terminated.
-async function Test2dContextNeverLost(t, canvas,
+async function Test2dContextNeverLost(test, canvas,
                                       {desynchronized = false} = {}) {
   const ctx = canvas.getContext('2d', {
     // Stay on GPU acceleration despite read-backs.
@@ -60,7 +60,7 @@ async function Test2dContextNeverLost(t, canvas,
     desynchronized: desynchronized,
   });
 
-  canvas.oncontextlost = t.step_func(() => {
+  canvas.oncontextlost = test.step_func(() => {
     assert_unreached('The context should not have been lost.');
   });
 
@@ -68,7 +68,7 @@ async function Test2dContextNeverLost(t, canvas,
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
-  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  terminateGpuProcess(test);
 
   // The canvas should still be alive.
   assert_false(ctx.isContextLost());

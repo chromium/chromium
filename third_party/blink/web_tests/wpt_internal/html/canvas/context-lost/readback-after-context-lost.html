@@ -2,19 +2,20 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./2d-context-lost-utils.js"></script>
 <script>
 assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
             'This test requires chrome.gpuBenchmarking.');
 assert_true(!!window.internals,
             'This test requires window.internals.');
 
-canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
   const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
-  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  terminateGpuProcess(test);
 
   if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // For accelerated canvases, the texture become immediately unreadable.
