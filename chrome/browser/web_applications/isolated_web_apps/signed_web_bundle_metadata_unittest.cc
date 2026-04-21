@@ -159,7 +159,8 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
 
   EXPECT_THAT(
       metadata,
-      ErrorIs(HasSubstr("Integrity block array of length 6 - should be 4.")));
+      ErrorIs(HasSubstr("Failed to parse integrity block: Invalid integrity "
+                        "block array length: expected 4, got 6.")));
 }
 
 }  // namespace

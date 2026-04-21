@@ -67,6 +67,16 @@ cbor::Value CreateSignatureStackEntryAttributes(
                    IntegritySignatureErrorForTesting::
                        kWrongSignatureStackEntryAttributeNameLength)) {
       attributes.emplace("ed25519", public_key_bytes);
+    } else if (errors_for_testing.Has(
+                   IntegritySignatureErrorForTesting::
+                       kSignatureStackEntryUnsupportedArrayAttribute)) {
+      attributes.emplace(kEd25519PublicKeyAttributeName,
+                         cbor::Value::ArrayValue());
+    } else if (errors_for_testing.Has(
+                   IntegritySignatureErrorForTesting::
+                       kSignatureStackEntryUnsupportedMapAttribute)) {
+      attributes.emplace(kEcdsaP256PublicKeyAttributeName,
+                         cbor::Value::MapValue());
     } else {
       attributes.emplace(
           std::visit(absl::Overload{[](const Ed25519PublicKey&) {
@@ -97,17 +107,6 @@ cbor::Value CreateSignatureStackEntryAttributes(
     // Negative integer values: one less than 24 (modulo) & one large.
     attributes.emplace("kNegativeInt_small", -12);
     attributes.emplace("kNegativeInt", std::numeric_limits<int64_t>::min());
-  }
-
-  if (errors_for_testing.Has(
-          IntegritySignatureErrorForTesting::
-              kSignatureStackEntryUnsupportedArrayAttribute)) {
-    attributes.emplace("kArrayUnsupported", cbor::Value::ArrayValue());
-  }
-
-  if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
-                                 kSignatureStackEntryUnsupportedMapAttribute)) {
-    attributes.emplace("kMapUnsupported", cbor::Value::MapValue());
   }
 
   return cbor::Value(attributes);

@@ -202,9 +202,8 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
       source, test_future.GetCallback());
   EXPECT_THAT(
       test_future.Get(),
-      ErrorIs(HasSubstr(
-          "Failed to read the integrity block of the signed web "
-          "bundle: Error reading the integrity block array structure.")));
+      ErrorIs(HasSubstr("Failed to read the integrity block of the signed web "
+                        "bundle: Integrity block is not a CBOR array.")));
 }
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,

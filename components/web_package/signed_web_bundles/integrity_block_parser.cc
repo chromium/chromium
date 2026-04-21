@@ -4,33 +4,30 @@
 
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "components/web_package/input_reader.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/writer.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "components/web_package/signed_web_bundles/attribute_map_parser.h"
 #include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
-#include "components/web_package/signed_web_bundles/signature_entry_parser.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package {
-
-namespace {
-
-std::optional<base::span<const uint8_t>> ReadByteStringWithHeader(
-    InputReader& input) {
-  if (std::optional<uint64_t> size =
-          input.ReadCBORHeader(CBORType::kByteString)) {
-    return input.ReadBytes(*size);
-  }
-  return std::nullopt;
-}
-
-}  // namespace
 
 IntegrityBlockParser::IntegrityBlockParser(
     mojom::BundleDataSource& data_source,
@@ -47,197 +44,185 @@ IntegrityBlockParser::~IntegrityBlockParser() {
 void IntegrityBlockParser::StartParsing(
     WebBundleParser::WebBundleSectionParser::ParsingCompleteCallback callback) {
   complete_callback_ = std::move(callback);
-  // First, we will parse the `magic` and `version` bytes.
-  constexpr static uint64_t kMagicBytesAndVersionHeaderLength =
-      /*array_header=*/kMaxCBORItemHeaderSize +
-      /*magic_bytes_header=*/kMaxCBORItemHeaderSize +
-      /*magic_bytes=*/kIntegrityBlockMagicBytes.size() +
-      /*version_bytes_header=*/kMaxCBORItemHeaderSize +
-      /*version_bytes=*/kIntegrityBlockV2VersionBytes.size();
-  data_source_->Read(
-      0, kMagicBytesAndVersionHeaderLength,
-      base::BindOnce(&IntegrityBlockParser::ParseMagicBytesAndVersion,
-                     weak_factory_.GetWeakPtr()));
+
+  // Reading the maximal size is safe because:
+  //  1. `Read` just return everything when the size of a bundle is shorter
+  //  2. CBOR parser (inside) read the CBOR structure fragment by fragment until
+  //  reaches its end, remaining part is ignored
+  data_source_->Read(0, kMaxIntegrityBlockSize,
+                     base::BindOnce(&IntegrityBlockParser::OnIntegrityBlockRead,
+                                    weak_factory_.GetWeakPtr()));
 }
 
-void IntegrityBlockParser::ParseMagicBytesAndVersion(
+void IntegrityBlockParser::OnIntegrityBlockRead(
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback("Error reading the integrity block array structure.");
+    RunErrorCallback("Error reading the integrity block.");
+    return;
+  }
+  // This structure is built during parsing and returned by the final callback
+  mojom::BundleIntegrityBlockPtr integrity_block =
+      mojom::BundleIntegrityBlock::New();
+
+  size_t consumed_bytes = 0;
+  cbor::Reader::DecoderError error;
+  cbor::Reader::Config config;
+  config.num_bytes_consumed = &consumed_bytes;
+  config.error_code_out = &error;
+
+  // When config `bytes_consumed` are assigned the CBOR parser reads only to the
+  // end of a structure. It parses only Integrity Block even if Web Bundle part
+  // starts just after.
+  std::optional<cbor::Value> value = cbor::Reader::Read(*data, config);
+  if (!value) {
+    RunErrorCallback("Error parsing integrity block as CBOR: " +
+                     std::string(cbor::Reader::ErrorCodeToString(error)));
+    return;
+  }
+  integrity_block->size = consumed_bytes;
+
+  if (!value->is_array()) {
+    RunErrorCallback("Integrity block is not a CBOR array.");
     return;
   }
 
-  InputReader input(*data);
-  std::optional<uint64_t> array_length = input.ReadCBORHeader(CBORType::kArray);
-  if (!array_length) {
-    RunErrorCallback("Error reading the integrity block array structure.");
+  const cbor::Value::ArrayValue& top_array = value->GetArray();
+  if (top_array.size() != kIntegrityBlockV2TopLevelArrayLength) {
+    RunErrorCallback(base::StringPrintf(
+        "Invalid integrity block array length: expected %u, got %zu.",
+        kIntegrityBlockV2TopLevelArrayLength, top_array.size()));
     return;
   }
 
-  if (*array_length < 2) {
-    RunErrorCallback(
-        "Integrity block array size is too short -- expected at least 2 "
-        "elements, got " +
-        base::ToString(*array_length) + ".");
-    return;
-  }
-
-  if (ReadByteStringWithHeader(input) != kIntegrityBlockMagicBytes) {
+  // 1. Magic bytes
+  if (!top_array[0].is_bytestring() ||
+      !std::ranges::equal(top_array[0].GetBytestring(),
+                          kIntegrityBlockMagicBytes)) {
     RunErrorCallback("Unexpected magic bytes.");
     return;
   }
 
-  std::optional<base::span<const uint8_t>> version_bytes =
-      ReadByteStringWithHeader(input);
-  if (version_bytes == kIntegrityBlockV1VersionBytes) {
-    RunErrorCallback(
-        "Integrity Block V1 has been deprecated since M129. Please re-sign "
-        "your bundle.");
-    return;
-  }
-  if (version_bytes != kIntegrityBlockV2VersionBytes) {
-    RunErrorCallback("Unexpected version bytes: expected `2b\\0\\0` (for v2).",
+  // 2. Version
+  if (!top_array[1].is_bytestring() ||
+      !std::ranges::equal(top_array[1].GetBytestring(),
+                          kIntegrityBlockV2VersionBytes)) {
+    RunErrorCallback("Unexpected version bytes.",
                      mojom::BundleParseErrorType::kVersionError);
     return;
   }
-  if (*array_length != kIntegrityBlockV2TopLevelArrayLength) {
-    RunErrorCallback("Integrity block array of length " +
-                     base::ToString(*array_length) + " - should be " +
-                     base::ToString(kIntegrityBlockV2TopLevelArrayLength) +
-                     ".");
+
+  // 3. Attributes
+  if (!top_array[2].is_map()) {
+    RunErrorCallback("Integrity block attributes must be a map.");
     return;
   }
-  offset_in_stream_ = input.CurrentOffset();
-  ReadAttributes();
-}
-
-void IntegrityBlockParser::ReadAttributes() {
-  attributes_parser_ = std::make_unique<AttributeMapParser>(
-      *data_source_, base::BindOnce(&IntegrityBlockParser::ParseAttributes,
-                                    weak_factory_.GetWeakPtr()));
-  attributes_parser_->Parse(offset_in_stream_);
-}
-
-void IntegrityBlockParser::ParseAttributes(
-    AttributeMapParser::ParsingResult result) {
-  ASSIGN_OR_RETURN(
-      (auto [attributes_map, offset_to_end_of_map]), std::move(result),
-      [&](std::string error) { RunErrorCallback(std::move(error)); });
-
+  const cbor::Value::MapValue& attributes_map = top_array[2].GetMap();
   const cbor::Value* web_bundle_id =
-      base::FindOrNull(attributes_map, kWebBundleIdAttributeName);
-  if (!web_bundle_id || !web_bundle_id->is_string() ||
-      web_bundle_id->GetString().empty()) {
+      base::FindOrNull(attributes_map, cbor::Value(kWebBundleIdAttributeName));
+  if (!web_bundle_id || !web_bundle_id->is_string()) {
     RunErrorCallback(
-        "`webBundleId` field in integrity block attributes is missing or "
-        "malformed.");
+        "`webBundleId` integrity block attribute is missing or malformed.");
     return;
   }
 
-  uint64_t attribute_map_size = offset_to_end_of_map - offset_in_stream_;
-  data_source_->Read(
-      offset_in_stream_, attribute_map_size,
-      base::BindOnce(&IntegrityBlockParser::ReadAttributesBytes,
-                     weak_factory_.GetWeakPtr(), web_bundle_id->GetString()));
-}
+  // Check if web_bundle_id is correct
+  RETURN_IF_ERROR(SignedWebBundleId::Create(web_bundle_id->GetString()),
+                  [&](const std::string& error) { RunErrorCallback(error); });
 
-void IntegrityBlockParser::ReadAttributesBytes(
-    std::string web_bundle_id,
-    const std::optional<BinaryData>& data) {
-  if (!data) {
-    RunErrorCallback("Error reading integrity block attributes.");
+  BinaryData attributes_cbor = *cbor::Writer::Write(top_array[2]);
+  integrity_block->attributes = IntegrityBlockAttributes(
+      web_bundle_id->GetString(), std::move(attributes_cbor));
+
+  // 4. Signature Stack
+  if (!top_array[3].is_array()) {
+    RunErrorCallback("Signature stack must be an array.");
     return;
   }
-
-  attributes_ = IntegrityBlockAttributes(std::move(web_bundle_id), *data);
-  offset_in_stream_ += data->size();
-
-  ReadSignatureStack();
-}
-
-void IntegrityBlockParser::ReadSignatureStack() {
-  data_source_->Read(offset_in_stream_, kMaxCBORItemHeaderSize,
-                     base::BindOnce(&IntegrityBlockParser::ParseSignatureStack,
-                                    weak_factory_.GetWeakPtr()));
-}
-
-void IntegrityBlockParser::ParseSignatureStack(
-    const std::optional<BinaryData>& data) {
-  if (!data) {
-    RunErrorCallback("Error reading signature stack.");
-    return;
-  }
-
-  InputReader input(*data);
-
-  const auto signature_stack_size = input.ReadCBORHeader(CBORType::kArray);
-  if (!signature_stack_size) {
-    RunErrorCallback("Cannot parse the size of the signature stack.");
-    return;
-  }
-
-  if (*signature_stack_size == 0) {
+  const cbor::Value::ArrayValue& signatures = top_array[3].GetArray();
+  if (signatures.empty()) {
     RunErrorCallback(
         "The signature stack must contain at least one signature.");
     return;
   }
 
-  offset_in_stream_ += input.CurrentOffset();
-  signature_stack_entries_left_ = *signature_stack_size;
-  ReadSignatureStackEntry();
-}
+  for (const auto& signature_info_raw : signatures) {
+    ASSIGN_OR_RETURN(
+        auto parsed_signature_info, ParseSignatureInfo(signature_info_raw),
+        [&](const std::string& error) { this->RunErrorCallback(error); });
 
-void IntegrityBlockParser::ReadSignatureStackEntry() {
-  current_signature_stack_entry_parser_ =
-      std::make_unique<SignatureStackEntryParser>(
-          *data_source_,
-          base::BindOnce(&IntegrityBlockParser::NextSignatureStackEntry,
-                         weak_factory_.GetWeakPtr()));
-
-  current_signature_stack_entry_parser_->Parse(offset_in_stream_);
-}
-
-void IntegrityBlockParser::NextSignatureStackEntry(
-    base::expected<
-        std::pair<mojom::BundleIntegrityBlockSignatureStackEntryPtr, uint64_t>,
-        std::string> result) {
-  CHECK_GT(signature_stack_entries_left_, 0u);
-
-  if (!result.has_value()) {
-    RunErrorCallback(std::move(result.error()),
-                     mojom::BundleParseErrorType::kFormatError);
-    return;
+    if (integrity_block->signature_stack.empty() &&
+        parsed_signature_info->signature_info->is_unknown()) {
+      RunErrorCallback("Unknown cipher type of the first signature.");
+      return;
+    }
+    integrity_block->signature_stack.push_back(
+        std::move(parsed_signature_info));
   }
-
-  auto [signature_entry, offset] = std::move(result.value());
-
-  if (signature_entry->signature_info->is_unknown() &&
-      signature_stack_.size() == 0) {
-    RunErrorCallback("Unknown cipher type of the first signature.");
-    return;
-  }
-
-  offset_in_stream_ = offset;
-  signature_stack_.emplace_back(std::move(signature_entry));
-
-  --signature_stack_entries_left_;
-  if (signature_stack_entries_left_ > 0) {
-    ReadSignatureStackEntry();
-  } else {
-    RunSuccessCallback();
-  }
-}
-
-void IntegrityBlockParser::RunSuccessCallback() {
-  mojom::BundleIntegrityBlockPtr integrity_block =
-      mojom::BundleIntegrityBlock::New();
-  integrity_block->size = offset_in_stream_;
-  integrity_block->signature_stack = std::move(signature_stack_);
-  integrity_block->attributes = std::move(*attributes_);
 
   std::move(complete_callback_)
       .Run(base::BindOnce(std::move(result_callback_),
                           std::move(integrity_block), nullptr));
+}
+
+base::expected<mojom::BundleIntegrityBlockSignatureStackEntryPtr, std::string>
+IntegrityBlockParser::ParseSignatureInfo(
+    const cbor::Value& signature_info_raw) {
+  if (!signature_info_raw.is_array() ||
+      signature_info_raw.GetArray().size() != 2) {
+    return base::unexpected(
+        "Each signature stack entry must contain exactly two elements.");
+  }
+
+  const cbor::Value::ArrayValue& signature_info_array =
+      signature_info_raw.GetArray();
+  if (!signature_info_array[0].is_map() ||
+      !signature_info_array[1].is_bytestring()) {
+    return base::unexpected("Malformed signature stack entry.");
+  }
+
+  mojom::BundleIntegrityBlockSignatureStackEntryPtr parsed_signature_info =
+      mojom::BundleIntegrityBlockSignatureStackEntry::New();
+  parsed_signature_info->attributes_cbor =
+      *cbor::Writer::Write(signature_info_array[0]);
+
+  const cbor::Value::MapValue& signature_attributes =
+      signature_info_array[0].GetMap();
+  const BinaryData& signature_bytes = signature_info_array[1].GetBytestring();
+
+  const cbor::Value* ed25519_key = base::FindOrNull(
+      signature_attributes, cbor::Value(kEd25519PublicKeyAttributeName));
+  const cbor::Value* ecdsa_key = base::FindOrNull(
+      signature_attributes, cbor::Value(kEcdsaP256PublicKeyAttributeName));
+
+  if (ed25519_key && ecdsa_key) {
+    return base::unexpected("Multiple key types for one signature.");
+  } else if (ed25519_key && !ed25519_key->is_bytestring()) {
+    return base::unexpected("Invalid ED25519 key.");
+  } else if (ecdsa_key && !ecdsa_key->is_bytestring()) {
+    return base::unexpected("Invalid ECDSA key.");
+
+  } else if (ed25519_key && ed25519_key->is_bytestring()) {
+    ASSIGN_OR_RETURN(auto public_key,
+                     Ed25519PublicKey::Create(ed25519_key->GetBytestring()));
+    ASSIGN_OR_RETURN(auto signature, Ed25519Signature::Create(signature_bytes));
+    parsed_signature_info->signature_info = mojom::SignatureInfo::NewEd25519(
+        mojom::SignatureInfoEd25519::New(public_key, signature));
+
+  } else if (ecdsa_key && ecdsa_key->is_bytestring()) {
+    ASSIGN_OR_RETURN(auto public_key,
+                     EcdsaP256PublicKey::Create(ecdsa_key->GetBytestring()));
+    ASSIGN_OR_RETURN(auto signature,
+                     EcdsaP256SHA256Signature::Create(signature_bytes));
+    parsed_signature_info->signature_info =
+        mojom::SignatureInfo::NewEcdsaP256Sha256(
+            mojom::SignatureInfoEcdsaP256SHA256::New(public_key, signature));
+
+  } else {
+    parsed_signature_info->signature_info =
+        mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
+  }
+
+  return parsed_signature_info;
 }
 
 void IntegrityBlockParser::RunErrorCallback(

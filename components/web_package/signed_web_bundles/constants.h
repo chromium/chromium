@@ -41,6 +41,9 @@ inline constexpr std::string_view kEd25519PublicKeyAttributeName =
 inline constexpr std::string_view kEcdsaP256PublicKeyAttributeName =
     "ecdsaP256SHA256PublicKey";
 
+// The maximum size of the integrity block allowed in this implementation.
+inline constexpr uint64_t kMaxIntegrityBlockSize = 1 * 1024 * 1024;
+
 }  // namespace web_package
 
 #endif  // COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_CONSTANTS_H_

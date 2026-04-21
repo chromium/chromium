@@ -951,8 +951,8 @@ TEST_F(WebBundleParserTest, SignedBundleNoBundleId) {
                   AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
                               Eq(mojom::BundleParseErrorType::kFormatError)),
                         Field(&mojom::BundleIntegrityBlockParseError::message,
-                              Eq("`webBundleId` field in integrity block "
-                                 "attributes is missing or malformed."))))));
+                              Eq("`webBundleId` integrity block attribute is "
+                                 "missing or malformed."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleNoAttributes) {
@@ -965,13 +965,13 @@ TEST_F(WebBundleParserTest, SignedBundleNoAttributes) {
        /*signatures_errors=*/{}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
-  EXPECT_THAT(
-      ParseSignedBundleIntegrityBlock(&data_source),
-      ErrorIs(Pointee(AllOf(
-          Field(&mojom::BundleIntegrityBlockParseError::type,
-                Eq(mojom::BundleParseErrorType::kFormatError)),
-          Field(&mojom::BundleIntegrityBlockParseError::message,
-                Eq("Integrity block array of length 3 - should be 4."))))));
+  EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("Invalid integrity block array length: "
+                                 "expected 4, got 3."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
@@ -1078,11 +1078,11 @@ TEST_F(WebBundleParserTest, SignedBundleWithMultiplePublicKeyAttributes) {
   TestDataSource data_source(bundle_and_keys.bundle);
 
   EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
-              ErrorIs(Pointee(AllOf(
-                  Field(&mojom::BundleIntegrityBlockParseError::type,
-                        Eq(mojom::BundleParseErrorType::kFormatError)),
-                  Field(&mojom::BundleIntegrityBlockParseError::message,
-                        Eq("Unknown cipher type of the first signature."))))));
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("Multiple key types for one signature."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeMap) {
@@ -1094,13 +1094,12 @@ TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeMap) {
                         kSignatureStackEntryUnsupportedMapAttribute}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
-  EXPECT_THAT(
-      ParseSignedBundleIntegrityBlock(&data_source),
-      ErrorIs(Pointee(AllOf(
-          Field(&mojom::BundleIntegrityBlockParseError::type,
-                Eq(mojom::BundleParseErrorType::kFormatError)),
-          Field(&mojom::BundleIntegrityBlockParseError::message,
-                HasSubstr("nested attributes are currently not supported"))))));
+  EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("Invalid ECDSA key."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeArray) {
@@ -1112,13 +1111,12 @@ TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeArray) {
                         kSignatureStackEntryUnsupportedArrayAttribute}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
-  EXPECT_THAT(
-      ParseSignedBundleIntegrityBlock(&data_source),
-      ErrorIs(Pointee(AllOf(
-          Field(&mojom::BundleIntegrityBlockParseError::type,
-                Eq(mojom::BundleParseErrorType::kFormatError)),
-          Field(&mojom::BundleIntegrityBlockParseError::message,
-                HasSubstr("nested attributes are currently not supported"))))));
+  EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("Invalid ED25519 key."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleNoPublicKeyAttribute) {
