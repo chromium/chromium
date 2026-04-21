@@ -34,7 +34,7 @@ class WebStateID;
 - (void)hideTabGroupCreationAnimated:(BOOL)animated;
 
 // Shows tab group edition view.
-- (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup;
+- (void)showTabGroupEditionForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
 // Show the current active tab.
 - (void)showActiveTab;

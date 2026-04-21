@@ -345,10 +345,12 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupCreator = nil;
 }
 
-- (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup {
+- (void)showTabGroupEditionForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
   CHECK(!_tabGroupCreator) << "There is an attempt to edit a tab group when a "
                               "creation process is still running.";
-  CHECK(tabGroup) << "To edit a tab group you should pass a group.";
+  if (!tabGroup) {
+    return;
+  }
 
   UIViewController* backgroundView = _tabGroupCoordinator
                                          ? _tabGroupCoordinator.viewController
@@ -356,7 +358,7 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initTabGroupEditionWithBaseViewController:backgroundView
                                         browser:self.browser
-                                       tabGroup:tabGroup];
+                                       tabGroup:tabGroup.get()];
   _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
