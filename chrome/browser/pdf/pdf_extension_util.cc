@@ -471,19 +471,7 @@ bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kPdfGlicSummarize)) {
-    return false;
-  }
-
-  if (glic::GlicEnabling::HasConsentedForProfile(profile)) {
-    return true;
-  }
-
-  if (glic::GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile)) {
-    return true;
-  }
-
-  return false;
+  return base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
 }
 
 }  // namespace pdf_extension_util

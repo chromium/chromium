@@ -917,15 +917,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kInvoke);
     }
 
-    if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
-      int arm = features::kGlicTrustFirstOnboardingArmParam.Get();
-      if (arm == 1) {
-        state->host_capabilities.push_back(
-            mojom::HostCapability::kTrustFirstOnboardingArm1);
-      } else if (arm == 2) {
-        state->host_capabilities.push_back(
-            mojom::HostCapability::kTrustFirstOnboardingArm2);
-      }
+    if (!GlicEnabling::HasConsentedForProfile(profile_)) {
+      state->host_capabilities.push_back(
+          mojom::HostCapability::kTrustFirstOnboardingArm2);
     }
     if (GlicEnabling::IsShareImageEnabledForProfile(profile_)) {
       // TODO(b:468877076): Ideally this would be a dynamic capability.
@@ -963,7 +957,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi);
     state->enable_trust_first_onboarding =
-        GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
+        !GlicEnabling::HasConsentedForProfile(profile_);
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);
     state->enable_skills =

@@ -3748,19 +3748,6 @@ const FeatureEntry::FeatureVariation kGlicButtonAltLabelVariations[] = {
     {"B", kGlicButtonAltLabelVariant1, nullptr},
     {"C", kGlicButtonAltLabelVariant2, nullptr}};
 
-const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm1Params[] = {
-    {"arm", "1"}};
-const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm2Params[] = {
-    {"arm", "2"}};
-const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm3Params[] = {
-    {"arm", "3"}};
-
-const FeatureEntry::FeatureVariation kGlicTrustFirstOnboardingVariations[] = {
-    {"- Arm 1: Start Chat", kGlicTrustFirstOnboardingArm1Params, nullptr},
-    {"- Arm 2: Welcome Screen", kGlicTrustFirstOnboardingArm2Params, nullptr},
-    {"- Arm 3: In-Flow opt-in", kGlicTrustFirstOnboardingArm3Params, nullptr},
-};
-
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
     {"glic-guest-url-preset-type", "0"}};
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeStaging[] = {
@@ -10619,12 +10606,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-share-image", flag_descriptions::kGlicShareImageName,
      flag_descriptions::kGlicShareImageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicShareImage)},
-    {"glic-trust-first-onboarding",
-     flag_descriptions::kGlicTrustFirstOnboardingName,
-     flag_descriptions::kGlicTrustFirstOnboardingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicTrustFirstOnboarding,
-                                    kGlicTrustFirstOnboardingVariations,
-                                    "GlicTrustFirstOnboarding")},
     {"glic-default-tab-context-setting",
      flag_descriptions::kGlicDefaultTabContextSettingName,
      flag_descriptions::kGlicDefaultTabContextSettingDescription, kOsDesktop,

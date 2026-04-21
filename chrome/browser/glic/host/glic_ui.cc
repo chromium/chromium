@@ -328,10 +328,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
                     admin_blocked_redirect_patterns);
 
   source->AddString("glicFreURL", GetFreURL(profile).spec());
-  source->AddBoolean(
-      "shouldShowFre",
-      !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile) &&
-          !GlicEnabling::HasConsentedForProfile(profile));
+  source->AddBoolean("shouldShowFre", false);
   source->AddInteger("reloadMaxLoadingTimeMs",
                      features::kGlicReloadMaxLoadingTimeMs.Get());
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(

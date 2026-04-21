@@ -22,7 +22,6 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
   std::string skill_id = skill_proto.id();
   RunTestSequence(
       Seed1PSkills({skill_proto}), ToggleGlicWindow(GlicWindowMode::kDetached),
-      PollForAndAcceptFre(),
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       WaitFor1PSkills(), InvokeSkillDirectly(&skill_id),
       VerifyInvocationInWebUI(skill_proto.prompt()));
@@ -33,7 +32,6 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest, Invoke1PSkill) {
   std::string skill_id = skill_proto.id();
   RunTestSequence(
       Seed1PSkills({skill_proto}), ToggleGlicWindow(GlicWindowMode::kAttached),
-      PollForAndAcceptFre(),
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       WaitFor1PSkills(), InvokeSkillDirectly(&skill_id),
       VerifyInvocationInWebUI(skill_proto.prompt()));
@@ -45,8 +43,7 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
   std::string generated_skill_id;
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(),
-      AddUserOwnedSkill(skill, &generated_skill_id),
+      OpenGlicAndInstrument(), AddUserOwnedSkill(skill, &generated_skill_id),
       // Simulate a notification that the skill to invoke has changed.
       Do([this, skill, skill_id_ptr = &generated_skill_id]() mutable {
         skill.id = *skill_id_ptr;
@@ -68,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
   auto edited_skill = GetEditedSkill();
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), CreateSkill(user_created_skill),
+      OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
@@ -104,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
 
   RunTestSequence(
       Seed1PSkills({skill_proto}), InstrumentTab(kFirstTabId),
-      OpenGlicAcceptFreAndInstrument(),
+      OpenGlicAndInstrument(),
       // Navigate to the site with contextual hint for `contextual_skill`.
       NavigateWebContents(kFirstTabId, GURL("https://enabled.com/")),
       WaitForWebContentsReady(kFirstTabId), WaitFor1PSkills(),

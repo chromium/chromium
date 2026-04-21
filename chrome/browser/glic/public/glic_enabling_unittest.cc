@@ -513,15 +513,14 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsFalse) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kCompleted);
 
-  EXPECT_FALSE(
-      GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
+  EXPECT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
 }
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsTrue) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kIncomplete);
 
-  EXPECT_TRUE(GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
+  EXPECT_FALSE(GlicEnabling::HasConsentedForProfile(profile()));
 }
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsReady) {

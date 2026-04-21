@@ -1090,8 +1090,7 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
   enabling()->SetCompletedFre(prefs::FreStatus::kCompleted);
-
-  EXPECT_FALSE(enabling()->IsTrustFirstOnboardingEnabled());
+  EXPECT_TRUE(enabling()->HasConsented());
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                         mojom::InvocationSource::kOsButton);

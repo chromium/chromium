@@ -588,9 +588,9 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerDidSelectProfileTest,
 
   auto* service = GetMockGlicKeyedService(profile);
 
-    EXPECT_CALL(*service, ToggleUI(testing::NotNull(), true,
-                                   mojom::InvocationSource::kProfilePicker,
-                                   testing::Eq(std::nullopt)));
+  EXPECT_CALL(*service,
+              ToggleUI(nullptr, true, mojom::InvocationSource::kProfilePicker,
+                       testing::Eq(std::nullopt)));
 
   GlicProfileManager::GetInstance()->DidSelectProfile(profile);
 }

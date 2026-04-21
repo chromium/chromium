@@ -125,9 +125,6 @@ EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   return EmbedderKey(tab);
 }
 
-bool IsTrustFirstOnboardingPending(Profile* profile) {
-  return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile);
-}
 }  // namespace
 
 // Web Contents Observer for the tab bound with its respective glic
@@ -202,15 +199,8 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
   auto* glic_embedder = GetEmbedderForTab(source_tab);
 
   if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
-    if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
-      if (IsTrustFirstOnboardingPending(profile()) &&
-          features::kGlicTrustFirstOnboardingArmParam.Get() != 1) {
-        return;
-      }
-    } else {
-      if (!GlicEnabling::HasConsentedForProfile(profile())) {
-        return;
-      }
+    if (!GlicEnabling::HasConsentedForProfile(profile())) {
+      return;
     }
   }
 
@@ -598,7 +588,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     }
   }
 
-  bool is_onboarding = IsTrustFirstOnboardingPending(profile_);
+  bool is_onboarding = !GlicEnabling::HasConsentedForProfile(profile_);
 
   base::AutoReset<bool> auto_reset(&is_creating_tab_from_glic_panel_link_click_,
                                    true);

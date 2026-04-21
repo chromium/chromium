@@ -14,7 +14,7 @@ class SkillsUpdateInteractiveUiTest : public SkillsInteractiveUiTestBase {};
 IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, ShowManageSkillsUi) {
   const DeepQuery kManageSkillsBtn{{"#manageSkillsBtn"}};
   RunTestSequence(
-      InstrumentTab(kFirstTabId), OpenGlicAcceptFreAndInstrument(),
+      InstrumentTab(kFirstTabId), OpenGlicAndInstrument(),
       ClickOnGlicClientElement(kManageSkillsBtn),
       WaitForTabOpenedTo(1, GURL("chrome://skills/yourSkills")),
       ActivateTabAt(0),
@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, ShowManageSkillsUi) {
 IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, ShowBrowseSkillsUi) {
   const DeepQuery kBrowseSkillsBtn{{"#browseSkillsBtn"}};
   RunTestSequence(
-      InstrumentTab(kFirstTabId), OpenGlicAcceptFreAndInstrument(),
+      InstrumentTab(kFirstTabId), OpenGlicAndInstrument(),
       ClickOnGlicClientElement(kBrowseSkillsBtn),
       WaitForTabOpenedTo(1, GURL("chrome://skills/browse")), ActivateTabAt(0),
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
@@ -49,8 +49,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, UpdateUserSkill) {
   std::string skill_id;
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(),
-      AddUserOwnedSkill(user_created_skill, &skill_id),
+      OpenGlicAndInstrument(), AddUserOwnedSkill(user_created_skill, &skill_id),
       WaitForSkillPreviewShown(user_created_skill.name), UpdateSkill(&skill_id),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
@@ -74,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
   std::string skill_id;
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(),
-      AddUserOwnedSkill(user_created_skill, &skill_id),
+      OpenGlicAndInstrument(), AddUserOwnedSkill(user_created_skill, &skill_id),
       WaitForSkillPreviewShown(user_created_skill.name), UpdateSkill(&skill_id),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
@@ -102,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
   }
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), Do([this, test_skills]() {
+      OpenGlicAndInstrument(), Do([this, test_skills]() {
         for (const auto& skill : test_skills) {
           GetSkillsService()->AddOrUpdateSkillFromSync(
               skill.id, /*source_skill_id=*/"", skill.name, skill.icon,

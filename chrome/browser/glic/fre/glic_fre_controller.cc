@@ -69,13 +69,7 @@ void GlicFreController::Shutdown() {
 }
 
 bool GlicFreController::ShouldShowFreDialog() {
-  if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
-    return false;
-  }
-  // If the given profile has not previously completed the FRE and is eligible,
-  // then it should be shown.
-  return GlicEnabling::IsEnabledForProfile(profile_) &&
-         !GlicEnabling::HasConsentedForProfile(profile_);
+  return false;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

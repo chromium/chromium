@@ -56,10 +56,8 @@ SkillsInteractiveUiTestBase::SkillsInteractiveUiTestBase() {
       /*enabled_features=*/{features::kGlic, features::kGlicRollout,
                             features::kSkillsEnabled,
                             features::kGlicMultitabUnderlines},
-      /*disabled_features=*/{features::kGlicWarming,
-                             features::kGlicTrustFirstOnboarding});
-  // Ensure that we open the FRE.
-  glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
+      /*disabled_features=*/{features::kGlicWarming});
+  // TODO(b:504651450): Consider adding support for the new FRE.
 }
 
 SkillsInteractiveUiTestBase::~SkillsInteractiveUiTestBase() = default;
@@ -315,21 +313,8 @@ SkillsInteractiveUiTestBase::ClickOnGlicClientElement(DeepQuery where) {
 }
 
 ui::test::InteractiveTestApi::MultiStep
-SkillsInteractiveUiTestBase::PollForAndAcceptFre() {
-  return Steps(
-      PollUntil(
-          [this]() {
-            return glic_service()->fre_controller().GetWebUiState() ==
-                   glic::mojom::FreWebUiState::kReady;
-          },
-          "polling until the fre is ready"),
-      Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
-}
-
-ui::test::InteractiveTestApi::MultiStep
-SkillsInteractiveUiTestBase::OpenGlicAcceptFreAndInstrument() {
+SkillsInteractiveUiTestBase::OpenGlicAndInstrument() {
   return Steps(ToggleGlicWindow(GlicWindowMode::kAttached),
-               PollForAndAcceptFre(),
                WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents));
 }
 

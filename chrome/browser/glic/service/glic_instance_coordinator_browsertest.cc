@@ -1464,22 +1464,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       InvokeWithAutoSubmitIncompatibleFre) {
-  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
-
-  base::test::TestFuture<GlicInvokeError> error_future;
-  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
-  options.fre_override = mojom::FreOverride::kTrustFirstText;
-  options.on_error = error_future.GetCallback();
-  options.target.surface = DefaultSurface{
-      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
-
-  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
-
-  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWaitsForFreCompletion_Arm2) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);

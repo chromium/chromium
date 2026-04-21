@@ -172,14 +172,8 @@ bool WaitForFreCompletionTask::ShouldWaitForFreCompletion() const {
   if (GlicEnabling::HasConsentedForProfile(profile_)) {
     return false;
   }
-  if (fre_override_ == mojom::FreOverride::kTrustFirstClick) {
-    return true;
-  }
-  if (fre_override_ == mojom::FreOverride::kUnspecified) {
-    return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_) &&
-           features::kGlicTrustFirstOnboardingArmParam.Get() == 2;
-  }
-  return false;
+  return fre_override_ == mojom::FreOverride::kTrustFirstClick ||
+         fre_override_ == mojom::FreOverride::kUnspecified;
 }
 
 }  // namespace glic

@@ -131,12 +131,9 @@ class SkillsInteractiveUiTestBase
   ui::test::InteractiveTestApi::StepBuilder ClickOnGlicClientElement(
       DeepQuery where);
 
-  // Polls until the First Run Experience (FRE) is ready, then accepts it.
-  ui::test::InteractiveTestApi::MultiStep PollForAndAcceptFre();
-
   // Opens the Glic window, accepts the FRE, and instruments it for WebContents
   // interaction.
-  ui::test::InteractiveTestApi::MultiStep OpenGlicAcceptFreAndInstrument();
+  ui::test::InteractiveTestApi::MultiStep OpenGlicAndInstrument();
 
   // Seeds a list of First-Party skills into the SkillsService.
   ui::test::InteractiveTestApi::StepBuilder Seed1PSkills(

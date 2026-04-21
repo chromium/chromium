@@ -263,34 +263,10 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
-  if (!GlicEnabling::HasConsentedForProfile(profile) &&
-      !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile)) {
-#if !BUILDFLAG(IS_ANDROID)
-    // Open a browser and show the FRE in a new tab.
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    service->OpenFreDialogInNewTab(displayer.browser(),
-                                   mojom::InvocationSource::kProfilePicker);
-#else
-    NOTIMPLEMENTED() << "OpenFreDialogInNewTab";
-#endif
-  } else if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile)) {
-#if !BUILDFLAG(IS_ANDROID)
-    // Open a browser and show the FRE in a new tab.
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    Browser* browser = displayer.browser();
-    chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1,
-                              /*foreground=*/true);
-    service->ToggleUI(browser, /*prevent_close=*/true,
-                      mojom::InvocationSource::kProfilePicker);
-#else
-    NOTIMPLEMENTED() << "ToggleUIOnNewTab";
-#endif
-  } else {
-    // Toggle glic but prevent close if it is already open for the selected
-    // profile.
-    service->ToggleUI(nullptr, /*prevent_close=*/true,
-                      mojom::InvocationSource::kProfilePicker);
-  }
+  // Toggle glic but prevent close if it is already open for the selected
+  // profile.
+  service->ToggleUI(nullptr, /*prevent_close=*/true,
+                    mojom::InvocationSource::kProfilePicker);
 }
 
 void GlicProfileManager::AddObserver(Observer* observer) {

@@ -578,7 +578,7 @@ bool GlicEnabling::HasConsentedForProfile(Profile* profile) {
   if (!service) {
     return false;
   }
-  return service->enabling().GetCompletedFre() == prefs::FreStatus::kCompleted;
+  return service->enabling().HasConsented();
 }
 
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
@@ -603,11 +603,6 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kDisabledByAdmin;
   }
   if (!enablement.IsEnabled()) {
-    return mojom::ProfileReadyState::kIneligible;
-  }
-
-  if (enablement.not_consented &&
-      !IsTrustFirstOnboardingEnabledForProfile(profile)) {
     return mojom::ProfileReadyState::kIneligible;
   }
 
@@ -689,42 +684,8 @@ bool GlicEnabling::IsChromeOSProfileEligible(const Profile* profile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
-  auto* service = GlicKeyedService::Get(profile);
-  if (!service) {
-    return false;
-  }
-  return service->enabling().IsTrustFirstOnboardingEnabled();
-}
-
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
-  return IsTrustFirstOnboardingGatedFeatureEnabled(
-      profile, features::kAutoOpenGlicForPdf,
-      features::kAutoOpenGlicForPdfWithOnboarding);
-}
-bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  bool enabled = IsEnabledForProfile(profile);
-  if (!enabled) {
-    base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
-    return enabled;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
-    enabled = base::FeatureList::IsEnabled(features::kGlicContextMenu);
-  } else {
-    enabled = HasConsentedForProfile(profile) &&
-              base::FeatureList::IsEnabled(features::kGlicContextMenu);
-  }
-  base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
-  return enabled;
-}
-
-// static
-bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
-    Profile* profile,
-    const base::Feature& feature,
-    const base::FeatureParam<bool>& onboarding_param) {
-  if (!base::FeatureList::IsEnabled(feature)) {
+  if (!base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
     return false;
   }
 
@@ -732,14 +693,20 @@ bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
     return true;
   }
 
-  // If the user has not consented and the onboarding gate is enabled,
-  // the behavior is gated by the Trust First onboarding feature.
-  if (onboarding_param.Get()) {
-    return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
-  }
-  return false;
+  return features::kAutoOpenGlicForPdfWithOnboarding.Get();
 }
 
+bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
+  bool enabled = IsEnabledForProfile(profile);
+  if (!enabled) {
+    base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
+    return enabled;
+  }
+
+  enabled = base::FeatureList::IsEnabled(features::kGlicContextMenu);
+  base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
+  return enabled;
+}
 
 bool GlicEnabling::IsLiveAndFloatyEnabledByFlags() {
   // Despite the name, when off, this disables live mode and floaty.
@@ -802,12 +769,7 @@ bool GlicEnabling::IsAllowed() {
 }
 
 bool GlicEnabling::HasConsented() {
-  return HasConsentedForProfile(profile_);
-}
-
-bool GlicEnabling::IsTrustFirstOnboardingEnabled() const {
-  return GetCompletedFre() != prefs::FreStatus::kCompleted &&
-         base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
+  return GetCompletedFre() == prefs::FreStatus::kCompleted;
 }
 
 prefs::FreStatus GlicEnabling::GetCompletedFre() const {

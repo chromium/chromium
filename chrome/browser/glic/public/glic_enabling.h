@@ -166,9 +166,6 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
-  // Whether the Trust-First Onboarding flow should be shown.
-  static bool IsTrustFirstOnboardingEnabledForProfile(Profile* profile);
-
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
 
@@ -326,9 +323,6 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // otherwise.
   bool HasConsented();
 
-  // Returns true if Trust-First Onboarding is enabled for this profile.
-  bool IsTrustFirstOnboardingEnabled() const;
-
   // Returns the FRE status.
   prefs::FreStatus GetCompletedFre() const;
   // Sets the FRE status.
@@ -423,11 +417,6 @@ class GlicEnabling : public signin::IdentityManager::Observer,
 
   void UpdateEnabledStatus();
   void UpdateConsentStatus();
-
-  static bool IsTrustFirstOnboardingGatedFeatureEnabled(
-      Profile* profile,
-      const base::Feature& feature,
-      const base::FeatureParam<bool>& onboarding_param);
 
 #if BUILDFLAG(IS_CHROMEOS)
   static bool IsChromeOSProfileEligible(const Profile* profile);

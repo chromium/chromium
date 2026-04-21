@@ -178,24 +178,11 @@ void GlicInvokeHandler::Invoke() {
 }
 
 bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
-  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
-    return false;
-  }
-  if (options_.fre_override != mojom::FreOverride::kUnspecified) {
-    return options_.fre_override != mojom::FreOverride::kTrustFirstInline &&
-           options_.fre_override != mojom::FreOverride::kTrustFirstClick;
-  }
-  return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
-             instance_->profile()) &&
-         features::kGlicTrustFirstOnboardingArmParam.Get() == 1;
+  return false;
 }
 
 bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
-  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
-    return false;
-  }
-  return !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
-      instance_->profile());
+  return false;
 }
 
 void GlicInvokeHandler::SendToClient() {

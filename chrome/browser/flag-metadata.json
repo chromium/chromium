@@ -5332,15 +5332,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-trust-first-onboarding",
-    "owners": [
-     "tommasin@chromium.org",
-     "zalmashni@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 152
-  },
-  {
     "name": "glic-z-order-changes",
     "owners": [
       "andreaxg@google.com",

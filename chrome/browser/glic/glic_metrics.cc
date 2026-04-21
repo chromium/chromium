@@ -318,7 +318,7 @@ void GlicMetrics::OnInstanceOpened() {
     return;
   }
 
-  if (enabling_->IsTrustFirstOnboardingEnabled()) {
+  if (!enabling_->HasConsented()) {
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
     base::UmaHistogramEnumeration("Glic.Fre.Shown.InvocationSource",

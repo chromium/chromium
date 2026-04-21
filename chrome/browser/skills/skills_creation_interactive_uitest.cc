@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest, UpdateSkillPreviews) {
   derived_skill.source =
       sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
 
-  RunTestSequence(OpenGlicAcceptFreAndInstrument(),
+  RunTestSequence(OpenGlicAndInstrument(),
                   UpdateContextualSkillPreviews(std::move(skill_previews)),
                   WaitForSkillPreviewShown(contextual_skill.name),
                   AddUserOwnedSkill(derived_skill),
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
   auto edited_skill = GetEditedSkill();
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), CreateSkill(user_created_skill),
+      OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
   auto edited_skill = GetEditedSkill();
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), CreateSkill(user_created_skill),
+      OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       /*last_update_time=*/base::Time::Now(), first_party_skill.source);
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), CreateSkill(first_party_skill),
+      OpenGlicAndInstrument(), CreateSkill(first_party_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(first_party_skill, edited_skill),
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       GetSkillCardQuery("cr-button#deleteButton");
 
   RunTestSequence(
-      OpenGlicAcceptFreAndInstrument(), AddUserOwnedSkill(user_created_skill),
+      OpenGlicAndInstrument(), AddUserOwnedSkill(user_created_skill),
       WaitForSkillPreviewOrder({user_created_skill.name}),
       // Navigate to the "Your Skills" page.
       InstrumentTab(kFirstTabId),

@@ -328,8 +328,7 @@ bool GlicKeyedService::MaybeInvoke(
 
   bool panel_closed = !IsPanelShowingForBrowser(*target_bwi);
   bool fre_override_compatible =
-      !GlicEnabling::HasConsentedForProfile(profile_) &&
-      GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
+      !GlicEnabling::HasConsentedForProfile(profile_);
 
   if (fre_override_compatible && panel_closed &&
       base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
