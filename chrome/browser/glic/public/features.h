@@ -58,6 +58,9 @@ BASE_DECLARE_FEATURE(kGlicButtonAutoSummarize);
 
 BASE_DECLARE_FEATURE(kGlicGetTabFaviconById);
 
+BASE_DECLARE_FEATURE(kGlicSkipCookieSyncOnOpen);
+BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

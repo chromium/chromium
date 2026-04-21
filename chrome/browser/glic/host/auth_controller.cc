@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/common/chrome_switches.h"
@@ -69,6 +70,12 @@ void AuthController::CheckAuthBeforeLoad(
                        mojom::PrepareForClientResult::kRequiresSignIn));
     return;
   }
+  if (base::FeatureList::IsEnabled(features::kGlicSkipCookieSyncOnOpen)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  mojom::PrepareForClientResult::kSuccess));
+    return;
+  }
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
       base::BindOnce(&AuthController::CookieSyncBeforeLoadDone, GetWeakPtr(),
                      std::move(callback)));
@@ -100,6 +107,10 @@ void AuthController::OnPrimaryAccountChanged(
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       last_cookie_sync_time_ = std::nullopt;
+      if (base::FeatureList::IsEnabled(
+              features::kGlicCookieSyncOnTokenChange)) {
+        SyncCookiesIfRequired(base::DoNothing());
+      }
       break;
     // Ignore until primary account is set.
     case signin::PrimaryAccountChangeEvent::Type::kNone:
@@ -128,6 +139,9 @@ void AuthController::OnErrorStateOfRefreshTokenUpdatedForAccount(
     if (GetTokenState() == TokenState::kOk) {
       std::move(after_signin_callback_).Run();
     }
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+    SyncCookiesIfRequired(base::DoNothing());
   }
 }
 
