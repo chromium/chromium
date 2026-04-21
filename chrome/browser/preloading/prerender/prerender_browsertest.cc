@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(chrome::kChromeUINewTabURL)));
+                                     chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html");
 
   std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                        NewTabPagePrerenderNonHttps) {
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(chrome::kChromeUINewTabURL)));
+                                     chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?prerender");
 
   std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(chrome::kChromeUINewTabURL)));
+                                     chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html");
 
   std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(chrome::kChromeUINewTabURL)));
+                                     chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html?prerender");
 
   std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
