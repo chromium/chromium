@@ -69,6 +69,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @SuppressWarnings("HidingField")
     private UrlBar mUrlBar;
 
+    private View mStatusView;
+
     private WindowAndroid mWindowAndroid;
     private @FuseboxState int mFuseboxState;
     private boolean mHasSuggestions;
@@ -115,6 +117,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mLocationBarIcon = findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mUrlBar = findViewById(R.id.url_bar);
+        mStatusView = findViewById(R.id.location_bar_status);
 
         mUrlBar.setOnHoverListener(
                 new View.OnHoverListener() {
@@ -520,24 +523,40 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void adjustVerticalTranslationForFuseboxState(@FuseboxState int state) {
+        MarginLayoutParams statusViewLayoutParams =
+                (MarginLayoutParams) mStatusView.getLayoutParams();
+        Resources resources = getResources();
         if (state == FuseboxState.COMPACT) {
             // In the compact fusebox state, the location bar is taller than its inner background,
             // creating the appearance of vertical misalignment. We resolve this by translating
             // constituent views to be centered withing the 56 dp inner background, shifting them
             // either 4dp up or down.
             int translationY =
-                    getResources().getDimensionPixelSize(R.dimen.fusebox_url_bar_translation_y);
+                    resources.getDimensionPixelSize(R.dimen.fusebox_url_bar_translation_y);
             // Url bar and delete button are positioned too high relative to inner background.
             mUrlBar.setTranslationY(translationY);
             mDeleteButton.setTranslationY(translationY);
             // Bottom stacked buttons are positioned too low relative to inner background; use a
             // negative translation.
             setTranslationYOfBottomStackedUrlActionButtons(-translationY);
+
+            // For the LocationBar to have the correct height in COMPACT mode for the two-tone
+            // background to look correct (exactly 68dp), we inflate the allocated height of the
+            // StatusView by 8dp using top margin. The translation compensates to keep the
+            // StatusView vertically centered. This is not very clean and should be resolved by the
+            // unified popover.
+            statusViewLayoutParams.topMargin =
+                    resources
+                            .getDimensionPixelSize(R.dimen.fusebox_compact_status_view_top_margin);
+            mStatusView.setTranslationY(-translationY);
         } else {
             mUrlBar.setTranslationY(0);
             mDeleteButton.setTranslationY(0);
+            statusViewLayoutParams.topMargin = 0;
+            mStatusView.setTranslationY(0);
             setTranslationYOfBottomStackedUrlActionButtons(0);
         }
+        mStatusView.setLayoutParams(statusViewLayoutParams);
     }
 
     private void setMarginsForWindowWidth(

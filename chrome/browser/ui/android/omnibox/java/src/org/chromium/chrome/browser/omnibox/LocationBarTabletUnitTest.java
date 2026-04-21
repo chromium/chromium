@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 
@@ -300,6 +301,7 @@ public class LocationBarTabletUnitTest {
         View urlBar = mLocationBarTablet.findViewById(R.id.url_bar);
         View deleteButton = mLocationBarTablet.findViewById(R.id.delete_button);
         View micButton = mLocationBarTablet.findViewById(R.id.mic_button);
+        View statusView = mLocationBarTablet.findViewById(R.id.location_bar_status);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.COMPACT);
         int translationY =
                 mLocationBarTablet
@@ -308,6 +310,13 @@ public class LocationBarTabletUnitTest {
         assertEquals(translationY, urlBar.getTranslationY(), MathUtils.EPSILON);
         assertEquals(translationY, deleteButton.getTranslationY(), MathUtils.EPSILON);
         assertEquals(-translationY, micButton.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(-translationY, statusView.getTranslationY(), MathUtils.EPSILON);
+
+        int marginTop =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_compact_status_view_top_margin);
+        assertEquals(marginTop, ((MarginLayoutParams) statusView.getLayoutParams()).topMargin);
     }
 
     @Test
