@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "remoting/base/username.h"
 #include "remoting/host/pam_utils.h"
 #include "remoting/protocol/authenticator.h"
@@ -111,7 +112,16 @@ class PamAuthorizerUafTest : public testing::Test {
   raw_ptr<TestUnderlyingFactory> underlying_factory_ptr_;
 };
 
-TEST_F(PamAuthorizerUafTest, GetNextMessage_FreesThisDuringUnderlyingCall) {
+// TODO(crbug.com/504793694): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_GetNextMessage_FreesThisDuringUnderlyingCall \
+  DISABLED_GetNextMessage_FreesThisDuringUnderlyingCall
+#else
+#define MAYBE_GetNextMessage_FreesThisDuringUnderlyingCall \
+  GetNextMessage_FreesThisDuringUnderlyingCall
+#endif
+TEST_F(PamAuthorizerUafTest,
+       MAYBE_GetNextMessage_FreesThisDuringUnderlyingCall) {
   auto underlying = std::make_unique<TestUnderlyingAuthenticator>();
   TestUnderlyingAuthenticator* underlying_ptr = underlying.get();
   underlying_factory_ptr_->set_authenticator(std::move(underlying));
