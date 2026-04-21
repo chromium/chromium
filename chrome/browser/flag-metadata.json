@@ -5687,7 +5687,7 @@
   {
     "name": "ios-best-features-screen",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 153
   },
   {
     "name": "ios-browser-edit-menu-metrics",
