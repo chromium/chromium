@@ -129,6 +129,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/traversal.rs",
   ]
   inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/../data/generated/generated_agl.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/../generated/font.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/../generated/generated_aat.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/../generated/generated_ankr.rs",
@@ -205,6 +206,7 @@ cargo_crate("lib") {
     "//third_party/rust/font_types/v0_11:lib",
   ]
   features = [
+    "agl",
     "default",
     "std",
   ]

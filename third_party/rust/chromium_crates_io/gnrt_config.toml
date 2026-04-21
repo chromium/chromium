@@ -654,7 +654,7 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.read-fonts]
-extra_src_roots = ['../generated']
+extra_src_roots = ['../generated', '../data/generated']
 extra_kv = { allow_unsafe = false }
 
 [crate.regex-automata.extra_kv]
