@@ -123,6 +123,8 @@ class CORE_EXPORT CSSParserLocalContext {
 
   wtf_size_t RandomValueCount() const { return random_value_count_; }
 
+  wtf_size_t CurrentRandomValueIndex() const { return random_value_count_ + 1; }
+
   // We currently use this class to get the context for resolving percentages.
   // for instance `30%` in `color-mix(red 30%, white)` and in `translate(30%)`
   // means different things, while in `color-mix()` it shows the progress, in

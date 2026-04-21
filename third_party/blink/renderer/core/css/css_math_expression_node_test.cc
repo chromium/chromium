@@ -906,26 +906,26 @@ TEST(CSSMathExpressionNode, ValidRandomFunction) {
     const char* input;
     const char* output;
   } test_cases[] = {
-      {"random(1, 3)", "random(1, 3)"},
-      {"random(1px, 3%)", "random(1px, 3%)"},
-      {"random(1px, 3px, 9px)", "random(1px, 3px, 9px)"},
-      {"random(calc(1 + 1), calc(3 + 3), round(10, 10))", "random(2, 6, 10)"},
+      {"random(1, 3)", "random(element-scoped ua-height-1, 1, 3)"},
+      {"random(1px, 3%)", "random(element-scoped ua-height-1, 1px, 3%)"},
+      {"random(1px, 3px, 9px)",
+       "random(element-scoped ua-height-1, 1px, 3px, 9px)"},
+      {"random(calc(1 + 1), calc(3 + 3), round(10, 10))",
+       "random(element-scoped ua-height-1, 2, 6, 10)"},
       {"random(--ident element-scoped, 1, 2, 3)",
        "random(--ident element-scoped, 1, 2, 3)"},
       {"random(--ident property-scoped, 1, 2, 3)",
-       "random(--ident property-scoped, 1, 2, 3)"},
+       "random(--ident ua-height, 1, 2, 3)"},
       {"random(--ident property-index-scoped, 1, 2, 3)",
-       "random(--ident property-index-scoped, 1, 2, 3)"},
+       "random(--ident ua-height-1, 1, 2, 3)"},
       {"random(--ident element-scoped property-index-scoped, 1, 2, 3)",
-       "random(--ident element-scoped property-index-scoped, 1, 2, 3)"},
-      {"random(--ident element-scoped property-index-scoped, 1, 2, 3)",
-       "random(--ident element-scoped property-index-scoped, 1, 2, 3)"},
+       "random(--ident element-scoped ua-height-1, 1, 2, 3)"},
       {"random(--ident property-scoped element-scoped, 1, 2, 3)",
-       "random(--ident element-scoped property-scoped, 1, 2, 3)"},
+       "random(--ident element-scoped ua-height, 1, 2, 3)"},
       {"random(--ident, 1, 2)", "random(--ident, 1, 2)"},
       {"random(--ident, 1, 2, 3)", "random(--ident, 1, 2, 3)"},
-      {"random(auto, 1px, 2%)", "random(1px, 2%)"},
-      {"random(auto, 1, 2, 3)", "random(1, 2, 3)"},
+      {"random(auto, 1px, 2%)", "random(element-scoped ua-height-1, 1px, 2%)"},
+      {"random(auto, 1, 2, 3)", "random(element-scoped ua-height-1, 1, 2, 3)"},
       {"random(fixed 0.1, 1px, 3px)", "random(fixed 0.1, 1px, 3px)"},
       {"random(fixed .3, 0deg, 90deg)", "random(fixed 0.3, 0deg, 90deg)"},
       {"random(fixed calc(2 / 4), 0px, 100px)",
@@ -935,8 +935,10 @@ TEST(CSSMathExpressionNode, ValidRandomFunction) {
     CSSParserTokenStream stream(test_case.input);
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
-    CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForTest();
+    CSSParserLocalContext local_context(
+        CSSPropertyName(CSSPropertyID::kHeight),
+        /*current_shorthand=*/CSSPropertyID::kInvalid,
+        /*custom_function_name=*/g_null_atom);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
         CSSValueID::kCalc, stream, *context, local_context,
         Flags({Flag::AllowPercent}), kCSSAnchorQueryTypesNone);

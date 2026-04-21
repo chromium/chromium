@@ -1059,4 +1059,23 @@ test(() => {
   }
 }, `Test collision with property name and identifier`);
 
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const t = document.createElement('div');
+    t.style.setProperty('width', 'random(--foo ua-height-1, 1px, 300000px)');
+    t.style.setProperty('height', 'random(--foo property-index-scoped, 1px, 300000px)');
+    holder.appendChild(t);
+
+    let tComputedWidth = getComputedStyle(t)['width'];
+    let tComputedHeight = getComputedStyle(t)['height'];
+
+    test_random_equals(tComputedWidth, tComputedHeight);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Test user specified <random-ua-ident>`);
+
 </script>

@@ -7712,12 +7712,12 @@ TEST_F(StyleEngineTest, TestRandomValueCacheCleanedWhenElementIsGone) {
 
   RandomCacheKey* random_value_sharing = MakeGarbageCollected<RandomCacheKey>(
       AtomicString("--ident"), RandomCacheKey::ElementScoped(false),
-      g_null_atom, -1);
+      g_null_atom);
   GetStyleEngine().GetCachedRandomBaseValue(*random_value_sharing, element);
   RandomCacheKey* random_value_sharing_element_shared =
       MakeGarbageCollected<RandomCacheKey>(AtomicString("--ident"),
                                            RandomCacheKey::ElementScoped(true),
-                                           g_null_atom, -1);
+                                           g_null_atom);
   GetStyleEngine().GetCachedRandomBaseValue(
       *random_value_sharing_element_shared, element);
 
