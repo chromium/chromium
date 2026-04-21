@@ -498,7 +498,7 @@ bool ManifestParser::Parse() {
     }
     if (!manifest_->migrate_from.empty() || manifest_->migrate_to) {
       UseCounter::CountWebDXFeature(execution_context_,
-                                    WebDXFeature::kDRAFT_WebAppMigration);
+                                    WebDXFeature::kAppMigration);
     }
   }
 

@@ -492,7 +492,7 @@ enum WebDXFeature {
   kLoadingLazyMedia = 428,
   kManifestLocalization = 429,
   kContrastColor = 430,
-  kDRAFT_WebAppMigration = 431,
+  kAppMigration = 431,
   kDeclarativeWebmcp = 432,
   kWebgl = 433,
   kWebgl2 = 434,

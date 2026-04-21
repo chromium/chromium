@@ -8963,7 +8963,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="428" label="LoadingLazyMedia"/>
   <int value="429" label="ManifestLocalization"/>
   <int value="430" label="ContrastColor"/>
-  <int value="431" label="DRAFT_WebAppMigration"/>
+  <int value="431" label="AppMigration"/>
   <int value="432" label="DeclarativeWebmcp"/>
   <int value="433" label="Webgl"/>
   <int value="434" label="Webgl2"/>
