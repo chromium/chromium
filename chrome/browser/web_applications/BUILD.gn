@@ -584,6 +584,7 @@ source_set("web_applications") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/shortcuts",
+    "//chrome/browser/ssl",
     "//chrome/browser/sync:factories",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/browser_window",

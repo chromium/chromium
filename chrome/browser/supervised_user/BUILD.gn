@@ -120,6 +120,7 @@ if (!is_android) {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
+      "//chrome/browser/ssl",
       "//chrome/browser/ui",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window",

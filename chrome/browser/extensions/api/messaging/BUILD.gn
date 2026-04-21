@@ -181,6 +181,7 @@ source_set("platform_browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/embedder_support",

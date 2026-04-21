@@ -512,6 +512,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/skills:public",
       "//chrome/browser/skills:ui",
+      "//chrome/browser/ssl",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/tab_group_sync:factories",

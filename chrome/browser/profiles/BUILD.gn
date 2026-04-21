@@ -469,6 +469,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/sharing",
     "//chrome/browser/signin",
     "//chrome/browser/speech",
+    "//chrome/browser/ssl",
     "//chrome/browser/storage",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/subresource_filter",

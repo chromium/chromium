@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/renderer_context_menu",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/tab_contents",
     "//components/captive_portal/core:buildflags",
     "//components/guest_view/browser",

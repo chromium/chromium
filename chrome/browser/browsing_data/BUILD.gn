@@ -263,6 +263,7 @@ source_set("unit_tests") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/segmentation_platform:test_utils",
     "//chrome/browser/spellchecker",
+    "//chrome/browser/ssl",
     "//chrome/browser/storage",
     "//chrome/browser/strike_database",
     "//chrome/browser/subresource_filter",

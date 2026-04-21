@@ -81,6 +81,7 @@ test("glic_internal_e2e_interactive_ui_tests") {
 
     # TODO(crbug.com/399665693): Remove unneeded deps after refactoring.
     # Required for translate_bubble_test_utils_views.cc
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/translate:test_support",
     "//chrome/test:chrome_test_launcher",

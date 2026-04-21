@@ -468,6 +468,10 @@ source_set("extensions") {
     # password_manager:impl includes extensions/api/settings_private/generated_pref.h
     "//chrome/browser/password_manager:impl",
 
+    # ssl includes extensions/api/settings_private/generated_pref.h via
+    # generated_https_first_mode_pref.h.
+    "//chrome/browser/ssl",
+
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
 
@@ -531,6 +535,7 @@ source_set("extensions") {
     "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/signin:google_accounts_private_api",
+    "//chrome/browser/ssl",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:browser_element_identifiers",

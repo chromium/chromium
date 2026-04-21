@@ -1,0 +1,210 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/captive_portal/core/features.gni")
+
+source_set("ssl") {
+  public = [
+    "ask_before_http_dialog_controller.h",
+    "chrome_security_blocking_page_factory.h",
+    "chrome_security_state_tab_helper.h",
+    "connection_help_tab_helper.h",
+    "daily_navigation_counter.h",
+    "https_defaulted_callbacks.h",
+    "https_first_mode_settings_tracker.h",
+    "https_only_mode_controller_client.h",
+    "https_only_mode_tab_helper.h",
+    "https_upgrades_interceptor.h",
+    "https_upgrades_navigation_throttle.h",
+    "https_upgrades_util.h",
+    "insecure_form/insecure_form_controller_client.h",
+    "known_interception_disclosure_infobar_delegate.h",
+    "sct_reporting_service.h",
+    "sct_reporting_service_factory.h",
+    "secure_origin_policy_handler.h",
+    "secure_origin_prefs_observer.h",
+    "ssl_client_certificate_selector.h",
+    "ssl_config_service_manager.h",
+    "ssl_error_controller_client.h",
+    "stateful_ssl_host_state_delegate_factory.h",
+    "typed_navigation_upgrade_throttle.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/captive_portal/core:buildflags",
+    "//components/infobars/core",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_state/content",
+    "//components/security_state/core",
+    "//components/site_engagement/content",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/base/unowned_user_data",
+    "//url",
+  ]
+
+  if (is_android) {
+    public += [
+      "chrome_security_state_client.h",
+      "chrome_security_state_model_delegate.h",
+      "known_interception_disclosure_infobar.h",
+    ]
+    public_deps += [
+      "//components/infobars/android",
+      "//components/security_state/content/android",
+    ]
+  }
+
+  if (!is_android) {
+    public += [
+      "generated_https_first_mode_pref.h",
+      "ssl_client_auth_observer.h",
+    ]
+    public_deps += [
+      "//chrome/browser/safe_browsing:advanced_protection",
+      "//ui/views",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [ "ssl_config_overlay.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "ask_before_http_dialog_controller.cc",
+    "chrome_security_blocking_page_factory.cc",
+    "chrome_security_state_tab_helper.cc",
+    "connection_help_tab_helper.cc",
+    "daily_navigation_counter.cc",
+    "https_defaulted_callbacks.cc",
+    "https_first_mode_settings_tracker.cc",
+    "https_only_mode_controller_client.cc",
+    "https_only_mode_tab_helper.cc",
+    "https_upgrades_interceptor.cc",
+    "https_upgrades_navigation_throttle.cc",
+    "https_upgrades_util.cc",
+    "insecure_form/insecure_form_controller_client.cc",
+    "known_interception_disclosure_infobar_delegate.cc",
+    "sct_reporting_service.cc",
+    "sct_reporting_service_factory.cc",
+    "secure_origin_policy_handler.cc",
+    "secure_origin_prefs_observer.cc",
+    "ssl_config_service_manager.cc",
+    "ssl_error_controller_client.cc",
+    "stateful_ssl_host_state_delegate_factory.cc",
+    "typed_navigation_upgrade_throttle.cc",
+  ]
+
+  public_deps = [
+    ":ssl",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
+    "//chrome/browser/infobars",
+    "//chrome/browser/interstitials",
+    "//chrome/browser/lookalikes",
+    "//chrome/browser/net",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/renderer_host",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/captive_portal/content",
+    "//components/guest_view/browser",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/pref_registry",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+  ]
+
+  if (enable_captive_portal_detection) {
+    deps += [ "//chrome/browser/captive_portal" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/https_first_mode_bridge.cc",
+      "android/https_upgrades_interceptor_android.cc",
+      "chrome_security_state_client.cc",
+      "chrome_security_state_model_delegate.cc",
+      "known_interception_disclosure_infobar.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ssl/android:jni_headers",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "generated_https_first_mode_pref.cc",
+      "ssl_client_auth_observer.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "ssl_config_overlay.cc" ]
+    deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/profiles",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "ssl_browsertest_util.h",
+    "ssl_client_auth_requestor_mock.h",
+  ]
+  sources = [
+    "ssl_browsertest_util.cc",
+    "ssl_client_auth_requestor_mock.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//net",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//components/security_state/content",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+  ]
+}

@@ -925,6 +925,7 @@ source_set("impl") {
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/search",
     "//chrome/browser/spellchecker",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/side_search",
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/webauthn",

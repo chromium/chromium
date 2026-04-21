@@ -328,6 +328,7 @@ source_set("unit_tests") {
     "//chrome/browser/autofill",
     "//chrome/browser/autofill:test_support",
     "//chrome/browser/plus_addresses",
+    "//chrome/browser/ssl",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
