@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -141,8 +142,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final Activity mActivity;
     private final int mCircleSize;
     private final int mIconSize;
-    private final int mVisualCenterOfTextY;
-    private final int mVisualCenterOfTextYIncognito;
+    private final int mRowHeight;
+    private final float mVisualCenterOfTextY;
+    private final float mVisualCenterOfTextYIncognito;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -179,20 +181,31 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         mCircleSize = getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size);
 
+        Context themedContext =
+                new ContextThemeWrapper(mActivity, R.style.OverflowMenuThemeOverlay);
         TypedValue value = new TypedValue();
-        mActivity.getTheme().resolveAttribute(R.attr.listItemIconSize, value, true);
+        themedContext.getTheme().resolveAttribute(R.attr.listItemIconSize, value, true);
         mIconSize =
+                TypedValue.complexToDimensionPixelSize(
+                        value.data, mActivity.getResources().getDisplayMetrics());
+
+        themedContext.getTheme().resolveAttribute(R.attr.listItemHeight, value, true);
+        mRowHeight =
                 TypedValue.complexToDimensionPixelSize(
                         value.data, mActivity.getResources().getDisplayMetrics());
 
         mVisualCenterOfTextY =
                 calculateVisualCenterOfTextY(
-                        mActivity, R.style.TextAppearance_BrowserUIListMenuItem, mIconSize);
+                        themedContext,
+                        R.style.TextAppearance_BrowserUIListMenuItem,
+                        mIconSize,
+                        mRowHeight);
         mVisualCenterOfTextYIncognito =
                 calculateVisualCenterOfTextY(
-                        mActivity,
+                        themedContext,
                         R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                        mIconSize);
+                        mIconSize,
+                        mRowHeight);
     }
 
     /**
@@ -201,23 +214,34 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      * @param context The {@link Context} to use.
      * @param textAppearance The style resource for the text.
      * @param iconSize The size of the icon area.
+     * @param rowHeight The height of the menu item row.
      * @return The Y coordinate of the visual center of the text.
      */
-    private static int calculateVisualCenterOfTextY(
-            Context context, int textAppearance, int iconSize) {
+    private static float calculateVisualCenterOfTextY(
+            Context context, int textAppearance, int iconSize, int rowHeight) {
         TextView textView = new TextView(context);
         textView.setTextAppearance(textAppearance);
+        // Set text to ensure measure() and getBaseline() return accurate values.
+        textView.setText("x");
 
-        Rect xBounds = new Rect();
-        textView.getPaint().getTextBounds("x", 0, 1, xBounds);
+        Rect bounds = new Rect();
+        textView.getPaint().getTextBounds("x", 0, 1, bounds);
         // Visual center of text relative to its baseline.
-        float visualCenterOffset = (xBounds.top + xBounds.bottom) / 2.0f;
+        float visualCenterOffset = (bounds.top + bounds.bottom) / 2.0f;
 
         textView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int tvBaseline = textView.getBaseline();
         int tvHeight = textView.getMeasuredHeight();
-        float baselineY = (iconSize / 2.0f) + (tvBaseline - (tvHeight / 2.0f));
-        return Math.round(baselineY + visualCenterOffset);
+
+        // Android's LinearLayout with center_vertical floors the top margin.
+        float textTopInRow = (float) Math.floor((rowHeight - tvHeight) / 2.0f);
+        float iconTopInRow = (float) Math.floor((rowHeight - iconSize) / 2.0f);
+
+        // Visual center relative to the row top.
+        float visualCenterInRow = textTopInRow + tvBaseline + visualCenterOffset;
+
+        // Return visual center relative to the icon area top.
+        return (float) Math.floor(visualCenterInRow - iconTopInRow);
     }
 
     /**
@@ -816,10 +840,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         circleDrawable.setSize(mCircleSize, mCircleSize);
 
         // Center the circle on the appropriate visual center.
-        int visualCenterOfTextY =
+        float visualCenterOfTextY =
                 isIncognito ? mVisualCenterOfTextYIncognito : mVisualCenterOfTextY;
-        int topInset = visualCenterOfTextY - (mCircleSize / 2);
-        int bottomInset = mIconSize - (topInset + mCircleSize);
+        float topInsetFloat = visualCenterOfTextY - (mCircleSize / 2.0f);
+        int topInset = (int) Math.floor(topInsetFloat);
+        int bottomInset = (int) Math.ceil(mIconSize - (topInsetFloat + mCircleSize));
         int leftInset = 0;
         int rightInset = 0;
 
