@@ -1194,31 +1194,6 @@ void AutofillAgent::ClearPreviewedForm() {
   previewed_elements_ = {};
 }
 
-void AutofillAgent::FindPotentialSiwgButtons(
-    base::OnceCallback<void(std::vector<mojom::SiwgButtonDataPtr>)> callback) {
-  std::vector<mojom::SiwgButtonDataPtr> results;
-  WebDocument document = GetDocument();
-  if (document.IsNull()) {
-    std::move(callback).Run(std::move(results));
-    return;
-  }
-
-  for (const WebElement& element : document.QuerySelectorAll(WebString(
-           R"(button, a, [role="button"], div#g_id_onload, div.g-signin2)"))) {
-    auto button_data = mojom::SiwgButtonData::New();
-    button_data->dom_node_id = element.GetDomNodeId();
-    button_data->text = element.TextContent().Utf16();
-    button_data->id_attribute = element.GetAttribute("id").Utf16();
-    button_data->class_attribute = element.GetAttribute("class").Utf16();
-    button_data->aria_label = element.GetAttribute("aria-label").Utf16();
-    button_data->href_attribute = element.GetAttribute("href").Utf16();
-    button_data->role = element.GetAttribute("role").Utf16();
-    button_data->tag_name = element.TagName().Utf16();
-    results.emplace_back(std::move(button_data));
-  }
-  std::move(callback).Run(std::move(results));
-}
-
 void AutofillAgent::TriggerSuggestions(
     FieldRendererId field_id,
     AutofillSuggestionTriggerSource trigger_source) {

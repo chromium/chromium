@@ -81,11 +81,6 @@ interface AutofillAgent {
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
 
-  // Finds potential "Sign in with Google" buttons in the DOM and returns their
-  // relevant data. The renderer should perform minimal filtering and leave the
-  // decision to the browser.
-  FindPotentialSiwgButtons() => (array<SiwgButtonData> siwg_button_data);
-
   // Tells the renderer to trigger Autofill suggestions on the `field`, as if
   // triggered through the provided `trigger_source`.
   // For the most part, suggestions are triggered through Blink events on the

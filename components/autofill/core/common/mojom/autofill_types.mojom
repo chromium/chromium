@@ -605,23 +605,3 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by the @memory feature via context menu.
   kAtMemoryContextMenu = 23,
 };
-
-// Encapsulates the data for a potential "Sign in with Google" button.
-struct SiwgButtonData {
-  // The DOM node ID of the button element.
-  int64 dom_node_id;
-  // The visible text of the button.
-  mojo_base.mojom.String16 text;
-  // The HTML id attribute of the button.
-  mojo_base.mojom.String16 id_attribute;
-  // The HTML class attribute of the button.
-  mojo_base.mojom.String16 class_attribute;
-  // The ARIA label of the button.
-  mojo_base.mojom.String16 aria_label;
-  // The HTML href attribute of the button.
-  mojo_base.mojom.String16 href_attribute;
-  // The HTML role attribute of the button.
-  mojo_base.mojom.String16 role;
-  // The HTML tag name of the button.
-  mojo_base.mojom.String16 tag_name;
-};
