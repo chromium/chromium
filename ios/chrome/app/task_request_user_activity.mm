@@ -24,6 +24,7 @@
 #import "ios/chrome/app/unexpected_mode_toast_util.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
@@ -306,6 +307,17 @@ void OpenSettingsWithBrowser(Browser* browser) {
   [handler maybeShowSettingsFromViewController];
 }
 
+// Opens the Set Default Browser settings page.
+void SetChromeDefaultBrowserWithBrowser(Browser* browser) {
+  id<SettingsCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+  [handler
+      showDefaultBrowserSettingsFromViewController:nil
+                                      sourceForUMA:
+                                          DefaultBrowserSettingsPageSource::
+                                              kExternalIntent];
+}
+
 // Runs the safety check.
 void RunSafetyCheckWithBrowser(Browser* browser) {
   id<SettingsCommands> handler =
@@ -538,7 +550,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
           completion:{}];
       break;
     case UserActivityType::kSetChromeDefaultBrowser:
-      // TODO(crbug.com/492115056): Add implementation.
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&SetChromeDefaultBrowserWithBrowser)];
       break;
     case UserActivityType::kViewHistory:
       [self openURLs:{GURL(kChromeUINewTabURL)}

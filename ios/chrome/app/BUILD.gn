@@ -103,6 +103,7 @@ source_set("tasks_handling") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_exchange/model:credential_import_manager_swift",
     "//ios/chrome/browser/credential_provider/model:features",
+    "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/intents/model:constants",
     "//ios/chrome/browser/intents/model:intent_type",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
