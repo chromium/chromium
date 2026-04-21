@@ -118,40 +118,39 @@ BASE_FEATURE(kRazeOldHistoryDatabase,
 // Whether Browsing History Actor Integration M2 or any dependent feature is
 // enabled.
 bool IsBrowsingHistoryActorIntegrationM2Enabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
   return base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) ||
          base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM3);
-#endif
 }
 
 // Whether Browsing History Actor Integration M3 is enabled.
 bool IsBrowsingHistoryActorIntegrationM3Enabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
   return base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM3);
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Enables Milestone 2 of History-Actor integration, this includes hiding
 // actor-initiated visits from non-primary sources (Omnibox, MVT) and updating
 // the deduplication logic of actor visits.
 BASE_FEATURE(kBrowsingHistoryActorIntegrationM2,
              base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Milestone 3 of History-Actor integration, this includes improvements
-// in history entry grouping and filtering.
-BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_ANDROID)
 
 // Enables improved chrome://history de-duplication logic, this includes
 // grouping entries by hostname and title per day.
 BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Enables Milestone 3 of History-Actor integration, this includes improvements
+// in history entry grouping and filtering. Enabled by default on Android as
+// actor code are gated by the kGlic feature.
+BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #endif  // !BUILDFLAG(IS_IOS)
 
 

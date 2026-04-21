@@ -70,16 +70,16 @@ bool IsBrowsingHistoryActorIntegrationM2Enabled();
 COMPONENT_EXPORT(HISTORY_FEATURES)
 bool IsBrowsingHistoryActorIntegrationM3Enabled();
 
-#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM2);
 
-COMPONENT_EXPORT(HISTORY_FEATURES)
-BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM3);
-
+#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kBrowsingHistorySimilarVisitsGrouping);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM3);
 #endif  // !BUILDFLAG(IS_IOS)
 
 

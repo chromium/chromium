@@ -15,8 +15,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/browsing_history_service.h"
+#include "components/history/core/browser/features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/android/gurl_android.h"
@@ -63,7 +63,8 @@ void BrowsingHistoryBridge::QueryHistory(
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   options.host_only = j_host_only;
-  options.include_actor_visits = base::FeatureList::IsEnabled(features::kGlic);
+  options.include_actor_visits =
+      history::IsBrowsingHistoryActorIntegrationM3Enabled();
   if (j_app_id) {
     options.app_id = base::android::ConvertJavaStringToUTF8(j_app_id);
   }
