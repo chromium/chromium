@@ -82,6 +82,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -883,6 +884,112 @@ public class MultiWindowUtilsUnitTest {
                 2,
                 MultiWindowUtils.getInstanceCount(
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY));
+    }
+
+    @Test
+    public void testGetInstanceCount_WithPreFetchedAppTaskIds() {
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+
+        // Create 2 active instances and 1 inactive instance.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+        writeInstanceInfo(
+                INSTANCE_ID_2,
+                URL_3,
+                /* tabCount= */ 5,
+                /* incognitoTabCount= */ 0,
+                MultiWindowUtils.INVALID_TASK_ID);
+
+        MultiWindowUtils.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
+
+        // Pre-fetch appTaskIds.
+        Set<Integer> appTaskIds = new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6));
+
+        // Verify the overload with pre-fetched appTaskIds matches the no-arg version.
+        assertEquals(
+                "getInstanceCount overload should match no-arg version for ACTIVE type.",
+                MultiWindowUtils.getInstanceCount(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE),
+                MultiWindowUtils.getInstanceCount(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE, appTaskIds));
+
+        assertEquals(
+                "getInstanceCount overload should match no-arg version for ANY type.",
+                MultiWindowUtils.getInstanceCount(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ANY),
+                MultiWindowUtils.getInstanceCount(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ANY, appTaskIds));
+    }
+
+    @Test
+    public void testGetPersistedInstanceIds_WithPreFetchedAppTaskIds() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Create 2 active instances and 1 inactive instance.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+        writeInstanceInfo(
+                INSTANCE_ID_2,
+                URL_3,
+                /* tabCount= */ 5,
+                /* incognitoTabCount= */ 0,
+                MultiWindowUtils.INVALID_TASK_ID);
+
+        MultiWindowUtils.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
+
+        Set<Integer> appTaskIds = new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6));
+
+        // Verify ACTIVE type returns same result with both overloads.
+        assertEquals(
+                "getPersistedInstanceIds overload should match no-arg version for ACTIVE type.",
+                MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ACTIVE),
+                MultiWindowUtils.getPersistedInstanceIds(
+                        PersistedInstanceType.ACTIVE, appTaskIds));
+
+        // Verify ANY type returns same result with both overloads.
+        assertEquals(
+                "getPersistedInstanceIds overload should match no-arg version for ANY type.",
+                MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY),
+                MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY, appTaskIds));
+
+        // Verify INACTIVE type returns same result with both overloads.
+        assertEquals(
+                "getPersistedInstanceIds overload should match no-arg version for INACTIVE type.",
+                MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.INACTIVE),
+                MultiWindowUtils.getPersistedInstanceIds(
+                        PersistedInstanceType.INACTIVE, appTaskIds));
+    }
+
+    @Test
+    public void testGetPersistedInstanceIds_AnyTypeSkipsIpc() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+
+        // Do not set appTaskIds for testing - this means getAllAppTaskIds() would return empty set.
+        // If getPersistedInstanceIds(ANY) correctly skips the IPC call, it should still return
+        // all persisted instance IDs regardless.
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>());
+
+        Set<Integer> ids = MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY);
+        assertEquals(
+                "ANY type should return all persisted IDs without needing appTaskIds.",
+                2,
+                ids.size());
+        assertTrue("Should contain INSTANCE_ID_0.", ids.contains(INSTANCE_ID_0));
+        assertTrue("Should contain INSTANCE_ID_1.", ids.contains(INSTANCE_ID_1));
     }
 
     @Test

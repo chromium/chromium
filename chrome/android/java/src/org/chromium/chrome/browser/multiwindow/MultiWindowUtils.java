@@ -578,9 +578,24 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
 
         if (!isMultiInstanceApi31Enabled()) return 0;
-        Set<Integer> ids = getPersistedInstanceIds(type);
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(context);
+        return getInstanceCount(type, appTaskIds);
+    }
+
+    /**
+     * Overload that accepts pre-fetched appTaskIds to avoid redundant Binder IPC calls to
+     * ActivityManager.getAppTasks(). Use this when calling getInstanceCount() multiple times
+     * to share a single IPC result.
+     */
+    /* package */ static int getInstanceCount(
+            @PersistedInstanceType int type, Set<Integer> appTaskIds) {
+        if (sInstanceCountForTesting != null) {
+            return sInstanceCountForTesting;
+        }
+
+        if (!isMultiInstanceApi31Enabled()) return 0;
+        Set<Integer> ids = getPersistedInstanceIds(type, appTaskIds);
         int count = 0;
         for (Integer id : ids) {
             if (ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) continue;
@@ -1104,9 +1119,23 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return A set of instance ids of the specified {@code type}.
      */
     /* package */ static Set<Integer> getPersistedInstanceIds(int type) {
+        // For ANY type, no need to call getAllAppTaskIds() — just return all IDs directly.
+        if (type == PersistedInstanceType.ANY) {
+            return ChromeMultiInstancePersistentStore.readAllInstanceIds();
+        }
+
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> activeTaskIds = getAllAppTaskIds(context);
 
+        return getPersistedInstanceIds(type, activeTaskIds);
+    }
+
+    /**
+     * Overload that accepts pre-fetched appTaskIds to avoid redundant Binder IPC calls to
+     * ActivityManager.getAppTasks().
+     */
+    /* package */ static Set<Integer> getPersistedInstanceIds(
+            int type, Set<Integer> activeTaskIds) {
         Set<Integer> allIds = ChromeMultiInstancePersistentStore.readAllInstanceIds();
         if (type == PersistedInstanceType.ANY) return allIds;
 

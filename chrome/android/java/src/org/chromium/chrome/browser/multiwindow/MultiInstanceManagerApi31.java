@@ -24,11 +24,15 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -93,6 +97,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     private static final Object sAllocIdLock = new Object();
 
     @VisibleForTesting protected final int mMaxInstances;
+
+    // Use a static sequenced task runner shared across all instances to ensure metrics tasks
+    // execute serially, preventing concurrent read-modify-write races on the global daily max
+    // counters in SharedPreferences even when multiple windows trigger state changes.
+    private static final TaskRunner sMetricsTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT);
 
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -1095,6 +1105,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
                 newState == ActivityState.RESUMED);
 
+        // Defer metrics collection to a background thread to avoid Binder IPC on the main thread,
+        // which can cause ANRs. Use a sequenced task runner to ensure serial execution and
+        // prevent concurrent read-modify-write races on daily max counters.
+        sMetricsTaskRunner.postDelayedTask(
+                () -> {
+                    recordInstanceCountMetrics();
+                },
+                0);
+    }
+
+    /** Collect instance count metrics on a background thread to avoid ANR from Binder IPC. */
+    private static void recordInstanceCountMetrics() {
         // Check the max instance count in a day for every state update if needed.
         long timestamp = ChromeMultiInstancePersistentStore.readMaxCountHistogramStartTime();
         int maxCount = ChromeMultiInstancePersistentStore.readDailyMaxInstanceCount();
@@ -1121,21 +1143,27 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 }
             }
             ChromeMultiInstancePersistentStore.writeMaxCountHistogramStartTime(current);
-            // Reset the count to 0 to be ready to obtain the max count for the next 24-hour period.
+            // Reset the count to 0 to be ready to obtain the max count for the next 24-hour
+            // period.
             maxCount = 0;
             maxActiveCount = 0;
             incognitoMaxCount = 0;
         }
+        // Fetch appTaskIds once and reuse via overloads to avoid redundant Binder IPC calls.
+        Context context = ContextUtils.getApplicationContext();
+        Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(context);
         int instanceCount =
-                MultiWindowUtils.getInstanceCount(MultiInstanceManager.PersistedInstanceType.ANY);
+                MultiWindowUtils.getInstanceCount(
+                        MultiInstanceManager.PersistedInstanceType.ANY, appTaskIds);
         int incognitoInstanceCount =
-                MultiWindowUtils.getInstanceCount(PersistedInstanceType.OFF_THE_RECORD);
+                MultiWindowUtils.getInstanceCount(
+                        PersistedInstanceType.OFF_THE_RECORD, appTaskIds);
         if (instanceCount > maxCount) {
             ChromeMultiInstancePersistentStore.writeDailyMaxInstanceCount(instanceCount);
         }
         int activeInstanceCount =
                 MultiWindowUtils.getInstanceCount(
-                        MultiInstanceManager.PersistedInstanceType.ACTIVE);
+                        MultiInstanceManager.PersistedInstanceType.ACTIVE, appTaskIds);
         if (activeInstanceCount > maxActiveCount) {
             ChromeMultiInstancePersistentStore.writeDailyMaxActiveInstanceCount(
                     activeInstanceCount);
