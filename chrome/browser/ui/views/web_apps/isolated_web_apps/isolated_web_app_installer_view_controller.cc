@@ -350,7 +350,7 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
           app_id, ui::EF_NONE, apps::LaunchSource::kFromInstaller,
           /*window_info=*/nullptr);
 #else
-      web_app_provider_->scheduler().LaunchApp(
+      web_app_provider_->scheduler().LaunchAppFromCommandLine(
           app_id, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
           /*protocol_handler_launch_url=*/std::nullopt,

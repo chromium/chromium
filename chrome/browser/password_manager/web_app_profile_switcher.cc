@@ -182,15 +182,16 @@ void WebAppProfileSwitcher::LaunchAppWithId(
 
   web_app::WebAppProvider::GetForWebApps(new_profile_)
       ->scheduler()
-      .LaunchApp(app_id, *base::CommandLine::ForCurrentProcess(),
-                 /*current_directory=*/base::FilePath(),
-                 /*protocol_handler_launch_url=*/std::nullopt,
-                 /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
-                 base::IgnoreArgs<base::WeakPtr<Browser>,
-                                  base::WeakPtr<content::WebContents>,
-                                  apps::LaunchContainer>(base::BindOnce(
-                     &WebAppProfileSwitcher::RunCompletionCallback,
-                     weak_factory_.GetWeakPtr())));
+      .LaunchAppFromCommandLine(
+          app_id, *base::CommandLine::ForCurrentProcess(),
+          /*current_directory=*/base::FilePath(),
+          /*protocol_handler_launch_url=*/std::nullopt,
+          /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
+          base::IgnoreArgs<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>(
+              base::BindOnce(&WebAppProfileSwitcher::RunCompletionCallback,
+                             weak_factory_.GetWeakPtr())));
 }
 
 void WebAppProfileSwitcher::RunCompletionCallback() {

@@ -557,14 +557,15 @@ class WebAppCommandScheduler {
 
   // Launches the given app. This call also uses keep-alives to guarantee that
   // the browser and profile will not destruct before the launch is complete.
-  void LaunchApp(const webapps::AppId& app_id,
-                 const base::CommandLine& command_line,
-                 const base::FilePath& current_directory,
-                 const std::optional<GURL>& protocol_handler_launch_url,
-                 const std::optional<GURL>& file_launch_url,
-                 const std::vector<base::FilePath>& launch_files,
-                 LaunchWebAppCallback callback,
-                 const base::Location& location = FROM_HERE);
+  void LaunchAppFromCommandLine(
+      const webapps::AppId& app_id,
+      const base::CommandLine& command_line,
+      const base::FilePath& current_directory,
+      const std::optional<GURL>& protocol_handler_launch_url,
+      const std::optional<GURL>& file_launch_url,
+      const std::vector<base::FilePath>& launch_files,
+      LaunchWebAppCallback callback,
+      const base::Location& location = FROM_HERE);
 
   // Launches the given app to the given url if specified, or the app
   // `start_url` if not. This uses keep-alives to guarantee the

@@ -568,7 +568,7 @@ void PWAHandler::LaunchFilesInApp(
   base::ConcurrentCallbacks<base::expected<std::string, protocol::Response>>
       concurrent;
   for (const auto& [url, paths] : launch_infos) {
-    provider->scheduler().LaunchApp(
+    provider->scheduler().LaunchAppFromCommandLine(
         app_id, *base::CommandLine::ForCurrentProcess(),
         /* current_directory */ base::FilePath{},
         /* protocol_handler_launch_url */ std::nullopt,

@@ -176,7 +176,7 @@ class StartupWebAppCreator
       if (!protocol_url_.is_empty()) {
         protocol = protocol_url_;
       }
-      provider_->scheduler().LaunchApp(
+      provider_->scheduler().LaunchAppFromCommandLine(
           app_id_, command_line_, cur_dir_, protocol,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
           base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
@@ -185,7 +185,7 @@ class StartupWebAppCreator
     }
 
     for (const auto& [url, paths] : file_launch_infos_) {
-      provider_->scheduler().LaunchApp(
+      provider_->scheduler().LaunchAppFromCommandLine(
           app_id_, command_line_, cur_dir_,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/url, /*launch_files=*/paths,

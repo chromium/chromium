@@ -618,7 +618,7 @@ void WebAppCommandScheduler::ComputeAppSize(
                                               std::move(callback)));
 }
 
-void WebAppCommandScheduler::LaunchApp(
+void WebAppCommandScheduler::LaunchAppFromCommandLine(
     const webapps::AppId& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
