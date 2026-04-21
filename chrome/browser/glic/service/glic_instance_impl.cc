@@ -333,7 +333,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   // Look up the current embedder for that tab/key.
   auto* embedder = GetEmbedderForKey(new_key);
-  bool should_log_open =
+  const bool new_embedder_will_show =
       !embedder || !embedder->IsShowing();
 
   GlicUiEmbedder* embedder_to_show = nullptr;
@@ -358,8 +358,10 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.auto_send,
                   options.fre_override);
-  if (should_log_open) {
+  if (new_embedder_will_show) {
     instance_metrics()->OnOpen(options.invocation_source, options);
+    service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                                    options.invocation_source);
   }
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
@@ -428,8 +430,6 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
     }
     return false;
   }
-
-  service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false, source);
 
   // We assume that a toggle is user initiated so focus on show.
   options.focus_on_show = true;
