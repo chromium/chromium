@@ -412,6 +412,12 @@ class AILanguageModel::PromptState
     session_.set_disconnect_with_reason_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
+    if (!constraint_.is_null()) {
+      auto hint_options = on_device_model::mojom::HintOptions::New();
+      hint_options->constrained_decoding_hint = true;
+      session_->Hint(std::move(hint_options));
+    }
+
     // Append() will call the on_device_model::mojom::ContextClient::OnComplete
     // override when finished.
     session_->Append(

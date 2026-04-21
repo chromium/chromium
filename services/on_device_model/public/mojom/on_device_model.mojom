@@ -227,6 +227,12 @@ struct AppendOptions {
   InputSource input_source;
 };
 
+[Stable]
+struct HintOptions {
+  // A hint that constrained decoding will be used.
+  bool constrained_decoding_hint = false;
+};
+
 [Stable, Extensible]
 union ResponseConstraint {
   // A JSON schema defining structured output requirements for the response.
@@ -317,6 +323,10 @@ interface Session {
   AsrStream@10(AsrStreamOptions options,
                pending_receiver<AsrStreamInput> stream,
                pending_remote<AsrStreamResponder> responder);
+
+  // Provides hints about future requests.
+  [MinVersion=6]
+  Hint@11(HintOptions options);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the

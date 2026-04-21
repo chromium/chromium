@@ -1191,7 +1191,8 @@ TEST_F(AILanguageModelTest, Constraint) {
   EXPECT_THAT(
       Prompt(*session, MakeInput("foo"),
              on_device_model::mojom::ResponseConstraint::NewRegex("reg")),
-      ElementsAre("Constraint: regex reg", "UfooEM"));
+      ElementsAre("Hint: constrained_decoding ", "Constraint: regex reg",
+                  "UfooEM"));
 }
 
 TEST_F(AILanguageModelTest, Prefix) {

@@ -18,6 +18,11 @@ namespace ml {
 
 namespace {
 
+// Whether to respect the constrained decoding hint for early tokenizer
+// initialization.
+BASE_FEATURE(kOnDeviceModelConstrainedDecodingHint,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace odmm = ::on_device_model::mojom;
 
 float GetTemperature(std::optional<float> temperature) {
@@ -187,6 +192,15 @@ void SessionAccessor::GetProbabilitiesBlocking(
                      base::Unretained(this), input, std::move(get_prob_fn)));
 }
 
+void SessionAccessor::Hint(on_device_model::mojom::HintOptionsPtr options,
+                           ConstraintFactory* constraint_factory) {
+  TRACE_EVENT("optimization_guide", "SessionAccessor::Hint");
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::HintInternal, base::Unretained(this),
+                     std::move(options), base::Unretained(constraint_factory)));
+}
+
 void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
                                    ChromeMLSizeInTokensFn size_in_tokens_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::SizeInTokens");
@@ -337,6 +351,16 @@ void SessionAccessor::ScoreInternal(const std::string& text,
   TRACE_EVENT("optimization_guide", "SessionAccessor::ScoreInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   chrome_ml_->SessionScore(session_, text, score_fn);
+}
+
+void SessionAccessor::HintInternal(
+    on_device_model::mojom::HintOptionsPtr options,
+    ConstraintFactory* constraint_factory) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (options->constrained_decoding_hint &&
+      base::FeatureList::IsEnabled(kOnDeviceModelConstrainedDecodingHint)) {
+    constraint_factory->InitializeTokenizer(model_, session_);
+  }
 }
 
 void SessionAccessor::GetProbabilitiesBlockingInternal(

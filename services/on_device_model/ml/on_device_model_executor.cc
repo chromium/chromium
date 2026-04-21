@@ -650,6 +650,11 @@ void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
   asr_responder_->session()->AsrAddAudioChunk(std::move(data));
 }
 
+void SessionImpl::Hint(on_device_model::mojom::HintOptionsPtr options) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::Hint");
+  session_->Hint(std::move(options), executor_->GetConstraintFactory());
+}
+
 std::unique_ptr<on_device_model::BackendSession> SessionImpl::Clone() {
   TRACE_EVENT("optimization_guide", "SessionImpl::Clone");
   auto clone = std::make_unique<SessionImpl>(*executor_, session_->Clone(),
@@ -678,8 +683,8 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
     base::PassKey<OnDeviceModelExecutor>,
     const ChromeML& chrome_ml)
     : chrome_ml_(chrome_ml),
-      model_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      model_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives()})),
       constraint_factory_(
           ConstraintFactory::Create(*chrome_ml_, model_task_runner_)) {}
 

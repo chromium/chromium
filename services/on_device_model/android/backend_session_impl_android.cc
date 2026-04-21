@@ -178,11 +178,13 @@ void BackendSessionImplAndroid::AsrAddAudioChunk(
   NOTIMPLEMENTED();
 }
 
+void BackendSessionImplAndroid::Hint(mojom::HintOptionsPtr options) {}
+
 void BackendSessionImplAndroid::OnResponse(const std::string& response) {
   sequence_checker_helper_.PostTask(
       FROM_HERE,
-      base::BindOnce(&BackendSessionImplAndroid::OnResponseOnSequence, weak_ptr_,
-                     response));
+      base::BindOnce(&BackendSessionImplAndroid::OnResponseOnSequence,
+                     weak_ptr_, response));
 }
 
 void BackendSessionImplAndroid::OnResponseOnSequence(
@@ -196,8 +198,8 @@ void BackendSessionImplAndroid::OnResponseOnSequence(
 void BackendSessionImplAndroid::OnComplete(GenerateResult generate_result) {
   sequence_checker_helper_.PostTask(
       FROM_HERE,
-      base::BindOnce(&BackendSessionImplAndroid::OnCompleteOnSequence, weak_ptr_,
-                     generate_result));
+      base::BindOnce(&BackendSessionImplAndroid::OnCompleteOnSequence,
+                     weak_ptr_, generate_result));
 }
 
 void BackendSessionImplAndroid::OnCompleteOnSequence(

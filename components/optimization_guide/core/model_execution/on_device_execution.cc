@@ -204,6 +204,17 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
   logged_request->set_execution_string(input->ToString());
   LogRequest(opts_.logger.get(), *logged_request);
 
+  auto options = on_device_model::mojom::GenerateOptions::New();
+  options->max_output_tokens = opts_.token_limits.max_output_tokens;
+  options->constraint = constraint_ ? std::move(constraint_)
+                                    : opts_.adapter->GetResponseConstraint();
+
+  if (!options->constraint.is_null()) {
+    auto hint_options = on_device_model::mojom::HintOptions::New();
+    hint_options->constrained_decoding_hint = true;
+    session_->Hint(std::move(hint_options));
+  }
+
   if (input->input->pieces.size() > 0) {
     auto append_options = on_device_model::mojom::AppendOptions::New();
     append_options->input = std::move(input->input);
@@ -211,11 +222,6 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
     session_->Append(std::move(append_options),
                      context_receiver_.BindNewPipeAndPassRemote());
   }
-
-  auto options = on_device_model::mojom::GenerateOptions::New();
-  options->max_output_tokens = opts_.token_limits.max_output_tokens;
-  options->constraint = constraint_ ? std::move(constraint_)
-                                    : opts_.adapter->GetResponseConstraint();
 
   opts_.safety_checker->RunRequestChecks(
       last_message_,

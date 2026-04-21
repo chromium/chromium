@@ -797,7 +797,8 @@ TEST_F(AISummarizerTest, DynamicConstraints) {
 
   EXPECT_THAT(
       Summarize(*summarizer_remote, kInputString, kContextString),
-      ElementsAreArray({"Constraint: regex ^TLDR:.*", "TLDR: Result text"}));
+      ElementsAreArray({"Hint: constrained_decoding ",
+                        "Constraint: regex ^TLDR:.*", "TLDR: Result text"}));
 }
 
 TEST_F(AISummarizerTest, NoConstraints) {

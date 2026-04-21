@@ -61,6 +61,7 @@ class SessionWrapper final : public mojom::Session {
       GetProbabilitiesBlockingCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Session> session) override;
   void SetPriority(mojom::Priority priority) override { priority_ = priority; }
+  void Hint(mojom::HintOptionsPtr options) override;
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
   BackendSession& backend() { return *session_; }
@@ -107,6 +108,12 @@ class SessionWrapper final : public mojom::Session {
       base::OnceClosure on_complete) {
     session_->GetProbabilitiesBlocking(
         text, std::move(callback).Then(std::move(on_complete)));
+  }
+
+  void HintInternal(mojom::HintOptionsPtr options,
+                    base::OnceClosure on_complete) {
+    session_->Hint(std::move(options));
+    std::move(on_complete).Run();
   }
 
   void CloneInternal(mojo::PendingReceiver<mojom::Session> session);
@@ -234,6 +241,16 @@ void SessionWrapper::Clone(mojo::PendingReceiver<mojom::Session> session) {
       base::IgnoreArgs<base::OnceClosure>(
           base::BindOnce(&SessionWrapper::CloneInternal,
                          weak_ptr_factory_.GetWeakPtr(), std::move(session))),
+      weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::Hint(mojom::HintOptionsPtr options) {
+  if (!model_) {
+    return;
+  }
+  model_->AddAndRunPendingTask(
+      base::BindOnce(&SessionWrapper::HintInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options)),
       weak_ptr_factory_.GetWeakPtr());
 }
 

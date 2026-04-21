@@ -101,6 +101,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
                  mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
                      response) override;
   void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
+  void Hint(on_device_model::mojom::HintOptionsPtr options) override;
 
   // Replace the underlying SessionAccessor backing this instance.
   void ReplaceSession(SessionAccessor::Ptr new_session,

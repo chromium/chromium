@@ -121,6 +121,7 @@ class FakeOnDeviceSession final : public mojom::Session {
       mojo::PendingReceiver<on_device_model::mojom::AsrStreamInput> stream,
       mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder> responder)
       override;
+  void Hint(mojom::HintOptionsPtr options) override;
 
  private:
   void GenerateImpl(mojom::GenerateOptionsPtr options,
@@ -142,6 +143,7 @@ class FakeOnDeviceSession final : public mojom::Session {
   mojom::SessionParamsPtr params_;
   on_device_model::mojom::Priority priority_ =
       on_device_model::mojom::Priority::kForeground;
+  on_device_model::mojom::HintOptionsPtr hint_options_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };

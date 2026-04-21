@@ -579,7 +579,8 @@ TEST_F(AIProofreaderTest, DynamicConstraints) {
       kCorrectionInstruction, responder.BindRemote());
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
-              ElementsAreArray({"Constraint: regex ^Correction type.*",
+              ElementsAreArray({"Hint: constrained_decoding ",
+                                "Constraint: regex ^Correction type.*",
                                 "Correction type: Spelling"}));
 }
 

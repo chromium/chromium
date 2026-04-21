@@ -166,10 +166,6 @@ void FakeOnDeviceSession::Generate(
     mojo::PendingRemote<mojom::StreamingResponder> responder) {
   TRACE_EVENT("optimization_guide", "FakeOnDeviceSession::Generate",
               perfetto::Flow::FromPointer(this));
-  if (settings_->execute_delay.is_zero()) {
-    GenerateImpl(std::move(options), std::move(responder));
-    return;
-  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeOnDeviceSession::GenerateImpl,
@@ -238,6 +234,10 @@ void FakeOnDeviceSession::SetPriority(mojom::Priority priority) {
   priority_ = priority;
 }
 
+void FakeOnDeviceSession::Hint(mojom::HintOptionsPtr options) {
+  hint_options_ = std::move(options);
+}
+
 void FakeOnDeviceSession::GenerateImpl(
     mojom::GenerateOptionsPtr options,
     mojo::PendingRemote<mojom::StreamingResponder> responder) {
@@ -293,6 +293,12 @@ void FakeOnDeviceSession::GenerateImpl(
   if (priority_ == on_device_model::mojom::Priority::kBackground) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Priority: background";
+    remote->OnResponse(std::move(chunk));
+  }
+
+  if (hint_options_ && hint_options_->constrained_decoding_hint) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Hint: constrained_decoding ";
     remote->OnResponse(std::move(chunk));
   }
 

@@ -78,6 +78,7 @@ class BackendSessionImplAndroid : public BackendSession {
                  mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
                      response) override;
   void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
+  void Hint(on_device_model::mojom::HintOptionsPtr options) override;
 
   // Called by Java (can be called on any thread):
   // Called when the response of `Generate` is received from the AiCoreSession.

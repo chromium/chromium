@@ -3538,6 +3538,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintOnExecute) {
       response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(response_.value(),
+            "Hint: constrained_decoding "
             "Constraint: regex [A-Z]*"
             "execute:input max:1024");
 }
@@ -3568,6 +3569,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigJson) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(response_.value(),
+            "Hint: constrained_decoding "
             "Constraint: json { type: \"object\"}"
             "execute:input max:1024");
 }
@@ -3598,6 +3600,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(response_.value(),
+            "Hint: constrained_decoding "
             "Constraint: regex [A-Z]*"
             "execute:input max:1024");
 }

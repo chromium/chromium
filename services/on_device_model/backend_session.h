@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendSession {
 
   // Add a chunk of audio the ASR stream.
   virtual void AsrAddAudioChunk(mojom::AudioDataPtr data) = 0;
+
+  // Provides hints about future requests.
+  virtual void Hint(mojom::HintOptionsPtr options) = 0;
 };
 
 }  // namespace on_device_model
