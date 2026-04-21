@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.TotalDuration.TimeInTabletMode" units="times"
+<histogram name="Session.TotalDuration.TabletMode" units="ms"
     expires_after="2026-07-08">
   <owner>robliao@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
