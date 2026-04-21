@@ -41,6 +41,30 @@ function promiseFinishBefore(timeoutMs, errorMessage) {
 }
 
 /**
+ * Binds `obj` to `promise`, to prevent `obj` from being GCed prematurely. This
+ * is needed for promises waiting on contextlost or contextrestored events. If
+ * the canvas is not on in the DOM, waiting on `promise` could make the whole
+ * test body a floating island waiting to be GCed. The canvas event handler
+ * would refer to the promise and the promise would refer to the code to resume,
+ * which refers to the canvas. But if neither the canvas nor the promise is
+ * anchored somewhere, there is nothing preventing the whole thing from being
+ * GCed. This function anchors the island against the browser's timer, by racing
+ * with a `setTimeout`, keeping everything alive at least until the timer
+ * expires.
+ */
+function bindToPromise(obj, promise) {
+  const racePromise = Promise.race([
+    promise,
+    // Race with a very long timeout, whose main purpose is to anchor the
+    // promise in the browser's timer, preventing the promise from being GCed.
+    promiseFinishBefore(20000, 'Fallback timeout should have never fired.'),
+  ]);
+  // Bind `obj` to `promise` to make sure `obj` won't be GCed before `promise`.
+  racePromise.obj = obj;
+  return racePromise;
+}
+
+/**
  * Returns a promise that resolves when the contextlost event of the canvas
  * associated with `ctx` fires.
  *
@@ -71,7 +95,7 @@ function promiseFinishBefore(timeoutMs, errorMessage) {
 function promiseContextLost(ctx, signal) {
   const { promise, resolve } = Promise.withResolvers();
   ctx.canvas.addEventListener('contextlost', resolve, {signal});
-  return promise;
+  return bindToPromise(ctx, promise);
 }
 
 /**
@@ -84,7 +108,7 @@ function promiseContextLost(ctx, signal) {
 function promiseContextRestored(ctx, signal) {
   const { promise, resolve } = Promise.withResolvers();
   ctx.canvas.addEventListener('contextrestored', resolve, {signal});
-  return promise;
+  return bindToPromise(ctx, promise);
 }
 
 /**
@@ -100,9 +124,8 @@ function promiseContextNotLost(ctx, signal) {
       'contextlost',
       () => reject(new Error('Unexpected contextlost event.')),
       {signal});
-  return promise;
+  return bindToPromise(ctx, promise);
 }
-
 
 /**
  * Returns a promise that is rejected if the contextrestored event of the canvas
@@ -117,7 +140,7 @@ function promiseContextNotRestored(ctx, signal) {
       'contextrestored',
       () => reject(new Error('Unexpected contextrestored event.')),
       {signal});
-  return promise;
+  return bindToPromise(ctx, promise);
 }
 
 /**
@@ -194,14 +217,7 @@ function promiseGpuProcessRestored() {
   const probeCanvas = document.createElement('canvas');
   const probeCtx = get2dContext(probeCanvas);
   drawAndReadBack(probeCtx);
-  const promise = Promise.race([
-      promiseContextRestored(probeCtx),
-      promiseFinishBefore(5000, 'GPU process should have been restored.'),
-    ]);
-  // Store a reference to the canvas in the promise, to make sure `probeCanvas`
-  // isn't GCed before the test is done.
-  promise.probeCanvas = probeCanvas;
-  return promise;
+  return promiseContextRestored(probeCtx);
 }
 
 /**
