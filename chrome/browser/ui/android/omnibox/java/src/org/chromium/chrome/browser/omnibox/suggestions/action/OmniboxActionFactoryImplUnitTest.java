@@ -123,4 +123,13 @@ public class OmniboxActionFactoryImplUnitTest {
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP));
     }
+
+    @Test
+    public void siteSearchActionDowncasting() {
+        // The underlying code will throw if instance is not valid.
+        // Checking for null in case that changes.
+        assertNotNull(
+                OmniboxActionFactoryImpl.get()
+                        .buildSiteSearchAction(0, "hint", "accessibility", "keyword"));
+    }
 }
