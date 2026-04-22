@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -48,6 +50,9 @@
   viewController.incognito = browser->GetProfile()->IsOffTheRecord();
   viewController.safeAreaProvider = _safeAreaProvider;
   _viewController = viewController;
+
+  SceneState* sceneState = browser->GetSceneState();
+  viewController.layoutState = sceneState.layoutState;
 
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent* agent =

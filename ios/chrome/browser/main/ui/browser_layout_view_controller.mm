@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -25,6 +26,13 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
+
+namespace {
+constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
+}  // namespace
+
+@interface BrowserLayoutViewController () <LayoutStateObserver>
+@end
 
 @implementation BrowserLayoutViewController {
   // Observer for the fullscreen controller.
@@ -120,19 +128,19 @@
   CHECK_EQ(_browserViewController, browserViewController,
            base::NotFatalUntil::M150);
 
-  [self updateCurrentBVCLayoutInsets];
+  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
 }
 
-- (void)updateCurrentBVCLayoutInsets {
-  CGFloat topInset = 0;
+- (void)updateCurrentBVCLayoutInsetsWithTopInset:(CGFloat)topInset {
+  CGFloat finalInset = 0;
   if (CanShowTabStrip(self)) {
-    topInset = self.safeAreaProvider.safeArea.top;
+    finalInset = topInset;
 
     if (self.tabStripViewController) {
-      topInset += TabStripCollectionViewConstants.height;
+      finalInset += TabStripCollectionViewConstants.height;
     }
   }
-  self.browserViewController.topToolbarInset = topInset;
+  self.browserViewController.topToolbarInset = finalInset;
 }
 
 - (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController {
@@ -146,7 +154,7 @@
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
-  [self updateCurrentBVCLayoutInsets];
+  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
   if (_tabStripViewController) {
     [self updateForFullscreenProgress:_fullscreenProgress];
   }
@@ -160,6 +168,11 @@
 }
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
+  [self updateForFullscreenProgress:progress withTopInset:[self topInset]];
+}
+
+- (void)updateForFullscreenProgress:(CGFloat)progress
+                       withTopInset:(CGFloat)topInset {
   _fullscreenProgress = progress;
   // Calculate offset based on progress (0 = collapsed/hidden, 1 =
   // expanded/visible).
@@ -169,7 +182,6 @@
   // Update frame directly for synchronous layout.
   // We don't rely on constraints here to avoid fighting with the layout system
   // during safe area transitions.
-  CGFloat topInset = self.safeAreaProvider.safeArea.top;
   CGRect frame = _tabStripViewController.view.frame;
   frame.origin.y = topInset - offset;
   _tabStripViewController.view.frame = frame;
@@ -228,7 +240,7 @@
 // Updates the UI when the trait collection changes.
 - (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
   [self updateStatusBarBackgroundViews];
-  [self updateCurrentBVCLayoutInsets];
+  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
   if (_tabStripViewController) {
     _tabStripViewController.view.hidden = !CanShowTabStrip(self);
   }
@@ -351,12 +363,33 @@
   [_tabStripViewController didMoveToParentViewController:self];
 
   // Set default frame to ensure valid initial position.
-  CGFloat topInset = self.safeAreaProvider.safeArea.top;
+  CGFloat topInset = [self topInset];
   CGRect frame = self.view.bounds;
   frame.origin.y = topInset;
   frame.size.height = TabStripCollectionViewConstants.height;
   tabStripView.frame = frame;
   tabStripView.hidden = !CanShowTabStrip(self);
+}
+
+// Returns the top inset based on the layout mode.
+- (CGFloat)topInset {
+  return [self topInsetForContainedLayout:_layoutState.containedLayoutActive];
+}
+
+// Returns the top inset for the specified contained layout state.
+- (CGFloat)topInsetForContainedLayout:(BOOL)containedLayout {
+  CGFloat topInset = containedLayout ? self.view.safeAreaInsets.top
+                                     : self.safeAreaProvider.safeArea.top;
+  if (CanShowTabStrip(self) && containedLayout) {
+    topInset += kContainedLayoutTabStripTopMargin;
+  }
+  return topInset;
+}
+
+// Updates the layout with the given top inset.
+- (void)updateLayoutWithTopInset:(CGFloat)topInset {
+  [self updateForFullscreenProgress:_fullscreenProgress withTopInset:topInset];
+  [self updateCurrentBVCLayoutInsetsWithTopInset:topInset];
 }
 
 #pragma mark - Properties
@@ -372,6 +405,15 @@
       _incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
   _fadingStatusBarView.overrideUserInterfaceStyle = style;
   _staticStatusBarView.overrideUserInterfaceStyle = style;
+}
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  [_layoutState removeObserver:self];
+  _layoutState = layoutState;
+  [_layoutState addObserver:self];
 }
 
 // Sets the tab strip view controller and installs it in the view hierarchy.
@@ -392,7 +434,7 @@
   [self updateStatusBarBackgroundViews];
 
   // Notify the BVC about the layout inset changes.
-  [self updateCurrentBVCLayoutInsets];
+  [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
 
   if (!_tabStripViewController) {
     return;
@@ -451,6 +493,26 @@
 - (NamedGuide*)contentAreaGuide {
   return [NamedGuide guideWithName:kContentAreaGuide
                               view:self.browserViewController.view];
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    willChangeContainedLayout:(BOOL)containedLayoutActive
+    withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator {
+  CGFloat targetTopInset =
+      [self topInsetForContainedLayout:containedLayoutActive];
+
+  __weak __typeof(self) weakSelf = self;
+  if (coordinator) {
+    [coordinator
+        animateAlongsideTransition:^{
+          [weakSelf updateLayoutWithTopInset:targetTopInset];
+        }
+                        completion:nil];
+    return;
+  }
+  [self updateLayoutWithTopInset:targetTopInset];
 }
 
 @end
