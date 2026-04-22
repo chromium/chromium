@@ -18,6 +18,14 @@
   min-height: var(--ntp-logo-height);
 }
 
+/*
+ * In case we use the boxed container for the Doodle, we can borrow 20px from
+ * the bottom margin to make the Doodle logo larger.
+ */
+:host([doodle-boxed_][show-tight-doodle-boxing_]) {
+  --ntp-logo-margin-bottom: 18px;
+}
+
 :host([doodle-boxed_]) {
   justify-content: flex-end;
 }
@@ -78,6 +86,14 @@
 
 :host([doodle-boxed_]) #image {
   max-height: 128px;
+}
+
+/*
+ * The max-height of 156px + 32px of vertical padding + 18px of bottom margin
+ * equals the height of the ntp-logo container + bottom margin, which is 206px.
+ */
+:host([doodle-boxed_][show-tight-doodle-boxing_]) #image {
+  max-height: 156px;
 }
 
 #animation {
