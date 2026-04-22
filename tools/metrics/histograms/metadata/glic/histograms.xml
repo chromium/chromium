@@ -447,22 +447,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.FirstReaction.Text.{ReactionType}.Time" units="ms"
-    expires_after="2026-01-15">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Recorded when the first reaction is rendered after a user input was made in
-    text mode. Measures the time from a user's submitted input until a response
-    starts and was visible to the user. Reported once for each type, only on the
-    first reaction of each user input.
-  </summary>
-  <token key="ReactionType">
-    <variant name="Canned"/>
-    <variant name="Modelled"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.Focus.Settings.Shortcut.Customized" enum="BooleanEnabled"
     expires_after="2026-05-31">
   <owner>bryantchandler@chromium.org</owner>
@@ -2633,22 +2617,6 @@ chromium-metrics-reviews@google.com.
   <token key="Model">
     <variant name="Actor"/>
     <variant name="Default"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.FirstReaction.Text.{ReactionType}.Time" units="ms"
-    expires_after="2026-10-16">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Recorded when the first reaction is rendered after a user input was made in
-    text mode. Measures the time from a user's submitted input until a response
-    starts and was visible to the user. Reported once for each type, only on the
-    first reaction of each user input.
-  </summary>
-  <token key="ReactionType">
-    <variant name="Canned"/>
-    <variant name="Modelled"/>
   </token>
 </histogram>
 

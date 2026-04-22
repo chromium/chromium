@@ -1004,10 +1004,6 @@ void GlicInstanceMetrics::OnUserResizeEnded(const gfx::Size& end_size) {
 void GlicInstanceMetrics::OnReaction(
     mojom::MetricUserInputReactionType reaction_type) {
   LogEvent(GlicInstanceEvent::kReaction);
-  if (last_turn_.input_submitted_time_.is_null() ||
-      input_mode_ != mojom::WebClientMode::kText) {
-    return;
-  }
 
   switch (reaction_type) {
     case mojom::MetricUserInputReactionType::kUnknown:
@@ -1015,21 +1011,9 @@ void GlicInstanceMetrics::OnReaction(
       return;
     case mojom::MetricUserInputReactionType::kCanned:
       base::RecordAction(base::UserMetricsAction("GlicReactionCanned"));
-      if (!last_turn_.reported_reaction_time_canned_) {
-        base::UmaHistogramMediumTimes(
-            "Glic.Turn.FirstReaction.Text.Canned.Time",
-            base::TimeTicks::Now() - last_turn_.input_submitted_time_);
-        last_turn_.reported_reaction_time_canned_ = true;
-      }
       return;
     case mojom::MetricUserInputReactionType::kModel:
       base::RecordAction(base::UserMetricsAction("GlicReactionModelled"));
-      if (!last_turn_.reported_reaction_time_modelled_) {
-        base::UmaHistogramMediumTimes(
-            "Glic.Turn.FirstReaction.Text.Modelled.Time",
-            base::TimeTicks::Now() - last_turn_.input_submitted_time_);
-        last_turn_.reported_reaction_time_modelled_ = true;
-      }
       return;
   }
 }

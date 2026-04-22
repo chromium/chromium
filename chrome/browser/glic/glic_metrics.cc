@@ -401,36 +401,6 @@ void GlicMetrics::OnContextUploadCompleted() {
   base::RecordAction(base::UserMetricsAction("GlicContextUploadCompleted"));
 }
 
-void GlicMetrics::OnReaction(mojom::MetricUserInputReactionType reaction_type) {
-  std::optional<base::TimeDelta> time_to_reaction;
-  if (!turn_.input_submitted_time_.is_null() &&
-      input_mode_ == mojom::WebClientMode::kText) {
-    time_to_reaction = base::TimeTicks::Now() - turn_.input_submitted_time_;
-  }
-
-  switch (reaction_type) {
-    case mojom::MetricUserInputReactionType::kUnknown:
-      base::RecordAction(base::UserMetricsAction("GlicReactionUnknown"));
-      return;
-    case mojom::MetricUserInputReactionType::kCanned:
-      base::RecordAction(base::UserMetricsAction("GlicReactionCanned"));
-      if (time_to_reaction && !turn_.reported_reaction_time_canned_) {
-        base::UmaHistogramMediumTimes("Glic.FirstReaction.Text.Canned.Time",
-                                      *time_to_reaction);
-        turn_.reported_reaction_time_canned_ = true;
-      }
-      return;
-    case mojom::MetricUserInputReactionType::kModel:
-      base::RecordAction(base::UserMetricsAction("GlicReactionModelled"));
-      if (time_to_reaction && !turn_.reported_reaction_time_modelled_) {
-        base::UmaHistogramMediumTimes("Glic.FirstReaction.Text.Modelled.Time",
-                                      *time_to_reaction);
-        turn_.reported_reaction_time_modelled_ = true;
-      }
-      return;
-  }
-}
-
 void GlicMetrics::OnResponseStarted() {
   turn_.response_started_ = true;
   base::UmaHistogramEnumeration(
@@ -708,40 +678,11 @@ void GlicMetrics::OnGlicWindowClose(Browser* last_active_browser,
                               attach_change_count_);
   attach_change_count_ = 0;
 
-  if (base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
-    base::UmaHistogramCounts100("Glic.ScrollTo.SessionCount",
-                                scroll_attempt_count_);
-    scroll_attempt_count_ = 0;
-  }
-
   OnInstanceClosed();
 
   glic_window_size_timer_.Stop();
   profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
                                 base::Time::Now());
-}
-
-void GlicMetrics::OnGlicScrollAttempt() {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
-  ++scroll_attempt_count_;
-  if (!turn_.input_submitted_time_.is_null()) {
-    scroll_input_submitted_time_ = turn_.input_submitted_time_;
-    scroll_input_mode_ = input_mode_;
-  }
-}
-
-void GlicMetrics::OnGlicScrollComplete(bool success) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
-  if (success && !scroll_input_submitted_time_.is_null()) {
-    base::TimeDelta time_to_scroll =
-        base::TimeTicks::Now() - scroll_input_submitted_time_;
-    std::string_view mode_string = GetInputModeString(scroll_input_mode_);
-    base::UmaHistogramMediumTimes(
-        base::StrCat({"Glic.ScrollTo.UserPromptToScrollTime.", mode_string}),
-        time_to_scroll);
-  }
-  scroll_input_submitted_time_ = base::TimeTicks();
-  scroll_input_mode_ = mojom::WebClientMode::kUnknown;
 }
 
 void GlicMetrics::LogClosedCaptionsShown() {

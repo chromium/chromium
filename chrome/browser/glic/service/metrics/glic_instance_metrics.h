@@ -167,9 +167,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnResponseStopped(mojom::ResponseStopCause cause) override;
   void OnTurnCompleted(mojom::WebClientModel model,
                        base::TimeDelta duration) override;
-  void OnReaction(mojom::MetricUserInputReactionType reaction_type) override;
-  void OnGlicScrollAttempt() override;
-  void OnGlicScrollComplete(bool success) override;
+  void OnReaction(mojom::MetricUserInputReactionType reaction_type);
+  void OnGlicScrollAttempt();
+  void OnGlicScrollComplete(bool success);
 
   // Called when GlicInstanceImpl is destroyed.
   void OnInstanceDestroyed();
@@ -327,8 +327,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     // should be removed, see crbug.com/399151164.
     bool response_started_ = false;
     bool did_request_context_ = false;
-    bool reported_reaction_time_canned_ = false;
-    bool reported_reaction_time_modelled_ = false;
     EmbedderType ui_mode_ = EmbedderType::kUnknown;
     mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
     bool pending_scroll_complete_ = false;

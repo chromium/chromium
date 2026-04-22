@@ -205,14 +205,11 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // `GlicInstanceMetricsBackwardsCompatibility`:
   void OnUserInputSubmitted(mojom::WebClientMode mode) override;
-  void OnReaction(mojom::MetricUserInputReactionType reaction_type) override;
   void OnResponseStarted() override;
   void OnResponseStopped(mojom::ResponseStopCause cause) override;
   void OnTurnCompleted(mojom::WebClientModel model,
                        base::TimeDelta duration) override;
   void DidRequestContextFromTab(tabs::TabInterface& tab) override;
-  void OnGlicScrollAttempt() override;
-  void OnGlicScrollComplete(bool success) override;
 
   // See glic.mojom for details. These are events from the web client. The
   // lifetime of the web client is scoped to that of the window, so if these
@@ -352,8 +349,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     // OnResponseStopped(). This is a workaround and should be removed, see
     // crbug.com/399151164.
     bool response_started_ = false;
-    bool reported_reaction_time_canned_ = false;
-    bool reported_reaction_time_modelled_ = false;
     // A chosen source id from which context was requested.
     ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
   };
@@ -421,14 +416,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The number of scroll attempts  (tracked per session and reset when the
   // session ends).
   int scroll_attempt_count_ = 0;
-  // These two variables mirror `input_submitted_time_` and
-  // `input_mode_`, but are only set when `OnGlicScrollAttempt()` is
-  // called. They are reset in `OnGlicScrollComplete()`. They are separately
-  // tracked because `OnGlicScrollComplete()` could potentially be called after
-  // `OnResponseStopped()`, which resets `input_submitted_time_` and
-  // `input_mode_`.
-  base::TimeTicks scroll_input_submitted_time_;
-  mojom::WebClientMode scroll_input_mode_ = mojom::WebClientMode::kUnknown;
 
   std::optional<base::TimeTicks> last_upload_start_time_;
 
