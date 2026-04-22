@@ -24,7 +24,7 @@
 }
 
 :host([multi-line-enabled]) textarea {
-  background-color: transparent;
+  background-color: var(--color-cr-searchbox-input-textarea, transparent);
   box-sizing: border-box;
   field-sizing: content;
   line-height: 24px;
@@ -42,7 +42,7 @@
 }
 
 :is(input, textarea) {
-  background-color: transparent;
+  background-color: var(--color-cr-searchbox-input-textarea, transparent);
   border: none;
   color: var(--color-searchbox-foreground);
   font-family: inherit;

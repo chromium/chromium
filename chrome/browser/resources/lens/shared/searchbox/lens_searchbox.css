@@ -10,6 +10,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --color-cr-searchbox-input-focused: var(--color-lens-searchbox-background);
+  --color-cr-searchbox-input-not-focused: var(--color-searchbox-background);
+  --color-cr-searchbox-input-textarea: var(--color-unfocused-searchbox-input);
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-icon-spacing: 11px;
@@ -42,8 +45,7 @@
 }
 
 #inputWrapper {
-  background-color: var(--color-lens-searchbox-background,
-      var(--color-searchbox-background));
+  background-color: var(--color-cr-searchbox-input-not-focused);
   border-radius: var(--cr-searchbox-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
   display: flex;
@@ -72,9 +74,12 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
           --color-searchbox-results-background);
 }
 
-:host(:not([dropdown-is-visible]))
-    cr-searchbox-input::part(searchbox-input):focus {
-  background-color: var(--color-searchbox-background);
+cr-searchbox-input::part(searchbox-input):focus {
+  --color-cr-searchbox-input-textarea: var(--color-cr-searchbox-input-focused);
+}
+
+#inputWrapper:focus-within {
+  background-color: var(--color-cr-searchbox-input-focused);
 }
 
 cr-searchbox-input::part(searchbox-input) {
