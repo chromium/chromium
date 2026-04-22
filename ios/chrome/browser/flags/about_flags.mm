@@ -2856,6 +2856,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAssistantAimMinimizedStateName,
      flag_descriptions::kAssistantAimMinimizedStateDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAssistantAimMinimizedState)},
+    {"lens-filter-toggle-enabled",
+     flag_descriptions::kLensFilterToggleEnabledName,
+     flag_descriptions::kLensFilterToggleEnabledDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensFilterToggleEnabled)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

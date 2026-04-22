@@ -6067,6 +6067,13 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-filter-toggle-enabled",
+    "owners": [
+      "cmyang@google.com"
+    ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "lens-filters-ablation-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 145

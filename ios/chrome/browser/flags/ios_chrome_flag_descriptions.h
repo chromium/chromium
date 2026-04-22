@@ -643,6 +643,9 @@ extern const char kLensExactMatchesEnabledDescription[];
 extern const char kLensFetchSrpApiEnabledName[];
 extern const char kLensFetchSrpApiEnabledDescription[];
 
+extern const char kLensFilterToggleEnabledName[];
+extern const char kLensFilterToggleEnabledDescription[];
+
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 

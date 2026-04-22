@@ -1035,6 +1035,10 @@ const char kLensExactMatchesEnabledDescription[] =
 const char kLensFetchSrpApiEnabledName[] = "Lens fetch SRP API enabled";
 const char kLensFetchSrpApiEnabledDescription[] = "Enables the fetch SRP API.";
 
+const char kLensFilterToggleEnabledName[] = "Lens filter toggle enabled";
+const char kLensFilterToggleEnabledDescription[] =
+    "Enables the filter toggle in Lens camera.";
+
 const char kLensFiltersAblationModeEnabledName[] =
     "Lens filters ablation mode enabled";
 const char kLensFiltersAblationModeEnabledDescription[] =
