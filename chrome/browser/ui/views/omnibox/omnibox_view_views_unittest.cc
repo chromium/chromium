@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -1802,4 +1803,33 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideFromModel) {
   EXPECT_EQ(24U, selection.start());
   EXPECT_EQ(0U, selection.end());
   ExpectFullUrlDisplayed();
+}
+
+TEST_F(OmniboxViewViewsTest, SetUserTextForTab) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // 1. Setup: Create an initial state for the tab.
+  // Set some user text and save it to the tab.
+  const std::u16string initial_text = u"initial text";
+  omnibox_view()->SetUserText(initial_text);
+  omnibox_view()->SaveStateToTab(web_contents.get());
+
+  // Verify initial state is saved.
+  auto* state1 = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state1);
+  EXPECT_EQ(initial_text, state1->model_state.user_text);
+  EXPECT_TRUE(state1->model_state.user_input_in_progress);
+
+  // 2. Act: Call the static helper to inject new text into this tab's state.
+  const std::u16string injected_text = u"typed in background";
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), injected_text);
+
+  // 3. Verify: Check that the stored state was updated correctly.
+  auto* state2 = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state2);
+  EXPECT_EQ(injected_text, state2->model_state.user_text);
+  EXPECT_TRUE(state2->model_state.user_input_in_progress);
 }

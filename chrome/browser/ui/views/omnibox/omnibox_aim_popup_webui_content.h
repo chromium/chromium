@@ -9,6 +9,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class LocationBarView;
 class OmniboxController;
 class OmniboxPopupAimHandler;
@@ -56,6 +60,10 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   std::string_view GetMetricPrefix() const override;
 
  private:
+  // Saves the input to the background tab's state.
+  void SaveInputToBackgroundTab(content::WebContents* original_web_contents,
+                                const std::string& input);
+
   // WebUIContentsWrapper::Host:
   // Called from WebUI code to close the widget. I.e. when user presses
   // <escape>, presses the 'x' button, or moves focus out of the popup.
@@ -68,7 +76,13 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   OmniboxPopupAimHandler* popup_aim_handler();
 
   // Called when the popup is hidden and the WebUI has painted a clean frame.
-  void OnClearCallback(const std::string& input);
+  void OnClearCallback(base::WeakPtr<content::WebContents> original_web_contents,
+                       const std::string& input);
+
+  FRIEND_TEST_ALL_PREFIXES(OmniboxAimPopupBrowserTest,
+                           DraftTextPreservedOnTabSwitch);
+
+  base::WeakPtr<content::WebContents> active_web_contents_;
 
   base::WeakPtrFactory<OmniboxAimPopupWebUIContent> weak_factory_{this};
 };
