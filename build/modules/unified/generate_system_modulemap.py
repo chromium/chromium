@@ -105,7 +105,7 @@ def _requires_met(require: str, os: str, cpu: str) -> bool:
     # Triggered by -maltivec. Not used in chromium.
     met = False
   elif require == 'arm':
-    met = cpu == 'arm'
+    met = cpu == 'arm' or cpu == 'arm64'
   elif require == 'arm64':
     met = cpu == 'arm64'
   elif require == 'freestanding':
@@ -121,6 +121,14 @@ def _requires_met(require: str, os: str, cpu: str) -> bool:
     met = cpu == 's390x'
   elif require == 'x86':
     met = cpu in ['x86', 'x64']
+  elif require == 'windows':
+    met = os == 'win'
+  elif require == 'neon':
+    # Required for 64-bit arm, unsure about 32-bit
+    met = cpu == 'arm64'
+  elif require == 'sve':
+    # Assume chrome doesn't use SVE
+    met = False
   else:
     raise NotImplementedError(f'Unknown require: {require}')
 
