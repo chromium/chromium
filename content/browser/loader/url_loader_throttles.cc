@@ -119,9 +119,9 @@ CreateContentBrowserURLLoaderThrottles(
     }
   }
 
-  if (auto throttle = MaybeCreateIdentityUrlLoaderThrottle(
-          base::BindRepeating(webid::SetIdpSigninStatus, browser_context,
-                              request.destination, frame_tree_node_id))) {
+  if (auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+          webid::SetIdpSigninStatus, browser_context->GetWeakPtr(),
+          request.destination, frame_tree_node_id))) {
     throttles.push_back(std::move(throttle));
   }
 

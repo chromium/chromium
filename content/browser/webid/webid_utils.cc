@@ -51,12 +51,15 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
   return true;
 }
 
-void SetIdpSigninStatus(content::BrowserContext* context,
+void SetIdpSigninStatus(base::WeakPtr<content::BrowserContext> context,
                         network::mojom::RequestDestination destination,
                         FrameTreeNodeId frame_tree_node_id,
                         const std::optional<url::Origin>& initiator,
                         const url::Origin& idp_origin,
                         blink::mojom::IdpSigninStatus status) {
+  if (!context) {
+    return;
+  }
   FrameTreeNode* frame_tree_node = nullptr;
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab, but check the destination because we don't want to allow
