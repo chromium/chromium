@@ -1826,18 +1826,12 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
     AnimationDirection scroll_end_animation_direction_;
   };
 
-  // Returns assertion success if scrolling the client by the given scroll delta
-  // triggered a snap animation, and failure otherwise. Also checks if the
-  // triggered animation is configured correctly.
-  testing::AssertionResult ScrollDidAnimate(
-      float scroll_y,
-      AnimationDirection animation_direction,
-      base::TimeDelta time_delta_from_previous_scroll_update =
-          base::Milliseconds(1),
-      bool is_inertial = false) {
+  void ScrollBy(float scroll_y,
+                base::TimeDelta time_delta_from_previous_scroll_update =
+                    base::Milliseconds(1),
+                bool is_inertial = false) {
     constexpr base::TimeDelta kEpsilonTimeDelta = base::Microseconds(1);
 
-    BrowserControlsOffsetManager* manager = client_.manager();
     // Advance the mock clock to ensure that the second scroll update is not
     // coalesced with the first and is treated as a new sample. Also, split the
     // scroll delta into two parts since BrowserControlsOffsetManager requires
@@ -1849,6 +1843,19 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
 
     mock_clock_.Advance(kEpsilonTimeDelta);
     client_.ScrollVerticallyBy(scroll_y / 2, is_inertial);
+  }
+
+  // Returns assertion success if scrolling the client by the given scroll delta
+  // triggered a snap animation, and failure otherwise. Also checks if the
+  // triggered animation is configured correctly.
+  testing::AssertionResult ScrollDidAnimate(
+      float scroll_y,
+      AnimationDirection animation_direction,
+      base::TimeDelta time_delta_from_previous_scroll_update =
+          base::Milliseconds(1),
+      bool is_inertial = false) {
+    BrowserControlsOffsetManager* manager = client_.manager();
+    ScrollBy(scroll_y, time_delta_from_previous_scroll_update, is_inertial);
 
     if (!manager->HasAnimation()) {
       if (animation_direction == AnimationDirection::kNone) {
@@ -2187,6 +2194,60 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
     EXPECT_TRUE(ScrollDidNotAnimate(-kControlsHeight));
   }
 }
+
+TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
+       ShowAnimationTriggeredWhenHideCompletesInAlwaysShownRegion) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Start well inside the can-hide region.
+  client_.SetViewportScrollOffset(
+      0.0f,
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+
+  // Trigger a hide animation by scrolling down. `ScrollDidAnimate` is not used
+  // here because we want to simulate the user scrolling up and down in
+  // succession, and we need to be able to inspect the state of the controls
+  // after the first scroll but before the second scroll is triggered.
+  manager->ScrollBegin();
+  ScrollBy(kControlsHeight, base::Milliseconds(1), /*is_inertial=*/false);
+  manager->ScrollEnd();
+
+  // A hide animation should be running.
+  ASSERT_TRUE(manager->HasAnimation());
+  ASSERT_EQ(manager->IsAnimatingToShowControls(), false);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.0f);
+
+  // Scroll up to the top of the page.
+  manager->ScrollBegin();
+  ScrollBy(-client_.ViewportScrollOffset().y(), base::Microseconds(10),
+           /*is_inertial=*/false);
+  manager->ScrollEnd();
+
+  // A show animation should have been triggered immediately after the hide
+  // animation completes since the top of the page is in the always-shown
+  // region. Verify this by ensuring that the controls shown ratio decreases at
+  // first and then increases to fully shown.
+  bool hide_animation_completed = false;
+  float prev_shown_ratio = manager->TopControlsShownRatio();
+  while (manager->HasAnimation()) {
+    // Slowly advance the animation to capture the inflection point where the
+    // controls shown ratio starts increasing after the hide animation
+    // completes.
+    mock_clock_.Advance(base::Milliseconds(1));
+    manager->Animate(base::TimeTicks::Now());
+
+    float current_shown_ratio = manager->TopControlsShownRatio();
+    if (hide_animation_completed) {
+      EXPECT_GT(current_shown_ratio, prev_shown_ratio);
+    } else {
+      hide_animation_completed = (current_shown_ratio > prev_shown_ratio);
+    }
+    prev_shown_ratio = current_shown_ratio;
+  }
+  EXPECT_TRUE(hide_animation_completed);
+  EXPECT_EQ(manager->TopControlsShownRatio(), 1.0f);
+}
+
 #endif  // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 
 }  // namespace

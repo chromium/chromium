@@ -994,11 +994,26 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
   if (!new_bottom_ratio.has_value())
     new_bottom_ratio = BottomControlsShownRatio();
 
+  // Upon completion, the animation object is reset and is no longer
+  // initialized.
+  bool animation_completed = !top_controls_animation_.IsInitialized() &&
+                             !bottom_controls_animation_.IsInitialized();
+
   client_->SetCurrentBrowserControlsShownRatio(new_top_ratio.value(),
                                                new_bottom_ratio.value());
 
   float top_offset_delta = ContentTopOffset() - old_top_offset;
   float bottom_offset_delta = ContentBottomOffset() - old_bottom_offset;
+
+  // If the user is in the always-shown region, snap to the shown state after
+  // the animation is completed. This prevents the controls from being hidden
+  // when the user scrolls to the top of the page while a hide animation is
+  // running.
+  if (use_snap_animation_ && animation_completed &&
+      client_->ViewportScrollOffset().y() <=
+          SnapAnimationAlwaysShownRegionHeight()) {
+    SetupSnapAnimation(AnimationDirection::kShowingControls, gfx::Vector2dF());
+  }
 
   if (top_min_height_change_in_progress_) {
     // The change in top offset may be larger than the min-height, resulting in
