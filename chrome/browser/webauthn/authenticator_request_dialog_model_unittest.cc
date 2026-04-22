@@ -854,7 +854,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        use_pk,
 #endif
       },
-      // Regression test for crbug.com/1484660.
+      // Regression test for crbug.com/40282332.
       // A platform authenticator that reports the availability of credentials
       // but does not enumerate them should be listed.
       {L,
@@ -1323,7 +1323,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
 // Simulate the user cancelling the Windows native UI after it was automatically
 // dispatched to because a matching credential for Windows Hello was found for
 // an allow-list request.
-// Regression test for crbug.com/1479142.
+// Regression test for crbug.com/40280770.
 TEST_F(AuthenticatorRequestDialogControllerTest,
        WinCancel_AfterMatchingLocalCred) {
   device::FakeWinWebAuthnApi fake_win_webauthn_api;
@@ -2009,7 +2009,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
 #if BUILDFLAG(IS_MAC)
 // Tests that a transport = internal virtual authenticator can be dispatched to
 // on Mac.
-// Regression test for crbug.com/1520898.
+// Regression test for crbug.com/41493872.
 TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
@@ -2150,7 +2150,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-// Regression test for crbug.com/1476884.
+// Regression test for crbug.com/40280124.
 TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
@@ -2275,7 +2275,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Crbug1503187) {
-  // This test reproduces the crash from crbug.com/1503187.
+  // This test reproduces the crash from crbug.com/40943613.
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {

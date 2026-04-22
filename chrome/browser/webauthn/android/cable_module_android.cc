@@ -99,7 +99,7 @@ class SystemInterface : public RegistrationState::SystemInterface {
       work_profile_callback_ = std::move(callback);
       // Checking whether this Chrome is in a work profile is sufficiently
       // expensive that doing it at startup impacts benchmarks. (See
-      // crbug.com/1459794.) Since startup is an especially contended time, we
+      // crbug.com/40919627.) Since startup is an especially contended time, we
       // wait a few minutes before doing this check.
       content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
           ->PostDelayedTask(

@@ -54,7 +54,7 @@ namespace web_app {
 // ExternallyManagedAppManager::SynchronizeInstalledApps is called.
 // TODO(dmurph): Remove this and merge it into WebAppManagement after it has a
 // new source for the  AndroidSmsAppSetupControllerImpl.
-// https://crbug.com/1314055
+// https://crbug.com/40832630
 enum class ExternalInstallSource {
   // Do not remove or re-order the names, only append to the end. Their
   // integer values are persisted in the preferences.

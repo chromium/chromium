@@ -928,7 +928,7 @@ class RealThemeSyncableServiceTest
   scoped_refptr<extensions::Extension> theme_extension_;
 };
 
-// Regression test for crbug.com/1409996.
+// Regression test for crbug.com/40062785.
 TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
   // Set up theme service to use custom theme.
   {

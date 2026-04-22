@@ -798,7 +798,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1338140")
+    @DisabledTest(message = "https://crbug.com/40848881")
     public void testRenameItem() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

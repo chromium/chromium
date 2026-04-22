@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExpandableReadyPaymentHandlerBrowserTest,
 }
 
 // Make sure openWindow() can be resolved into window client.
-// Android: Flaky. See https://crbug.com/1075481.
+// Android: Flaky. See https://crbug.com/40687687.
 IN_PROC_BROWSER_TEST_F(ExpandableReadyPaymentHandlerBrowserTest,
                        DISABLE_ON_ANDROID(WindowClientReady)) {
   DCHECK(test_controller()->GetPaymentHandlerWebContents());

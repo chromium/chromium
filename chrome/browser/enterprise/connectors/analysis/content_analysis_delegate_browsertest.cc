@@ -1721,7 +1721,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
 
   // Expect 1 request for initial authentication (unspecified type, to be
-  // removed for crbug.com/1090088, then count should be 1), + 1 to scan the
+  // removed for crbug.com/40133594, then count should be 1), + 1 to scan the
   // file in all cases.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);

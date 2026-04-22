@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
             local_value);
 }
 
-// Regression test for crbug.com/1456872.
+// Regression test for crbug.com/40066193.
 // ChromeOS does not support signing out of a primary account.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
       GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
 }
 
-// Regression test for crbug.com/1470161.
+// Regression test for crbug.com/40277783.
 IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldNotNotifyUponSyncStart) {
   ASSERT_TRUE(SetupClients());

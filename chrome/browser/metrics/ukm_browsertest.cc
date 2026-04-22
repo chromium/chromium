@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Sign out the user to revoke all refresh tokens. This prevents any posted
   // tasks from successfully fetching an access token during the tear-down
-  // phase and crashing on a DCHECK. See crbug/1102746 for more details.
+  // phase and crashing on a DCHECK. See crbug.com/40704261 for more details.
   harness->SignOutPrimaryAccount();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   ClosePlatformBrowser(browser);
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest,
 }
 
 // Make sure that providing consent doesn't enable UKM when sync is disabled.
-// Flaky on Android crbug.com/1096400
+// Flaky on Android crbug.com/40700711
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ConsentAddedButNoSyncCheck DISABLED_ConsentAddedButNoSyncCheck
 #else
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
 // ChromeOS doesn't have the concept of sign-out so this test doesn't make sense
 // there.
 //
-// Flaky on Android: https://crbug.com/1096047.
+// Flaky on Android: https://crbug.com/40700532.
 //
 // Make sure that UKM is disabled when the profile signs out of Sync.
 // LINT.IfChange(SingleSyncSignoutCheck)
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsReportingCheck) {
 
 // Make sure that pending data is deleted when user deletes history.
 // LINT.IfChange(HistoryDeleteCheck)
-// Flaky on Android: https://crbug.com/1131541.
+// Flaky on Android: https://crbug.com/40721445.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_HistoryDeleteCheck DISABLED_HistoryDeleteCheck
 #else
@@ -1625,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestForAppConsent,
   const std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
 
   // Verify that the only sources in the report are APP_ID.
-  // NOTE(crbug/1395143): It was noticed that there was an APP_ID source
+  // NOTE(crbug.com/40248943): It was noticed that there was an APP_ID source
   // generated despite not being explicitly created. No entries are associated
   // with it though.
   for (int i = 0; i < report->sources_size(); ++i) {

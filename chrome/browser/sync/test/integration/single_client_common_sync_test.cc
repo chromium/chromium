@@ -161,7 +161,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        PRE_ShouldNotIssueGetUpdatesOnBrowserRestart) {
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
 #if !BUILDFLAG(IS_ANDROID)
 class SingleClientFeatureToTransportSyncTest : public SyncTest {
  public:

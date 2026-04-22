@@ -190,7 +190,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-// Test is flaky (crbug.com/1097050)
+// Test is flaky (crbug.com/40701077)
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        DISABLED_SyncDoubleInstallation) {
   ASSERT_TRUE(SetupClients());
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
   EXPECT_EQ(GetRegistrar(GetProfile(1)).GetAppShortName(app_id), "Test name 2");
 }
 
-// Flaky, see crbug.com/1126404.
+// Flaky, see crbug.com/40148122.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SyncDoubleInstallationDifferentUserDisplayMode \
   DISABLED_SyncDoubleInstallationDifferentUserDisplayMode
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 // Although the logic is allowed to be racy, the profiles should still end up
 // with the same web app ids.
 #if BUILDFLAG(IS_WIN)
-// Flaky on windows, https://crbug.com/1111533
+// Flaky on windows, https://crbug.com/40142626
 #define MAYBE_DoubleInstallWithUninstall DISABLED_DoubleInstallWithUninstall
 #else
 #define MAYBE_DoubleInstallWithUninstall DoubleInstallWithUninstall
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, AppSortingSynced) {
             GetAppSorting(GetProfile(1))->GetAppLaunchOrdinal(app_id));
 }
 
-// Test is flaky (crbug.com/1313368).
+// Test is flaky (crbug.com/40832261).
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        DISABLED_AppSortingFixCollisions) {
   ASSERT_TRUE(SetupSync());
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
             GetAppSorting(GetProfile(0))->GetAppLaunchOrdinal(app_id2));
 }
 
-// Flaky on Linux TSan (crbug.com/1108172).
+// Flaky on Linux TSan (crbug.com/40707317).
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_UninstallSynced DISABLED_UninstallSynced
 #else
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
                   .GetAppsFromSyncAndPendingInstallation()
                   .empty());
   // No apps.
-  // https://crbug.com/1323003: Update this once AppSet & size is resolved.
+  // https://crbug.com/40838364: Update this once AppSet & size is resolved.
   auto calculate_size = [](WebAppRegistrar::AppSet set) {
     int size = 0;
     for (auto it = set.begin(); it != set.end(); ++it) {

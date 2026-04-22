@@ -666,7 +666,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
 
   // TODO(dmurph): Store expected os integration state in the database so
   // this doesn't re-apply when we already have it done.
-  // https://crbug.com/1295044
+  // https://crbug.com/40214162
   install_options.add_to_applications_menu = true;
   install_options.add_to_desktop = create_desktop_shortcut.value_or(false);
   // Pinning apps to the ChromeOS shelf is done through the PinnedLauncherApps

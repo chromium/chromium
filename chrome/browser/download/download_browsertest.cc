@@ -1295,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, KnownSize) {
 }
 
 // Test that when downloading an item in Incognito mode, we don't crash when
-// closing the last Incognito window (http://crbug.com/13983).
+// closing the last Incognito window (http://crbug.com/40882961).
 IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownload) {
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
@@ -1787,8 +1787,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadHistoryDangerCheck) {
   // there are CRLF transformations for those files.
 }
 
-// Test for crbug.com/14505. This tests that chrome:// urls are still functional
-// after download of a file while viewing another chrome://.
+// Test for crbug.com/40915332. This tests that chrome:// urls are still
+// functional after download of a file while viewing another chrome://.
 IN_PROC_BROWSER_TEST_F(DownloadTest, ChromeURLAfterDownload) {
   GURL flags_url(chrome::kChromeUIFlagsURL);
   GURL extensions_url(chrome::kChromeUIExtensionsURL);
@@ -1814,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, ChromeURLAfterDownload) {
         )"));
 }
 
-// Test for crbug.com/12745. This tests that if a download is initiated from
+// Test for crbug.com/40807622. This tests that if a download is initiated from
 // a chrome:// page that has registered and onunload handler, the browser
 // will be able to close.
 IN_PROC_BROWSER_TEST_F(DownloadTest, BrowserCloseAfterDownload) {
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_UserScriptDownload) {
 }
 
 // Test to make sure auto-open works.
-// High flake rate; https://crbug.com/1247392.
+// High flake rate; https://crbug.com/40789909.
 IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenByUser) {
   base::FilePath file(FILE_PATH_LITERAL("download-autoopen.txt"));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -2966,7 +2966,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Flaking on Windows, macOS, Linux, ChromeOS. https://crbug.com/1141263
+// Flaking on Windows, macOS, Linux, ChromeOS. https://crbug.com/40727061
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #else
 #define MAYBE_SaveLargeImage SaveLargeImage
@@ -4493,7 +4493,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
 }
 
 // Test is flaky on multiple platforms.
-// https://crbug.com/1064435
+// https://crbug.com/40681285
 IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest,
                        DISABLED_WakeLockAcquireAndCancel) {
   Initialize();
@@ -4510,7 +4510,7 @@ IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest,
 }
 
 // Downloading a data URL that's bigger than url::kMaxURLChars should work.
-// Flaky: https://crbug.com/1141278
+// Flaky: https://crbug.com/40727070
 IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadLargeDataURL) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5103,7 +5103,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
 #endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
 // The rest of these tests rely on the download surface, which ChromeOS doesn't
-// use (crbug.com/1323505 is tracking Download Bubble on ChromeOS).
+// use (crbug.com/40224714 is tracking Download Bubble on ChromeOS).
 #if !BUILDFLAG(IS_CHROMEOS)
 // Test that the download surface is shown by starting a download.
 //
@@ -5121,7 +5121,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
   EXPECT_TRUE(IsDownloadDetailedUiVisible(browser()->window()));
 }
 
-// Flaky. crbug.com/1383009
+// Flaky. crbug.com/40877586
 // Test that when downloading an item in Incognito mode, the download surface is
 // not visible after closing the Incognito window.
 IN_PROC_BROWSER_TEST_F(DownloadTest,
@@ -5153,7 +5153,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
 // Close the new window.
 // Verify that we have 1 window, and the download surface is not visible.
 //
-// Regression test for http://crbug.com/44454
+// Regression test for http://crbug.com/41149590
 // TODO(crbug.com/40262026): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_NewWindow DISABLED_NewWindow
@@ -5283,7 +5283,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, HiddenDownload) {
   EXPECT_FALSE(IsDownloadDetailedUiVisible(browser()->window()));
 }
 
-// High flake rate; https://crbug.com/1247392.
+// High flake rate; https://crbug.com/40789909.
 IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenClosesSurface) {
   base::FilePath file(FILE_PATH_LITERAL("download-autoopen.txt"));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());

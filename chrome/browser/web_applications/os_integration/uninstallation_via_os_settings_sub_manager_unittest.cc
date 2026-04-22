@@ -174,7 +174,7 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-// Testing crbug.com/1434577, that OS states can be cleaned up even after
+// Testing crbug.com/40904294, that OS states can be cleaned up even after
 // the app has been uninstalled.
 TEST_F(UninstallationViaOsSettingsSubManagerTest,
        OsStatesCleanupAfterAppUninstallation) {

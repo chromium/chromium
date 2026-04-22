@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
 // Tests that client can decrypt |pending_keys| with implicit passphrase in
 // backward-compatible keystore mode, when |keystore_decryptor_token| is
 // non-decryptable (corrupted). Additionally verifies that there is no
-// regression causing crbug.com/1042203.
+// regression causing crbug.com/40668359.
 IN_PROC_BROWSER_TEST_P(
     SingleClientNigoriSyncTest,
     ShouldDecryptWithImplicitPassphraseInBackwardCompatibleKeystoreMode) {
@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-// Regression test for crbug.com/1479879: test verifies that client is able to
+// Regression test for crbug.com/40930088: test verifies that client is able to
 // fix degraded recoverability if trusted vault keys were obtained by key
 // retrieval. In particular, this requires plumbing correct key version
 // (verified by FakeSecurityDomainsServer).
@@ -2271,7 +2271,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
       /*expected_bucket_count=*/1);
 }
 
-// Regression test for crbug.com/1267391: after following key rotation the
+// Regression test for crbug.com/40802753: after following key rotation the
 // client should still send all trusted vault keys (including keys that predate
 // key rotation) to the server when adding recovery method.
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,

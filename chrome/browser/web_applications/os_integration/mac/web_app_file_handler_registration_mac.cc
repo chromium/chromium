@@ -48,7 +48,7 @@ void UnregisterFileHandlersWithOs(const webapps::AppId& app_id,
   // When updating file handlers, |callback| here triggers the registering of
   // the new file handlers. It is therefore important that |callback| not be
   // dropped on the floor.
-  // https://crbug.com/1201993
+  // https://crbug.com/40178947
   std::move(callback).Run(Result::kOk);
 }
 

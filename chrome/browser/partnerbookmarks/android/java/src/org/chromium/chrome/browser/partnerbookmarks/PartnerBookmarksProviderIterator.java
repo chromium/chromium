@@ -81,7 +81,7 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
                                     BOOKMARKS_SORT_ORDER);
                 } catch (Exception ex) {
                     // Depending on the OEM version of Android query() may throw a variety of
-                    // different exception types. See crbug.com/1466882.
+                    // different exception types. See crbug.com/40924167.
                     Log.e(TAG, "Unable to read partner bookmark database", ex);
                     return null;
                 }

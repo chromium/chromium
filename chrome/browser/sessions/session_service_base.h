@@ -154,7 +154,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void OnWillSaveCommands() override;
   // This implementation in SessionServiceBase is mostly a no-op.
   // Full support for Session Service logging will come with
-  // https://crbug.com/1193711
+  // https://crbug.com/40175339
   void OnErrorWritingSessionCommands() override;
 
   // sessions::SessionTabHelperDelegate:

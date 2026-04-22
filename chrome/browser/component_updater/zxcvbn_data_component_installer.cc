@@ -120,7 +120,7 @@ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
 
   // Perform a minimal check that the file has not been corrupted - otherwise
   // the client will run into a failing CHECK when using the library.
-  // See (crbug.com/1505352) for instances where this occurred.
+  // See (crbug.com/40945968) for instances where this occurred.
   char local_buffer[kNumMarkerBytes] = {};
   if (base::ReadFile(combined_ranked_dicts_path, local_buffer,
                      /*max_size=*/kNumMarkerBytes) != kNumMarkerBytes) {

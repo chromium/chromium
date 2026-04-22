@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
   TurnOnSessionRestore();
 }
 
-// https://crbug.com/1216209
+// https://crbug.com/40770352
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
   size_t total_count = 0;
   size_t app1_maximized_count = 0;
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
   TurnOnSessionRestore();
 }
 
-// https://crbug.com/1216209
+// https://crbug.com/40770352
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
   size_t total_count = 0;
   size_t minimized_count = 0;

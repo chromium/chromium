@@ -65,7 +65,7 @@ std::list<BundleInfoPlist> BundleInfoPlist::SearchForBundlesById(
 
   // LaunchServices can fail to locate a recently-created bundle. Search
   // for an app in the applications folder to handle this case.
-  // https://crbug.com/937703
+  // https://crbug.com/41444624
   infos = GetAllInPath(apps_path,
                        /*recursive=*/true);
   for (auto it = infos.begin(); it != infos.end();) {

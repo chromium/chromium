@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
       navigation_metrics::kMainFrameSchemeDifferentPage, 5 /* data: */, 1);
 }
 
-// crbug.com/1292471: the test is flaky on Mac.
+// crbug.com/40213146: the test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Navigation_EngagementLevel DISABLED_Navigation_EngagementLevel
 #else

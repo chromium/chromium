@@ -1134,7 +1134,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
 
 // Tests that disabling sync before sync startup correctly clears the passkey
 // cache.
-// Regression test for crbug.com/1476895.
+// Regression test for crbug.com/40280127.
 IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_ClearingModelDataOnSyncStartup) {
   ASSERT_TRUE(SetupSync());

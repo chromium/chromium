@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWifiConfigurationSyncTest,
           .Wait());
 }
 
-// Regression test for crbug.com/1318390: the client should clear metadata when
+// Regression test for crbug.com/40835352: the client should clear metadata when
 // sync requires it and perform initial sync again (was crashing before the
 // fix).
 IN_PROC_BROWSER_TEST_F(SingleClientWifiConfigurationSyncTest,

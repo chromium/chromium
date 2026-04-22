@@ -800,7 +800,7 @@ bool PrintBackendServiceManager::PrinterDriverKnownToRequireElevatedPrivilege(
     ClientType client_type) const {
   // Any Windows printer driver which causes a UI dialog to be displayed does
   // not work if printing is started from within a sandboxed environment.
-  // crbug.com/1243873
+  // crbug.com/40787526
   switch (client_type) {
     case ClientType::kQuery:
       return false;

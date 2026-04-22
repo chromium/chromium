@@ -202,7 +202,7 @@ bool AwaitWebAppQuiescence(
   FlushPendingOperations(profiles);
 
   // If sync is off, then `AwaitQuiescence()` will crash. This code can be
-  // removed once https://crbug.com/1330792 is fixed.
+  // removed once https://crbug.com/40843470 is fixed.
   if (sync_datatype_helper::test()) {
     SyncTest* test = sync_datatype_helper::test();
     bool is_sync_on = true;

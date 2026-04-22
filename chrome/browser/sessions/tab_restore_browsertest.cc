@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreToDifferentWindow) {
 
 // Close a tab, open a new window, close the first window, then restore the
 // tab. It should be in a new window.
-// If this becomes flaky, use http://crbug.com/14774
+// If this becomes flaky, use http://crbug.com/40280288
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
   // Navigate to url1 then url2.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
@@ -1270,7 +1270,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow_ActiveTabIndex) {
 #endif
 
 // Restore tab with special URL chrome://credits/ and make sure the page loads
-// properly after restore. See http://crbug.com/31905.
+// properly after restore. See http://crbug.com/41073817.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
   // Navigate new tab to a special URL.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1303,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
 #endif
 
 // Restore tab with special URL in its navigation history, go back to that
-// entry and see that it loads properly. See http://crbug.com/31905
+// entry and see that it loads properly. See http://crbug.com/41073817
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1487,7 +1487,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(4, browser->GetTabStripModel()->count());
 }
 
-// Test is flaky on Win and Mac. crbug.com/1241761, crbug.com/330838232.
+// Test is flaky on Win and Mac. crbug.com/40786215, crbug.com/330838232.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
   DISABLED_TabsFromRestoredWindowsAreLoadedGradually
@@ -1853,7 +1853,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
 }
 
 // Ensure a tab is not restored between tabs of another group.
-// Regression test for https://crbug.com/1109368.
+// Regression test for https://crbug.com/40141707.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreIntoOtherGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
@@ -2132,7 +2132,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
 
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers
-// https://crbug.com/1116320 - a scenario where (before
+// https://crbug.com/40144702 - a scenario where (before
 // https://crrev.com/c/2551302) the restore type was different from LAST_SESSION
 // (e.g. the test below used CURRENT_SESSION).
 //
@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
 }
 
 // Ensures group IDs are regenerated for restored windows so that we don't split
-// the same group between multiple windows. See https://crbug.com/1202102. This
+// the same group between multiple windows. See https://crbug.com/40055647. This
 // test is temporary until a more comprehensive fix is implemented.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());

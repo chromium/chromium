@@ -2842,7 +2842,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls, chrome_schema));
 
   // WindowPlacement policies to be deprecated and replaced by WindowManagement.
-  // crbug.com/1328581
+  // crbug.com/40842072
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
           key::kDefaultWindowPlacementSetting,

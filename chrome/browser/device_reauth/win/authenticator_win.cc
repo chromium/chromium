@@ -151,7 +151,7 @@ void GetBiometricAvailabilityFromWindows(
     AvailabilityCallback callback,
     scoped_refptr<base::SequencedTaskRunner> thread) {
   // Mitigate the issues caused by loading DLLs on a background thread
-  // (http://crbug/973868).
+  // (http://crbug.com/41464781).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
   ComPtr<IUserConsentVerifierStatics> factory;

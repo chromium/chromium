@@ -116,7 +116,7 @@ class PluginInfoHostImplBidiTestBase : public PluginInfoHostImplTest {
 // direction affects the PDF viewer extension, as the plugin name is derived
 // from the extension name, and the extension name may be adjusted to include
 // Unicode bidirectional control characters in RTL mode. These extra control
-// characters can break string comparisons (see crbug.com/1404260).
+// characters can break string comparisons (see crbug.com/40885917).
 class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
                                    public testing::WithParamInterface<bool> {
  public:

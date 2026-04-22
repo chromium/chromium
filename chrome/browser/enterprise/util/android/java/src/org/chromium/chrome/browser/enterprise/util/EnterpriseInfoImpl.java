@@ -111,7 +111,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
     private void getDeviceEnterpriseInfoInBackground() {
         try {
             new AsyncTask<OwnedState>() {
-                // TODO: Unit test this function. https://crbug.com/1099262
+                // TODO: Unit test this function. https://crbug.com/40137392
                 private OwnedState calculateIsRunningOnManagedProfile(Context context) {
                     long startTime = SystemClock.elapsedRealtime();
                     boolean hasProfileOwnerApp = false;

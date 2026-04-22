@@ -19,7 +19,7 @@ using ManagementAuthorityTrustworthiness =
 
 class Profile;
 
-// TODO (crbug/1238355): Add unit tests for this file.
+// TODO (crbug.com/40193436): Add unit tests for this file.
 
 class BrowserCloudManagementStatusProvider final
     : public policy::ManagementStatusProvider {

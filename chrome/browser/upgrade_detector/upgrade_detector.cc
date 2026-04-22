@@ -87,7 +87,7 @@ base::Time ComputeRelaunchWindowStartForDay(
     // The adjusted time could still fail `Time::FromLocalExploded`. This
     // happens on ARM devices in ChromeOS. Once it happens, it could be sticky
     // and creates a crash loop. Return the unadjusted time in this case.
-    // See http://crbug/1307913
+    // See http://crbug.com/40828727
     if (!base::Time::FromLocalExploded(window_start_exploded, &window_start)) {
       LOG(ERROR) << "FromLocalExploded failed with time=" << time
                  << ", now=" << base::Time::Now()

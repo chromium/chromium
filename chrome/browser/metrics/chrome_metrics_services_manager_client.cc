@@ -76,7 +76,7 @@ BASE_FEATURE(kMetricsReportingFeature,
 // different trial, which has different sampling rates. This is due to a bug
 // in which the old sampling rate was not being applied correctly. In order for
 // the fix to not affect the overall sampling rate, this new feature was
-// created. See crbug/1306481.
+// created. See crbug.com/40218371.
 BASE_FEATURE(kPostFREFixMetricsReportingFeature,
              "PostFREFixMetricsReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -212,7 +212,7 @@ bool ChromeMetricsServicesManagerClient::IsClientInSampleForCrashes() {
   // On Android, there are two field trials that, together, drive metrics and
   // crash reporting. The determination of which trial to use is based on
   // whether the client went through the FRE before or after the fix to
-  // crbug.com/1306481 was deployed.
+  // crbug.com/40218371 was deployed.
   //
   // The PostFREFixSamplingTrial controls crash and metrics sampling for clients
   // which went through the FRE after the FRE fix was deployed. These clients

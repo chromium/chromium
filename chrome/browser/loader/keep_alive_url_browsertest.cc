@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 
 // Shutdown delay is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
-// Mac browser shutdown is flaky: https://crbug.com/1259913
+// Mac browser shutdown is flaky: https://crbug.com/40201651
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ReceiveResponseAfterBrowserShutdown \
   DISABLED_ReceiveResponseAfterBrowserShutdown

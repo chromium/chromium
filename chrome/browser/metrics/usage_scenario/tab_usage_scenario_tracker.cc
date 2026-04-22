@@ -222,7 +222,7 @@ void TabUsageScenarioTracker::OnMediaDestroyed(
   // `contents_playing_video_fullscreen_` by
   // TabUsageScenarioTracker::OnWebContentsRemoved().
   //
-  // This is an unfortunate workaround for a crash (crbug.com/1393544) that
+  // This is an unfortunate workaround for a crash (crbug.com/40880999) that
   // occurs when a Browser that still contains WebContents is destroyed,
   // resulting in:
   // 1. The Browser destroys its `exclusive_access_manager_`.

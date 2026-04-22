@@ -296,7 +296,7 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
             WebAppDatabase::GetCurrentDatabaseVersion());
 }
 
-// Tests handling crashes fixed in crbug.com/1417955.
+// Tests handling crashes fixed in crbug.com/40894450.
 TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   test::CreateRandomWebAppParams params;
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp(params);

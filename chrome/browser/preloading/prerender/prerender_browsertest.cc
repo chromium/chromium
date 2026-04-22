@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
 // Prerendering in a new tab should not be activate for a new window with an
 // opener.
-// The test is flaky on android-12l-x64-dbg-tests: https://crbug.com/1490582.
+// The test is flaky on android-12l-x64-dbg-tests: https://crbug.com/40935364.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrerenderAndActivate_InNewTab_Opener \
   DISABLED_PrerenderAndActivate_InNewTab_Opener

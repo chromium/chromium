@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 #define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
 #endif
 // Verify that restoring a minimized window does not create a blank window.
-// Regression test for https://crbug.com/1018885.
+// Regression test for https://crbug.com/40655640.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
                        MAYBE_RestoreMinimizedWindow) {
   // Minimize the window.
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   EXPECT_EQ(1, restored->tab_strip_model()->count());
 
   // Expect the window to be visible.
-  // Prior to the fix for https://crbug.com/1018885, the window was active but
+  // Prior to the fix for https://crbug.com/40655640, the window was active but
   // not visible.
   EXPECT_TRUE(restored->window()->IsActive());
   EXPECT_TRUE(restored->window()->IsVisible());
@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
 
 // Verify that in restoring a browser with a normal and minimized window twice,
 // the minimized window remains minimized. Guards against a regression
-// introduced in the fix for https://crbug.com/1204517. This test fails on
-// Linux and Windows - see https://crbug.com/1213497.
+// introduced in the fix for https://crbug.com/40180053. This test fails on
+// Linux and Windows - see https://crbug.com/40183669.
 // Also fails flakily on Mac.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
                        DISABLED_RestoreMinimizedWindowTwice) {

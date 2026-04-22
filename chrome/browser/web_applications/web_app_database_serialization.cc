@@ -941,7 +941,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
   }
   // Due to the bitmaps possibly being not populated (see
-  // https://crbug.com/1427444), we just have empty bitmap data in that case.
+  // https://crbug.com/40899887), we just have empty bitmap data in that case.
   while (shortcuts_menu_icons_sizes.size() < shortcut_menu_item_size) {
     shortcuts_menu_icons_sizes.emplace_back();
   }

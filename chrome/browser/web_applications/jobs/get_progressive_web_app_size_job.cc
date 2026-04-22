@@ -68,20 +68,20 @@ void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
 
   if (!lock_with_app_resources_->registrar().AppMatches(
           app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
-    // (crbug.com/1480755): This crash is not expected as the app is checked for
-    // validity when the command is evoked in StartWithLock. We are also still
-    // holding the lock so a change to the status of the app throughout is not
-    // expected.
+    // (crbug.com/40071855): This crash is not expected as the app is checked
+    // for validity when the command is evoked in StartWithLock. We are also
+    // still holding the lock so a change to the status of the app throughout is
+    // not expected.
     NOTREACHED();
   }
 
   GURL gurl =
       lock_with_app_resources_->registrar().GetAppById(app_id_)->start_url();
   if (!gurl.is_valid()) {
-    // (crbug.com/1480755): This crash is not expected as the app is checked for
-    // validity when the command is evoked in StartWithLock. We are also still
-    // holding the lock so a change to the status of the app throughout is not
-    // expected.
+    // (crbug.com/40071855): This crash is not expected as the app is checked
+    // for validity when the command is evoked in StartWithLock. We are also
+    // still holding the lock so a change to the status of the app throughout is
+    // not expected.
     NOTREACHED();
   }
   origin_ = url::Origin::Create(gurl);

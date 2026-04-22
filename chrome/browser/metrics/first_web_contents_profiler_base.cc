@@ -43,7 +43,8 @@ content::WebContents* FirstWebContentsProfilerBase::GetVisibleContents(
 
   // It is incorrect to have a visible browser window with no active
   // WebContents, but reports on show that it happens.
-  // See https://crbug.com/1032348 for Mac or https://crbug.com/1414831 for Win.
+  // See https://crbug.com/40662817 for Mac or https://crbug.com/40892329 for
+  // Win.
   if (!contents) {
     return nullptr;
   }

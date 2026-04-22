@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Sign out the user to revoke all refresh tokens. This prevents any posted
   // tasks from successfully fetching an access token during the tear-down
-  // phase and crashing on a DCHECK. See crbug/1102746 for more details.
+  // phase and crashing on a DCHECK. See crbug.com/40704261 for more details.
   harness->SignOutPrimaryAccount();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

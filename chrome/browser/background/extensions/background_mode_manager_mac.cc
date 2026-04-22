@@ -8,6 +8,6 @@ void BackgroundModeManager::DisplayClientInstalledNotification(
     const std::u16string& name) {
   // Mac does not display a notification when a background mode is
   // entered.  The associated bug for implementing this was closed as OBSOLETE,
-  // and the feature was never implemented. See https://crbug.com/74970 for
+  // and the feature was never implemented. See https://crbug.com/41336273 for
   // more details.
 }

@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
   EXPECT_NE(normal_browser, popup_browser);
 }
 
-// Flaky on Mac. https://crbug.com/1334914.
+// Flaky on Mac. https://crbug.com/40846749.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreIndividualTabFromWindow \
   DISABLED_RestoreIndividualTabFromWindow
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
 // Test that a session can be restored even if the PageState were corrupted.
 // This test covers a GetPageState call that used to fail a DCHECK when the
 // PageState failed to decode during the command building step of session
-// restore, per https://crbug.com/1412401. See also https://crbug.com/1196330,
+// restore, per https://crbug.com/40890861. See also https://crbug.com/40759554,
 // where release builds would crash in the renderer process during restore.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreInvalidPageState) {
   Profile* profile = browser()->profile();
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest,
   }
 }
 
-// Flaky (https://crbug.com/1383903)
+// Flaky (https://crbug.com/40878113)
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_RecentlyClosedGroup DISABLED_RecentlyClosedGroup
 #else
@@ -1769,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 
 // Verifies that launching with no previous session to a url which closes itself
 // results in no session being restored on the next launch.
-// Regression test for http://crbug.com/1052096
+// Regression test for http://crbug.com/40118737
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                        AutoClosedSingleTabDoesNotGetRestored) {
   Profile* profile = browser()->profile();
@@ -1878,7 +1878,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ActiveIndexUpdatedAtInsert) {
 
 // Launches an app window, closes tabbed browser, launches and makes sure
 // we restore the tabbed browser url.
-// If this test flakes, use http://crbug.com/29110
+// If this test flakes, use http://crbug.com/41051840
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                        RestoreAfterClosingTabbedBrowserWithAppAndLaunching) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
@@ -2234,7 +2234,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorage) {
   EXPECT_EQ(session_storage_id, restored_session_storage_id);
 }
 
-// Failing on Mac. See https://crbug.com/1484860
+// Failing on Mac. See https://crbug.com/40932962
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabWithDownloadDoesNotGetRestored \
   DISABLED_TabWithDownloadDoesNotGetRestored
@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   }
 }
 
-// Test is flaky on Linux and Windows: https://crbug.com/1181867
+// Test is flaky on Linux and Windows: https://crbug.com/40170555
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 namespace {
 
@@ -2787,7 +2787,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, SecFetchSite) {
 
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers the original
-// repro steps reported in https://crbug.com/1026474.
+// repro steps reported in https://crbug.com/40108295.
 //
 // See also TabRestoreTest.BackToAboutBlank
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
@@ -2861,7 +2861,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
 
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a missing initiator origin.  Note that this scenario did not hit
-// the CHECK from https://crbug.com/1026474, because the CHECK is/was skipped
+// the CHECK from https://crbug.com/40108295, because the CHECK is/was skipped
 // for opaque origins (which would be the case for about:blank with a missing
 // initiator origin).
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
@@ -2916,7 +2916,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
 
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers the variant
-// of the repro that was reported in https://crbug.com/1016954#c27.
+// of the repro that was reported in https://crbug.com/40104314#c27.
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
   // Open about:blank#foo in a new tab.
   //
@@ -2977,7 +2977,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
 
 // Test that it is possible to navigate back to a subframe with a restored
 // about:blank history entry with a non-null initiator origin - see
-// https://crbug.com/1026474.
+// https://crbug.com/40108295.
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
                        BackToAboutBlankSubframe) {
   // Navigate to a.com(a.com/title2.html).
@@ -3513,7 +3513,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Skip for ChromeOS because the keep alive is not created for ChromeOS.
-// See https://crbug.com/1174627.
+// See https://crbug.com/40167603.
 class SessionRestoreSilentLaunchTest : public SessionRestoreTest {
  protected:
   // SessionRestoreTest:
@@ -3624,7 +3624,7 @@ class AppSessionRestoreTest : public SessionRestoreTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-// This is disabled on mac pending http://crbug.com/1194201
+// This is disabled on mac pending http://crbug.com/40758309
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_BasicAppSessionRestore DISABLED_BasicAppSessionRestore
 #else
@@ -3875,7 +3875,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// This is disabled on mac pending http://crbug.com/1194201
+// This is disabled on mac pending http://crbug.com/40758309
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IsolatedFromBrowserRestore DISABLED_IsolatedFromBrowserRestore
 #else
@@ -3945,8 +3945,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   EXPECT_EQ(tab2_url, example_url2);
 }
 
-// This is disabled on mac pending http://crbug.com/1194201
-// These tests currently fail on linux due to http://crbug.com/1196493.
+// This is disabled on mac pending http://crbug.com/40758309
+// These tests currently fail on linux due to http://crbug.com/40176475.
 // To keep the coverage from the rest of the test, we disable the failing check
 // on linux for window-maximization.
 #if BUILDFLAG(IS_MAC)
@@ -4025,8 +4025,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   profile_keep_alive.reset();
 }
 
-// This is disabled on mac pending http://crbug.com/1194201
-// These tests currently fail on linux due to http://crbug.com/1196493.
+// This is disabled on mac pending http://crbug.com/40758309
+// These tests currently fail on linux due to http://crbug.com/40176475.
 // In order to keep the coverage from the rest of the test, the checks that
 // fail on linux are explicitly disabled.
 #if BUILDFLAG(IS_MAC)

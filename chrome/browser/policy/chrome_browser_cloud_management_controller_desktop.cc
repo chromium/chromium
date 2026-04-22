@@ -333,7 +333,7 @@ ChromeBrowserCloudManagementControllerDesktop::
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   if (IsInvalidationsServiceStarted()) {
     NOTREACHED() << "Trying to start an invalidation service when there's "
-                    "already one. Please see crbug.com/1186159.";
+                    "already one. Please see crbug.com/40172363.";
   }
 
   device_instance_id_driver_ = std::make_unique<instance_id::InstanceIDDriver>(

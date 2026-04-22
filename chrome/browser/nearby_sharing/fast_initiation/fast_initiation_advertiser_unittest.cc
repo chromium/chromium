@@ -218,7 +218,7 @@ TEST_F(NearbySharingFastInitiationAdvertiserTest, TestStartAdvertising_Error) {
   EXPECT_FALSE(called_on_stop_advertising());
 }
 
-// Regression test for crbug.com/1109581.
+// Regression test for crbug.com/40708077.
 TEST_F(NearbySharingFastInitiationAdvertiserTest,
        TestStartAdvertising_DeleteInErrorCallback) {
   fast_initiation_advertiser_->StartAdvertising(

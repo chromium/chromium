@@ -61,7 +61,7 @@ public class ShareSheetUsageRankingHelper {
     // testing.
     private static final Set<String> PACKAGE_BLOCK_LIST =
             Set.of(
-                    // https://crbug.com/1323786
+                    // https://crbug.com/40838852
                     "com.android.cts.ctsshim", "com.android.cts.priv.ctsshim");
 
     // Don't log click indexes for usage-ranked items: the ordering is local to this client, so

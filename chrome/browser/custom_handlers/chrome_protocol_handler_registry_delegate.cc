@@ -72,7 +72,7 @@ bool ChromeProtocolHandlerRegistryDelegate::ShouldRemoveHandlersNotInOS() {
   // We don't do this on Linux as the OS registration there is not reliable,
   // and Chrome OS doesn't have any notion of OS registration.
   // TODO(benwells): When Linux support is more reliable remove this
-  // difference (http://crbug.com/88255).
+  // difference (http://crbug.com/40593005).
   return false;
 #else
   return shell_integration::GetDefaultSchemeClientSetPermission() !=

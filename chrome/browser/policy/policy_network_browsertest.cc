@@ -668,7 +668,7 @@ class ECHPolicyTest : public SSLPolicyTest {
     host_resolver()->AddRule(kDohServerHostname, "127.0.0.1");
 
     // The net stack doesn't enable DoH when it can't find a system DNS config
-    // (see https://crbug.com/1251715).
+    // (see https://crbug.com/40198483).
     SetReplaceSystemDnsConfig();
 
     // Via policy, configure the network service to use `doh_server_`.

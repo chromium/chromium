@@ -664,7 +664,7 @@ TEST_F(TemplateURLServiceTest, ClearBrowsingData_Keywords) {
                      "http://suggest5", std::string(), "http://icon5", false,
                      "UTF-8;UTF-16", now, Time(), Time());
   // Also add a replaceable engine that's marked as the Default Search Engine.
-  // We also need to verify we never remove those. https://crbug.com/1166372
+  // We also need to verify we never remove those. https://crbug.com/40742063
   TemplateURL* replaceable_dse = AddKeywordWithDate(
       "replaceable_dse_name", "replaceable_dse_key", "http://foo6",
       "http://suggest6", std::string(), "http://icon6", true, "UTF-8;UTF-16",
@@ -1963,7 +1963,7 @@ TEST_F(TemplateURLServiceTest, TestManagedDefaultSearch) {
 
   // Clear the model and disable the default search provider through policy.
   // Verify that there is no default search provider after loading the model.
-  // This checks against regressions of http://crbug.com/67180
+  // This checks against regressions of http://crbug.com/41289900
 
   // First, remove the preferences, reset the model, and set a default.
   RemoveManagedDefaultSearchPreferences(test_util()->profile());
@@ -2208,7 +2208,7 @@ TEST_F(TemplateURLServiceTest, KeywordConflictNonReplaceableEngines) {
 }
 
 // Verifies that we don't have reentrant behavior when resolving default search
-// provider keyword conflicts. crbug.com/1031506
+// provider keyword conflicts. crbug.com/40110481
 TEST_F(TemplateURLServiceTest, DefaultSearchProviderKeywordConflictReentrancy) {
   // Merely loading should increment the count once.
   test_util()->VerifyLoad();
@@ -2276,7 +2276,7 @@ TEST_F(TemplateURLServiceTest, ReplaceableEngineUpdateHandlesKeywordConflicts) {
 
 // Verifies that we favor prepopulated engines over other safe_for_autoreplace()
 // engines, even if they are newer. Also verifies that we never remove the
-// prepopulated engine, even if outranked. https://crbug.com/1164024
+// prepopulated engine, even if outranked. https://crbug.com/40740503
 TEST_F(TemplateURLServiceTest, KeywordConflictFavorsPrepopulatedEngines) {
   test_util()->VerifyLoad();
 

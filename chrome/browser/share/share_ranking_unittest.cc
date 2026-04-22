@@ -201,7 +201,7 @@ TEST(ShareRankingStaticTest, MoreTargetReplacesLast) {
 }
 
 TEST_F(ShareRankingStaticTest, PromotedTargetIsVisible) {
-  // Regression test for <https://crbug.com/1240355>: in "fix more" mode, the
+  // Regression test for <https://crbug.com/40785358>: in "fix more" mode, the
   // last slot on the screen is actually unusable for display since it gets
   // replaced with the "More" option that invokes the system share hub. The
   // logic to promote a target into being visible should therefore not promote
@@ -341,7 +341,7 @@ TEST_F(ShareRankingStaticTest, SwapAboveFold) {
   EXPECT_EQ(expected_displayed, displayed);
 }
 
-// Regression test for https://crbug.com/1233232
+// Regression test for https://crbug.com/40780780
 TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
   std::map<std::string, int> history = {
       {"bar", 2},

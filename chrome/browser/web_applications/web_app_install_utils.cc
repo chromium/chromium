@@ -156,7 +156,7 @@ std::vector<WebAppShortcutsMenuItemInfo> GetShortcutsMenuInfoWithIconSizes(
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_items,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   // Due to the bitmaps possibly being not populated (see
-  // https://crbug.com/1427444), we create empty bitmaps in that case. We
+  // https://crbug.com/40899887), we create empty bitmaps in that case. We
   // continue to check to make sure that there aren't MORE bitmaps than
   // items.
   CHECK_LE(shortcuts_menu_icon_bitmaps.size(), shortcuts_menu_items.size());

@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
 
   // Make sure that session startup finishes before letting chrome exit.
   // Rationale: We've seen CHECK-failures when exiting chrome right after
-  // a new profile is created, see e.g. https://crbug.com/1002066.
+  // a new profile is created, see e.g. https://crbug.com/40097998.
   ash::test::WaitForPrimaryUserSessionStart();
 }
 

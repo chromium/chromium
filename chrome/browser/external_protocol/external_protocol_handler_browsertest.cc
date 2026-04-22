@@ -148,7 +148,7 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
   base::RunLoop loop_;
 };
 
-// Flaky on Mac: https://crbug.com/1143762:
+// Flaky on Mac: https://crbug.com/40728467:
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AutoCloseTabOnNonWebProtocolNavigation DISABLED_AutoCloseTabOnNonWebProtocolNavigation
 #else
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 }
 
-// Flaky on Mac: https://crbug.com/1143762:
+// Flaky on Mac: https://crbug.com/40728467:
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ProtocolLaunchEmitsConsoleLog \
   DISABLED_ProtocolLaunchEmitsConsoleLog

@@ -574,7 +574,7 @@ public abstract class NotificationBuilderBase {
         // TODO(crbug.com/40498483) Post a group summary notification.
         // Notifications with the same group will only actually be stacked if we post a group
         // summary notification. Calling setGroup at least prevents them being autobundled with
-        // all Chrome notifications on N though (see crbug.com/674015).
+        // all Chrome notifications on N though (see crbug.com/40498015).
     }
 
     private static NotificationCompat.Action.Builder getActionBuilder(Action action) {

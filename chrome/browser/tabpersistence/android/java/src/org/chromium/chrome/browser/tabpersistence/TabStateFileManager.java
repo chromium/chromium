@@ -659,7 +659,7 @@ public class TabStateFileManager {
         // Create the byte array from contentsState before opening the FileOutputStream, in case
         // contentsState.buffer is an instance of MappedByteBuffer that is mapped to
         // the tab state file.
-        // Use local ByteBuffer (backed by same byte[] to mitigate crbug.com/1297894)
+        // Use local ByteBuffer (backed by same byte[] to mitigate crbug.com/40822602)
         byte[] contentsStateBytes =
                 getContentStateByteArray(state.contentsState.buffer().asReadOnlyBuffer());
 

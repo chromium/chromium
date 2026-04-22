@@ -21,7 +21,7 @@ const NSSearchPathDirectory kSearchPath = NSLibraryDirectory;
 // migration of the rest of this code to more inclusive language. Unfortunately
 // the file with this filename is the documented way to set initial preferences,
 // so changing this filename will require some care.
-// See https://crbug.com/1097204 for details.
+// See https://crbug.com/40701168 for details.
 const char kInitialPreferencesDirectory[] = "Google";
 const char kInitialPreferencesFileName[] = "Google Chrome Initial Preferences";
 const char kLegacyInitialPreferencesFileName[] =

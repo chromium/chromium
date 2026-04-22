@@ -94,7 +94,7 @@ std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url);
 
 // Tests if `app` is marked as a placeholder app or appears to be one despite
-// not being marked due to corruption, see: https://crbug.com/1427340
+// not being marked due to corruption, see: https://crbug.com/40261748
 bool LooksLikePlaceholder(const WebApp& app);
 
 }  // namespace web_app

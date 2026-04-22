@@ -480,7 +480,7 @@ class UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Regression test for https://crbug.com/1061459
+// Regression test for https://crbug.com/40122451
 // Start a new signing flow while the existing one is hanging on a policy
 // request.
 IN_PROC_BROWSER_TEST_F(

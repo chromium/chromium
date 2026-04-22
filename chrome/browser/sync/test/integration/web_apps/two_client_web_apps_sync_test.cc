@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest,
 }
 
 // Tests that we don't crash when syncing an icon info with no size.
-// Context: https://crbug.com/1058283
+// Context: https://crbug.com/40121073
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   Profile* sourceProfile = GetProfile(0);
   Profile* destProfile = GetProfile(1);
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 // Tests that we don't use the page title if there's no manifest.
 // Pages without a manifest are usually not the correct page to draw information
 // from e.g. login redirects or loading pages.
-// Context: https://crbug.com/1078286
+// Context: https://crbug.com/40689254
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);

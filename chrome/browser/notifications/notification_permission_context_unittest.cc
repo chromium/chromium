@@ -389,7 +389,7 @@ TEST_F(NotificationPermissionContextTest, SecureOriginRequirement) {
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/40734863
 #define MAYBE_TestDenyInIncognitoAfterDelay \
   DISABLED_TestDenyInIncognitoAfterDelay
 #else

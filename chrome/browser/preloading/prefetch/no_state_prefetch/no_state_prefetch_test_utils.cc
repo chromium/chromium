@@ -509,7 +509,7 @@ void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
   // Increase the memory allowed in a prerendered page above normal settings.
   // Debug build bots occasionally run against the default limit, and tests
   // were failing because the prerender was canceled due to memory exhaustion.
-  // http://crbug.com/93076
+  // http://crbug.com/40613397
   no_state_prefetch_manager->mutable_config().max_bytes = 2000 * 1024 * 1024;
 
   no_state_prefetch_manager->mutable_config().rate_limit_enabled = false;

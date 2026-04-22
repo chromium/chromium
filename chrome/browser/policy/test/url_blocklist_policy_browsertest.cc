@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
 }
 
 // Tests that javascript-links are handled properly according to blocklist
-// settings, bug crbug/913334.
+// settings, bug crbug.com/40605746.
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&JSIncrementerPageHandler));

@@ -258,7 +258,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   // The freezing policy isn't enabled on Android yet as it doesn't play well
   // with the freezing logic already in place in renderers. This logic should be
-  // moved to PerformanceManager, this is tracked in https://crbug.com/1156803.
+  // moved to PerformanceManager, this is tracked in https://crbug.com/40160563.
   std::unique_ptr<FreezingOptOutChecker> freezing_opt_out_checker;
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kFreezingFollowsDiscardOptOut)) {

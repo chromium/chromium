@@ -281,6 +281,6 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
   task_environment_.RunUntilIdle();
 
   // Do this after we've finished running tasks to avoid touching
-  // synchronize_displayed_notifications_timer_. See crbug.com/1220122.
+  // synchronize_displayed_notifications_timer_. See crbug.com/40186327.
   bridge.SetDisplayedNotificationsForTesting(nullptr);
 }

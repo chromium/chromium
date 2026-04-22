@@ -69,7 +69,7 @@ bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   // If the Sandbox was ever reported as restricted, it is always restricted.
-  // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
+  // TODO (crbug.com/40262264): Adjust when we have a graduation flow.
   bool was_ever_reported_as_restricted =
       profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1Restricted);
 

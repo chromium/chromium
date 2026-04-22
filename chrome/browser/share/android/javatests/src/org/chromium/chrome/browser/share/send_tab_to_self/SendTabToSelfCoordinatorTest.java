@@ -82,7 +82,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1299410")
+    @DisabledTest(message = "https://crbug.com/40215923")
     @DisableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT

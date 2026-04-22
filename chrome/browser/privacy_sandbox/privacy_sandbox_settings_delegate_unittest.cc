@@ -113,7 +113,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // Even when the capability is currently unrestricted, the sandbox should
   // remain restricted. The capability should be reported as currently
   // unrestricted.
-  // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
+  // TODO (crbug.com/40262264): Adjust when we have a graduation flow.
   SetPrivacySandboxAccountCapability(kTestEmail, true);
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
   EXPECT_TRUE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());

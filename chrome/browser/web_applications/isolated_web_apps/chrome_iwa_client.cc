@@ -96,7 +96,7 @@ void GetIwaSourceForRequestImpl(
     if (!web_contents) {
       // `web_contents` can be `nullptr` in certain edge cases, such as when
       // the browser window closes concurrently with an ongoing request (see
-      // crbug.com/1477761). Return an error if that is the case, instead of
+      // crbug.com/40929036). Return an error if that is the case, instead of
       // silently not querying `NonInstalledBundleInspectionContext`. Should we
       // ever find a case where we _do_ want to continue request processing
       // even though the `WebContents` no longer exists, we can change the

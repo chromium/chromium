@@ -72,7 +72,7 @@ using blink::mojom::SubAppsServiceResultCode;
 namespace web_app {
 
 // TODO(crbug.com/40924576): Replace registrar_unsafe with Locks
-// TODO (crbug.com/1467862): Move from //c/b/ui/web_applications to
+// TODO (crbug.com/40924577): Move from //c/b/ui/web_applications to
 // //c/b/web_applications
 
 namespace {

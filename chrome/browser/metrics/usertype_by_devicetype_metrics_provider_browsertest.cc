@@ -411,7 +411,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   std::unique_ptr<ScopedDeviceSettings> settings_;
 };
 
-// Flaky on CrOS (http://crbug.com/1248669).
+// Flaky on CrOS (http://crbug.com/40790701).
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Uma DISABLED_Uma
 #else

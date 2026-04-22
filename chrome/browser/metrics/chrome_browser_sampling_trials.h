@@ -14,8 +14,8 @@ namespace metrics {
 // if they do not exist (e.g., no variations seed was applied, or the variations
 // seed did not contain the trials). On Windows, there is only one trial to
 // control sampling. On Android, there are two (with different sampling rates,
-// see crbug/1306481 for more details), but the client will only use one. The
-// trial used depends on when metrics reporting was enabled. We create both
+// see crbug.com/40218371 for more details), but the client will only use one.
+// The trial used depends on when metrics reporting was enabled. We create both
 // trials regardless of which one the client would use at the time this is
 // called, because the trial used may change during the session (e.g., if the
 // user disables then re-enables metrics reporting during the same session).

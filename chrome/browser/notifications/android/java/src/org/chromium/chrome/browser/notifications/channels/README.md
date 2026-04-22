@@ -71,7 +71,7 @@ for newly created channels, where appropriate. See [the setDescription documenta
 
 > **Important**: As of October 2017, instrumented channel tests are not run on trybots because
  these tests are restricted to Android O+, and there are no such devices in the waterfall yet (
- [Issue 763951](https://crbug.com/763951)). So when making changes you *must* check all the channel tests
+ [Issue 763951](https://crbug.com/40539445)). So when making changes you *must* check all the channel tests
  pass on an Android O device locally.
 
 

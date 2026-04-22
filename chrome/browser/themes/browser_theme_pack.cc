@@ -781,7 +781,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     std::string_view expected_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Allow IO on UI thread due to deep-seated theme design issues.
-  // (see http://crbug.com/80206)
+  // (see http://crbug.com/40558197)
   base::ScopedAllowBlocking scoped_allow_blocking;
 
   // For now data pack can only have extension type.
@@ -790,7 +790,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
   pack->set_extension_id(expected_id);
 
   // The data pack is loaded in a local variable to be released synchronously
-  // in case of failures (see https://crbug.com/1292632).
+  // in case of failures (see https://crbug.com/40819488).
   // Scale factor parameter is moot as data pack has image resources for all
   // supported scale factors.
   std::unique_ptr<ui::DataPack> data_pack =
@@ -1666,7 +1666,7 @@ void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
 bool BrowserThemePack::LoadRawBitmapsTo(const FilePathMap& file_paths,
                                         ImageCache* image_cache) {
   // Themes should be loaded on the file thread, not the UI thread.
-  // http://crbug.com/61838
+  // http://crbug.com/40472272
   base::ScopedAllowBlocking scoped_allow_blocking;
 
   for (const auto& entry : file_paths) {

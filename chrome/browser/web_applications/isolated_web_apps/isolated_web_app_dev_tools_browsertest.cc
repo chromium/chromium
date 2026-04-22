@@ -51,7 +51,7 @@ class IsolatedWebAppDevToolsTest : public IsolatedWebAppBrowserTestHarness {
   }
 };
 
-// TODO (crbug.com/1522953): Resolve flakiness on linux debug builds.
+// TODO (crbug.com/41495909): Resolve flakiness on linux debug builds.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ErrorPage DISABLED_ErrorPage
 #else

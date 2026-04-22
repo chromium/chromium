@@ -120,7 +120,7 @@
 
 // These tests are disabled under MSAN. The enclave subprocess is written in
 // Rust and FFI from Rust to C++ doesn't work in Chromium at this time
-// (crbug.com/1369167).
+// (crbug.com/40240570).
 #if !defined(MEMORY_SANITIZER)
 
 namespace {

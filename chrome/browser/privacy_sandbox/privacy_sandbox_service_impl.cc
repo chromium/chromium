@@ -515,7 +515,7 @@ void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(
 
     // By design, each interest group should have a joining site or host, and
     // so this could ideally be a NOTREACHED(). However, following
-    // crbug.com/1487191, it is apparent that this is not always true.
+    // crbug.com/40933994, it is apparent that this is not always true.
     // A host or site is expected in other parts of the UI, so we cannot
     // simply display the origin directly (it may also be empty). Instead, we
     // elide it but record a metric to understand how widespread this is.

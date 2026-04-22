@@ -1610,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
 // Verifies that corrupted non-webstore policy-based extension is automatically
 // repaired (reinstalled) even if hashes file is damaged too.
-// crbug.com/1131634: flaky on win
+// crbug.com/40150293: flaky on win
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired \
   DISABLED_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired
@@ -1882,7 +1882,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
 // Verifies that the browser doesn't crash on shutdown. If the extensions are
 // being installed, and the browser is shutdown, it should not lead to a crash
-// as in (crbug/1114191).
+// as in (crbug.com/40710676).
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallForcelistShutdownBeforeInstall) {
   ExtensionRequestInterceptor interceptor;

@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyCancel) {
 
 // Test that saving an HTML file with long (i.e. > 65536 bytes) text content
 // does not crash the browser despite the renderer requiring more than one
-// "pass" to serialize the HTML content (see crash from crbug.com/1085721).
+// "pass" to serialize the HTML content (see crash from crbug.com/40693777).
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithLongTextContent) {
   GURL url =
       embedded_test_server()->GetURL("/save_page/long-text-content.html");
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SecurityLevelHistogram) {
 }
 
 // Tests that a page can be saved as MHTML.
-// Flaky on Windows, crbug.com/1048100
+// Flaky on Windows, crbug.com/40671774
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SavePageAsMHTML DISABLED_SavePageAsMHTML
 #else
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   EXPECT_EQ(received_params.save_type, content::SAVE_PAGE_TYPE_AS_MHTML);
 }
 
-// Flaky on Windows: https://crbug.com/1247404.
+// Flaky on Windows: https://crbug.com/40789916.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SavePageBrowserTest_NonMHTML DISABLED_SavePageBrowserTest_NonMHTML
 #else
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DangerousSubresources) {
 }
 
 // Test that we don't crash when the page contains an iframe that
-// was handled as a download (http://crbug.com/42212).
+// was handled as a download (http://crbug.com/41136499).
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveDownloadableIFrame) {
   GURL url =
       embedded_test_server()->GetURL("/downloads/iframe-src-is-a-download.htm");
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
 }
 
 // Test for crbug.com/40438557.
-// Disabled on Mac due to excessive flakiness. https://crbug.com/1271741
+// Disabled on Mac due to excessive flakiness. https://crbug.com/40805746
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SaveAsMHTML DISABLED_SaveAsMHTML
 #else
@@ -1326,10 +1326,10 @@ class SavePageOriginalVsSavedComparisonTest
           << "Verifying that \"" << expected_substring << "\" appears "
           << "exactly once in the text of web contents";
 
-      // TODO(lukasza): https://crbug.com/1070597 and https://crbug.com/1070886:
-      // Remove the extra test assertions below (and maybe also the
-      // |save_page_type| parameter) after we get a better understanding of the
-      // root cause of test flakiness.
+      // TODO(lukasza): https://crbug.com/40684650 and
+      // https://crbug.com/40684809: Remove the extra test assertions below (and
+      // maybe also the |save_page_type| parameter) after we get a better
+      // understanding of the root cause of test flakiness.
       if (expected_substring == "a.htm: 1b8aae2b-e164-462f-bd5b-98aa366205f2" &&
           save_page_type == content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML) {
         DLOG(INFO) << "Verifying that a.htm frame has fully loaded...";
@@ -1398,7 +1398,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, CrossSite) {
 
 // Test compares original-vs-saved for a page with <object> elements.
 // (see crbug.com/41216547).
-// crbug.com/1070886: disabled because of flakiness.
+// crbug.com/40684809: disabled because of flakiness.
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest,
                        DISABLED_ObjectElementsViaHttp) {
   GURL url(
@@ -1568,7 +1568,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, BrokenImage) {
 }
 
 // Test for saving a page with a cross-site <object> element.
-// Disabled on Windows due to flakiness. crbug.com/1070597.
+// Disabled on Windows due to flakiness. crbug.com/40684650.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CrossSiteObject DISABLED_CrossSiteObject
 #else

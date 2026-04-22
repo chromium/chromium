@@ -181,7 +181,7 @@ void CreateFallbackSamplingTrialsIfNeeded(
     // This leaves 0.5% for OutOfReportingSample.
 
     // We use 5.3% for this set of users to work around an old bug
-    // (crbug.com/1306481). This should be ~10% in practice.
+    // (crbug.com/40218371). This should be ~10% in practice.
     const int kStableSampledInRatePerMille = 53;     // 5.3%
     const int kStableReportingFullRatePerMille = 0;  // 0%
 

@@ -171,7 +171,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
   }
 };
 
-// This is disabled due to flakiness: https://crbug.com/1362518
+// This is disabled due to flakiness: https://crbug.com/40864308
 #define MAYBE_RunTest DISABLED_RunTest
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
                        MAYBE_RunTest) {

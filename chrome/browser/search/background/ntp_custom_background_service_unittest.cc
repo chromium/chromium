@@ -623,7 +623,7 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
-// TODO (crbug/1520873): Fix and re-enable or remove if no longer relevant.
+// TODO (crbug.com/41493847): Fix and re-enable or remove if no longer relevant.
 TEST_F(NtpCustomBackgroundServiceTest,
        DISABLED_TestUpdateCustomBackgroundColor) {
   EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(2);

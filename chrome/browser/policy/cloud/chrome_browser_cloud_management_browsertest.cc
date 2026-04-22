@@ -440,8 +440,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(http://crbug.com/1091438): Enable this test on Android once reporting is
-// implemented.
+// TODO(http://crbug.com/40134194): Enable this test on Android once reporting
+// is implemented.
 #define MAYBE_ChromeDesktopReport DISABLED_ChromeDesktopReport
 #else
 #define MAYBE_ChromeDesktopReport ChromeDesktopReport
@@ -637,7 +637,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
   ChromeBrowserCloudManagementControllerObserver observer_;
 };
 
-// Consistently timing out on Windows. http://crbug.com/1025220
+// Consistently timing out on Windows. http://crbug.com/40659096
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
@@ -1296,7 +1296,7 @@ class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
   ChromeBrowserCloudManagementControllerObserver observer_;
 };  // namespace policy
 
-// Flaky on linux & win: https://crbug.com/1105167
+// Flaky on linux & win: https://crbug.com/40705662
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test

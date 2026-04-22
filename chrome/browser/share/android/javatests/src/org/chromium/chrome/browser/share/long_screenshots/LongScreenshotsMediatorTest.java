@@ -163,7 +163,7 @@ public class LongScreenshotsMediatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1275758")
+    @DisabledTest(message = "https://crbug.com/40207207")
     public void testOnCompositorReady_VeryLargeBitmap_Scales() {
         // Very large size should trigger scaling.
         int bitmapDimension = 1 + MAX_ALLOWABLE_SCREENSHOT_DIMENSION;

@@ -95,7 +95,7 @@ class SupervisionRemovalExtensionTest : public SupervisionExtensionTestBase {};
 // Tests that removing supervision should also remove associated disable
 // reasons, such as DISABLE_CUSTODIAN_APPROVAL_REQUIRED. Extensions should
 // become enabled again after removing supervision. Prevents a regression to
-// crbug.com/1045625.
+// crbug.com/40670349.
 IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
                        PRE_RemoveCustodianApprovalRequirement) {
   ASSERT_TRUE(profile()->IsChild());

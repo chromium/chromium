@@ -19,7 +19,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
   ~PreinstalledWebAppUtilsTest() override = default;
 };
 
-// https://crbug.com/1198780 tracks test failures due to memory smashing on
+// https://crbug.com/40177501 tracks test failures due to memory smashing on
 // Linux, ChromeOS, and the Mac.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetTranslatedName DISABLED_GetTranslatedName

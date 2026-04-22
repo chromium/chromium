@@ -623,7 +623,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
 
 #if BUILDFLAG(IS_MAC)
 // Tests that on MacOS, a full |charge_level| while not plugged does not result
-// in a kDischarging value emitted. See https://crbug.com/1249830.
+// in a kDischarging value emitted. See https://crbug.com/40197761.
 TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
   // Set the initial battery level at 100%.
   power_metrics_reporter_->battery_state_for_testing()->current_capacity = 100;

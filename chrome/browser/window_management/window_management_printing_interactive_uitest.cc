@@ -64,7 +64,7 @@ class WindowManagementTest : public InProcessBrowserTest {
 #endif
 // Test that screen change events occurring while an event handler is running
 // a nested event loop (i.e. via window.print()) do not cause a crash.
-// Regression test for crbug.com/1273841
+// Regression test for crbug.com/40058028
 IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                        MAYBE_NoCrashOnEventsDuringHandlerPrint) {
   // Update the display configuration to mock display changes.

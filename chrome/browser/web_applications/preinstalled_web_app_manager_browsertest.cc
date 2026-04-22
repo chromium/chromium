@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   // Mark web app as user uninstalled without uninstalling it.
   // This is an erroneous state that users have gotten into in the past via
-  // database migration bugs, see crbug.com/1393284 and crbug.com/1363004 for
+  // database migration bugs, see crbug.com/40880824 and crbug.com/1363004 for
   // past incidents.
   {
     UserUninstalledPreinstalledWebAppPrefs prefs(profile()->GetPrefs());
@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_TRUE(registrar().AppMatches(
       app_id, WebAppFilter::InstalledByDefaultManagement()));
 
-  // Simulate the effects of https://crbug.com/1359205 by adding an installed
+  // Simulate the effects of https://crbug.com/40237276 by adding an installed
   // preinstalled web app to the "has been uninstalled by the user" pref even
   // though the web app is still kDefault installed.
   UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Disabled due to test flakiness. https://crbug.com/1267164.
+// Disabled due to test flakiness. https://crbug.com/40802600.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DISABLED_UninstallFromTwoItemAppListFolder) {
   GURL preinstalled_app_start_url("https://example.org/");

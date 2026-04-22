@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   VerifyPermissionsForFile(main_rfh, /*expect_granted=*/false);
 }
 
-// Flaky - https://crbug.com/1289985
+// Flaky - https://crbug.com/40817826
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls
 #else
@@ -1573,7 +1573,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
 
   // The main frame of a newly created frame tree is a prerenderer. It is
   // inactive, all permission requests should be automatically denied.
-  // (crbug.com/1126305): Do not use RFH::IsInactiveAndDisallowActivation() as
+  // (crbug.com/40148089): Do not use RFH::IsInactiveAndDisallowActivation() as
   // it will stop prerendering process.
   EXPECT_EQ(prerender_render_frame_host->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kPrerendering);
@@ -2240,7 +2240,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       "permissions_test/request_from_popup_v3/has_permissions");
 }
 
-// crbug.com/1356314 Failed on Linux.
+// crbug.com/40860324 Failed on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OptionsPageNoPermissonsV2Test \
   DISABLED_OptionsPageNoPermissonsV2Test
@@ -2254,7 +2254,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       /*shown_prompts=*/4);
 }
 
-// crbug.com/1356314 Failed on Linux.
+// crbug.com/40860324 Failed on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OptionsPageHasPermissonsV2Test \
   DISABLED_OptionsPageHasPermissonsV2Test
@@ -2268,7 +2268,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       /*shown_prompts=*/2);
 }
 
-// crbug.com/1356314 Failed on Linux.
+// crbug.com/40860324 Failed on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OptionsPageNoPermissonsV3Test \
   DISABLED_OptionsPageNoPermissonsV3Test
@@ -2282,7 +2282,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       /*shown_prompts=*/4);
 }
 
-// crbug.com/1356314 Failed on Linux.
+// crbug.com/40860324 Failed on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OptionsPageHasPermissonsV3Test \
   DISABLED_OptionsPageHasPermissonsV3Test

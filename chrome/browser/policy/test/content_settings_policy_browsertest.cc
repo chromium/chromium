@@ -173,7 +173,7 @@ class WebBluetoothPolicyTest : public PolicyTest {
   }
 };
 
-// crbug.com/1061063
+// crbug.com/40679403
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_Block DISABLED_Block
 #else

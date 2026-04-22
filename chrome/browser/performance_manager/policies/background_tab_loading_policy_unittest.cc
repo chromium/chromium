@@ -412,7 +412,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsAlreadyLoading) {
   EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
-// Regression test for crbug.com/1166745
+// Regression test for crbug.com/40742293
 TEST_F(BackgroundTabLoadingPolicyTest, LoadingStateLoadedBusy) {
   // Create 1 PageNode to load.
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>

@@ -54,7 +54,7 @@ enum Type {
   // TODO(dmurph): Add a new source here so that the
   // AndroidSmsAppSetupControllerImpl has its own source, and migrate those
   // installations to have the new source.
-  // https://crbug.com/1314055
+  // https://crbug.com/40832630
   kDefault,
   kMaxValue = kDefault,
 };

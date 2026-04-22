@@ -69,7 +69,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
 
     // The description can be an extremely long data url, whose length can cause a low memory
-    // error when applied to a text view. https://crbug.com/1250423
+    // error when applied to a text view. https://crbug.com/40197985
     private static final int MAX_DESCRIPTION_LENGTH = 200;
 
     // Keep this in sync with the DownloadInfoBar.ShownState enum in enums.xml.

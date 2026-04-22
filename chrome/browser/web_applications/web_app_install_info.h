@@ -307,7 +307,7 @@ struct WebAppInstallInfo {
   // given |IconBitmaps| matches that of the shortcut in
   // |shortcuts_menu_item_infos| whose bitmaps it contains.
   // Notes: It is not guaranteed that these are populated if the menu items are.
-  // See https://crbug.com/1427444.
+  // See https://crbug.com/40899887.
   ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps;
 
   // The URL protocols/schemes that the app can handle.

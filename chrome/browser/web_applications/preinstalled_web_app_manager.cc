@@ -215,7 +215,7 @@ struct SynchronizeDecision {
     // Leaves the web app preinstall state alone.
     // Prefer kIgnore over kUninstall in most cases of disabling a config as
     // uninstalling can have permanent consequences for users when bugs are hit.
-    // See crbug.com/1393284 and crbug.com/1363004 for past incidents.
+    // See crbug.com/40880824 and crbug.com/1363004 for past incidents.
     kIgnore,
   } type;
   // TODO(crbug.com/40253925): Rename DisabledReason to
@@ -1106,7 +1106,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
       // Track whether the app to replace is still present. This is
       // possibly due to getting reinstalled by the user or by Chrome app
-      // sync. See https://crbug.com/1266234 for context.
+      // sync. See https://crbug.com/40204047 for context.
       if (proxy &&
           result.code == webapps::InstallResultCode::kSuccessAlreadyInstalled) {
         bool is_installed = false;

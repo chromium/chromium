@@ -179,8 +179,8 @@ void UpdateMetricsPrefsOnPermissionChange(
   // MetricsAndCrashSampling. However, if such a user disables metrics
   // reporting and later re-enables it, they will start using the new trial.
   //
-  // See crbug/1306481 and the comment above |kUsePostFREFixSamplingTrial| in
-  // components/metrics/metrics_pref_names.cc for more details.
+  // See crbug.com/40218371 and the comment above |kUsePostFREFixSamplingTrial|
+  // in components/metrics/metrics_pref_names.cc for more details.
   g_browser_process->local_state()->SetBoolean(
       metrics::prefs::kUsePostFREFixSamplingTrial, true);
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -515,7 +515,7 @@ SearchPrefetchRequest::CreateResponseReader() {
   if (!servable_response_code_received_) {
     // It is not expected to reach here, as DSE prerender should only be
     // triggered after `this` received servable response. But other triggers may
-    // unexpectedly trigger prerendering due to https://crbug.com/1484914.
+    // unexpectedly trigger prerendering due to https://crbug.com/40282403.
     return {};
   }
   TRACE_EVENT0("loading", "SearchPrefetchRequest::CreateResponseReader");

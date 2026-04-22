@@ -128,7 +128,7 @@ void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
   // bug when dealing with named NSImages where it incorrectly handles alpha
   // premultiplication. This is most noticeable with small assets since the 1px
   // border is a much larger component of the small icons.
-  // See http://crbug.com/305373 for details.
+  // See http://crbug.com/40336190 for details.
   for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32}) {
     const auto& found = images.find(id);
     DCHECK(found != images.end());

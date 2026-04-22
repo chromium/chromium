@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest, PostScriptLevel3Image) {
                                             "embedded_images_ps_level3.emf");
 }
 
-// Regression test for crbug.com/1399155.
+// Regression test for crbug.com/40883034.
 IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest,
                        PostScriptLevel2FaxCompress) {
   const PdfRenderSettings pdf_settings(
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest,
                                             "bug_1399155.emf");
 }
 
-// Regression test for crbug.com/1399155.
+// Regression test for crbug.com/40883034.
 IN_PROC_BROWSER_TEST_P(PdfToEmfConverterBrowserTest,
                        PostScriptLevel3FaxCompress) {
   const PdfRenderSettings pdf_settings(

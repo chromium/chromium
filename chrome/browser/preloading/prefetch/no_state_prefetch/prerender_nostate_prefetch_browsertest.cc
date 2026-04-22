@@ -1291,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ResponseHeaderCSP) {
 
 // Checks that CSP in the meta tag cancels the prefetch.
 // TODO(mattcary): probably this behavior should be consistent with
-// response-header CSP. See crbug/656581.
+// response-header CSP. See crbug.com/40489267.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MetaTagCSP) {
   GURL second_script_url(base::StringPrintf(
       "http://%s%s", test_utils::kSecondaryDomain, kPrefetchScript2));
@@ -1569,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, Loop) {
   WaitForRequestCount(src_server()->GetURL(kPrefetchScript), 1);
 }
 
-// Crashes on Win.  http://crbug.com/1516892
+// Crashes on Win.  http://crbug.com/41489875
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_RendererCrash DISABLED_RendererCrash
 #else

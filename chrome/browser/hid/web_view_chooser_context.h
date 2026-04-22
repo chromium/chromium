@@ -20,7 +20,7 @@ class HidChooserContext;
 // disk.
 //
 // WebView permissions should be stored separately from other permissions for
-// security reasons, e.g., crbug/1462709.
+// security reasons, e.g., crbug.com/40066989.
 class WebViewChooserContext
     : public permissions::ObjectPermissionContextBase::PermissionObserver {
  public:

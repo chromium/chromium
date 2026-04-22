@@ -984,7 +984,7 @@ void ThemeService::OnThemeBuiltFromExtension(
 
   if (!pack->is_valid()) {
     // TODO(erg): We've failed to install the theme; perhaps we should tell the
-    // user? http://crbug.com/34780
+    // user? http://crbug.com/41092094
     LOG(ERROR) << "Could not load theme.";
     return;
   }

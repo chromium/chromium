@@ -72,7 +72,7 @@ void PrinterQueryOop::OnDidUseDefaultSettings(
                        << result;
 
     // TODO(crbug.com/40561724)  Fill in support for handling of access-denied
-    // result code.  Blocked on crbug.com/1243873 for Windows.
+    // result code.  Blocked on crbug.com/40787526 for Windows.
   } else {
     VLOG(1) << "Use default settings from service complete";
     result = mojom::ResultCode::kSuccess;
@@ -115,7 +115,7 @@ void PrinterQueryOop::OnDidAskUserForSettings(
     }
 
     // TODO(crbug.com/40561724)  Fill in support for handling of access-denied
-    // result code.  Blocked on crbug.com/1243873 for Windows.
+    // result code.  Blocked on crbug.com/40787526 for Windows.
   }
 
   InvokeSettingsCallback(std::move(callback), result);

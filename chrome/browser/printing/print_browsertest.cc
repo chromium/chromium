@@ -886,8 +886,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SelectionContainsIframe) {
   PrintAndWaitUntilPreviewIsReady(kParams);
 }
 
-// https://crbug.com/1125972
-// https://crbug.com/1131598
+// https://crbug.com/40147936
+// https://crbug.com/40150272
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrolling) {
   ASSERT_NO_FATAL_FAILURE(
       StartEmbeddedTestServerAndNavigate("/printing/with-scrollable.html"));
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrolling) {
   EXPECT_EQ(old_scroll3, new_scroll3);
 }
 
-// https://crbug.com/1131598
+// https://crbug.com/40150272
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_NoScrollingFrameset) {
   ASSERT_NO_FATAL_FAILURE(
       StartEmbeddedTestServerAndNavigate("/printing/frameset.html"));
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_NoScrollingFrameset) {
   EXPECT_EQ(old_scroll, new_scroll);
 }
 
-// https://crbug.com/1125972
+// https://crbug.com/40147936
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrollingVerticalRl) {
   ASSERT_NO_FATAL_FAILURE(
       StartEmbeddedTestServerAndNavigate("/printing/vertical-rl.html"));
@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrollingVerticalRl) {
                          "window.scrollX"));
 }
 
-// https://crbug.com/1285208
+// https://crbug.com/40814851
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LegacyLayoutEngineFallback) {
   ASSERT_NO_FATAL_FAILURE(StartEmbeddedTestServerAndNavigate(
       "/printing/legacy-layout-engine-known-bug.html"));
@@ -1722,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
   EXPECT_EQ(rendered_page_count(), 3u);
 }
 
-// Disabled due to flakiness: crbug.com/1311998
+// Disabled due to flakiness: crbug.com/40831392
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        DISABLED_PDFPluginNotKeyboardFocusable) {
   ASSERT_NO_FATAL_FAILURE(

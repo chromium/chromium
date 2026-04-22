@@ -519,8 +519,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTestWithVerifier,
   ASSERT_TRUE(
       AllProfilesContainSamePasswordFormsAsVerifier(GetPasswordStoreType()));
   // There should be only one deletion. This is to test the bug
-  // (crbug.com/1046309) where the USS client was local deletions when receiving
-  // remote deletions.
+  // (crbug.com/40670749) where the USS client was local deletions when
+  // receiving remote deletions.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.DataTypeEntityChange.PASSWORD",
                    syncer::DataTypeEntityChange::kLocalDeletion));
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
       ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 }
 
-// Regression test for crbug.com/1346576.
+// Regression test for crbug.com/40232558.
 IN_PROC_BROWSER_TEST_P(
     TwoClientPasswordsSyncTest,
     MatchingDeletionsConflictDoesNotInvokeTrimmingEntitySpecifics) {

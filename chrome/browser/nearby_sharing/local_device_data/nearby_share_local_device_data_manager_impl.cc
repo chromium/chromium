@@ -279,7 +279,7 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
     UploadCompleteCallback callback,
     const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
         response) {
-  // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // NOTE(http://crbug.com/40767495): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
 
@@ -290,7 +290,7 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
     UploadCompleteCallback callback,
     const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
         response) {
-  // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // NOTE(http://crbug.com/40767495): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
 
@@ -311,7 +311,7 @@ void NearbyShareLocalDeviceDataManagerImpl::HandleUpdateDeviceResponse(
                             response->person_name());
   }
 
-  // NOTE(http://crbug.com/1211189): An icon URL can change without the
+  // NOTE(http://crbug.com/40767495): An icon URL can change without the
   // underlying image changing. For example, icon URLs for some child accounts
   // can rotate on every UpdateDevice RPC call; a timestamp is included in the
   // URL. The icon token is used to detect changes in the underlying image. If a

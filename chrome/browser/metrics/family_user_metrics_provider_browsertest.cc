@@ -157,8 +157,8 @@ class FamilyUserMetricsProviderGuestModeTest
   ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 };
 
-// Prevents a regression to crbug/1137352. Also tests secondary account metrics
-// not reported in guest mode.
+// Prevents a regression to crbug.com/40152633. Also tests secondary account
+// metrics not reported in guest mode.
 IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
                        NoCrashInGuestMode) {
   base::HistogramTester histogram_tester;

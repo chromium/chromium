@@ -263,7 +263,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 #endif
 
 // Returns a reference to the static UpdateShortcuts lock.
-// See https://crbug.com/1090548 for more info.
+// See https://crbug.com/40133807 for more info.
 base::Lock& GetUpdateShortcutsLock() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
@@ -580,7 +580,7 @@ bool WebAppShortcutCreator::UpdateShortcuts(
   // UpdateShortcuts call at a time will run at once past here.  Not
   // protecting against that can result in multiple CreateShortcutsAt()
   // calls deleting and creating the app shim folder at once.
-  // See https://crbug.com/1090548 for more info.
+  // See https://crbug.com/40133807 for more info.
   base::AutoLock auto_lock(GetUpdateShortcutsLock());
 
   // Get the list of paths to (re)create by bundle id (wherever it was moved
@@ -619,7 +619,7 @@ void WebAppShortcutCreator::RevealAppShimInFinder(
       app_path);
   // Perform the call to NSWorkspace on the UI thread. Calling it on the IO
   // thread appears to cause crashes.
-  // https://crbug.com/1067367
+  // https://crbug.com/40124995
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(closure));
 }
 
@@ -768,7 +768,7 @@ void WebAppShortcutCreator::CreateShortcutsAt(
   // we must guarantee that no more than one CreateShortcutsAt() call will
   // ever run at a time.  We have an UpdateShortcuts lock for this purpose,
   // so check that lock has been acquired on this thread before proceeding.
-  // See https://crbug.com/1090548 for more info.
+  // See https://crbug.com/40133807 for more info.
   GetUpdateShortcutsLock().AssertAcquired();
 
   base::ScopedTempDir scoped_temp_dir;
@@ -1010,7 +1010,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   // changes, instead of relying on localization, then this will need to change
   // to use GetShortcutBaseName, most likely only for non-legacy-apps
   // (in other words, revert to what the code looked like before on these
-  // lines). See also crbug.com/1021804.
+  // lines). See also crbug.com/40657267.
   base::FilePath app_name = app_path.BaseName().RemoveFinalExtension();
   plist[base::apple::CFToNSPtrCast(kCFBundleNameKey)] =
       base::apple::FilePathToNSString(app_name);

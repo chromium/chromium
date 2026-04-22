@@ -30,7 +30,7 @@ class RemoveInstallUrlJob;
 // recently installed non-placeholder-like web app.
 // Placeholder-like web apps are either marked as placeholder or have
 // their name set to their start URL like a placeholder. This is an erroneous
-// state some web apps have gotten into, see https://crbug.com/1427340.
+// state some web apps have gotten into, see https://crbug.com/40261748.
 class DedupeInstallUrlsCommand : public WebAppCommand<AllAppsLock> {
  public:
   static base::AutoReset<bool> ScopedSuppressForTesting();

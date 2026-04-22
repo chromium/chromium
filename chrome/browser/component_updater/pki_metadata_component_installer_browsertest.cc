@@ -2892,7 +2892,7 @@ class PKIMetadataComponentChromeRootStoreUpdateWithDoHServerTest
     SystemNetworkContextManager::GetStubResolverConfigReader()
         ->SetOverrideDnsOverHttpsConfigSource(std::move(doh_config_source_));
     // The net stack doesn't enable DoH when it can't find a system DNS config
-    // (see https://crbug.com/1251715).
+    // (see https://crbug.com/40198483).
     SetReplaceSystemDnsConfig();
 
     // Ensure that the DoH configuration is picked up.

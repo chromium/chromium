@@ -108,7 +108,7 @@ void TouchUIControllerStatsTracker::OnSessionEnded(
   // |last_touch_mode_switch_in_session_| because an OnSessionEnded()
   // call may happen slightly after the session end time. Assuming the
   // difference is small, the touch mode time left unaccounted for is small.
-  // Accept this error and ignore this time. See crbug.com/1165462.
+  // Accept this error and ignore this time. See crbug.com/40163874.
   if (touch_ui_controller_->touch_ui() &&
       session_end >= last_touch_mode_switch_in_session_) {
     touch_mode_duration_in_session_ +=

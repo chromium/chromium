@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 }
 
 // Disabled on linux+ASAN, macOS+ASAN, chromeOS+ASAN and windows due to high
-// failure rate: crbug.com/1199854 crbug.com/1297485.
+// failure rate: crbug.com/40178025 crbug.com/40215178.
 // TODO(crbug.com/40904444): Re-enable this test
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        DISABLED_LanguageDetectionWithBackgroundTab) {

@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Similar to the above, but passphrase is obtained by
-// SetEncryptionPassphrase(). Regression test for crbug.com/1298062.
+// SetEncryptionPassphrase(). Regression test for crbug.com/40822722.
 IN_PROC_BROWSER_TEST_P(
     SingleClientCustomPassphraseSyncTest,
     ShouldRestorePassphraseOnClientDataObsoleteResponseWhenPassphraseSetByEncryption) {

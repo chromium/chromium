@@ -621,7 +621,7 @@ class WebAppCommandScheduler {
 
   // Finds web apps that share the same install URLs (possibly across different
   // install sources) and dedupes the install URL configs into the most
-  // recently installed non-placeholder-like web app. See crbug.com/1427340.
+  // recently installed non-placeholder-like web app. See crbug.com/40261748.
   void ScheduleDedupeInstallUrls(base::OnceClosure callback,
                                  const base::Location& location = FROM_HERE);
 

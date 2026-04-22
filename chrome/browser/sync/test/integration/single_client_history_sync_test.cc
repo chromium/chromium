@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest, UploadsAllFields) {
   // cause it to get updated with some details that are known only now, e.g.
   // the visit duration.
   // Note that currently, HistoryBackend depends on the presence of a referrer
-  // to correctly populate the visit_duration (see crbug.com/1357013).
+  // to correctly populate the visit_duration (see crbug.com/40236508).
   GURL url2 =
       embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
   NavigateToURL(url2, ui::PAGE_TRANSITION_LINK, /*referrer=*/url1);
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 
   // Turn Sync off *in two steps* (similar to what actually happens in practice,
-  // see crbug.com/1383912#c5):
+  // see crbug.com/40246310#c5):
   // 1) Remove the Sync-consent bit (but leave the primary account around).
   // 2) Actually remove the primary account.
   // After step 1, Sync will *not* be fully disabled, but rather try to start up

@@ -27,7 +27,7 @@ void DragDownloadItem(const download::DownloadItem* download,
 
   // If this drag was initiated from a views::Widget, that widget may have
   // mouse capture. Drags via View::DoDrag() usually release it. The code below
-  // bypasses that, so release manually. See https://crbug.com/863377.
+  // bypasses that, so release manually. See https://crbug.com/41401418.
   if (widget) {
     widget->ReleaseCapture();
   }

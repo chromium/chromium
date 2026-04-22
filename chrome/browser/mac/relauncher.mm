@@ -265,7 +265,7 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
     // passed to main(), so use those. Access them through _NSGetArgc and
     // _NSGetArgv because NXArgc and NXArgv are normally only available to a
     // main executable via crt1.o and this code will run from a dylib, and
-    // because of http://crbug.com/139902.
+    // because of http://crbug.com/40249743.
     const int* argcp = _NSGetArgc();
     if (!argcp) {
       NOTREACHED();

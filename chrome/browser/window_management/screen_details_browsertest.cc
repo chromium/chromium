@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, GetScreenDetailsBasic) {
 }
 
 // Tests that ScreenDetailed and window.screen both yield display metrics, not
-// viewport dimensions, while the frame is fullscreen. See crbug.com/1367416
+// viewport dimensions, while the frame is fullscreen. See crbug.com/40867640
 IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, FullscreenSize) {
   auto* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(embedded_test_server()->Start());

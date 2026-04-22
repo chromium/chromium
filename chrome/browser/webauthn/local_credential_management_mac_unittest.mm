@@ -192,7 +192,7 @@ class MockKeychainLocalCredentialManagementTest : public testing::Test {
        .metadata_secret = "TestMetadataSecret"}};
 };
 
-// Regression test for crbug.com/1401342.
+// Regression test for crbug.com/40250693.
 TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
   EXPECT_CALL(mock_keychain_, ItemCopyMatching)
       .WillOnce(testing::Return(errSecInternalComponent));

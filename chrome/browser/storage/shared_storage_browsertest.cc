@@ -1748,7 +1748,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// See crbug.com/1453981: A CL on V8 side (https://crrev.com/c/4582948) made
+// See crbug.com/40916708: A CL on V8 side (https://crrev.com/c/4582948) made
 // each Api call slower in Android debug mode compared to what we had before
 // because of additional DCHECKs. So we disable on Android debug builds where
 // this test times out.
@@ -1851,7 +1851,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-// See crbug.com/1453981: A CL on V8 side (https://crrev.com/c/4582948) made
+// See crbug.com/40916708: A CL on V8 side (https://crrev.com/c/4582948) made
 // each Api call slower in Android debug mode compared to what we had before
 // because of additional DCHECKs. So we disable on Android debug builds where
 // this test times out.

@@ -349,7 +349,7 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
 
     // Some profile types (e.g. sign-in screen) don't support app list.
     // Temporarily Disable AppListSyncableService for tablet form factor
-    // devices. See crbug/1013732 for details.
+    // devices. See crbug.com/40652815 for details.
     if (app_list_syncable_service_.value() &&
         !ash::switches::IsTabletFormFactor()) {
       // Runs in sync transport-mode and full-sync mode.

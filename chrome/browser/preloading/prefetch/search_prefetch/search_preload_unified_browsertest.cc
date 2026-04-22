@@ -2207,7 +2207,7 @@ class SearchPreloadServingTestURLLoader
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
 };
 
-// Regression test for https://crbug.com/1493229.
+// Regression test for https://crbug.com/40936560.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                        PrerenderHandlerExecutedAfterPrefetchHandler) {
   base::HistogramTester histogram_tester;

@@ -183,7 +183,7 @@ bool ShouldRegisterFileHandlersWithOs() {
 }
 
 bool FileHandlingIconsSupportedByOs() {
-  // File type icons are not supported on Linux: see https://crbug.com/1218235
+  // File type icons are not supported on Linux: see https://crbug.com/40185572
   return false;
 }
 

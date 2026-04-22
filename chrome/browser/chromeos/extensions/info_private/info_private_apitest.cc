@@ -49,7 +49,7 @@ class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
   }
 };
 
-// Flaky crashes. https://crbug.com/1226266
+// Flaky crashes. https://crbug.com/40776299
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   // Set the initial timezone different from what JS function
   // timezoneSetTest() will attempt to set.

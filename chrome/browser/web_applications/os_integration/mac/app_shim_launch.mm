@@ -80,7 +80,7 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   // When running unbundled (e.g, when running browser_tests), the path
   // returned by base::apple::FrameworkBundlePath will not include the version.
   // Manually append it.
-  // https://crbug.com/1286681
+  // https://crbug.com/40210938
   const base::FilePath framework_bundle_path =
       base::apple::AmIBundled() ? base::apple::FrameworkBundlePath()
                                 : base::apple::FrameworkBundlePath()

@@ -1004,7 +1004,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
               ->RecreateSessionStorage(tab.session_storage_persistent_id);
     }
 
-    // Relabel group IDs to prevent duplicating groups. See crbug.com/1202102.
+    // Relabel group IDs to prevent duplicating groups. See crbug.com/40055647.
     std::optional<tab_groups::TabGroupId> new_group;
     if (tab.group) {
       auto it = new_group_ids->find(*tab.group);

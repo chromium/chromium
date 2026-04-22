@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   EXPECT_EQ(kDefaultBillingAddressID, cards[0]->billing_address_id());
 }
 
-// Regression test for crbug.com/1203984.
+// Regression test for crbug.com/40179805.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        ShouldUpdateWhenDownloadingManyUpdates) {
   // Tests that a Wallet update is successfully applied even if there are more

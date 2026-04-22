@@ -183,7 +183,7 @@ void LiveCaptionSpeechRecognitionHostTest::DispatchTranscriptionCallback(
   EXPECT_EQ(expected_success, success);
 }
 
-// Disabled due to flaky crashes; https://crbug.com/1216304.
+// Disabled due to flaky crashes; https://crbug.com/40184759.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        DISABLED_DestroysWithoutCrashing) {
   content::RenderFrameHost* frame_host = browser()

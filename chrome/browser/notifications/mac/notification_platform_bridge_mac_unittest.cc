@@ -428,7 +428,7 @@ TEST_F(NotificationPlatformBridgeMacTest,
   EXPECT_EQ(false, remaining_notification->meta->id->profile->incognito);
 }
 
-// Regression test for crbug.com/1182795
+// Regression test for crbug.com/40751657
 TEST_F(NotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
       CreateBannerDispatcher(), CreateAlertDispatcher(),

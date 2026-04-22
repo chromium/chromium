@@ -263,7 +263,7 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
   }
 }
 
-// Tests handling crashes fixed in crbug.com/1417955.
+// Tests handling crashes fixed in crbug.com/40894450.
 TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
   const int num_menu_items = 2;
 
@@ -291,7 +291,7 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
   ASSERT_FALSE(os_integration_state.has_shortcut_menus());
 }
 
-// Tests handling crashes fixed in crbug.com/1417955.
+// Tests handling crashes fixed in crbug.com/40894450.
 TEST_F(ShortcutMenuHandlingSubManagerConfigureTest,
        LessShortcutMenuItemsThanIconInfos) {
   const int num_menu_items = 2;
@@ -365,7 +365,7 @@ TEST_F(ShortcutMenuHandlingSubManagerConfigureTest,
   EXPECT_EQ(shortcut_menu_info.icon_data_monochrome_size(), 2);
 }
 
-// This tests our handling of https://crbug.com/1427444.
+// This tests our handling of https://crbug.com/40899887.
 TEST_F(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
   const int num_menu_items = 2;
 

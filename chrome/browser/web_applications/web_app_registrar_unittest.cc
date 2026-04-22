@@ -1388,8 +1388,8 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
 }
 
 TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
-  // Please note, this is a bad state done to test crbug.com/1427340.
-  // This should not occur once crbug.com/1434692 is implemented.
+  // Please note, this is a bad state done to test crbug.com/40261748.
+  // This should not occur once crbug.com/40264854 is implemented.
   StartWebAppProvider();
 
   // Add first app with install_url in the registry as a non-placeholder app,
@@ -1419,7 +1419,7 @@ TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
   auto placeholder_id = registrar().LookupPlaceholderAppId(
       install_url, WebAppManagement::kPolicy);
 
-  // This will fail if the fix for crbug.com/1427340 is reverted.
+  // This will fail if the fix for crbug.com/40261748 is reverted.
   EXPECT_TRUE(placeholder_id.has_value());
   EXPECT_EQ(placeholder_id.value(), app_id2);
 }

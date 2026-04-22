@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
              qr_code_generator::LocatorStyle::kSquare);
 }
 
-// This is a regression test for https://crbug.com/1334066.  It tests that the
+// This is a regression test for https://crbug.com/40846193.  It tests that the
 // QR code generator can handle fairly big inputs (the URL below is more than
 // 800 bytes long).
 //
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest, BigUrl) {
              qr_code_generator::LocatorStyle::kRounded);
 }
 
-// This is a regression test for https://crbug.com/1334066.  It tests that the
+// This is a regression test for https://crbug.com/40846193.  It tests that the
 // QR code generator can handle fairly big inputs (the URL below is 2331 bytes
 // long).
 //

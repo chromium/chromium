@@ -92,7 +92,7 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   }
 };
 
-// Regression test for crbug.com/1182030
+// Regression test for crbug.com/40170623
 TEST_F(WebAppUninstallAndReplaceJobTest,
        WebAppMigrationPreservesShortcutStates) {
   const GURL kOldAppUrl("https://old.app.com");

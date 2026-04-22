@@ -300,7 +300,7 @@ TEST_F(NoStatePrefetchTest, LinkRelNextWithNSPDisabled) {
       "Prerender.FinalStatus", FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED, 1);
 }
 
-// Flaky on Android and Mac, crbug.com/1087876.
+// Flaky on Android and Mac, crbug.com/40695134.
 TEST_F(NoStatePrefetchTest, DISABLED_PrerenderDisabledOnLowEndDevice) {
   GURL url("http://www.google.com/");
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
@@ -344,7 +344,7 @@ TEST_F(NoStatePrefetchTest, FoundTest) {
       url, &prefetch_age, &final_status, &origin));
 }
 
-// Flaky on Android, crbug.com/1088454.
+// Flaky on Android, crbug.com/40133399.
 // Make sure that if queue a request, and a second prerender request for the
 // same URL comes in, that the second request attaches to the first prerender,
 // and we don't use the second prerender contents.
@@ -649,7 +649,7 @@ TEST_F(NoStatePrefetchTest, MaxConcurrencyTest) {
   }
 }
 
-// Flaky on Android: https://crbug.com/1105908
+// Flaky on Android: https://crbug.com/40706063
 TEST_F(NoStatePrefetchTest, DISABLED_AliasURLTest) {
   SetConcurrency(7);
 
@@ -946,8 +946,8 @@ TEST_F(NoStatePrefetchTest, LinkManagerAbandonThenCancel) {
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
 }
 
-// Flaky on Android, crbug.com/1087876.
-// Flaky on Mac and Linux, crbug.com/1087735.
+// Flaky on Android, crbug.com/40695134.
+// Flaky on Mac and Linux, crbug.com/40695035.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LinkManagerAddTwiceCancelTwice \
@@ -989,7 +989,7 @@ TEST_F(NoStatePrefetchTest, MAYBE_LinkManagerAddTwiceCancelTwice) {
 
 // TODO(gavinp): Update this test after abandon has an effect on Prerenders,
 // like shortening the timeouts.
-// Flaky on Android and Linux, crbug.com/1087876 & crbug.com/1087736.
+// Flaky on Android and Linux, crbug.com/40695134 & crbug.com/40695036.
 TEST_F(NoStatePrefetchTest, DISABLED_LinkManagerAddTwiceAbandonTwiceUseTwice) {
   SetConcurrency(2);
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
@@ -1081,7 +1081,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerExpireThenAddAgain) {
   ASSERT_EQ(second_no_state_prefetch_contents, entry.get());
 }
 
-// Flaky on Android, crbug.com/1087876.
+// Flaky on Android, crbug.com/40695134.
 TEST_F(NoStatePrefetchTest, DISABLED_LinkManagerCancelThenAddAgain) {
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
   GURL url("http://www.myexample.com");

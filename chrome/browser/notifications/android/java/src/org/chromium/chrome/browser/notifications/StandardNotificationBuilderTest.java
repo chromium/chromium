@@ -201,7 +201,8 @@ public class StandardNotificationBuilderTest {
     }
 
     /**
-     * Regression test for crash observed on Samsung/Coolpad Marshmallow devices - see crbug/829367.
+     * Regression test for crash observed on Samsung/Coolpad Marshmallow devices - see
+     * crbug.com/41381026.
      */
     @Test
     @Feature({"Browser", "Notifications"})

@@ -1253,7 +1253,7 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   bool user_approved_path =
       !download_->GetForcedFilePath().empty() &&
       // Drag and drop download paths are not approved by the user. See
-      // https://crbug.com/1513639
+      // https://crbug.com/41486208
       download_->GetDownloadSource() != download::DownloadSource::DRAG_AND_DROP;
   if (HasPromptedForPath() ||
       confirmation_reason_ != DownloadConfirmationReason::NONE ||

@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ShouldProceedWarn) {
   }
 }
 
-// Test case for crbug.com/1213143
+// Test case for crbug.com/40768586
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, Reporting) {
   base::HistogramTester histogram_tester;
 

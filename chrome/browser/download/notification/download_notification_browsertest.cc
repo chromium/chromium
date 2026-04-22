@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest, DownloadFile) {
   EXPECT_FALSE(GetNotification(notification_id()));
 }
 
-// Flaky test: crbug/822470.
+// Flaky test: crbug.com/41376889.
 IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
                        DISABLED_DownloadDangerousFile) {
   GURL download_url(
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest, DownloadRemoved) {
   EXPECT_EQ(0u, downloads.size());
 }
 
-// Test is flaky: https://crbug.com/1252430
+// Test is flaky: https://crbug.com/40793163
 IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
                        DISABLED_DownloadMultipleFiles) {
   GURL url1(SlowDownloadInterceptor::kUnknownSizeUrl);

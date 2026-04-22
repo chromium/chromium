@@ -1218,7 +1218,7 @@ IN_PROC_BROWSER_TEST_P(
                    syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
@@ -3142,7 +3142,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
               ElementsAre(IsUrlBookmark(kTitle2, kUrl2)));
 }
 
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+// Android doesn't currently support PRE_ tests, see crbug.com/40145099.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
                        PRE_PersistAccountBookmarksAcrossRestarts) {

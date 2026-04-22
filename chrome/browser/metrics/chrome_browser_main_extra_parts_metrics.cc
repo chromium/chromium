@@ -941,7 +941,7 @@ void RecordStartupMetrics() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Record whether Chrome is the default browser or not.
-  // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
+  // Disabled on Linux due to hanging browser tests, see crbug.com/40770414.
 #if !BUILDFLAG(IS_LINUX)
   shell_integration::DefaultWebClientState default_state =
       shell_integration::GetDefaultBrowser();

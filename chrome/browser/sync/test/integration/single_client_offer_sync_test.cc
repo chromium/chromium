@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EnabledByDefault) {
 // (temporarily) stopped, e.g. due to a persistent auth error.
 //
 // Excluded on Android because SyncServiceImplHarness doesn't have the ability
-// to mimic sync-paused on Android due to https://crbug.com/1373448.
+// to mimic sync-paused on Android due to https://crbug.com/40871747.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSyncPaused) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});

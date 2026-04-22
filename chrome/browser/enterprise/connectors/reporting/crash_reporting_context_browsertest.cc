@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
   CrashReportingContext* crash_reporting_context =
       CrashReportingContext::GetInstance();
 
-  // This should not crash. See https://crbug.com/1441715.
+  // This should not crash. See https://crbug.com/40266629.
   crash_reporting_context->OnCloudReportingLaunched(nullptr);
 }
 

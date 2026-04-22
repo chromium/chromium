@@ -132,9 +132,9 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
   //
   // There's a race condition in macOS code where unpublishing an `NSProgress`
   // object for a file that was renamed will sometimes leave a progress
-  // indicator visible in the Finder (https://crbug.com/1304233). Therefore, as
+  // indicator visible in the Finder (https://crbug.com/40217637). Therefore, as
   // soon as `DownloadItem::AllDataSaved()` returns true, do the unpublish.
-  // As an additional bug to avoid (http://crbug.com/166683), never update the
+  // As an additional bug to avoid (http://crbug.com/40297082), never update the
   // data of an `NSProgress` after the file name has changed, as that can result
   // in the file being stuck in an in-progress state in the Dock.
   if (download->GetState() == download::DownloadItem::IN_PROGRESS &&

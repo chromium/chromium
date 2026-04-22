@@ -85,7 +85,7 @@ class SyncServiceImplHarness {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // The underlying implementation for mimic-ing persistent auth errors isn't
-  // implemented on Android, see https://crbug.com/1373448.
+  // implemented on Android, see https://crbug.com/40871747.
 #if !BUILDFLAG(IS_ANDROID)
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.

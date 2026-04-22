@@ -325,7 +325,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
   // Due to the extensions sync system setting ordinals on sync, this can get
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
-  // https://crbug.com/1101781
+  // https://crbug.com/40703751
   // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
   // different more restrictive filter should likely be used instead.
   if (!registrar_->AppMatches(app_id, WebAppFilter::IsAppSurfaceableToUser())) {
@@ -344,7 +344,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
   // Due to the extensions sync system setting ordinals on sync, this can get
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
-  // https://crbug.com/1101781
+  // https://crbug.com/40703751
   // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
   // different more restrictive filter should likely be used instead.
   if (!registrar_->AppMatches(app_id, WebAppFilter::IsAppSurfaceableToUser())) {

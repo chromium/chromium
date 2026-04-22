@@ -254,7 +254,7 @@ TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
             kInterval);
 }
 
-// Regression test for crbug.com/1273251.
+// Regression test for crbug.com/40206265.
 TEST_F(TabUsageScenarioTrackerTest,
        FullScreenVideoSingleMonitor_StopPlayingWithTwoMonitors) {
   auto contents = CreateWebContents();

@@ -135,7 +135,7 @@ public class LongScreenshotsMediator
         // Scale down the bitmap if passing it to
         // ImageView.setImageBitmap() would throw a too-large
         // error due to OOM (out of memory).
-        // TODO(http://crbug.com/1275758): We could include this
+        // TODO(http://crbug.com/40207207): We could include this
         // logic inside the generator and reuse mScaleFactor
         // there.
         if (bitmapByteCount >= DOWNSCALE_AREA_THRESHOLD_BYTES) {

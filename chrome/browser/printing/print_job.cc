@@ -98,7 +98,7 @@ bool PrintWithReducedRasterization(PrefService* prefs) {
 }
 
 PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
-  // TODO(thestig): Figure out why crbug.com/1083911 occurred, which is likely
+  // TODO(thestig): Figure out why crbug.com/40692772 occurred, which is likely
   // because `web_contents` was null. As a result, this section has many more
   // pointer checks to avoid crashing.
   content::BrowserContext* context =

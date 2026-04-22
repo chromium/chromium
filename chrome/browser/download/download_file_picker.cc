@@ -82,7 +82,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // could be null, then it will cause the select file dialog is not modal
   // dialog in Linux (See SelectFileImpl() in select_file_dialog_linux_gtk.cc).
   // and windows.Here we make owning_window host to browser current active
-  // window if it is null. https://crbug.com/1301898
+  // window if it is null. https://crbug.com/40825014
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (!owning_window || !owning_window->GetHost()) {
     owning_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile()

@@ -156,8 +156,8 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
                                     shortcut_menu_item_info.size());
 
   // Due to the bitmaps possibly being not populated (see
-  // https://crbug.com/1427444), we just have empty bitmap data in that case. We
-  // continue to check to make sure that there aren't MORE bitmaps than
+  // https://crbug.com/40899887), we just have empty bitmap data in that case.
+  // We continue to check to make sure that there aren't MORE bitmaps than
   // items.
   while (downloaded_shortcut_menu_items.size() <
          shortcut_menu_item_info.size()) {

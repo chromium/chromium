@@ -32,7 +32,7 @@ profile_metrics::BrowserProfileType GetProfileType(Profile* profile) {
   // purposes (e.g. signin screen), to system metrics profiles. This is done
   // here as, due to dependency injection, the service itself does not hold a
   // profile pointer.
-  // TODO (crbug.com/1450490) - Move to simply not creating the service for
+  // TODO (crbug.com/40270186) - Move to simply not creating the service for
   // these types of profiles.
   if (!ash::IsUserBrowserContext(profile)) {
     return profile_metrics::BrowserProfileType::kSystem;

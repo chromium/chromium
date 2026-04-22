@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
   // This should not disable syncing of autofill profiles. Otherwise, if the
   // user deletes profiles while Autofill is disabled and then re-enables
   // Autofill, sync retrieves the seemingly deleted profiles
-  // (crbug.com/1320097).
+  // (crbug.com/40059485).
   EXPECT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_PROFILE));
   // The autofill profile itself should still be there.

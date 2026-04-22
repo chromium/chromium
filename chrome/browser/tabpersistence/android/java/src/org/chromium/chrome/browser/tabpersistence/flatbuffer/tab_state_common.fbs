@@ -56,7 +56,7 @@ enum TabLaunchTypeAtCreation:int {
     FROM_TAB_LIST_INTERFACE_BACKGROUND = 34,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
-    // values will lead to backwards compatibility issues crbug.com/1286984.
+    // values will lead to backwards compatibility issues crbug.com/40815944.
 }
 
 enum UserAgentType:int {
