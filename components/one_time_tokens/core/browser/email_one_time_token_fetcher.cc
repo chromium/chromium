@@ -38,6 +38,11 @@ void EmailOneTimeTokenFetcher::Start(
   StartAccessTokenFetch();
 }
 
+void EmailOneTimeTokenFetcher::InvokeCallbackAndDestroySelf(
+    base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
+  std::move(callback_).Run(std::move(result));
+}
+
 void EmailOneTimeTokenFetcher::StartAccessTokenFetch() {
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
@@ -52,13 +57,12 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo info) {
   access_token_fetcher_.reset();
-  if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback_).Run(base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    StartOneTimeTokenServiceCall(std::move(info));
     return;
   }
-
-  StartOneTimeTokenServiceCall(std::move(info));
+  InvokeCallbackAndDestroySelf(
+      base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
 }
 
 void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
@@ -138,19 +142,19 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
 
 void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
     std::optional<std::string> response_body) {
-  if (!response_body.has_value()) {
-    // TODO(crbug.com/486141336): handle errors.
-    // HTTP error status is available in simple_url_loader.
-    // Additionally, we should parse the error response as
-    // FetchEmailOneTimeTokenErrorDetails and interpret it.
-    std::move(callback_).Run(base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError));
+  if (response_body.has_value()) {
+    auto result = ExtractOneTimeTokenValueFromResponse(*response_body);
+    simple_url_loader_.reset();
+    InvokeCallbackAndDestroySelf(std::move(result));
     return;
   }
-  base::expected<OneTimeToken, OneTimeTokenRetrievalError> result =
-      ExtractOneTimeTokenValueFromResponse(*response_body);
-  simple_url_loader_.reset();
-  std::move(callback_).Run(std::move(result));
+
+  // TODO(crbug.com/486141336): handle errors.
+  // HTTP error status is available in simple_url_loader.
+  // Additionally, we should parse the error response as
+  // FetchEmailOneTimeTokenErrorDetails and interpret it.
+  InvokeCallbackAndDestroySelf(base::unexpected(
+      OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError));
 }
 
 base::expected<OneTimeToken, OneTimeTokenRetrievalError>

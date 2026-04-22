@@ -4,6 +4,7 @@
 
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
@@ -53,31 +54,29 @@ void GmailOtpBackendImpl::OnCanSendNetworkRequest(
 
 void GmailOtpBackendImpl::RetrieveGmailOtp(
     const OneTimeTokenBackendNotification& notification) {
-  // TODO(crbug.com/478840436) Fix the race condition where a second tickle
-  // arrives while a pending request is in flight. The solution is probably
-  // just to remove the has_pending_request_ from this class. Unlike SMS OTPs
-  // multiple different requests may be sent in parallel, each looking up a
-  // different encrypted_message_reference.
-  if (has_pending_request_ ||
-      subscription_manager_.GetNumberSubscribers() == 0) {
+  if (subscription_manager_.GetNumberSubscribers() == 0) {
+    coordinator_->InformOfNetworkRequestFinished(notification);
     return;
   }
-  has_pending_request_ = true;
-  auto request = std::make_unique<EmailOneTimeTokenFetcher>(
+
+  auto [it, inserted] =
+      active_fetchers_.try_emplace(notification.encrypted_message_reference);
+  CHECK(inserted);
+
+  it->second = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
       notification.encrypted_message_reference.value());
-  auto* request_ptr = request.get();
-  request_ptr->Start(
+
+  it->second->Start(
       base::BindOnce(&GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,
-                     weakptr_factory_.GetWeakPtr(), std::move(request)));
+                     weakptr_factory_.GetWeakPtr(), notification));
 }
 
 void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
-    std::unique_ptr<EmailOneTimeTokenFetcher> request,
+    const OneTimeTokenBackendNotification& notification,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
-  has_pending_request_ = false;
-
-  // TODO(crbug.com/478840436): Inform coordinator about finished request.
+  active_fetchers_.erase(notification.encrypted_message_reference);
+  coordinator_->InformOfNetworkRequestFinished(notification);
 
   if (!reply.has_value()) {
     subscription_manager_.Notify(base::unexpected(reply.error()));

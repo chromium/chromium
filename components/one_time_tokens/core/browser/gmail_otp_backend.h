@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -78,7 +79,7 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification);
 
   void OnResponseFromGmailOtpBackend(
-      std::unique_ptr<EmailOneTimeTokenFetcher> request,
+      const OneTimeTokenBackendNotification& notification,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -91,11 +92,11 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   // Policy for coordinating network requests.
   std::unique_ptr<EmailOneTimeTokenFetchCoordinator> coordinator_;
 
-  // Indicates whether there is currently a request in flight to retrieve a
-  // Gmail OTP. This prevents multiple concurrent requests. Timeouts for the OTP
-  // itself are handled by the consumer of the ExpiringSubscription, not by this
-  // flag.
-  bool has_pending_request_ = false;
+  // Active fetchers for Gmail OTPs, keyed by their unique
+  // encrypted_message_reference.
+  base::flat_map<EncryptedMessageReference,
+                 std::unique_ptr<EmailOneTimeTokenFetcher>>
+      active_fetchers_;
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<GmailOtpBackendImpl> weakptr_factory_{this};

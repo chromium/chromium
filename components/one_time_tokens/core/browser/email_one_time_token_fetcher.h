@@ -46,6 +46,13 @@ class EmailOneTimeTokenFetcher {
   void Start(ServerResponseCallback callback);
 
  private:
+  // Finalizes the fetch by invoking the callback with the |result| and
+  // notifying the backend that this fetcher can be destroyed.
+  // IMPORTANT: This method must be called last, as the object will be deleted
+  // during the callback execution.
+  void InvokeCallbackAndDestroySelf(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
+
   // Starts fetching the access token.
   void StartAccessTokenFetch();
 
