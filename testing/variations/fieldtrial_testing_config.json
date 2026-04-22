@@ -1043,8 +1043,10 @@
                 {
                     "name": "Enabled_NonDesktop_FormFactor_20260417",
                     "enable_features": [
-                        "AutoDocPiPPermissionPromptAndroid",
                         "DocumentPictureInPictureAPI"
+                    ],
+                    "disable_features": [
+                        "AutoDocPiPPermissionPromptAndroid"
                     ]
                 },
                 {
