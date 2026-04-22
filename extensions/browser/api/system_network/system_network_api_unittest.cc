@@ -22,8 +22,8 @@ using SystemNetworkApiUnitTest = extensions::ApiUnitTest;
 }  // namespace
 
 TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
-  scoped_refptr<SystemNetworkGetNetworkInterfacesFunction> socket_function(
-      new SystemNetworkGetNetworkInterfacesFunction());
+  scoped_refptr<SystemNetworkGetNetworkInterfacesFunction> socket_function =
+      base::MakeRefCounted<SystemNetworkGetNetworkInterfacesFunction>();
   scoped_refptr<const Extension> empty_extension(
       extensions::ExtensionBuilder("Test").Build());
 
@@ -31,7 +31,7 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   socket_function->set_has_callback(true);
 
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
-      socket_function.get(), "[]", browser_context()));
+      socket_function, "[]", browser_context()));
   ASSERT_TRUE(result->is_list());
 
   // All we can confirm is that we have at least one address, but not what it

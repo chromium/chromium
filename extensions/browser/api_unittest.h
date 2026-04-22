@@ -54,25 +54,24 @@ class ApiUnitTest : public ExtensionsTest {
   void CreateExtensionPage();
 
   // Return the `function` result as a base::Value. Takes ownership of
-  // `function` which should be refcounted. `args` should be in JSON format,
+  // `function`. `args` should be in JSON format,
   // wrapped in a list.
-  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
   std::optional<base::Value> RunFunctionAndReturnValue(
-      ExtensionFunction* function,
+      scoped_refptr<ExtensionFunction> function,
       api_test_utils::ArgsType args);
 
   // Return an error thrown from the function, if one exists. This will
   // EXPECT-fail if any result is returned from the function. Takes ownership of
-  // `function` which should be refcounted. `args` should be in JSON format,
+  // `function`. `args` should be in JSON format,
   // wrapped in a list.
-  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
-  std::string RunFunctionAndReturnError(ExtensionFunction* function,
-                                        api_test_utils::ArgsType args);
+  std::string RunFunctionAndReturnError(
+      scoped_refptr<ExtensionFunction> function,
+      api_test_utils::ArgsType args);
 
-  // Run the function and ignore any result. Takes ownership of `function` which
-  // should be refcounted. `args` should be in JSON format, wrapped in a list.
-  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
-  void RunFunction(ExtensionFunction* function, api_test_utils::ArgsType args);
+  // Run the function and ignore any result. Takes ownership of `function`.
+  // `args` should be in JSON format, wrapped in a list.
+  void RunFunction(scoped_refptr<ExtensionFunction> function,
+                   api_test_utils::ArgsType args);
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &testing_pref_service_;

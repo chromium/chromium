@@ -106,8 +106,8 @@ TEST_F(IdleTest, QueryLockedActive) {
   idle_provider_->set_locked(true);
   idle_provider_->set_idle_time(0);
 
-  std::optional<base::Value> result(
-      RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
+  std::optional<base::Value> result(RunFunctionAndReturnValue(
+      base::MakeRefCounted<IdleQueryStateFunction>(), "[60]"));
 
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("locked", result->GetString());
@@ -118,8 +118,8 @@ TEST_F(IdleTest, QueryLockedIdle) {
   idle_provider_->set_locked(true);
   idle_provider_->set_idle_time(INT_MAX);
 
-  std::optional<base::Value> result(
-      RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
+  std::optional<base::Value> result(RunFunctionAndReturnValue(
+      base::MakeRefCounted<IdleQueryStateFunction>(), "[60]"));
 
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("locked", result->GetString());
@@ -134,8 +134,8 @@ TEST_F(IdleTest, QueryActive) {
     SCOPED_TRACE(time);
     idle_provider_->set_idle_time(time);
 
-    std::optional<base::Value> result(
-        RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
+    std::optional<base::Value> result(RunFunctionAndReturnValue(
+        base::MakeRefCounted<IdleQueryStateFunction>(), "[60]"));
 
     ASSERT_TRUE(result->is_string());
     EXPECT_EQ("active", result->GetString());
@@ -151,8 +151,8 @@ TEST_F(IdleTest, QueryIdle) {
     SCOPED_TRACE(time);
     idle_provider_->set_idle_time(time);
 
-    std::optional<base::Value> result(
-        RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
+    std::optional<base::Value> result(RunFunctionAndReturnValue(
+        base::MakeRefCounted<IdleQueryStateFunction>(), "[60]"));
 
     ASSERT_TRUE(result->is_string());
     EXPECT_EQ("idle", result->GetString());
@@ -171,8 +171,8 @@ TEST_F(IdleTest, QueryMinThreshold) {
       idle_provider_->set_idle_time(time);
 
       std::string args = "[" + base::NumberToString(threshold) + "]";
-      std::optional<base::Value> result(
-          RunFunctionAndReturnValue(new IdleQueryStateFunction(), args));
+      std::optional<base::Value> result(RunFunctionAndReturnValue(
+          base::MakeRefCounted<IdleQueryStateFunction>(), args));
 
       int real_threshold = (threshold < 15) ? 15 : threshold;
       const char* expected = (time < real_threshold) ? "active" : "idle";
@@ -198,8 +198,8 @@ TEST_F(IdleTest, QueryMaxThreshold) {
       idle_provider_->set_idle_time(time);
 
       std::string args = "[" + base::NumberToString(threshold) + "]";
-      std::optional<base::Value> result(
-          RunFunctionAndReturnValue(new IdleQueryStateFunction(), args));
+      std::optional<base::Value> result(RunFunctionAndReturnValue(
+          base::MakeRefCounted<IdleQueryStateFunction>(), args));
 
       int real_threshold =
           (threshold > kFourHoursInSeconds) ? kFourHoursInSeconds : threshold;
@@ -348,7 +348,7 @@ TEST_F(IdleTest, SetDetectionInterval) {
   ScopedListen listen_extension(idle_manager_, extension()->id());
 
   std::optional<base::Value> result(RunFunctionAndReturnValue(
-      new IdleSetDetectionIntervalFunction(), "[45]"));
+      base::MakeRefCounted<IdleSetDetectionIntervalFunction>(), "[45]"));
 
   idle_provider_->set_locked(false);
   idle_provider_->set_idle_time(44);
@@ -371,7 +371,7 @@ TEST_F(IdleTest, SetDetectionInterval) {
 // works correctly.
 TEST_F(IdleTest, SetDetectionIntervalBeforeListener) {
   std::optional<base::Value> result(RunFunctionAndReturnValue(
-      new IdleSetDetectionIntervalFunction(), "[45]"));
+      base::MakeRefCounted<IdleSetDetectionIntervalFunction>(), "[45]"));
 
   ScopedListen listen_extension(idle_manager_, extension()->id());
 
@@ -390,9 +390,9 @@ TEST_F(IdleTest, SetDetectionIntervalBeforeListener) {
 TEST_F(IdleTest, SetDetectionIntervalMaximum) {
   ScopedListen listen_extension(idle_manager_, extension()->id());
 
-  std::optional<base::Value> result(
-      RunFunctionAndReturnValue(new IdleSetDetectionIntervalFunction(),
-                                "[18000]"));  // five hours in seconds
+  std::optional<base::Value> result(RunFunctionAndReturnValue(
+      base::MakeRefCounted<IdleSetDetectionIntervalFunction>(),
+      "[18000]"));  // five hours in seconds
 
   idle_provider_->set_locked(false);
   idle_provider_->set_idle_time(4 * 60 * 60 - 1);
@@ -410,7 +410,7 @@ TEST_F(IdleTest, SetDetectionIntervalMinimum) {
   ScopedListen listen_extension(idle_manager_, extension()->id());
 
   std::optional<base::Value> result(RunFunctionAndReturnValue(
-      new IdleSetDetectionIntervalFunction(), "[10]"));
+      base::MakeRefCounted<IdleSetDetectionIntervalFunction>(), "[10]"));
 
   idle_provider_->set_locked(false);
   idle_provider_->set_idle_time(14);
@@ -428,7 +428,7 @@ TEST_F(IdleTest, UnloadCleanup) {
     ScopedListen listen(idle_manager_, extension()->id());
 
     std::optional<base::Value> result(RunFunctionAndReturnValue(
-        new IdleSetDetectionIntervalFunction(), "[15]"));
+        base::MakeRefCounted<IdleSetDetectionIntervalFunction>(), "[15]"));
   }
 
   // Listener count dropping to zero does not reset threshold.

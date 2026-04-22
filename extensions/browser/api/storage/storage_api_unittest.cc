@@ -164,9 +164,8 @@ class StorageApiUnittest : public ApiUnitTest {
     scoped_refptr<StorageStorageAreaSetFunction> function =
         base::MakeRefCounted<StorageStorageAreaSetFunction>();
     function->set_source_context_type(mojom::ContextType::kPrivilegedExtension);
-    RunFunction(function.get(),
-                base::StringPrintf("[\"local\", {\"%s\": \"%s\"}]", key.c_str(),
-                                   value.c_str()));
+    RunFunction(function, base::StringPrintf("[\"local\", {\"%s\": \"%s\"}]",
+                                             key.c_str(), value.c_str()));
   }
 
   testing::AssertionResult RunSetFunctionWithContextAndExpectSuccess(
@@ -182,7 +181,7 @@ class StorageApiUnittest : public ApiUnitTest {
                                           storage_area_name.c_str(),
                                           key.c_str(), value.c_str());
 
-    api_test_utils::RunFunction(function.get(), args, browser_context());
+    api_test_utils::RunFunction(function, args, browser_context());
     std::string error = function->GetError();
 
     if (error.empty()) {
@@ -208,7 +207,7 @@ class StorageApiUnittest : public ApiUnitTest {
                                           storage_area_name.c_str(),
                                           key.c_str(), value.c_str());
 
-    std::string error = RunFunctionAndReturnError(function.get(), args);
+    std::string error = RunFunctionAndReturnError(function, args);
     if (error.empty()) {
       return testing::AssertionFailure()
              << "Expected error containing '" << expected_error_substring
@@ -233,7 +232,7 @@ class StorageApiUnittest : public ApiUnitTest {
         base::MakeRefCounted<StorageStorageAreaGetFunction>();
     function->set_source_context_type(mojom::ContextType::kPrivilegedExtension);
     std::optional<base::Value> result = RunFunctionAndReturnValue(
-        function.get(), base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
+        function, base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
     if (!result) {
       return testing::AssertionFailure() << "No result";
     }
@@ -428,8 +427,7 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
 
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
-            function.get(),
-            base::ListValue().Append("local").Append(base::Value()),
+            function, base::ListValue().Append("local").Append(base::Value()),
             browser_context());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_double());
@@ -456,7 +454,7 @@ TEST_F(StorageApiUnittest, GetOperationExceedsSizeLimit) {
   function->set_source_context_type(mojom::ContextType::kPrivilegedExtension);
 
   std::string error = api_test_utils::RunFunctionAndReturnError(
-      function.get(), "[\"local\", \"kKeyWithLargeValue\"]", browser_context());
+      function, "[\"local\", \"kKeyWithLargeValue\"]", browser_context());
 
   const std::string expected_error_substring = "exceeds the maximum limit";
   EXPECT_TRUE(error.contains(expected_error_substring));

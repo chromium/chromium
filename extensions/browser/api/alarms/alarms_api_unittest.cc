@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
@@ -88,7 +89,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   }
 
   void CreateAlarm(const std::string& args) {
-    RunFunction(new AlarmsCreateFunction(&test_clock_), args);
+    RunFunction(base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
   }
 
   // Takes a JSON result from a function and converts it to a vector of
@@ -120,7 +121,8 @@ class ExtensionAlarmsTest : public ApiUnitTest {
     };
     for (size_t i = 0; i < num_alarms; ++i) {
       std::optional<base::Value> result = RunFunctionAndReturnValue(
-          new AlarmsCreateFunction(&test_clock_), kCreateArgs[i]);
+          base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_),
+          kCreateArgs[i]);
       EXPECT_FALSE(result);
     }
   }
@@ -394,8 +396,8 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get the default one.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[null]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsGetFunction>(), "[null]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
     auto alarm = JsAlarm::FromValue(result->GetDict());
@@ -407,8 +409,8 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get "7".
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"7\"]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsGetFunction>(), "[\"7\"]");
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_dict());
     auto alarm = JsAlarm::FromValue(result->GetDict());
@@ -420,8 +422,8 @@ TEST_F(ExtensionAlarmsTest, Get) {
 
   // Get a non-existent one.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsGetFunction(), "[\"nobody\"]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsGetFunction>(), "[\"nobody\"]");
     ASSERT_FALSE(result);
   }
 }
@@ -429,8 +431,8 @@ TEST_F(ExtensionAlarmsTest, Get) {
 TEST_F(ExtensionAlarmsTest, GetAll) {
   // Test getAll with 0 alarms.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsGetAllFunction>(), "[]");
     std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(0u, alarms.size());
   }
@@ -439,8 +441,8 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   CreateAlarms(2);
 
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsGetAllFunction(), "[null]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsGetAllFunction>(), "[null]");
     std::vector<JsAlarm> alarms = ToAlarmList(result);
     EXPECT_EQ(2u, alarms.size());
 
@@ -488,8 +490,8 @@ void ExtensionAlarmsTestClearGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, Clear) {
   // Clear a non-existent one.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"nobody\"]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearFunction>(), "[\"nobody\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_FALSE(result->GetBool());
   }
@@ -499,14 +501,14 @@ TEST_F(ExtensionAlarmsTest, Clear) {
 
   // Clear all but the 0.001-minute alarm.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"7\"]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearFunction>(), "[\"7\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsClearFunction(), "[\"0\"]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearFunction>(), "[\"0\"]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }
@@ -528,7 +530,7 @@ void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
   EXPECT_EQ(3u, alarms->size());
 
   // Clear them.
-  test->RunFunction(new AlarmsClearAllFunction(), "[]");
+  test->RunFunction(base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
   test->alarm_manager_->GetAllAlarms(
       test->extension()->id(),
       base::BindOnce(ExtensionAlarmsTestClearAllGetAllAlarms2Callback));
@@ -537,8 +539,8 @@ void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
 TEST_F(ExtensionAlarmsTest, ClearAll) {
   // ClearAll with no alarms set.
   {
-    std::optional<base::Value> result =
-        RunFunctionAndReturnValue(new AlarmsClearAllFunction(), "[]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
     ASSERT_TRUE(result->is_bool());
     EXPECT_TRUE(result->GetBool());
   }

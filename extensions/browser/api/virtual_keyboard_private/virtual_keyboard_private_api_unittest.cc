@@ -154,7 +154,9 @@ class VirtualKeyboardPrivateApiUnittest : public ApiUnitTest {
 };
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithNoBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetOccludedBoundsFunction(), "[[]]");
+  RunFunction(
+      base::MakeRefCounted<VirtualKeyboardPrivateSetOccludedBoundsFunction>(),
+      "[[]]");
 
   const auto bounds = client()
                           .GetDelegateForBrowserContext(browser_context())
@@ -163,8 +165,9 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithNoBounds) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithOneBound) {
-  RunFunction(new VirtualKeyboardPrivateSetOccludedBoundsFunction(),
-              R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 }]])");
+  RunFunction(
+      base::MakeRefCounted<VirtualKeyboardPrivateSetOccludedBoundsFunction>(),
+      R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 }]])");
 
   const auto bounds = client()
                           .GetDelegateForBrowserContext(browser_context())
@@ -174,8 +177,9 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithOneBound) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithTwoBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetOccludedBoundsFunction(),
-              R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 },
+  RunFunction(
+      base::MakeRefCounted<VirtualKeyboardPrivateSetOccludedBoundsFunction>(),
+      R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 },
       { "left": 10, "top": 20, "width": 30, "height": 40 }]])");
 
   const auto bounds = client()
@@ -187,7 +191,9 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetOccludedBoundsWithTwoBounds) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetHitTestBoundsWithNoBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetHitTestBoundsFunction(), "[[]]");
+  RunFunction(
+      base::MakeRefCounted<VirtualKeyboardPrivateSetHitTestBoundsFunction>(),
+      "[[]]");
 
   const auto bounds = client()
                           .GetDelegateForBrowserContext(browser_context())
@@ -196,8 +202,9 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetHitTestBoundsWithNoBounds) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetHitTestBoundsWithMultipleBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetHitTestBoundsFunction(),
-              R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 },
+  RunFunction(
+      base::MakeRefCounted<VirtualKeyboardPrivateSetHitTestBoundsFunction>(),
+      R"([[{ "left": 0, "top": 10, "width": 20, "height": 30 },
       { "left": 10, "top": 20, "width": 30, "height": 40 }]])");
 
   const auto bounds = client()
@@ -209,7 +216,8 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetHitTestBoundsWithMultipleBounds) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetAreaToRemainOnScreenWithBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction(),
+  RunFunction(base::MakeRefCounted<
+                  VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction>(),
               R"([{ "left": 0, "top": 0, "width": 10, "height": 20 }])");
 
   const gfx::Rect bounds = client()
@@ -219,7 +227,8 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetAreaToRemainOnScreenWithBounds) {
 }
 
 TEST_F(VirtualKeyboardPrivateApiUnittest, SetWindowBoundsInScreenWithBounds) {
-  RunFunction(new VirtualKeyboardPrivateSetWindowBoundsInScreenFunction(),
+  RunFunction(base::MakeRefCounted<
+                  VirtualKeyboardPrivateSetWindowBoundsInScreenFunction>(),
               R"([{ "left": 120, "top": 300, "width": 400, "height": 250 }])");
 
   const gfx::Rect bounds = client()

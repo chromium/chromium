@@ -53,7 +53,7 @@ void ApiUnitTest::CreateExtensionPage() {
 }
 
 std::optional<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
-    ExtensionFunction* function,
+    scoped_refptr<ExtensionFunction> function,
     api_test_utils::ArgsType args) {
   function->set_extension(extension());
   if (contents_) {
@@ -64,7 +64,7 @@ std::optional<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
 }
 
 std::string ApiUnitTest::RunFunctionAndReturnError(
-    ExtensionFunction* function,
+    scoped_refptr<ExtensionFunction> function,
     api_test_utils::ArgsType args) {
   function->set_extension(extension());
   if (contents_) {
@@ -74,7 +74,7 @@ std::string ApiUnitTest::RunFunctionAndReturnError(
                                           browser_context());
 }
 
-void ApiUnitTest::RunFunction(ExtensionFunction* function,
+void ApiUnitTest::RunFunction(scoped_refptr<ExtensionFunction> function,
                               api_test_utils::ArgsType args) {
   RunFunctionAndReturnValue(function, std::move(args));
 }

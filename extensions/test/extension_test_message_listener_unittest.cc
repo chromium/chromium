@@ -28,7 +28,7 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   {
     ExtensionTestMessageListener listener(kTestMessage);
     EXPECT_FALSE(listener.was_satisfied());
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kTestMessage));
     EXPECT_TRUE(listener.was_satisfied());
     EXPECT_EQ(kTestMessage, listener.message());
@@ -38,7 +38,7 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   {
     ExtensionTestMessageListener listener;  // won't reply
     EXPECT_FALSE(listener.was_satisfied());
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kTestMessage2));
     EXPECT_TRUE(listener.was_satisfied());
     EXPECT_EQ(kTestMessage2, listener.message());
@@ -49,14 +49,14 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   {
     ExtensionTestMessageListener listener;  // won't reply
     EXPECT_FALSE(listener.was_satisfied());
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kTestMessage));
     EXPECT_EQ(kTestMessage, listener.message());
     EXPECT_TRUE(listener.was_satisfied());
     listener.Reset();
     EXPECT_FALSE(listener.was_satisfied());
     EXPECT_TRUE(listener.message().empty());
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kTestMessage2));
     EXPECT_TRUE(listener.was_satisfied());
     EXPECT_EQ(kTestMessage2, listener.message());
@@ -67,12 +67,12 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   {
     ExtensionTestMessageListener listener(kTestMessage);
     listener.set_failure_message(kFailureMessage);
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kTestMessage));
     EXPECT_TRUE(listener.WaitUntilSatisfied());  // succeeds
     EXPECT_EQ(kTestMessage, listener.message());
     listener.Reset();
-    RunFunction(new TestSendMessageFunction,
+    RunFunction(base::MakeRefCounted<TestSendMessageFunction>(),
                 base::StringPrintf(kFormat, kFailureMessage));
     EXPECT_FALSE(listener.WaitUntilSatisfied());  // fails
     EXPECT_EQ(kFailureMessage, listener.message());

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/socket/socket.h"
@@ -37,7 +38,7 @@ class SocketsUdpUnitTest : public ApiUnitTest {
 
 TEST_F(SocketsUdpUnitTest, Create) {
   // Create SocketCreateFunction and put it on BrowserThread
-  SocketsUdpCreateFunction* function = new SocketsUdpCreateFunction();
+  auto function = base::MakeRefCounted<SocketsUdpCreateFunction>();
 
   // Run tests
   std::optional<base::Value> result = RunFunctionAndReturnValue(
