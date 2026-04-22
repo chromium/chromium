@@ -16,6 +16,8 @@
 #import "base/types/expected.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
@@ -49,12 +51,14 @@ class ScopedFullscreenDisabler;
 @class GeminiActuationHandler;
 
 @protocol BWGGatewayProtocol;
+@protocol FullscreenCommands;
 
 // A browser agent responsible for presenting the floaty and managing
 // its protocol handlers.
 class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public GeminiTabHelperObserver,
                            public FullscreenControllerObserver,
+                           public FullscreenBrowserAgentObserver,
                            public TabsDependencyInstaller,
                            public BrowserObserver,
                            public signin::IdentityManager::Observer {
@@ -206,12 +210,18 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       UIEdgeInsets min_viewport_insets,
       UIEdgeInsets max_viewport_insets) override;
 
+  // FullscreenBrowserAgentObserver:
+  void WillUpdateState(FullscreenBrowserAgent* agent) override;
+  void DidUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override;
+
   // Returns true if the user has completed the FRE.
   bool HasCompletedFirstRun();
 
-  // Returns the floaty offset from a FullscreenController.
-  CGFloat GetFloatyOffsetFromFullscreenController(
-      FullscreenController* controller);
+  // Returns the floaty offset based on current fullscreen progress.
+  CGFloat GetFloatyOffset();
+
+  // Returns the floaty progress based on current fullscreen state.
+  CGFloat GetFloatyProgress();
 
   // Invokes the floaty.
   void InvokeFloaty(GeminiConfiguration* config);
@@ -233,6 +243,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // animation. Not called every time the floaty is shown since there are
   // instances where scrolling should be allowed when a floaty is shown.
   void PrepareFloatyToBeShown();
+
+  // Returns true if the active fullscreen implementation is initialized.
+  bool IsFullscreenInitialized();
 
   // Resets the fullscreen disabler. Needs to be called each time
   // PrepareFloatyToBeShown() is called or the floaty may permanently disable
@@ -301,7 +314,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
 
   // Reference to fullscreen controller. Used to observe fullscreen progress
-  // updates related to the Gemini overlay.
+  // updates related to the Gemini overlay for the legacy fullscreen
+  // implementation.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 
   // IdentityManager associated with the Browser's profile.
