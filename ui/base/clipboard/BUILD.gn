@@ -297,6 +297,10 @@ source_set("clipboard_test") {
     sources += [ "clipboard_util_win_unittest.cc" ]
   }
 
+  if (is_android) {
+    sources += [ "clipboard_android_unittest.cc" ]
+  }
+
   deps = [
     ":clipboard_test_support",
     "//base/test:test_support",

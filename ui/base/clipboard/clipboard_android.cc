@@ -145,6 +145,11 @@ class ClipboardMap {
   // Unlike the functions above, does not call |modified_cb_|.
   void SetLastModifiedTimeWithoutRunningCallback(base::Time time);
 
+  void SetCustomClipDataForTesting(std::optional<std::string> data) {
+    has_test_custom_data_ = true;
+    test_custom_data_ = std::move(data);
+  }
+
  private:
   enum class MapState {
     kOutOfDate,
@@ -162,9 +167,14 @@ class ClipboardMap {
   // the data.
   void UpdateFromAndroidClipboard();
   void ReadWebCustomData(JNIEnv* env);
+  std::optional<std::string> GetCustomClipData(
+      JNIEnv* env,
+      const std::string& custom_type_name);
 
   std::map<ClipboardFormatType, std::string> map_ GUARDED_BY(lock_);
   MapState map_state_;
+  bool has_test_custom_data_ = false;
+  std::optional<std::string> test_custom_data_;
   std::vector<ui::FileInfo> filenames_;
 
   // This lock is for read/write |map_|.
@@ -529,12 +539,22 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
   map_state_ = MapState::kUpToDate;
 }
 
+std::optional<std::string> ClipboardMap::GetCustomClipData(
+    JNIEnv* env,
+    const std::string& custom_type_name) {
+  if (has_test_custom_data_) {
+    return test_custom_data_;
+  }
+  return Java_Clipboard_getCustomClipData(env, clipboard_manager_,
+                                          custom_type_name);
+}
+
 void ClipboardMap::ReadWebCustomData(JNIEnv* env) {
   lock_.AssertAcquired();
   std::string custom_type_name =
       ClipboardFormatType::DataTransferCustomType().GetName();
-  std::optional<std::string> encoded_data = Java_Clipboard_getCustomClipData(
-      env, clipboard_manager_, custom_type_name);
+  std::optional<std::string> encoded_data =
+      GetCustomClipData(env, custom_type_name);
   if (!encoded_data) {
     map_.erase(ClipboardFormatType::DataTransferCustomType());
     return;
@@ -559,6 +579,11 @@ Clipboard* Clipboard::Create() {
 // Static method for testing.
 static void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
   Clipboard::DestroyClipboardForCurrentThread();
+}
+
+// Set custom clip data for testing.
+void SetCustomClipDataForTesting(std::optional<std::string> data) {
+  GetClipboardMap().SetCustomClipDataForTesting(std::move(data));  // IN-TEST
 }
 
 // ClipboardAndroid implementation.

@@ -117,14 +117,6 @@ static bool JNI_ClipboardAndroidTestSupport_NativeTestClipboardNotifications(
   return notification_count == 1;
 }
 
-static bool JNI_ClipboardAndroidTestSupport_NativeHasCustomData(JNIEnv* env) {
-  auto* clipboard = Clipboard::GetForCurrentThread();
-  std::string data = clipboard_test_util::ReadData(
-      clipboard, ClipboardFormatType::DataTransferCustomType(),
-      /* data_dst = */ nullptr);
-  return !data.empty();
-}
-
 }  // namespace ui
 
 DEFINE_JNI(ClipboardAndroidTestSupport)

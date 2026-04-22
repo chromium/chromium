@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/android/scoped_java_ref.h"
@@ -32,6 +34,7 @@ class ClipboardAndroid : public Clipboard {
 
   // Called by Java when the Java Clipboard is notified that the clipboard has
   // changed.
+  COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
   void OnPrimaryClipChanged(JNIEnv* env);
 
   // Called by Java when the Java Clipboard is notified that the window focus
@@ -130,6 +133,9 @@ class ClipboardAndroid : public Clipboard {
 
   void WriteConfidentialDataForPassword();
 };
+
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+void SetCustomClipDataForTesting(std::optional<std::string> data);
 
 }  // namespace ui
 
