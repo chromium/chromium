@@ -191,8 +191,8 @@ views::View* PopupRowWithButtonView::GetButtonContainer() {
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
   button_->GetViewAccessibility().SetPopupFocusOverride();
-  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
-                                              true);
+  GetContentView().GetViewAccessibility().SetIsSelected(false);
+  button_->GetViewAccessibility().SetIsSelected(true);
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kButton);
 }
@@ -200,7 +200,8 @@ void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
   GetContentView().GetViewAccessibility().SetPopupFocusOverride();
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
+  button_->GetViewAccessibility().SetIsSelected(false);
+  GetContentView().GetViewAccessibility().SetIsSelected(true);
   views::InkDrop::Get(button_->ink_drop_view())
       ->GetInkDrop()
       ->SetHovered(false);

@@ -24,6 +24,9 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -237,6 +240,41 @@ TEST_F(PopupRowWithButtonViewTest, AutocompleteControlsFocusByKeyboardKeys) {
 
   SimulateKeyPress(ui::VKEY_LEFT);
   EXPECT_FALSE(view().GetButtonFocusedForTest());
+}
+
+TEST_F(PopupRowWithButtonViewTest, SetsAccessibleSelectionOnFocusChange) {
+  views::ImageButton* button = CreateRowAndGetButton();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  // Pressing right focuses the button, which should mark it as selected
+  // and the content view as not selected.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+
+  ui::AXNodeData button_data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_TRUE(
+      button_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ui::AXNodeData content_data;
+  view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &content_data);
+  EXPECT_FALSE(
+      content_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Pressing left focuses the content, which should mark it as selected
+  // and the button as not selected.
+  SimulateKeyPress(ui::VKEY_LEFT);
+
+  content_data = ui::AXNodeData();
+  view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &content_data);
+  EXPECT_TRUE(
+      content_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  button_data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_FALSE(
+      button_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
 }  // namespace autofill
