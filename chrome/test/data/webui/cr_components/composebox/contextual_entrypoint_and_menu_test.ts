@@ -215,4 +215,24 @@ suite('ContextualEntrypointAndMenu', () => {
 
         assertFalse(entrypointAndMenu.$.menu.open);
       });
+
+  test('DisableAutoRepositionForwardsToInnerMenu', async () => {
+    entrypointAndMenu.disableAutoReposition = true;
+    await entrypointAndMenu.updateComplete;
+
+    const innerActionMenu = entrypointAndMenu.$.menu;
+    assertTrue(innerActionMenu.disableAutoReposition);
+
+    await innerActionMenu.updateComplete;
+    assertFalse(innerActionMenu.$.menu.hasAttribute('auto-reposition'));
+    assertFalse(innerActionMenu.$.menu.autoReposition);
+  });
+
+  test('DefaultPathPreservesAutoRepositionThroughWrapperChain', async () => {
+    const innerActionMenu = entrypointAndMenu.$.menu;
+    await entrypointAndMenu.updateComplete;
+    assertFalse(innerActionMenu.disableAutoReposition);
+    assertTrue(innerActionMenu.$.menu.hasAttribute('auto-reposition'));
+    assertTrue(innerActionMenu.$.menu.autoReposition);
+  });
 });

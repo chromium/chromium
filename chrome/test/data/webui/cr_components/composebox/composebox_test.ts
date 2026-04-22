@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -242,4 +243,96 @@ suite('ComposeboxTest', () => {
 
         composebox.getActiveElement = originalGetActiveElement;
       });
+});
+
+suite('composeboxSharedMountAutoRepostionDefault', () => {
+  let composebox: ComposeboxElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.resetForTesting({
+      // Reuse the ComposeboxTest suite's key set, but sets
+      // `composeboxShowContextMenu` to true so composebox_context_menu.html.ts's
+      // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
+      composeboxShowImageSuggest: false,
+      composeboxSmartComposeEnabled: false,
+      composeboxShowContextMenuDescription: false,
+      composeboxShowZps: true,
+      composeboxContextDragAndDropEnabled: false,
+      composeboxSource: 'NTP',
+      composeboxFileMaxCount: 1,
+      composeboxFileMaxSize: 1024,
+      composeboxAttachmentFileTypes: '.pdf',
+      composeboxImageFileTypes: 'image/png',
+      lensSendRawFileMediaTypesEnabled: false,
+      composeDeepSearchPlaceholder: 'Deep Search',
+      composeCreateImagePlaceholder: 'Create Image',
+      searchboxComposePlaceholder: 'Compose',
+      composeboxShowContextMenu: true,
+      // Keys accessed by ContextualActionMenuElement /
+      // ContextualEntrypointAndMenuElement class-field initializations once the
+      // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
+      // loadTimeData.getBoolean() asserts on absent keys, so these are required.
+      // Not optional with defaults - when `composeboxShowContextMenu` is true.
+      composeboxContextMenuEnableMultiTabSelection: false,
+      composeboxShowContextMenuTabPreviews: false,
+      ShowContextMenuHeaders: false,
+      composeboxSmartTabSharingVisible: false,
+      contextualMenuUsePecApi: true,
+      menu: 'menu',
+      addContextTile: 'Add context',
+      addContext: 'Add context',
+      composeboxShowTypedSuggest: false,
+      composeboxCancelButtonTitleInput: 'Cancel input',
+      composeboxCancelButtonTitle: 'Cancel',
+      voiceSearchButtonLabel: 'Voice search',
+      lensSearchButtonLabel: 'Lens search',
+      suggestionActivityLink: '<a>Activity</a>',
+      composeboxSubmitButtonTitle: 'Submit',
+      composeboxSmartComposeTabTitle: 'Tab',
+      voiceListening: 'Listening',
+      voiceDetails: 'Details',
+      voiceClose: 'Close',
+      dismissButton: 'Dismiss',
+      composeboxDragAndDropHint: 'Hint',
+      removeSuggestion: 'Remove',
+    });
+
+    const handler = installMock(
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
+    handler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+
+    installMock(
+        SearchboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+
+    composebox = document.createElement('cr-composebox');
+    composebox.showMenuOnClick = true;
+    document.body.appendChild(composebox);
+    await composebox.updateComplete;
+  });
+
+  teardown(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  test('ShareComposeboxMountPreservesAutoReposition', async () => {
+    const entrypointAndMenu = composebox.shadowRoot.querySelector<
+        ContextualEntrypointAndMenuElement>(
+      'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+    await entrypointAndMenu.updateComplete;
+    assertFalse(entrypointAndMenu.disableAutoReposition);
+
+    const contextualActionMenu = entrypointAndMenu.$.menu;
+    await contextualActionMenu.updateComplete;
+    const crActionMenu = contextualActionMenu.$.menu;
+    assertTrue(crActionMenu.autoReposition);
+    assertTrue(crActionMenu.hasAttribute('auto-reposition'));
+  });
 });

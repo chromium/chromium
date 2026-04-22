@@ -8,6 +8,7 @@ import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextType} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState, FileUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -146,6 +147,21 @@ suite('NewTabPageRealboxTabsTest', () => {
     testProxy.callbackRouterRemote.onTabStripChanged();
     await microtasksFinished();
     assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 0);
+  });
+
+  test('NtpRealboxMountDisableAutoReposition', async () => {
+    const entrypointAndMenu =
+        realbox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+    await entrypointAndMenu.updateComplete;
+    assertTrue(entrypointAndMenu.disableAutoReposition);
+
+    const contextualActionMenu = entrypointAndMenu.$.menu;
+    await contextualActionMenu.updateComplete;
+    const crActionMenu = contextualActionMenu.$.menu;
+    assertFalse(crActionMenu.autoReposition);
+    assertFalse(crActionMenu.hasAttribute('auto-reposition'));
   });
 });
 

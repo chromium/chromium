@@ -64,6 +64,7 @@ export class ContextualEntrypointAndMenuElement extends
       glifAnimationState: {type: String, reflect: true},
       searchboxLayoutMode: {type: String},
       uploadButtonDisabled: {type: Boolean},
+      disableAutoReposition: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -90,6 +91,7 @@ export class ContextualEntrypointAndMenuElement extends
 
   accessor hasImageFiles: boolean = false;
   accessor searchboxLayoutMode: string = '';
+  accessor disableAutoReposition: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');

@@ -14,6 +14,7 @@ export function getHtml(this: NtpSearchboxElement) {
     <cr-composebox-contextual-entrypoint-and-menu id="context"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button"
+        disable-auto-reposition
         @add-tab-context="${this.onAddTabContext_}"
         @tool-click="${this.onToolClick_}"
         @deep-search-click="${this.onDeepSearchClick_}"

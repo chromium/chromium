@@ -610,4 +610,22 @@ suite('ContextualActionMenu', () => {
     assertTrue(eventFired);
     assertTrue(toggle.checked);
   });
+
+  test('AutoRepositionEnabledByDefaultOnSharedWrapper', () => {
+    const innerMenu = actionMenu.$.menu;
+    assertTrue(innerMenu.hasAttribute('auto-reposition'));
+    assertTrue(innerMenu.autoReposition);
+  });
+
+  test('AutoRepositionDisabledWhenOptedOut', async () => {
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.disableAutoReposition = true;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    const innerMenu = actionMenu.$.menu;
+    assertFalse(innerMenu.hasAttribute('auto-reposition'));
+    assertFalse(innerMenu.autoReposition);
+  });
 });

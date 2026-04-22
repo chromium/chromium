@@ -66,6 +66,7 @@ export class ContextualActionMenuElement extends
       tabPreviewsEnabled_: {type: Boolean},
       showContextMenuHeaders_: {type: Boolean},
       smartTabSharingVisible_: {type: Boolean},
+      disableAutoReposition: {type: Boolean},
     };
   }
 
@@ -74,6 +75,7 @@ export class ContextualActionMenuElement extends
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
+  accessor disableAutoReposition: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');

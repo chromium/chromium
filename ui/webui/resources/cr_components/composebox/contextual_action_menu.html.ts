@@ -10,12 +10,9 @@ import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 export function getHtml(this: ContextualActionMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <!-- auto-reposition is used to enable the ResizeObserver in cr-action-menu,
-       which recalculates the menu's position when its content size changes.
-       This is necessary because menu options (e.g. models, tabs) are populated
-       asynchronously from the browser process. -->
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
-      @close="${this.onMenuClose_}" auto-reposition>
+      @close="${this.onMenuClose_}"
+      ?auto-reposition="${!this.disableAutoReposition}">
     ${this.smartTabSharingVisible_ ? html`
       <button class="dropdown-item toggle-item"
           id="smartTabSharingItem"
