@@ -499,11 +499,6 @@ OVERLAY_CONFIGS = {
                         ZeroCopyCodec.H264])),
     },
     constants.GpuVendor.QUALCOMM: {
-        0x41333430: BasicDirectCompositionConfig()\
-                    .WithHardwareNV12Support(supported_rotations=[
-                        VideoRotation.ROT180])\
-                    .WithZeroCopyConfig(ZeroCopyConfig(
-                        supports_scaled_video=True)),
         0x36333630: BasicDirectCompositionConfig()\
                     .WithHardwareNV12Support(supported_rotations=[
                         VideoRotation.ROT180])\

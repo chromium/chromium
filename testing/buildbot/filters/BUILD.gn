@@ -328,7 +328,6 @@ source_set("services_unittests_filters") {
   data = [
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.services_unittests.filter",
-    "//testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter",
     "//testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.services_webnn_unittests.filter",
   ]
 }
@@ -396,7 +395,6 @@ source_set("gl_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
-    "//testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
     "//testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
     "//testing/buildbot/filters/win.amd.7600.gl_unittests.filter",
     "//testing/buildbot/filters/win.amd.780m.gl_unittests.filter",

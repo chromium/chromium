@@ -42,7 +42,7 @@
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
-#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
+#         qualcomm qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
@@ -140,20 +140,6 @@ crbug.com/1368785 [ android-pixel-6 arm renderer-skia-gl graphite-enabled target
 crbug.com/1368785 [ android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
-
-
-# MediaFoundation report `max_macroblocks_per_second=194400`, but only supports 1920x1080
-# up to 238fps instead of 240fps.
-crbug.com/373648897 [ memory_lt_16gb qualcomm-0x41333430 win ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
-
-
-# Encoding rate control bitrate is too far off on older Windows Qualcomm GPUs.
-crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
-crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_3000000 [ Failure ]
-crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_2000000 [ Failure ]
-crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
-crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
-
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]

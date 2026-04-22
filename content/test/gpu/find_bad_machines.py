@@ -56,7 +56,6 @@ MIXIN_GROUPS = {
         'win11_amd_rx_7600_stable',
         'win11_nvidia_rtx_4070_super_experimental',
         'win11_nvidia_rtx_4070_super_stable',
-        'win11_qualcomm_adreno_690_stable',
         'win11_qualcomm_snapdragon_x_elite_stable',
     ],
 }

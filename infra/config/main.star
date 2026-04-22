@@ -336,7 +336,6 @@ chromium_luci.configure_targets(
             "win11_amd_rx_7600_stable": targets.IGNORE_UNUSED,
             "win11_nvidia_rtx_4070_super_experimental": targets.IGNORE_UNUSED,
             "win11_nvidia_rtx_4070_super_stable": targets.IGNORE_UNUSED,
-            "win11_qualcomm_adreno_690_stable": targets.IGNORE_UNUSED,
             "win11_qualcomm_snapdragon_x_elite_stable": targets.IGNORE_UNUSED,
 
             # The angle repo uses a script that wraps generate_buildbot_json.py

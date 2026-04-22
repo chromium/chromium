@@ -252,7 +252,6 @@ ci/Win10 Tests x64
 ci/Win10 Tests x64 (dbg)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
-ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
 ci/Win11 FYI x64 Experimental Release (AMD 890M)
@@ -578,7 +577,6 @@ try/gpu-fyi-try-win11-amd-rel-64
 try/gpu-fyi-try-win11-amd-rx-5500xt-exp
 try/gpu-fyi-try-win11-nvidia-4070-exp-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
-try/gpu-fyi-try-win11-qualcomm-rel-64
 try/gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
 try/gpu-fyi-try-win11-x64-amd-890m-exp

@@ -42,7 +42,7 @@
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
-#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
+#         qualcomm qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
@@ -102,7 +102,6 @@
 # platform/configuration.
 
 # These Qualcomm GPUs does not support Vulkan.
-[ win qualcomm-0x41333430 ] InfoCollection_dx12_vulkan [ Skip ]
 [ win qualcomm-0x36333630 ] InfoCollection_dx12_vulkan [ Skip ]
 [ win qualcomm-0x36334330 ] InfoCollection_dx12_vulkan [ Skip ]
 

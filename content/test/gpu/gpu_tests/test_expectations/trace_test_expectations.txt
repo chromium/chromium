@@ -42,7 +42,7 @@
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
-#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
+#         qualcomm qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
@@ -286,10 +286,6 @@ crbug.com/438512194 [ win11 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/438512194 [ win11 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 crbug.com/438512194 [ win11 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
 crbug.com/438512194 [ win11 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
-
-# WebGPU is currently not enabled on win11 qualcomm but it will be soon
-[ memory_lt_16gb qualcomm-0x41333430 win11 ] WebGPUTraceTest* [ Failure ]
-[ memory_lt_16gb qualcomm-0x41333430 win11 ] WebGPUCachingTraceTest_* [ Failure ]
 
 # Win11/Qualcomm Snapdragon X Elite
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]

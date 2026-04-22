@@ -42,7 +42,7 @@
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
-#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
+#         qualcomm qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
@@ -229,9 +229,6 @@ crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextResto
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/1416920 [ win debug ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 
-# Flaky crash affects this test in particular for some reason
-crbug.com/365565140 [ memory_lt_16gb qualcomm-0x41333430 win ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
 crbug.com/384605105 [ amd-0x7340 angle-opengl debug graphite-disabled no-asan no-clang-coverage sonoma ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 crbug.com/384605105 [ mac intel no-asan ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
@@ -245,12 +242,6 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Slow ]
 crbug.com/380088337 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
-
-
-# WebGPU is currently not enabled on win11 qualcomm but it will be soon
-[ memory_lt_16gb qualcomm-0x41333430 win11 ] ContextLost_WebGPU* [ Failure ]
-[ memory_lt_16gb qualcomm-0x41333430 win11 ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
-
 
 ###############################
 # Permanent Slow Expectations #

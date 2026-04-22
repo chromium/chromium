@@ -42,7 +42,7 @@
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
 #         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
-#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
+#         qualcomm qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ arch-arm64 arch-x86_64 ]
 # Decoder
@@ -124,7 +124,6 @@ crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_perfo
 [ fuchsia ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
 # SwiftShader is not supported on arm64 by default
-[ win qualcomm-0x41333430 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 [ win qualcomm-0x36333630 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 [ win qualcomm-0x36334330 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 [ win qualcomm-0x36334330 ] GpuProcess_feature_status_under_swiftshader [ Skip ]
