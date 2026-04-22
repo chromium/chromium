@@ -1783,9 +1783,17 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 1, 1);
 }
 
+// TODO(crbug.com/402536429): Re-enable once the test is fixed.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+#define MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd \
+  DISABLED_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd
+#else
+#define MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd \
+  FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd
+#endif
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
-    FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd) {
+    MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd) {
   // Subdocument resources should always check allowlist rules, even if
   // there is not matching blocklist rule.
   SetRulesetWithRules(
