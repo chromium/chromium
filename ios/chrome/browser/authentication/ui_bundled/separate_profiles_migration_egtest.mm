@@ -397,6 +397,13 @@
 }
 
 - (void)testForceMigration {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    if (@available(iOS 26.0, *)) {
+      // TODO(crbug.com/505386534): Test is flaky on iPad and iOS 26.0.
+      EARL_GREY_TEST_DISABLED(@"Test flaky on iPad and iOS 26.0.");
+    }
+  }
+
   // Reset `kWaitingForMultiProfileForcedMigrationTimestamp`.
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kWaitingForMultiProfileForcedMigrationTimestamp];
