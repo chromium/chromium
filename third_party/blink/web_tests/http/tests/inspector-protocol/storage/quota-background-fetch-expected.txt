@@ -1,0 +1,53 @@
+Tests Storage.getUsageAndQuota with background fetch.
+
+Initial storage
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false,
+  "usageBreakdown": [
+    {
+      "usage": 0,
+      "storageType": "file_systems"
+    },
+    {
+      "usage": 0,
+      "storageType": "indexeddb"
+    },
+    {
+      "usage": 0,
+      "storageType": "cache_storage"
+    },
+    {
+      "usage": 0,
+      "storageType": "service_workers"
+    }
+  ]
+}
+Registering service worker and background fetch
+JS result: fetch success
+Storage after background fetch
+{
+  "usage": 22,
+  "quota": 1073741824,
+  "overrideActive": false,
+  "usageBreakdown": [
+    {
+      "usage": 0,
+      "storageType": "file_systems"
+    },
+    {
+      "usage": 0,
+      "storageType": "indexeddb"
+    },
+    {
+      "usage": 0,
+      "storageType": "cache_storage"
+    },
+    {
+      "usage": 22,
+      "storageType": "service_workers"
+    }
+  ]
+}
+

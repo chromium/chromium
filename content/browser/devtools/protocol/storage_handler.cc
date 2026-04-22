@@ -106,10 +106,14 @@ void ReportUsageAndQuotaDataOnUIThread(
 
   blink::mojom::UsageBreakdown* breakdown_ptr = usage_breakdown.get();
   for (const auto initializer : initializers) {
+    int64_t usage_value = breakdown_ptr->*(initializer.usage_member);
+    if (initializer.type == Storage::StorageTypeEnum::Cache_storage) {
+      usage_value += breakdown_ptr->backgroundFetch;
+    }
     std::unique_ptr<Storage::UsageForType> entry =
         Storage::UsageForType::Create()
             .SetStorageType(initializer.type)
-            .SetUsage(breakdown_ptr->*(initializer.usage_member))
+            .SetUsage(usage_value)
             .Build();
     usageList->emplace_back(std::move(entry));
   }
