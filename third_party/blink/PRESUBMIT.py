@@ -129,6 +129,19 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
     return results
 
 
+def _CheckBundleData(input_api, output_api):
+    old_sys_path = input_api.sys.path[:]
+    try:
+        input_api.sys.path.append(input_api.change.RepositoryRoot())
+        from build.ios import presubmit_support
+        return presubmit_support.CheckBundleData(
+            input_api, output_api,
+            'renderer/platform/blink_platform_unittests_bundle_data',
+            'renderer/platform')
+    finally:
+        input_api.sys.path = old_sys_path
+
+
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     # We should figure out what license checks we actually want to use.
@@ -145,6 +158,7 @@ def _CommonChecks(input_api, output_api):
             license_header=license_header,
             global_checks=False))
     results.extend(_CheckForWrongMojomIncludes(input_api, output_api))
+    results.extend(_CheckBundleData(input_api, output_api))
     return results
 
 
