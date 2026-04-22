@@ -144,7 +144,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RectCalculations) {
+// TODO(crbug.com/502069860): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RectCalculations DISABLED_RectCalculations
+#else
+#define MAYBE_RectCalculations RectCalculations
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_RectCalculations) {
   RunSidePanelTest("side_panel/read_anything/rect_calculations_test.js",
                    "mocha.run()");
 }
