@@ -438,10 +438,7 @@ class QueryContextualizerDelegateBridge
   ComposeboxModelOption _modelOption;
 
   // The state reflecting the availbale modes and models.
-  std::unique_ptr<contextual_search::InputStateModel> _inputStateModel;
-  contextual_search::InputState _inputState;
-  // The subscription for updates on the input state.
-  base::CallbackListSubscription _inputStateSubscription;
+  ComposeboxInputStateManager* _stateManager;
   // Handler for browser coordinator commands.
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
   // Handler for scene commands.
@@ -517,6 +514,18 @@ class QueryContextualizerDelegateBridge
     _items = [[ComposeboxInputItemCollection alloc] init];
     _items.delegate = self;
 
+    signin::IdentityManager* identityManager =
+        _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
+    _stateManager = [[ComposeboxInputStateManager alloc]
+         initWithWebStateList:_webStateList
+                  prefService:_prefService
+        aimEligibilityService:_aimEligibilityService
+              identityManager:identityManager
+                sessionHandle:_contextualSearchSession.get()
+                   entrypoint:_entrypoint
+                  isIncognito:_isIncognito];
+    _stateManager.delegate = self;
+
     contextual_tasks::ContextualTasksService* tasksService =
         IOSContextualTasksServiceFactory::GetForProfile(_profile);
     if (tasksService) {
@@ -546,10 +555,10 @@ class QueryContextualizerDelegateBridge
   _persistTabContextAgent = nullptr;
   _searchEngineObserver.reset();
   _templateURLService = nullptr;
-  [self invalidateInputStateSubscription];
+  [_stateManager disconnect];
+  _stateManager = nil;
   _aimEligibilityService = nullptr;
   _cobrowseBrowserAgent = nullptr;
-  _inputStateModel = nullptr;
   _queryContextualizer.reset();
   _queryContextualizerDelegate.reset();
   _composeboxObserverBridge.reset();
@@ -596,7 +605,7 @@ class QueryContextualizerDelegateBridge
 // regardless the type.
 - (NSUInteger)totalAttachmentLimit {
   if (EnableComposeboxServerSideState()) {
-    return _inputState.max_total_inputs;
+    return _stateManager.inputState.max_total_inputs;
   }
 
   return kAttachmentLimit;
@@ -630,10 +639,7 @@ class QueryContextualizerDelegateBridge
 
   int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
   if (EnableComposeboxServerSideState()) {
-    if (!_inputStateModel) {
-      return 0;
-    }
-    auto limits = _inputState.max_inputs_by_type;
+    auto limits = _stateManager.inputState.max_inputs_by_type;
     auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
     if (limits.count(type)) {
       int serverLimit = limits[type];
@@ -687,11 +693,9 @@ class QueryContextualizerDelegateBridge
     return;
   }
 
-  if (_inputStateModel) {
-    auto advancedToolsParams = _inputStateModel->GetAdditionalQueryParams();
-    additionalParams.insert(advancedToolsParams.begin(),
-                            advancedToolsParams.end());
-  }
+  auto advancedToolsParams = [_stateManager additionalQueryParams];
+  additionalParams.insert(advancedToolsParams.begin(),
+                          advancedToolsParams.end());
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
@@ -881,39 +885,8 @@ class QueryContextualizerDelegateBridge
 
   [self commitUIUpdates];
 
-  if (_inputStateModel) {
-    switch (modelOption) {
-      case kNone:
-        _inputStateModel->setActiveModel(_inputState.GetDefaultModel());
-        break;
-      case kRegular:
-        _inputStateModel->setActiveModel(
-            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
-        break;
-      case kAuto:
-        _inputStateModel->setActiveModel(
-            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
-        break;
-      case kThinking:
-        _inputStateModel->setActiveModel(
-            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-        break;
-      case kThinkingNoGenUI:
-        _inputStateModel->setActiveModel(
-            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
-        break;
-      default:
-        break;
-    }
-
-    contextual_search::ContextualSearchMetricsRecorder* recorder =
-        _contextualSearchSession
-            ? _contextualSearchSession->GetMetricsRecorder()
-            : nullptr;
-    if (explicitUserAction && recorder) {
-      recorder->RecordModelMode(_inputStateModel->GetInputState().active_model);
-    }
-  }
+  [_stateManager setActiveModel:modelOption
+             explicitUserAction:explicitUserAction];
 
   // When the model option is reset (set to none), reset the mode to regular
   // search before exiting.
@@ -932,40 +905,10 @@ class QueryContextualizerDelegateBridge
 }
 
 - (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig {
-  if (!_contextualSearchSession) {
+  if (!_contextualSearchSession || !searchboxConfig) {
     return;
   }
-  // Only preselect when there was already a input state model created.
-  // Otherwise it's safe to assume it is the first time a searchbox config is
-  // loaded.
-  BOOL needPreselection = _inputStateModel != nil;
-
-  contextual_search::InputState previousInputState = _inputState;
-
-  contextual_search::ContextualSearchSessionHandle* sessionHandle =
-      _contextualSearchSession.get();
-  const signin::IdentityManager* identity_manager =
-      _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
-  BOOL has_primary_account =
-      identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *sessionHandle, *searchboxConfig, GURL(), _isIncognito,
-      has_primary_account);
-
-  if (needPreselection) {
-    // Try maintaining the same options if there was no change in their
-    // availability.
-    __weak __typeof(self) weakSelf = self;
-    [self preselectPreferencesIfAvailable:previousInputState
-                               completion:^{
-                                 [weakSelf startInputStateObservation];
-                               }];
-  } else {
-    [self startInputStateObservation];
-  }
-
-  [self commitUIUpdates];
+  [_stateManager setSearchboxConfig:*searchboxConfig];
 }
 
 - (void)setOmniboxFocused:(bool)focused {
@@ -1079,8 +1022,7 @@ class QueryContextualizerDelegateBridge
   int capacityForTabs = remainingAttachmentCapacity + tabsCount;
 
   if (EnableComposeboxServerSideState()) {
-    CHECK(_inputStateModel);
-    auto limits = _inputState.max_inputs_by_type;
+    auto limits = _stateManager.inputState.max_inputs_by_type;
     auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
     if (limits.count(type)) {
       int serverLimit = limits[type];
@@ -1317,11 +1259,11 @@ class QueryContextualizerDelegateBridge
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
                                : nullptr;
-  if (_inputStateModel && recorder) {
-    for (const auto& tool : _inputState.allowed_tools) {
+  if (recorder) {
+    for (const auto& tool : _stateManager.inputState.allowed_tools) {
       recorder->RecordToolModeShown(tool);
     }
-    for (const auto& model : _inputState.allowed_models) {
+    for (const auto& model : _stateManager.inputState.allowed_models) {
       recorder->RecordModelModeShown(model);
     }
   }
@@ -1449,10 +1391,8 @@ class QueryContextualizerDelegateBridge
   request_info->file_tokens =
       _contextualSearchSession->GetSubmittedContextTokens();
 
-  if (_inputStateModel) {
-    request_info->active_tool = _inputStateModel->GetInputState().active_tool;
-    request_info->active_model = _inputStateModel->GetInputState().active_model;
-  }
+  request_info->active_tool = _stateManager.inputState.active_tool;
+  request_info->active_model = _stateManager.inputState.active_model;
 
   lens::ClientToAimMessage message =
       _contextualSearchSession->CreateClientToAimRequest(
@@ -1472,16 +1412,14 @@ class QueryContextualizerDelegateBridge
   omnibox::ToolMode toolMode =
       imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
                          : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-  if (_inputState.active_tool != toolMode) {
+  if (_stateManager.inputState.active_tool != toolMode) {
     [self setActiveTool:toolMode];
   }
 }
 
 // Informs the model of a context change (e.g.; attachment added or deleted).
 - (void)notifyContextChanged {
-  if (_inputStateModel) {
-    _inputStateModel->OnContextChanged();
-  }
+  [_stateManager onContextChanged];
 }
 
 // Adds an item to the collection.
@@ -1724,16 +1662,7 @@ class QueryContextualizerDelegateBridge
       recordAttachCountAtSubmission:_items.filesCount
                             forType:ComposeboxInputItemType::
                                         kComposeboxInputItemTypeRawFile];
-  contextual_search::ContextualSearchMetricsRecorder* recorder =
-      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
-                               : nullptr;
-  if (recorder) {
-    std::vector<omnibox::InputType> active_input_types =
-        contextual_search::InputStateModel::GetCurrentInputTypes(
-            _contextualSearchSession.get());
-    recorder->RecordModesOnSubmission(
-        _inputState.active_tool, _inputState.active_model, active_input_types);
-  }
+  [_stateManager recordInputStateOnSubmission];
 }
 
 // Records whether the session resulted in navigation.
@@ -1744,22 +1673,9 @@ class QueryContextualizerDelegateBridge
                                     requestType:
                                         [self currentAutocompleteRequestType]];
 
-  contextual_search::ContextualSearchMetricsRecorder* recorder =
-      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
-                               : nullptr;
-  if (recorder) {
-    std::vector<lens::MimeType> types = MimeTypesFromCollection(_items);
-
-    recorder->RecordFileTypesOnSessionEnd(types, _inNavigation);
-
-    if (_inputStateModel) {
-      recorder->RecordActiveModesOnSessionEnd(
-          _inputStateModel->GetInputState().active_tool,
-          _inputStateModel->GetInputState().active_model, _inNavigation);
-    }
-
-    recorder->RecordNavigationResult(_inNavigation);
-  }
+  std::vector<lens::MimeType> types = MimeTypesFromCollection(_items);
+  [_stateManager recordInputStateOnSessionEndWithNavigation:_inNavigation
+                                                  mimeTypes:types];
 }
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
@@ -2192,9 +2108,9 @@ class QueryContextualizerDelegateBridge
   if (!EnableComposeboxServerSideState()) {
     return YES;
   }
-  return std::find(_inputState.allowed_tools.begin(),
-                   _inputState.allowed_tools.end(),
-                   toolMode) != _inputState.allowed_tools.end();
+  return std::find(_stateManager.inputState.allowed_tools.begin(),
+                   _stateManager.inputState.allowed_tools.end(),
+                   toolMode) != _stateManager.inputState.allowed_tools.end();
 }
 
 // Whether the given mode is disabled in the input state.
@@ -2202,41 +2118,9 @@ class QueryContextualizerDelegateBridge
   if (!EnableComposeboxServerSideState()) {
     return NO;
   }
-  return std::find(_inputState.disabled_tools.begin(),
-                   _inputState.disabled_tools.end(),
-                   toolMode) != _inputState.disabled_tools.end();
-}
-
-// Whether the given model mode is selectable.
-- (BOOL)canSelectToolBasedOnInputState:(omnibox::ToolMode)toolMode {
-  return [self toolAllowedInInputState:toolMode] &&
-         ![self toolDisabledInInputState:toolMode];
-}
-
-// Whether the given mode is allowed in the input state.
-- (BOOL)modelAllowedInInputState:(omnibox::ModelMode)modelMode {
-  if (!EnableComposeboxServerSideState()) {
-    return YES;
-  }
-  return std::find(_inputState.allowed_models.begin(),
-                   _inputState.allowed_models.end(),
-                   modelMode) != _inputState.allowed_models.end();
-}
-
-// Whether the given mode is disabled in the input state.
-- (BOOL)modelDisabledInInputState:(omnibox::ModelMode)modelMode {
-  if (!EnableComposeboxServerSideState()) {
-    return NO;
-  }
-  return std::find(_inputState.disabled_models.begin(),
-                   _inputState.disabled_models.end(),
-                   modelMode) != _inputState.disabled_models.end();
-}
-
-// Whether the given model mode is selectable.
-- (BOOL)canSelectModelBasedOnInputState:(omnibox::ModelMode)modelMode {
-  return [self modelAllowedInInputState:modelMode] &&
-         ![self modelDisabledInInputState:modelMode];
+  return std::find(_stateManager.inputState.disabled_tools.begin(),
+                   _stateManager.inputState.disabled_tools.end(),
+                   toolMode) != _stateManager.inputState.disabled_tools.end();
 }
 
 // The list of model options available based on the input model.
@@ -2245,7 +2129,7 @@ class QueryContextualizerDelegateBridge
   if (!ShowComposeboxAdditionalAdvancedTools()) {
     return allowed;
   }
-  for (auto modelType : _inputState.allowed_models) {
+  for (auto modelType : _stateManager.inputState.allowed_models) {
     allowed.insert(ModelOptionForModelMode(modelType));
   }
 
@@ -2258,7 +2142,7 @@ class QueryContextualizerDelegateBridge
   if (!ShowComposeboxAdditionalAdvancedTools()) {
     return disabled;
   }
-  for (auto modelType : _inputState.disabled_models) {
+  for (auto modelType : _stateManager.inputState.disabled_models) {
     disabled.insert(ModelOptionForModelMode(modelType));
   }
 
@@ -2269,16 +2153,18 @@ class QueryContextualizerDelegateBridge
 
 // Whether the current input state disables the given input type.
 - (BOOL)inputStateDisablesType:(omnibox::InputType)inputType {
-  return std::find(_inputState.disabled_input_types.begin(),
-                   _inputState.disabled_input_types.end(),
-                   inputType) != _inputState.disabled_input_types.end();
+  return std::find(_stateManager.inputState.disabled_input_types.begin(),
+                   _stateManager.inputState.disabled_input_types.end(),
+                   inputType) !=
+         _stateManager.inputState.disabled_input_types.end();
 }
 
 // Whether the current input state allows the given input type.
 - (BOOL)inputStateAllowsType:(omnibox::InputType)inputType {
-  return std::find(_inputState.allowed_input_types.begin(),
-                   _inputState.allowed_input_types.end(),
-                   inputType) != _inputState.allowed_input_types.end();
+  return std::find(_stateManager.inputState.allowed_input_types.begin(),
+                   _stateManager.inputState.allowed_input_types.end(),
+                   inputType) !=
+         _stateManager.inputState.allowed_input_types.end();
 }
 
 // Whether the current state allows tab attachments.
@@ -2424,7 +2310,7 @@ class QueryContextualizerDelegateBridge
 }
 
 - (contextual_search::InputState)inputState {
-  return _inputState;
+  return _stateManager.inputState;
 }
 
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {
@@ -2772,104 +2658,13 @@ class QueryContextualizerDelegateBridge
 }
 
 - (void)setActiveTool:(omnibox::ToolMode)activeTool {
-  if (_inputStateModel) {
-    if (_inputStateModel->GetInputState().active_tool != activeTool) {
-      contextual_search::ContextualSearchMetricsRecorder* recorder =
-          _contextualSearchSession
-              ? _contextualSearchSession->GetMetricsRecorder()
-              : nullptr;
-      if (recorder) {
-        recorder->RecordToolMode(activeTool);
-      }
-    }
-    _inputStateModel->setActiveTool(activeTool);
-  }
+  [_stateManager setActiveTool:activeTool];
 }
 
-#pragma mark - Input State Subscription
+#pragma mark - ComposeboxInputStateManagerDelegate
 
-// Creates a new input state model based on the config from the AIM eligibility
-// service.
-- (void)createInputStateModel {
-  if (!_contextualSearchSession) {
-    return;
-  }
-  const omnibox::SearchboxConfig* config =
-      _aimEligibilityService->GetSearchboxConfig();
-  contextual_search::ContextualSearchSessionHandle* sessionHandle =
-      _contextualSearchSession.get();
-  const signin::IdentityManager* identity_manager =
-      _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
-  BOOL has_primary_account =
-      identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *sessionHandle, *config, GURL(), _isIncognito, has_primary_account);
-}
-
-- (void)preselectPreferencesIfAvailable:
-            (const contextual_search::InputState&)preselectionState
-                             completion:(ProceduralBlock)completion {
-  if (!_inputStateModel) {
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  _inputStateSubscription = _inputStateModel->subscribe(
-      base::BindRepeating(^(const contextual_search::InputState& inputState) {
-        // Make sure the preselection sequence happens only once by invalidating
-        // the subscription as soon as the initial input state is determined;
-        // Otherwise subsequent updates will cause it to loop.
-        [weakSelf invalidateInputStateSubscription];
-        [weakSelf applyPreselection:preselectionState
-                  forReferenceState:inputState];
-
-        if (completion) {
-          completion();
-        }
-      }));
-  _inputStateModel->Initialize();
-}
-
-// Attempts to prepopulate the input state after an environment change.
-// This is subject to restriction based on the reference state.
-- (void)applyPreselection:
-            (const contextual_search::InputState&)preselectionState
-        forReferenceState:(const contextual_search::InputState&)referenceState {
-  bool canSelectModel =
-      [self canSelectModelBasedOnInputState:preselectionState.active_model];
-  if (canSelectModel && _inputStateModel) {
-    _inputStateModel->setActiveModel(preselectionState.active_model);
-  }
-
-  bool canSelectTool =
-      [self canSelectToolBasedOnInputState:preselectionState.active_tool];
-  if (canSelectTool) {
-    [self setActiveTool:preselectionState.active_tool];
-  }
-}
-
-- (void)invalidateInputStateSubscription {
-  _inputStateSubscription = {};
-}
-
-// Starts observing changes in the input state. Emits the initial state
-// immediately after starting.
-- (void)startInputStateObservation {
-  if (!_inputStateModel) {
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  _inputStateSubscription = _inputStateModel->subscribe(
-      base::BindRepeating(^(const contextual_search::InputState& inputState) {
-        [weakSelf didUpdateInputState:inputState];
-      }));
-  _inputStateModel->Initialize();
-}
-
-// Called when the input state is updated.
-- (void)didUpdateInputState:(contextual_search::InputState)inputState {
-  _inputState = inputState;
-
+- (void)inputStateManager:(ComposeboxInputStateManager*)manager
+      didUpdateInputState:(const contextual_search::InputState&)inputState {
   if (EnableComposeboxServerSideState()) {
     _strings = ServerStringsFromInputState(inputState);
   }

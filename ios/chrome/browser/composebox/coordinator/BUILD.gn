@@ -61,6 +61,8 @@ source_set("input_plate") {
     "composebox_input_plate_coordinator.mm",
     "composebox_input_plate_mediator.h",
     "composebox_input_plate_mediator.mm",
+    "composebox_input_state_manager.h",
+    "composebox_input_state_manager.mm",
     "composebox_omnibox_client.h",
     "composebox_omnibox_client.mm",
     "composebox_omnibox_client_delegate.h",
@@ -279,6 +281,7 @@ source_set("unit_tests") {
   sources = [
     "composebox_cobrowse_omnibox_client_unittest.mm",
     "composebox_input_plate_mediator_unittest.mm",
+    "composebox_input_state_manager_unittest.mm",
   ]
   deps = [
     ":coordinator",
