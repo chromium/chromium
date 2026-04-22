@@ -148,6 +148,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // Returns true if the app menu is focused.
   bool GetAppMenuFocused() const;
 
+  WebUIToolbarWebView* GetWebUIToolbarViewForTesting() override;
+
   void ShowIntentPickerBubble(
       std::vector<IntentPickerBubbleView::AppInfo> app_info,
       bool show_stay_in_chrome,
@@ -300,7 +302,6 @@ class ToolbarView : public views::AccessiblePaneView,
   ReloadControl* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
-  WebUIToolbarWebView* GetWebUIToolbarViewForTesting() override;
 
   // BrowserRootView::DropTarget
   std::optional<BrowserRootView::DropIndex> GetDropIndex(

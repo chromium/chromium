@@ -66,7 +66,7 @@ class WebUIToolbarWebView
   ~WebUIToolbarWebView() override;
 
   ReloadControl* GetReloadControl();
-  PinnedToolbarActions* GetPinnedToolbarActions() {
+  WebUIPinnedToolbarActions* GetPinnedToolbarActions() {
     return &pinned_toolbar_actions_;
   }
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface();

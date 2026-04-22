@@ -14,7 +14,8 @@ export function getHtml(this: PinnedToolbarActionElement) {
       ?is-menu-open="${this.state.highlighted}"
       title="${this.state.tooltip}"
       aria-label="${this.state.accessibilityText || this.state.tooltip}"
-      @click="${this.onActionClick_}">
+      @click="${this.onActionClick_}"
+      @contextmenu="${this.onContextmenu_}">
   </cr-icon-button>
 <!--_html_template_end_-->`;
 }

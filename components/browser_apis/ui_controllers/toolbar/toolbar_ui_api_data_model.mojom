@@ -13,12 +13,43 @@ import "ui/gfx/range/mojom/range.mojom";
 // ShowContextMenu.
 enum ContextMenuType {
   kUnspecified,
+  // Navigation control buttons
   kReload,
   kSplitTabsAction,
   kSplitTabsContext,
   kBack,
   kForward,
   kHome,
+
+  // Pinned toolbar action buttons
+  kPinnedActionNewIncognitoWindow,
+  kPinnedActionShowPasswordsBubbleOrPage,
+  kPinnedActionShowPaymentsBubbleOrPage,
+  kPinnedActionShowAddressesBubbleOrPage,
+  kPinnedActionSidePanelShowBookmarks,
+  kPinnedActionSidePanelShowReadingList,
+  kPinnedActionSidePanelShowHistoryCluster,
+  kPinnedActionShowDownloads,
+  kPinnedActionClearBrowsingData,
+  kPinnedActionPrint,
+  kPinnedActionSidePanelShowLensOverlayResults,
+  kPinnedActionShowTranslate,
+  kPinnedActionQrCodeGenerator,
+  kPinnedActionRouteMedia,
+  kPinnedActionSidePanelShowReadAnything,
+  kPinnedActionCopyUrl,
+  kPinnedActionSendTabToSelf,
+  kPinnedActionTaskManager,
+  kPinnedActionDevTools,
+  kPinnedActionTabSearch,
+  kPinnedActionSidePanelShowContextualTasks,
+  kPinnedActionSidePanelShowLens,
+  kPinnedActionSidePanelShowAboutThisSite,
+  kPinnedActionSidePanelShowCustomizeChrome,
+  kPinnedActionSidePanelShowShoppingInsights,
+  kPinnedActionSidePanelShowMerchantTrust,
+  kPinnedActionSendSharedTabGroupFeedback,
+  kPinnedActionSidePanelShowComments,
 };
 
 struct BackForwardButtonState {
