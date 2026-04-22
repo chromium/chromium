@@ -230,8 +230,7 @@ OptRecordRdata::PaddingOpt::PaddingOpt(base::span<const uint8_t> padding)
     : Opt(padding) {}
 
 OptRecordRdata::PaddingOpt::PaddingOpt(uint16_t padding_len)
-    : Opt(base::span<const uint8_t>(
-          std::vector<uint8_t>(base::checked_cast<size_t>(padding_len)))) {}
+    : Opt(std::vector<uint8_t>(base::checked_cast<size_t>(padding_len))) {}
 
 OptRecordRdata::PaddingOpt::~PaddingOpt() = default;
 
