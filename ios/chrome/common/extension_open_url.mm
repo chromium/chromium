@@ -20,6 +20,10 @@ bool ExtensionOpenURL(NSURL* url,
       open_invocation.target = responder;
       open_invocation.selector = open_url_selector;
       [open_invocation setArgument:&url atIndex:2];
+      NSDictionary* options = nil;
+      [open_invocation setArgument:&options atIndex:3];
+      void (^completion)(BOOL) = nil;
+      [open_invocation setArgument:&completion atIndex:4];
       [open_invocation retainArguments];
       [open_invocation invoke];
       return YES;
