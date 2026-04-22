@@ -8,7 +8,7 @@
 </head>
 <body>
 <script>
-promise_test(async () => {
+promise_test(async (t) => {
   await asyncGC();
   assert_equals(internals.audioHandlerCount(), 0,
                 'the initial handler count should be zero.');
@@ -19,52 +19,59 @@ promise_test(async () => {
   let node1 = new AudioWorkletNode(context, 'gc-processor');
   let node2 = new AudioWorkletNode(context, 'gc-processor');
 
-  await new Promise(resolve => {
-    // Checking `node2` only is good enough.
-    node2.port.onmessage = (event) => {
-      if (event.data.status === 'created') {
-        resolve();
-        node2.port.onmessage = null;
-      }
-    }
-  });
+  // Helper function to wait for a message from a port.
+  const waitForMessage = (port, expectedStatus) => {
+    return new Promise((resolve, reject) => {
+      port.onmessage = (event) => {
+        port.onmessage = null; // Stop listening after the first message
+        if (event.data.status === expectedStatus) {
+          resolve();
+        } else {
+          reject(new Error(`Expected status "${expectedStatus}", ` +
+                           `but got "${event.data.status}"`));
+        }
+      };
+    });
+  };
+
+  // Wait for both nodes to be created.
+  await waitForMessage(node1.port, 'created');
+  await waitForMessage(node2.port, 'created');
 
   assert_equals(internals.audioHandlerCount(), 3,
                 'the handler count should be 3.');
   assert_equals(internals.audioWorkletProcessorCount(), 2,
                 'the worklet processor count should be 2.');
 
-  return new Promise(resolve => {
-    // Finish the life cycle of `node2` by terminating the matching processor.
-    node2.port.postMessage({command: 'finish'});
+  // Finish the life cycle of `node2` by terminating the matching processor.
+  node2.port.postMessage({command: 'finish'});
+  await waitForMessage(node2.port, 'finished');
 
-    node2.port.onmessage = async (event) => {
-      if (event.data.status === 'finished') {
-        node2.port.onmessage = null;
-        node2.port.close();
-        node2.disconnect();
-        node2 = null;
+  node2.port.close();
+  node2.disconnect();
+  node2 = null;
 
-        // Perform GC.
-        await asyncGC();
+  // Yield to the event loop to allow pending cross-thread tasks to
+  // run. Specifically, we need
+  // `AudioWorkletHandler::MarkProcessorInactiveOnMainThread` to
+  // execute and set `is_processor_active_` to false, so that
+  // `AudioWorkletNode::HasPendingActivity()` returns false and allows
+  // the node to be garbage collected.
+  await new Promise(resolve => t.step_timeout(resolve, 0));
 
-        // Trigger GC on AudioWorkletGlobalScope via `node1` and its processor.
-        node1.port.postMessage({command: 'gc'});
+  // Perform GC.
+  await asyncGC();
 
-        node1.port.onmessage = async (event) => {
-          if (event.data.status === 'collected') {
-            // Verify processor count before closing context.
-            assert_equals(internals.audioWorkletProcessorCount(), 1,
-                          'the worklet processor after gc count should be 1.');
+  // Trigger GC on AudioWorkletGlobalScope via `node1` and its processor.
+  node1.port.postMessage({command: 'gc'});
+  await waitForMessage(node1.port, 'collected');
 
-            assert_equals(internals.audioHandlerCount(), 2,
-                          'the handler count after gc should be 2.');
-            resolve();
-          }
-        };
-      }
-    };
-  });
+  // Verify processor count before closing context.
+  assert_equals(internals.audioWorkletProcessorCount(), 1,
+                'the worklet processor after gc count should be 1.');
+
+  assert_equals(internals.audioHandlerCount(), 2,
+                'the handler count after gc should be 2.');
 }, 'Test GC of AudioWorkletProcessor');
 </script>
 </body>
