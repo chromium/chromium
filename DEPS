@@ -38,7 +38,6 @@ git_dependencies = 'SYNC'
 
 gclient_gn_args_file = 'src/build/config/gclient_args.gni'
 gclient_gn_args = [
-  'android_ndk_version',
   'build_with_chromium',
   'checkout_android',
   'checkout_android_prebuilts_build_tools',
@@ -58,10 +57,6 @@ gclient_gn_args = [
 
 
 vars = {
-  # The version of the NDK. Set here, to allow the autoroller to update this
-  # value when updating the CIPD hash.
-  'android_ndk_version': Str('2@0537f5c8d977013e9123bc3c4101c046'),
-
   # Variable that can be used to support multiple build scenarios, like having
   # Chromium specific targets in a client project's GN file or sync dependencies
   # conditionally etc.
@@ -1735,7 +1730,7 @@ deps = {
       'packages': [
             {
                 'package': 'chromium/third_party/android_toolchain/android_toolchain',
-                'version': 'version:' + Var('android_ndk_version'),
+                'version': 'KXOia11cm9lVdUdPlbGLu8sCz6Y4ey_HV2s8_8qeqhgC',
             },
       ],
       'condition': 'checkout_android and non_git_source',
