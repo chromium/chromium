@@ -523,9 +523,17 @@ IN_PROC_BROWSER_TEST_P(PasswordManualFallbackTest,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
 }
 
+// TODO(crbug.com/505417497): Re-enable after fixing failures on Mac 13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics \
+  DISABLED_ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics
+#else
+#define MAYBE_ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics \
+  ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics
+#endif
 IN_PROC_BROWSER_TEST_P(
     PasswordManualFallbackTest,
-    ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics) {
+    MAYBE_ImportPasswordsTriggersOpeningPaswordManagerTabAndRecordsMetrics) {
   base::HistogramTester histogram_tester;
   ASSERT_NE(web_contents()->GetLastCommittedURL(),
             "chrome://password-manager/");
