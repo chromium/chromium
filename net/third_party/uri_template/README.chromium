@@ -1,8 +1,9 @@
 Name: URI Template Parser
 Short Name: uri_template
 URL: https://github.com/google/google-api-cpp-client/
+Version: N/A
 Revision: d0bbe169d81a50936ec5fcea4e6dbcfb97303f13
-Update Mechanism: Manual
+Update Mechanism: Static.HardFork (https://crbug.com/505232094)
 Date: 2018-08-06
 License: Apache-2.0
 License File: LICENSE
