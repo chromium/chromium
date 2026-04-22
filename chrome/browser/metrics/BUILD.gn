@@ -40,6 +40,7 @@ source_set("metrics") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resource_coordinator:mojo_bindings",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/metrics:content",

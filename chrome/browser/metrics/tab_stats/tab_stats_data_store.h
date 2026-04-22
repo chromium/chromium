@@ -16,7 +16,7 @@
 #include "base/profiler/sample_metadata.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"  // nogncheck
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "content/public/browser/visibility.h"
 
 using mojom::LifecycleUnitDiscardReason;
