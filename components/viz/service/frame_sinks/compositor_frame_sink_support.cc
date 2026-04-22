@@ -14,6 +14,8 @@
 #include "base/containers/map_util.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -64,6 +66,11 @@ bool HasElapsedCadenceInterval(
 }
 
 namespace viz {
+
+// TODO (crbug.com/495852034): Remove once M150 hits Stable.
+BASE_FEATURE(kDisconnectOnInvalidHitTestRegionList,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // The maximum amount of time to wait for a new interactive frame before
@@ -1002,8 +1009,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
   // QueueFrame can fail in unit tests, so SubmitHitTestRegionList has to be
   // called before that.
-  frame_sink_manager()->SubmitHitTestRegionList(
-      last_created_surface_id_, frame_index, std::move(hit_test_region_list));
+  if (!frame_sink_manager()->SubmitHitTestRegionList(
+          last_created_surface_id_, frame_index,
+          std::move(hit_test_region_list))) {
+    if (base::FeatureList::IsEnabled(kDisconnectOnInvalidHitTestRegionList)) {
+      return SubmitResult::HIT_TEST_DATA_INVALID;
+    }
+  }
   // Update the interaction state at the end of this method to ensure it only
   // reflects valid frames that were successfully accepted. This prevents
   // invalid frames (e.g. those with a size mismatch) from affecting the global
@@ -1468,6 +1480,8 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
       return "LocalSurfaceId sequence numbers decreased";
     case SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT:
       return "Surface belongs to another client";
+    case SubmitResult::HIT_TEST_DATA_INVALID:
+      return "Invalid hit-test data";
   }
   NOTREACHED();
 }

@@ -38,8 +38,9 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
 
   // Called when HitTestRegionList is submitted along with every call
-  // to SubmitCompositorFrame.
-  void SubmitHitTestRegionList(
+  // to SubmitCompositorFrame. Returns true if hit_test_region_list was
+  // successfully submitted, and false if hit_test_region_list is invalid.
+  bool SubmitHitTestRegionList(
       const SurfaceId& surface_id,
       const uint32_t frame_index,
       std::optional<HitTestRegionList> hit_test_region_list);
