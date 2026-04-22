@@ -10,6 +10,7 @@
 #include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -900,6 +901,62 @@ TEST_F(LayerContextImplDebugStateTest, UpdateDebugState) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(host_impl->debug_state(), kDefaultDebugState);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSurfaceRanges) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_TRUE(active_tree->SurfaceRanges().empty());
+
+  // Update with surface ranges.
+  auto update2 = CreateDefaultUpdate();
+  const SurfaceRange kRange1(
+      SurfaceId(
+          FrameSinkId(1, 1),
+          LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(1, 1))),
+      SurfaceId(
+          FrameSinkId(1, 1),
+          LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(1, 2))));
+  const SurfaceRange kRange2(
+      std::nullopt,
+      SurfaceId(
+          FrameSinkId(2, 2),
+          LocalSurfaceId(2, base::UnguessableToken::CreateForTesting(2, 2))));
+  update2->surface_ranges = {kRange1, kRange2};
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_THAT(active_tree->SurfaceRanges(),
+              testing::UnorderedElementsAre(kRange1, kRange2));
+
+  // Update with different surface ranges.
+  auto update3 = CreateDefaultUpdate();
+  update3->surface_ranges = {kRange1};
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_THAT(active_tree->SurfaceRanges(),
+              testing::UnorderedElementsAre(kRange1));
+
+  // Persistence test: Update with nullopt surface_ranges should keep existing
+  // ranges.
+  auto update_nullopt = CreateDefaultUpdate();
+  // update_nullopt->surface_ranges is std::nullopt by default.
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_nullopt))
+          .has_value());
+  EXPECT_THAT(active_tree->SurfaceRanges(),
+              testing::UnorderedElementsAre(kRange1));
+
+  // Update with empty surface ranges.
+  auto update4 = CreateDefaultUpdate();
+  update4->surface_ranges = std::vector<SurfaceRange>();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_TRUE(active_tree->SurfaceRanges().empty());
 }
 
 }  // namespace
