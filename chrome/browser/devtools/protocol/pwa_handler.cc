@@ -263,7 +263,13 @@ void PWAHandler::InstallFromManifestId(
             const bool manifest_match =
                 (web_app_info->manifest_id().spec() == in_manifest_id);
             std::move(acceptance_callback)
-                .Run(manifest_match, std::move(web_app_info));
+                .Run(
+                    manifest_match, std::move(web_app_info),
+                    base::BindOnce([](bool success, base::OnceClosure closure) {
+                      // DevTools does not need to handle the post-install
+                      // closure. We are not launching or reparenting here by
+                      // design, as that is handled in PWAHandler::Launch.
+                    }));
           },
           in_manifest_id),
       base::BindOnce(

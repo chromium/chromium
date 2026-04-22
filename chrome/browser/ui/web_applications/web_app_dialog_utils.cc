@@ -84,6 +84,12 @@ void OnWebAppInstallShowInstallDialog(
   os_type = InstallOsType::kWin;
 #endif
 
+  // The UI methods below expect a callback that takes only 2 arguments, but
+  // WebAppInstallationAcceptanceCallback now takes 3 arguments. We use this
+  // adapter to pass a dummy result callback.
+  auto launch_app_on_install_success =
+      AdaptToLaunchOnInstallSuccess(std::move(web_app_acceptance_callback));
+
   switch (flow) {
     case WebAppInstallFlow::kInstallSite:
       web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -105,29 +111,32 @@ void OnWebAppInstallShowInstallDialog(
         }
         WebAppInstallFlowDialogDelegate::Show(
             initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker), std::move(web_app_acceptance_callback),
-            iph_state, std::move(screenshot_fetcher), show_initiating_origin,
-            install_type, os_type);
+            std::move(install_tracker),
+            std::move(launch_app_on_install_success), iph_state,
+            std::move(screenshot_fetcher), show_initiating_origin, install_type,
+            os_type);
         return;
       }
 
       if (screenshot_fetcher) {
         ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker), std::move(web_app_acceptance_callback),
-            screenshot_fetcher, iph_state);
+            std::move(install_tracker),
+            std::move(launch_app_on_install_success), screenshot_fetcher,
+            iph_state);
         return;
       } else if (web_app_info->is_diy_app) {
         ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),
                                 std::move(install_tracker),
-                                std::move(web_app_acceptance_callback),
+                                std::move(launch_app_on_install_success),
                                 iph_state);
         return;
       } else {
         ShowSimpleInstallDialogForWebApps(
             initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker), std::move(web_app_acceptance_callback),
-            iph_state, show_initiating_origin);
+            std::move(install_tracker),
+            std::move(launch_app_on_install_success), iph_state,
+            show_initiating_origin);
         return;
       }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -140,7 +149,7 @@ void OnWebAppInstallShowInstallDialog(
 
       ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),
                                std::move(install_tracker),
-                               std::move(web_app_acceptance_callback));
+                               std::move(launch_app_on_install_success));
       return;
 #endif
     case WebAppInstallFlow::kUnknown:

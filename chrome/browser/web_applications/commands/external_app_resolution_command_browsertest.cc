@@ -313,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
   const webapps::AppId& first_app_id = future_first_install.Get<0>();
   webapps::InstallResultCode first_install_code = future_first_install.Get<1>();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(first_install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       first_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));

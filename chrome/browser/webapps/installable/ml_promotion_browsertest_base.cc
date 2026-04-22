@@ -119,6 +119,8 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
     return success;
   }
 
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+
   const webapps::AppId& app_id = install_future.Get<webapps::AppId>();
   if (!install_locally) {
     provider->sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(app_id);

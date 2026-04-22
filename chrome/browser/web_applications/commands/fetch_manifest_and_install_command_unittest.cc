@@ -189,7 +189,14 @@ class FetchManifestAndInstallCommandTest
            std::unique_ptr<WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
           web_app_info->user_display_mode = user_display_mode;
-          std::move(acceptance_callback).Run(accept, std::move(web_app_info));
+          std::move(acceptance_callback)
+              .Run(accept, std::move(web_app_info),
+                   base::BindOnce([](bool success,
+                                     base::OnceClosure reparent_or_launch_app) {
+                     if (success && reparent_or_launch_app) {
+                       std::move(reparent_or_launch_app).Run();
+                     }
+                   }));
         },
         accept, user_display_mode);
   }
@@ -278,6 +285,53 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
       kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
+}
+
+TEST_F(FetchManifestAndInstallCommandTest, SuccessWithDelayedReparent) {
+  SetupPageState();
+
+  base::OnceClosure saved_reparent_closure;
+  auto dialog_callback = base::BindLambdaForTesting(
+      [&](base::WeakPtr<WebAppScreenshotFetcher>,
+          content::WebContents* initiator_web_contents,
+          std::unique_ptr<WebAppInstallInfo> web_app_info,
+          WebAppInstallationAcceptanceCallback acceptance_callback) {
+        web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+        std::move(acceptance_callback)
+            .Run(true, std::move(web_app_info),
+                 base::BindOnce(
+                     [](base::OnceClosure* saved_closure, bool success,
+                        base::OnceClosure reparent_or_launch_app) {
+                       if (success) {
+                         *saved_closure = std::move(reparent_or_launch_app);
+                       }
+                     },
+                     &saved_reparent_closure));
+      });
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider()->scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      web_contents()->GetWeakPtr(), std::move(dialog_callback),
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
+
+  EXPECT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  // Install completed, but reparenting should not have happened yet.
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
+  EXPECT_TRUE(saved_reparent_closure);
+
+  // Now run the closure.
+  std::move(saved_reparent_closure).Run();
+
+  // Wait for the reparent command to complete.
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -366,6 +420,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
       kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -386,6 +441,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
       kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -434,7 +490,14 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
           content::WebContents* initiator_web_contents,
           std::unique_ptr<WebAppInstallInfo> web_app_info,
           WebAppInstallationAcceptanceCallback acceptance_callback) {
-        std::move(acceptance_callback).Run(true, std::move(web_app_info));
+        std::move(acceptance_callback)
+            .Run(true, std::move(web_app_info),
+                 base::BindOnce([](bool success,
+                                   base::OnceClosure reparent_or_launch_app) {
+                   if (success && reparent_or_launch_app) {
+                     std::move(reparent_or_launch_app).Run();
+                   }
+                 }));
         dialog_runloop.Quit();
       });
 

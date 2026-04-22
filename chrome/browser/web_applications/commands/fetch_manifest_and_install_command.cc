@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
+#include "chrome/browser/web_applications/commands/launch_or_reparent_web_contents_into_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -125,15 +127,7 @@ void LogInstallInfoForFallbackData(base::DictValue& dict,
   dict.Set("name", install_info.title.AsDebugValue());
 }
 
-bool IsShortcutCreated(WebAppRegistrar& registrar,
-                       const webapps::AppId& app_id) {
-  auto os_state = registrar.GetAppCurrentOsIntegrationState(app_id);
-  if (!os_state.has_value()) {
-    return false;
-  }
 
-  return os_state->has_shortcut();
-}
 
 static bool& ShouldBypassVisibilityChecks() {
   static bool g_bypass_visibility_checking = false;
@@ -637,7 +631,14 @@ void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
 
 void FetchManifestAndInstallCommand::ShowInstallDialog() {
   if (!dialog_callback_) {
-    OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info_));
+    OnDialogCompleted(
+        /*user_accepted=*/true, std::move(web_app_info_),
+        base::BindOnce(
+            [](bool success, base::OnceClosure reparent_or_launch_app) {
+              if (success && reparent_or_launch_app) {
+                std::move(reparent_or_launch_app).Run();
+              }
+            }));
   } else {
     std::move(dialog_callback_)
         .Run((!screenshot_sizes_.empty() ? weak_ptr_factory_.GetWeakPtr()
@@ -650,7 +651,9 @@ void FetchManifestAndInstallCommand::ShowInstallDialog() {
 
 void FetchManifestAndInstallCommand::OnDialogCompleted(
     bool user_accepted,
-    std::unique_ptr<WebAppInstallInfo> web_app_info) {
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    WebAppInstallationAcceptanceResultCallback result_callback) {
+  acceptance_result_callback_ = std::move(result_callback);
   if (IsWebContentsDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
@@ -707,12 +710,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
           ->GetPrefs(),
       app_id, install_surface_);
 
-  bool is_shortcut_created = IsShortcutCreated(app_lock_->registrar(), app_id);
   CHECK(app_lock_);
-
-  const bool can_reparent_tab =
-      app_lock_->ui_manager().CanReparentAppTabToWindow(
-          app_id, is_shortcut_created, web_contents_.get());
 
   SCOPED_CRASH_KEY_NUMBER("PWA", "install_surface",
                           static_cast<int>(install_surface_));
@@ -727,11 +725,14 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
                               tab_helper->window_app_id().value_or("<none>"));
   }
 
-  if (can_reparent_tab &&
-      (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser) &&
-      (install_surface_ != webapps::WebappInstallSource::DEVTOOLS)) {
-    app_lock_->ui_manager().ReparentAppTabToWindow(web_contents_.get(), app_id,
-                                                   is_shortcut_created);
+  base::OnceClosure reparent_closure = base::BindOnce(
+      &WebAppCommandScheduler::LaunchOrReparentWebContentsIntoApp,
+      app_lock_->scheduler().GetWeakPtr(), app_id, web_contents_->GetWeakPtr(),
+      base::DoNothing(), FROM_HERE);
+
+  if (acceptance_result_callback_) {
+    std::move(acceptance_result_callback_)
+        .Run(true, std::move(reparent_closure));
   }
 
   OnInstallCompleted(app_id, code);

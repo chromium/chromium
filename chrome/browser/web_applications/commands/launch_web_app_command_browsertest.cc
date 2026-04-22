@@ -93,6 +93,7 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
         FallbackBehavior::kAllowFallbackDataAlways);
 
     run_loop.Run();
+    GetProvider().command_manager().AwaitAllCommandsCompleteForTesting();
     return app_id;
   }
 };

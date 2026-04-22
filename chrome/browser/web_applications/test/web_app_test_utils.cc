@@ -1361,8 +1361,16 @@ void TestAcceptDialogCallback(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(acceptance_callback), true /*accept*/,
-                                std::move(web_app_info)));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(acceptance_callback), true /*accept*/,
+          std::move(web_app_info),
+          base::BindOnce(
+              [](bool success, base::OnceClosure reparent_or_launch_app) {
+                if (success && reparent_or_launch_app) {
+                  std::move(reparent_or_launch_app).Run();
+                }
+              })));
 }
 
 void TestDeclineDialogCallback(
@@ -1371,8 +1379,9 @@ void TestDeclineDialogCallback(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(acceptance_callback),
-                                false /*accept*/, std::move(web_app_info)));
+      FROM_HERE,
+      base::BindOnce(std::move(acceptance_callback), false /*accept*/,
+                     std::move(web_app_info), base::DoNothing()));
 }
 
 // TODO(b/329703817): Make this smarter by waiting for a specific dialog, and

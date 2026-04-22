@@ -287,7 +287,11 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchUseCounterBrowserTest,
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
+  ui_test_utils::BrowserCreatedObserver browser_observer;
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  Browser* app_browser = browser_observer.Wait();
+  test::WaitForLoadCompleteAndMaybeManifestSeen(
+      *app_browser->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
                    blink::mojom::WebFeature::kInstalledManifestApplied));
@@ -2071,6 +2075,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
       install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
 
   const webapps::AppId& app_id = install_future.Get<0>();
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
             GetInstallableAppName());
 

@@ -132,6 +132,7 @@ IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
           install_future.GetCallback(),
           FallbackBehavior::kAllowFallbackDataAlways);
       ASSERT_TRUE(install_future.Wait());
+      provider().command_manager().AwaitAllCommandsCompleteForTesting();
       EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
                 webapps::InstallResultCode::kSuccessNewInstall);
       EXPECT_EQ(install_future.Get<webapps::AppId>(), app_id);
@@ -220,6 +221,7 @@ IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
           start_url, base::BindOnce(test::TestAcceptDialogCallback),
           install_future.GetCallback());
       ASSERT_TRUE(install_future.Wait());
+      provider().command_manager().AwaitAllCommandsCompleteForTesting();
       EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
                 webapps::InstallResultCode::kSuccessNewInstall);
       EXPECT_EQ(install_future.Get<webapps::AppId>(), app_id);

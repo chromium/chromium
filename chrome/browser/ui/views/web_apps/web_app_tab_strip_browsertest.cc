@@ -248,7 +248,14 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
                WebAppInstallationAcceptanceCallback acceptance_callback) {
               web_app_info->user_display_mode = mojom::UserDisplayMode::kTabbed;
               std::move(acceptance_callback)
-                  .Run(/*user_accepted=*/true, std::move(web_app_info));
+                  .Run(/*user_accepted=*/true, std::move(web_app_info),
+                       base::BindOnce(
+                           [](bool success,
+                              base::OnceClosure reparent_or_launch_app) {
+                             if (success && reparent_or_launch_app) {
+                               std::move(reparent_or_launch_app).Run();
+                             }
+                           }));
             }),
         base::BindLambdaForTesting(
             [&run_loop, &app_id](const webapps::AppId& installed_app_id,

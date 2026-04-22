@@ -57,7 +57,13 @@ WebAppInstallDialogCallback CreateAcceptDialogCallback() {
          WebAppInstallationAcceptanceCallback acceptance_callback) {
         web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
         std::move(acceptance_callback)
-            .Run(/*accept=*/true, std::move(web_app_info));
+            .Run(/*accept=*/true, std::move(web_app_info),
+                 base::BindOnce([](bool success,
+                                   base::OnceClosure reparent_or_launch_app) {
+                   if (success && reparent_or_launch_app) {
+                     std::move(reparent_or_launch_app).Run();
+                   }
+                 }));
       });
 }
 
@@ -327,6 +333,7 @@ webapps::AppId InstallForWebContents(
       install_source, web_contents->GetWeakPtr(), CreateAcceptDialogCallback(),
       install_future.GetCallback(), fallback_behavior);
   EXPECT_TRUE(install_future.Wait());
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
   return install_future.Get<webapps::AppId>();
 }
 

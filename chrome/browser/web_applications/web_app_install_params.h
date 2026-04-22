@@ -40,11 +40,24 @@ using OnceInstallCallback =
 using OnceUninstallCallback =
     base::OnceCallback<void(const webapps::AppId& app_id, bool uninstalled)>;
 
+using WebAppInstallationAcceptanceResultCallback =
+    base::OnceCallback<void(bool install_success,
+                            base::OnceClosure reparent_closure)>;
+
 // Callback used to indicate whether a user has accepted the installation of a
-// web app.
-using WebAppInstallationAcceptanceCallback =
-    base::OnceCallback<void(bool user_accepted,
-                            std::unique_ptr<WebAppInstallInfo>)>;
+// web app. The `result_callback` will be called when the installation is
+// complete, providing a success flag and a closure to handle reparenting or
+// launching.
+using WebAppInstallationAcceptanceCallback = base::OnceCallback<void(
+    bool user_accepted,
+    std::unique_ptr<WebAppInstallInfo>,
+    WebAppInstallationAcceptanceResultCallback result_callback)>;
+
+// Adapts a WebAppInstallationAcceptanceCallback to a callback that takes
+// only 2 arguments (the old signature), automatically running the reparent
+// closure on success.
+base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>
+AdaptToLaunchOnInstallSuccess(WebAppInstallationAcceptanceCallback callback);
 
 // Callback to show the WebApp installation confirmation bubble in UI.
 // |web_app_info| is the WebAppInstallInfo to be installed.

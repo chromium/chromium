@@ -130,8 +130,10 @@ class FetchManifestAndInstallCommand
 
   void ShowInstallDialog();
 
-  void OnDialogCompleted(bool user_accepted,
-                         std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void OnDialogCompleted(
+      bool user_accepted,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      WebAppInstallationAcceptanceResultCallback result_callback);
   void OnInstallFinalizedMaybeReparentTab(const webapps::AppId& app_id,
                                           webapps::InstallResultCode code);
 
@@ -155,6 +157,7 @@ class FetchManifestAndInstallCommand
   const webapps::WebappInstallSource install_surface_;
   const base::WeakPtr<content::WebContents> web_contents_;
   WebAppInstallDialogCallback dialog_callback_;
+  WebAppInstallationAcceptanceResultCallback acceptance_result_callback_;
   const FallbackBehavior fallback_behavior_;
   const base::WeakPtr<WebAppUiManager> ui_manager_;
 

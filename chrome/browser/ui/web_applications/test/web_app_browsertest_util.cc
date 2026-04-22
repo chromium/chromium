@@ -101,7 +101,13 @@ void AutoAcceptDialogCallback(
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::move(acceptance_callback)
       .Run(
-          /*user_accepted=*/true, std::move(web_app_info));
+          /*user_accepted=*/true, std::move(web_app_info),
+          base::BindOnce(
+              [](bool success, base::OnceClosure reparent_or_launch_app) {
+                if (success && reparent_or_launch_app) {
+                  std::move(reparent_or_launch_app).Run();
+                }
+              }));
 }
 
 // An utility that observes a `WebContents` instance to either finish loading
@@ -201,6 +207,8 @@ webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
     return webapps::AppId();
   }
 
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
 
@@ -272,6 +280,7 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
       FallbackBehavior::kCraftedManifestOnly);
 
   run_loop.Run();
+  provider->command_manager().AwaitAllCommandsCompleteForTesting();
   return app_id;
 }
 

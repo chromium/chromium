@@ -25,6 +25,10 @@ class LaunchOrReparentWebContentsIntoAppCommandTest : public WebAppTest {
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
+
+  FakeWebAppUiManager& fake_ui_manager() {
+    return static_cast<FakeWebAppUiManager&>(fake_provider().ui_manager());
+  }
 };
 
 TEST_F(LaunchOrReparentWebContentsIntoAppCommandTest, ReparentsWhenInScope) {
@@ -43,6 +47,7 @@ TEST_F(LaunchOrReparentWebContentsIntoAppCommandTest, ReparentsWhenInScope) {
       app_id, web_contents->GetWeakPtr(), future.GetCallback());
 
   EXPECT_EQ(LaunchOrReparentResult::kReparented, future.Get());
+  EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 
   // Verify metrics
   histogram_tester.ExpectUniqueSample("WebApp.Command.LaunchOrReparentResult",
@@ -65,6 +70,7 @@ TEST_F(LaunchOrReparentWebContentsIntoAppCommandTest, LaunchesWhenOutOfScope) {
       app_id, web_contents->GetWeakPtr(), future.GetCallback());
 
   EXPECT_EQ(LaunchOrReparentResult::kLaunched, future.Get());
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 
   histogram_tester.ExpectUniqueSample("WebApp.Command.LaunchOrReparentResult",
                                       LaunchOrReparentResult::kLaunched, 1);
@@ -89,6 +95,7 @@ TEST_F(LaunchOrReparentWebContentsIntoAppCommandTest,
       app_id, weak_web_contents, future.GetCallback());
 
   EXPECT_EQ(LaunchOrReparentResult::kWebContentsGone, future.Get());
+  EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 
   histogram_tester.ExpectUniqueSample("WebApp.Command.LaunchOrReparentResult",
                                       LaunchOrReparentResult::kWebContentsGone,
