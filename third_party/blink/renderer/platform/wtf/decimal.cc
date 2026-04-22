@@ -60,8 +60,8 @@ class SpecialValueHandler {
     kBothFinite,
     kBothInfinity,
     kEitherNaN,
-    kLHSIsInfinity,
-    kRHSIsInfinity,
+    kLhsIsInfinity,
+    kRhsIsInfinity,
   };
 
   SpecialValueHandler(const Decimal& lhs, const Decimal& rhs);
@@ -73,8 +73,8 @@ class SpecialValueHandler {
 
  private:
   enum Result {
-    kResultIsLHS,
-    kResultIsRHS,
+    kResultIsLhs,
+    kResultIsRhs,
     kResultIsUnknown,
   };
 
@@ -91,25 +91,25 @@ SpecialValueHandler::HandleResult SpecialValueHandler::Handle() {
     return kBothFinite;
 
   if (lhs_.IsNaN()) {
-    result_ = kResultIsLHS;
+    result_ = kResultIsLhs;
     return kEitherNaN;
   }
 
   if (rhs_.IsNaN()) {
-    result_ = kResultIsRHS;
+    result_ = kResultIsRhs;
     return kEitherNaN;
   }
 
   if (lhs_.IsInfinity())
-    return rhs_.IsInfinity() ? kBothInfinity : kLHSIsInfinity;
+    return rhs_.IsInfinity() ? kBothInfinity : kLhsIsInfinity;
 
   DCHECK(rhs_.IsInfinity());
-  return kRHSIsInfinity;
+  return kRhsIsInfinity;
 }
 
 Decimal SpecialValueHandler::Value() const {
-  DCHECK(result_ == kResultIsLHS || result_ == kResultIsRHS);
-  return (result_ == kResultIsLHS) ? lhs_ : rhs_;
+  DCHECK(result_ == kResultIsLhs || result_ == kResultIsRhs);
+  return (result_ == kResultIsLhs) ? lhs_ : rhs_;
 }
 
 // This class is used for 128 bit unsigned integer arithmetic.
@@ -316,10 +316,10 @@ Decimal Decimal::operator+(const Decimal& rhs) const {
     case SpecialValueHandler::kEitherNaN:
       return handler.Value();
 
-    case SpecialValueHandler::kLHSIsInfinity:
+    case SpecialValueHandler::kLhsIsInfinity:
       return lhs;
 
-    case SpecialValueHandler::kRHSIsInfinity:
+    case SpecialValueHandler::kRhsIsInfinity:
       return rhs;
   }
 
@@ -355,10 +355,10 @@ Decimal Decimal::operator-(const Decimal& rhs) const {
     case SpecialValueHandler::kEitherNaN:
       return handler.Value();
 
-    case SpecialValueHandler::kLHSIsInfinity:
+    case SpecialValueHandler::kLhsIsInfinity:
       return lhs;
 
-    case SpecialValueHandler::kRHSIsInfinity:
+    case SpecialValueHandler::kRhsIsInfinity:
       return Infinity(InvertSign(rhs_sign));
   }
 
@@ -404,10 +404,10 @@ Decimal Decimal::operator*(const Decimal& rhs) const {
     case SpecialValueHandler::kEitherNaN:
       return handler.Value();
 
-    case SpecialValueHandler::kLHSIsInfinity:
+    case SpecialValueHandler::kLhsIsInfinity:
       return rhs.IsZero() ? Nan() : Infinity(result_sign);
 
-    case SpecialValueHandler::kRHSIsInfinity:
+    case SpecialValueHandler::kRhsIsInfinity:
       return lhs.IsZero() ? Nan() : Infinity(result_sign);
   }
 
@@ -431,10 +431,10 @@ Decimal Decimal::operator/(const Decimal& rhs) const {
     case SpecialValueHandler::kEitherNaN:
       return handler.Value();
 
-    case SpecialValueHandler::kLHSIsInfinity:
+    case SpecialValueHandler::kLhsIsInfinity:
       return Infinity(result_sign);
 
-    case SpecialValueHandler::kRHSIsInfinity:
+    case SpecialValueHandler::kRhsIsInfinity:
       return Zero(result_sign);
   }
 
