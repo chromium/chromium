@@ -18,7 +18,10 @@ found in the LICENSE file.
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:focusable="true"
-        android:padding="6dp">
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
         <TextView
             android:id="@+id/name"
