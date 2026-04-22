@@ -7587,7 +7587,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- NTP -->
       <!-- Google Drive integration disclaimer for New Tab Page -->
       <message name="IDS_NTP_DRIVE_CONNECT_TITLE" desc="Title of the dialog asking to connect Google Drive to AIM.">
-        Allow Search to Access Drive Content?
+        Allow Search to access Drive content?
       </message>
       <message name="IDS_NTP_DRIVE_DISCLAIMER_BODY" desc="Body text explaining how Drive data is handled in AIM.">
         Your Google Drive content is accessed only to provide this file search feature. It is not used to improve Google Search. Google will not access your Google Drive content unless you explicitly upload a file.
