@@ -8216,4 +8216,39 @@ TEST_F(AXPlatformNodeWinTest, UiaMathMlFeatureFlag) {
   }
 }
 
+// Regression test for crbug.com/503419515: a node destroyed mid-event must
+// not be inserted into the global alert targets set.
+TEST_F(AXPlatformNodeWinTest, DestroyedNodeNotAddedToAlertTargets) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData alert;
+  alert.id = 2;
+  alert.role = ax::mojom::Role::kAlert;
+
+  Init(root, alert);
+  AXNode* alert_ax_node = GetRoot()->children()[0];
+
+  auto* alert_node = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(alert_ax_node));
+  ASSERT_TRUE(alert_node);
+
+  const size_t initial_count =
+      AXPlatformNodeWin::GetAlertTargetCountForTesting();
+
+  // Put the node in the IsDestroyed() state without actually destroying it,
+  // so the wrapper can still tear down cleanly at the end of the test.
+  AXPlatformNodeDelegate* original_delegate =
+      alert_node->SetDelegateForTesting(nullptr);
+  ASSERT_TRUE(alert_node->IsDestroyed());
+
+  alert_node->AddAlertTargetForTesting();
+  EXPECT_EQ(initial_count,
+            AXPlatformNodeWin::GetAlertTargetCountForTesting());
+
+  alert_node->SetDelegateForTesting(original_delegate);
+}
+
 }  // namespace ui
