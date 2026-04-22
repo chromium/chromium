@@ -3307,6 +3307,9 @@ message RemoteCommand {
     // Query the geolocation of the device.
     QUERY_GEOLOCATION = 17;
 
+    // Immediately force an extension update check for a given profile.
+    EXTENSION_UPDATE_CHECK = 18;
+
     // Please update metrics after adding a new item - see the comment above.
   }
 

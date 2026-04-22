@@ -89,6 +89,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
     case RemoteCommand::USER_ARC_COMMAND:
     case RemoteCommand::BROWSER_CLEAR_BROWSING_DATA:
     case RemoteCommand::BROWSER_ROTATE_ATTESTATION_CREDENTIAL:
+    case RemoteCommand::EXTENSION_UPDATE_CHECK:
       // These types of commands should be sent to `UserCommandsFactoryAsh`
       // instead of here.
       NOTREACHED();
