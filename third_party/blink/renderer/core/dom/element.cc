@@ -1126,7 +1126,7 @@ Node* Element::Clone(Document& factory,
     }
   } else {
     copy = &CloneWithChildren(data, &factory, append_to, registry,
-                              append_exception_state);
+                              fallback_registry, append_exception_state);
   }
   // 6. If node is a shadow host whose shadow root’s clonable is true:
   auto* shadow_root = GetShadowRoot();
@@ -1191,6 +1191,7 @@ Element& Element::CloneWithChildren(
     Document* nullable_factory,
     ContainerNode* append_to,
     CustomElementRegistry* registry,
+    CustomElementRegistry* fallback_registry,
     ExceptionState& append_exception_state) const {
   InvalidateNodeListCachesScope deferred_invalidation_scope(GetDocument());
   Element& clone = CloneWithoutAttributesAndChildren(
@@ -1208,7 +1209,11 @@ Element& Element::CloneWithChildren(
   if (append_to) {
     append_to->AppendChild(&clone, append_exception_state);
   }
-  clone.CloneChildNodesFrom(*this, data, registry);
+  // Pass the original fallback_registry (not the resolved registry) so that
+  // descendants with null registries fall back to the registry originally
+  // provided to importNode/cloneNode, rather than an intermediate ancestor's
+  // resolved registry. See https://crbug.com/491031515.
+  clone.CloneChildNodesFrom(*this, data, fallback_registry);
   return clone;
 }
 

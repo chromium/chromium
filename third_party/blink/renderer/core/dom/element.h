@@ -703,7 +703,8 @@ class CORE_EXPORT Element : public ContainerNode {
   Element& CloneWithChildren(NodeCloningData& data,
                              Document*,
                              ContainerNode*,
-                             CustomElementRegistry*,
+                             CustomElementRegistry* registry,
+                             CustomElementRegistry* fallback_registry,
                              ExceptionState& = ASSERT_NO_EXCEPTION) const;
   Element& CloneWithoutChildren(NodeCloningData& data,
                                 CustomElementRegistry*,

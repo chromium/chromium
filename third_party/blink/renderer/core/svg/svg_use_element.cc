@@ -458,7 +458,7 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
   NodeCloningData data{CloneOption::kIncludeDescendants};
   SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren(
       data, /*document*/ nullptr, /*append_to*/ nullptr,
-      /*fallback_registry*/ nullptr));
+      /*registry*/ nullptr, /*fallback_registry*/ nullptr));
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
   PostProcessInstanceTree(target_root, *instance_root);
   return instance_root;
