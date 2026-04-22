@@ -596,7 +596,7 @@ public class OverlayPanelContent {
      * @return Whether the given HTTP result code represents a failure or not.
      */
     private static boolean isHttpFailureCode(int httpResultCode) {
-        return httpResultCode <= 0 || httpResultCode >= 400;
+        return httpResultCode < 0 || httpResultCode >= 400;
     }
 
     /**

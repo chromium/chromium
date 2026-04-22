@@ -118,11 +118,9 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->GetNetErrorCode(),
       base::android::ConvertUTF8ToJavaString(
           env, net::ErrorToString(cpp_navigation_handle_->GetNetErrorCode())),
-      // TODO(shaktisahu): Change default status to -1 after fixing
-      // crbug/690041.
       cpp_navigation_handle_->GetResponseHeaders()
           ? cpp_navigation_handle_->GetResponseHeaders()->response_code()
-          : 200,
+          : 0,
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
