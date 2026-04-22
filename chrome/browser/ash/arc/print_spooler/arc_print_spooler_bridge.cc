@@ -93,7 +93,7 @@ void ArcPrintSpoolerBridge::OnPrintDocumentSaved(
     return;
   }
 
-  DCHECK(file_path.IsAbsolute()) << file_path;
+  CHECK(file_path.IsAbsolute()) << file_path;
   GURL url = net::FilePathToFileURL(file_path);
 
   aura::Window* arc_window = GetArcWindow(task_id);
@@ -104,8 +104,9 @@ void ArcPrintSpoolerBridge::OnPrintDocumentSaved(
   }
 
   auto web_contents = CreateArcCustomTabWebContents(profile_, url);
-  std::move(callback).Run(PrintSessionImpl::Create(
-      std::move(web_contents), arc_window, std::move(instance)));
+  std::move(callback).Run(
+      PrintSessionImpl::Create(std::move(web_contents), arc_window,
+                               std::move(instance), std::move(file_path)));
 }
 
 // static

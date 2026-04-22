@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -43,7 +44,8 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
   static mojo::PendingRemote<mojom::PrintSessionHost> Create(
       std::unique_ptr<content::WebContents> web_contents,
       aura::Window* arc_window,
-      mojo::PendingRemote<mojom::PrintSessionInstance> instance);
+      mojo::PendingRemote<mojom::PrintSessionInstance> instance,
+      base::FilePath document_path);
 
   PrintSessionImpl(const PrintSessionImpl&) = delete;
   PrintSessionImpl& operator=(const PrintSessionImpl&) = delete;
@@ -59,7 +61,8 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
   PrintSessionImpl(std::unique_ptr<content::WebContents> web_contents,
                    aura::Window* arc_window,
                    mojo::PendingRemote<mojom::PrintSessionInstance> instance,
-                   mojo::PendingReceiver<mojom::PrintSessionHost> receiver);
+                   mojo::PendingReceiver<mojom::PrintSessionHost> receiver,
+                   base::FilePath document_path);
   friend class content::WebContentsUserData<PrintSessionImpl>;
 
   // printing::mojom::PrintRenderer:
@@ -116,6 +119,9 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
 
   // Web contents for the ARC custom tab.
   std::unique_ptr<content::WebContents> web_contents_;
+
+  // Path to the temporary document displayed in the ARC custom tab.
+  const base::FilePath document_path_;
 
   // Observes the ARC window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
