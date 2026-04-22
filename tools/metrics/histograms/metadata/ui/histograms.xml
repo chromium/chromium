@@ -74,6 +74,15 @@ chromium-metrics-reviews@google.com.
   <variant name="ShellIntegration" summary="the shell integration setter"/>
 </variants>
 
+<variants name="ExistingWindow">
+  <variant name="WithExistingWindow"
+      summary="the profile already has one or more browser windows when this
+               new window is created"/>
+  <variant name="WithoutExistingWindow"
+      summary="the profile has no browser windows when this new window is
+               created"/>
+</variants>
+
 <!-- LINT.IfChange(TopChromeWebUIName) -->
 
 <variants name="TopChromeWebUIName">
@@ -443,33 +452,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.BrowserWindow.ShowRequestedToFirstPaint"
-    units="ms" expires_after="2026-09-17">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-webium-product-eng@google.com</owner>
-  <summary>
-    Records the duration from the initial show/activation request of a new
-    browser window to its first paint. {CreationSource}
-
-    This metric is used to measure the impact of window show deferral. It is
-    recorded only once per window lifecycle. If multiple windows are shown
-    during startup, e.g. due to session restore, the first window is measured in
-    &quot;InitialWebUI.Startup&quot; and not in this histogram.
-
-    This is only recorded for desktop platforms when the InitialWebUIMetrics is
-    enabled.
-  </summary>
-  <token key="CreationSource">
-    <variant name=".AllSources" summary="Aggregated across all sources"/>
-    <variant name=".BrowserInitiated"
-        summary="Triggered by browser action, e.g. shortcut or menu"/>
-    <variant name=".DragToNewWindow"
-        summary="Triggered by dragging a tab to a new window"/>
-    <variant name=".SessionRestore" summary="Triggered by session restore"/>
-  </token>
-</histogram>
-
-<histogram
     name="InitialWebUI.NewWindow{CreationSource}.ReloadButton.{PaintType}.{StartPoint}"
     units="ms" expires_after="2026-09-06">
   <owner>mych@chromium.org</owner>
@@ -500,6 +482,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint"
+    units="ms" expires_after="2026-09-17">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the initial show/activation request of a new
+    browser window to its first paint. {CreationSource} {ExistingWindow}.
+
+    This metric is used to measure the impact of window show deferral. It is
+    recorded only once per window lifecycle. If multiple windows are shown
+    during startup, e.g. due to session restore, the first window is measured in
+    &quot;InitialWebUI.Startup&quot; and not in this histogram.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
+</histogram>
+
+<histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindowToReloadButton.FirstPaintGap"
     units="ms" expires_after="2026-09-13">
   <owner>mych@chromium.org</owner>
@@ -523,12 +533,7 @@ chromium-metrics-reviews@google.com.
         summary="Triggered by dragging a tab to a new window"/>
     <variant name=".SessionRestore" summary="Triggered by session restore"/>
   </token>
-  <token key="ExistingWindow">
-    <variant name="WithExistingWindow"
-        summary="for the profile with existing window"/>
-    <variant name="WithoutExistingWindow"
-        summary="for the profile without existing window"/>
-  </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
 </histogram>
 
 <histogram
@@ -646,13 +651,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.BrowserWindow.FirstPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.BrowserWindow.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-09-06">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {Scenario} browser application startup to the first
-    presentation of the browser window onto the screen{StartupTemperature}.
+    presentation of the browser window onto the screen{StartupTemperature}
+    {ExistingWindow}.
 
     This metric is mutually exclusive by scenarios.
 
@@ -665,6 +671,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
@@ -679,14 +686,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.BrowserWindow.ShowRequestedToFirstPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-09-06">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the initial show/activation request of the first
     browser window during {Scenario} startup to its first
-    paint{StartupTemperature}.
+    paint{StartupTemperature} {ExistingWindow}.
 
     This metric is used to measure the impact of window show deferral. It is
     recorded only once per browser process. If multiple windows are shown during
@@ -703,6 +710,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
@@ -717,14 +725,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.BrowserWindowToReloadButton.FirstPaintGap{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.BrowserWindowToReloadButton.FirstPaintGap{StartupTemperature}"
     units="ms" expires_after="2026-09-13">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the delay between the native browser window's first presentation
     (paint) and the Reload Button first paint during {Scenario} startup
-    {StartupTemperature}
+    {StartupTemperature} {ExistingWindow}
 
     This is a direct, session-linked measurement of the delta, unlike the
     separately logged `.FirstPaint` metrics. Used to quantify the rendering lag
@@ -742,6 +750,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
@@ -756,14 +765,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessCreated{StartupTemperature}"
-    units="ms" expires_after="2026-07-05">
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.ReloadButton.RendererProcessCreated{StartupTemperature}"
+    units="ms" expires_after="2026-10-04">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the start of {Scenario} browser application
     startup to the point where the dedicated renderer process for the Reload
-    button WebUI is initialized {StartupTemperature}.
+    button WebUI is initialized {StartupTemperature} {ExistingWindow}.
 
     This metric specifically measures the renderer process creation cost (Cost
     A), which is an overhead incurred by the Initial WebUI architecture that
@@ -778,6 +787,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
@@ -792,14 +802,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessLaunched{StartupTemperature}"
-    units="ms" expires_after="2026-07-05">
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.ReloadButton.RendererProcessLaunched{StartupTemperature}"
+    units="ms" expires_after="2026-10-04">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the start of {Scenario} browser application
     startup to the point where the dedicated renderer process for the Reload
-    button WebUI is launched {StartupTemperature}.
+    button WebUI is launched {StartupTemperature} {ExistingWindow}.
 
     This metrics captures the completion of the process launch sequence.
     Comparing this with the `.RendererProcessCreated` metric reveals the time
@@ -815,6 +825,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
@@ -829,7 +840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{Scenario}.ReloadButton.{PaintType}{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.{ExistingWindow}.ReloadButton.{PaintType}{StartupTemperature}"
     units="ms" expires_after="2026-09-06">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
@@ -838,7 +849,7 @@ chromium-metrics-reviews@google.com.
     {Scenario} browser application startup with pre/post Initial WebUI setup.
     The timer starts immediately after the browser application
     startup{StartupTemperature}, and ends immediately after a {PaintType} of the
-    view is requested.
+    view is requested. {ExistingWindow}
 
     This metric is mutually exclusive by scenarios.
 
@@ -853,6 +864,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore"
         summary="session restored (without showing the Profile Picker)"/>
   </token>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="PaintType">
     <variant name="FirstContentfulPaint" summary="contentful paint"/>
     <variant name="FirstPaint" summary="paint"/>

@@ -121,7 +121,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
 
   // Still no metric because first presentation hasn't happened.
   tester.ExpectTotalCount(
-      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
       "ShowRequestedToFirstPaint",
       0);
 
@@ -135,11 +135,12 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
   base::TimeDelta expected_delta = total_delay - show_request_delay;
 
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
       "ShowRequestedToFirstPaint.FromConstructor",
       expected_delta, 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.BrowserWindow."
+      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "BrowserWindow."
       "ShowRequestedToFirstPaint."
       "FromConstructor",
       expected_delta, 1);
@@ -174,7 +175,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   base::TimeDelta expected_delta = total_delay - first_delay;
 
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.AllSources.BrowserWindow."
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
       "ShowRequestedToFirstPaint."
       "FromConstructor",
       expected_delta, 1);
@@ -208,7 +209,9 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 
   // Verify the startup metric was NOT recorded because the gap is negative.
   tester.ExpectTotalCount(
-      "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
+      "InitialWebUI.Startup.WithoutExistingWindow.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      0);
 
   base::TimeDelta webui_delay = base::Milliseconds(50);
   {
@@ -230,7 +233,9 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   // The critical verification: This window must incorrectly NOT be logged as
   // Startup, but correctly as a New Window.
   tester.ExpectTotalCount(
-      "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
+      "InitialWebUI.Startup.WithoutExistingWindow.BrowserWindowToReloadButton."
+      "FirstPaintGap",
+      0);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
       "BrowserWindowToReloadButton.FirstPaintGap",

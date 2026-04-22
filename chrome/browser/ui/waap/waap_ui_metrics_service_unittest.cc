@@ -65,16 +65,16 @@ TEST_F(WaapUIMetricsServiceTest, OnFirstPaint) {
   ASSERT_TRUE(service);
 
   const base::TimeTicks paint_time = base::TimeTicks::Now();
-  service->OnFirstPaint(paint_time);
+  service->OnFirstPaint(/*with_existing_window=*/false, paint_time);
 
   // For tests, startup temperature is undetermined.
   histogram_tester()->ExpectTotalCount(
-      "InitialWebUI.Startup.ReloadButton.FirstPaint", 1);
+      "InitialWebUI.Startup.WithoutExistingWindow.ReloadButton.FirstPaint", 1);
 
   // Call a second time to ensure it's not recorded again.
-  service->OnFirstPaint(paint_time);
+  service->OnFirstPaint(/*with_existing_window=*/false, paint_time);
   histogram_tester()->ExpectTotalCount(
-      "InitialWebUI.Startup.ReloadButton.FirstPaint", 1);
+      "InitialWebUI.Startup.WithoutExistingWindow.ReloadButton.FirstPaint", 1);
 }
 
 // Tests that the OnFirstContentfulPaint method records a histogram on the
@@ -85,16 +85,20 @@ TEST_F(WaapUIMetricsServiceTest, OnFirstContentfulPaint) {
   ASSERT_TRUE(service);
 
   const base::TimeTicks paint_time = base::TimeTicks::Now();
-  service->OnFirstContentfulPaint(paint_time);
+  service->OnFirstContentfulPaint(/*with_existing_window=*/false, paint_time);
 
   // For tests, startup temperature is undetermined.
   histogram_tester()->ExpectTotalCount(
-      "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 1);
+      "InitialWebUI.Startup.WithoutExistingWindow.ReloadButton."
+      "FirstContentfulPaint",
+      1);
 
   // Call a second time to ensure it's not recorded again.
-  service->OnFirstContentfulPaint(paint_time);
+  service->OnFirstContentfulPaint(/*with_existing_window=*/false, paint_time);
   histogram_tester()->ExpectTotalCount(
-      "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 1);
+      "InitialWebUI.Startup.WithoutExistingWindow.ReloadButton."
+      "FirstContentfulPaint",
+      1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
