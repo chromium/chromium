@@ -374,7 +374,6 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
   ButtonSeparatorView() {
     const int leading_padding = 8;
     const int trailing_padding = 8;
-    separator_thickness_ = kBookmarkBarSeparatorThickness;
     const gfx::Insets border_insets =
         gfx::Insets::TLBR(0, leading_padding, 0, trailing_padding);
     const ui::ColorId color_id = kColorBookmarkBarSeparatorChromeRefresh;
@@ -390,18 +389,25 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
   ButtonSeparatorView& operator=(const ButtonSeparatorView&) = delete;
   ~ButtonSeparatorView() override = default;
 
-  void UpdateBorderAndPreferredSize(gfx::Insets border_insets) {
-    SetPreferredSize(gfx::Size(
-        border_insets.left() + separator_thickness_ + border_insets.right(),
-        gfx::kFaviconSize));
+  void UpdateBorderAndPreferredSize(const gfx::Insets& border_insets) {
+    const int border_thickness = kBookmarkBarSeparatorThickness / 2;
+
+    // For RoundedRectBorder, Border::GetInsets() is equal to border thickness
+    // + paint insets.
+    if (GetBorder() && GetBorder()->GetInsets() ==
+                           border_insets + gfx::Insets(border_thickness)) {
+      return;
+    }
+
+    SetPreferredSize(gfx::Size(border_insets.left() +
+                                   kBookmarkBarSeparatorThickness +
+                                   border_insets.right(),
+                               gfx::kFaviconSize));
 
     SetBorder(views::CreateRoundedRectBorder(
-        separator_thickness_ / 2, separator_thickness_ / 2, border_insets,
+        border_thickness, border_thickness, border_insets,
         kColorBookmarkBarSeparatorChromeRefresh));
   }
-
- private:
-  int separator_thickness_;
 };
 
 BEGIN_METADATA(BookmarkBarView, ButtonSeparatorView)
