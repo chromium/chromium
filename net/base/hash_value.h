@@ -33,6 +33,7 @@ class NET_EXPORT HashValue {
   explicit HashValue(const SHA256HashValue& hash);
   // `hash` must match the size of a `SHA256HashValue`.
   explicit HashValue(base::span<const uint8_t> hash);
+  HashValue(HashValueTag tag, base::span<const uint8_t> hash);
   explicit HashValue(HashValueTag tag) : tag_(tag) {}
   HashValue() : tag_(HASH_VALUE_SHA256) {}
 

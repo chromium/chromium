@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/version_info/version_info.h"
+#include "crypto/hash.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
@@ -26,7 +27,6 @@
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace network {
 
@@ -102,8 +102,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   // SCTs is used as the cache key to deduplicate reports with the same SCTs.
   // Constructing the report in parallel with computing the hash avoids
   // encoding the SCTs multiple times and avoids extra copies.
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
   for (const auto& sct : signed_certificate_timestamps) {
     auto* sct_source_and_status = tls_report->add_included_sct();
     // TODO(crbug.com/40692154): Update the proto to remove the status entirely
@@ -115,15 +114,15 @@ SCTAuditingCache::MaybeGenerateReportEntry(
     net::ct::EncodeSignedCertificateTimestamp(
         sct.sct, sct_source_and_status->mutable_serialized_sct());
 
-    SHA256_Update(&ctx, sct_source_and_status->serialized_sct().data(),
-                  sct_source_and_status->serialized_sct().size());
+    hasher.Update(sct_source_and_status->serialized_sct());
   }
   // Don't handle reports if there were no valid SCTs.
   if (tls_report->included_sct().empty())
     return std::nullopt;
 
-  net::HashValue cache_key(net::HASH_VALUE_SHA256);
-  SHA256_Final(cache_key.span().data(), &ctx);
+  net::SHA256HashValue hash;
+  hasher.Finish(hash);
+  net::HashValue cache_key(net::HASH_VALUE_SHA256, hash);
 
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.
