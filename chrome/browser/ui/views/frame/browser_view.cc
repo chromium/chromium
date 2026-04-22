@@ -184,6 +184,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
@@ -4624,12 +4626,11 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {
     if (toolbar_ && toolbar_->location_bar_view() &&
+        toolbar_->location_bar_view()->permission_dashboard_view() &&
         toolbar_->location_bar_view()
-            ->permission_dashboard_controller()
             ->permission_dashboard_view()
             ->GetVisible()) {
       panes->push_back(toolbar_->location_bar_view()
-                           ->permission_dashboard_controller()
                            ->permission_dashboard_view());
     }
   } else if (toolbar_ && toolbar_->location_bar() &&
@@ -4641,8 +4642,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     // and individual chips won't be added here. Instead, the WebUI container
     // itself will act as the pane, and DOM focus management will handle
     // traversing the internal chips.
-    if (views::View* view = GetLocationBarView()->chip_view()) {
-      panes->push_back(view);
+    if (GetLocationBarView() && GetLocationBarView()->chip_view()) {
+      panes->push_back(GetLocationBarView()->chip_view());
     }
   }
 

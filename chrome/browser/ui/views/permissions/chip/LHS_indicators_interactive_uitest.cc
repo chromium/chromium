@@ -268,7 +268,6 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   PermissionChipView* GetIndicatorChip() {
     return GetLocationBarView(browser())
-        ->permission_dashboard_controller()
         ->permission_dashboard_view()
         ->GetIndicatorChip();
   }

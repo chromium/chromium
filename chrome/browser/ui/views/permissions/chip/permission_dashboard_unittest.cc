@@ -71,9 +71,7 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
 
   void WaitForAnimationCompletion() {
     PermissionDashboardView* dashboard_view =
-        location_bar_view()
-            ->permission_dashboard_controller()
-            ->permission_dashboard_view();
+        location_bar_view()->permission_dashboard_view();
     base::RunLoop run_loop;
     std::unique_ptr<AnimationObserver> observer =
         std::make_unique<AnimationObserver>(run_loop.QuitWhenIdleClosure());
@@ -109,11 +107,8 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
 // TODO(crbug.com/41492809): Test LHS indicators animation on macOS as well.
 #if !BUILDFLAG(IS_MAC)
 TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
-  PermissionDashboardController* dashboard_controller =
-      location_bar_view()->permission_dashboard_controller();
-
   PermissionChipView* indicator_chip =
-      dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
+      location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -176,11 +171,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
 // 3. The chip disappears after `PageSpecificContentSettings` resets camera
 // usage.
 TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
-  PermissionDashboardController* dashboard_controller =
-      location_bar_view()->permission_dashboard_controller();
-
   PermissionChipView* indicator_chip =
-      dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
+      location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -195,12 +187,12 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
   WaitForAnimationCompletion();
 
   EXPECT_TRUE(indicator_chip->GetVisible());
-  EXPECT_TRUE(dashboard_controller->is_verbose());
+  EXPECT_TRUE(dashboard_controller()->is_verbose());
   EXPECT_TRUE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
 
   EXPECT_TRUE(
-      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
+      dashboard_controller()->get_collapse_timer_for_testing().IsRunning());
   EXPECT_FALSE(indicator_chip->IsAnimating());
   // Wait longer than 4 seconds for collapse timer to fire and the collapse
   // animation to finish.
@@ -214,9 +206,9 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(
-      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
+      dashboard_controller()->get_collapse_timer_for_testing().IsRunning());
 
-  EXPECT_FALSE(dashboard_controller->is_verbose());
+  EXPECT_FALSE(dashboard_controller()->is_verbose());
 
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
   base::RunLoop().RunUntilIdle();
@@ -240,11 +232,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 // 2. The chip disappears after `PageSpecificContentSettings` resets camera &
 // microphone usage.
 TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
-  PermissionDashboardController* dashboard_controller =
-      location_bar_view()->permission_dashboard_controller();
-
   PermissionChipView* indicator_chip =
-      dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
+      location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -261,9 +250,9 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_TRUE(
-      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
+      dashboard_controller()->get_collapse_timer_for_testing().IsRunning());
 
-  EXPECT_TRUE(dashboard_controller->is_verbose());
+  EXPECT_TRUE(dashboard_controller()->is_verbose());
   EXPECT_TRUE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
@@ -297,11 +286,8 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
 // 4. The chip disappears after `PageSpecificContentSettings` resets microphone
 // usage.
 TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
-  PermissionDashboardController* dashboard_controller =
-      location_bar_view()->permission_dashboard_controller();
-
   PermissionChipView* indicator_chip =
-      dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
+      location_bar_view()->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -318,9 +304,9 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_TRUE(
-      dashboard_controller->get_collapse_timer_for_testing().IsRunning());
+      dashboard_controller()->get_collapse_timer_for_testing().IsRunning());
 
-  EXPECT_TRUE(dashboard_controller->is_verbose());
+  EXPECT_TRUE(dashboard_controller()->is_verbose());
   EXPECT_TRUE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_FALSE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
@@ -332,14 +318,14 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
 
   WaitForAnimationCompletion();
 
-  EXPECT_FALSE(dashboard_controller->is_verbose());
+  EXPECT_FALSE(dashboard_controller()->is_verbose());
 
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, true);
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->IsAnimating());
   // The indicator stays collapsed.
-  EXPECT_FALSE(dashboard_controller->is_verbose());
+  EXPECT_FALSE(dashboard_controller()->is_verbose());
 
   EXPECT_TRUE(pscs->GetMicrophoneCameraState().HasAll(
       {content_settings::PageSpecificContentSettings::kCameraAccessed,
@@ -354,7 +340,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->IsAnimating());
   // The indicator stays collapsed.
-  EXPECT_FALSE(dashboard_controller->is_verbose());
+  EXPECT_FALSE(dashboard_controller()->is_verbose());
 
   EXPECT_FALSE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));

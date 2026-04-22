@@ -6,14 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
-class PermissionChipView;
-
 // UI component for activity indicators and chip button located in the omnibox.
-class PermissionDashboardView : public views::View {
+class PermissionDashboardView : public views::View,
+                                public PermissionDashboardInterface {
   METADATA_HEADER(PermissionDashboardView, views::View)
 
  public:
@@ -24,17 +25,23 @@ class PermissionDashboardView : public views::View {
       delete;
   ~PermissionDashboardView() override;
 
-  PermissionChipView* GetRequestChip() { return secondary_chip_; }
-  PermissionChipView* GetIndicatorChip() { return anchored_chip_; }
+  // PermissionDashboardInterface:
+  void SetVisible(bool visible) override;
+  bool GetVisible() const override;
+  PermissionChipView* GetRequestChip() override;
+  PermissionChipView* GetIndicatorChip() override;
+  views::BubbleAnchor GetAnchor() override;
+
   views::View* GetDividerView() { return chip_divider_view_; }
 
-  void SetDividerBackgroundColor(SkColor background_color);
   void UpdateDividerViewVisibility();
+  void SetDividerBackgroundColor(SkColor background_color);
 
-  // views::View.
+  // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   views::View::Views GetChildrenInZOrder() override;
+  void ChildVisibilityChanged(views::View* child) override;
 
  private:
   // This chip is used to display in-use left-hand side activity indicators.

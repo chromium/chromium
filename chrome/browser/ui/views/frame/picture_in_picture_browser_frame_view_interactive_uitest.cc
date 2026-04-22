@@ -1658,10 +1658,8 @@ IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view);
   ASSERT_TRUE(browser_view->GetLocationBarView());
-  PermissionDashboardController* permission_dashboard_controller =
-      browser_view->GetLocationBarView()->permission_dashboard_controller();
   PermissionDashboardView* permission_dashboard_view =
-      permission_dashboard_controller->permission_dashboard_view();
+      browser_view->GetLocationBarView()->permission_dashboard_view();
 
   ASSERT_TRUE(permission_dashboard_view);
 

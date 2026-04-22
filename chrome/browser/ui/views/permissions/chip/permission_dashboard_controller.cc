@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -142,21 +145,20 @@ bool SuppressVerboseState(ChipController* request_chip_controller) {
 PermissionDashboardController::PermissionDashboardController(
     LocationBar* location_bar,
     ContentSettingImageViewDelegate* content_settings_image_delegate,
-    PermissionDashboardView* permission_dashboard_view)
+    PermissionDashboardInterface* permission_dashboard)
     : location_bar_(location_bar),
       content_setting_image_delegate_(content_settings_image_delegate),
-      permission_dashboard_view_(permission_dashboard_view) {
+      permission_dashboard_(permission_dashboard) {
   request_chip_controller_ = std::make_unique<ChipController>(
       location_bar, content_setting_image_delegate_,
-      permission_dashboard_view_->GetRequestChip(), permission_dashboard_view_,
-      this);
-  observation_.Observe(permission_dashboard_view_->GetIndicatorChip());
+      permission_dashboard_->GetRequestChip(), permission_dashboard_, this);
+  observation_.Observe(permission_dashboard_->GetIndicatorChip());
 
-  permission_dashboard_view->GetIndicatorChip()->SetPressedCallback(
+  permission_dashboard->GetIndicatorChip()->SetPressedCallback(
       base::BindRepeating(
           &PermissionDashboardController::OnIndicatorsChipButtonPressed,
           weak_factory_.GetWeakPtr()));
-  permission_dashboard_view->SetVisible(false);
+  permission_dashboard->SetVisible(false);
 }
 
 PermissionDashboardController::~PermissionDashboardController() = default;
@@ -168,8 +170,8 @@ bool PermissionDashboardController::Update(
           ? nullptr
           : location_bar_->GetWebContents());
 
-  PermissionChipView* indicator_chip =
-      permission_dashboard_view_->GetIndicatorChip();
+  PermissionChipInterface* indicator_chip =
+      permission_dashboard_->GetIndicatorChip();
 
   // This method can be called multiple times. If the indicator's model is not
   // visible, then we need to hide the indicators. It can happen in two
@@ -211,7 +213,7 @@ bool PermissionDashboardController::Update(
   // main frame gets changed.
   main_frame_id_ =
       location_bar_->GetWebContents()->GetPrimaryMainFrame()->GetGlobalId();
-  permission_dashboard_view_->SetVisible(true);
+  permission_dashboard_->SetVisible(true);
 
   // Always update the icon and the message as they may change based on used
   // permissions.
@@ -242,8 +244,8 @@ bool PermissionDashboardController::Update(
     is_verbose_ = false;
     if (SuppressVerboseState(request_chip_controller())) {
       // Permission request chip is visible it was drawn without a divider.
-      // Add the divider between an indicator and the request chip.
-      permission_dashboard_view_->UpdateDividerViewVisibility();
+      // The divider will be automatically added because of the
+      // ChildVisibilityChanged observer.
     } else {
       // Suppress LHS indicator's verbose animation if it was already displayed.
       // Blocked on the system level is an error case and should always be
@@ -372,27 +374,25 @@ void PermissionDashboardController::Collapse(bool hide) {
   if (hide) {
     UpdateIndicatorsVisibilityFlags(location_bar_);
   }
-  if (!permission_dashboard_view_->GetIndicatorChip()->IsAnimating()) {
-    permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
+  if (!permission_dashboard_->GetIndicatorChip()->IsAnimating()) {
+    permission_dashboard_->GetIndicatorChip()->AnimateCollapse(
         gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
   }
 }
 
 void PermissionDashboardController::HideIndicators() {
   collapse_timer_.Stop();
-  permission_dashboard_view_->GetIndicatorChip()->ResetAnimation(
+  permission_dashboard_->GetIndicatorChip()->ResetAnimation(
       PermissionChipInterface::AnimationState::kCollapsed);
   is_verbose_ = false;
-  permission_dashboard_view_->GetIndicatorChip()->SetAccessibilityIgnored(true);
-  permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
+  permission_dashboard_->GetIndicatorChip()->SetAccessibilityIgnored(true);
+  permission_dashboard_->GetIndicatorChip()->SetVisible(false);
   content_setting_image_model_ = nullptr;
 
-  permission_dashboard_view_->UpdateDividerViewVisibility();
-
   // This method hides the indicator chip. If the request chip is not visible,
-  // then hide the parent permission_dashboard_view_ view as well.
-  if (!permission_dashboard_view_->GetRequestChip()->GetVisible()) {
-    permission_dashboard_view_->SetVisible(false);
+  // then hide the parent permission_dashboard_ view as well.
+  if (!permission_dashboard_->GetRequestChip()->GetVisible()) {
+    permission_dashboard_->SetVisible(false);
   }
 
   // If blocked on the system level, then the indicators will not be shown as
@@ -428,14 +428,14 @@ void PermissionDashboardController::HideIndicators() {
 void PermissionDashboardController::ShowBubble() {
   content::WebContents* web_contents = location_bar_->GetWebContents();
   if (web_contents && !page_info_bubble_tracker_) {
-    views::View* const anchor = permission_dashboard_view_->GetIndicatorChip();
     ContentSettingBubbleContents* bubble_view_ =
         new ContentSettingBubbleContents(
             content_setting_image_model_->CreateBubbleModel(
                 content_setting_image_delegate_
                     ->GetContentSettingBubbleModelDelegate(),
                 web_contents),
-            web_contents, views::BubbleAnchor(anchor),
+            web_contents,
+            permission_dashboard_->GetIndicatorChip()->GetAnchor(),
             views::BubbleBorder::TOP_LEFT);
     bubble_view_->SetHighlightedElement(
         PermissionChipView::kIndicatorChipElementId);
@@ -478,10 +478,9 @@ void PermissionDashboardController::ShowPageInfoDialog() {
   }
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(
-          views::BubbleAnchor(permission_dashboard_view_),
-          permission_dashboard_view_->GetWidget()->GetNativeWindow(), contents,
-          entry->GetVirtualURL())
+      PageInfoBubbleSpecification::Builder(permission_dashboard_->GetAnchor(),
+                                           contents->GetTopLevelNativeWindow(),
+                                           contents, entry->GetVirtualURL())
           .AddPageInfoClosingCallback(base::BindOnce(
               &PermissionDashboardController::OnPageInfoBubbleClosed,
               weak_factory_.GetWeakPtr()))

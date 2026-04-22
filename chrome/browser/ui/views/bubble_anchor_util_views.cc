@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/content_settings/core/common/features.h"
@@ -33,8 +34,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
           content_settings::features::kLeftHandSideActivityIndicators) &&
       location_bar_view) {
     auto* permission_dashboard_view =
-        location_bar_view->permission_dashboard_controller()
-            ->permission_dashboard_view();
+        location_bar_view->permission_dashboard_view();
 
     if (anchor == Anchor::kLocationBar &&
         permission_dashboard_view->GetVisible()) {

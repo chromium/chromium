@@ -204,6 +204,9 @@ class LocationBarView
   }
 
   PermissionChipView* chip_view() { return chip_view_; }
+  PermissionDashboardView* permission_dashboard_view() {
+    return permission_dashboard_view_;
+  }
 
   IntentChipButton* intent_chip() { return intent_chip_; }
 

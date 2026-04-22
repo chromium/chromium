@@ -100,26 +100,27 @@ PermissionDashboardView::PermissionDashboardView() {
       views::BoxLayout::Orientation::kHorizontal));
 
   // Left-Hand Side Activity indicators chip.
-  anchored_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+  auto anchored_chip = std::make_unique<PermissionChipView>(
       PermissionChipView::Role::kIndicatorChip,
-      PermissionChipView::PressedCallback()));
+      PermissionChipView::PressedCallback());
+  anchored_chip->SetVisible(false);
+  anchored_chip_ = AddChildView(std::move(anchored_chip));
 
   // An empty view is created to be placed between the LHS activity indicator
   // chip and the permission request chip. This view is a divider that creates
   // an illusion of an empty space between chips.
-  chip_divider_view_ = AddChildView(std::make_unique<views::View>());
-  chip_divider_view_->SetPaintToLayer();
-  chip_divider_view_->layer()->SetFillsBoundsOpaquely(false);
-  chip_divider_view_->SetVisible(false);
+  auto chip_divider_view = std::make_unique<views::View>();
+  chip_divider_view->SetPaintToLayer();
+  chip_divider_view->layer()->SetFillsBoundsOpaquely(false);
+  chip_divider_view->SetVisible(false);
+  chip_divider_view_ = AddChildView(std::move(chip_divider_view));
 
   // Permission request chip.
-  secondary_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+  auto secondary_chip = std::make_unique<PermissionChipView>(
       PermissionChipView::Role::kPermissionRequestChip,
-      PermissionChipView::PressedCallback()));
-
-  // It is unclear which chip will be shown first, hence hide both of them.
-  secondary_chip_->SetVisible(false);
-  anchored_chip_->SetVisible(false);
+      PermissionChipView::PressedCallback());
+  secondary_chip->SetVisible(false);
+  secondary_chip_ = AddChildView(std::move(secondary_chip));
 
   // This is needed to make sure that the permission dashboard view is
   // recognized as a single button. Individual elements inside this view should
@@ -139,6 +140,26 @@ void PermissionDashboardView::SetDividerBackgroundColor(
   chip_divider_view_->SetBackground(
       std::make_unique<IndicatorDividerBackground>(background_color,
                                                    kDividerViewArcRadius));
+}
+
+void PermissionDashboardView::SetVisible(bool visible) {
+  views::View::SetVisible(visible);
+}
+
+bool PermissionDashboardView::GetVisible() const {
+  return views::View::GetVisible();
+}
+
+PermissionChipView* PermissionDashboardView::GetRequestChip() {
+  return secondary_chip_;
+}
+
+PermissionChipView* PermissionDashboardView::GetIndicatorChip() {
+  return anchored_chip_;
+}
+
+views::BubbleAnchor PermissionDashboardView::GetAnchor() {
+  return views::BubbleAnchor(this);
 }
 
 void PermissionDashboardView::UpdateDividerViewVisibility() {
@@ -209,6 +230,12 @@ views::View::Views PermissionDashboardView::GetChildrenInZOrder() {
   View::Views paint_order = View::GetChildrenInZOrder();
   std::ranges::reverse(paint_order);
   return paint_order;
+}
+
+void PermissionDashboardView::ChildVisibilityChanged(views::View* child) {
+  if (child == anchored_chip_ || child == secondary_chip_) {
+    UpdateDividerViewVisibility();
+  }
 }
 
 BEGIN_METADATA(PermissionDashboardView)

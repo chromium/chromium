@@ -27,7 +27,7 @@ class ContentSettingBubbleContents;
 class ContentSettingImageViewDelegate;
 class LocationBar;
 class PermissionDashboardController;
-class PermissionDashboardView;
+class PermissionDashboardInterface;
 class PermissionPromptBubbleBaseView;
 class PermissionPromptChipModel;
 
@@ -55,7 +55,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
       LocationBar* location_bar,
       ContentSettingImageViewDelegate* content_settings_image_delegate,
       PermissionChipInterface* chip,
-      PermissionDashboardView* permission_dashboard_view = nullptr,
+      PermissionDashboardInterface* permission_dashboard = nullptr,
       PermissionDashboardController* permission_dashboard_controller = nullptr);
 
   ~ChipController() override;
@@ -256,7 +256,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   raw_ptr<PermissionChipInterface> chip_;
 
   // `PermissionDashboardView` is an owner of PermissionChipInterface.
-  raw_ptr<PermissionDashboardView> permission_dashboard_view_;
+  raw_ptr<PermissionDashboardInterface> permission_dashboard_;
   // `PermissionDashboardController` is an owner of this.
   raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
 
