@@ -859,7 +859,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
       return;
     }
 
-    curve = gfx::Tween::FAST_OUT_LINEAR_IN;
+    curve = gfx::Tween::ACCEL_30_DECEL_LIN;
     did_hide_this_scroll_ = true;
   } else {
     // Animate to show the controls when the user scrolls up:
@@ -887,7 +887,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
     // the always-shown region, in which case a linear curve is more visually
     // pleasant.
     curve = viewport_offset_y > controls_animated_height
-                ? gfx::Tween::LINEAR_OUT_SLOW_IN
+                ? gfx::Tween::ACCEL_LIN_DECEL_60
                 : gfx::Tween::LINEAR;
   }
 
