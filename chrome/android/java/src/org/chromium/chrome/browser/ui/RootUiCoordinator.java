@@ -1918,7 +1918,8 @@ public class RootUiCoordinator
                     assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                     trackerSupplier,
                     mScrimManagerSupplier.asNonNull(),
-                    mReaderModeIphControllerSupplier);
+                    mReaderModeIphControllerSupplier,
+                    mToolbarContainer);
 
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(
