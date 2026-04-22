@@ -438,8 +438,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       HostContentSettingsMapTest,
       MigrateSettingsEmbeddingOriginToWildcardForGeolocationWithOptions);
   FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
-                           SetOneTimeAndPersistentGeolocationSetting);
-  FRIEND_TEST_ALL_PREFIXES(HostContentSettingsMapTest,
                            MigrateRequestingAndTopLevelOriginSettings);
   FRIEND_TEST_ALL_PREFIXES(
       HostContentSettingsMapTest,

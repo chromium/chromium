@@ -55,9 +55,6 @@ class ContentSettingsInfo {
         const PermissionSetting& setting) const override;
     PermissionSetting ToPermissionSetting(
         ContentSetting setting) const override;
-    bool RemoveBlockedPermissionsForEphemeralGrant(
-        PermissionSetting& setting,
-        const PermissionSetting& new_ephemeral_setting) const override;
 
     void set_content_settings_info(const ContentSettingsInfo* info) {
       info_ = info;

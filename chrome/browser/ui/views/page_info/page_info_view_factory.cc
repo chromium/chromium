@@ -55,9 +55,6 @@
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
 constexpr int PageInfoViewFactory::kMaxBubbleWidth;
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoViewFactory,
-                                      kBackButtonElementId);
-
 namespace {
 
 class PageInfoSubpageView : public views::View {
@@ -245,8 +242,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                           vector_icons::kArrowBackChromeRefreshIcon,
                           GetIconSize()))
                       .SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON)
-                      .SetProperty(views::kElementIdentifierKey,
-                                   kBackButtonElementId)
                       .SetTooltipText(
                           l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
                       .CustomConfigure(

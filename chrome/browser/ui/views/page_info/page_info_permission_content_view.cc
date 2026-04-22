@@ -42,11 +42,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoPermissionContentView,
-                                      kStateLabelElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoPermissionContentView,
-                                      kRememberCheckboxElementId);
-
 namespace {
 std::u16string PageInfoSubpageText(ContentSettingsType type) {
   // Without this, the title and toggle accessibility text inside the submenu of
@@ -109,7 +104,6 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   state_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBTITLE_LABEL);
-  state_label_->SetProperty(views::kElementIdentifierKey, kStateLabelElementId);
 
   // Add extra details as sublabel.
   std::u16string detail = ui_delegate_->GetPermissionDetail(type);
@@ -152,8 +146,6 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   remember_setting_->SetID(
       PageInfoViewFactory::
           VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_REMEMBER_CHECKBOX);
-  remember_setting_->SetProperty(views::kElementIdentifierKey,
-                                 kRememberCheckboxElementId);
   remember_setting_->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(controls_spacing, 0, 0, 0));
 

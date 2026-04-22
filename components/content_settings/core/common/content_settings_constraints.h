@@ -66,14 +66,6 @@ class ContentSettingConstraints {
     decided_by_related_website_sets_ = granted_by_related_website_sets;
   }
 
-  void set_ephemeral_clears_persistent_grant(
-      bool ephemeral_clears_persistent_grant) {
-    ephemeral_clears_persistent_grant_ = ephemeral_clears_persistent_grant;
-  }
-  bool ephemeral_clears_persistent_grant() const {
-    return ephemeral_clears_persistent_grant_;
-  }
-
  private:
   ContentSettingConstraints(const ContentSettingConstraints& other) = default;
 
@@ -97,11 +89,6 @@ class ContentSettingConstraints {
 
   // Set to true if the storage access was decided by a Related Website Set.
   bool decided_by_related_website_sets_ = false;
-
-  // Set to true if by setting an ephemeral grant we should not clear the
-  // corresponding persistent grant. This only makes sense if `session_model_ ==
-  // mojom::SessionModel::ONE_TIME`.
-  bool ephemeral_clears_persistent_grant_ = false;
 };
 
 }  // namespace content_settings
