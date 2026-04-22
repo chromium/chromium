@@ -138,6 +138,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".FetchCrdAvailabilityInfo"
       summary="Fetch CRD availability info"/>
   <variant name=".FetchSupportPacket" summary="Fetch support packet"/>
+  <variant name=".QueryGeolocation" summary="Query geolocation"/>
   <variant name=".UserArcCommand" summary="ARC command"/>
 </variants>
 
