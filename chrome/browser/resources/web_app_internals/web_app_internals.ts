@@ -13,6 +13,8 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateInfo, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
+import type {DebugSection} from './web_app_internals_utils.js';
+import {filterToApp, getQuery, renderAppIndex} from './web_app_internals_utils.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
 
@@ -655,6 +657,30 @@ function prepareAppButtons(
   return {updateMsg, buttonsSection};
 }
 
+/**
+ * Renders the debug info JSON, building a clickable app index and optionally
+ * filtering to a specific app based on the URL hash.
+ */
+function renderDebugInfo(jsonString: string) {
+  let parsed: DebugSection[];
+  try {
+    parsed = JSON.parse(jsonString);
+  } catch {
+    getRequiredElement('json').innerText = jsonString;
+    return;
+  }
+
+  const query = getQuery();
+  renderAppIndex(parsed, getRequiredElement('app-index'), query);
+
+  if (query) {
+    const displayData = filterToApp(parsed, query);
+    getRequiredElement('json').innerText = JSON.stringify(displayData, null, 2);
+  } else {
+    getRequiredElement('json').innerText = jsonString;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (loadTimeData.getBoolean('isIwaPolicyInstallEnabled')) {
     showIwaSection('iwa-updates-container');
@@ -673,6 +699,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   setTimeout(async () => {
-    getRequiredElement('json').innerText = await debugInfoAsJsonString;
+    renderDebugInfo(await debugInfoAsJsonString);
   }, 0);
+});
+
+window.addEventListener('hashchange', () => {
+  debugInfoAsJsonString.then(renderDebugInfo);
 });

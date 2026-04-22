@@ -14,7 +14,10 @@ build_webui("build") {
     "web_app_internals.html",
   ]
 
-  ts_files = [ "web_app_internals.ts" ]
+  ts_files = [
+    "web_app_internals.ts",
+    "web_app_internals_utils.ts",
+  ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/web_app_internals:mojo_bindings_ts__generator",
@@ -25,5 +28,6 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  ts_composite = true
   webui_context_type = "trusted"
 }

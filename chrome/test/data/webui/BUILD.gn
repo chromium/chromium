@@ -96,6 +96,7 @@ source_set("browser_tests") {
       "subresource_filter/subresource_filter_internals_browsertest.cc",
       "tab_group_home/tab_group_home_browsertest.cc",
       "tab_search/tab_search_browsertest.cc",
+      "web_app_internals/web_app_internals_browsertest.cc",
       "webnn_internals/webnn_internals_browsertest.cc",
       "webui_toolbar/webui_toolbar_js_browsertest.cc",
       "webview/webui_webview_browsertest.cc",
@@ -621,6 +622,7 @@ generate_grd("build_grd") {
       "support_tool:build_grdp",
       "tab_group_home:build_grdp",
       "tab_search:build_grdp",
+      "web_app_internals:build_grdp",
       "webnn_internals:build_grdp",
       "webui_toolbar:build_grdp",
       "webview:build_grdp",
@@ -683,6 +685,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/tab_group_home/resources.grdp",
       "$target_gen_dir/tab_search/resources.grdp",
       "$target_gen_dir/webnn_internals/resources.grdp",
+      "$target_gen_dir/web_app_internals/resources.grdp",
       "$target_gen_dir/webui_toolbar/resources.grdp",
     ]
 
