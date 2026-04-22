@@ -47,9 +47,21 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
   virtual const std::string& GetHardwareClass() const;
 
  private:
+  void OnAppUpdateCheckComplete();
+
   raw_ptr<PrefService> local_state_;
   // Stores the full hardware class of the Android device.
   std::string hardware_class_;
+
+  bool app_update_check_in_progress_ = false;
+
+  // The completion time of the last app update check during this run of
+  // Chrome. It is a null TimeTicks if no check has completed yet during this
+  // run (regardless of prior runs). While an update check is in progress, this
+  // retains the completion time of the previous check (or null if none).
+  base::TimeTicks last_app_update_check_time_;
+
+  base::WeakPtrFactory<ChromeAndroidMetricsProvider> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_

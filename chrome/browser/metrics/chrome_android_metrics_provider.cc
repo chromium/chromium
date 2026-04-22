@@ -25,6 +25,8 @@
 
 namespace {
 
+constexpr base::TimeDelta kAppUpdateCheckInterval = base::Hours(1);
+
 // Corresponds to APP_NOTIFICATIONS_STATUS_BOUNDARY in
 // NotificationSystemStatusUtil.java
 const int kAppNotificationStatusBoundary = 3;
@@ -86,8 +88,20 @@ void ChromeAndroidMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   const auto type = chrome::android::GetActivityType();
 
-  // Determine and emit to histogram if AppUpdate is available.
-  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(&GetAppUpdateData));
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!app_update_check_in_progress_ &&
+      (last_app_update_check_time_.is_null() ||
+       (now - last_app_update_check_time_) > kAppUpdateCheckInterval)) {
+    app_update_check_in_progress_ = true;
+    // Determine and emit to histogram if AppUpdate is available.
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&GetAppUpdateData),
+        base::BindOnce(&ChromeAndroidMetricsProvider::OnAppUpdateCheckComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // All records should be created with an activity type, even if no activity
   // type has yet been declared. If an activity type is declared before the UMA
@@ -166,6 +180,11 @@ void ChromeAndroidMetricsProvider::ProvideSystemProfileMetrics(
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
   hardware->set_full_hardware_class(GetHardwareClass());
+}
+
+void ChromeAndroidMetricsProvider::OnAppUpdateCheckComplete() {
+  app_update_check_in_progress_ = false;
+  last_app_update_check_time_ = base::TimeTicks::Now();
 }
 
 DEFINE_JNI(AppUpdateInfoUtils)
