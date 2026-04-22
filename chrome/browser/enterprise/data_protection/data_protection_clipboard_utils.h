@@ -5,12 +5,20 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/content_browser_client.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
+
+namespace content {
+class RenderFrameHost;
+class WebContents;
+struct DropData;
+}  // namespace content
 
 namespace enterprise_data_protection {
 
@@ -123,6 +131,11 @@ bool IsSearchWithAllowed(content::WebContents* web_contents);
 void ShouldAllowSearchWith(content::WebContents* web_contents,
                            size_t selection_size,
                            base::OnceClosure on_allowed_callback);
+
+// Copies `text` to the user's clipboard. This checks the Data Controls rules to
+// ensure the copy is allowed.
+void CopyTextToClipboard(content::RenderFrameHost* rfh,
+                         const std::u16string& text);
 
 }  // namespace enterprise_data_protection
 
