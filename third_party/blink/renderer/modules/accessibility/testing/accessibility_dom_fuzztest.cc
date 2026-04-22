@@ -444,6 +444,86 @@ class ReadingFlowAndOrder : public DomScenarioDomainSpecification {
   }
 };
 
+class SelectAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(
+        AnyAriaAttributeNameValuePair(),
+        AttributeNameValuePairDomain(html_names::kForAttr,
+                                     fuzztest::Just(std::string("id_0"))),
+        AttributeNameValuePairDomain(
+            html_names::kSizeAttr,
+            AnyValueForHtmlAttribute(html_names::kSizeAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kMultipleAttr,
+            AnyValueForHtmlAttribute(html_names::kMultipleAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kDisabledAttr,
+            AnyValueForHtmlAttribute(html_names::kDisabledAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kSelectedAttr,
+            AnyValueForHtmlAttribute(html_names::kSelectedAttr)),
+        AttributeNameValuePairDomain(html_names::kValueAttr,
+                                     fuzztest::PrintableAsciiString()),
+        AttributeNameValuePairDomain(html_names::kLabelAttr,
+                                     fuzztest::PrintableAsciiString()));
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return AnyCssDeclaration();
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  static constexpr int kNumNodes = 8;
+  int GetMaxDomNodes() override { return kNumNodes; }
+  int GetMaxAttributesPerNode() override { return 4; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  bool AllowReparenting() override { return false; }
+  std::optional<PredefinedNodesConfig> GetPredefinedNodes() override {
+    auto tag = [](html_names::HTMLTag t) {
+      return html_names::TagToQualifiedName(t);
+    };
+    auto nodes = std::vector<NodeSpecification>{
+        // <select> (parent: root) index 0.
+        {.tag = tag(html_names::HTMLTag::kSelect),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <optgroup> (parent: select) index 1.
+        {.tag = tag(html_names::HTMLTag::kOptgroup),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: select) index 2.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: select) index 3.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: optgroup) index 4.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 1}},
+        // <option> (parent: optgroup) index 5.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 1}},
+        // <option> (parent: optgroup) index 6.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 1}},
+        // <label> (parent: root) index 7 — associated via for= attr.
+        {.tag = tag(html_names::HTMLTag::kLabel),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+    };
+    auto states_domain =
+        fuzztest::VectorOf(AnyNodeState(this, kNumNodes,
+                                        AnyAttributeNameValuePair(),
+                                        AnyStyles()))
+            .WithSize(kNumNodes);
+    return PredefinedNodesConfig{std::move(nodes), states_domain,
+                                 states_domain};
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -456,6 +536,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void ValidTableAndAria(const DomScenario& input) { RunTest(input); }
   void AnimationAndAria(const DomScenario& input) { RunTest(input); }
   void ReadingFlowAndOrder(const DomScenario& input) { RunTest(input); }
+  void SelectAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -505,5 +586,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, AnimationAndAria)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, ReadingFlowAndOrder)
     .WithDomains(BuildDomScenarios<ReadingFlowAndOrder>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, SelectAndAria)
+    .WithDomains(BuildDomScenarios<SelectAndAria>());
 
 }  // namespace blink
