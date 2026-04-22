@@ -8,6 +8,8 @@ source_set("omnibox") {
   sources = [
     "autocomplete_controller_emitter_factory.cc",
     "autocomplete_controller_emitter_factory.h",
+    "geolocation_header_service_factory.cc",
+    "geolocation_header_service_factory.h",
   ]
 
   # Matches the build check used for the objects constructed by these factories.
@@ -21,7 +23,12 @@ source_set("omnibox") {
   }
   deps = [
     "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//components/keyed_service/content",
     "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//content/public/browser",
   ]
 }

@@ -410,7 +410,7 @@ android_resources("java_resources") {
 }
 
 proto_java_library("partner_location_descriptor_proto_java") {
-  proto_path = "java/src/org/chromium/chrome/browser/omnibox/geo"
+  proto_path = "//components/omnibox/browser/proto"
   sources = [ "$proto_path/partner_location_descriptor.proto" ]
 }
 

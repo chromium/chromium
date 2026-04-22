@@ -4,6 +4,7 @@
 
 module device.mojom;
 
+// LINT.IfChange(GeolocationClientId)
 // An identifier for distinguishing geolocation clients.
 enum GeolocationClientId {
   // A client created for testing.
@@ -20,7 +21,13 @@ enum GeolocationClientId {
   // of the host machine for the purpose of fraud prevention.
   kFingerprintDataLoader = 3,
 
+  // Omnibox uses location data to provide relevant search results.
+  kOmnibox = 4,
+
   // NOTE: If you add any entries to this enum, you must also update the
   // corresponding UMA GeolocationClientId at
   // tools/metrics/histograms/metadata/geolocation/enums.xml
 };
+// LINT.ThenChange(
+// /tools/metrics/histograms/metadata/geolocation/enums.xml:GeolocationClientId
+// )

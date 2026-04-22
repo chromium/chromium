@@ -70,12 +70,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kWifiDisabled"/>
 </enum>
 
+<!-- LINT.IfChange(GeolocationClientId) -->
+
 <enum name="GeolocationClientId">
   <int value="0" label="kForTesting"/>
   <int value="1" label="kGeolocationServiceImpl"/>
   <int value="2" label="kGeoLanguageProvider"/>
   <int value="3" label="kFingerprintDataLoader"/>
+  <int value="4" label="kOmnibox"/>
 </enum>
+
+<!-- LINT.ThenChange(
+  /services/device/public/mojom/geolocation_client_id.mojom:GeolocationClientId
+) -->
 
 <enum name="GeolocationIOSAuthorizationStatus">
   <int value="0" label="Not determined"/>

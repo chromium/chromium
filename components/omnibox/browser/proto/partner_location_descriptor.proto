@@ -12,7 +12,7 @@
 
 syntax = "proto2";
 
-package org.chromium.chrome.browser.omnibox.geo;
+package omnibox;
 
 option java_outer_classname = "PartnerLocationDescriptor";
 option java_package = "org.chromium.chrome.browser.omnibox.geo";

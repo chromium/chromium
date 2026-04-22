@@ -104,6 +104,10 @@ static_library("vector_icons") {
   ]
 }
 
+proto_library("partner_location_descriptor_proto") {
+  sources = [ "proto/partner_location_descriptor.proto" ]
+}
+
 static_library("browser") {
   sources = [
     "actions/contextual_search_action.cc",
@@ -326,9 +330,12 @@ static_library("browser") {
     ":buildflags",
     ":location_bar",
     ":mojo_bindings",
+    ":partner_location_descriptor_proto",
     ":pref_names",
     "//base",
     "//base:i18n",
+    "//components/content_settings/core/browser",
+    "//components/google/core/common",
     "//components/history/core/browser",
     "//components/lens",
     "//components/lens/proto/server:proto",
@@ -393,6 +400,7 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
+    deps += [ "//components/location/android:settings" ]
     sources += [
       "actions/omnibox_action_factory_android.cc",
       "actions/omnibox_action_factory_android.h",
@@ -409,8 +417,19 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
+  # GeolocationHeaderService is not supported on iOS due to dependencies on //content
   if (!is_ios) {
     deps += [ "//ui/base/clipboard" ]
+    public_deps += [
+      "//components/keyed_service/content",
+      "//components/permissions",
+      "//content/public/browser",
+      "//services/device/public/mojom",
+    ]
+    sources += [
+      "geolocation_header_service.cc",
+      "geolocation_header_service.h",
+    ]
   }
 
   if ((!is_android || enable_vr) && !is_ios) {
@@ -873,6 +892,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":partner_location_descriptor_proto",
     ":test_support",
     ":unit_tests_bundle_data",
     "//base",
@@ -880,6 +900,7 @@ source_set("unit_tests") {
     "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/content_settings/core/browser",
     "//components/contextual_tasks/public:feature_list",
     "//components/dom_distiller/core",
     "//components/favicon/core/test:test_support",
@@ -933,9 +954,19 @@ source_set("unit_tests") {
     ]
   }
 
+  # GeolocationHeaderService is not supported on iOS due to dependencies on //content
   if (!is_ios) {
-    sources += [ "history_cluster_provider_unittest.cc" ]
-    deps += [ "//ui/base/clipboard:clipboard_test_support" ]
+    sources += [
+      "geolocation_header_service_unittest.cc",
+      "history_cluster_provider_unittest.cc",
+    ]
+    deps += [
+      "//components/permissions:test_support",
+      "//content/test:test_support",
+      "//services/device/public/cpp:test_support",
+      "//services/device/public/mojom",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
   }
 
   if (is_chromeos) {
@@ -947,7 +978,14 @@ source_set("unit_tests") {
   }
 
   if (use_blink) {
-    deps += [ "//components/history_clusters/core:test_support" ]
+    deps += [
+      "//components/history_clusters/core",
+      "//components/history_clusters/core:test_support",
+    ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/location/android:test_support" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
