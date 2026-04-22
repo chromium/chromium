@@ -459,6 +459,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     // We should only log if the callback has not been answered yet.
     if (ShouldClassifyForPhishing()) {
       base::UmaHistogramExactLinear(
+          "SBClientPhishing.PreClassificationCheckCancelActor", request_type,
+          ClientSideDetectionType_MAX + 1);
+      base::UmaHistogramExactLinear(
           base::StrCat({"SBClientPhishing.PreClassificationCheckCancelActor.",
                         GetRequestTypeName(phishing_detection_request_type_)}),
           request_type, ClientSideDetectionType_MAX + 1);
