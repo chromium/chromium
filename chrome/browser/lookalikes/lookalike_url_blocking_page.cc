@@ -98,7 +98,7 @@ void LookalikeUrlBlockingPage::CommandReceived(const std::string& command) {
       // If the interstitial doesn't have a suggested URL (e.g. punycode
       // interstitial), simply open the new tab page.
       if (!safe_url_.is_valid()) {
-        controller()->OpenUrlInCurrentTab(GURL(chrome::kChromeUINewTabURL));
+        controller()->OpenUrlInCurrentTab(chrome::ChromeUINewTabURLAsGURL());
       } else {
         controller()->GoBack();
       }

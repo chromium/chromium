@@ -38,7 +38,7 @@ LookalikeUrlControllerClient::LookalikeUrlControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL),
+          chrome::ChromeUINewTabURLAsGURL(),
           /*settings_page_helper=*/nullptr),
       request_url_(request_url),
       safe_url_(safe_url) {}

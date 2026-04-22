@@ -396,7 +396,7 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED,
                                 /*punycode_interstitial=*/true);
     EXPECT_EQ(
-        GURL(chrome::kChromeUINewTabURL),
+        chrome::ChromeUINewTabURLAsGURL(),
         browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     histograms.ExpectTotalCount(kInterstitialHistogramName, 1);
