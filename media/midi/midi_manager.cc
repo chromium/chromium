@@ -164,7 +164,7 @@ bool MidiManager::EndSession(MidiManagerClient* client) {
 
 bool MidiManager::HasOpenSession() {
   base::AutoLock auto_lock(lock_);
-  return clients_.size() != 0u;
+  return !clients_.empty() || !pending_clients_.empty();
 }
 
 void MidiManager::DispatchSendMidiData(MidiManagerClient* client,
