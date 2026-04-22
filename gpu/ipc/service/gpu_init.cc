@@ -827,23 +827,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
-#if BUILDFLAG(IS_OZONE)
-  // We need to get supported formats before sandboxing to avoid an known
-  // issue which breaks the camera preview. (b/166850715)
-  {
-    TRACE_EVENT("gpu,startup", "ui::ozone::IsFormatSupportedForTexturing");
-    auto* surface_factory =
-        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-    auto* gl_ozone = surface_factory->GetCurrentGLOzone();
-    if (gl_ozone) {
-      gpu_feature_info_.supports_nv12_gl_native_pixmap =
-          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
-      gpu_feature_info_.supports_p010_gl_native_pixmap =
-          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
-    }
-  }
-#endif  // BUILDFLAG(IS_OZONE)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
@@ -865,6 +848,23 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_OZONE)
+  // We need to get supported formats before sandboxing to avoid an known
+  // issue which breaks the camera preview. (b/166850715)
+  {
+    TRACE_EVENT("gpu,startup", "ui::ozone::CanImportNativePixmap");
+    auto* surface_factory =
+        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+    auto* gl_ozone = surface_factory->GetCurrentGLOzone();
+    if (gl_ozone) {
+      gpu_feature_info_.supports_nv12_gl_native_pixmap =
+          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
+      gpu_feature_info_.supports_p010_gl_native_pixmap =
+          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
 
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
