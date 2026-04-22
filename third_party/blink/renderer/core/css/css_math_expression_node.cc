@@ -1125,6 +1125,12 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
         CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
             final_node, node, op);
   }
+
+  // Due to simplification, we could be left with only a single term
+  // that contains a sum. If so, we need to mark that there are
+  // de-facto parentheses around it.
+  final_node->SetIsNestedCalc();
+
   return final_node;
 }
 
