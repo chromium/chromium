@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -50,6 +51,8 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   CursorWindowController& operator=(const CursorWindowController&) = delete;
 
   ~CursorWindowController() override;
+
+  void Init();
 
   bool is_cursor_compositing_enabled() const {
     return is_cursor_compositing_enabled_;
@@ -140,6 +143,10 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // If using fast ink, create `cursor_view_widget_`; otherwise,
   // create `cursor_window_`.
   void UpdateCursorMode();
+
+  void SeparateCursorBitmapForTest(const SkBitmap& original,
+                                   SkBitmap* mask,
+                                   SkBitmap* overlay) const;
 
   base::ObserverList<Observer> observers_;
 

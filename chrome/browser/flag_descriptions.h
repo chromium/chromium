@@ -1796,6 +1796,12 @@ inline constexpr char kAccessibilityFlashScreenFeatureDescription[] =
     "Allows the user to use a feature which flashes the screen for each "
     "notification.";
 
+inline constexpr char kAccessibilityInvertedMouseCursorName[] =
+    "Accessibility inverted mouse cursor";
+inline constexpr char kAccessibilityInvertedMouseCursorDescription[] =
+    "This option enables the accessibility feature to invert the colors under "
+    "the mouse cursor.";
+
 inline constexpr char kAccessibilityShakeToLocateName[] =
     "Adds shake cursor to locate feature";
 inline constexpr char kAccessibilityShakeToLocateDescription[] =

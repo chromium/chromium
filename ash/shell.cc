@@ -1827,6 +1827,7 @@ void Shell::Init(
   window_restore_controller_ = std::make_unique<WindowRestoreController>();
 
   static_cast<CursorManager*>(cursor_manager_.get())->Init();
+  window_tree_host_manager_->cursor_window_controller()->Init();
 
   mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
   shell_delegate_->BindFingerprint(

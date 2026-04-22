@@ -276,6 +276,13 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
+BASE_FEATURE(kAccessibilityInvertedMouseCursor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityInvertedMouseCursorEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityInvertedMouseCursor);
+}
+
 BASE_FEATURE(kAccessibilityShakeToLocate, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);

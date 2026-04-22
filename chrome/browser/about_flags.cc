@@ -7900,7 +7900,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFlashScreenFeatureName,
      flag_descriptions::kAccessibilityFlashScreenFeatureDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFlashScreenFeature)},
-
+    {"enable-accessibility-inverted-mouse-cursor",
+     flag_descriptions::kAccessibilityInvertedMouseCursorName,
+     flag_descriptions::kAccessibilityInvertedMouseCursorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityInvertedMouseCursor)},
     {"enable-accessibility-shake-to-locate",
      flag_descriptions::kAccessibilityShakeToLocateName,
      flag_descriptions::kAccessibilityShakeToLocateDescription, kOsCrOS,

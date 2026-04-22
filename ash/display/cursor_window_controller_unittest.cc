@@ -32,6 +32,7 @@
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -112,6 +113,13 @@ class CursorWindowControllerTest : public AshTestBase {
 
   int64_t GetCursorDisplayId() const {
     return cursor_window_controller()->display_.id();
+  }
+
+  void SeparateCursorBitmap(const SkBitmap& original,
+                            SkBitmap* mask,
+                            SkBitmap* overlay) const {
+    cursor_window_controller()->SeparateCursorBitmapForTest(original, mask,
+                                                            overlay);
   }
 
   void SetCursorCompositionEnabled(bool enabled) {
@@ -459,6 +467,78 @@ TEST_F(CursorWindowControllerTest, RefreshRateChangeUpdatesMaxUpdateRates) {
   display_info_list.push_back(info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_NEAR(cursor_window_controller()->max_update_rate_ms(), 22.22, 0.01f);
+}
+
+class InvertedCursorWindowControllerTest : public CursorWindowControllerTest {
+ public:
+  InvertedCursorWindowControllerTest() {
+    feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityInvertedMouseCursor);
+  }
+  ~InvertedCursorWindowControllerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(InvertedCursorWindowControllerTest, InvertedCursorLayers) {
+  SetCursorCompositionEnabled(true);
+  cursor_window_controller()->SetCursor(CursorType::kPointer);
+
+  aura::Window* cursor_window =
+      const_cast<aura::Window*>(GetCursorHostWindow());
+  ASSERT_TRUE(cursor_window);
+  ui::Layer* root_layer = cursor_window->layer();
+  ASSERT_TRUE(root_layer);
+
+  // The root layer should have two children: invert_layer and overlay_layer.
+  ASSERT_EQ(2u, root_layer->children().size());
+
+  ui::Layer* invert_layer = root_layer->children()[0];
+  ui::Layer* overlay_layer = root_layer->children()[1];
+
+  EXPECT_TRUE(invert_layer->background_inverted());
+  EXPECT_FALSE(overlay_layer->background_inverted());
+
+  // invert_layer should have a mask layer.
+  EXPECT_TRUE(invert_layer->layer_mask_layer());
+}
+
+TEST_F(InvertedCursorWindowControllerTest, SeparateCursorBitmap_PureColors) {
+  SkBitmap original;
+  original.allocN32Pixels(4, 1);
+  original.eraseColor(SK_ColorTRANSPARENT);
+
+  // Create a 4-pixel bitmap: Red, Blue, Magenta, White
+  // Note: SkPreMultiplyARGB is used because SeparateCursorBitmap expects
+  // premultiplied bitmaps.
+  *original.getAddr32(0, 0) = SkPreMultiplyARGB(255, 255, 0, 0);      // Red
+  *original.getAddr32(1, 0) = SkPreMultiplyARGB(255, 0, 0, 255);      // Blue
+  *original.getAddr32(2, 0) = SkPreMultiplyARGB(255, 255, 0, 255);    // Magenta
+  *original.getAddr32(3, 0) = SkPreMultiplyARGB(255, 255, 255, 255);  // White
+
+  SkBitmap mask, overlay;
+  SeparateCursorBitmap(original, &mask, &overlay);
+
+  // 1. Pure Red pixel: Should be ignored by the mask and kept as pure red in
+  // the overlay.
+  EXPECT_EQ(SK_ColorTRANSPARENT, mask.getColor(0, 0));
+  EXPECT_EQ(SK_ColorRED, overlay.getColor(0, 0));
+
+  // 2. Pure Blue pixel: Should be ignored by the mask and kept as pure blue in
+  // the overlay.
+  EXPECT_EQ(SK_ColorTRANSPARENT, mask.getColor(1, 0));
+  EXPECT_EQ(SK_ColorBLUE, overlay.getColor(1, 0));
+
+  // 3. Pure Magenta pixel: Should be entirely captured by the mask as a black
+  // pixel (inversion mask).
+  EXPECT_EQ(SK_ColorBLACK, mask.getColor(2, 0));
+  EXPECT_EQ(SK_ColorTRANSPARENT, overlay.getColor(2, 0));
+
+  // 4. Pure White pixel: Should be ignored by the mask and kept as pure white
+  // in the overlay.
+  EXPECT_EQ(SK_ColorTRANSPARENT, mask.getColor(3, 0));
+  EXPECT_EQ(SK_ColorWHITE, overlay.getColor(3, 0));
 }
 
 }  // namespace ash
