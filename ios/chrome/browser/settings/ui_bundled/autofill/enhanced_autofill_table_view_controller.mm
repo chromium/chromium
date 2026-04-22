@@ -98,8 +98,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       forSectionWithIdentifier:SectionIdentifierThingsToConsider];
   [model addItem:[self dataUsageItem]
       toSectionWithIdentifier:SectionIdentifierThingsToConsider];
-  [model addItem:[self storedOnDeviceItem]
-      toSectionWithIdentifier:SectionIdentifierThingsToConsider];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -161,14 +159,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       detailItemWithTitleId:IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE
                   iconImage:MakeSymbolMonochrome(
                                 GetBrandedGoogleServicesSymbol())];
-}
-
-- (TableViewDetailIconItem*)storedOnDeviceItem {
-  return [self
-      detailItemWithTitleId:IDS_IOS_SETTINGS_ENHANCED_AUTOFILL_SAVED_INFORMATION
-                  iconImage:CustomSymbolWithPointSize(
-                                kRecentTabsSymbol,
-                                kSettingsRootSymbolImagePointSize)];
 }
 
 - (TableViewDetailIconItem*)detailItemWithTitleId:(NSInteger)titleId
