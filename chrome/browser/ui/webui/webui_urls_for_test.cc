@@ -74,6 +74,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://device-log",
       "chrome://download-internals",
       "chrome://downloads",
+      "chrome://drive-picker-host",
       "chrome://extensions",
       "chrome://extensions-internals",
       "chrome://extensions-zero-state",

@@ -41,6 +41,7 @@ source_set("configs") {
       "//chrome/browser/ui/tabs/tab_group_home",
       "//chrome/browser/ui/webui/accessibility_annotator",
       "//chrome/browser/ui/webui/commerce",
+      "//chrome/browser/ui/webui/drive_picker_host",
     ]
   }
 

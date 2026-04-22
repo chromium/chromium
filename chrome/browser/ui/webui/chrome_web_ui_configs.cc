@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/webui/color_pipeline_internals/color_pipeline_internals_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_ui.h"
@@ -339,6 +340,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<CommentsSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<DrivePickerHostUIConfig>());
   map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistorySidePanelUIConfig>());

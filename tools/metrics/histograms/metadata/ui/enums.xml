@@ -944,6 +944,7 @@ chromium-metrics-reviews@google.com.
   <int value="864711974" label="chrome://emoji-picker/"/>
   <int value="870607687" label="chrome://accessibility-annotator-internals/"/>
   <int value="890996135" label="chrome://enterprise-reporting/"/>
+  <int value="891296796" label="chrome://drive-picker-host/"/>
   <int value="894368493" label="chrome://internet-config-dialog/"/>
   <int value="911597664" label="chrome://multidevice-setup/"/>
   <int value="918960088" label="chrome://instant/"/>

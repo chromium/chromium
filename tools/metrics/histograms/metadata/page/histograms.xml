@@ -368,6 +368,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".dlp-internals"/>
   <variant name=".downloads"/>
   <variant name=".drive-internals"/>
+  <variant name=".drive-picker-host"/>
   <variant name=".eche-app"/>
   <variant name=".emoji-picker"/>
   <variant name=".enterprise-reporting"/>

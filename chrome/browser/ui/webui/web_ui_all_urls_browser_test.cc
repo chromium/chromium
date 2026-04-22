@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/collaboration/public/features.h"
 #include "components/history_clusters/core/features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -44,6 +45,7 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enabled_features.push_back(
       optimization_guide::features::kOptimizationGuideModelExecution);
   enabled_features.push_back(collaboration::features::kCollaborationComments);
+  enabled_features.push_back(omnibox::kComposeboxDriveContextMenuOption);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

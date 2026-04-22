@@ -150,6 +150,10 @@
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
     "includes": [2500],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/drive_picker_host/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2505],
+  },
   # chrome/browser/glic/resources/internal/browser_resources.grd and
   # chrome/browser/glic/resources/browser_resources.grd must share the same id
   # because they define the same resources, but only one of them is built

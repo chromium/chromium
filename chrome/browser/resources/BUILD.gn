@@ -44,6 +44,7 @@ group("resources") {
       "content_annotator_internals:resources",
       "data_sharing:resources",
       "downloads:resources",
+      "drive_picker_host:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
       "glic/selection_overlay:resources",

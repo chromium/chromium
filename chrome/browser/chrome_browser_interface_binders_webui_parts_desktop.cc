@@ -45,6 +45,8 @@
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site.mojom.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
@@ -595,6 +597,13 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         OmniboxPopupUI>(map);
   }
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOption)) {
+    RegisterWebUIControllerInterfaceBinder<
+        drive_picker_host::mojom::DrivePickerHostHandler, DrivePickerHostUI>(
+        map);
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
@@ -667,6 +676,12 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
   registry.ForWebUI<NewTabPageThirdPartyUI>()
       .Add<most_visited::mojom::MostVisitedPageHandlerFactory>()
       .Add<new_tab_page_third_party::mojom::PageHandlerFactory>();
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOption)) {
+    registry.ForWebUI<DrivePickerHostUI>()
+        .Add<drive_picker_host::mojom::DrivePickerHostHandler>();
+  }
 
   registry
       .ForWebUI<settings::SettingsUI>()

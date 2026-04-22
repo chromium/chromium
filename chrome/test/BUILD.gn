@@ -8789,6 +8789,8 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
+      "//chrome/browser/ui/webui/drive_picker_host",
+      "//chrome/browser/ui/webui/drive_picker_host:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/ui/webui/searchbox",
