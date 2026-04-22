@@ -2026,7 +2026,9 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
       1);
 }
 
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/503556973): Re-enable after fixing flakiness on Windows,
+// ChromeOS and Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestShouldTriggerProactiveNudgeEnabled \
   DISABLED_TestShouldTriggerProactiveNudgeEnabled
 #else
