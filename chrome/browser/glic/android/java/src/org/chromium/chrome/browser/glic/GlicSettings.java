@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -34,9 +35,11 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -44,6 +47,7 @@ import org.chromium.ui.text.SpanApplier;
 @NullMarked
 public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PREFERENCE_BUTTON = "glic_button";
+    private static final String PREFERENCE_BUTTON_TOGGLE = "glic_button_toggle";
     private static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
@@ -82,7 +86,26 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
 
         Preference buttonPref = assertNonNull(findPreference(PREFERENCE_BUTTON));
-        updateButtonPreference(buttonPref);
+        ChromeSwitchPreference buttonTogglePref =
+                assertNonNull(findPreference(PREFERENCE_BUTTON_TOGGLE));
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            buttonPref.setVisible(false);
+            int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
+            buttonTogglePref.setChecked(currentSetting == AdaptiveToolbarButtonVariant.GLIC);
+            buttonTogglePref.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        boolean enabled = (boolean) newValue;
+                        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                                enabled
+                                        ? AdaptiveToolbarButtonVariant.GLIC
+                                        : AdaptiveToolbarButtonVariant.AUTO);
+                        return true;
+                    });
+        } else {
+            buttonTogglePref.setVisible(false);
+            updateButtonPreference(buttonPref);
+        }
 
         ChromeSwitchPreference locationPref =
                 setupSwitchPreference(
@@ -179,9 +202,17 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Preference buttonPref = findPreference(PREFERENCE_BUTTON);
-        if (buttonPref != null) {
-            updateButtonPreference(buttonPref);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            ChromeSwitchPreference buttonTogglePref = findPreference(PREFERENCE_BUTTON_TOGGLE);
+            if (buttonTogglePref != null) {
+                int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
+                buttonTogglePref.setChecked(currentSetting == AdaptiveToolbarButtonVariant.GLIC);
+            }
+        } else {
+            Preference buttonPref = findPreference(PREFERENCE_BUTTON);
+            if (buttonPref != null) {
+                updateButtonPreference(buttonPref);
+            }
         }
     }
 
@@ -192,7 +223,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             preference.setTitle(R.string.glic_button_entrypoint_pinned_label);
             preference.setSummary(R.string.glic_button_entrypoint_label);
         } else {
-            preference.setTitle(R.string.glic_button_entrypoint_unpinned_label);
+            preference.setTitle(R.string.glic_pin);
             preference.setSummary(R.string.settings_glic_button_toggle_sublabel);
         }
     }
@@ -346,9 +377,16 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/480218604): Override #updateDynamicPreferences once the preference is
-    // implemented.
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(GlicSettings.class.getName(), R.xml.glic_settings);
+            new ChromeBaseSearchIndexProvider(GlicSettings.class.getName(), R.xml.glic_settings) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    String prefFrag = GlicSettings.class.getName();
+                    if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+                        indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
+                    } else {
+                        indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
+                    }
+                }
+            };
 }

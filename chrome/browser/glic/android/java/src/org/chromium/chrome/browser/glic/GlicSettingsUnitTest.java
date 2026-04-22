@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -166,12 +167,60 @@ public class GlicSettingsUnitTest {
                         AdaptiveToolbarButtonVariant.AUTO);
         GlicSettings fragment = launchFragment();
         Preference preference = fragment.findPreference("glic_button");
-        assertEquals(
-                mActivity.getString(R.string.glic_button_entrypoint_unpinned_label),
-                preference.getTitle());
+        assertEquals(mActivity.getString(R.string.glic_pin), preference.getTitle());
         assertEquals(
                 mActivity.getString(R.string.settings_glic_button_toggle_sublabel),
                 preference.getSummary());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testGlicButtonPreference_Tablet_Glic() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.GLIC);
+        GlicSettings fragment = launchFragment();
+
+        Preference preference = fragment.findPreference("glic_button");
+        assertFalse("Preference glic_button should be invisible on tablet", preference.isVisible());
+
+        ChromeSwitchPreference togglePreference = fragment.findPreference("glic_button_toggle");
+        assertTrue(
+                "Preference glic_button_toggle should be visible on tablet",
+                togglePreference.isVisible());
+        assertTrue("Toggle should be checked when Glic is selected", togglePreference.isChecked());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testGlicButtonPreference_Tablet_Toggle() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.AUTO);
+        GlicSettings fragment = launchFragment();
+
+        ChromeSwitchPreference togglePreference = fragment.findPreference("glic_button_toggle");
+        assertFalse(
+                "Toggle should not be checked when Glic is not selected",
+                togglePreference.isChecked());
+
+        // Test toggling on
+        togglePreference.getOnPreferenceChangeListener().onPreferenceChange(togglePreference, true);
+        assertEquals(
+                AdaptiveToolbarButtonVariant.GLIC,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, -1));
+
+        // Test toggling off
+        togglePreference
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(togglePreference, false);
+        assertEquals(
+                AdaptiveToolbarButtonVariant.AUTO,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, -1));
     }
 
     @Test

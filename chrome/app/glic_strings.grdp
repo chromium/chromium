@@ -443,10 +443,7 @@
     Gemini
   </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_PINNED_LABEL" desc="Label on the button used to open Gemini in Chrome when pinned." formatter_data="android_java">
-    Current toolbar shortcut
-  </message>
-  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_UNPINNED_LABEL" desc="Label on the button used to open Gemini in Chrome when pinned." formatter_data="android_java">
-    Pin Gemini to toolbar shortcut
+    Toolbar shortcut
   </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Ask Gemini
