@@ -82,6 +82,9 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
   if (try_locker.is_acquired()) {
     if (!Buffer()) {
       output_bus->Zero();
+      if (GetPlaybackState() != UNSCHEDULED_STATE) {
+        Finish();
+      }
       return;
     }
 
@@ -660,20 +663,9 @@ double AudioBufferSourceHandler::GetMinPlaybackRate() {
 bool AudioBufferSourceHandler::PropagatesSilence() const {
   DCHECK(Context()->IsAudioThread());
 
-  if (!IsPlayingOrScheduled() || HasFinished()) {
-    return true;
-  }
-
-  // Protect `shared_buffer_` with TryLock because it can be accessed by the
-  // main thread.
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    return !shared_buffer_.get();
-  } else {
-    // Can't get lock. Assume `shared_buffer_` exists, so return false to
-    // indicate this node is (or might be) outputting non-zero samples.
-    return false;
-  }
+  // A null buffer source still needs to process to fire the ended event at the
+  // correct time. Don't propagate silence until the state is FINISHED.
+  return !IsPlayingOrScheduled();
 }
 
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {

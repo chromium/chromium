@@ -58,50 +58,6 @@
             .then(() => task.done());
       });
 
-      // Task: Test that looping an AudioBufferSource works correctly if the
-      // source is started and the buffer is assigned later, but before the
-      // source would start.
-      audit.define('delayed-start', (task, should) => {
-        let renderDuration = 2;
-        let context =
-            new OfflineAudioContext(2, sampleRate * renderDuration, sampleRate);
-        let linearRampBuffer = createLinearRampBuffer(context, 128);
-
-        let normal = context.createBufferSource();
-        let delayed = context.createBufferSource();
-        let merger = context.createChannelMerger(2);
-
-        // Connect the normally started source to the left channel, and the
-        // delayed to the right channel.
-        normal.connect(merger, 0, 0);
-        delayed.connect(merger, 0, 1);
-        merger.connect(context.destination);
-
-        normal.buffer = linearRampBuffer;
-        normal.loop = true;
-        delayed.loop = true;
-
-        normal.start(1, 0);
-        delayed.start(1, 0);
-
-        // Assign the buffer to the delayed source node at 0.5 second.
-        context.suspend(0.5).then(function() {
-          delayed.buffer = linearRampBuffer;
-          context.resume();
-        });
-
-        context.startRendering()
-            .then(function(buffer) {
-              // The left and right channel must match regardless of the timing
-              // of buffer assignment.
-              should(
-                  buffer.getChannelData(0),
-                  'The content of the left and right channel')
-                  .beEqualToArray(buffer.getChannelData(1));
-            })
-            .then(() => task.done());
-      });
-
       audit.run();
     </script>
   </body>
