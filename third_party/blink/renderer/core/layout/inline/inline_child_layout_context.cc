@@ -15,12 +15,14 @@ struct SameSizeAsInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
+  void* pointers[1];
   FragmentItemsBuilder items_builder_;
+  void* pointers2[3];
   std::optional<InlineLayoutStateStack> box_states_;
-  std::optional<LayoutUnit> optional_layout_unit;
-  void* pointers[5];
+  void* pointers3[1];
   unsigned number;
   HeapVector<Member<const BlockBreakToken>> tokens_;
+  std::optional<LayoutUnit> optional_layout_unit;
   float floating_number[2];
   bool flag;
 };
