@@ -8,5 +8,5 @@
 
 /** A more specific interface for the PDF plugin. */
 export interface PdfPluginElement extends HTMLEmbedElement {
-  postMessage(message: any, transfer?: Transferable[]): void;
+  postMessage(message: unknown, transfer?: Transferable[]): void;
 }

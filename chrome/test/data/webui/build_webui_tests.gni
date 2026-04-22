@@ -182,7 +182,6 @@ template("build_webui_tests") {
         # Note: DO NOT add new entries to the list below.
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
-        "//chrome/test/data/pdf",
         "//chrome/test/data/webui/access_code_cast",
         "//chrome/test/data/webui/bluetooth_internals",
         "//chrome/test/data/webui/bookmarks",

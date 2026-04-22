@@ -622,7 +622,6 @@ template("build_webui") {
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
         "//chrome/browser/resources/glic",
-        "//chrome/browser/resources/pdf",
         "//chrome/browser/resources/print_preview",
         "//chrome/browser/resources/settings",
         "//chrome/browser/resources/settings_shared",

@@ -941,7 +941,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // </if>
   }
 
-  override handleScriptingMessage(message: MessageEvent<any>) {
+  override handleScriptingMessage(message: MessageEvent<unknown>) {
     if (super.handleScriptingMessage(message)) {
       return true;
     }
@@ -951,7 +951,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
 
     let messageType;
-    switch (message.data.type.toString()) {
+    switch ((message.data as {type: string}).type) {
       case 'getSelectedText':
         messageType = PostMessageDataType.GET_SELECTED_TEXT;
         this.pluginController_.getSelectedText().then(
@@ -1298,8 +1298,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         const writable = await fileHandle.createWritable();
         await writable.write(blob);
         await writable.close();
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== 'AbortError') {
           console.error('window.showSaveFilePicker failed: ' + error);
         }
       }
@@ -1703,8 +1703,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       // <if expr="enable_pdf_ink2">
       this.onSaveSuccessful_(requestType);
       // </if>
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('window.showSaveFilePicker failed: ' + error);
       }
       // <if expr="enable_pdf_ink2">
@@ -1804,9 +1804,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       // <if expr="enable_pdf_ink2">
       this.onSaveSuccessful_(requestType);
       // </if>
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.pluginController_.releaseSaveInBlockBuffers();
-      if (error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('window.showSaveFilePicker failed: ' + error);
       }
       // <if expr="enable_pdf_ink2">

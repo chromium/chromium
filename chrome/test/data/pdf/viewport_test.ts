@@ -26,7 +26,8 @@ function ackAllScrollToRemoteMessages(
     viewport: Viewport, plugin: MockPdfPluginElement) {
   for (const message of plugin.messages) {
     if (message.type === 'syncScrollToRemote') {
-      viewport.ackScrollToRemote(message);
+      const msg = message as unknown as {x: number, y: number};
+      viewport.ackScrollToRemote({x: msg.x, y: msg.y});
     }
   }
 }
@@ -1976,7 +1977,8 @@ const tests = [
     const mockPlugin = createMockPdfPluginForTest();
     viewport.setRemoteContent(mockPlugin);
 
-    const {width, height} = mockPlugin.findMessage('updateSize');
+    const {width, height} =
+        mockPlugin.findMessage<{width: number, height: number}>('updateSize')!;
     chrome.test.assertEq(20, width);
     chrome.test.assertEq(30, height);
     chrome.test.succeed();
@@ -1992,7 +1994,8 @@ const tests = [
     const mockPlugin = createMockPdfPluginForTest();
     viewport.setRemoteContent(mockPlugin);
 
-    const {x, y} = mockPlugin.findMessage('syncScrollToRemote');
+    const {x, y} =
+        mockPlugin.findMessage<{x: number, y: number}>('syncScrollToRemote')!;
     chrome.test.assertEq(20, x);
     chrome.test.assertEq(30, y);
     chrome.test.succeed();
@@ -2007,7 +2010,8 @@ const tests = [
 
     viewport.setDocumentDimensions(new MockDocumentDimensions(20, 30));
 
-    const {width, height} = mockPlugin.findMessage('updateSize');
+    const {width, height} =
+        mockPlugin.findMessage<{width: number, height: number}>('updateSize')!;
     chrome.test.assertEq(20, width);
     chrome.test.assertEq(20, viewport.contentSize.width);
     chrome.test.assertEq(30, height);
@@ -2026,7 +2030,8 @@ const tests = [
 
     viewport.setPosition({x: 20, y: 30});
 
-    const {x, y} = mockPlugin.findMessage('syncScrollToRemote');
+    const {x, y} =
+        mockPlugin.findMessage<{x: number, y: number}>('syncScrollToRemote')!;
     chrome.test.assertEq(20, x);
     chrome.test.assertEq(20, viewport.position.x);
     chrome.test.assertEq(30, y);

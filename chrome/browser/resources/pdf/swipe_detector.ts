@@ -43,11 +43,11 @@ export class SwipeDetector {
     this.element_ = element;
 
     this.element_.addEventListener(
-        'touchstart', (this.onTouchStart_.bind(this) as (p1: Event) => any),
+        'touchstart', this.onTouchStart_.bind(this) as EventListener,
         {passive: true});
 
     this.element_.addEventListener(
-        'touchend', (this.onTouchEnd_.bind(this) as (p1: Event) => any),
+        'touchend', this.onTouchEnd_.bind(this) as EventListener,
         {passive: true});
     this.element_.addEventListener(
         'touchcancel', () => this.onTouchCancel_(), {passive: true});

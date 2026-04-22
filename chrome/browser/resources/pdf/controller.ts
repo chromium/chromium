@@ -14,7 +14,7 @@ import type {NamedDestinationMessageData, Rect} from './constants.js';
 import type {PdfPluginElement} from './internal_plugin.js';
 import type {DestinationMessageData} from './pdf_viewer_utils.js';
 import {verifyPdfHeader} from './pdf_viewer_utils.js';
-import type {Viewport} from './viewport.js';
+import type {LayoutOptions, Viewport} from './viewport.js';
 import {PinchPhase} from './viewport.js';
 
 type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
@@ -27,7 +27,6 @@ export interface MessageData {
 export interface SaveAttachmentMessageData {
   type: string;
   dataToSave: ArrayBuffer;
-  messageId: string;
 }
 
 interface SaveDataMessageData {
@@ -56,15 +55,20 @@ interface ThumbnailMessageData {
   height: number;
 }
 
+export interface SelectedTextData {
+  type: 'getSelectedTextReply';
+  selectedText: string;
+}
+
 // <if expr="enable_pdf_ink2">
 // Messages for setting and getting the annotation brush.
-interface AnnotationBrushMessage {
-  type: string;
+export interface AnnotationBrushMessage {
+  type: 'setAnnotationBrush'|'getAnnotationBrush';
   data: AnnotationBrush;
 }
 
 interface AllTextAnnotationsMessage {
-  type: string;
+  type: 'getAllTextAnnotations';
   annotations: TextAnnotation[];
 }
 
@@ -79,6 +83,191 @@ interface FinishTextAnnotationMessage {
   data: TextAnnotation;
 }
 // </if>
+
+export interface ViewportMessage {
+  type: 'viewport';
+  userInitiated: boolean;
+  zoom: number;
+  layoutOptions?: LayoutOptions;
+  xOffset: number;
+  yOffset: number;
+  pinchPhase?: PinchPhase;
+  pinchX?: number;
+  pinchY?: number;
+  pinchVectorX?: number;
+  pinchVectorY?: number;
+}
+
+export interface StopScrollingMessage {
+  type: 'stopScrolling';
+}
+
+export interface RotateClockwiseMessage {
+  type: 'rotateClockwise';
+}
+
+export interface RotateCounterclockwiseMessage {
+  type: 'rotateCounterclockwise';
+}
+
+export interface DisplayAnnotationsMessage {
+  type: 'displayAnnotations';
+  display: boolean;
+}
+
+export interface SetTwoUpViewMessage {
+  type: 'setTwoUpView';
+  enableTwoUpView: boolean;
+}
+
+export interface PrintMessage {
+  type: 'print';
+}
+
+export interface SelectAllMessage {
+  type: 'selectAll';
+}
+
+export interface HighlightTextFragmentsMessage {
+  type: 'highlightTextFragments';
+  textFragments: string[];
+}
+
+export interface GetSelectedTextMessage {
+  type: 'getSelectedText';
+}
+
+export interface GetThumbnailMessage {
+  type: 'getThumbnail';
+  pageIndex: number;
+}
+
+export interface ResetPrintPreviewModeMessage {
+  type: 'resetPrintPreviewMode';
+  url: string;
+  grayscale: boolean;
+  pageCount: number;
+}
+
+export interface SetBackgroundColorMessage {
+  type: 'setBackgroundColor';
+  color: number;
+}
+
+export interface LoadPreviewPageMessage {
+  type: 'loadPreviewPage';
+  url: string;
+  index: number;
+}
+
+export interface GetPageBoundingBoxMessage {
+  type: 'getPageBoundingBox';
+  page: number;
+}
+
+export interface GetPasswordCompleteMessage {
+  type: 'getPasswordComplete';
+  password: string;
+}
+
+export interface GetNamedDestinationMessage {
+  type: 'getNamedDestination';
+  namedDestination: string;
+}
+
+export interface SetPresentationModeMessage {
+  type: 'setPresentationMode';
+  enablePresentationMode: boolean;
+}
+
+export interface SaveMessage {
+  type: 'save';
+  token: string;
+  saveRequestType: SaveRequestType;
+}
+
+export interface GetSaveDataBlockMessage {
+  type: 'getSaveDataBlock';
+  token: string;
+  saveRequestType: SaveRequestType;
+  offset: number;
+  blockSize: number;
+}
+
+export interface GetSuggestedFileNameMessage {
+  type: 'getSuggestedFileName';
+  saveRequestTypeForTesting: SaveRequestType;
+}
+
+export interface ReleaseSaveInBlockBuffersMessage {
+  type: 'releaseSaveInBlockBuffers';
+}
+
+export interface SaveAttachmentMessage {
+  type: 'saveAttachment';
+  attachmentIndex: number;
+}
+
+// <if expr="enable_pdf_ink2">
+export interface SetAnnotationModeMessage {
+  type: 'setAnnotationMode';
+  mode: AnnotationMode;
+}
+
+export interface GetAnnotationBrushMessage {
+  type: 'getAnnotationBrush';
+  brushType?: AnnotationBrushType;
+}
+
+export interface AnnotationRedoMessage {
+  type: 'annotationRedo';
+}
+
+export interface GetAllTextAnnotationsRequestMessage {
+  type: 'getAllTextAnnotations';
+}
+
+export interface AnnotationUndoMessage {
+  type: 'annotationUndo';
+}
+// </if>
+
+export type PluginMessageWithReply =
+    GetSelectedTextMessage|GetThumbnailMessage|GetPageBoundingBoxMessage|
+    GetNamedDestinationMessage|GetSuggestedFileNameMessage|SaveAttachmentMessage
+    // <if expr="enable_pdf_ink2">
+    |GetAnnotationBrushMessage|GetAllTextAnnotationsRequestMessage
+    // </if>
+    ;
+
+export type PluginMessageWithoutReply = StopScrollingMessage|ViewportMessage|
+    RotateClockwiseMessage|RotateCounterclockwiseMessage|
+    DisplayAnnotationsMessage|SetTwoUpViewMessage|PrintMessage|SelectAllMessage|
+    HighlightTextFragmentsMessage|ResetPrintPreviewModeMessage|
+    SetBackgroundColorMessage|LoadPreviewPageMessage|GetPasswordCompleteMessage|
+    SetPresentationModeMessage|SaveMessage|GetSaveDataBlockMessage|
+    ReleaseSaveInBlockBuffersMessage
+    // <if expr="enable_pdf_ink2">
+    |SetAnnotationModeMessage|AnnotationBrushMessage|EditTextAnnotationMessage|
+    FinishTextAnnotationMessage|AnnotationRedoMessage|AnnotationUndoMessage
+    // </if>
+    ;
+
+export type PluginMessage = PluginMessageWithReply|PluginMessageWithoutReply;
+
+export interface MessageResponseMap {
+  'getSelectedText': SelectedTextData;
+  'getThumbnail': ThumbnailMessageData;
+  'getPageBoundingBox': Rect;
+  'getNamedDestination': NamedDestinationMessageData;
+  'getSuggestedFileName':
+      {fileName: string, bypassSaveFileForTesting?: boolean};
+  'saveAttachment': SaveAttachmentMessageData;
+  // <if expr="enable_pdf_ink2">
+  'getAnnotationBrush': AnnotationBrushMessage;
+  'getAllTextAnnotations': AllTextAnnotationsMessage;
+  // </if>
+}
 
 /**
  * Creates a cryptographically secure pseudorandom 128-bit token.
@@ -150,8 +339,8 @@ export class PluginController implements ContentController {
   private eventTarget_: EventTarget = new EventTarget();
   private isActive_: boolean = false;
   private plugin_?: PdfPluginElement;
-  private delayedMessages_: Array<{message: any, transfer?: Transferable[]}>|
-      null = [];
+  private delayedMessages_:
+      Array<{message: unknown, transfer?: Transferable[]}>|null = [];
   private viewport_?: Viewport;
   private getIsUserInitiatedCallback_: () => boolean = () => false;
   private pendingSaveTokens_:
@@ -162,7 +351,8 @@ export class PluginController implements ContentController {
       Map<string,
           PromiseResolver<{dataToSave: ArrayBuffer, totalFileSize: number}>> =
           new Map();
-  private requestResolverMap_: Map<string, PromiseResolver<any>> = new Map();
+  private requestResolverMap_: Map<string, PromiseResolver<unknown>> =
+      new Map();
   private uidCounter_: number = 1;
 
   init(
@@ -336,7 +526,7 @@ export class PluginController implements ContentController {
    * Post a message to the plugin. Some messages will cause an async reply to be
    * received through handlePluginMessage_().
    */
-  private postMessage_<M extends MessageData>(message: M) {
+  private postMessage_(message: PluginMessage) {
     assert(this.plugin_);
     this.plugin_.postMessage(message);
   }
@@ -346,11 +536,14 @@ export class PluginController implements ContentController {
    * from the plugin.
    * @return A promise holding the response from the plugin.
    */
-  private postMessageWithReply_<T, M extends MessageData>(message: M):
-      Promise<T> {
-    const promiseResolver = new PromiseResolver<T>();
-    message.messageId = `${message.type}_${this.createUid_()}`;
-    this.requestResolverMap_.set(message.messageId, promiseResolver);
+  private postMessageWithReply_<K extends keyof MessageResponseMap>(
+      message: Extract<PluginMessageWithReply, {type: K}>):
+      Promise<MessageResponseMap[K]> {
+    const promiseResolver = new PromiseResolver<MessageResponseMap[K]>();
+    const messageId = `${(message as MessageData).type}_${this.createUid_()}`;
+    (message as MessageData).messageId = messageId;
+    this.requestResolverMap_.set(
+        messageId, promiseResolver as PromiseResolver<unknown>);
     this.postMessage_(message);
     return promiseResolver.promise;
   }
@@ -392,7 +585,7 @@ export class PluginController implements ContentController {
     });
   }
 
-  getSelectedText(): Promise<{selectedText: string}> {
+  getSelectedText(): Promise<SelectedTextData> {
     return this.postMessageWithReply_({type: 'getSelectedText'});
   }
 

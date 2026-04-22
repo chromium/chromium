@@ -45,10 +45,10 @@ export class GestureDetector {
     this.element_ = element;
 
     this.element_.addEventListener(
-        'touchstart', (this.onTouchStart_.bind(this) as (p1: Event) => any),
+        'touchstart', this.onTouchStart_.bind(this) as EventListener,
         {passive: true});
 
-    const boundOnTouch = (this.onTouch_.bind(this) as (p1: Event) => any);
+    const boundOnTouch = this.onTouch_.bind(this) as EventListener;
     this.element_.addEventListener('touchmove', boundOnTouch, {passive: true});
     this.element_.addEventListener('touchend', boundOnTouch, {passive: true});
     this.element_.addEventListener(

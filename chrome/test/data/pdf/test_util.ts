@@ -7,10 +7,10 @@
 // clang-format off
 import './test_bookmarks.js';
 
-import type {DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {DocumentDimensions, LayoutOptions, PdfViewerElement, SaveMessage, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, AnnotationBrushMessage, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 // <if expr="enable_pdf_save_to_drive">
@@ -178,14 +178,20 @@ export class MockDocumentDimensions implements DocumentDimensions {
   }
 }
 
+interface MockMessage extends Record<string, unknown> {
+  type: string;
+  messageId?: string;
+  token?: string;
+}
+
 export class MockPdfPluginElement extends HTMLEmbedElement {
-  private messages_: any[] = [];
+  private messages_: MockMessage[] = [];
   // <if expr="enable_pdf_ink2">
   private messageReplies_: Map<string, Object> = new Map();
   private replyToSave_: boolean = false;
   // </if>
 
-  get messages(): any[] {
+  get messages(): MockMessage[] {
     return this.messages_;
   }
 
@@ -193,15 +199,17 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
     this.messages_.length = 0;
   }
 
-  findMessage(type: string): any {
-    return this.messages_.find(element => element.type === type);
+  findMessage<T = MockMessage>(type: string): T|undefined {
+    return this.messages_.find(element => element.type === type) as unknown as
+        T |
+        undefined;
   }
 
-  postMessage(message: any, _transfer: Transferable[]) {
+  postMessage(message: MockMessage, _transfer: Transferable[]) {
     chrome.test.assertTrue(!!message.type);
     // <if expr="enable_pdf_ink2">
     if (message.type === 'save' && this.replyToSave_) {
-      this.replyToSaveMessage_(message);
+      this.replyToSaveMessage_(message as unknown as SaveMessage);
     } else if (this.messageReplies_.has(message.type)) {
       const reply = this.messageReplies_.get(message.type);
       chrome.test.assertTrue(!!reply);
@@ -238,7 +246,7 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
     this.replyToSave_ = reply;
   }
 
-  private replyToSaveMessage_(message: any) {
+  private replyToSaveMessage_(message: SaveMessage) {
     chrome.test.assertTrue(!!message.token);
     if (message.saveRequestType === SaveRequestType.ORIGINAL) {
       this.dispatchEvent(new MessageEvent('message', {
@@ -651,22 +659,20 @@ export function setGetAnnotationBrushReply(
 export function assertAnnotationBrush(
     mockPlugin: MockPdfPluginElement, expectedBrush: AnnotationBrush) {
   const setAnnotationBrushMessage =
-      mockPlugin.findMessage('setAnnotationBrush');
+      mockPlugin.findMessage<AnnotationBrushMessage>('setAnnotationBrush');
   chrome.test.assertTrue(setAnnotationBrushMessage !== undefined);
-  chrome.test.assertEq('setAnnotationBrush', setAnnotationBrushMessage.type);
-  chrome.test.assertEq(expectedBrush.type, setAnnotationBrushMessage.data.type);
+  const message = setAnnotationBrushMessage;
+  chrome.test.assertEq('setAnnotationBrush', message.type);
+  chrome.test.assertEq(expectedBrush.type, message.data.type);
   const hasColor = expectedBrush.color !== undefined;
-  chrome.test.assertEq(
-      hasColor, setAnnotationBrushMessage.data.color !== undefined);
+  chrome.test.assertEq(hasColor, message.data.color !== undefined);
   if (hasColor) {
-    chrome.test.assertEq(
-        expectedBrush.color!.r, setAnnotationBrushMessage.data.color.r);
-    chrome.test.assertEq(
-        expectedBrush.color!.g, setAnnotationBrushMessage.data.color.g);
-    chrome.test.assertEq(
-        expectedBrush.color!.b, setAnnotationBrushMessage.data.color.b);
+    const color = message.data.color!;
+    chrome.test.assertEq(expectedBrush.color!.r, color.r);
+    chrome.test.assertEq(expectedBrush.color!.g, color.g);
+    chrome.test.assertEq(expectedBrush.color!.b, color.b);
   }
-  chrome.test.assertEq(expectedBrush.size, setAnnotationBrushMessage.data.size);
+  chrome.test.assertEq(expectedBrush.size, message.data.size);
 
   mockPlugin.clearMessages();
 }
@@ -762,7 +768,8 @@ export async function clickDropdownButton(
 }
 
 export function assertDeepEquals(
-    value1: object|any[]|undefined|null, value2: object|any[]|undefined|null) {
+    value1: object|unknown[]|undefined|null,
+    value2: object|unknown[]|undefined|null) {
   chrome.test.assertTrue(chrome.test.checkDeepEq(value1, value2));
 }
 

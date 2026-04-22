@@ -15,15 +15,43 @@ import type {BrowserApi} from './browser_api.js';
 import {ZoomBehavior} from './browser_api.js';
 import type {Point} from './constants.js';
 import {FittingType} from './constants.js';
-import type {ContentController, MessageData} from './controller.js';
+import type {ContentController, MessageData, SelectedTextData} from './controller.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
 import {record, recordFitTo, UserAction} from './metrics.js';
 import type {OpenPdfParams} from './open_pdf_params_parser.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
+import type {SerializedKeyEvent} from './pdf_scripting_api.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
 import {ZoomManager} from './zoom_manager.js';
+
+interface DocumentLoadedScriptingMessage {
+  type: 'documentLoaded';
+  load_state: LoadState;
+}
+
+interface ViewportScriptingMessage {
+  type: 'viewport';
+  pageX: number;
+  pageY: number;
+  pageWidth: number;
+  viewportWidth: number;
+  viewportHeight: number;
+}
+
+interface SendKeyEventScriptingMessage {
+  type: 'sendKeyEvent';
+  keyEvent: SerializedKeyEvent;
+}
+
+interface SimpleScriptingMessage {
+  type: 'passwordPrompted'|'touchSelectionOccurred';
+}
+
+export type ScriptingMessage =
+    DocumentLoadedScriptingMessage|ViewportScriptingMessage|
+    SendKeyEventScriptingMessage|SimpleScriptingMessage|SelectedTextData;
 
 /** @return Width of a scrollbar in pixels */
 function getScrollbarWidth(): number {
@@ -494,7 +522,7 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
    * Send a scripting message outside the extension (typically to
    * PdfScriptingApi in a page containing the extension).
    */
-  protected sendScriptingMessage(message: any) {
+  protected sendScriptingMessage(message: ScriptingMessage) {
     if (this.parentWindow_ && this.parentOrigin_) {
       let targetOrigin;
       // Only send data back to the embedder if it is from the same origin,
@@ -504,8 +532,9 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
       if (this.parentOrigin_ === window.location.origin) {
         targetOrigin = this.parentOrigin_;
       } else if (
-          message.type === 'documentLoaded' ||
-          message.type === 'passwordPrompted') {
+          'type' in message &&
+          (message.type === 'documentLoaded' ||
+           message.type === 'passwordPrompted')) {
         targetOrigin = '*';
       } else {
         targetOrigin = this.originalUrl;
@@ -541,7 +570,7 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
   }
 
   /** Handles a selected text reply from the current controller. */
-  protected handleSelectedTextReply(message: {selectedText: string}) {
+  protected handleSelectedTextReply(message: SelectedTextData) {
     if (this.overrideSendScriptingMessageForTest_) {
       this.overrideSendScriptingMessageForTest_ = false;
       try {

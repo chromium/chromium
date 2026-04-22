@@ -105,7 +105,8 @@ async function dragHandleWithKeyboard(
 }
 
 function verifyFinishTextAnnotationMessage(expectedAnnotation: TextAnnotation) {
-  const message = mockPlugin.findMessage('finishTextAnnotation');
+  const message = mockPlugin.findMessage<{type: string, data: TextAnnotation}>(
+      'finishTextAnnotation');
   chrome.test.assertTrue(message !== undefined);
   chrome.test.assertEq('finishTextAnnotation', message.type);
   assertDeepEquals(expectedAnnotation, message.data);
@@ -821,7 +822,9 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     // This happens if the user changes annotation mode.
     textbox.remove();
-    const message = mockPlugin.findMessage('finishTextAnnotation');
+    const message =
+        mockPlugin.findMessage<{type: string, data: TextAnnotation}>(
+            'finishTextAnnotation');
     chrome.test.assertTrue(message !== undefined);
     chrome.test.assertEq('finishTextAnnotation', message.type);
     assertDeepEquals(testAnnotation, message.data);
@@ -1162,7 +1165,9 @@ chrome.test.runTests([
     // won't send a corresponding scroll message back.
     mockPlugin.clearMessages();
     textbox.focus();
-    const syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
+    const syncScrollMessage =
+        mockPlugin.findMessage<{type: string, x: number, y: number}>(
+            'syncScrollToRemote');
     chrome.test.assertTrue(syncScrollMessage !== undefined);
     chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
     // The box is at 60, 60 in viewport coordinates, and the viewport is 500px

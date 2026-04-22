@@ -10,7 +10,7 @@ import type {SwipeDirection} from './swipe_detector.js';
 import {SwipeDetector} from './swipe_detector.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
-  postMessage(message: any): void;
+  postMessage(message: unknown): void;
 }
 
 const channel = new MessageChannel();

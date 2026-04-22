@@ -153,9 +153,11 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
-    let enableMessage = mockPlugin.findMessage('setAnnotationMode');
-    chrome.test.assertTrue(enableMessage !== null);
-    chrome.test.assertEq(enableMessage!.mode, AnnotationMode.DRAW);
+    let enableMessage =
+        mockPlugin.findMessage<{type: string, mode: AnnotationMode}>(
+            'setAnnotationMode');
+    chrome.test.assertTrue(enableMessage !== undefined);
+    chrome.test.assertEq(enableMessage.mode, AnnotationMode.DRAW);
 
     mockPlugin.clearMessages();
 
@@ -163,9 +165,11 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
 
-    enableMessage = mockPlugin.findMessage('setAnnotationMode');
-    chrome.test.assertTrue(enableMessage !== null);
-    chrome.test.assertEq(enableMessage!.mode, AnnotationMode.TEXT);
+    enableMessage =
+        mockPlugin.findMessage<{type: string, mode: AnnotationMode}>(
+            'setAnnotationMode');
+    chrome.test.assertTrue(enableMessage !== undefined);
+    chrome.test.assertEq(enableMessage.mode, AnnotationMode.TEXT);
 
     mockPlugin.clearMessages();
 
@@ -173,9 +177,11 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
-    const disableMessage = mockPlugin.findMessage('setAnnotationMode');
-    chrome.test.assertTrue(disableMessage !== null);
-    chrome.test.assertEq(disableMessage!.mode, AnnotationMode.OFF);
+    const disableMessage =
+        mockPlugin.findMessage<{type: string, mode: AnnotationMode}>(
+            'setAnnotationMode');
+    chrome.test.assertTrue(disableMessage !== undefined);
+    chrome.test.assertEq(disableMessage.mode, AnnotationMode.OFF);
     chrome.test.succeed();
   },
   // Test that entering presentation mode exits annotation mode, and exiting

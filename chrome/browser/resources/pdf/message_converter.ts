@@ -10,19 +10,19 @@ import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 
 type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
-export function convertDocumentDimensionsMessage(message: any) {
-  return message as unknown as DocumentDimensionsMessageData;
+export function convertDocumentDimensionsMessage(message: unknown) {
+  return message as DocumentDimensionsMessageData;
 }
 
-export function convertFormFocusChangeMessage(message: any) {
-  return message as unknown as {focused: FormFieldFocusType};
+export function convertFormFocusChangeMessage(message: unknown) {
+  return message as {focused: FormFieldFocusType};
 }
 
-export function convertLoadProgressMessage(message: any) {
-  return message as unknown as {progress: number};
+export function convertLoadProgressMessage(message: unknown) {
+  return message as {progress: number};
 }
 
-export function convertSendKeyEventMessage(message: any): ExtendedKeyEvent {
+export function convertSendKeyEventMessage(message: unknown): ExtendedKeyEvent {
   const keyEventData = message as KeyEventData;
   return deserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
 }
