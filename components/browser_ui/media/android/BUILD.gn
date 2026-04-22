@@ -36,18 +36,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/drawable-hdpi/audio_playing.png",
-    "java/res/drawable-hdpi/audio_playing_square.png",
-    "java/res/drawable-mdpi/audio_playing.png",
-    "java/res/drawable-mdpi/audio_playing_square.png",
-    "java/res/drawable-xhdpi/audio_playing.png",
-    "java/res/drawable-xhdpi/audio_playing_square.png",
-    "java/res/drawable-xxhdpi/audio_playing.png",
-    "java/res/drawable-xxhdpi/audio_playing_square.png",
-    "java/res/drawable-xxxhdpi/audio_playing.png",
-    "java/res/drawable-xxxhdpi/audio_playing_square.png",
-  ]
+  sources = [ "java/res/drawable/chrome_product_vd_24.xml" ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",

@@ -233,7 +233,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                                 .setPaused(isPaused)
                                 .setOrigin(mOrigin)
                                 .setPrivate(mWebContents.isIncognito())
-                                .setNotificationSmallIcon(R.drawable.audio_playing)
+                                .setNotificationSmallIcon(R.drawable.chrome_product_vd_24)
                                 .setNotificationLargeIcon(mCurrentMediaImage)
                                 .setMediaSessionImage(mPageMediaImage)
                                 .setActions(
@@ -252,7 +252,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                 if (mWebContents.isIncognito()
                         || (mCurrentMediaImage == null && !fetchLargeFaviconImage())) {
                     mNotificationInfoBuilder.setDefaultNotificationLargeIcon(
-                            R.drawable.audio_playing_square);
+                            R.drawable.chrome_product_vd_24);
                 }
                 showNotification();
                 Activity activity = getActivity();
@@ -577,7 +577,7 @@ public class MediaSessionHelper implements MediaImageCallback {
             // If we do not have any favicon then make sure we show default sound icon. This
             // icon is used by notification manager only if we do not show any icon.
             mNotificationInfoBuilder.setDefaultNotificationLargeIcon(
-                    R.drawable.audio_playing_square);
+                    R.drawable.chrome_product_vd_24);
             showNotification();
         } else {
             updateFavicon(icon);
