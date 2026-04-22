@@ -1036,7 +1036,8 @@ xsltAttribute(xsltTransformContextPtr ctxt,
 	*/
 	if (ctxt->internalized &&
 	    (ctxt->insert->doc != NULL) &&
-	    (ctxt->insert->doc->dict == ctxt->dict))
+	    (ctxt->insert->doc->dict == ctxt->dict) &&
+	    xmlDictOwns(ctxt->dict, inst->children->content))
 	{
 	    copyTxt = xmlNewText(NULL);
 	    if (copyTxt == NULL) /* TODO: report error */
