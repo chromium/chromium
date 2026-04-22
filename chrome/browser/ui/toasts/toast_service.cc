@@ -492,7 +492,7 @@ void ToastService::RegisterToasts(
           IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
           .AddCloseButton()
           .AddActionButton(
-              IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON,
+              IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND_ACTION_BUTTON,
               base::BindRepeating(
                   [](BrowserWindowInterface* window) {
                     send_tab_to_self::ReceivingUiHandler* handler =

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
+#include "base/i18n/message_formatter.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -23,7 +26,9 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace send_tab_to_self {
 
@@ -74,8 +79,11 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
 
       // Show a toast.
       ToastParams params(ToastId::kSendTabToSelfTabOpened);
-      params.body_string_replacement_params = {
-          base::UTF8ToUTF16(new_entries[0]->GetDeviceName())};
+      params.body_string_override =
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND),
+              static_cast<int>(new_entries.size()),
+              base::UTF8ToUTF16(new_entries[0]->GetDeviceName()));
       browser->GetFeatures()
           .toast_service()
           ->toast_controller()
@@ -163,8 +171,11 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
       // Only show the device name of the first tab. Note that the tabs might
       // have been sent from different devices, but it's not worth the extra
       // hassle to list them all.
-      params.body_string_replacement_params = {
-          base::UTF8ToUTF16(entries[0]->GetDeviceName())};
+      params.body_string_override =
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND),
+              static_cast<int>(latest_tabs_opened_in_background_.size()),
+              base::UTF8ToUTF16(entries[0]->GetDeviceName()));
       params.toast_close_callback = base::ScopedClosureRunner(
           base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
                          weak_ptr_factory_.GetWeakPtr()));

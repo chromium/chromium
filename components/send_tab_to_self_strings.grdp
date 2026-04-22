@@ -28,4 +28,19 @@
   <message name="IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_BODY" desc = "Body text of the iOS send tab to self push notification when payload decryption fails.">
     Tap to open the tab on your phone
   </message>
+  <message name="IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND" desc = "Notification shown when the user receives a tab on the target device while the user is actively using the device.">
+    {COUNT, plural,
+      =1 {Link sent from <ph name="DEVICE_NAME">{1}<ex>Jane's iPhone</ex></ph>}
+      other {# links sent from <ph name="DEVICE_NAME">{1}<ex>Jane's iPhone</ex></ph>}
+    }
+  </message>
+  <message name="IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND" desc = "Notification shown when the user receives a tab on the target device while the user is not actively using the device.">
+    {COUNT, plural,
+      =1 {Link received from <ph name="DEVICE_NAME">{1}<ex>Jane's iPhone</ex></ph>}
+      other {# links received from <ph name="DEVICE_NAME">{1}<ex>Jane's iPhone</ex></ph>}
+    }
+  </message>
+  <message name="IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND_ACTION_BUTTON" desc = "Label for the action button on the notification shown when the user receives a tab on the target device while the user is not actively using the device.">
+    Switch to tab
+  </message>
 </grit-part>
