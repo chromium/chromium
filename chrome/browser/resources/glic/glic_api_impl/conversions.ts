@@ -108,3 +108,6 @@ assertNever<CheckEnumCompatibility<
 assertNever<CheckEnumCompatibility<
     typeof mojom.MetricUserInputReactionType,
     typeof api.MetricUserInputReactionType>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.SubscriberObservationType,
+    typeof requestTypes.SubscriberObservationType>>();

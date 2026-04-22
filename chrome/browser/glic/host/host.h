@@ -441,6 +441,11 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
 
+  // Register a handler to observe experimental triggering related updates.
+  // The callback informs if the registration operations was successful or not.
+  virtual void getExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback);
   virtual void Invoke(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,

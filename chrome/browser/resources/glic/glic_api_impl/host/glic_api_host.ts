@@ -9,7 +9,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from '../../browser_proxy.js';
-import type {WebClientInitialState} from '../../glic.mojom-webui.js';
+import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
@@ -202,6 +202,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
   captureRegionObserver?: CaptureRegionObserverImpl;
   tabDataHandlerSet: TabDataHandlerSet;
   tabFaviconHandlerSet: TabFaviconHandlerSet;
+  private experimentalTriggeringUpdatesHandler =
+      new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
+  private nextExperimentalTriggeringUpdateHandlerId = 0;
 
   constructor(
       private browserProxy: BrowserProxy, communicator: GlicApiCommunicator,
@@ -242,6 +245,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.messageHandler.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.disconnectFromSource();
+    for (const handler of this.experimentalTriggeringUpdatesHandler.values()) {
+      handler.$.close();
+    }
+    this.experimentalTriggeringUpdatesHandler.clear();
   }
 
   setInitialState(initialState: WebClientInitialState) {
@@ -553,6 +560,22 @@ export class GlicApiHost implements PostMessageRequestHandler {
       default:
         break;
     }
+  }
+
+  addExperimentalTriggeringUpdatesHandler(
+      handler: ExperimentalTriggeringUpdatesHandlerRemote): number {
+    const id = this.nextExperimentalTriggeringUpdateHandlerId++;
+    this.experimentalTriggeringUpdatesHandler.set(id, handler);
+    return id;
+  }
+
+  getExperimentalTriggeringUpdatesHandler(observationId: number):
+      ExperimentalTriggeringUpdatesHandlerRemote|undefined {
+    return this.experimentalTriggeringUpdatesHandler.get(observationId);
+  }
+
+  deleteExperimentalTriggeringUpdatesHandler(observationId: number): void {
+    this.experimentalTriggeringUpdatesHandler.delete(observationId);
   }
 }
 

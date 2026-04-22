@@ -14,6 +14,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/version.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -1807,6 +1808,52 @@ struct AdditionalContext {
   array<AdditionalContextPart> parts;
 };
 
+// @generate glic_api
+// Types of updates that may be relayed back by the web client.
+[Stable, Extensible]
+enum ExperimentalTriggeringUpdateType {
+  // An unknown, non-terminal update type.
+  [Default] kUnknown = 0,
+  // A log entry describing internal steps or "thought" process.
+  kWorklog = 1,
+  // The interaction was paused.
+  kPaused = 2,
+  // A final status update or metadata about the completed task.
+  kTerminalCompletion = 3,
+  // The interaction was stopped or cancelled.
+  kTerminalStopped = 4,
+  // The interaction failed.
+  kTerminalFailed = 5,
+};
+
+// Types of subscriber observations that may be observed.
+[Stable, Extensible]
+enum SubscriberObservationType {
+  // An update was observed.
+  [Default] kUpdate = 0,
+  // Completed all observations.
+  kComplete = 1,
+  // An unexpected error was observed.
+  kError = 2,
+};
+
+// An update event sent to the browser by the web client.
+struct ExperimentalTriggeringUpdate {
+  // The type of this update.
+  ExperimentalTriggeringUpdateType type;
+  // The human-readable text associated with the update, such as response text
+  // or status message.
+  string data;
+};
+
+// Interface for receiving updates during web client interactions.
+// Implemented by the caller to receive streaming updates from the web client.
+interface ExperimentalTriggeringUpdatesHandler {
+  // Called when a new update is available.
+  OnUpdate(ExperimentalTriggeringUpdate? update,
+      SubscriberObservationType observation);
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
@@ -1956,6 +2003,11 @@ interface WebClient {
 
   // Invokes Glic with specific options. Expects a return to signal completion.
   Invoke(InvokeOptions options) => ();
+
+  // Register a handler to observe Glic updates.
+  GetExperimentalTriggeringUpdates(
+      pending_remote<ExperimentalTriggeringUpdatesHandler> handler)
+      => (bool success);
 };
 
 // Information extracted from a tab.

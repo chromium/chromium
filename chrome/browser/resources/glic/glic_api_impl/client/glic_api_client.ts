@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
@@ -12,7 +11,7 @@ import {replaceProperties} from './../conversions.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
 import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
-import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
+import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason, SubscriberObservationType} from './../request_types.js';
 import {rgbaImageToBmpBlob} from './image_utils.js';
 
 // Web client side of the Glic API.
@@ -158,6 +157,50 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     } catch (e) {
       console.warn(e);
     }
+  }
+
+  async glicWebClientGetExperimentalTriggeringUpdates(
+      payload: {observationId: number},
+      _extras: ResponseExtras): Promise<{success: boolean}> {
+    const getUpdates = this.webClient.getExperimentalTriggeringUpdates;
+    if (!getUpdates) {
+      return {success: false};
+    }
+    const observable = await getUpdates.call(this.webClient);
+    if (!observable) {
+      return {success: false};
+    }
+    const subscriber = observable.subscribeObserver({
+      next: (update: ExperimentalTriggeringUpdate) => {
+        this.host.sender.requestNoResponse(
+            'glicBrowserOnExperimentalTriggeringUpdate', {
+              observationId: payload.observationId,
+              update,
+              observation: SubscriberObservationType.UPDATE,
+            });
+      },
+      complete: () => {
+        this.host.sender.requestNoResponse(
+            'glicBrowserOnExperimentalTriggeringUpdate', {
+              observationId: payload.observationId,
+              observation: SubscriberObservationType.COMPLETE,
+            });
+        if (subscriber) {
+          subscriber.unsubscribe();
+        }
+      },
+      error: (_err: any) => {
+        this.host.sender.requestNoResponse(
+            'glicBrowserOnExperimentalTriggeringUpdate', {
+              observationId: payload.observationId,
+              observation: SubscriberObservationType.ERROR,
+            });
+        if (subscriber) {
+          subscriber.unsubscribe();
+        }
+      },
+    });
+    return {success: true};
   }
 
   glicWebClientNotifyActuationOnWebSettingChanged(payload: {

@@ -5,7 +5,7 @@
 // This file handles messages from the browser, sending messages to the client.
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, ExperimentalTriggeringUpdatesHandlerRemote, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import {enumToClient} from '../enum_conversions.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
@@ -25,6 +25,25 @@ export class WebClientImpl implements WebClientInterface {
 
   markCreated() {
     this.clientCreated.resolve();
+  }
+
+  async getExperimentalTriggeringUpdates(
+      handler: ExperimentalTriggeringUpdatesHandlerRemote):
+      Promise<{success: boolean}> {
+    const id = this.host.addExperimentalTriggeringUpdatesHandler(handler);
+    try {
+      const result = await this.sender.requestWithResponse(
+          'glicWebClientGetExperimentalTriggeringUpdates', {
+            observationId: id,
+          });
+      if (!result.success) {
+        this.host.deleteExperimentalTriggeringUpdatesHandler(id);
+      }
+      return {success: result.success};
+    } catch (e) {
+      this.host.deleteExperimentalTriggeringUpdatesHandler(id);
+      throw e;
+    }
   }
 
   async processNotifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):

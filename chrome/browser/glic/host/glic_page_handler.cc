@@ -2001,6 +2001,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->Invoke(std::move(options), std::move(callback));
   }
 
+  void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback) override {
+    web_client_->GetExperimentalTriggeringUpdates(
+        std::move(handler), std::move(success_status_callback));
+  }
+
   // SkillsService::Observer implementation.
   void OnSkillUpdated(std::string_view skill_id,
                       skills::SkillsService::UpdateSource update_source,

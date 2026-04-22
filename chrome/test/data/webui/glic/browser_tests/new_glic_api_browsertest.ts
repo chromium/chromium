@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientCapabilities, SkillSource} from '/glic/glic_api/glic_api.js';
-import type {GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import {ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource} from '/glic/glic_api/glic_api.js';
+import type {ExperimentalTriggeringUpdate, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -472,6 +474,62 @@ class InvokeTest extends ApiTests {
     assertEquals('notifyPanelWillOpen,invoke', client.calls.join(','));
   }
 }
+
+class TriggeringUpdatesClient extends WebClient {
+  triggeringUpdatesSubject = new Subject<ExperimentalTriggeringUpdate>();
+
+  async getExperimentalTriggeringUpdates():
+      Promise<Observable2<ExperimentalTriggeringUpdate>> {
+    return this.triggeringUpdatesSubject;
+  }
+}
+
+class TriggeringUpdatesTest extends ApiTests {
+  override createWebClient() {
+    return new TriggeringUpdatesClient();
+  }
+
+  async testGetExperimentalTriggeringUpdates() {
+    const client = this.client as TriggeringUpdatesClient;
+
+    // Step 1: Wait for C++ to trigger the request.
+    await this.advanceToNextStep();
+
+    // The host should have requested updates.
+    await runUntil(
+        () => client.triggeringUpdatesSubject.hasActiveSubscription());
+
+    // Push a terminal update to trigger cleanup.
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.TERMINAL_COMPLETION,
+      data: '',
+    });
+    client.triggeringUpdatesSubject.complete();
+
+    // Verify that the subscriber auto-unsubscribed on the client side.
+    await runUntil(
+        () => !client.triggeringUpdatesSubject.hasActiveSubscription());
+  }
+
+  async testGetExperimentalTriggeringUpdatesError() {
+    const client = this.client as TriggeringUpdatesClient;
+
+    // Step 1: Wait for C++ to trigger the request.
+    await this.advanceToNextStep();
+
+    // The host should have requested updates.
+    await runUntil(
+        () => client.triggeringUpdatesSubject.hasActiveSubscription());
+
+    // Trigger error.
+    client.triggeringUpdatesSubject.error(new Error('Error'));
+
+    // Verify that the subscriber auto-unsubscribed on the client side.
+    await runUntil(
+        () => !client.triggeringUpdatesSubject.hasActiveSubscription());
+  }
+}
+
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
     'navigateToSorryPageBeforeInitialize'|'navigateToSorryPageAfterInitialize';
 
@@ -649,7 +707,9 @@ const TEST_FIXTURES = [
   FaviconOmittedTest,
   InvokeTest,
   ApiTestFailsToInitialize,
+  TriggeringUpdatesTest,
 ];
+
 
 if (!navigator.userAgent.includes('Android')) {
   TEST_FIXTURES.push(SkillsApiTests);

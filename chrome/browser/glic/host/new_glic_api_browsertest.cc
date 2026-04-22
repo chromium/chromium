@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_logging_settings.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -82,6 +84,41 @@
 // rewritten to avoid RunTestSequence which is not supported on Android.
 
 namespace glic {
+
+class TestExperimentalTriggeringUpdatesHandler
+    : public mojom::ExperimentalTriggeringUpdatesHandler {
+ public:
+  TestExperimentalTriggeringUpdatesHandler(
+      mojo::PendingReceiver<mojom::ExperimentalTriggeringUpdatesHandler>
+          receiver,
+      base::RepeatingCallback<void(mojom::SubscriberObservationType)> callback)
+      : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
+
+  void OnUpdate(mojom::ExperimentalTriggeringUpdatePtr update,
+                mojom::SubscriberObservationType observation) override {
+    if (update) {
+      last_update_ = std::move(update);
+    }
+    last_observation_ = observation;
+    if (callback_) {
+      callback_.Run(observation);
+    }
+  }
+
+  mojom::ExperimentalTriggeringUpdatePtr GetUpdate() {
+    return last_update_.Clone();
+  }
+  mojom::SubscriberObservationType GetObservation() const {
+    return last_observation_;
+  }
+
+ private:
+  mojo::Receiver<mojom::ExperimentalTriggeringUpdatesHandler> receiver_;
+  base::RepeatingCallback<void(mojom::SubscriberObservationType)> callback_;
+  mojom::ExperimentalTriggeringUpdatePtr last_update_;
+  mojom::SubscriberObservationType last_observation_;
+};
+
 namespace {
 
 std::vector<std::string> GetTestSuiteNames() {
@@ -498,6 +535,75 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
   coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetExperimentalTriggeringUpdates) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+
+  mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> remote;
+  base::RunLoop run_loop;
+  TestExperimentalTriggeringUpdatesHandler handler(
+      remote.InitWithNewPipeAndPassReceiver(),
+      base::BindRepeating(
+          [](base::RepeatingClosure quit_closure,
+             mojom::SubscriberObservationType observation) {
+            if (observation == mojom::SubscriberObservationType::kComplete) {
+              quit_closure.Run();
+            }
+          },
+          run_loop.QuitClosure()));
+
+  ExecuteJsTest();
+  base::test::TestFuture<bool> future;
+  coordinator().GetExperimentalTriggeringUpdates(std::move(remote),
+                                                 future.GetCallback());
+  ContinueJsTest();
+
+  run_loop.Run();
+  EXPECT_TRUE(future.Get());
+
+  auto update = handler.GetUpdate();
+  ASSERT_TRUE(update);
+  EXPECT_EQ(update->type,
+            mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion);
+  EXPECT_EQ(update->data, "");
+  EXPECT_EQ(handler.GetObservation(),
+            mojom::SubscriberObservationType::kComplete);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetExperimentalTriggeringUpdatesError) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+
+  mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> remote;
+  base::RunLoop run_loop;
+  TestExperimentalTriggeringUpdatesHandler handler(
+      remote.InitWithNewPipeAndPassReceiver(),
+      base::BindRepeating(
+          [](base::RepeatingClosure quit_closure,
+             mojom::SubscriberObservationType observation) {
+            if (observation == mojom::SubscriberObservationType::kError) {
+              quit_closure.Run();
+            }
+          },
+          run_loop.QuitClosure()));
+
+  ExecuteJsTest();
+  base::test::TestFuture<bool> future;
+  coordinator().GetExperimentalTriggeringUpdates(std::move(remote),
+                                                 future.GetCallback());
+  ContinueJsTest();
+
+  run_loop.Run();
+  EXPECT_TRUE(future.Get());
+
+  EXPECT_EQ(handler.GetObservation(), mojom::SubscriberObservationType::kError);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest,

@@ -143,6 +143,17 @@ void Host::NotifyContextualSkillsChanged(
   }
 }
 
+void Host::getExperimentalTriggeringUpdates(
+    mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+    base::OnceCallback<void(bool)> success_status_callback) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->GetExperimentalTriggeringUpdates(
+        std::move(handler), std::move(success_status_callback));
+  } else {
+    std::move(success_status_callback).Run(false);
+  }
+}
+
 void Host::Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback) {
   CHECK(!options->auto_submit) << "Use InvokeWithAutoSubmit instead.";
   InvokeInternal(std::move(options), std::move(callback));
@@ -793,8 +804,6 @@ std::vector<Host*> HostManager::GetAllHosts() {
   return GetPrimaryHosts();
 }
 
-
-
 bool HostManager::IsGlicWebUi(content::WebContents* contents) {
   for (const Host* host : GetAllHosts()) {
     if (host->IsGlicWebUi(contents)) {
@@ -812,7 +821,6 @@ bool HostManager::IsGlicWebUiHost(content::RenderProcessHost* process_host) {
   }
   return false;
 }
-
 
 std::vector<Host*> HostManager::GetPrimaryHosts() {
   if (!window_controller_) {

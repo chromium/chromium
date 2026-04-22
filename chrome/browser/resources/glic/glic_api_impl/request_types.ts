@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, FormFillingRequest, FormFillingResponse, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, MicrophoneStatus, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, FormFillingRequest, FormFillingResponse, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, MicrophoneStatus, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -63,6 +64,16 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+
+  glicBrowserOnExperimentalTriggeringUpdate: {
+    request: {
+      observationId: number,
+      update?: ExperimentalTriggeringUpdate,
+            observation: SubscriberObservationType,
+    },
+    backgroundAllowed: true,
+  },
+
 
   // The messages that fulfil the GlicBrowserHost public API follow below.
 
@@ -908,6 +919,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientGetExperimentalTriggeringUpdates: {
+    request: {
+      observationId: number,
+    },
+    response: {
+      success: boolean,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -1017,6 +1037,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnActionSubmitted: 93,
         SubscribeToTabFavicon: 94,
         ShowBrowseSkillsUi: 95,
+        OnExperimentalTriggeringUpdate: 96,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();
@@ -1143,6 +1164,16 @@ export enum ImageAlphaType {
 export enum ImageColorType {
   BGRA = 0,
   RGBA = 1,
+}
+
+// Types of subscriber observations that may be observed.
+export enum SubscriberObservationType {
+  // An update was observed.
+  UPDATE = 0,
+  // Completed all observations.
+  COMPLETE = 1,
+  // An unexpected error was observed.
+  ERROR = 2,
 }
 
 // FocusedTabData data for postMessage transport.

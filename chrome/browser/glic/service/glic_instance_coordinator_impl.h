@@ -140,6 +140,10 @@ class GlicInstanceCoordinatorImpl
   void Invoke(GlicInvokeOptions options);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
                             GlicInvokeOptions options);
+  void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback);
+
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(

@@ -314,6 +314,17 @@ void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
   InvokeInternal(auto_submit_passkey, std::move(options));
 }
 
+void GlicInstanceCoordinatorImpl::GetExperimentalTriggeringUpdates(
+    mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+    base::OnceCallback<void(bool)> success_status_callback) {
+  if (active_instance_) {
+    active_instance_->host().getExperimentalTriggeringUpdates(
+        std::move(handler), std::move(success_status_callback));
+  } else {
+    std::move(success_status_callback).Run(false);
+  }
+}
+
 void GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options) {

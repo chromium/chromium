@@ -244,6 +244,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnClosedCaptionsShown"/>
     <variant name="OnContextUploadCompleted"/>
     <variant name="OnContextUploadStarted"/>
+    <variant name="OnExperimentalTriggeringUpdate"/>
     <variant name="OnMicrophoneStatusChange"/>
     <variant name="OnModeChange"/>
     <variant name="OnReaction"/>

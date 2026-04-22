@@ -115,6 +115,13 @@ export declare interface InvokeOptions {
   zssConfig?: ZssConfig;
 }
 
+/** An update sent from the web client to the host. */
+export declare interface ExperimentalTriggeringUpdate {
+  type: ExperimentalTriggeringUpdateType;
+  /** Content associated with an update, such as log data or response text. */
+  data: string;
+}
+
 /**
  * Implemented by the Glic web client, with its methods being called by the
  * browser. Most functions are optional.
@@ -204,6 +211,16 @@ export declare interface GlicWebClient {
    * and the result will be cached for the lifetime of the web client.
    */
   getClientCapabilities?(): Set<ClientCapabilities>;
+
+  /*
+   * Returns an observable that emits all the glic updates for this instance.
+   * A terminal `ExperimentalTriggeringUpdateType` in the
+   * `ExperimentalTriggeringUpdate` payload should be followed by the completion
+   * of the observable to ensure proper unsubscribing and cleanup operations
+   * take place.
+   */
+  getExperimentalTriggeringUpdates?
+      (): Observable2<ExperimentalTriggeringUpdate>;
 
   // !!! ATTENTION !!!
   // Avoid adding new methods to this interface! Instead, to push information to
@@ -2090,6 +2107,28 @@ export declare interface Observable<T> {
 }
 
 /**
+ * A generic interface for observing a stream of values.
+ *
+ * Unlike `Observable`, `subscribeObserver` is required and in the future the
+ * two related Observable interfaces will be merged into one.
+ *
+ * Subscriptions should be kept only while necessary, as they incur some cost.
+ * When not needed anymore, call Subscriber.unsubscribe() on the instance
+ * returned by subscribe.
+ */
+export declare interface Observable2<T> {
+  /** Receive updates for value changes. */
+  subscribe(change: (newValue: T) => void): Subscriber;
+
+  /**
+   * Subscribe with an Observer.
+   * This API was added in later, and is not supported by all versions of
+   * Chrome.
+   */
+  subscribeObserver(observer: Observer<T>): Subscriber;
+}
+
+/**
  * An observable value that may change over time. A subscriber is guaranteed to
  * be called once with the value, and again anytime the value changes. Note that
  * the subscriber may or may not be invoked immediately upon calling
@@ -2975,6 +3014,24 @@ export enum AdditionalContextSource {
   SHARE_CONTEXT_MENU = 0,
   REGION_SELECTION = 1,
   TEXT_SELECTION = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Types of updates that may be relayed back by the web client.
+export enum ExperimentalTriggeringUpdateType {
+  // An unknown, non-terminal update type.
+  UNKNOWN = 0,
+  // A log entry describing internal steps or "thought" process.
+  WORKLOG = 1,
+  // The interaction was paused.
+  PAUSED = 2,
+  // A final status update or metadata about the completed task.
+  TERMINAL_COMPLETION = 3,
+  // The interaction was stopped or cancelled.
+  TERMINAL_STOPPED = 4,
+  // The interaction failed.
+  TERMINAL_FAILED = 5,
 }
 
 ///////////////////////////////////////////////
