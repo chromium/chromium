@@ -240,11 +240,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   BOOL _mediatorSetUp;
   // Callback for the thumbnail image fetch.
   std::unique_ptr<base::CancelableOnceCallback<
-      void(const gfx::Image&, const image_fetcher::RequestMetadata&)>>
+      void(const std::string&, const image_fetcher::RequestMetadata&)>>
       _thumbnailCallback;
   // Callback for the high-resolution image fetch.
   std::unique_ptr<base::CancelableOnceCallback<
-      void(const gfx::Image&, const image_fetcher::RequestMetadata&)>>
+      void(const std::string&, const image_fetcher::RequestMetadata&)>>
       _imageCallback;
   // The URL of the background image currently being fetched.
   GURL _pendingBackgroundURL;
@@ -865,31 +865,30 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   image_fetcher::ImageFetcher* imageFetcher =
       _imageFetcherService->GetImageFetcher(
-          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+          image_fetcher::ImageFetcherConfig::kReducedMode);
 
   __weak __typeof(self) weakSelf = self;
 
   _thumbnailCallback = std::make_unique<base::CancelableOnceCallback<void(
-      const gfx::Image&, const image_fetcher::RequestMetadata&)>>(
-      base::BindOnce(^(const gfx::Image& image,
+      const std::string&, const image_fetcher::RequestMetadata&)>>(
+      base::BindOnce(^(const std::string& image_data,
                        const image_fetcher::RequestMetadata& metadata) {
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
+        if (!image_data.empty()) {
+          NSData* data = [NSData dataWithBytes:image_data.data()
+                                        length:image_data.length()];
+          UIImage* image = [UIImage imageWithData:data];
+          if (image) {
+            // Temporarily sets the thumbnail as the background until the
+            // high-resolution image is loaded.
+            [weakSelf setCustomBackground:background image:image cache:NO];
+          }
           return;
-        }
-
-        if (!image.IsEmpty()) {
-          // Temporarily sets the thumbnail as the background until the
-          // high-resolution image is loaded.
-          [strongSelf setCustomBackground:background
-                                    image:image.ToUIImage()
-                                    cache:NO];
         }
       }));
 
   _imageCallback = std::make_unique<base::CancelableOnceCallback<void(
-      const gfx::Image&, const image_fetcher::RequestMetadata&)>>(
-      base::BindOnce(^(const gfx::Image& image,
+      const std::string&, const image_fetcher::RequestMetadata&)>>(
+      base::BindOnce(^(const std::string& image_data,
                        const image_fetcher::RequestMetadata& metadata) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -908,10 +907,13 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           strongSelf->_thumbnailCallback.reset();
         }
 
-        if (!image.IsEmpty()) {
-          [strongSelf setCustomBackground:background
-                                    image:image.ToUIImage()
-                                    cache:YES];
+        if (!image_data.empty()) {
+          NSData* data = [NSData dataWithBytes:image_data.data()
+                                        length:image_data.length()];
+          UIImage* image = [UIImage imageWithData:data];
+          if (image) {
+            [strongSelf setCustomBackground:background image:image cache:YES];
+          }
         } else {
           base::UmaHistogramSparse(
               "IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode",
@@ -922,15 +924,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         strongSelf->_pendingBackgroundURL = GURL();
       }));
 
-  imageFetcher->FetchImage(imageURL, _imageCallback->callback(),
-                           image_fetcher::ImageFetcherParams(
-                               kTrafficAnnotation, kImageFetcherUmaClient));
-
   // Retrieving the thumbnail URL should hit the cache, so it returns almost
   // instantly.
-  imageFetcher->FetchImage(thumbnailURL, _thumbnailCallback->callback(),
-                           image_fetcher::ImageFetcherParams(
-                               kTrafficAnnotation, kImageFetcherUmaClient));
+  imageFetcher->FetchImageData(thumbnailURL, _thumbnailCallback->callback(),
+                               image_fetcher::ImageFetcherParams(
+                                   kTrafficAnnotation, kImageFetcherUmaClient));
+
+  imageFetcher->FetchImageData(imageURL, _imageCallback->callback(),
+                               image_fetcher::ImageFetcherParams(
+                                   kTrafficAnnotation, kImageFetcherUmaClient));
 }
 
 - (void)markSafariDataImportSetupListItemAsComplete {
