@@ -14,14 +14,18 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
@@ -134,8 +138,22 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
 #endif
     case InfoBarType::kDevTools: {
-      DevToolsInfoBarDelegate::Create(u"DevTools Infobar test",
-                                      base::DoNothing());
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+      DevToolsInfoBarDelegate::Create(
+          l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_INFOBAR_LABEL,
+                                     u"Infobar Internals"),
+          base::BindOnce(
+              [](content::WebContents* web_contents, bool accepted) {
+                if (accepted) {
+                  DevToolsWindow::OpenDevToolsWindow(
+                      web_contents, DevToolsOpenedByAction::kUnknown);
+                }
+              },
+              bwi->GetActiveTabInterface()->GetContents()));
       return true;
     }
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
