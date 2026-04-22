@@ -82,9 +82,6 @@ class FeedService : public KeyedService {
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
     // Returns the synthetic field experiments.
     virtual const Experiments& GetExperiments() const = 0;
-    // Registers a synthetic field trial "FollowingFeedFollowCount".
-    virtual void RegisterFollowingFeedFollowCountFieldTrial(
-        size_t follow_count) = 0;
     // Registers a synthetic field trial "FeedUserSettings".
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     // Returns the server-provided feed launch CUI metadata.

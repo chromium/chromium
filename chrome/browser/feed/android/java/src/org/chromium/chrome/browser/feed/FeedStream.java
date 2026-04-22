@@ -27,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
@@ -576,7 +575,6 @@ public class FeedStream implements Stream {
     private ShareHelperWrapper mShareHelper;
     private final SnackbarManager mSnackManager;
     private final WindowAndroid mWindowAndroid;
-    private @Nullable UnreadContentObserver mUnreadContentObserver;
     @Nullable FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
     private final Stream.StreamsMediator mStreamsMediator;
     InProgressWorkTracker mInProgressWorkTracker = new InProgressWorkTracker();
@@ -694,21 +692,10 @@ public class FeedStream implements Stream {
                     @Override
                     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
                 };
-
-        // Only watch for unread content on the web feed, not for-you feed.
-        // Sort options only available for web feed right now.
-        if (streamKind == StreamKind.FOLLOWING) {
-            mUnreadContentObserver = new UnreadContentObserver(/* isWebFeed= */ true);
-        }
     }
 
     @Override
     public void destroy() {
-        // Cleans up observers first.
-        if (mUnreadContentObserver != null) {
-            mUnreadContentObserver.destroy();
-            mUnreadContentObserver = null;
-        }
         mContentChangedListeners.clear();
 
         // Performs unbinding (UI cleanup).
@@ -932,13 +919,6 @@ public class FeedStream implements Stream {
         if (canTrigger) {
             mAccumulatedDySinceLastLoadMore = 0;
         }
-    }
-
-    @Override
-    public NonNullObservableSupplier<Boolean> hasUnreadContent() {
-        return mUnreadContentObserver != null
-                ? mUnreadContentObserver.mHasUnreadContent
-                : Stream.super.hasUnreadContent();
     }
 
     @Override
@@ -1295,10 +1275,6 @@ public class FeedStream implements Stream {
         return mMainScrollListener;
     }
 
-    @Nullable UnreadContentObserver getUnreadContentObserverForTest() {
-        return mUnreadContentObserver;
-    }
-
     InProgressWorkTracker getInProgressWorkTrackerForTesting() {
         return mInProgressWorkTracker;
     }
@@ -1402,8 +1378,8 @@ public class FeedStream implements Stream {
         SettableNonNullObservableSupplier<Boolean> mHasUnreadContent =
                 ObservableSuppliers.createNonNull(false);
 
-        UnreadContentObserver(boolean isWebFeed) {
-            super(isWebFeed);
+        UnreadContentObserver(@StreamKind int streamKind) {
+            super(streamKind);
         }
 
         @Override

@@ -1007,11 +1007,6 @@ AccountInfo FeedApiTest::GetAccountInfo() {
 bool FeedApiTest::IsSigninAllowed() {
   return is_signin_allowed_;
 }
-void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
-    size_t follow_count) {
-  register_following_feed_follow_count_field_trial_calls_.push_back(
-      follow_count);
-}
 void FeedApiTest::RegisterFeedUserSettingsFieldTrial(std::string_view group) {
   register_feed_user_settings_field_trial_calls_.push_back(
       static_cast<std::string>(group));

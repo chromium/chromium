@@ -534,7 +534,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool IsSigninAllowed() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
-  void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override;
   std::string GetCountry() override;
   void SetFeedLaunchCuiMetadata(const std::string& metadata) override;
@@ -598,7 +597,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
-  std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
   std::string country_ = "US";
   std::string feed_launch_cui_metadata_;

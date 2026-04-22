@@ -15,10 +15,6 @@ if (is_android) {
       "android/refresh_task_scheduler_impl.h",
       "feed_service_factory.h",
       "rss_links_fetcher.h",
-      "web_feed_page_information_fetcher.h",
-      "web_feed_tab_helper.h",
-      "web_feed_ui_util.h",
-      "web_feed_util.h",
     ]
 
     public_deps = [
@@ -49,10 +45,6 @@ if (is_android) {
       "android/refresh_task_scheduler_impl.cc",
       "feed_service_factory.cc",
       "rss_links_fetcher.cc",
-      "web_feed_page_information_fetcher.cc",
-      "web_feed_tab_helper.cc",
-      "web_feed_ui_util.cc",
-      "web_feed_util.cc",
     ]
 
     public_deps = [

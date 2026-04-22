@@ -29,8 +29,6 @@ BASE_FEATURE(kFeedLoadingPlaceholder, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedAwareness, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebFeedOnboarding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedSort, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -55,8 +53,6 @@ BASE_FEATURE(kSyntheticCapabilities,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedSignedOutViewDemotion, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedFollowUiUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRefreshFeedOnRestart, base::FEATURE_DISABLED_BY_DEFAULT);
 

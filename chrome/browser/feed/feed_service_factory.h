@@ -15,10 +15,6 @@ class BrowserContext;
 }
 
 namespace feed {
-namespace internal {
-const std::string_view GetFollowingFeedFollowCountGroupName(
-    size_t follow_count);
-}
 
 class FeedService;
 

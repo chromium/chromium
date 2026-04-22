@@ -88,7 +88,6 @@ class FieldTrialRegisterImpl;
 
 namespace feed {
 class FeedServiceDelegateImpl;
-class WebFeedSubscriptionCoordinator;
 }  // namespace feed
 
 namespace browser_sync {
@@ -182,7 +181,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::FeedServiceDelegateImpl;
   friend class FirstRunService;
   friend class browser_sync::DeviceInfoSyncClientImpl;
-  friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
   friend class DataSharingUI;

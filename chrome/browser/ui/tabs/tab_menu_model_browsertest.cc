@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"

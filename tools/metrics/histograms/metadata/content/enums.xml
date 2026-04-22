@@ -569,18 +569,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="WebFeedPageInformationRequestReason">
-  <int value="0" label="User Requested Follow">
-    The user requested to Follow the current web page.
-  </int>
-  <int value="1" label="Follow Recommendation">
-    A Follow recommendation is being considered the current web page.
-  </int>
-  <int value="2" label="Menu Item Presentation">
-    The Follow menu item state needs to reflect the current web page.
-  </int>
-</enum>
-
 <enum name="WebFeedQueryRequestStatus">
   <int value="0" label="Unknown status"/>
   <int value="1" label="Success. The query succeeded."/>

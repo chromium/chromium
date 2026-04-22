@@ -176,7 +176,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       ::prefs::kSigninAllowed, profile_prefs,
       base::BindRepeating(&FeedStream::ClearAll, GetWeakPtr()));
   web_feed_subscription_coordinator_ =
-      std::make_unique<WebFeedSubscriptionCoordinator>(delegate, this);
+      std::make_unique<WebFeedSubscriptionCoordinator>(this);
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.

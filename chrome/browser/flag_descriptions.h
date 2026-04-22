@@ -5687,11 +5687,6 @@ inline constexpr char kFeedDiscoFeedEndpointName[] =
 inline constexpr char kFeedDiscoFeedEndpointDescription[] =
     "Uses the DiscoFeed endpoint for serving the feed instead of GWS.";
 
-inline constexpr char kFeedFollowUiUpdateName[] =
-    "UI Update for the Following Feed";
-inline constexpr char kFeedFollowUiUpdateDescription[] =
-    "Enables showing the updated UI for the following feed.";
-
 inline constexpr char kFeedLoadingPlaceholderName[] =
     "Feed loading placeholder";
 inline constexpr char kFeedLoadingPlaceholderDescription[] =
@@ -6110,10 +6105,6 @@ inline constexpr char kUseAngleDescriptionAndroid[] =
 
 inline constexpr char kUseAngleGLES[] = "OpenGL ES";
 inline constexpr char kUseAngleVulkan[] = "Vulkan";
-
-inline constexpr char kWebFeedAwarenessName[] = "Web Feed Awareness";
-inline constexpr char kWebFeedAwarenessDescription[] =
-    "Helps the user discover the web feed.";
 
 inline constexpr char kWebFeedDeprecationName[] = "Web feed deprecation";
 inline constexpr char kWebFeedDeprecationDescription[] =

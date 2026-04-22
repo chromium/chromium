@@ -47,8 +47,6 @@ const char kWebFeedContentOrder[] = "webfeed.content_order";
 const char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
-const char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
-const char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
 const char kExperimentsV3[] = "feedv2.experiments_v3";
 const char kInfoCardTrackingStateDict[] = "info-card-tracking-state-dict";
 
@@ -93,9 +91,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(feed::prefs::kFeedOnDeviceUserActionsCollector,
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(feed::prefs::kInfoCardStates, 0);
-  registry->RegisterBooleanPref(feed::prefs::kHasSeenWebFeed, false);
-  registry->RegisterTimePref(feed::prefs::kLastBadgeAnimationTime,
-                             base::Time());
   registry->RegisterDictionaryPref(feed::prefs::kExperimentsV3);
   registry->RegisterDictionaryPref(feed::prefs::kInfoCardTrackingStateDict);
 

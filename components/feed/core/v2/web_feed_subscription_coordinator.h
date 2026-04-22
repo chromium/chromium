@@ -31,14 +31,7 @@ class WebFeedMetadataModel;
 // Coordinates the state of subscription to web feeds.
 class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
  public:
-  class Delegate {
-   public:
-    virtual void RegisterFollowingFeedFollowCountFieldTrial(
-        size_t follow_count) = 0;
-  };
-
-  explicit WebFeedSubscriptionCoordinator(Delegate* delegate,
-                                          FeedStream* feed_stream);
+  explicit WebFeedSubscriptionCoordinator(FeedStream* feed_stream);
   virtual ~WebFeedSubscriptionCoordinator();
   WebFeedSubscriptionCoordinator(const WebFeedSubscriptionCoordinator&) =
       delete;
@@ -230,7 +223,6 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   void ReadWebFeedStartupDataTask();
 
-  raw_ptr<Delegate> delegate_;       // Always non-null.
   raw_ptr<FeedStream> feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   SubscriptionDatastoreProvider datastore_provider_;

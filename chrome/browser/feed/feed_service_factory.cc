@@ -47,20 +47,6 @@ namespace feed {
 const base::FilePath::CharType kFeedv2Folder[] = FILE_PATH_LITERAL("feedv2");
 
 namespace internal {
-const std::string_view GetFollowingFeedFollowCountGroupName(
-    size_t follow_count) {
-  if (follow_count == 0)
-    return "None";
-  if (follow_count <= 4)
-    return "1-4";
-  if (follow_count <= 8)
-    return "5-8";
-  if (follow_count <= 12)
-    return "9-12";
-  if (follow_count <= 20)
-    return "13-20";
-  return "21+";
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(jianli): Need to figure out what to do for desktop version.
@@ -133,12 +119,7 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
       }
     }
   }
-  void RegisterFollowingFeedFollowCountFieldTrial(
-      size_t follow_count) override {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "FollowingFeedFollowCount",
-        internal::GetFollowingFeedFollowCountGroupName(follow_count));
-  }
+
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "FeedUserSettings", group);

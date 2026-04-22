@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -907,25 +906,6 @@ public class FeedStreamTest {
         assertThat(
                 nativeViewContent.getNativeView(layout),
                 not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
-    }
-
-    @Test
-    @SmallTest
-    public void testUnreadContentObserver_nullInterestFeed() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        /* streamKind= */ StreamKind.FOR_YOU,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertNull(stream.getUnreadContentObserverForTest());
     }
 
     @Test

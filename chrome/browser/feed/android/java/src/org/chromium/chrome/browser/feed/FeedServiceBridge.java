@@ -16,7 +16,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -90,14 +89,6 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
     }
 
-    public static @ContentOrder int getContentOrderForWebFeed() {
-        return FeedServiceBridgeJni.get().getContentOrderForWebFeed();
-    }
-
-    public static void setContentOrderForWebFeed(@ContentOrder int contentOrder) {
-        FeedServiceBridgeJni.get().setContentOrderForWebFeed(contentOrder);
-    }
-
     /** Reports that a user action occurred which is associated with a feed stream. */
     public static void reportOtherUserAction(
             @StreamKind int streamKind, @FeedUserActionType int userAction) {
@@ -117,17 +108,14 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().isSignedIn();
     }
 
+    // TODO(crbug.com/407797637) Remove UnreadContentObserver entirely.
     /** Observes whether or not the Feed stream contains unread content */
     public static class UnreadContentObserver {
         private long mNativePtr;
 
-        /**
-         * Begins observing.
-         *
-         * @param isWebFeed  Whether to observe the Web Feed, or the For-you Feed.
-         */
-        public UnreadContentObserver(boolean isWebFeed) {
-            mNativePtr = FeedServiceBridgeJni.get().addUnreadContentObserver(this, isWebFeed);
+        /** Begins observing. */
+        public UnreadContentObserver(@StreamKind int streamKind) {
+            mNativePtr = FeedServiceBridgeJni.get().addUnreadContentObserver(this, streamKind);
         }
 
         /** Stops observing. Must be called when this observer is no longer needed */
@@ -161,12 +149,7 @@ public final class FeedServiceBridge {
 
         void reportOtherUserAction(@FeedUserActionType int userAction);
 
-        @ContentOrder
-        int getContentOrderForWebFeed();
-
-        void setContentOrderForWebFeed(@ContentOrder int contentOrder);
-
-        long addUnreadContentObserver(Object object, boolean isWebFeed);
+        long addUnreadContentObserver(UnreadContentObserver observer, int streamKind);
 
         boolean isSignedIn();
 

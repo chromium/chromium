@@ -982,6 +982,12 @@ constexpr char kSafeBrowsingModuleOpened[] =
 // Deprecated 04/2026.
 constexpr char kTpcdMetadataCohorts[] = "tpcd.metadata.cohorts";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 04/2026.
+constexpr char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
+constexpr char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1092,6 +1098,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 04/2026.
   registry->RegisterDictionaryPref(kTpcdMetadataCohorts);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 04/2026.
+  registry->RegisterBooleanPref(kHasSeenWebFeed, false);
+  registry->RegisterTimePref(kLastBadgeAnimationTime, base::Time());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2364,6 +2376,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   // Added 04/2026.
   tabs::MigrateHoverCardMemoryPref(local_state);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 04/2026.
+  local_state->ClearPref(kHasSeenWebFeed);
+  local_state->ClearPref(kLastBadgeAnimationTime);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

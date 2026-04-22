@@ -4650,11 +4650,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "feed-follow-ui-update",
-    "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "feed-loading-placeholder",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
     "expiry_milestone": 140
@@ -9682,11 +9677,6 @@
     // requires individual attestation on a device that is not enterprised
     // managed (e.g. during onboarding).
     "expiry_milestone": -1
-  },
-  {
-    "name": "web-feed-awareness",
-    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 140
   },
   {
     "name": "web-feed-deprecation",

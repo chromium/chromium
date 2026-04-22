@@ -87,10 +87,8 @@ WebFeedSubscriptionCoordinator::HooksForTesting::HooksForTesting() = default;
 WebFeedSubscriptionCoordinator::HooksForTesting::~HooksForTesting() = default;
 
 WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
-    Delegate* delegate,
     FeedStream* feed_stream)
-    : delegate_(delegate),
-      feed_stream_(feed_stream),
+    : feed_stream_(feed_stream),
       datastore_provider_(&feed_stream->GetGlobalXsurfaceDatastore()) {
   base::TimeDelta delay = GetFeedConfig().fetch_web_feed_info_delay;
   if (IsSignedInAndWebFeedsEnabled() && !delay.is_zero()) {
@@ -129,11 +127,6 @@ void WebFeedSubscriptionCoordinator::Populate(
   metadata_model_ = std::make_unique<WebFeedMetadataModel>(
       &feed_stream_->GetStore(), std::move(startup_data.pending_operations));
   populated_ = true;
-
-  if (IsSignedInAndWebFeedsEnabled()) {
-    delegate_->RegisterFollowingFeedFollowCountFieldTrial(
-        startup_data.subscribed_web_feeds.feeds_size());
-  }
 
   SubscriptionsChanged();
 

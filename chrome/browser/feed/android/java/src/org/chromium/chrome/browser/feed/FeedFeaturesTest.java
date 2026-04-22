@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -22,16 +20,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
-
-import java.time.Duration;
 
 /** Unit tests for {@link FeedFeatures}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,65 +62,5 @@ public class FeedFeaturesTest {
         FeedFeatures.setLastSeenFeedTabId(mProfile, StreamTabId.FOLLOWING);
         assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore(mProfile));
         assertEquals(StreamTabId.FOR_YOU, mPrefStoredTab);
-    }
-
-    @Test
-    public void testShouldUseNewIndicator_noLimit() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation_no_limit");
-
-        when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(true);
-        when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
-                .thenReturn("" + System.currentTimeMillis());
-
-        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
-    }
-
-    @Test
-    public void testShouldUseNewIndicator_seenFeed() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-
-        when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(true);
-        when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME)).thenReturn("0");
-
-        assertFalse(FeedFeatures.shouldUseNewIndicator(mProfile));
-    }
-
-    @Test
-    public void testShouldUseNewIndicator_seenAnimation() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-
-        when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
-        when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
-                .thenReturn("" + System.currentTimeMillis());
-
-        assertFalse(FeedFeatures.shouldUseNewIndicator(mProfile));
-    }
-
-    @Test
-    @DisabledTest(message = "https://crbug.com/1445267")
-    public void testShouldUseNewIndicator_notSeenFeedAndAnimation() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-
-        when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
-        when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
-                .thenReturn("" + (System.currentTimeMillis() - Duration.ofDays(1).toMillis()));
-
-        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
-    }
-
-    @Test
-    public void testShouldUseNewIndicator_notSeenAnimationInFuture() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");
-
-        when(mPrefService.getBoolean(Pref.HAS_SEEN_WEB_FEED)).thenReturn(false);
-        when(mPrefService.getString(Pref.LAST_BADGE_ANIMATION_TIME))
-                .thenReturn("" + (System.currentTimeMillis() + Duration.ofDays(1).toMillis()));
-
-        assertTrue(FeedFeatures.shouldUseNewIndicator(mProfile));
     }
 }

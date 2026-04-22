@@ -2610,21 +2610,6 @@ const FeatureEntry::FeatureVariation
          kNotificationPermissionRationale_show_dialog_next_start, nullptr},
 };
 
-const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation[] = {
-    {"awareness_style", "new_animation"}};
-const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation_no_limit[] = {
-    {"awareness_style", "new_animation_no_limit"}};
-
-const FeatureEntry::FeatureParam kWebFeedAwareness_IPH[] = {
-    {"awareness_style", "IPH"}};
-
-const FeatureEntry::FeatureVariation kWebFeedAwarenessVariations[] = {
-    {"new animation", kWebFeedAwareness_new_animation, nullptr},
-    {"new animation rate limit off", kWebFeedAwareness_new_animation_no_limit,
-     nullptr},
-    {"IPH and dot", kWebFeedAwareness_IPH, nullptr},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
@@ -5807,11 +5792,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeedSignedOutViewDemotionName,
      flag_descriptions::kFeedSignedOutViewDemotionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedSignedOutViewDemotion)},
-    {"web-feed-awareness", flag_descriptions::kWebFeedAwarenessName,
-     flag_descriptions::kWebFeedAwarenessDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeedAwareness,
-                                    kWebFeedAwarenessVariations,
-                                    "WebFeedAwareness")},
     {"web-feed-onboarding", flag_descriptions::kWebFeedOnboardingName,
      flag_descriptions::kWebFeedOnboardingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kWebFeedOnboarding)},
@@ -5828,9 +5808,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"feed-discofeed-endpoint", flag_descriptions::kFeedDiscoFeedEndpointName,
      flag_descriptions::kFeedDiscoFeedEndpointDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kDiscoFeedEndpoint)},
-    {"feed-follow-ui-update", flag_descriptions::kFeedFollowUiUpdateName,
-     flag_descriptions::kFeedFollowUiUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kFeedFollowUiUpdate)},
     {"refresh-feed-on-start", flag_descriptions::kRefreshFeedOnRestartName,
      flag_descriptions::kRefreshFeedOnRestartDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kRefreshFeedOnRestart)},

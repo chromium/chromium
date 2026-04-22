@@ -42,10 +42,6 @@ BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-// Feature that provides the user assistance in discovering the web feed.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kWebFeedAwareness);
-
 // Feature that provides the user assistance in using the web feed.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedOnboarding);
@@ -82,10 +78,6 @@ BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 // Feature that enables signed-out view demotion.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
-
-// Feature that enables UI update for Follow.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
 
 // Feature that enables refreshing feed when Chrome restarts.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
