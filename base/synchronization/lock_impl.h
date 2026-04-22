@@ -45,6 +45,11 @@ class BASE_EXPORT LockImpl {
   LockImpl(const LockImpl&) = delete;
   LockImpl& operator=(const LockImpl&) = delete;
 
+#if BUILDFLAG(IS_POSIX)
+  // Sets the maximum number of yields before blocking in the kernel.
+  static void SetTrySpinCount(int spin_count);
+#endif
+
  private:
   friend class base::Lock;
   friend class base::ConditionVariable;
@@ -79,6 +84,13 @@ class BASE_EXPORT LockImpl {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Whether this lock will attempt to use priority inheritance.
   static bool PriorityInheritanceAvailable();
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+  // Repeatedly attempts to acquire the lock, yielding the processor between
+  // attempts. Returns true if the lock was acquired, false if the maximum
+  // number of yields was reached.
+  bool TrySpin();
 #endif
 
   void LockInternal();

@@ -200,6 +200,19 @@ BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPumpPeekMessageWithObserver, FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_POSIX)
+// If enabled, threads acquiring a base::Lock will try to acquire it in user
+// space. The `kSpinCount` parameter represents the maximum number of pause
+// instructions (yields) that will be executed with an exponential backoff
+// before blocking in the kernel.
+BASE_FEATURE(kBaseLockTrySpin, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kSpinCount,
+                   &kBaseLockTrySpin,
+                   "Spin count for base::Lock",
+                   0);
+#endif  // BUILDFLAG(IS_POSIX)
+
 bool IsReducePPMsEnabled() {
   return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
 }
@@ -207,6 +220,11 @@ bool IsReducePPMsEnabled() {
 void Init() {
   g_is_reduce_ppms_enabled.store(FeatureList::IsEnabled(kReducePPMs),
                                  std::memory_order_relaxed);
+#if BUILDFLAG(IS_POSIX)
+  if (FeatureList::IsEnabled(kBaseLockTrySpin)) {
+    base::internal::LockImpl::SetTrySpinCount(kSpinCount.Get());
+  }
+#endif  // BUILDFLAG(IS_POSIX)
 
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures();

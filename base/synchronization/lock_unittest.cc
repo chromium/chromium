@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -26,7 +27,9 @@
 #include "base/profiler/thread_delegate.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock_impl.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/lock_subtle.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -589,5 +592,81 @@ TEST(LockTest, PriorityIsInherited) {
 #endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 
 #endif  // DCHECK_IS_ON()
+
+#if BUILDFLAG(IS_POSIX)
+class LockTrySpinTest : public testing::Test {
+ public:
+  void SetUp() override {
+    LockMetricsRecorder::Get()->SetTargetCurrentThread();
+  }
+
+ protected:
+  class TestThread : public PlatformThread::Delegate {
+   public:
+    TestThread() { EXPECT_TRUE(PlatformThread::Create(0, this, &handle_)); }
+
+    ~TestThread() override { PlatformThread::Join(handle_); }
+
+    void ThreadMain() override {
+      AutoLock auto_lock(lock_);
+      event_.Signal();
+      PlatformThread::Sleep(Seconds(1));
+    }
+
+    // Wait for the thread to signal that it has acquired the lock and then
+    // acquire the lock on the main thread to create contention.
+    void CreateLockContention() {
+      event_.Wait();
+      {
+        AutoLock auto_lock(lock_);
+      }
+    }
+
+   private:
+    Lock lock_;
+    base::WaitableEvent event_;
+    PlatformThreadHandle handle_;
+  };
+
+  bool DidRecordLockMetricsSample() {
+    bool sample_recorded = false;
+    LockMetricsRecorder::Get()->ForEachSample(
+        LockMetricsRecorder::LockType::kBaseLock,
+        [&sample_recorded](const TimeDelta&) { sample_recorded = true; });
+    return sample_recorded;
+  }
+
+  void ClearLockMetricsSamples() {
+    // Clear any samples that may have been recorded.
+    LockMetricsRecorder::Get()->ForEachSample(
+        LockMetricsRecorder::LockType::kBaseLock, [](const TimeDelta&) {});
+  }
+
+ private:
+  MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
+};
+
+TEST_F(LockTrySpinTest, TrySpinAvoidsSyscall) {
+  // Set the try-spin count to an absurdly large value to ensure that the
+  // thread never waits for the lock in the kernel.
+  internal::LockImpl::SetTrySpinCount(std::numeric_limits<int>::max());
+  ClearLockMetricsSamples();
+  {
+    TestThread thread;
+    thread.CreateLockContention();
+  }
+  EXPECT_FALSE(DidRecordLockMetricsSample());
+
+  // Set the try-spin count to zero to ensure that the thread always waits for
+  // the lock in the kernel.
+  internal::LockImpl::SetTrySpinCount(0);
+  ClearLockMetricsSamples();
+  {
+    TestThread thread;
+    thread.CreateLockContention();
+  }
+  EXPECT_TRUE(DidRecordLockMetricsSample());
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace base

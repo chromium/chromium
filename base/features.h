@@ -75,6 +75,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kRetryCreateFileMappingOnCommitLimit);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPumpPeekMessageWithObserver);
 #endif
 
+#if BUILDFLAG(IS_POSIX)
+BASE_EXPORT BASE_DECLARE_FEATURE(kBaseLockTrySpin);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSpinCount);
+#endif  // BUILDFLAG(IS_POSIX)
+
 // Whether the ReducePPMs feature is enabled. Unlike
 // `FeatureList::IsEnabled(base::features::kReducePPMs)`, this can be called
 // racily with initializing the FeatureList (although the return value might not
