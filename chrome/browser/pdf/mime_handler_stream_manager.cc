@@ -17,7 +17,6 @@
 #include "base/supports_user_data.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/pdf/browser/pdf_frame_util.h"
-#include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -54,11 +53,19 @@ MimeHandlerStreamManager::EmbedderHostInfo GetUnclaimedEmbedderHostInfo(
   return {frame_tree_node_id, content::GlobalRenderFrameHostId()};
 }
 
-// Gets the embedder host from the PDF content host's navigation handle.
-content::RenderFrameHost* GetEmbedderHostFromPdfContentNavigation(
+// Some clients of this class require knowing whether a navigation targets a
+// content frame served by a MIME handler. Today PDF is the only such client,
+// so the predicate reduces to `IsPdf()`.
+// TODO(crbug.com/495538206): find a better way to do that.
+bool IsContentFrameNavigation(content::NavigationHandle* navigation) {
+  return navigation->IsPdf();
+}
+
+// Gets the embedder host from the content host's navigation handle.
+content::RenderFrameHost* GetEmbedderHostFromContentNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Since `navigation_handle` is for a PDF content frame, the parent frame is
-  // the PDF extension frame, and the grandparent frame is the embedder frame.
+  // Since `navigation_handle` is for a content frame, the parent frame is
+  // the extension frame, and the grandparent frame is the embedder frame.
   content::RenderFrameHost* extension_host =
       navigation_handle->GetParentFrame();
   CHECK(extension_host);
@@ -419,11 +426,11 @@ void MimeHandlerStreamManager::FrameDeleted(
 void MimeHandlerStreamManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Set the content host frame tree node ID if the navigation is for a content
-  // host. This needs to occur before the network request for the PDF content
-  // navigation so that
-  // `ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation()` can properly
-  // check that the navigation is allowed.
-  if (navigation_handle->IsPdf()) {
+  // host. This needs to occur before the network request for the content
+  // navigation so that delegates that consult content-host state during
+  // navigation throttling (e.g.
+  // `ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation`) see it set.
+  if (IsContentFrameNavigation(navigation_handle)) {
     ++g_debug_ongoing_content_navigations;
     auto debug_data = std::make_unique<PdfNavigationDebugData>();
     debug_data->did_start_navigation = true;
@@ -439,7 +446,7 @@ void MimeHandlerStreamManager::DidStartNavigation(
 
 void MimeHandlerStreamManager::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsPdf()) {
+  if (IsContentFrameNavigation(navigation_handle)) {
     SetManagerCrashKeys(stream_infos_.size());
     SetContentNavigationCrashKeys(navigation_handle, UserDataKey());
   }
@@ -468,7 +475,7 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
 
 void MimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsPdf()) {
+  if (IsContentFrameNavigation(navigation_handle)) {
     --g_debug_ongoing_content_navigations;
     SetManagerCrashKeys(stream_infos_.size());
     ClearContentNavigationCrashKeys();
@@ -600,16 +607,14 @@ const extensions::StreamInfo* MimeHandlerStreamManager::GetClaimedStreamInfo(
 }
 
 extensions::StreamInfo*
-MimeHandlerStreamManager::GetClaimedStreamInfoFromPdfContentNavigation(
+MimeHandlerStreamManager::GetClaimedStreamInfoFromContentNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsPdf()) {
+  if (!IsContentFrameNavigation(navigation_handle)) {
     return nullptr;
   }
 
-  // `navigation_handle` is for a PDF content frame, as checked by
-  // `NavigationHandle::IsPdf()`.
   content::RenderFrameHost* embedder_host =
-      GetEmbedderHostFromPdfContentNavigation(navigation_handle);
+      GetEmbedderHostFromContentNavigation(navigation_handle);
   CHECK(embedder_host);
 
   return GetClaimedStreamInfo(embedder_host);
@@ -708,7 +713,7 @@ bool MimeHandlerStreamManager::MaybeRegisterPdfSubresourceOverride(
   // PDF content frame. Ignore all other navigations in different frames, such
   // as navigations in the embedder frame or PDF extension frame.
   auto* claimed_stream_info =
-      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
+      GetClaimedStreamInfoFromContentNavigation(navigation_handle);
   if (!claimed_stream_info) {
     return false;
   }
@@ -721,9 +726,9 @@ bool MimeHandlerStreamManager::MaybeRegisterPdfSubresourceOverride(
 
 bool MimeHandlerStreamManager::MaybeSetUpPostMessage(
     content::NavigationHandle* navigation_handle) {
-  // Only set up postMessage if `navigation_handle` is for a PDF content frame.
+  // Only set up postMessage if `navigation_handle` is for a content frame.
   auto* claimed_stream_info =
-      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
+      GetClaimedStreamInfoFromContentNavigation(navigation_handle);
   if (!claimed_stream_info) {
     return false;
   }
@@ -738,10 +743,14 @@ bool MimeHandlerStreamManager::MaybeSetUpPostMessage(
     return false;
   }
 
-  // `navigation_handle` is for a PDF content frame, as checked by
-  // `NavigationHandle::IsPdf()`.
+  // Depending on the delegate implementation, the delegate may decide not to
+  // opt in to postMessage setup.
+  if (!claimed_stream_info->delegate()->ShouldSetUpPostMessage()) {
+    return false;
+  }
+
   content::RenderFrameHost* embedder_host =
-      GetEmbedderHostFromPdfContentNavigation(navigation_handle);
+      GetEmbedderHostFromContentNavigation(navigation_handle);
   CHECK(embedder_host);
 
   // If `owner_type` is kEmbed or kObject, then the PDF is embedded onto another
@@ -768,13 +777,8 @@ bool MimeHandlerStreamManager::MaybeSetUpPostMessage(
   claimed_stream_info->set_mime_handler_view_container_manager(
       std::move(container_manager));
 
-  // Now that postMessage is set up, the PDF viewer has finished loading, so
-  // update metrics.
-  ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
-                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
-                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
-  // TODO(b:289010799): Call `RecordPDFOpenedWithA11yFeatureWithPdfOcr`in
-  // pdf_ocr_util.cc after figuring out how to fix the build dependency issue.
+  // Hand off to the delegate for any post-setup work.
+  claimed_stream_info->delegate()->OnPostMessageSetUp(embedder_host);
 
   return true;
 }
@@ -782,7 +786,7 @@ bool MimeHandlerStreamManager::MaybeSetUpPostMessage(
 void MimeHandlerStreamManager::SetStreamContentHostFrameTreeNodeId(
     content::NavigationHandle* navigation_handle) {
   auto* claimed_stream_info =
-      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
+      GetClaimedStreamInfoFromContentNavigation(navigation_handle);
   CHECK(claimed_stream_info);
   claimed_stream_info->set_content_host_frame_tree_node_id(
       navigation_handle->GetFrameTreeNodeId());

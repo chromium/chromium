@@ -49,7 +49,7 @@ void TestMimeHandlerStreamManager::DidFinishNavigation(
   // Check if the PDF has finished loading after the final PDF navigation. A
   // complete PDF navigation should have a claimed `StreamInfo`.
   auto* claimed_stream_info =
-      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
+      GetClaimedStreamInfoFromContentNavigation(navigation_handle);
   if (!claimed_stream_info || !claimed_stream_info->DidPdfContentNavigate()) {
     return;
   }

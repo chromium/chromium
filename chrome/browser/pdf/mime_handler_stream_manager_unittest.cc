@@ -44,6 +44,11 @@ class MockMimeHandlerStreamDelegate
   MockMimeHandlerStreamDelegate() = default;
   ~MockMimeHandlerStreamDelegate() override = default;
 
+  MOCK_METHOD(bool, ShouldSetUpPostMessage, (), (const, override));
+  MOCK_METHOD(void,
+              OnPostMessageSetUp,
+              (content::RenderFrameHost*),
+              (override));
   MOCK_METHOD(void,
               OnExtensionFrameFinished,
               (content::NavigationHandle*, extensions::StreamInfo*),
@@ -930,6 +935,49 @@ TEST_F(MimeHandlerStreamManagerTest,
               OnExtensionFrameFinished(&navigation_handle, stream_info));
   manager->DidFinishNavigation(&navigation_handle);
 }
+
+class MimeHandlerStreamManagerPostMessageTest
+    : public MimeHandlerStreamManagerTest,
+      public ::testing::WithParamInterface<bool> {};
+
+TEST_P(MimeHandlerStreamManagerPostMessageTest,
+       OnPostMessageSetUpFiresWhenDelegateOptsIn) {
+  const bool should_set_up_post_message = GetParam();
+
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      stream_info->stream()->original_url(), content_host);
+
+  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
+  ON_CALL(*delegate_ptr, ShouldSetUpPostMessage())
+      .WillByDefault(Return(should_set_up_post_message));
+  EXPECT_CALL(*delegate_ptr, OnPostMessageSetUp(_))
+      .Times(should_set_up_post_message ? 1 : 0);
+
+  manager->DidFinishNavigation(&navigation_handle);
+}
+
+INSTANTIATE_TEST_SUITE_P(ShouldSetUpPostMessage,
+                         MimeHandlerStreamManagerPostMessageTest,
+                         ::testing::Bool());
 
 TEST_F(MimeHandlerStreamManagerTest,
        DidFinishNavigationDelegateExtensionFinishedIgnoresNonMatchingUrl) {

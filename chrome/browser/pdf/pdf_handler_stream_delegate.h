@@ -17,10 +17,12 @@ class PdfHandlerStreamDelegate : public extensions::MimeHandlerStreamDelegate {
   ~PdfHandlerStreamDelegate() override;
 
   // extensions::MimeHandlerStreamDelegate:
-  void OnExtensionFrameFinished(content::NavigationHandle* navigation_handle,
-                                extensions::StreamInfo* stream_info) override;
   void OnStreamClaimed(content::RenderFrameHost* embedder_host,
                        extensions::StreamInfo* stream_info) override;
+  void OnExtensionFrameFinished(content::NavigationHandle* navigation_handle,
+                                extensions::StreamInfo* stream_info) override;
+  bool ShouldSetUpPostMessage() const override;
+  void OnPostMessageSetUp(content::RenderFrameHost* embedder_host) override;
   bool PluginCanSave() const override;
   void SetPluginCanSave(bool plugin_can_save) override;
 

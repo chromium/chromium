@@ -5,6 +5,7 @@
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 
 #include "base/check.h"
+#include "components/pdf/common/pdf_util.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,6 +21,25 @@ namespace pdf {
 
 PdfHandlerStreamDelegate::PdfHandlerStreamDelegate() = default;
 PdfHandlerStreamDelegate::~PdfHandlerStreamDelegate() = default;
+
+bool PdfHandlerStreamDelegate::ShouldSetUpPostMessage() const {
+  // PDF viewer always relies on MimeHandlerViewContainerManager postMessage
+  // support for the embedder<->extension communication.
+  return true;
+}
+
+void PdfHandlerStreamDelegate::OnPostMessageSetUp(
+    content::RenderFrameHost* embedder_host) {
+  CHECK(embedder_host);
+
+  // Now that postMessage is set up, the PDF viewer has finished loading, so
+  // update metrics.
+  // TODO(b:289010799): Call RecordPDFOpenedWithA11yFeatureWithPdfOcr in
+  // pdf_ocr_util.cc after figuring out how to fix the build dependency issue.
+  ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
+                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
+                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
+}
 
 void PdfHandlerStreamDelegate::OnExtensionFrameFinished(
     content::NavigationHandle* navigation_handle,

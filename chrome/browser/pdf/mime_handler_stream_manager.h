@@ -225,8 +225,9 @@ class MimeHandlerStreamManager
   const extensions::StreamInfo* GetClaimedStreamInfo(
       const content::RenderFrameHost* embedder_host) const;
 
-  // Returns the stream info for a PDF content navigation.
-  extensions::StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
+  // Returns the claimed StreamInfo whose delegate owns this navigation as its
+  // content-frame navigation, or nullptr if no claimed stream owns it.
+  extensions::StreamInfo* GetClaimedStreamInfoFromContentNavigation(
       content::NavigationHandle* navigation_handle);
 
   // Navigates the FrameTreeNode with ID `extension_host_frame_tree_node_id` to
