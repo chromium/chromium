@@ -198,7 +198,9 @@ void TransientWindowManager::OnWindowHierarchyChanged(
     base::WeakAutoReset reset(
         weak_factory_.GetWeakPtr(),
         &TransientWindowManager::pause_transient_descendants_restacking_, true);
-    for (aura::Window* transient_child : transient_children_) {
+    aura::WindowTracker tracker(transient_children_);
+    while (!tracker.windows().empty()) {
+      aura::Window* transient_child = tracker.Pop();
       if (transient_child->parent() == old_parent) {
         new_parent->AddChild(transient_child);
         should_restack = true;
