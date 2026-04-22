@@ -16,12 +16,12 @@ import './cra/cra-menu-item.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
   css,
   html,
-  PropertyDeclarations,
   ref,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -30,10 +30,7 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {
-  RecordingMetadata,
-  RecordingMetadataMap,
-} from '../core/recording_data_manager.js';
+import type {RecordingMetadata, RecordingMetadataMap} from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
 import {
   assertExhaustive,
@@ -48,7 +45,7 @@ import {
 } from '../core/utils/datetime.js';
 import {isObjectEmpty} from '../core/utils/utils.js';
 
-import {CraMenu} from './cra/cra-menu.js';
+import type {CraMenu} from './cra/cra-menu.js';
 import {withTooltip} from './directives/with-tooltip.js';
 import {RecordingFileListItem} from './recording-file-list-item.js';
 

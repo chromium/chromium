@@ -192,8 +192,6 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
         parent.maybeUpdate();
         // Typescript assumes that maybeUpdate won't change this.state, but it
         // can.
-        /* eslint-disable-next-line
-           @typescript-eslint/consistent-type-assertions */
         if ((this.state as DirtyState) === DirtyState.DIRTY) {
           // Someone already pass dirty state down, no need to check further.
           break;
@@ -208,11 +206,10 @@ export class ComputedImpl<T> extends Signal<T> implements Parent, Child {
     // Needs update. Since the parents might change we need to dispose here.
     this.dispose();
     const oldComputing = currentComputing;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+
     currentComputing = this;
     const newValue = this.get();
     currentComputing = oldComputing;
-
     if (newValue !== this.valueInternal) {
       // Value changed, mark child as dirty.
       this.valueInternal = newValue;
@@ -292,7 +289,6 @@ export class Effect implements Child {
     this.disconnect();
     const oldComputing = currentComputing;
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     currentComputing = this;
     this.callback({dispose: this.dispose});
     currentComputing = oldComputing;
@@ -308,8 +304,6 @@ export class Effect implements Child {
         parent.maybeUpdate();
         // Typescript assumes that maybeUpdate won't change this.state, but it
         // can.
-        /* eslint-disable-next-line
-           @typescript-eslint/consistent-type-assertions */
         if ((this.state as DirtyState) === DirtyState.DIRTY) {
           // Someone already pass dirty state down, no need to check further.
           break;

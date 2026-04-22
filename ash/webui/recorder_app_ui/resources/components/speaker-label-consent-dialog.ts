@@ -8,12 +8,13 @@ import './speaker-label-consent-dialog-content.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n, NoArgStringName} from '../core/i18n.js';
+import type {NoArgStringName} from '../core/i18n.js';
+import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 
-import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
+import type {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';

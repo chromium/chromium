@@ -26,17 +26,15 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {CraIconButton} from '../components/cra/cra-icon-button.js';
-import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import type {CraIconButton} from '../components/cra/cra-icon-button.js';
+import type {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {withTooltip} from '../components/directives/with-tooltip.js';
-import {ExportDialog} from '../components/export-dialog.js';
-import {OnboardingDialog} from '../components/onboarding-dialog.js';
-import {RecordingFileList} from '../components/recording-file-list.js';
-import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
-import {SettingsMenu} from '../components/settings-menu.js';
-import {
-  SystemAudioConsentDialog,
-} from '../components/system-audio-consent-dialog.js';
+import type {ExportDialog} from '../components/export-dialog.js';
+import type {OnboardingDialog} from '../components/onboarding-dialog.js';
+import type {RecordingFileList} from '../components/recording-file-list.js';
+import type {RecordingInfoDialog} from '../components/recording-info-dialog.js';
+import type {SettingsMenu} from '../components/settings-menu.js';
+import type {SystemAudioConsentDialog} from '../components/system-audio-consent-dialog.js';
 import {AudioPlayerController} from '../core/audio_player_controller.js';
 import {focusToBody} from '../core/focus.js';
 import {i18n} from '../core/i18n.js';

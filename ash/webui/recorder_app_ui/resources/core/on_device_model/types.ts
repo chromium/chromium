@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ReadonlySignal} from '../reactive/signal.js';
-import {LanguageCode} from '../soda/language_info.js';
+import type {ReadonlySignal} from '../reactive/signal.js';
+import type {LanguageCode} from '../soda/language_info.js';
 import {assertExists} from '../utils/assert.js';
 
 /**

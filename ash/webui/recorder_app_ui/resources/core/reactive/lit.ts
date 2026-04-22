@@ -9,18 +9,15 @@
  * This is similar to SignalWatcher in lit-labs/preact-signal.
  */
 
+import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 import {
   LitElement,
-  ReactiveController,
-  ReactiveControllerHost,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import type {Dispose, ReadonlySignal, Signal} from './signal.js';
 import {
   batch,
-  Dispose,
   effect,
-  ReadonlySignal,
-  Signal,
   signal,
 } from './signal.js';
 
@@ -194,8 +191,6 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
   // TODO(pihsun): render() similar to @lit/task
 }
 
-// This is for exporting the class alias.
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ScopedAsyncEffect = ScopedAsyncComputed<void>;
 export type ScopedAsyncEffect = ScopedAsyncComputed<void>;
 

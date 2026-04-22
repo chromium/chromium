@@ -11,14 +11,13 @@ import './expandable-card.js';
 import {
   Checkbox as CrosCheckbox,
 } from 'chrome://resources/cros_components/checkbox/checkbox.js';
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   css,
-  CSSResultGroup,
   html,
   map,
   nothing,
-  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';

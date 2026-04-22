@@ -5,17 +5,17 @@
 import './cra-dialog.js';
 import './cra-image.js';
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../../core/reactive/lit.js';
 
-import {CraDialog} from './cra-dialog.js';
+import type {CraDialog} from './cra-dialog.js';
 
 /**
  * Dialog with an illustration on top, matching the "feature tour" style of the

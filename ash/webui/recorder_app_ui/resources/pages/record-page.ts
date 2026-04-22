@@ -18,6 +18,7 @@ import '../components/transcription-consent-dialog.js';
 import '../components/time-duration.js';
 import '../components/error-dialog.js';
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
@@ -25,19 +26,16 @@ import {
   html,
   live,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {CraButton} from '../components/cra/cra-button.js';
+import type {CraButton} from '../components/cra/cra-button.js';
 import {CraDialog} from '../components/cra/cra-dialog.js';
-import {CraMenu} from '../components/cra/cra-menu.js';
-import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import type {CraMenu} from '../components/cra/cra-menu.js';
+import type {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {withTooltip} from '../components/directives/with-tooltip.js';
-import {LanguagePickerDialog} from '../components/language-picker-dialog.js';
-import {
-  TranscriptionConsentDialog,
-} from '../components/transcription-consent-dialog.js';
+import type {LanguagePickerDialog} from '../components/language-picker-dialog.js';
+import type {TranscriptionConsentDialog} from '../components/transcription-consent-dialog.js';
 import {SAMPLES_PER_POWER_BAR} from '../core/audio_constants.js';
 import {i18n, replacePlaceholderWithHtml} from '../core/i18n.js';
 import {
@@ -46,8 +44,9 @@ import {
   useRecordingDataManager,
 } from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
-import {RecordingCreateParams} from '../core/recording_data_manager.js';
+import type {Dispose} from '../core/reactive/signal.js';
+import {computed, effect, signal} from '../core/reactive/signal.js';
+import type {RecordingCreateParams} from '../core/recording_data_manager.js';
 import {RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
 import {

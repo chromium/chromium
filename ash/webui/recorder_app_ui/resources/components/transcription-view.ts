@@ -5,17 +5,14 @@
 import 'chrome://resources/mwc/@material/web/focus/md-focus-ring.js';
 import 'chrome://resources/cros_components/button/button.js';
 
+import type {CSSResultGroup, PropertyDeclarations, PropertyValues, Ref} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
   css,
-  CSSResultGroup,
   html,
   ifDefined,
   nothing,
-  PropertyDeclarations,
-  PropertyValues,
-  Ref,
   ref,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -23,7 +20,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {TextPart, Transcription} from '../core/soda/soda.js';
+import type {TextPart, Transcription} from '../core/soda/soda.js';
 import {
   assert,
   assertExists,

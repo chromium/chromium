@@ -8,18 +8,16 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './recording-title-suggestion.js';
 
-import {
-  Snackbar,
-} from 'chrome://resources/cros_components/snackbar/snackbar.js';
+import type {Snackbar} from 'chrome://resources/cros_components/snackbar/snackbar.js';
 import {
   Textfield,
 } from 'chrome://resources/cros_components/textfield/textfield.js';
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -33,13 +31,13 @@ import {
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
-import {RecordingMetadata} from '../core/recording_data_manager.js';
+import type {RecordingMetadata} from '../core/recording_data_manager.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 
-import {CraIconButton} from './cra/cra-icon-button.js';
+import type {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
-import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
+import type {RecordingTitleSuggestion} from './recording-title-suggestion.js';
 
 /**
  * The title of the recording in playback page of Recorder App.

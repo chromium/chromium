@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MicrophoneManager} from '../microphone_manager.js';
-import {PlatformHandler} from '../platform_handler.js';
+import type {MicrophoneManager} from '../microphone_manager.js';
+import type {PlatformHandler} from '../platform_handler.js';
 import {signal} from '../reactive/signal.js';
-import {RecordingDataManager} from '../recording_data_manager.js';
+import type {RecordingDataManager} from '../recording_data_manager.js';
 import {assert, assertExists} from '../utils/assert.js';
 
 interface Context {

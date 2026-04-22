@@ -5,7 +5,7 @@
 import {DataDir} from './data_dir.js';
 import {initContext} from './lit/context.js';
 import {MicrophoneManager} from './microphone_manager.js';
-import {PlatformHandler} from './platform_handler.js';
+import type {PlatformHandler} from './platform_handler.js';
 import {RecordingDataManager} from './recording_data_manager.js';
 import {installRouter} from './state/route.js';
 import {init as initSettings} from './state/settings.js';

@@ -6,9 +6,7 @@ import 'chrome://resources/cros_components/textfield/textfield.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 
-import {
-  Textfield,
-} from 'chrome://resources/cros_components/textfield/textfield.js';
+import type {Textfield} from 'chrome://resources/cros_components/textfield/textfield.js';
 import {
   classMap,
   createRef,
@@ -24,7 +22,7 @@ import {computed, signal} from '../core/reactive/signal.js';
 import {assertExists} from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 
-import {CraIconButton} from './cra/cra-icon-button.js';
+import type {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 export class RecordingSearchBox extends ReactiveLitElement {

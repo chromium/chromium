@@ -215,7 +215,7 @@ export function isObjectEmpty(obj: Record<string, unknown>): boolean {
   // We're explicitly using for (... in ...) here to avoid the cost of having
   // to initialize Object.keys() array. The usage is safe since we check
   // Object.hasOwn afterwards.
-  // eslint-disable-next-line no-restricted-syntax
+
   for (const k in obj) {
     if (Object.hasOwn(obj, k)) {
       return false;

@@ -52,11 +52,11 @@ import {
 } from '../core/utils/assert.js';
 import {stopPropagation} from '../core/utils/event_handler.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
-import {CraIconButton} from './cra/cra-icon-button.js';
+import type {CraDialog} from './cra/cra-dialog.js';
+import type {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
-import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
-import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
+import type {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
+import type {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
 /**
  * Settings menu for Recording app.

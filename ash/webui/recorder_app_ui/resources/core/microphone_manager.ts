@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ReadonlySignal, signal} from './reactive/signal.js';
+import type {ReadonlySignal} from './reactive/signal.js';
+import {signal} from './reactive/signal.js';
 import {assert, assertExists} from './utils/assert.js';
 import {AsyncJobQueue} from './utils/async_job_queue.js';
 

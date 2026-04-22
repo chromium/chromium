@@ -12,36 +12,22 @@ import 'chrome://resources/cros_components/switch/switch.js';
 import '../../components/cra/cra-dropdown.js';
 import './error-view.js';
 
-import {
-  Switch as CrosSwitch,
-} from 'chrome://resources/cros_components/switch/switch.js';
+import {Switch as CrosSwitch} from 'chrome://resources/cros_components/switch/switch.js';
 import {html, map, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
-import {NoArgStringName} from '../../core/i18n.js';
-import {InternalMicInfo} from '../../core/microphone_manager.js';
-import {
-  LoadModelResult,
-  Model,
-  ModelExecutionError,
-  ModelLoader,
-  ModelLoadError,
-  ModelResponse,
-  ModelState,
-} from '../../core/on_device_model/types.js';
+import type {NoArgStringName} from '../../core/i18n.js';
+import type {InternalMicInfo} from '../../core/microphone_manager.js';
+import type {LoadModelResult, Model, ModelResponse, ModelState} from '../../core/on_device_model/types.js';
+import {ModelExecutionError, ModelLoader, ModelLoadError} from '../../core/on_device_model/types.js';
 import {PerfLogger} from '../../core/perf.js';
-import {
-  PlatformHandler as PlatformHandlerBase,
-} from '../../core/platform_handler.js';
-import {computed, Signal, signal} from '../../core/reactive/signal.js';
-import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
-import {
-  HypothesisPart,
-  SodaEvent,
-  SodaSession,
-  TimeDelta,
-} from '../../core/soda/types.js';
+import {PlatformHandler as PlatformHandlerBase} from '../../core/platform_handler.js';
+import type {Signal} from '../../core/reactive/signal.js';
+import {computed, signal} from '../../core/reactive/signal.js';
+import type {LangPackInfo} from '../../core/soda/language_info.js';
+import {LanguageCode} from '../../core/soda/language_info.js';
+import type {HypothesisPart, SodaEvent, SodaSession, TimeDelta} from '../../core/soda/types.js';
 import {
   assert,
   assertEnumVariant,
@@ -50,20 +36,13 @@ import {
   assertInstanceof,
   checkEnumVariant,
 } from '../../core/utils/assert.js';
-import {
-  Observer,
-  ObserverList,
-  Unsubscribe,
-} from '../../core/utils/observer_list.js';
+import type {Observer, Unsubscribe} from '../../core/utils/observer_list.js';
+import {ObserverList} from '../../core/utils/observer_list.js';
 import {sleep} from '../../core/utils/utils.js';
 
 import {ErrorView} from './error-view.js';
 import {EventsSender} from './metrics.js';
-import {
-  ColorTheme,
-  devSettings,
-  init as settingsInit,
-} from './settings.js';
+import {ColorTheme, devSettings, init as settingsInit} from './settings.js';
 import {strings} from './strings.js';
 
 class TitleSuggestionModelDev implements Model<string[]> {
@@ -122,7 +101,7 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
       this.state.value.kind !== 'installing',
       'Requested model installation when model is installing.',
     );
-    console.log('model installation requested');
+    console.info('model installation requested');
     if (this.state.value.kind !== 'installed') {
       this.state.value = {kind: 'installing', progress: 0};
       // Simulate the loading of model.
@@ -274,8 +253,9 @@ class SodaSessionDev implements SodaSession {
     };
     // Speaker label starts from "1".
     const lineSpeakerLabel = (this.currentLineIdx % MAX_NUM_SPEAKER) + 1;
-    const hypothesisPart =
-      currentLine.slice(0, this.currentWordIdx + 1).map((w, i) => {
+    const hypothesisPart = currentLine
+      .slice(0, this.currentWordIdx + 1)
+      .map((w, i) => {
         let speakerLabel = lineSpeakerLabel;
         if (i === 0 && this.currentLineIdx > 0 && !finishLine) {
           // Change speaker label of first word of each line to "wrong" speaker
@@ -345,6 +325,8 @@ class SodaSessionDev implements SodaSession {
   }
 
   addAudio(samples: Float32Array): void {
+    // This is only used for dev server
+    // eslint-disable-next-line no-console
     console.debug(`Soda add audio of length ${samples.length}`);
 
     this.numSamples += samples.length;
@@ -450,8 +432,9 @@ export class PlatformHandler extends PlatformHandlerBase {
     }
     if (devSettings.value.genAiInstalled) {
       this.summaryModelLoader.state = signal<ModelState>({kind: 'installed'});
-      this.titleSuggestionModelLoader.state =
-        signal<ModelState>({kind: 'installed'});
+      this.titleSuggestionModelLoader.state = signal<ModelState>({
+        kind: 'installed',
+      });
     }
     this.langPacks.set(LanguageCode.EN_US, {
       languageCode: LanguageCode.EN_US,
@@ -502,7 +485,7 @@ export class PlatformHandler extends PlatformHandlerBase {
   override perfLogger = new PerfLogger(this.eventsSender);
 
   override installSoda(language: LanguageCode): Promise<void> {
-    console.log(`SODA lang pack ${language} installation requested`);
+    console.info(`SODA lang pack ${language} installation requested`);
     const sodaState = this.getSodaState(language);
     if (sodaState.value.kind !== 'installed' &&
         sodaState.value.kind !== 'installing') {
@@ -542,16 +525,13 @@ export class PlatformHandler extends PlatformHandlerBase {
     return Promise.resolve(new SodaSessionDev());
   }
 
-  override getMicrophoneInfo(
-    _deviceId: string,
-  ): Promise<InternalMicInfo> {
+  override getMicrophoneInfo(_deviceId: string): Promise<InternalMicInfo> {
     return Promise.resolve({isDefault: false, isInternal: false});
   }
 
-  private renderGenAiErrorOptions<T extends ModelExecutionError|ModelLoadError>(
-    errorValues: T[],
-    selectedError: T|null,
-  ): RenderResult {
+  private renderGenAiErrorOptions<
+    T extends ModelExecutionError | ModelLoadError,
+  >(errorValues: T[], selectedError: T | null): RenderResult {
     return html`
       <cros-dropdown-option
         headline="SUCCESS"
@@ -560,8 +540,8 @@ export class PlatformHandler extends PlatformHandlerBase {
       ${map(errorValues, (errorValue) => {
         return html`
           <cros-dropdown-option
-          headline=${errorValue}
-          ?selected=${errorValue === selectedError}
+            headline=${errorValue}
+            ?selected=${errorValue === selectedError}
           ></cros-dropdown-option>
         `;
       })}
@@ -721,7 +701,7 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override showAiFeedbackDialog(description: string): void {
-    console.log('Feedback report dialog requested: ', description);
+    console.info('Feedback report dialog requested: ', description);
     window.prompt('fake AI feedback dialog', description);
   }
 

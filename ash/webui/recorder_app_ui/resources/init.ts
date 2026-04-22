@@ -8,7 +8,7 @@ import {PlatformHandler} from './platforms/index.js';
 
 // The error for the promise is handled by the global unhandledrejection
 // handler.
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
+
 document.addEventListener('DOMContentLoaded', async () => {
   const platformHandler = new PlatformHandler();
   // Initialize core.

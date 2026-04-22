@@ -12,29 +12,27 @@ import './genai-placeholder.js';
 import './spoken-message.js';
 import './summary-consent-card.js';
 
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
-  CSSResultGroup,
   html,
   map,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
+import type {ModelResponse, ModelState} from '../core/on_device_model/types.js';
 import {
   GenaiResultType,
   ModelLoadError,
-  ModelResponse,
-  ModelState,
 } from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
-import {Transcription} from '../core/soda/soda.js';
+import type {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {HELP_URL} from '../core/url_constants.js';
 import {
@@ -444,9 +442,6 @@ export class SummarizationView extends ReactiveLitElement {
           default:
             assertExhaustive(summaryModelState.kind);
         }
-      // eslint doesn't detect that the above case never reaches here, but tsc
-      // prevents us from adding "break;" here since it's unreachable code.
-      // eslint-disable-next-line no-fallthrough
       default:
         assertExhaustive(summaryEnabled);
     }

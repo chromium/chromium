@@ -17,11 +17,11 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
-import {LanguageCode} from '../core/soda/language_info.js';
+import type {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
 
-import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
-import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
+import type {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
+import type {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 
 /**
  * Dialog for selecting transcript language when onboarding.

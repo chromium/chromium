@@ -5,4 +5,3 @@
 AlignAfterOpenBracket: BlockIndent
 BasedOnStyle: Chromium
 ContinuationIndentWidth: 2
-JavaScriptWrapImports: true

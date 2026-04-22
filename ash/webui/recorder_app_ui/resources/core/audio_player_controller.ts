@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  ReactiveController,
-  ReactiveControllerHost,
-} from 'chrome://resources/mwc/lit/index.js';
+import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 
 import {useRecordingDataManager} from './lit/context.js';
 import {ScopedAsyncEffect, ScopedEffect} from './reactive/lit.js';
-import {computed, ReadonlySignal, Signal, signal} from './reactive/signal.js';
+import type {ReadonlySignal, Signal} from './reactive/signal.js';
+import {computed, signal} from './reactive/signal.js';
 import {AnimationFrameController} from './utils/animation_frame_controller.js';
 import {assertInstanceof} from './utils/assert.js';
 

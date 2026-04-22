@@ -13,14 +13,15 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {Signal, signal} from '../core/reactive/signal.js';
-import {LanguageCode} from '../core/soda/language_info.js';
+import type {Signal} from '../core/reactive/signal.js';
+import {signal} from '../core/reactive/signal.js';
+import type {LanguageCode} from '../core/soda/language_info.js';
 import {
   installSoda,
   setTranscriptionLanguage,
 } from '../core/state/transcription.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
+import type {CraDialog} from './cra/cra-dialog.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 /**

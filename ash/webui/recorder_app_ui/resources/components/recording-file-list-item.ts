@@ -7,7 +7,8 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './time-duration.js';
 
-import {Card} from 'chrome://resources/cros_components/card/card.js';
+import type {Card} from 'chrome://resources/cros_components/card/card.js';
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
@@ -15,7 +16,6 @@ import {
   html,
   map,
   nothing,
-  PropertyDeclarations,
   ref,
   styleMap,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -24,8 +24,8 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import type {RecordingMetadata} from '../core/recording_data_manager.js';
 import {
-  RecordingMetadata,
   TimelineSegmentKind,
 } from '../core/recording_data_manager.js';
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';
@@ -36,7 +36,7 @@ import {
 import {stopPropagation} from '../core/utils/event_handler.js';
 import {clamp} from '../core/utils/utils.js';
 
-import {CraIconButton} from './cra/cra-icon-button.js';
+import type {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 import {
   getNumSpeakerClass,

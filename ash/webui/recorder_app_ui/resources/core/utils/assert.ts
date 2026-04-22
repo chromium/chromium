@@ -79,14 +79,12 @@ export function checkEnumVariant<T extends EnumObj>(
   value: unknown,
 ): T[keyof T]|null {
   // `includes` work for any value types.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   if (!Object.values(enumType).includes(value as T[keyof T])) {
     return null;
   }
 
   // We just checked that the value is a valid enum variant, so the cast is
   // safe.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return value as T[keyof T];
 }
 
@@ -108,7 +106,6 @@ export function assertEnumVariant<T extends EnumObj>(
 
 // "unknown" doesn't work well here if the constructor have overloads with
 // different numbers of argument and strictNullChecks on.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T> = new (...args: any[]) => T;
 
 /**

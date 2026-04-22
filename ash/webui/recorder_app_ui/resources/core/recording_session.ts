@@ -9,18 +9,19 @@ import {
   SAMPLES_PER_POWER_BAR,
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
-import {PlatformHandler} from './platform_handler.js';
+import type {PlatformHandler} from './platform_handler.js';
 import {computed, signal} from './reactive/signal.js';
-import {LanguageCode} from './soda/language_info.js';
+import type {LanguageCode} from './soda/language_info.js';
 import {SodaEventTransformer, Transcription} from './soda/soda.js';
-import {SodaSession} from './soda/types.js';
+import type {SodaSession} from './soda/types.js';
 import {
   assert,
   assertExists,
 } from './utils/assert.js';
-import {AsyncJobInfo, AsyncJobQueue} from './utils/async_job_queue.js';
+import type {AsyncJobInfo} from './utils/async_job_queue.js';
+import {AsyncJobQueue} from './utils/async_job_queue.js';
 import {InteriorMutableArray} from './utils/interior_mutable_array.js';
-import {Unsubscribe} from './utils/observer_list.js';
+import type {Unsubscribe} from './utils/observer_list.js';
 import {clamp} from './utils/utils.js';
 
 declare global {

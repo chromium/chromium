@@ -5,12 +5,11 @@
 import './cra/cra-button.js';
 import './unescapable-dialog.js';
 
+import type {PropertyDeclarations, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
-  PropertyDeclarations,
-  PropertyValues,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -18,7 +17,7 @@ import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {assertExists} from '../core/utils/assert.js';
 
-import {CraButton} from './cra/cra-button.js';
+import type {CraButton} from './cra/cra-button.js';
 
 /**
  * A dialog that displays error message. Users must click the consent button to

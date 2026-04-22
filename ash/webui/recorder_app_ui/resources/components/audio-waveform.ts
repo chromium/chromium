@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   css,
   html,
   nothing,
-  PropertyDeclarations,
   repeat,
   svg,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -19,7 +19,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed} from '../core/reactive/signal.js';
-import {Transcription} from '../core/soda/soda.js';
+import type {Transcription} from '../core/soda/soda.js';
 import {
   assert,
   assertExists,

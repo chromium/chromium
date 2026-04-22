@@ -12,26 +12,26 @@ import './genai-placeholder.js';
 import './spoken-message.js';
 
 import {Chip} from 'chrome://resources/cros_components/chip/chip.js';
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
   map,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
+import type {ModelResponse} from '../core/on_device_model/types.js';
 import {
   GenaiResultType,
-  ModelResponse,
 } from '../core/on_device_model/types.js';
+import type {ScopedAsyncComputed} from '../core/reactive/lit.js';
 import {
   ComputedState,
   ReactiveLitElement,
-  ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
 import {HELP_URL} from '../core/url_constants.js';
 import {
@@ -40,7 +40,7 @@ import {
   assertInstanceof,
 } from '../core/utils/assert.js';
 
-import {CraIconButton} from './cra/cra-icon-button.js';
+import type {CraIconButton} from './cra/cra-icon-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 /**

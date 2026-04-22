@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import * as localStorage from '../utils/local_storage.js';
-import {JsonSerializable, Key} from '../utils/local_storage.js';
-import {Schema} from '../utils/schema.js';
+import type {JsonSerializable, Key} from '../utils/local_storage.js';
+import type {Schema} from '../utils/schema.js';
 
-import {effect, Signal} from './signal.js';
+import type {Signal} from './signal.js';
+import {effect} from './signal.js';
 
 /**
  * Initialize a signal with value from local storage if exist, listens to

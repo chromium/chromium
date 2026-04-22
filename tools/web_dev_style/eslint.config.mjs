@@ -108,12 +108,6 @@ export default [
       // No point checking minify_js expected output tests.
       'ui/webui/resources/tools/tests/minify_js/*_expected.js',
 
-      // ESLint is disabled for recorder_app_ui as they used a custom eslint
-      // plugin that does not work with the latest eslint, and they had complex
-      // eslint rc files that have not been updated to the latest eslint. See
-      // https://crbug.com/368085620.
-      'ash/webui/recorder_app_ui/resources/**/*',
-
       // ESLint is disabled for directories that use custom linting rules,
       // which is no longer supported. TODO(https://crbug.com/369766161):
       // Bring directories into conformance to re-enable linting.
@@ -121,8 +115,9 @@ export default [
       'chrome/browser/resources/chromeos/**/*',
       'chrome/test/data/webui/chromeos/**/*.js',
 
-      // camera_app_ui conforms to global ESLint.
+      // camera_app_ui and recorder_app_ui conforms to global ESLint.
       '!ash/webui/camera_app_ui',
+      '!ash/webui/recorder_app_ui',
 
       // TODO(https://crbug.com/41446521): Bring these extension test files into
       // conformance.

@@ -4,18 +4,12 @@
 
 import {i18n} from '../i18n.js';
 import {assertExists} from '../utils/assert.js';
-import {Infer, z} from '../utils/schema.js';
+import type {Infer} from '../utils/schema.js';
+import {z} from '../utils/schema.js';
 import {getWordCount, lazyInit, sliceWhen} from '../utils/utils.js';
 
 import {LanguageCode} from './language_info.js';
-import {
-  FinalResult,
-  PartialResult,
-  SodaEvent,
-  SpeakerLabelCorrectionEvent,
-  TimeDelta,
-  TimingInfo,
-} from './types.js';
+import type {FinalResult, PartialResult, SodaEvent, SpeakerLabelCorrectionEvent, TimeDelta, TimingInfo} from './types.js';
 
 // A time range in milliseconds.
 export const timeRangeSchema = z.object({

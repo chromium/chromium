@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RecorderApp} from '../pages/recorder-app.js';
+import type {RecorderApp} from '../pages/recorder-app.js';
 
 import {SAMPLES_PER_SLICE} from './audio_constants.js';
 import {usePlatformHandler, useRecordingDataManager} from './lit/context.js';
 import {LanguageCode} from './soda/language_info.js';
-import {TextToken, Transcription} from './soda/soda.js';
+import type {TextToken} from './soda/soda.js';
+import {Transcription} from './soda/soda.js';
 import {navigateTo} from './state/route.js';
 import {
   settings,

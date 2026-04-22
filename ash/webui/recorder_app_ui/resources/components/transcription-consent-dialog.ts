@@ -17,9 +17,9 @@ import {
   enableTranscriptionSkipConsentCheck,
 } from '../core/state/transcription.js';
 
-import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
-import {LanguageSelectionDialog} from './language-selection-dialog.js';
-import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
+import type {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
+import type {LanguageSelectionDialog} from './language-selection-dialog.js';
+import type {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 
 /**
  * Dialog for asking transcription consent from user.

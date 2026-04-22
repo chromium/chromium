@@ -39,7 +39,6 @@ function createDraft<T>(base: T): Draft<T> {
   const shadowMap = new Map<string|symbol, unknown>();
   // Need to force `base` type to `Draft<T>` since [tag] is handled in the
   // proxy handler.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return new Proxy(base as Draft<T>, {
     get(target, prop, receiver) {
       if (prop === tag) {
@@ -112,13 +111,11 @@ export function produce<T>(base: T, recipe: (draft: T) => T | void): T {
     const maybeNewValue = recipe(draft);
     // Type `T` might contains null, and we deliberately differentiate between
     // "undefined" and "null" here.
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     return maybeNewValue !== undefined ? maybeNewValue : finalizeDraft(draft);
   } else {
     const maybeNewValue = recipe(base);
     // Type `T` might contains null, and we deliberately differentiate between
     // "undefined" and "null" here.
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     return maybeNewValue !== undefined ? maybeNewValue : base;
   }
 }

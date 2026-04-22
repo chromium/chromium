@@ -4,13 +4,12 @@
 
 import './cra/cra-image.js';
 
+import type {PropertyDeclarations, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
   nothing,
-  PropertyDeclarations,
-  PropertyValues,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 

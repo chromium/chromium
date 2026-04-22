@@ -33,38 +33,26 @@ import {
   CrOSEvents_RecorderAppTranscriptionLocale,
 } from 'chrome://resources/ash/common/metrics/structured_events.js';
 
-import {
-  ChangePlaybackSpeedParams,
-  ChangePlaybackVolumeParams,
-  EventsSender as EventsSenderBase,
-  ExportEventParams,
-  FeedbackEventParams,
-  isTranscriptionModelDownloadPerf,
-  OnboardEventParams,
-  PerfEvent,
-  RecordEventParams,
-  StartSessionEventParams,
-  SuggestTitleEventParams,
-  SummarizeEventParams,
-} from '../../core/events_sender.js';
+import type {ChangePlaybackSpeedParams, ChangePlaybackVolumeParams, ExportEventParams, FeedbackEventParams, OnboardEventParams, PerfEvent, RecordEventParams, StartSessionEventParams, SuggestTitleEventParams, SummarizeEventParams} from '../../core/events_sender.js';
+import {EventsSender as EventsSenderBase, isTranscriptionModelDownloadPerf} from '../../core/events_sender.js';
+import type {ModelResponseError} from '../../core/on_device_model/types.js';
 import {
   ModelExecutionError,
   ModelLoadError,
-  ModelResponseError,
 } from '../../core/on_device_model/types.js';
 import {LanguageCode} from '../../core/soda/language_info.js';
+import type {ExportSettings} from '../../core/state/settings.js';
 import {
   ExportAudioFormat,
-  ExportSettings,
   ExportTranscriptionFormat,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../../core/state/settings.js';
 import {assertExhaustive} from '../../core/utils/assert.js';
-import {Event} from '../../mojom/event.mojom-webui.js';
+import type {Event} from '../../mojom/event.mojom-webui.js';
 
-import {PageHandlerRemote} from './types.js';
+import type {PageHandlerRemote} from './types.js';
 
 function getSpeakerLabelEnableState(
   transcriptionAvailable: boolean,

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MenuItem} from 'chrome://resources/cros_components/menu/menu_item.js';
-import {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
+import type {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 export class CraMenuItem extends MenuItem {
   // TODO(pihsun): Remove this once the upstream fix is merged and pulled in

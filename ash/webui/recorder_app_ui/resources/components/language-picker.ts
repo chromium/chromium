@@ -8,22 +8,22 @@ import './settings-row.js';
 import './spoken-message.js';
 import './language-list.js';
 
+import type {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
-  PropertyValues,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {LanguageCode} from '../core/soda/language_info.js';
+import type {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
 import {assertExists} from '../core/utils/assert.js';
 
-import {CraButton} from './cra/cra-button.js';
+import type {CraButton} from './cra/cra-button.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 /**

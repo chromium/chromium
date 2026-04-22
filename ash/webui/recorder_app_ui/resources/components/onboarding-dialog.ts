@@ -8,21 +8,21 @@ import './language-dropdown.js';
 import './speaker-label-consent-dialog-content.js';
 import './unescapable-dialog.js';
 
+import type {PropertyDeclarations, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
   keyed,
-  PropertyDeclarations,
-  PropertyValues,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n, NoArgStringName} from '../core/i18n.js';
+import type {NoArgStringName} from '../core/i18n.js';
+import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
-import {LanguageCode} from '../core/soda/language_info.js';
+import type {LanguageCode} from '../core/soda/language_info.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 import {
   disableTranscription,

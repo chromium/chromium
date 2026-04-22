@@ -5,17 +5,20 @@
 import {MAX_SPEAKER_COLORS} from '../components/styles/speaker_label.js';
 
 import {SAMPLE_RATE, SAMPLES_PER_SLICE} from './audio_constants.js';
-import {DataDir} from './data_dir.js';
-import {computed, ReadonlySignal, signal} from './reactive/signal.js';
-import {Transcription, transcriptionSchema} from './soda/soda.js';
+import type {DataDir} from './data_dir.js';
+import type {ReadonlySignal} from './reactive/signal.js';
+import {computed, signal} from './reactive/signal.js';
+import type {Transcription} from './soda/soda.js';
+import {transcriptionSchema} from './soda/soda.js';
+import type {ExportSettings} from './state/settings.js';
 import {
   ExportAudioFormat,
-  ExportSettings,
   ExportTranscriptionFormat,
 } from './state/settings.js';
 import {assert, assertExhaustive, assertExists} from './utils/assert.js';
 import {AsyncJobQueue} from './utils/async_job_queue.js';
-import {Infer, z} from './utils/schema.js';
+import type {Infer} from './utils/schema.js';
+import {z} from './utils/schema.js';
 import {ulid} from './utils/ulid.js';
 import {asyncLazyInit, downloadFile} from './utils/utils.js';
 

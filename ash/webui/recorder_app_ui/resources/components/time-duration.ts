@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   html,
   nothing,
-  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {Duration, formatDuration} from '../core/utils/datetime.js';
+import type {Duration} from '../core/utils/datetime.js';
+import {formatDuration} from '../core/utils/datetime.js';
 
 /**
  * Component formats time duration, associates corresponding full digital format

@@ -24,6 +24,7 @@ import '../components/time-duration.js';
 import {
   Slider as CrosSlider,
 } from 'chrome://resources/cros_components/slider/slider.js';
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
@@ -31,22 +32,21 @@ import {
   html,
   live,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {CraIconButton} from '../components/cra/cra-icon-button.js';
-import {CraMenu} from '../components/cra/cra-menu.js';
-import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import type {CraIconButton} from '../components/cra/cra-icon-button.js';
+import type {CraMenu} from '../components/cra/cra-menu.js';
+import type {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {withTooltip} from '../components/directives/with-tooltip.js';
-import {ExportDialog} from '../components/export-dialog.js';
-import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
-import {RecordingTitle} from '../components/recording-title.js';
-import {SummarizationView} from '../components/summarization-view.js';
+import type {ExportDialog} from '../components/export-dialog.js';
+import type {RecordingInfoDialog} from '../components/recording-info-dialog.js';
+import type {RecordingTitle} from '../components/recording-title.js';
+import type {SummarizationView} from '../components/summarization-view.js';
 import {SAMPLE_RATE, SAMPLES_PER_POWER_BAR} from '../core/audio_constants.js';
+import type {ReactiveAudio} from '../core/audio_player_controller.js';
 import {
   AudioPlayerController,
-  ReactiveAudio,
 } from '../core/audio_player_controller.js';
 import {i18n} from '../core/i18n.js';
 import {

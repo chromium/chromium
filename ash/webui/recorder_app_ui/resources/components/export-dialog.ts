@@ -6,12 +6,11 @@ import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 import './export-dialog-section.js';
 
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
-  CSSResultGroup,
   html,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -33,7 +32,7 @@ import {
 import {assertEnumVariant} from '../core/utils/assert.js';
 import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
+import type {CraDialog} from './cra/cra-dialog.js';
 
 interface DropdownOption<T extends string> {
   headline: string;

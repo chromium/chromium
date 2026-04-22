@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {MdDialog} from 'chrome://resources/mwc/@material/web/dialog/dialog.js';
-import {
-  DialogAnimation,
-} from 'chrome://resources/mwc/@material/web/dialog/internal/animations.js';
-import {css, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
+import type {DialogAnimation} from 'chrome://resources/mwc/@material/web/dialog/internal/animations.js';
+import type {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
+import {css} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * A dialog with ChromeOS specific style.

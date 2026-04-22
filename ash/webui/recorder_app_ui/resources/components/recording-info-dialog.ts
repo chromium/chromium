@@ -8,13 +8,12 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './time-duration.js';
 
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
-  CSSResultGroup,
   html,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -33,7 +32,7 @@ import {
   formatFullDatetime,
 } from '../core/utils/datetime.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
+import type {CraDialog} from './cra/cra-dialog.js';
 import {withTooltip} from './directives/with-tooltip.js';
 
 export class RecordingInfoDialog extends ReactiveLitElement {

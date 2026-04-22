@@ -5,14 +5,13 @@
 import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   createRef,
   css,
-  CSSResultGroup,
   html,
   nothing,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -20,7 +19,7 @@ import {focusToBody} from '../core/focus.js';
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
+import type {CraDialog} from './cra/cra-dialog.js';
 
 export class DeleteRecordingDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`

@@ -11,11 +11,10 @@ import './cra/cra-icon.js';
 import {
   Checkbox as CrosCheckbox,
 } from 'chrome://resources/cros_components/checkbox/checkbox.js';
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   css,
-  CSSResultGroup,
   html,
-  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';

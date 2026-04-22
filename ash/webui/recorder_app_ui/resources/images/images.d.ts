@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TemplateResult} from 'chrome://resources/mwc/lit/index.js';
+import type {TemplateResult} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * Mapping of SVG file path (relative to images/, without the .svg extension)

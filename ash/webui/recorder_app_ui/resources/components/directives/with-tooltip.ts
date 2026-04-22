@@ -5,13 +5,11 @@
 import 'chrome://resources/cros_components/tooltip/tooltip.js';
 
 import {Tooltip} from 'chrome://resources/cros_components/tooltip/tooltip.js';
+import type {DirectiveParameters, ElementPart, PartInfo} from 'chrome://resources/mwc/lit/index.js';
 import {
   AsyncDirective,
   directive,
-  DirectiveParameters,
-  ElementPart,
   nothing,
-  PartInfo,
   PartType,
 } from 'chrome://resources/mwc/lit/index.js';
 

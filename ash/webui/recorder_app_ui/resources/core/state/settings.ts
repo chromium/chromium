@@ -6,7 +6,8 @@ import {bindSignal} from '../reactive/local_storage.js';
 import {signal} from '../reactive/signal.js';
 import {LanguageCode} from '../soda/language_info.js';
 import * as localStorage from '../utils/local_storage.js';
-import {Infer, z} from '../utils/schema.js';
+import type {Infer} from '../utils/schema.js';
+import {z} from '../utils/schema.js';
 
 export enum RecordingSortType {
   DATE = 'DATE',

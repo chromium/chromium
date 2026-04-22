@@ -45,9 +45,8 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
 
     cros_components_dir = resources_dir / "cros_components/to_be_rewritten"
 
-    metrics_dir = (
-        build_dir /
-        "gen/ash/webui/common/resources/preprocessed/metrics")
+    metrics_dir = (build_dir /
+                   "gen/ash/webui/common/resources/preprocessed/metrics")
 
     return {
         "//resources/*": [str(resources_dir / "*")],
@@ -97,8 +96,7 @@ def _get_tsc_references(build_dir: pathlib.Path) -> list[dict[str, str]]:
         "gen/third_party/cros-components/tsconfig_cros_components_ts.json")
 
     ash_common_tsconfig = (
-        build_dir /
-        "gen/ash/webui/common/resources/tsconfig_build_ts.json")
+        build_dir / "gen/ash/webui/common/resources/tsconfig_build_ts.json")
 
     return [{
         "path": str(mwc_gen_dir / "tsconfig_library.json")

@@ -9,7 +9,8 @@ import {
 import {bindSignal} from '../../core/reactive/local_storage.js';
 import {effect, signal} from '../../core/reactive/signal.js';
 import * as localStorage from '../../core/utils/local_storage.js';
-import {Infer, z} from '../../core/utils/schema.js';
+import type {Infer} from '../../core/utils/schema.js';
+import {z} from '../../core/utils/schema.js';
 
 export enum ColorTheme {
   SYSTEM = 'system',

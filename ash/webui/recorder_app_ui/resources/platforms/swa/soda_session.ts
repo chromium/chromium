@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SodaEvent, SodaSession} from '../../core/soda/types.js';
-import {
-  Observer,
-  ObserverList,
-  Unsubscribe,
-} from '../../core/utils/observer_list.js';
+import type {SodaEvent, SodaSession} from '../../core/soda/types.js';
+import type {Observer, Unsubscribe} from '../../core/utils/observer_list.js';
+import {ObserverList} from '../../core/utils/observer_list.js';
 import {clamp} from '../../core/utils/utils.js';
 import {WaitableEvent} from '../../core/utils/waitable_event.js';
-import {SpeechRecognizerEvent} from '../../mojom/soda.mojom-webui.js';
+import type {SpeechRecognizerEvent} from '../../mojom/soda.mojom-webui.js';
 
-import {SodaClientInterface, SodaRecognizerRemote} from './types.js';
+import type {SodaClientInterface, SodaRecognizerRemote} from './types.js';
 
 export class MojoSodaSession implements SodaSession, SodaClientInterface {
   private readonly observers = new ObserverList<SodaEvent>();

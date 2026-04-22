@@ -103,6 +103,8 @@ export class SettingsRow extends ReactiveLitElement {
 
   private onClick() {
     const actionItem = this.getActionable();
+    // Some custom element doesn't work with .click().
+    // eslint-disable-next-line no-restricted-syntax
     actionItem?.dispatchEvent(new Event('click'));
   }
 

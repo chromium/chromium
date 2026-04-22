@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Observer, Unsubscribe} from '../utils/observer_list.js';
-import {Infer, z} from '../utils/schema.js';
+import type {Observer, Unsubscribe} from '../utils/observer_list.js';
+import type {Infer} from '../utils/schema.js';
+import {z} from '../utils/schema.js';
 
 // The type is manually constructed from the .mojo at
 // chromeos/services/machine_learning/public/mojom/soda.mojom

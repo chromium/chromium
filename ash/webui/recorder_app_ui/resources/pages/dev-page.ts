@@ -13,7 +13,7 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import type {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';

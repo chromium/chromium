@@ -6,7 +6,7 @@ import {
   IconDropdownOption,
 } from
   'chrome://resources/cros_components/icon_dropdown/icon-dropdown-option.js';
-import {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
+import type {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 import {assertExists} from '../../core/utils/assert.js';
 

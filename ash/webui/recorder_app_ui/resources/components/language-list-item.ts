@@ -9,19 +9,18 @@ import './cra/cra-icon.js';
 import './settings-row.js';
 import './spoken-message.js';
 
+import type {PropertyDeclarations, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 import {
   css,
   html,
   nothing,
-  PropertyDeclarations,
-  PropertyValues,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {ModelState} from '../core/on_device_model/types.js';
+import type {ModelState} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {LangPackInfo} from '../core/soda/language_info.js';
+import type {LangPackInfo} from '../core/soda/language_info.js';
 import {
   assertExhaustive,
   assertExists,

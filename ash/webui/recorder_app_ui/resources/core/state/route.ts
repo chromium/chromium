@@ -79,7 +79,6 @@ function extractCurrentRouteInfo(url: URL): UnionCurrentRoute|null {
       parameters[key] = search.get(key);
     }
     // TypeScript can't deduce the type of name and the dependent parameters.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {name, parameters} as UnionCurrentRoute;
   }
   return null;
@@ -169,7 +168,6 @@ export function navigateTo<Name extends RouteNames>(
   const {path} = routes[name];
   // TypeScript can't deduce that parameters is a sub-type of Record<string,
   // string>.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const params = new URLSearchParams(parameters as Record<string, string>);
   navigateToImpl(`${path}?${params.toString()}`);
 }

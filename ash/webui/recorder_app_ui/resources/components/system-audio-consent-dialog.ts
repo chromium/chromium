@@ -16,7 +16,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 
-import {CraDialog} from './cra/cra-dialog.js';
+import type {CraDialog} from './cra/cra-dialog.js';
 
 export class SystemAudioConsentDialog extends ReactiveLitElement {
   static override styles = css`

@@ -4,20 +4,19 @@
 
 import './cra/cra-image.js';
 
+import type {CSSResultGroup, PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   css,
-  CSSResultGroup,
   html,
   nothing,
-  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import type {ModelResponseError} from '../core/on_device_model/types.js';
 import {
   GenaiResultType,
   ModelExecutionError,
   ModelLoadError,
-  ModelResponseError,
 } from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {createTranscriptionModelDownloadPerf} from '../events_sender.js';
 import {usePlatformHandler} from '../lit/context.js';
-import {LanguageCode} from '../soda/language_info.js';
+import type {LanguageCode} from '../soda/language_info.js';
 import {assertExhaustive} from '../utils/assert.js';
 
 import {settings, TranscriptionEnableState} from './settings.js';

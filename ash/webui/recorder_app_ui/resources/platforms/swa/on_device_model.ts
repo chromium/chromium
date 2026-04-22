@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  LoadModelResult,
-  Model,
-  ModelExecutionError,
-  ModelLoader as ModelLoaderBase,
-  ModelLoadError,
-  ModelResponse,
-  ModelState,
-} from '../../core/on_device_model/types.js';
+import type {LoadModelResult, Model, ModelResponse, ModelState} from '../../core/on_device_model/types.js';
+import {ModelExecutionError, ModelLoader as ModelLoaderBase, ModelLoadError} from '../../core/on_device_model/types.js';
 import {signal} from '../../core/reactive/signal.js';
-import {LanguageCode} from '../../core/soda/language_info.js';
+import type {LanguageCode} from '../../core/soda/language_info.js';
 import {
   assertExhaustive,
   assertExists,
@@ -22,25 +15,21 @@ import {
   chunkContentByWord,
 } from '../../core/utils/utils.js';
 
-import {PlatformHandler} from './handler.js';
+import type {PlatformHandler} from './handler.js';
 import {
   isCannedResponse,
   isInvalidFormatResponse,
   parseResponse,
   trimRepeatedBulletPoints,
 } from './on_device_model_utils.js';
+import type {ModelInfo, ModelState as MojoModelState, PageHandlerRemote, ResponseChunk, ResponseSummary} from './types.js';
 import {
   FormatFeature,
   InputSource,
   LoadModelResult as MojoLoadModelResult,
-  ModelInfo,
-  ModelState as MojoModelState,
   ModelStateMonitorReceiver,
   ModelStateType,
   OnDeviceModelRemote,
-  PageHandlerRemote,
-  ResponseChunk,
-  ResponseSummary,
   SafetyFeature,
   SessionRemote,
   StreamingResponderCallbackRouter,
@@ -328,7 +317,7 @@ export class SummaryModel extends OnDeviceModel<string> {
          * See
          * http://google3/chromeos/odml_foundations/lib/inference/features/models/audio_summary_v2.cc.
          */
-        /* eslint-disable-next-line @typescript-eslint/naming-convention */
+
         bullet_points_request: bulletPointsRequest,
       },
       session,

@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {EventsSender} from './events_sender.js';
 import {
   createTranscriptionModelDownloadPerf,
-  EventsSender,
 } from './events_sender.js';
-import {NoArgStringName} from './i18n.js';
-import {InternalMicInfo} from './microphone_manager.js';
+import type {NoArgStringName} from './i18n.js';
+import type {InternalMicInfo} from './microphone_manager.js';
+import type {ModelLoader, ModelState} from './on_device_model/types.js';
 import {
   getModelUiOrder,
-  ModelLoader,
-  ModelState,
 } from './on_device_model/types.js';
-import {PerfLogger} from './perf.js';
-import {effect, ReadonlySignal, Signal} from './reactive/signal.js';
-import {LangPackInfo, LanguageCode} from './soda/language_info.js';
-import {SodaSession} from './soda/types.js';
+import type {PerfLogger} from './perf.js';
+import type {ReadonlySignal, Signal} from './reactive/signal.js';
+import {effect} from './reactive/signal.js';
+import type {LangPackInfo} from './soda/language_info.js';
+import {LanguageCode} from './soda/language_info.js';
+import type {SodaSession} from './soda/types.js';
 import {settings} from './state/settings.js';
 
 export abstract class PlatformHandler {

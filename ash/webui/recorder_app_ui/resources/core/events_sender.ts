@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModelResponseError} from './on_device_model/types.js';
-import {LanguageCode} from './soda/language_info.js';
-import {
-  ExportSettings,
-  SpeakerLabelEnableState,
-  SummaryEnableState,
-  TranscriptionEnableState,
-} from './state/settings.js';
+import type {ModelResponseError} from './on_device_model/types.js';
+import type {LanguageCode} from './soda/language_info.js';
+import type {ExportSettings, SpeakerLabelEnableState, SummaryEnableState, TranscriptionEnableState} from './state/settings.js';
 
 export interface StartSessionEventParams {
   speakerLabelEnableState: SpeakerLabelEnableState;

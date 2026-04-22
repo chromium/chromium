@@ -13,7 +13,7 @@ from cra import cli
 from cra import util
 
 
-def _check_eslint(fix: bool, eslintrc: Optional[str]) -> Optional[int]:
+def _check_eslint(fix: bool, eslintrc: str) -> Optional[int]:
     # TODO(pihsun): Adjust the rules when build_dir is specified, so we can
     # take advantage of the full type information.
     cmd = [
@@ -22,8 +22,7 @@ def _check_eslint(fix: bool, eslintrc: Optional[str]) -> Optional[int]:
     ]
     if fix:
         cmd.append("--fix")
-    if eslintrc is not None:
-        cmd.extend(["--config", eslintrc])
+    cmd.extend(["--config", eslintrc])
     try:
         util.run_node(cmd, cwd=util.get_cra_root())
     except subprocess.CalledProcessError as e:
@@ -89,6 +88,8 @@ def _check_lit_analyzer(build_dir: Optional[pathlib.Path]) -> Optional[int]:
 @util.build_dir_option(optional=True)
 def cmd(fix: bool, eslintrc: Optional[str],
         build_dir: Optional[pathlib.Path]) -> int:
+    eslintrc = eslintrc or str(util.get_chromium_root() /
+                            "tools/web_dev_style/eslint.config.mjs")
     eslint_ret = _check_eslint(fix, eslintrc)
     lit_analyzer_ret = _check_lit_analyzer(build_dir)
     # TODO(pihsun): Add stylelint check as an local only optional check similar

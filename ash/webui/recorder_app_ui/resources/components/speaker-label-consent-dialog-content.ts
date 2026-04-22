@@ -4,7 +4,8 @@
 
 import {css, html, LitElement} from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n, NoArgStringName} from '../core/i18n.js';
+import type {NoArgStringName} from '../core/i18n.js';
+import {i18n} from '../core/i18n.js';
 import {HELP_URL} from '../core/url_constants.js';
 
 // Since all string names need to be reported when recording user consent for

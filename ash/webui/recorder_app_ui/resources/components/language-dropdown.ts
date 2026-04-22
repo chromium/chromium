@@ -6,17 +6,18 @@ import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import './cra/cra-dropdown.js';
 import './cra/cra-icon.js';
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   createRef,
   css,
   html,
   map,
-  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {LangPackInfo, LanguageCode} from '../core/soda/language_info.js';
+import type {LangPackInfo} from '../core/soda/language_info.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {
   assertEnumVariant,
   assertInstanceof,

@@ -19,7 +19,6 @@ type KeyPath = string[];
 // Used as a base schema type to accept any Schema. We can't use `unknown`
 // here because of the type of Schema (encode use the `Output` type as
 // argument).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySchema = Schema<any, unknown>;
 
 interface Issue {
@@ -139,7 +138,6 @@ export class Schema<Output, Input = Output> {
 export type Infer<T> = T extends Schema<infer U, unknown>? U : never;
 // `any` is used here since the first type parameter is invariant due to it
 // being used in argument of `encode`.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type InferInput<T> = T extends Schema<any, infer U>? U : never;
 
 function identity<T>(val: T): T {
@@ -394,12 +392,10 @@ function createTupleSchema<const T extends SchemaArray>(
 
       // The entries in `ret` are from decoded values, so the type should be
       // correct.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return ret as InferTupleOutput<T>;
     },
     encode(val): InferTupleInput<T> {
       // The entries are from decoded values, so the type should be correct.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return schemas.map(
                (schema, i) => schema.encode(val[i]),
              ) as InferTupleInput<T>;
@@ -442,11 +438,10 @@ function createObjectSchema<T extends SchemaObject>(
       }
       for (const [key, schema] of Object.entries(spec)) {
         // We're deliberately casting to access arbitrary key of the object.
-        /* eslint-disable @typescript-eslint/consistent-type-assertions */
         const value = Object.hasOwn(input, key) ?
           (input as Record<string, unknown>)[key] :
           undefined;
-        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
         if (!schema.test(value)) {
           return false;
         }
@@ -468,11 +463,10 @@ function createObjectSchema<T extends SchemaObject>(
       for (const [key, schema] of Object.entries(spec)) {
         ctx.pushKey(key);
         // We're deliberately casting to access arbitrary key of the object.
-        /* eslint-disable @typescript-eslint/consistent-type-assertions */
         const value = Object.hasOwn(input, key) ?
           (input as Record<string, unknown>)[key] :
           undefined;
-        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
         const decodedValue = schema.decode(value, ctx);
         if (decodedValue === DECODE_ERROR) {
           return DECODE_ERROR;
@@ -483,24 +477,21 @@ function createObjectSchema<T extends SchemaObject>(
 
       // The keys and values are derived from the spec, so the `obj` should
       // always follow the type.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return obj as Expand<InferObjectOutput<T>>;
     },
     encode(val) {
       const ret: Record<string, unknown> = {};
       for (const [key, schema] of Object.entries(spec)) {
         // We're deliberately casting to access arbitrary key of the object.
-        /* eslint-disable @typescript-eslint/consistent-type-assertions */
         const value = Object.hasOwn(val, key) ?
           (val as Record<string, unknown>)[key] :
           undefined;
-        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
         ret[key] = schema.encode(value);
       }
 
       // The keys and values are derived from the spec, so the `obj` should
       // always follow the type.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return ret as Expand<InferObjectInput<T>>;
     },
   });
@@ -530,9 +521,8 @@ function createUnionSchema<const T extends SchemaArray>(
         if (val !== DECODE_ERROR) {
           // One of the alternative decodes the input correctly, so the returned
           // value type would be the alternative.
-          /* eslint-disable @typescript-eslint/consistent-type-assertions */
           return val as InferUnionOutput<T>;
-          /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
         }
       }
       ctx.setIssue('expect union but all alternatives failed');
@@ -543,9 +533,8 @@ function createUnionSchema<const T extends SchemaArray>(
         if (schema.test(val)) {
           // One of the alternative validates the value correctly, so it should
           // be able to encode the value.
-          /* eslint-disable @typescript-eslint/consistent-type-assertions */
           return schema.encode(val) as InferUnionInput<T>;
-          /* eslint-enable @typescript-eslint/consistent-type-assertions */
+
         }
       }
       assertNotReached(
@@ -597,7 +586,6 @@ function createIntersectionSchema<const T extends SchemaArray>(
 
       // The values are derived from the spec, so the `obj` should always
       // follow the type.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return obj as Expand<InferIntersectionOutput<T>>;
     },
     encode(val): Expand<InferIntersectionInput<T>> {
@@ -617,7 +605,6 @@ function createIntersectionSchema<const T extends SchemaArray>(
 
       // The values are derived from the spec, so the `obj` should always
       // follow the type.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return obj as Expand<InferIntersectionInput<T>>;
     },
   });

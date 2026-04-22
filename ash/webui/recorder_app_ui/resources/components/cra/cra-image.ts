@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {images} from '/images/images.js';
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   css,
   LitElement,
-  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {assertExists} from '../../core/utils/assert.js';

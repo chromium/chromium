@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {EffectCallback} from './signal/impl.js';
 import {
   ComputedImpl,
   Effect,
-  EffectCallback,
   SignalImpl,
 } from './signal/impl.js';
-import {Computed, Dispose, Signal} from './signal/types.js';
+import type {Computed, Dispose, Signal} from './signal/types.js';
 
 export type * from './signal/types.js';
 

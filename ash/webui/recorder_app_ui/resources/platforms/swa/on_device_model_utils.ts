@@ -4,7 +4,7 @@
 
 // This file contains all utility functions for on_device_model.ts.
 
-import {LanguageCode} from '../../core/soda/language_info.js';
+import type {LanguageCode} from '../../core/soda/language_info.js';
 import {assertExists} from '../../core/utils/assert.js';
 
 /**
@@ -120,7 +120,7 @@ function getRepeatedBulletPointIndexes(
   return repeatedIndexSet;
 }
 
-/* eslint-disable  @typescript-eslint/no-non-null-assertion */
+
 /**
  * Typescript cannot identify type correctly when iterate array by index.
  */
@@ -161,7 +161,7 @@ function getLcsScore(str1: string, str2: string, language: LanguageCode):
 
   return dp[len1]![len2]! / Math.min(len1, len2);
 }
-/* eslint-enable @typescript-eslint/no-non-null-assertion */
+
 
 // Segment string to words and return word-like segments only.
 function segmentStringToWords(str: string, language: LanguageCode): string[] {

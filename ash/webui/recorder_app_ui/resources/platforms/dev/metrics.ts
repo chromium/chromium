@@ -2,19 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  ChangePlaybackSpeedParams,
-  ChangePlaybackVolumeParams,
-  EventsSender as EventsSenderBase,
-  ExportEventParams,
-  FeedbackEventParams,
-  OnboardEventParams,
-  PerfEvent,
-  RecordEventParams,
-  StartSessionEventParams,
-  SuggestTitleEventParams,
-  SummarizeEventParams,
-} from '../../core/events_sender.js';
+import type {ChangePlaybackSpeedParams, ChangePlaybackVolumeParams, ExportEventParams, FeedbackEventParams, OnboardEventParams, PerfEvent, RecordEventParams, StartSessionEventParams, SuggestTitleEventParams, SummarizeEventParams} from '../../core/events_sender.js';
+import {EventsSender as EventsSenderBase} from '../../core/events_sender.js';
 
 export class EventsSender extends EventsSenderBase {
   override sendStartSessionEvent(_: StartSessionEventParams): void {}

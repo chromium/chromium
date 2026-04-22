@@ -20,7 +20,7 @@ import {
   useMicrophoneManager,
   usePlatformHandler,
 } from '../core/lit/context.js';
-import {MicrophoneInfo} from '../core/microphone_manager.js';
+import type {MicrophoneInfo} from '../core/microphone_manager.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings} from '../core/state/settings.js';
 import {assert} from '../core/utils/assert.js';
