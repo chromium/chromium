@@ -37,6 +37,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kArrangeSplitTabsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapSplitTabsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddNewTabAdjacentMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
 
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabMenuModelDelegate* tab_menu_model_delegate,
@@ -46,12 +47,10 @@ class TabMenuModel : public ui::SimpleMenuModel {
   TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
-
  private:
-  void Build(TabStripModel* tab_strip, int index);
-  void BuildForWebApp(TabStripModel* tab_strip, int index);
-  void BuildSendTabToSelfSubmenu(TabStripModel* tab_strip, int index);
+  void Build(int index);
+  void BuildForWebApp(int index);
+  void BuildSendTabToSelfSubmenu(int index);
   void BuildLegacySendTabToSelfItem();
 
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
@@ -65,6 +64,8 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
       send_tab_to_self_submenu_delegate_;
 
+  // `tab_strip_` needs to outlive this class.
+  raw_ptr<TabStripModel> tab_strip_;
   raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 };
 
