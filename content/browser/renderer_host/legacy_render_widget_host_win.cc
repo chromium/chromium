@@ -432,7 +432,11 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
   if (!msg_handled &&
       (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
     ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
-    SetMsgHandled(TRUE);
+    // DefWindowProc() may result in |this| being deleted (e.g. if a nested
+    // modal loop is entered and the tab is closed). See crbug.com/503793153.
+    if (ref) {
+      SetMsgHandled(TRUE);
+    }
   }
   return ret;
 }
