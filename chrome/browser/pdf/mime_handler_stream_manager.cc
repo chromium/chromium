@@ -16,7 +16,6 @@
 #include "base/strings/to_string.h"
 #include "base/supports_user_data.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/pdf/browser/pdf_frame_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -684,10 +683,14 @@ bool MimeHandlerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged(
     return false;
   }
 
-  content::RenderFrameHost* embedder_host =
-      pdf_frame_util::GetEmbedderHost(old_host);
+  // `IsPdfContentHost()` validated: parent is extension host, grandparent is
+  // embedder.
+  content::RenderFrameHost* embedder_host = old_host->GetParent()->GetParent();
   CHECK(embedder_host);
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
+
+  // Let the delegate validate content-frame invariants.
+  stream_info->delegate()->ValidateContentFrameHost(old_host, stream_info);
 
   // In a PDF load, the initial RFH for the PDF content frame is created for the
   // navigation to the PDF stream URL. This navigation is canceled in

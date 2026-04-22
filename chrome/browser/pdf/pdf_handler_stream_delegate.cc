@@ -15,6 +15,7 @@
 #include "extensions/browser/mime_handler/stream_info.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace pdf {
@@ -61,6 +62,16 @@ void PdfHandlerStreamDelegate::OnExtensionFrameFinished(
   // Set ZoomController on the extension host.
   zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
       navigation_handle->GetWebContents(), render_frame_host->GetGlobalId());
+}
+
+void PdfHandlerStreamDelegate::ValidateContentFrameHost(
+    content::RenderFrameHost* content_host,
+    extensions::StreamInfo* stream_info) {
+  CHECK(content_host);
+  CHECK(stream_info);
+  CHECK(chrome_pdf::features::IsOopifPdfEnabled());
+  CHECK(IsPdfExtensionOrigin(
+      content_host->GetParent()->GetLastCommittedOrigin()));
 }
 
 void PdfHandlerStreamDelegate::OnStreamClaimed(

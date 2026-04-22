@@ -41,6 +41,11 @@ class MimeHandlerStreamDelegate {
       content::NavigationHandle* navigation_handle,
       StreamInfo* stream_info);
 
+  // Validates that `content_host` belongs to a legitimate content frame for
+  // this handler type. Default implementation is a no-op.
+  virtual void ValidateContentFrameHost(content::RenderFrameHost* content_host,
+                                        StreamInfo* stream_info);
+
   // Returns true if the manager should wire up MimeHandlerViewContainerManager
   // postMessage support for this content-frame navigation. Default: false.
   virtual bool ShouldSetUpPostMessage() const;

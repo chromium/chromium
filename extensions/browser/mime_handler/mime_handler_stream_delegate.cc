@@ -20,6 +20,10 @@ void MimeHandlerStreamDelegate::OnExtensionFrameFinished(
     content::NavigationHandle* navigation_handle,
     StreamInfo* stream_info) {}
 
+void MimeHandlerStreamDelegate::ValidateContentFrameHost(
+    content::RenderFrameHost* content_host,
+    StreamInfo* stream_info) {}
+
 void MimeHandlerStreamDelegate::OnStreamClaimed(
     content::RenderFrameHost* embedder_host,
     StreamInfo* stream_info) {}

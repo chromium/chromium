@@ -21,6 +21,8 @@ class PdfHandlerStreamDelegate : public extensions::MimeHandlerStreamDelegate {
                        extensions::StreamInfo* stream_info) override;
   void OnExtensionFrameFinished(content::NavigationHandle* navigation_handle,
                                 extensions::StreamInfo* stream_info) override;
+  void ValidateContentFrameHost(content::RenderFrameHost* content_host,
+                                extensions::StreamInfo* stream_info) override;
   bool ShouldSetUpPostMessage() const override;
   void OnPostMessageSetUp(content::RenderFrameHost* embedder_host) override;
   bool PluginCanSave() const override;

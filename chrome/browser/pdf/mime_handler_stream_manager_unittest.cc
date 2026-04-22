@@ -54,6 +54,10 @@ class MockMimeHandlerStreamDelegate
               (content::NavigationHandle*, extensions::StreamInfo*),
               (override));
   MOCK_METHOD(void,
+              ValidateContentFrameHost,
+              (content::RenderFrameHost*, extensions::StreamInfo*),
+              (override));
+  MOCK_METHOD(void,
               OnStreamClaimed,
               (content::RenderFrameHost*, extensions::StreamInfo*),
               (override));
@@ -547,8 +551,7 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
   // The extension host needs to have the PDF extension origin so that
-  // `pdf_frame_util::GetEmbedderHost()` can identify and get the embedder host
-  // in `MimeHandlerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged()`.
+  // `IsPdfContentHost()` can walk up to the embedder via the extension frame.
   content::OverrideLastCommittedOrigin(
       extension_host,
       url::Origin::Create(GURL(
@@ -578,6 +581,41 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
   EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       ContentRenderFrameHostChangedCallsValidateContentFrameHost) {
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+
+  EXPECT_CALL(*delegate_ptr,
+              ValidateContentFrameHost(content_host, stream_info));
+
+  // Trigger content host change. The content host has an empty last committed
+  // URL, so the stream should NOT be deleted (initial RFH changes are ignored).
+  manager->RenderFrameHostChanged(content_host, new_host);
+
+  ASSERT_TRUE(mime_handler_stream_manager());
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
 }
 
 // If the `content::RenderFrameHost` for the stream is deleted, then the stream
