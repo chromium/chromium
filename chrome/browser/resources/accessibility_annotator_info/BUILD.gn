@@ -2,12 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+if (is_chrome_branded) {
+  generate_grd("build_google_g_grdp") {
+    grd_prefix = "accessibility_annotator_info"
+    out_grd = "$target_gen_dir/google_g_cr23.grdp"
+    input_files = [ "google_g_cr23.svg" ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
+  }
+}
 
 build_webui("resources") {
   grd_prefix = "accessibility_annotator_info"
 
-  static_files = [ "accessibility_annotator_info.html" ]
+  static_files = [
+    "accessibility_annotator_info.html",
+    "keyboard.svg",
+  ]
 
   css_files = [ "accessibility_annotator_info.css" ]
 
@@ -29,4 +44,9 @@ build_webui("resources") {
   ]
 
   webui_context_type = "trusted"
+
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ ":build_google_g_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/google_g_cr23.grdp" ]
+  }
 }

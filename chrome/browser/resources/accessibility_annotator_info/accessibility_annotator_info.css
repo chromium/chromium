@@ -154,3 +154,14 @@ a {
   gap: 8px;
   width: 100%;
 }
+
+<if expr="_google_chrome">
+.g-icon {
+  background: linear-gradient(73deg, #3186FF 5.47%, #346BF1 57.9%, #4FA0FF 121.98%);
+  -webkit-mask-image: url(google_g_cr23.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  width: 16px;
+  height: 16px;
+}
+</if>

@@ -28,7 +28,7 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
     <div class="features-container">
       <div class="feature-item">
         <div class="feature-icon">
-          <!-- TODO(crbug.com/488321731): Add icon here. -->
+          <img src="keyboard.svg" alt="">
         </div>
         <div class="feature-text">
           <span class="pill">@@</span> $i18n{privacyPageTitle}
@@ -36,7 +36,7 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
       </div>
       <div class="feature-item">
         <div class="feature-icon">
-          <!-- TODO(crbug.com/488321731): Add icon here. -->
+          <div class="g-icon"></div>
         </div>
         <div class="feature-text">
           $i18n{privacyPageTitle}
