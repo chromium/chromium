@@ -1923,13 +1923,6 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // since we did load the current document, but we don't want to reload it if
   // that is the case. See crbug.com/1125106.
   CHECK(!request->IsSameDocument());
-  // TODO(crbug.com/40055210): Verify that we're not resetting the document
-  // sequence number in a same-document navigation. This method will reset it
-  // if the site instance changed. But this method should not be called for a
-  // same document history navigation. Change back to a CHECK() once this is
-  // resolved.
-  if (request->IsSameDocument())
-    base::debug::DumpWithoutCrashing();
 
   // Navigations for inactive frames should be disallowed, except for the
   // following two cases:
