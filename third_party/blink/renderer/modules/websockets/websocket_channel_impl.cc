@@ -43,6 +43,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1093,13 +1094,29 @@ void WebSocketChannelImpl::ConsumeDataFrame(bool fin,
       break;
   }
 
-  size_t message_size_so_far = message_chunks_->GetSize();
-  const base::CheckedNumeric<size_t> checked_message_size =
-      base::CheckAdd(message_size_so_far, data.size());
-  if (checked_message_size.IsInvalidOr([this](size_t message_size) {
-        return message_size > max_message_size_;
-      })) {
+  // data.size() is always smaller than a mojo pipe, and
+  // message_chunks_->GetSize() is always smaller than 4GB, so this sum never
+  // overflows.
+  const size_t message_size =
+      base::CheckAdd(message_chunks_->GetSize(), data.size()).ValueOrDie();
+
+  // All characters representable in 1 UTF-16 code unit are represented in 3 or
+  // less bytes in UTF-8. Characters that require 4 bytes of UTF-8 are outside
+  // the basic multilingual plane, and so require 2 code units of UTF-16, so
+  // the ratio is never greater than 3.
+  static constexpr size_t kMaxUtf8BytesPerUtf16CodeUnit = 3u;
+  static constexpr size_t kMaxWtfSizeT = std::numeric_limits<wtf_size_t>::max();
+  static constexpr size_t kMaxStringBytes = std::min<size_t>(
+      kMaxWtfSizeT,
+      base::ValueOrDieForType<size_t>(base::CheckMul(
+          v8::String::kMaxLength, kMaxUtf8BytesPerUtf16CodeUnit)));
+  const size_t max_size = std::min(
+      max_message_size_,
+      receiving_message_type_is_text_ ? kMaxStringBytes : kMaxWtfSizeT);
+  if (message_size > max_size) {
     message_chunks_->Clear();
+    // TODO(crbug.com/491996744): This sends Close code 1001, "Going
+    // Away". It should actually send 1009, "Message Too Big".
     FailAsError("Message size is too large.");
     return;
   }
@@ -1123,7 +1140,6 @@ void WebSocketChannelImpl::ConsumeDataFrame(bool fin,
   Vector<base::span<const uint8_t>> chunks = message_chunks_->GetView();
   if (!data.empty()) {
     chunks.push_back(data);
-    message_size_so_far += data.size();
   }
   auto opcode = receiving_message_type_is_text_
                     ? WebSocketOpCode::kOpCodeText
@@ -1138,8 +1154,8 @@ void WebSocketChannelImpl::ConsumeDataFrame(bool fin,
     // or equal to `wtf_size_t` max value, due to the check earlier in this
     // function. `max_message_size_` is always equal to `wtf_size_t` max value
     // in production.
-    String message = GetTextMessage(
-        chunks, base::checked_cast<wtf_size_t>(message_size_so_far));
+    String message =
+        GetTextMessage(chunks, base::checked_cast<wtf_size_t>(message_size));
     if (message.IsNull()) {
       FailAsError("Could not decode a text frame as UTF-8.");
     } else {
