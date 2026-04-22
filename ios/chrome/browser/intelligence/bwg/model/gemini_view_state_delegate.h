@@ -18,12 +18,6 @@
 // Switch to `viewState`.
 - (void)switchToViewState:(ios::provider::GeminiViewState)viewState;
 
-// Called when the processing status changes.
-- (void)didUpdateProcessingStatus:
-            (ios::provider::GeminiClientMode)processingStatus
-                        sessionID:(NSString*)sessionID
-                   conversationID:(NSString*)conversationID;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_DELEGATE_H_

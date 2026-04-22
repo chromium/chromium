@@ -100,10 +100,11 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
                    sessionID:(NSString*)sessionID
               conversationID:(NSString*)conversationID;
 
-// Called when the processing status changes.
-- (void)didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processStatus
-                        sessionID:(NSString*)sessionID
-                   conversationID:(NSString*)conversationID;
+// Called when the Live processing status changes.
+- (void)didChangeLiveProcessStatus:
+            (ios::provider::GeminiClientMode)processStatus
+                         sessionID:(NSString*)sessionID
+                    conversationID:(NSString*)conversationID;
 
 // Called when gemini response is cancelled.
 - (void)responseCancelledWithReason:(GeminiCancelType)reason

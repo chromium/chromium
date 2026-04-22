@@ -143,23 +143,12 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self.geminiViewStateDelegate didSwitchToViewState:viewState];
 }
 
-- (void)didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processStatus
-                        sessionID:(NSString*)sessionID
-                   conversationID:(NSString*)conversationID {
-  [self.geminiViewStateDelegate didUpdateProcessingStatus:processStatus
-                                                sessionID:sessionID
-                                           conversationID:conversationID];
-}
-
-// TODO(crbug.com/504596190): Remove this method when internal code doesn't use
-// anymore.
 - (void)didChangeLiveProcessStatus:
             (ios::provider::GeminiClientMode)processStatus
                          sessionID:(NSString*)sessionID
                     conversationID:(NSString*)conversationID {
-  [self.geminiViewStateDelegate didUpdateProcessingStatus:processStatus
-                                                sessionID:sessionID
-                                           conversationID:conversationID];
+  // TODO(crbug.com/502965949): Pass on the process status to make the
+  // appropriate changes (e.g., page context generation on kListening)
 }
 
 - (void)UIDidAppearWithClientID:(NSString*)clientID
