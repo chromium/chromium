@@ -39,6 +39,7 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ai_overlay_dialog:resources",
     "//chrome/browser/search_engines",
+    "//chrome/browser/translate",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ai_overlay_dialog",

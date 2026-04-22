@@ -4,6 +4,7 @@
 
 module ai_overlay_dialog.mojom;
 
+import "mojo/public/mojom/base/empty.mojom";
 import "url/mojom/url.mojom";
 
 struct SwitchTabResult {
@@ -34,10 +35,11 @@ interface AiOverlayTools {
   // Open a URL.
   //
   // url: Exact URL. Use PerformSearch to find a page instead of guessing a URL.
-  OpenUrl(string url, bool new_tab) => result<bool, string>;
+  OpenUrl(string url, bool new_tab) => result<mojo_base.mojom.Empty, string>;
 
   // Search using the default search engine.
-  PerformSearch(string query, bool new_tab) => result<bool, string>;
+  PerformSearch(
+      string query, bool new_tab) => result<mojo_base.mojom.Empty, string>;
 
   // Switch to another open tab by fuzzy matching name or URL.
   //
@@ -45,38 +47,45 @@ interface AiOverlayTools {
   SwitchTab(string query) => result<SwitchTabResult, string>;
 
   // Close the current browser tab.
-  CloseCurrentTab() => result<bool, string>;
+  CloseCurrentTab() => result<mojo_base.mojom.Empty, string>;
 
   // Go back to the previous page in history.
-  GoBack() => result<bool, string>;
+  GoBack() => result<mojo_base.mojom.Empty, string>;
 
   // Go forward to the next page in history.
-  GoForward() => result<bool, string>;
+  GoForward() => result<mojo_base.mojom.Empty, string>;
 
   // Refresh the current page.
-  ReloadPage() => result<bool, string>;
+  ReloadPage() => result<mojo_base.mojom.Empty, string>;
 
   // Page tools
 
   // Highlight and scroll to specific text on the page.
   //
   // query: A short phrase copied exactly as it appears in the page content.
-  FindAndHighlight(string query) => result<bool, string>;
+  FindAndHighlight(string query) => result<mojo_base.mojom.Empty, string>;
 
   // Scroll the viewport in a specific direction.
   Scroll(ScrollGranularity granularity, double magnitude)
-      => result<bool, string>;
+      => result<mojo_base.mojom.Empty, string>;
 
   // Media tools
 
   // Resume video playback.
-  PlayVideo() => result<bool, string>;
+  PlayVideo() => result<mojo_base.mojom.Empty, string>;
 
   // Pause video playback.
-  PauseVideo() => result<bool, string>;
+  PauseVideo() => result<mojo_base.mojom.Empty, string>;
 
   // Jump the video to a specific timecode.
   //
   // timecode: from the video transcript. Format: "1:45", "0:30", "1:02:15"
-  SeekToTimestamp(string timecode) => result<bool, string>;
+  SeekToTimestamp(string timecode) => result<mojo_base.mojom.Empty, string>;
+
+  // Translate the current page.
+  //
+  // target_language: Target language code (e.g. "en", "es", "fr").
+  //                  If empty, translates to the user's default language.
+  TranslatePage(
+      string target_language) => result<mojo_base.mojom.Empty, string>;
 };

@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -28,6 +29,8 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -98,7 +101,7 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
       new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
               : WindowOpenDisposition::CURRENT_TAB;
   browser_->OpenGURL(url, disposition);
-  std::move(callback).Run(true);
+  std::move(callback).Run(std::monostate());
 }
 
 void AiOverlayTools::PerformSearch(const std::string& query,
@@ -155,7 +158,7 @@ void AiOverlayTools::CloseCurrentTab(CloseCurrentTabCallback callback) {
   RecordToolCallInvoked("CloseCurrentTab");
   if (browser_->GetTabStripModel()->count() > 0) {
     browser_->GetTabStripModel()->CloseSelectedTabs();
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
   } else {
     std::move(callback).Run(base::unexpected("No active tab to close"));
   }
@@ -167,7 +170,7 @@ void AiOverlayTools::GoBack(GoBackCallback callback) {
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoBack()) {
     contents->GetController().GoBack();
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot go back"));
@@ -179,7 +182,7 @@ void AiOverlayTools::GoForward(GoForwardCallback callback) {
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoForward()) {
     contents->GetController().GoForward();
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot go forward"));
@@ -191,7 +194,7 @@ void AiOverlayTools::ReloadPage(ReloadPageCallback callback) {
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     contents->GetController().Reload(content::ReloadType::NORMAL, true);
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot reload page"));
@@ -217,7 +220,7 @@ void AiOverlayTools::AnnotationTask::DidFinishAttachment(
   if (attachment_result == blink::mojom::AttachmentResult::kSuccess) {
     agent_remote_->ScrollIntoView(/*applies_focus=*/true);
     if (callback_) {
-      std::move(callback_).Run(true);
+      std::move(callback_).Run(std::monostate());
     }
   } else {
     if (callback_) {
@@ -305,7 +308,7 @@ void AiOverlayTools::Scroll(
   widget_host->ForwardKeyboardEvent(
       input::NativeWebKeyboardEvent(released_event));
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(std::monostate());
 }
 
 void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
@@ -321,7 +324,7 @@ void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
     media_session->Resume(content::MediaSession::SuspendType::kUI);
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
@@ -340,7 +343,7 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
     media_session->Suspend(content::MediaSession::SuspendType::kUI);
-    std::move(callback).Run(true);
+    std::move(callback).Run(std::monostate());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
@@ -363,13 +366,54 @@ void AiOverlayTools::SeekToTimestamp(const std::string& timecode,
     if (seek_time.has_value() &&
         (seek_time.value().is_positive() || seek_time.value().is_zero())) {
       media_session->SeekTo(seek_time.value());
-      std::move(callback).Run(true);
+      std::move(callback).Run(std::monostate());
     } else {
       std::move(callback).Run(base::unexpected("Invalid timecode"));
     }
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
+}
+
+void AiOverlayTools::TranslatePage(const std::string& target_language,
+                                   TranslatePageCallback callback) {
+  content::WebContents* contents =
+      browser_->GetTabStripModel()->GetActiveWebContents();
+  if (!contents) {
+    std::move(callback).Run(base::unexpected("No active tab"));
+    return;
+  }
+
+  ChromeTranslateClient* translate_client =
+      ChromeTranslateClient::FromWebContents(contents);
+  if (!translate_client) {
+    std::move(callback).Run(base::unexpected("Translation not supported"));
+    return;
+  }
+
+  translate::TranslateManager* translate_manager =
+      translate_client->GetTranslateManager();
+  if (!translate_manager) {
+    std::move(callback).Run(base::unexpected("Translation not available"));
+    return;
+  }
+
+  if (target_language.empty()) {
+    translate_manager->ShowTranslateUI(/*auto_translate=*/true,
+                                       /*triggered_from_menu=*/true);
+  } else {
+    if (!translate::TranslateDownloadManager::IsSupportedLanguage(
+            target_language)) {
+      std::move(callback).Run(base::unexpected("Unsupported language"));
+      return;
+    }
+
+    translate_manager->ShowTranslateUI(std::nullopt, target_language,
+                                       /*auto_translate=*/true,
+                                       /*triggered_from_menu=*/true);
+  }
+
+  std::move(callback).Run(std::monostate());
 }
 
 }  // namespace ttc

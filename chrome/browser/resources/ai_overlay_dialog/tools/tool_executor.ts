@@ -32,6 +32,11 @@ interface ScrollArgs {
 interface SeekToTimestampArgs {
   timecode: string;
 }
+
+interface TranslatePageArgs {
+  target_language: string;
+}
+
 type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
     {name: 'perform_search', args: PerformSearchArgs}|
     {name: 'switch_tab', args: SwitchTabArgs}|
@@ -43,7 +48,8 @@ type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
     {name: 'go_forward', args: Record<string, unknown>}|
     {name: 'reload_page', args: Record<string, unknown>}|
     {name: 'play_video', args: Record<string, unknown>}|
-    {name: 'pause_video', args: Record<string, unknown>};
+    {name: 'pause_video', args: Record<string, unknown>}|
+    {name: 'translate_page', args: TranslatePageArgs};
 
 export class ToolExecutor {
   private readonly toolsRemote: AiOverlayToolsRemote;
@@ -109,6 +115,10 @@ export class ToolExecutor {
           break;
         case 'seek_to_timestamp': {
           await this.toolsRemote.seekToTimestamp(call.args.timecode);
+          break;
+        }
+        case 'translate_page': {
+          await this.toolsRemote.translatePage(call.args.target_language);
           break;
         }
         default:
