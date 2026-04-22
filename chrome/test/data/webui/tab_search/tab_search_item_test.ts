@@ -180,4 +180,14 @@ suite('TabSearchItemTest', () => {
           `Should not have thrown error: '${(e as Error).message}`);
     }
   });
+
+  // Regression test for crbug.com/504594425
+  test('SecondaryTextDirection', () => {
+    const secondaryTextInner =
+        tabSearchItem.shadowRoot.querySelector('#secondaryTextInner')!;
+    assertEquals(
+        'ltr',
+        (secondaryTextInner.computedStyleMap().get('direction') as CSSUnitValue)
+            .value);
+  });
 });

@@ -29,7 +29,9 @@ export function getHtml(this: TabSearchItemElement) {
       <div id="groupTitle"></div>
       <div class="separator">•</div>
     ` : ''}
-    <div id="secondaryText" ?hidden="${this.hideUrl}"></div>
+    <div id="secondaryText" ?hidden="${this.hideUrl}">
+      <bdi id="secondaryTextInner"></bdi>
+    </div>
     ${!this.hideTimestamp ? html`
       <div class="separator" ?hidden="${!this.data.hostname || this.hideUrl}">•
       </div>

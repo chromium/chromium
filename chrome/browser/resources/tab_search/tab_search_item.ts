@@ -47,6 +47,7 @@ export interface TabSearchItemElement {
   $: {
     primaryText: HTMLElement,
     secondaryText: HTMLElement,
+    secondaryTextInner: HTMLElement,
   };
 }
 
@@ -248,7 +249,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     const data = this.data;
     ([
       ['tab.title', this.$.primaryText],
-      ['hostname', this.$.secondaryText],
+      ['hostname', this.$.secondaryTextInner],
       ['tabGroup.title', this.shadowRoot.querySelector('#groupTitle')],
     ] as Array<[string, HTMLElement | null]>)
         .forEach(([path, element]) => {
@@ -262,7 +263,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     // Show chrome:// if it's a chrome internal url
     const protocol = new URL(normalizeURL(data.tab.url)).protocol;
     if (protocol === 'chrome:') {
-      this.$.secondaryText.prepend(document.createTextNode('chrome://'));
+      this.$.secondaryTextInner.prepend(document.createTextNode('chrome://'));
     }
   }
 
