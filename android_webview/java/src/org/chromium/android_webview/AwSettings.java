@@ -203,7 +203,7 @@ public class AwSettings {
     private int mMixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
     private int mAttributionBehavior = AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
     private boolean mIgnoreDuplicateNavEnabled;
-    private int mIgnoreDuplicateNavThresholdMs = -1;
+    private long mIgnoreDuplicateNavThresholdMs = -1;
 
     @SpeculativeLoadingAllowedFlags
     private int mSpeculativeLoadingAllowedFlags =
@@ -834,7 +834,7 @@ public class AwSettings {
      *
      * @param thresholdMs the threshold in milliseconds.
      */
-    public void setIgnoreDuplicateNavThreshold(int thresholdMs) {
+    public void setIgnoreDuplicateNavThreshold(long thresholdMs) {
         synchronized (mAwSettingsLock) {
             if (mIgnoreDuplicateNavThresholdMs != thresholdMs) {
                 mIgnoreDuplicateNavThresholdMs = thresholdMs;
@@ -844,7 +844,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    public int getIgnoreDuplicateNavThreshold() {
+    public long getIgnoreDuplicateNavThreshold() {
         synchronized (mAwSettingsLock) {
             return mIgnoreDuplicateNavThresholdMs;
         }
@@ -2112,7 +2112,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private int getIgnoreDuplicateNavThresholdLocked() {
+    private long getIgnoreDuplicateNavThresholdLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mIgnoreDuplicateNavThresholdMs;
     }

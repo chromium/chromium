@@ -431,7 +431,7 @@ public class AwNavigationClientTest extends AwParameterizedTest {
 
         // Enable the feature and set a custom threshold.
         mActivityTestRule.getAwSettingsOnUiThread(awContents).setIgnoreDuplicateNavEnabled(true);
-        mActivityTestRule.getAwSettingsOnUiThread(awContents).setIgnoreDuplicateNavThreshold(3000);
+        mActivityTestRule.getAwSettingsOnUiThread(awContents).setIgnoreDuplicateNavThreshold(3000L);
 
         // Load an empty page to exit the initial empty document state. Without this, the initial
         // navigation would have 'should_replace_current_entry' set to true, causing a mismatch with

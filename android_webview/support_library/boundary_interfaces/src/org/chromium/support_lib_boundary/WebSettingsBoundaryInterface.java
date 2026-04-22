@@ -184,7 +184,7 @@ public interface WebSettingsBoundaryInterface {
 
     boolean getIgnoreDuplicateNavEnabled();
 
-    void setIgnoreDuplicateNavThreshold(int thresholdMs);
+    void setIgnoreDuplicateNavThreshold(long thresholdMs);
 
-    int getIgnoreDuplicateNavThreshold();
+    long getIgnoreDuplicateNavThreshold();
 }

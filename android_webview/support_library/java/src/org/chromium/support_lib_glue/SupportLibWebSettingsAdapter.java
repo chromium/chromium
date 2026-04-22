@@ -654,7 +654,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setIgnoreDuplicateNavThreshold(int thresholdMs) {
+    public void setIgnoreDuplicateNavThreshold(long thresholdMs) {
         try (TraceEvent ignored =
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.SET_IGNORE_DUPLICATE_NAV_THRESHOLD")) {
@@ -664,7 +664,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public int getIgnoreDuplicateNavThreshold() {
+    public long getIgnoreDuplicateNavThreshold() {
         try (TraceEvent ignored =
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.GET_IGNORE_DUPLICATE_NAV_THRESHOLD")) {

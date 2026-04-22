@@ -778,7 +778,7 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->ignore_duplicate_nav_enabled =
       Java_AwSettings_getIgnoreDuplicateNavEnabledLocked(env, obj);
-  int ignore_duplicate_nav_threshold_ms =
+  int64_t ignore_duplicate_nav_threshold_ms =
       Java_AwSettings_getIgnoreDuplicateNavThresholdLocked(env, obj);
   // If the threshold is -1, which means it is the default value in WebView,
   // then do not set the threshold in WebPreferences.

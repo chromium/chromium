@@ -4037,11 +4037,11 @@ public class AwSettingsTest {
 
         // Verify default values: feature disabled and threshold set to -1 (default).
         Assert.assertFalse(settings.getIgnoreDuplicateNavEnabled());
-        Assert.assertEquals(-1, settings.getIgnoreDuplicateNavThreshold());
+        Assert.assertEquals(-1L, settings.getIgnoreDuplicateNavThreshold());
 
         // Enable the feature and set a custom threshold.
         settings.setIgnoreDuplicateNavEnabled(true);
-        int customThreshold = 1000;
+        long customThreshold = 1000L;
         settings.setIgnoreDuplicateNavThreshold(customThreshold);
         Assert.assertTrue(settings.getIgnoreDuplicateNavEnabled());
         Assert.assertEquals(customThreshold, settings.getIgnoreDuplicateNavThreshold());
