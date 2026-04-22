@@ -324,6 +324,13 @@ class CoverageReportPostProcessor(object):
         return path.replace(mapping[0], mapping[1], 1)
     return path
 
+  def _MapFromLocal(self, path):
+    """Maps a local path back to the path from the coverage data."""
+    for mapping in self.path_map:
+      if path.startswith(mapping[1]):
+        return path.replace(mapping[1], mapping[0], 1)
+    return path
+
   def CalculatePerDirectoryCoverageSummary(self, per_file_coverage_summary):
     """Calculates per directory coverage summary."""
     logging.debug('Calculating per-directory coverage summary.')
@@ -437,7 +444,9 @@ class CoverageReportPostProcessor(object):
     """Given a file path, returns the corresponding html report path."""
     assert os.path.isfile(
         self._MapToLocal(file_path)), '"%s" is not a file.' % file_path
-    html_report_path = os.extsep.join([GetFullPath(file_path), 'html'])
+
+    unmapped_file_path = self._MapFromLocal(file_path)
+    html_report_path = os.extsep.join([GetFullPath(unmapped_file_path), 'html'])
 
     return self.CombineAbsolutePaths(self.html_file_root_dir, html_report_path)
 
