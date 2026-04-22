@@ -66,16 +66,6 @@ public interface SyncService {
     @Nullable CoreAccountInfo getAccountInfo();
 
     /**
-     * Checks whether the primary account is consented to run Sync (the feature). Note that even if
-     * this is true, other reasons might prevent Sync from actually starting up.
-     *
-     * @return true if the primary account is consented to Sync (the feature), false otherwise.
-     */
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-    // codebase. See ConsentLevel::kSync documentation for details.
-    boolean hasSyncConsent();
-
-    /**
      * Gets the set of data types that are currently syncing.
      *
      * <p>This is affected by whether sync is on.

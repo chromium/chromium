@@ -109,13 +109,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean hasSyncConsent() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().hasSyncConsent(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public Set<Integer> getActiveDataTypes() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -525,8 +518,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         GoogleServiceAuthError getAuthError(long nativeSyncServiceAndroidBridge);
 
         @Nullable CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
-
-        boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
 
         boolean isPassphrasePromptMutedForCurrentProductVersion(
                 long nativeSyncServiceAndroidBridge);

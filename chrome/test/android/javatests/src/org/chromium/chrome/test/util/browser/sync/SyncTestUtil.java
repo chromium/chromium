@@ -49,17 +49,6 @@ public final class SyncTestUtil {
                 });
     }
 
-    /**
-     * Returns whether the user has sync consent.
-     *
-     * <p>TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-     * codebase. See ConsentLevel::kSync documentation for details.
-     */
-    public static boolean hasSyncConsent() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> getSyncServiceForLastUsedProfile().hasSyncConsent());
-    }
-
     /** Returns whether sync-the-feature is enabled. */
     public static boolean isSyncFeatureEnabled() {
         return ThreadUtils.runOnUiThreadBlocking(
@@ -78,20 +67,6 @@ public final class SyncTestUtil {
         CriteriaHelper.pollUiThread(
                 () -> getSyncServiceForLastUsedProfile().isSyncFeatureEnabled(),
                 "Timed out waiting for sync to become enabled.",
-                TIMEOUT_MS,
-                INTERVAL_MS);
-    }
-
-    /**
-     * Waits for hasSyncConsent() to return true.
-     *
-     * <p>TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-     * codebase. See ConsentLevel::kSync documentation for details.
-     */
-    public static void waitForSyncConsent() {
-        CriteriaHelper.pollUiThread(
-                () -> getSyncServiceForLastUsedProfile().hasSyncConsent(),
-                "Timed out waiting for sync consent.",
                 TIMEOUT_MS,
                 INTERVAL_MS);
     }

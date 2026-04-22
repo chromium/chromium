@@ -29,7 +29,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -88,13 +87,8 @@ public class PassphraseCreationDialogFragment extends DialogFragment
 
     private SpannableString getInstructionsText() {
         assert mProfile != null : "Profile should be non-null.";
-        boolean shouldReplaceSyncSettingsWithAccountSettings =
-                !assumeNonNull(SyncServiceFactory.getForProfile(mProfile)).hasSyncConsent();
         return SpanApplier.applySpans(
-                getString(
-                        shouldReplaceSyncSettingsWithAccountSettings
-                                ? R.string.sync_encryption_create_passphrase
-                                : R.string.legacy_sync_encryption_create_passphrase),
+                getString(R.string.sync_encryption_create_passphrase),
                 new SpanInfo(
                         "BEGIN_LINK",
                         "END_LINK",

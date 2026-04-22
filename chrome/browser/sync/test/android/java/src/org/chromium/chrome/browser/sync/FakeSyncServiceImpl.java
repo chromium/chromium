@@ -225,11 +225,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean hasSyncConsent() {
-        return mDelegate.hasSyncConsent();
-    }
-
-    @Override
     public Set<Integer> getActiveDataTypes() {
         return mDelegate.getActiveDataTypes();
     }

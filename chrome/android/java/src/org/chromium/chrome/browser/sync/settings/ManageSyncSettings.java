@@ -321,7 +321,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void setupAccountSettings(Profile profile) {
-        assert !mSyncService.hasSyncConsent();
         mPageTitle.set(getString(R.string.account_settings_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.unified_account_settings_preferences);
 
@@ -365,7 +364,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void setupAccountDataTypePreferences() {
-        assert !mSyncService.hasSyncConsent();
         mSyncTypeSwitchPreferencesMap = new HashMap<>();
         mSyncTypeSwitchPreferencesMap.put(
                 UserSelectableType.AUTOFILL, findPreference(PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));

@@ -348,10 +348,6 @@ SyncServiceAndroidBridge::GetAccountInfo(JNIEnv* env) {
              : ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
-bool SyncServiceAndroidBridge::HasSyncConsent() {
-  return native_sync_service_->HasSyncConsent();
-}
-
 bool SyncServiceAndroidBridge::
     IsPassphrasePromptMutedForCurrentProductVersion() {
   return native_sync_service_->GetUserSettings()

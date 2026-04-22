@@ -81,7 +81,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
                    const base::android::JavaRef<jobject>& callback);
   GoogleServiceAuthError GetAuthError();
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
-  bool HasSyncConsent();
   bool IsPassphrasePromptMutedForCurrentProductVersion();
   void MarkPassphrasePromptMutedForCurrentProductVersion();
   bool ShouldOfferTrustedVaultOptIn();
