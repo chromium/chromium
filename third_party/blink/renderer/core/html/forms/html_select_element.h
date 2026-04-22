@@ -359,7 +359,17 @@ class CORE_EXPORT HTMLSelectElement final
   void DefaultEventHandler(Event&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
-  void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
+  // UpdateAllSelectedcontentsSingle and UpdateAllSelectedcontentsMultiple both
+  // clone the selected option(s) into all descendant selectedcontent elements.
+  // the Single method is for single-selects, and the Multiple method is for
+  // multi-selects. These methods are separate because the single-select case
+  // can use the cached currently-selected option element as an optimization.
+  void UpdateAllSelectedcontentsSingle(HTMLOptionElement*);
+  void UpdateAllSelectedcontentsMultiple();
+  // UpdateSelectedcontent clones the contents of all selected option
+  // elements into the provided selectedcontent element. This is called when the
+  // provided selectedcontent is added to the subtree of this select element.
+  void UpdateIndividualSelectedcontent(HTMLSelectedContentElement&);
 
   // Returns the localized "X selected" text used for MenuList multiple select
   // elements.

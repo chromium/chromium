@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/357649033">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select multiple size=1>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option class=one value=one selected>
+    <span class=one>span</span> one
+  </option>
+  <option class=two value=two selected>
+    <span class=two>span</span> two
+  </option>
+  <option class=three value=three>
+    <span class=three>span</span> three
+  </option>
+</select>
+
+<script>
+function expectedHtml(options) {
+  let output = '';
+  for (const option of options) {
+    output += `<div>${option.innerHTML}</div>`;
+  }
+  return output;
+}
+
+test(() => {
+  const select = document.querySelector('select');
+  const optionOne = document.querySelector('option.one');
+  const optionTwo = document.querySelector('option.two');
+  const optionThree = document.querySelector('option.three');
+  const selectedcontent = document.querySelector('selectedcontent');
+
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne, optionTwo]),
+    'The innerHTML of <selectedcontent> should initially match the innerHTML of the initially selected options.');
+
+  optionTwo.selected = false;
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne]),
+    'The innerHTML of <selectedcontent> should update after de-selecting option two.');
+
+  optionThree.selected = true;
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne, optionThree]),
+    'The innerHTML of <selectedcontent> should update after selecting option three.');
+
+  const optionFour = document.createElement('option');
+  optionFour.textContent = 'four';
+  optionFour.selected = true;
+  select.appendChild(optionFour);
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne, optionThree, optionFour]),
+    'The selectedcontent should update after appending a selected option.');
+
+  optionOne.remove();
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionThree, optionFour]),
+    'The selectedcontent should update after removing a selected option.');
+}, '<selectedcontent> should support <select multiple>.');
+</script>

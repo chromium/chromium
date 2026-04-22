@@ -5132,6 +5132,15 @@
       depends_on: ["SelectedcontentSpec"],
     },
     {
+      // Makes the <selectedcontent> element work in <select multiple> by
+      // cloning the contents for each option which is selected into the
+      // <selectedcontent> element.
+      // https://issues.chromium.org/issues/483769482
+      name: "SelectedcontentMultiple",
+      status: "experimental",
+      depends_on: ["SelectedcontentSpec", "CustomizableSelectMultiplePopup"],
+    },
+    {
       // Aligns the implementation of the <selectedcontent> element with the
       // HTML spec. https://issues.chromium.org/issues/458113204
       name: "SelectedcontentSpec",

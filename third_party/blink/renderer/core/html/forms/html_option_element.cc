@@ -913,9 +913,12 @@ void HTMLOptionElement::ChooseOptionForCombobox(HTMLInputElement& input,
 void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   if (Selected()) {
-    auto* select = OwnerSelectElement();
-    if (select && !select->IsMultiple()) {
-      select->UpdateAllSelectedcontents(this);
+    if (auto* select = OwnerSelectElement()) {
+      if (select->IsMultiple()) {
+        select->UpdateAllSelectedcontentsMultiple();
+      } else {
+        select->UpdateAllSelectedcontentsSingle(this);
+      }
     }
   }
 }
