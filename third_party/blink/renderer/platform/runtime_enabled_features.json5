@@ -366,6 +366,7 @@
     // math consistent with visual bounding boxes.
     {
       name: "AIPageContentOuterBoxMapToAncestorSpace",
+      status: "stable",
     },
     {
       name: "AIPageContentPaidContentAnnotation",

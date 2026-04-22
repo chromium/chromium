@@ -184,25 +184,23 @@ third_party/blink/tools/run_web_tests.py -C out/Default content_extraction --res
 
 ### Feature Flags and APC-on-load
 
-Two Blink runtime flags control the experimental geometry and automatic build
-behaviour:
+`AIPageContentOuterBoxMapToAncestorSpace` reuses the GeometryMapper mapping for
+both the `outer_bounding_box` and `visible_bounding_box`. It is enabled by
+default because it is a stable Blink runtime feature.
 
-* `AIPageContentOuterBoxMapToAncestorSpace` reuses the GeometryMapper mapping
-  for both the `outer_bounding_box` and `visible_bounding_box`. Enable it to
-  exercise the new geometry pipeline.
-* `AIPageContentBuildOnLoadForTesting` forces every local root frame to build APC (in
-  actionable mode) immediately after load. This mirrors the behaviour used by
-  the AnnotatedPageContentExtraction Finch trial.
+`AIPageContentBuildOnLoadForTesting` forces every local root frame to build APC
+(in actionable mode) immediately after load. This mirrors the behaviour used by
+the AnnotatedPageContentExtraction Finch trial.
 
-For example, to launch content_shell with both Blink flags:
+For example, to launch content_shell with APC-on-load enabled:
 
 ```bash
 out/Default/content_shell \
-  --enable-blink-features=AIPageContentBuildOnLoadForTesting,AIPageContentOuterBoxMapToAncestorSpace
+  --enable-blink-features=AIPageContentBuildOnLoadForTesting
 ```
 
 A dedicated virtual test suite (`content-extraction`) exercises existing
-layout tests with these flags enabled:
+layout tests with APC-on-load enabled while reusing the default geometry path:
 
 ```bash
 third_party/blink/tools/run_web_tests.py \

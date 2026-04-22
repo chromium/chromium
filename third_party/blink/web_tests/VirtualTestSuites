@@ -290,7 +290,7 @@
       "transforms/rotate.html"
     ],
     "args": [
-      "--enable-blink-features=AIPageContentBuildOnLoadForTesting,AIPageContentOuterBoxMapToAncestorSpace"
+      "--enable-blink-features=AIPageContentBuildOnLoadForTesting"
     ],
     "owners": [
       "aleventhal@chromium.org"

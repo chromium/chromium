@@ -6705,8 +6705,8 @@ TEST_F(AIPageContentAgentTest, InlinePreWrapGeometry) {
 }
 
 TEST_F(AIPageContentAgentTest, IframeOuterBoxNotViewportClipped) {
-  // Enable the experimental outer-box mapping so GeometryMapper is used for
-  // both the visible and unclipped bounds.
+  // Force outer-box mapping on so GeometryMapper is used for both the visible
+  // and unclipped bounds.
   ScopedAIPageContentOuterBoxMapToAncestorSpaceForTest enable_outer_box_mapping(
       true);
   frame_test_helpers::LoadHTMLString(
