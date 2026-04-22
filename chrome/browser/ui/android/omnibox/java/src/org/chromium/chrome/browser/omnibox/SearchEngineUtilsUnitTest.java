@@ -676,4 +676,39 @@ public class SearchEngineUtilsUnitTest {
                 searchEngineUtils.getOmniboxHintText(
                         AutocompleteRequestType.IMAGE_GENERATION, mFuseboxSessionState));
     }
+
+    @Test
+    public void testGetOmniboxHintText_UseAskHintForNtp() {
+        SearchEngineUtils searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+        // Case 1: Feature disabled
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
+        configureSearchEngine("google", "Google");
+        searchEngineUtils.onTemplateURLServiceChanged();
+        assertEquals(
+                "Search Google or type URL",
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
+
+        // Case 2: Feature enabled, Search Engine is Google
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        configureSearchEngine("google", "Google");
+        searchEngineUtils.onTemplateURLServiceChanged();
+        assertEquals(
+                "Ask Google or type URL",
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
+
+        // Case 3: Feature enabled, Search Engine is NOT Google
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        configureSearchEngine("yahoo", "Yahoo");
+        searchEngineUtils.onTemplateURLServiceChanged();
+        assertEquals(
+                "Search Yahoo or type URL",
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
+
+        // Reset for testing
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
+    }
 }

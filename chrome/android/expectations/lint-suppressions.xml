@@ -378,9 +378,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(https://crbug.com/461840249): Remove the following 1 line after lint migrates to using merged manifests. -->
     <ignore regexp="The resource `R.string.menu` appears to be unused"/>
 
-    <!-- TODO(https://crbug.com/498955645): Start using this string. -->
-    <ignore regexp="The resource `R.string.omnibox_empty_ask_hint_with_dse_name` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

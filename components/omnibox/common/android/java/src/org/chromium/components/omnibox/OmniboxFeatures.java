@@ -171,6 +171,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowBottomSheetPopup =
             newBooleanParam(sOmniboxMultimodalInput, "show_bottom_sheet_popup", false);
 
+    public static final BooleanCachedFeatureParam sUseAskHintForNtp =
+            newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
 

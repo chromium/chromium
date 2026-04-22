@@ -268,7 +268,11 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                             R.string.omnibox_ai_mode_scope_placeholder_text;
                     case AutocompleteRequestType.IMAGE_GENERATION ->
                             R.string.omnibox_empty_hint_for_image_generation;
-                    default -> R.string.omnibox_empty_hint_with_dse_name;
+                    default ->
+                            OmniboxFeatures.sUseAskHintForNtp.getValue()
+                                            && mTemplateUrlService.isDefaultSearchEngineGoogle()
+                                    ? R.string.omnibox_empty_ask_hint_with_dse_name
+                                    : R.string.omnibox_empty_hint_with_dse_name;
                 };
 
         return OmniboxResourceProvider.getString(mContext, res, mSearchEngineName);
