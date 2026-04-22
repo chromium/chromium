@@ -157,7 +157,7 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
     // When the raw file media types feature is enabled, only set the mime type
     // to image if the file is an image, otherwise set it to unknown for all
     // other file types.
-    if (mime_type_has_image) {
+    if (mime_type_has_image && file_mime_type != "image/svg+xml") {
       mime_type = lens::MimeType::kImage;
     } else {
       mime_type = lens::MimeType::kUnknown;

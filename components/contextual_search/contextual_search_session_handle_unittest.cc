@@ -70,4 +70,25 @@ TEST_F(ContextualSearchSessionHandleTest,
                                       std::move(buffer), std::nullopt);
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       StartFileContextUploadFlow_SvgFallbackToUnknownWhenRawFilesEnabled) {
+  // Ensure the feature is enabled.
+  feature_list_.InitAndEnableFeature(
+      lens::features::kLensSendRawFileMediaTypes);
+
+  base::UnguessableToken token = handle_->CreateContextToken();
+
+  // Expect StartFileUploadFlow to be called with kUnknown for SVG.
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> input_data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kUnknown);
+      });
+
+  mojo_base::BigBuffer buffer;
+  handle_->StartFileContextUploadFlow(token, "test.svg", "image/svg+xml",
+                                      std::move(buffer), std::nullopt);
+}
+
 }  // namespace contextual_search
