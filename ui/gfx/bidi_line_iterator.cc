@@ -5,6 +5,7 @@
 #include "ui/gfx/bidi_line_iterator.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -32,6 +33,12 @@ BiDiLineIterator::~BiDiLineIterator() = default;
 
 bool BiDiLineIterator::Open(std::u16string_view text,
                             base::i18n::TextDirection direction) {
+  // A workaround for integer overflow in ICU. See crbug.com/504629701.
+  // We can remove this after fixing the ICU issue, and rolling out the ICU
+  // update.
+  constexpr size_t kIcuRunSize = sizeof(int32_t) * 3;
+  CHECK_LE(text.length(), std::numeric_limits<int32_t>::max() / kIcuRunSize);
+
   DCHECK(!bidi_);
   UErrorCode error = U_ZERO_ERROR;
   bidi_.reset(ubidi_openSized(static_cast<int>(text.length()), 0, &error));
