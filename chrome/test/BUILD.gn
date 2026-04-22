@@ -4187,7 +4187,6 @@ if (!is_android) {
       "//chrome/browser/webdata_services",
       "//chrome/common:mojo_bindings",
       "//components/contextual_tasks/public:feature_list",
-      "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/live_caption:live_translate",
       "//components/metrics/mapping",
       "//components/plus_addresses/core/browser:blocklist_data",
@@ -4872,8 +4871,10 @@ if (!is_android) {
         sources += [
           "../browser/enterprise/connectors/connectors_service_browsertest.cc",
         ]
-        deps +=
-            [ "//chrome/browser/enterprise/connectors/reporting:browser_tests" ]
+        deps += [
+          "//chrome/browser/enterprise/connectors/reporting:browser_tests",
+          "//components/enterprise/connectors/core:cloud_content_scanning",
+        ]
       }
 
       if (enterprise_cloud_content_analysis) {

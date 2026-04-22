@@ -1181,8 +1181,6 @@ static_library("browser") {
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/ui_controllers/toolbar:mojom",
     "//components/content_settings/browser/ui",
-    "//components/enterprise/connectors/core",
-    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/supervised_user/core/browser:device_parental_controls",
@@ -4538,6 +4536,7 @@ static_library("browser") {
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
+      "//components/enterprise/connectors/core:cloud_content_scanning",
     ]
     public_deps +=
         [ "//components/enterprise/common/proto:browser_events_proto" ]

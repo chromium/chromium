@@ -57,7 +57,6 @@ source_set("enterprise") {
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/enterprise/connectors/core",
-    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/enterprise/content",
     "//components/enterprise/core",
     "//components/enterprise/data_controls/core/browser",
@@ -285,6 +284,8 @@ source_set("enterprise") {
       "connectors/analysis/content_analysis_info.h",
       "connectors/common.h",
     ]
+    public_deps +=
+        [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
   }
 
   if (is_linux || is_win || is_mac) {

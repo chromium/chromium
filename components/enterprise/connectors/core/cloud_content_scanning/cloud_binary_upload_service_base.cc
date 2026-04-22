@@ -19,7 +19,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_IOS)
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #endif
 
@@ -366,7 +366,7 @@ void CloudBinaryUploadServiceBase::LogResponseDebugInfo(
     ScanRequestUploadResult result,
     BinaryUploadRequest* request,
     const ContentAnalysisResponse& response) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_IOS)
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanRequests(request->per_profile_request(),
                               request->access_token(), upload_info,

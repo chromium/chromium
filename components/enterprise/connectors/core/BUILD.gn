@@ -106,62 +106,64 @@ source_set("core") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-source_set("cloud_content_scanning") {
-  configs += [ "//components/enterprise:extra_warnings" ]
+if (enterprise_cloud_content_analysis || is_android) {
+  source_set("cloud_content_scanning") {
+    configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [
-    "cloud_content_scanning/binary_upload_ack.cc",
-    "cloud_content_scanning/binary_upload_ack.h",
-    "cloud_content_scanning/binary_upload_cancel_requests.cc",
-    "cloud_content_scanning/binary_upload_cancel_requests.h",
-    "cloud_content_scanning/binary_upload_request.cc",
-    "cloud_content_scanning/binary_upload_request.h",
-    "cloud_content_scanning/binary_upload_service.h",
-    "cloud_content_scanning/cloud_binary_upload_service_base.cc",
-    "cloud_content_scanning/cloud_binary_upload_service_base.h",
-    "cloud_content_scanning/common.cc",
-    "cloud_content_scanning/common.h",
-    "cloud_content_scanning/connector_data_pipe_getter.cc",
-    "cloud_content_scanning/connector_data_pipe_getter.h",
-    "cloud_content_scanning/connector_upload_request.cc",
-    "cloud_content_scanning/connector_upload_request.h",
-    "cloud_content_scanning/deep_scanning_utils.cc",
-    "cloud_content_scanning/deep_scanning_utils.h",
-    "cloud_content_scanning/file_analysis_request_base.cc",
-    "cloud_content_scanning/file_analysis_request_base.h",
-    "cloud_content_scanning/file_opening_job.cc",
-    "cloud_content_scanning/file_opening_job.h",
-    "cloud_content_scanning/files_request_handler_base.cc",
-    "cloud_content_scanning/files_request_handler_base.h",
-    "cloud_content_scanning/multipart_uploader.cc",
-    "cloud_content_scanning/multipart_uploader.h",
-    "cloud_content_scanning/multipart_uploader_base.cc",
-    "cloud_content_scanning/multipart_uploader_base.h",
-    "cloud_content_scanning/request_handler_base.cc",
-    "cloud_content_scanning/request_handler_base.h",
-    "cloud_content_scanning/resumable_uploader.cc",
-    "cloud_content_scanning/resumable_uploader.h",
-    "cloud_content_scanning/resumable_uploader_base.cc",
-    "cloud_content_scanning/resumable_uploader_base.h",
-  ]
-  deps = [
-    "//base",
-    "//components/crash/core/common:crash_key",
-    "//components/enterprise/common:strings",
-    "//components/enterprise/connectors/core",
-    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
-    "//components/file_access",
-    "//components/policy/core/browser",
-    "//components/safe_browsing/core/common",
-    "//crypto",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
+    sources = [
+      "cloud_content_scanning/binary_upload_ack.cc",
+      "cloud_content_scanning/binary_upload_ack.h",
+      "cloud_content_scanning/binary_upload_cancel_requests.cc",
+      "cloud_content_scanning/binary_upload_cancel_requests.h",
+      "cloud_content_scanning/binary_upload_request.cc",
+      "cloud_content_scanning/binary_upload_request.h",
+      "cloud_content_scanning/binary_upload_service.h",
+      "cloud_content_scanning/cloud_binary_upload_service_base.cc",
+      "cloud_content_scanning/cloud_binary_upload_service_base.h",
+      "cloud_content_scanning/common.cc",
+      "cloud_content_scanning/common.h",
+      "cloud_content_scanning/connector_data_pipe_getter.cc",
+      "cloud_content_scanning/connector_data_pipe_getter.h",
+      "cloud_content_scanning/connector_upload_request.cc",
+      "cloud_content_scanning/connector_upload_request.h",
+      "cloud_content_scanning/deep_scanning_utils.cc",
+      "cloud_content_scanning/deep_scanning_utils.h",
+      "cloud_content_scanning/file_analysis_request_base.cc",
+      "cloud_content_scanning/file_analysis_request_base.h",
+      "cloud_content_scanning/file_opening_job.cc",
+      "cloud_content_scanning/file_opening_job.h",
+      "cloud_content_scanning/files_request_handler_base.cc",
+      "cloud_content_scanning/files_request_handler_base.h",
+      "cloud_content_scanning/multipart_uploader.cc",
+      "cloud_content_scanning/multipart_uploader.h",
+      "cloud_content_scanning/multipart_uploader_base.cc",
+      "cloud_content_scanning/multipart_uploader_base.h",
+      "cloud_content_scanning/request_handler_base.cc",
+      "cloud_content_scanning/request_handler_base.h",
+      "cloud_content_scanning/resumable_uploader.cc",
+      "cloud_content_scanning/resumable_uploader.h",
+      "cloud_content_scanning/resumable_uploader_base.cc",
+      "cloud_content_scanning/resumable_uploader_base.h",
+    ]
+    deps = [
+      "//base",
+      "//components/crash/core/common:crash_key",
+      "//components/enterprise/common:strings",
+      "//components/enterprise/connectors/core",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+      "//components/file_access",
+      "//components/policy/core/browser",
+      "//components/safe_browsing/core/common",
+      "//crypto",
+      "//mojo/public/cpp/bindings",
+      "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+    ]
 
-  if (!is_ios && !is_fuchsia) {
-    deps += [ "//components/safe_browsing/content/browser/web_ui" ]
+    if (!is_ios) {
+      deps += [ "//components/safe_browsing/content/browser/web_ui" ]
+    }
   }
 }
 
@@ -190,12 +192,9 @@ source_set("test_support") {
     "reporting_test_utils.h",
     "test_connectors_service.cc",
     "test_connectors_service.h",
-    "uploader_test_utils.cc",
-    "uploader_test_utils.h",
   ]
 
   deps = [
-    ":cloud_content_scanning",
     ":core",
     "//base/test:test_support",
     "//components/enterprise",
@@ -214,6 +213,14 @@ source_set("test_support") {
     "//testing/gmock",
     "//url",
   ]
+
+  if (enterprise_cloud_content_analysis || is_android) {
+    sources += [
+      "uploader_test_utils.cc",
+      "uploader_test_utils.h",
+    ]
+    deps += [ ":cloud_content_scanning" ]
+  }
 
   if (enterprise_data_controls) {
     deps += [ "//components/enterprise/data_controls/core/browser" ]
@@ -272,45 +279,47 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("cloud_content_scanning_unittests") {
-  testonly = true
+if (enterprise_cloud_content_analysis || is_android) {
+  source_set("cloud_content_scanning_unittests") {
+    testonly = true
 
-  sources = [
-    "cloud_content_scanning/cloud_binary_upload_service_base_unittest.cc",
-    "cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
-    "cloud_content_scanning/deep_scanning_utils_unittest.cc",
-    "cloud_content_scanning/file_analysis_request_base_unittest.cc",
-    "cloud_content_scanning/file_opening_job_unittest.cc",
-    "cloud_content_scanning/files_request_handler_base_unittest.cc",
-    "cloud_content_scanning/multipart_uploader_base_unittest.cc",
-    "cloud_content_scanning/multipart_uploader_unittest.cc",
-    "cloud_content_scanning/resumable_uploader_base_unittest.cc",
-  ]
+    sources = [
+      "cloud_content_scanning/cloud_binary_upload_service_base_unittest.cc",
+      "cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
+      "cloud_content_scanning/deep_scanning_utils_unittest.cc",
+      "cloud_content_scanning/file_analysis_request_base_unittest.cc",
+      "cloud_content_scanning/file_opening_job_unittest.cc",
+      "cloud_content_scanning/files_request_handler_base_unittest.cc",
+      "cloud_content_scanning/multipart_uploader_base_unittest.cc",
+      "cloud_content_scanning/multipart_uploader_unittest.cc",
+      "cloud_content_scanning/resumable_uploader_base_unittest.cc",
+    ]
 
-  public_deps = [ ":cloud_content_scanning" ]
+    public_deps = [ ":cloud_content_scanning" ]
 
-  deps = [
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//components/download/public/common:test_support",
-    "//components/enterprise:test_support",
-    "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/connectors/core",
-    "//components/enterprise/connectors/core:test_support",
-    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
-    "//components/file_access",
-    "//components/file_access:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//net",
-    "//net/traffic_annotation:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/gfx/range",
-  ]
+    deps = [
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//components/download/public/common:test_support",
+      "//components/enterprise:test_support",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//components/enterprise/connectors/core",
+      "//components/enterprise/connectors/core:test_support",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+      "//components/file_access",
+      "//components/file_access:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//net",
+      "//net/traffic_annotation:test_support",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/gfx/range",
+    ]
+  }
 }
 
 if (is_android) {
