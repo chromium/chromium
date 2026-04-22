@@ -108,10 +108,7 @@ class ContextualTasksComposeboxHandler
   void ResetInputStateModel() override;
   void UpdateModelFromUrl(const GURL& url) override;
   void UpdateSuggestedTabContext(
-      std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab)
-      override;
-  bool has_suggested_tab_context() const override;
-  void ResetBlocklistedSuggestions() override;
+      const contextual_tasks::SuggestedTabInfo* suggested_tab) override;
   void OnTaskChanged() override;
 
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
@@ -208,15 +205,6 @@ class ContextualTasksComposeboxHandler
   // These tabs will be contextualized and added to the context after user
   // submits the query in the composebox.
   std::map<base::UnguessableToken, int32_t> delayed_tabs_;
-
-  // List of auto-suggested tab URLs that have been explicitly dismissed by the
-  // user. Those URLs will not be auto-suggested again for the same task in the
-  // same session, unless the user explicitly adds the tab via "+" button or
-  // switches to a new thread in which case the whole list will be cleared.
-  std::set<GURL> blocklisted_suggestions_;
-
-  // The URL of the current suggested tab context.
-  std::optional<GURL> current_suggestion_;
 
   // The pending query request info to be sent once uploads are complete.
   std::unique_ptr<contextual_search::ContextualSearchContextController::

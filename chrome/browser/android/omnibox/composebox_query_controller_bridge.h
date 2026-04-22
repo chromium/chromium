@@ -102,14 +102,11 @@ class ComposeboxQueryControllerBridge
 
   // contextual_tasks::ContextualTasksComposeboxHandlerInterface:
   void ResetInputStateModel() override;
-  void ResetBlocklistedSuggestions() override;
   void UpdateSuggestedTabContext(
-      std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab)
-      override;
+      const contextual_tasks::SuggestedTabInfo* suggested_tab) override;
   void OnTaskChanged() override;
   void InitializeInputStateModel() override;
   void UpdateModelFromUrl(const GURL& url) override;
-  bool has_suggested_tab_context() const override;
 
   // contextual_tasks::QueryContextualizer::Delegate:
   GURL GetTabUrl(contextual_tasks::QueryContextualizer::TabId id) override;

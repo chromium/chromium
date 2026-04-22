@@ -69,11 +69,10 @@ class MockContextualTasksComposeboxHandler
             std::move(get_inputstatemodel_callback)) {}
   ~MockContextualTasksComposeboxHandler() override = default;
 
-  MOCK_METHOD(
-      void,
-      UpdateSuggestedTabContext,
-      (std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab),
-      (override));
+  MOCK_METHOD(void,
+              UpdateSuggestedTabContext,
+              (const contextual_tasks::SuggestedTabInfo* suggested_tab),
+              (override));
 };
 
 class MockActiveTaskContextProviderObserver

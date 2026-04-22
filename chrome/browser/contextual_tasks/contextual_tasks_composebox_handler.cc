@@ -698,14 +698,8 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   // The tab was explicitly added by the user. Hence remove the URL from the
   // blocklist.
   if (tab) {
-    if (tab->IsActivated() && !blocklisted_suggestions_.empty()) {
-      const std::string metric_name =
-          "ContextualTasks.Composebox.UserAction."
-          "AddedActiveTabAfterDeletingAutoSuggestion";
-      base::UmaHistogramBoolean(metric_name, true);
-      base::RecordAction(base::UserMetricsAction(metric_name.c_str()));
-    }
-    blocklisted_suggestions_.erase(tab->GetContents()->GetLastCommittedURL());
+    web_ui_interface_->GetAutoSuggestionManager()->OnTabContextAdded(
+        tab->GetContents()->GetLastCommittedURL(), tab->IsActivated());
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
@@ -746,14 +740,6 @@ void ContextualTasksComposeboxHandler::AddDriveContext(
       token, drive_id, resource_key, mime_type_string);
 }
 
-bool ContextualTasksComposeboxHandler::has_suggested_tab_context() const {
-  return current_suggestion_.has_value();
-}
-
-void ContextualTasksComposeboxHandler::ResetBlocklistedSuggestions() {
-  blocklisted_suggestions_.clear();
-}
-
 void ContextualTasksComposeboxHandler::ClearFiles(
     bool should_block_auto_suggested_tabs) {
   // Clear all files from the UI.
@@ -765,10 +751,9 @@ void ContextualTasksComposeboxHandler::ClearFiles(
   pending_context_uploads_.clear();
   pending_query_request_info_.reset();
 
-  if (current_suggestion_ && should_block_auto_suggested_tabs) {
-    blocklisted_suggestions_.insert(*current_suggestion_);
+  if (should_block_auto_suggested_tabs) {
+    web_ui_interface_->GetAutoSuggestionManager()->OnAutoSuggestionDismissed();
   }
-  current_suggestion_ = std::nullopt;
 }
 
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
@@ -932,39 +917,19 @@ void ContextualTasksComposeboxHandler::DeleteContext(
     active_task_context_provider->RefreshContext();
   }
 
+  auto* auto_suggestion_manager = web_ui_interface_->GetAutoSuggestionManager();
   if (from_automatic_chip) {
-    // If it was an auto-suggestion and user has dismissed it, the URL should be
-    // blocklisted for this thread.
-    // TODO(shaktisahu): Pass the URL of the chip from the UI. This requires URL
-    // to be stored and passed back from Typescript. For now, we can assume that
-    // the URL of the auto chip dismissed is equal to the active tab's URL.
-    TabListInterface* tab_list =
-        browser_window_interface
-            ? TabListInterface::From(browser_window_interface)
-            : nullptr;
-    tabs::TabInterface* active_tab =
-        tab_list ? tab_list->GetActiveTab() : nullptr;
-    if (active_tab) {
-      deleted_tab_url = active_tab->GetContents()->GetLastCommittedURL();
-    }
-  }
-
-  if (deleted_tab_url) {
-    // Blocklist the URL so that it shouldn't show up in subsequent
-    // auto-suggestions.
-    blocklisted_suggestions_.insert(deleted_tab_url.value());
+    auto_suggestion_manager->OnAutoSuggestionDismissed();
+  } else if (deleted_tab_url.has_value()) {
+    auto_suggestion_manager->OnTabContextRemoved(deleted_tab_url.value());
   }
 }
 
 void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
-    std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab) {
-  current_suggestion_ = std::nullopt;
-
-  // Filter the suggested tab info based on blocklisted URLs and update the UI.
+    const contextual_tasks::SuggestedTabInfo* suggested_tab) {
+  // Always use the passed info as the result of the manager's filtering.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
-  if (contextual_tasks::GetIsTabAutoSuggestionChipEnabled() && suggested_tab &&
-      !blocklisted_suggestions_.contains(suggested_tab->url)) {
-    current_suggestion_ = suggested_tab->url;
+  if (contextual_tasks::GetIsTabAutoSuggestionChipEnabled() && suggested_tab) {
     filtered_suggestion = searchbox::mojom::TabInfo::New();
     filtered_suggestion->tab_id = suggested_tab->tab_id;
     filtered_suggestion->title = base::UTF16ToUTF8(suggested_tab->title);

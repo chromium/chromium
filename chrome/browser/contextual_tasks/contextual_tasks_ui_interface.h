@@ -33,6 +33,8 @@ namespace mojom {
 class Page;
 }  // namespace mojom
 
+class ContextualTasksAutoSuggestionManager;
+
 // An interface to interact with the Contextual Tasks WebUI (ContextualTasksUI)
 // from the rest of the browser process.
 class ContextualTasksUIInterface : public TaskInfoDelegate {
@@ -43,6 +45,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   };
 
   ~ContextualTasksUIInterface() override = default;
+
+  // Returns the auto-suggestion manager.
+  virtual ContextualTasksAutoSuggestionManager* GetAutoSuggestionManager() = 0;
 
   // Returns the Profile associated with this WebUI.
   virtual Profile* GetProfile() = 0;

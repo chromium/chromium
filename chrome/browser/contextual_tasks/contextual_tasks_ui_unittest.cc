@@ -58,15 +58,13 @@ class MockContextualTasksComposeboxHandler
     : public ContextualTasksComposeboxHandlerInterface {
  public:
   MOCK_METHOD(void, ResetInputStateModel, (), (override));
-  MOCK_METHOD(void, ResetBlocklistedSuggestions, (), (override));
   MOCK_METHOD(void,
               UpdateSuggestedTabContext,
-              (std::unique_ptr<SuggestedTabInfo>),
+              (const SuggestedTabInfo*),
               (override));
   MOCK_METHOD(void, OnTaskChanged, (), (override));
   MOCK_METHOD(void, InitializeInputStateModel, (), (override));
   MOCK_METHOD(void, UpdateModelFromUrl, (const GURL&), (override));
-  MOCK_METHOD(bool, has_suggested_tab_context, (), (const, override));
 };
 
 class MockTaskInfoDelegate : public TaskInfoDelegate {

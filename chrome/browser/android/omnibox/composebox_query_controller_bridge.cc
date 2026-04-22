@@ -639,12 +639,8 @@ void ComposeboxQueryControllerBridge::ResetInputStateModel() {
   input_state_model_.reset();
 }
 
-void ComposeboxQueryControllerBridge::ResetBlocklistedSuggestions() {
-  // TODO(crbug.com/493281303): Implement this.
-}
-
 void ComposeboxQueryControllerBridge::UpdateSuggestedTabContext(
-    std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab) {
+    const contextual_tasks::SuggestedTabInfo* suggested_tab) {
   // TODO(crbug.com/493281303): Implement this.
 }
 
@@ -679,10 +675,6 @@ void ComposeboxQueryControllerBridge::UpdateModelFromUrl(const GURL& url) {
   if (input_state_model_) {
     input_state_model_->UpdateModelFromUrl(url);
   }
-}
-
-bool ComposeboxQueryControllerBridge::has_suggested_tab_context() const {
-  return false;
 }
 
 DEFINE_JNI(ComposeboxQueryControllerBridge)

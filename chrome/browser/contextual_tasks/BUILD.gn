@@ -20,6 +20,7 @@ source_set("contextual_tasks") {
     "active_task_context_provider.h",
     "active_task_context_provider_impl.h",
     "ai_mode_context_library_converter.h",
+    "contextual_tasks_auto_suggestion_manager.h",
     "contextual_tasks_composebox_handler_interface.h",
     "contextual_tasks_context_scoring_utils.h",
     "contextual_tasks_context_service.h",
@@ -72,6 +73,7 @@ source_set("impl") {
   sources = [
     "active_task_context_provider_impl.cc",
     "ai_mode_context_library_converter.cc",
+    "contextual_tasks_auto_suggestion_manager.cc",
     "contextual_tasks_context_model_executor.cc",
     "contextual_tasks_context_model_executor.h",
     "contextual_tasks_context_model_handler.cc",
@@ -434,6 +436,7 @@ source_set("unit_tests") {
   sources = [
     "active_task_context_provider_impl_unittest.cc",
     "ai_mode_context_library_converter_unittest.cc",
+    "contextual_tasks_auto_suggestion_manager_unittest.cc",
     "contextual_tasks_context_model_handler_unittest.cc",
     "contextual_tasks_context_scoring_utils_unittest.cc",
     "contextual_tasks_context_service_factory_unittest.cc",

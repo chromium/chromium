@@ -16,6 +16,8 @@
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
@@ -34,7 +36,6 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-#include "contextual_tasks_composebox_handler_interface.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -61,9 +62,10 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace contextual_tasks {
+class ContextualTasksAutoSuggestionManager;
 class ContextualTasksComposeboxHandlerInterface;
-class ContextualTasksPanelController;
 class ContextualTasksUiService;
+
 }  // namespace contextual_tasks
 
 namespace tabs {
@@ -168,6 +170,8 @@ class ContextualTasksUI
 
   // contextual_tasks::ContextualTasksUIInterface implementation:
   Profile* GetProfile() override;
+  contextual_tasks::ContextualTasksAutoSuggestionManager*
+  GetAutoSuggestionManager() override;
   void TransferNavigationToEmbeddedPage(content::OpenURLParams params) override;
   void CloseSidePanel() override;
   void OnSidePanelStateChanged() override;
@@ -308,9 +312,6 @@ class ContextualTasksUI
       const GURL& last_committed_url,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
 
-  // Called to update the suggested tab chip on composebox.
-  void UpdateSuggestedTabContext(tabs::TabInterface* tab);
-
   // Adds the initial task state to the WebUIDataSource for the initial UI
   // state rendering.
   void AddInitialTaskStateToDataSource(content::WebUIDataSource* source,
@@ -322,6 +323,9 @@ class ContextualTasksUI
   bool CanExpandToFullTab();
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
+
+  std::unique_ptr<contextual_tasks::ContextualTasksAutoSuggestionManager>
+      auto_suggestion_manager_;
 
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
