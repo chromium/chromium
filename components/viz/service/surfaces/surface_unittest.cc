@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/surfaces/surface.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -16,7 +19,6 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
-#include "components/viz/service/surfaces/surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -396,6 +398,67 @@ TEST_F(ImmediateActivationSurfaceTest, WithInteraction) {
 
   Surface* surface = surface_manager->GetSurfaceForId(root_surface_id);
   EXPECT_TRUE(surface->activation_dependencies().empty());
+}
+
+// Checks that modifying surface activation group vector while iterating through
+// the existing entries doesn't cause problems.
+TEST_F(SurfaceTest, RentrantSurfaceActivationGroups) {
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+
+  auto will_invalidate_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, kArbitraryFrameSinkId, /*is_root=*/false);
+  auto y1_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, FrameSinkId(3, 1), /*is_root=*/false);
+  auto y2_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, FrameSinkId(4, 1), /*is_root=*/false);
+
+  // Builds a frame with dependencies and a long deadline for activation.
+  auto build_frame = [](std::vector<SurfaceId> deps,
+                        std::vector<SurfaceRange> refs) {
+    return CompositorFrameBuilder()
+        .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+        .SetActivationDependencies(std::move(deps))
+        .SetReferencedSurfaces(std::move(refs))
+        .SetDeadline(FrameDeadline(base::TimeTicks::Now(), 10000u,
+                                   base::Milliseconds(16), false))
+        .Build();
+  };
+
+  // Each of these SurfaceIds are from the same FrameSinkId but have different
+  // embed_tokens therefore different SurfaceAllocationGroups.
+  std::vector<SurfaceRange> malicious_refs;
+  malicious_refs.reserve(100);
+  for (int i = 0; i < 100; i++) {
+    SurfaceId sid(kArbitraryFrameSinkId,
+                  LocalSurfaceId(i, 1, base::UnguessableToken::Create()));
+    malicious_refs.emplace_back(sid);
+  }
+
+  // A SurfaceAllocationGroup for `dep1` is added immediately but groups for
+  // `malicious_refs` are only added once the CompositorFrame activates.
+  SurfaceId dep1(kArbitraryFrameSinkId,
+                 LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
+  LocalSurfaceId y1_lsid(1, 1, base::UnguessableToken::Create());
+  y1_support->SubmitCompositorFrame(y1_lsid,
+                                    build_frame({dep1}, malicious_refs));
+
+  SurfaceId dep2(kArbitraryFrameSinkId,
+                 LocalSurfaceId(2, 1, base::UnguessableToken::Create()));
+  LocalSurfaceId y2_lsid(1, 1, base::UnguessableToken::Create());
+  y2_support->SubmitCompositorFrame(y2_lsid, build_frame({dep2}, {}));
+
+  // There will be two SurfaceAllocationGroups for `kArbitraryFrameSinkId` at
+  // this point. WillNotRegisterNewSurfaces() will be called on each allocation
+  // groups, first for `y1_lsid` group which activates the surface and add 100
+  // more SurfaceAllocationGroups to the vector. This tests that modifying
+  // the vector being iterated doesn't cause problems.
+  surface_manager->InvalidateFrameSinkId(kArbitraryFrameSinkId);
+
+  // Both y1 and y2 surfaces are now active.
+  EXPECT_TRUE(surface_manager->GetSurfaceForId(
+      SurfaceId(y1_support->frame_sink_id(), y1_lsid)));
+  EXPECT_TRUE(surface_manager->GetSurfaceForId(
+      SurfaceId(y2_support->frame_sink_id(), y2_lsid)));
 }
 
 }  // namespace
