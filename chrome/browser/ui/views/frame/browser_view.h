@@ -563,7 +563,6 @@ class BrowserView : public BrowserWindow,
   void UpdateToolbar(content::WebContents* contents) override;
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override;
-  void SetDevToolsScrimVisibility(bool visible) override;
   void ResetToolbarTabState(content::WebContents* contents) override;
   void FocusToolbar() override;
   void ToolbarSizeChanged(bool is_animating) override;
@@ -1121,6 +1120,10 @@ class BrowserView : public BrowserWindow,
   // Called by BrowserWindowZoomObserver when zoom changes on the active tab.
   void ZoomChangedForActiveTab(bool can_show_bubble);
 
+  // Called by BrowserWindowModalDialogDelegate when DevTools scrim visibility
+  // needs to change.
+  void SetDevToolsScrimVisibility(bool visible);
+
   void UpdateAccessibleNameForRootView();
   void UpdateAccessibleURLForRootView(const GURL& url);
 
@@ -1441,6 +1444,8 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription theme_changed_subscription_;
 
   base::CallbackListSubscription zoom_changed_subscription_;
+
+  base::CallbackListSubscription devtools_scrim_subscription_;
 
   // Bitmask of current combination of reparenting states, e.g. immersive and
   // ChromeOS tablet modes.

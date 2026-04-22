@@ -144,6 +144,7 @@ if (!is_android) {
         "//chrome/browser/preloading:test_support",
         "//chrome/browser/ui:test_support",
         "//chrome/browser/ui/test:test_support",
+        "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//components/blocked_content",
         "//components/metrics:content",

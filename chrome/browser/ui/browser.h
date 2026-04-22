@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
-#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -120,7 +119,6 @@ enum class BrowserClosingStatus {
 class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
-                public ChromeWebModalDialogManagerDelegate,
                 public BookmarkTabHelperObserver,
                 public BrowserWindowInterface,
                 public DesktopBrowserWindowCapabilitiesDelegate {
@@ -1022,11 +1020,9 @@ class Browser : public TabStripModelObserver,
       content::RenderFrameHost* render_frame_host) override;
 #endif
 
-  // Overridden from WebContentsModalDialogManagerDelegate:
+  // Overridden from DesktopBrowserWindowCapabilitiesDelegate:
   void SetWebContentsBlocked(content::WebContents* web_contents,
                              bool blocked) override;
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
-      content::WebContents* web_contents) override;
 
   // Overridden from BookmarkTabHelperObserver:
   void URLStarredChanged(content::WebContents* web_contents,

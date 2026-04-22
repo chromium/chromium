@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -887,8 +888,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   // Blocking the tab for a modal dialog exits fullscreen.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = false});
-  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser())
-      ->SetWebContentsBlocked(tab, true);
+  BrowserWindowModalDialogDelegate::From(browser())->SetWebContentsBlocked(
+      tab, true);
   waiter.Wait();
   EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
 }
@@ -964,8 +965,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_TRUE(tab->IsFullscreen());
 
   // Blocking the tab for a modal dialog does not exit fullscreen-within-tab.
-  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser())
-      ->SetWebContentsBlocked(tab, true);
+  BrowserWindowModalDialogDelegate::From(browser())->SetWebContentsBlocked(
+      tab, true);
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
 }
@@ -1256,8 +1257,8 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
   // Blocking the tab for a modal dialog does not exit fullscreen if the origin
   // has been granted the automatic fullscreen content setting.
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser)
-      ->SetWebContentsBlocked(web_contents_, true);
+  BrowserWindowModalDialogDelegate::From(browser)->SetWebContentsBlocked(
+      web_contents_, true);
   EXPECT_TRUE(web_contents_->IsFullscreen());
 }
 

@@ -53,10 +53,7 @@ source_set("internal") {
       "embedder_browser_window_features.cc",
       "global_browser_collection_platform_delegate_non_android.cc",
     ]
-    public_deps = [
-      "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/ui/zoom:browser_window_zoom_observer",
-    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps += [
       "//chrome/browser:global_features",
@@ -117,7 +114,9 @@ source_set("internal") {
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/webui_browser",
+      "//chrome/browser/ui/zoom:browser_window_zoom_observer",
       "//components/breadcrumbs/core:status",
       "//components/collaboration/public",
       "//components/commerce/core:feature_list",

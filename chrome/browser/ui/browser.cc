@@ -150,6 +150,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
@@ -1159,7 +1160,8 @@ Browser::GetWebContentsModalDialogHostForWindow() {
 web_modal::WebContentsModalDialogHost*
 Browser::GetWebContentsModalDialogHostForTab(
     tabs::TabInterface* tab_interface) {
-  return GetWebContentsModalDialogHost(tab_interface->GetContents());
+  return window_->GetWebContentsModalDialogHostFor(
+      tab_interface->GetContents());
 }
 
 bool Browser::IsActive() const {
@@ -2898,56 +2900,12 @@ void Browser::CapturePaintPreviewOfSubframe(
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// Browser, web_modal::WebContentsModalDialogManagerDelegate implementation:
+// Browser, DesktopBrowserWindowCapabilitiesDelegate implementation:
 
 void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
                                     bool blocked) {
-  int index = tab_strip_model_->GetIndexOfWebContents(web_contents);
-  if (index == TabStripModel::kNoTab) {
-    // Removal of tabs from the TabStripModel can cause observer callbacks to
-    // invoke this method. The WebContents may no longer exist in the
-    // TabStripModel.
-    // If the WebContents has a DevTools window,
-    // the call is meant for the DevTools area.
-    if (DevToolsWindow::AsDevToolsWindow(web_contents)) {
-      window_->SetDevToolsScrimVisibility(blocked);
-    }
-    return;
-  }
-
-  // Drop HTML fullscreen to give users context for making informed decisions.
-  // Skip browser-fullscreen, which is more expressly user-initiated.
-  // Skip fullscreen-within-tab, which shows the browser frame.
-  if (blocked && GetFullscreenState(web_contents).target_mode ==
-                     content::FullscreenMode::kContent) {
-    // Skip URLs with the automatic fullscreen content setting granted.
-    const GURL& url = web_contents->GetLastCommittedURL();
-    const HostContentSettingsMap* const content_settings =
-        HostContentSettingsMapFactory::GetForProfile(
-            web_contents->GetBrowserContext());
-    if (content_settings->GetContentSetting(
-            url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
-        CONTENT_SETTING_ALLOW) {
-      web_contents->ExitFullscreen(true);
-    }
-  }
-
-  tab_strip_model_->SetTabBlocked(index, blocked);
-
-  const bool browser_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile() == this;
-  bool contents_is_active =
-      tab_strip_model_->GetActiveWebContents() == web_contents;
-  // If the WebContents is foremost (the active tab in the front-most browser)
-  // and is being unblocked, focus it to make sure that input works again.
-  if (!blocked && contents_is_active && browser_active) {
-    web_contents->Focus();
-  }
-}
-
-web_modal::WebContentsModalDialogHost* Browser::GetWebContentsModalDialogHost(
-    content::WebContents* web_contents) {
-  return window_->GetWebContentsModalDialogHostFor(web_contents);
+  BrowserWindowModalDialogDelegate::From(this)->SetWebContentsBlocked(
+      web_contents, blocked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3541,8 +3499,12 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
   web_contents->SetDelegate(delegate);
 
   // ...and all the helpers.
-  WebContentsModalDialogManager::FromWebContents(web_contents)
-      ->SetDelegate(delegate);
+  // The modal dialog delegate must be set during SetAsDelegate (not via a
+  // separate TabStripModelObserver) to ensure it is wired before layout
+  // triggered by OnActiveTabChanged.
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+      ->SetDelegate(set_delegate ? BrowserWindowModalDialogDelegate::From(this)
+                                 : nullptr);
   if (delegate) {
     BookmarkTabHelper::FromWebContents(web_contents)->AddObserver(this);
     web_contents_collection_.StartObserving(web_contents);

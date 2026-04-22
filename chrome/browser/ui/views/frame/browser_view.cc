@@ -227,6 +227,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
@@ -1084,6 +1085,13 @@ BrowserView::BrowserView(Browser* browser)
     zoom_changed_subscription_ =
         zoom_observer->RegisterZoomChangedCallback(base::BindRepeating(
             &BrowserView::ZoomChangedForActiveTab, base::Unretained(this)));
+  }
+
+  if (auto* modal_delegate =
+          BrowserWindowModalDialogDelegate::From(browser_.get())) {
+    devtools_scrim_subscription_ =
+        modal_delegate->RegisterDevToolsScrimCallback(base::BindRepeating(
+            &BrowserView::SetDevToolsScrimVisibility, base::Unretained(this)));
   }
 
   if (vertical_tab_strip_state_controller) {

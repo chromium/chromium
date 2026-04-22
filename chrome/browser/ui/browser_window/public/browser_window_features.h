@@ -42,6 +42,7 @@ class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
 class BrowserView;
 class BrowserWindowInterface;
+class BrowserWindowModalDialogDelegate;
 class BrowserWindowThemeObserver;
 class BrowserWindowZoomObserver;
 class CallToActionLock;
@@ -799,6 +800,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserWindowThemeObserver> browser_window_theme_observer_;
 
   std::unique_ptr<BrowserWindowZoomObserver> browser_window_zoom_observer_;
+
+  std::unique_ptr<BrowserWindowModalDialogDelegate>
+      browser_window_modal_dialog_delegate_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

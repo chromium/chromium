@@ -926,6 +926,8 @@ static_library("ui") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/profile_resetter",
+      "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
+      "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     ]
   }
 

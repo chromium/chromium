@@ -148,6 +148,7 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/find_bar_owner_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
@@ -508,6 +509,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   browser_window_zoom_observer_ =
       GetUserDataFactory().CreateInstance<BrowserWindowZoomObserver>(*browser,
                                                                      browser);
+
+  browser_window_modal_dialog_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserWindowModalDialogDelegate>(
+          *browser, browser);
 
   call_to_action_lock_ =
       GetUserDataFactory().CreateInstance<CallToActionLock>(*browser, browser);

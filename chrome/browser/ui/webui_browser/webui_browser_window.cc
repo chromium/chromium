@@ -777,10 +777,6 @@ void WebUIBrowserWindow::UpdateCustomTabBarVisibility(bool visible,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::SetDevToolsScrimVisibility(bool visible) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void WebUIBrowserWindow::ResetToolbarTabState(content::WebContents* contents) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
