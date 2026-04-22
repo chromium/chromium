@@ -7283,6 +7283,7 @@ test("unit_tests") {
     "//components/content_settings/core/browser:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/contextual_tasks/public",
+    "//components/contextual_tasks/public:test_support",
     "//components/country_codes",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
