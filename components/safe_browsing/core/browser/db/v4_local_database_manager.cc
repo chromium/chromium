@@ -101,7 +101,8 @@ ListInfos GetListInfos() {
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
       ListInfo(kSyncOnDesktopBuilds, "UrlCsdDownloadAllowlist.store",
-               GetUrlCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
+               GetUrlCsdDownloadAllowlistId(),
+               SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST),
       ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
                "UrlCsdAllowlist.store", GetUrlCsdAllowlistId(),
                SB_THREAT_TYPE_CSD_ALLOWLIST),
@@ -203,6 +204,7 @@ ListIdentifier GetUrlIdFromSBThreatType(SBThreatType sb_threat_type) {
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+    case SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
       NOTREACHED();
   }
 }

@@ -335,6 +335,7 @@ class FakeRealTimeUrlLookupService
       case SB_THREAT_TYPE_BILLING:
       case SB_THREAT_TYPE_APK_DOWNLOAD:
       case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      case SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
         NOTREACHED();
     }
     threat_info.set_threat_type(threat_type);

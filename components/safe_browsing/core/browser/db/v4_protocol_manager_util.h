@@ -169,7 +169,10 @@ enum class SBThreatType {
   // Managed policy indicated to block a navigation.
   SB_THREAT_TYPE_MANAGED_POLICY_BLOCK = 27,
 
-  kMaxValue = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+  // CSD Download allowlist.
+  SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST = 28,
+
+  kMaxValue = SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;
