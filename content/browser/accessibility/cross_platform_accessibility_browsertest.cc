@@ -3058,14 +3058,22 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        TestNotificationTextDeletedInTextfield) {
   LoadInitialAccessibilityTreeFromHtml(
-      "<input autofocus id='input' aria-label='Input' type='text' value='old "
-      "value'/>");
+      "<input id='input' aria-label='Input' type='text' value='old value'/>");
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Input");
 
   ui::BrowserAccessibility* input_node = FindNode("Input");
   ASSERT_NE(input_node, nullptr);
+
+  // Ensure focus so the synthetic keypress is delivered to the textfield.
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::AXEventGenerator::Event::FOCUS_CHANGED);
+    input_node->manager()->SetFocus(*input_node);
+    ASSERT_TRUE(waiter.WaitForNotification());
+    ASSERT_EQ(input_node, GetManager()->GetFocus());
+  }
 
   // We select an arbitrary portion of the text.
   {
