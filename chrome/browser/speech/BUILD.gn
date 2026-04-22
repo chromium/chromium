@@ -113,6 +113,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//components/content_settings/core/browser",

@@ -29,6 +29,7 @@ source_set("media") {
       "media_transcript_provider_impl.h",
     ]
     deps += [
+      "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/picture_in_picture",
@@ -55,6 +56,7 @@ if (!is_android) {
     deps = [
       ":media",
       "//base/test:test_support",
+      "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/prefs",

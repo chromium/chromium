@@ -20,7 +20,6 @@ source_set("accessibility") {
       "caption_settings_dialog.h",
       "embedded_a11y_extension_loader.h",
       "invert_bubble_prefs.h",
-      "live_caption/live_translate_controller_factory.h",
       "page_colors_controller.h",
       "page_colors_controller_factory.h",
     ]
@@ -57,6 +56,7 @@ source_set("accessibility") {
 
   if (!is_android) {
     public_deps += [
+      "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//components/live_caption",
@@ -91,11 +91,11 @@ source_set("impl") {
       "ax_main_node_annotator_controller_factory.cc",
       "embedded_a11y_extension_loader.cc",
       "invert_bubble_prefs.cc",
-      "live_caption/live_translate_controller_factory.cc",
       "page_colors_controller.cc",
       "page_colors_controller_factory.cc",
     ]
     deps += [
+      "//chrome/browser/accessibility/live_caption:impl",
       "//chrome/browser/extensions",
       "//chrome/browser/on_device_translation",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
@@ -207,7 +207,6 @@ if (!is_android) {
       "ax_main_node_annotator_controller_browsertest.cc",
       "image_annotation_browsertest.cc",
       "interstitial_accessibility_browsertest.cc",
-      "live_caption/live_translate_controller_browsertest.cc",
       "page_colors_controller_browsertest.cc",
     ]
 
@@ -218,7 +217,7 @@ if (!is_android) {
     deps = [
       ":accessibility",
       ":impl",
-      ":test_support",
+      "//chrome/browser/accessibility/live_caption:browser_tests",
       "//chrome/test:test_support",
       "//components/live_caption:constants",
       "//components/live_caption:live_translate",
@@ -232,7 +231,12 @@ if (!is_android) {
         "aria_notify_uia_browsertest_win.cc",
         "leaked_node_detection_browsertest.cc",
       ]
-      deps += [ "//chrome/test:uia_test_support" ]
+      deps += [
+        ":test_support",
+        "//chrome/test:uia_test_support",
+      ]
+    } else {
+      deps += [ "//chrome/browser/accessibility/live_caption:test_support" ]
     }
 
     deps += [
@@ -246,20 +250,27 @@ if (!is_android) {
   }
 }
 
-if (!is_android) {
+if (is_win) {
   source_set("test_support") {
     testonly = true
-    public = [ "live_caption/live_caption_test_util.h" ]
-    sources = [ "live_caption/live_caption_test_util.cc" ]
+
+    public = [ "browser_test_with_ax_client.h" ]
+    sources = [ "browser_test_with_ax_client.cc" ]
 
     public_deps = [
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support_ui",
+      "//chrome/test/accessibility/ax_client:launcher",
+      "//chrome/test/accessibility/ax_client:mojom",
+      "//mojo/public/cpp/bindings",
+      "//ui/accessibility",
     ]
+
     deps = [
       "//chrome/browser:browser_process",
       "//chrome/browser/accessibility",
+      "//chrome/browser/accessibility/live_caption:test_support",
       "//chrome/browser/ui",
       "//components/live_caption:constants",
       "//components/soda",
@@ -267,20 +278,5 @@ if (!is_android) {
       "//components/sync_preferences",
       "//ui/accessibility",
     ]
-
-    if (is_chromeos) {
-      deps += [ "//ash/constants" ]
-    }
-
-    if (is_win) {
-      public += [ "browser_test_with_ax_client.h" ]
-      sources += [ "browser_test_with_ax_client.cc" ]
-      public_deps += [
-        "//chrome/test/accessibility/ax_client:launcher",
-        "//chrome/test/accessibility/ax_client:mojom",
-        "//mojo/public/cpp/bindings",
-        "//ui/accessibility",
-      ]
-    }
   }
 }

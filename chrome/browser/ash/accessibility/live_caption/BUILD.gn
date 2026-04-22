@@ -49,6 +49,7 @@ source_set("browser_tests") {
   deps = [
     ":live_caption",
     "//base",
+    "//chrome/browser/accessibility/live_caption",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/speech",
     "//chrome/test:test_support",

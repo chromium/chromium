@@ -2594,7 +2594,7 @@ if (!is_android) {
       "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility",
       "//chrome/browser/accessibility:browser_tests",
-      "//chrome/browser/accessibility:test_support",
+      "//chrome/browser/accessibility/live_caption:test_support",
       "//chrome/browser/accessibility/phrase_segmentation:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/actor:test_support",
@@ -4114,6 +4114,7 @@ if (!is_android) {
 
     deps += [
       "//chrome/browser:flags",
+      "//chrome/browser/accessibility/live_caption:browser_tests",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/autocomplete",
@@ -4202,18 +4203,11 @@ if (!is_android) {
 
     if (!is_linux || target_cpu != "arm64") {
       # SODA doesn't support Linux on Arm64.
-      sources += [
-        "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
-        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
-        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
-      ]
 
       deps += [ "//components/live_caption:utils" ]
 
       if (is_win || is_mac || is_linux) {
         sources += [
-          "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc",
-          "../browser/accessibility/live_caption/live_caption_language_identification_browsertest.cc",
           "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
         ]
         deps += [ "//chrome/browser/speech" ]
@@ -4234,7 +4228,6 @@ if (!is_android) {
 
     if (is_win) {
       sources += [
-        "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/performance_manager/mechanisms/termination_target_setter_browsertest.cc",
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
         "../browser/ui/views/tab_search_bubble_ui_browsertest.cc",
@@ -7672,7 +7665,6 @@ test("unit_tests") {
   if (is_win) {
     assert(toolkit_views)
     sources += [
-      "../browser/accessibility/live_caption/live_caption_unavailability_notifier_unittest.cc",
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_provider_win_unittest.cc",
@@ -7731,6 +7723,7 @@ test("unit_tests") {
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
+      "//chrome/browser/accessibility/live_caption:unit_tests",
       "//chrome/browser/install_verification:unit_tests",
       "//chrome/browser/os_crypt",
       "//chrome/browser/os_crypt:unit_tests",
@@ -9076,7 +9069,7 @@ test("unit_tests") {
       "//ash/webui/scanning",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser:global_features",
-      "//chrome/browser/accessibility:test_support",
+      "//chrome/browser/accessibility/live_caption:test_support",
       "//chrome/browser/accessibility/media_app/test:test_support",
       "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",

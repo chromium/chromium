@@ -2597,6 +2597,7 @@ static_library("browser") {
   } else {
     #!is_android
     deps += [
+      "//chrome/browser/accessibility/live_caption:impl",
       "//chrome/browser/payments:impl",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
@@ -2609,10 +2610,6 @@ static_library("browser") {
     ]
 
     sources += [
-      "accessibility/live_caption/live_caption_controller_factory.cc",
-      "accessibility/live_caption/live_caption_controller_factory.h",
-      "accessibility/live_caption/live_caption_speech_recognition_host.cc",
-      "accessibility/live_caption/live_caption_speech_recognition_host.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
       "certificate_viewer.h",
@@ -4303,8 +4300,6 @@ static_library("browser") {
       "comsuppw.lib",
     ]
     sources += [
-      "accessibility/live_caption/live_caption_unavailability_notifier.cc",
-      "accessibility/live_caption/live_caption_unavailability_notifier.h",
       "chrome_browser_main_win.cc",
       "chrome_browser_main_win.h",
       "font_prewarmer_tab_helper.cc",
