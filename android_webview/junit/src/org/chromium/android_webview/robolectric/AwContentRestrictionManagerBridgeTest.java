@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
@@ -172,5 +173,51 @@ public class AwContentRestrictionManagerBridgeTest {
         promise.fulfill(false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(false, mCallbackResult);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testSendShowRestrictedContentIntent_invalidUrl() {
+        Assert.assertFalse(AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(null));
+        verifyNoInteractions(mFlaggedApiDelegate);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testSendShowRestrictedContentIntent_delegateMissing() {
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        Assert.assertFalse(
+                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        verifyNoInteractions(mFlaggedApiDelegate);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testSendShowRestrictedContentIntent_success() {
+        Uri testUri = Uri.parse(TEST_URL);
+        when(mFlaggedApiDelegate.sendShowRestrictedContentIntent(Mockito.eq(testUri)))
+                .thenReturn(true);
+        Assert.assertTrue(
+                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        verify(mFlaggedApiDelegate).sendShowRestrictedContentIntent(Mockito.eq(testUri));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testSendShowRestrictedContentIntent_failure() {
+        Uri testUri = Uri.parse(TEST_URL);
+        when(mFlaggedApiDelegate.sendShowRestrictedContentIntent(Mockito.eq(testUri)))
+                .thenReturn(false);
+        Assert.assertFalse(
+                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        verify(mFlaggedApiDelegate).sendShowRestrictedContentIntent(Mockito.eq(testUri));
     }
 }

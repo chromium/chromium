@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -45,8 +44,7 @@ public class AwContentRestrictionManagerBridge {
         if (!Boolean.TRUE.equals(ManifestMetadataUtil.getContentRestrictionAppOptInPreference())) {
             return false;
         }
-        AconfigFlaggedApiDelegate delegate =
-                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        @Nullable AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
             Log.w(TAG, "Unable to retrieve the AconfigFlaggedApiDelegate instance.");
             return false;
@@ -59,13 +57,12 @@ public class AwContentRestrictionManagerBridge {
             @JniType("std::string") String url,
             @JniType("std::string") String mimeType,
             JniOnceCallback<Boolean> callback) {
-        Uri uri = parseUrl(url);
+        @Nullable Uri uri = parseUrl(url);
         if (uri == null) {
             callback.onResult(false);
             return;
         }
-        AconfigFlaggedApiDelegate delegate =
-                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        @Nullable AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
             Log.w(TAG, "Unable to retrieve the AconfigFlaggedApiDelegate instance.");
             callback.onResult(false);
@@ -90,5 +87,19 @@ public class AwContentRestrictionManagerBridge {
                     }
                     callback.onResult(false);
                 });
+    }
+
+    @CalledByNative
+    public static boolean sendShowRestrictedContentIntent(@JniType("std::string") String url) {
+        @Nullable Uri uri = parseUrl(url);
+        if (uri == null) {
+            return false;
+        }
+        @Nullable AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate == null) {
+            Log.w(TAG, "Unable to retrieve the AconfigFlaggedApiDelegate instance.");
+            return false;
+        }
+        return delegate.sendShowRestrictedContentIntent(uri);
     }
 }
