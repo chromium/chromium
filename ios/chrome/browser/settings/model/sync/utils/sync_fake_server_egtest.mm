@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -29,14 +31,14 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -92,7 +94,9 @@ void ClearRelevantData() {
 }  // namespace
 
 // Hermetic sync tests, which use the fake sync server.
-@interface SyncFakeServerTestCase : WebHttpServerChromeTestCase
+@interface SyncFakeServerTestCase : ChromeTestCase {
+  std::map<std::string, std::string> _responses;
+}
 @end
 
 @implementation SyncFakeServerTestCase
@@ -110,6 +114,28 @@ void ClearRelevantData() {
 
 - (void)setUp {
   [super setUp];
+
+  auto* responses = &_responses;
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](std::map<std::string, std::string>* responses,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto it = responses->find(request.relative_url);
+        if (it != responses->end()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content(it->second);
+          return response;
+        }
+        return nullptr;
+      },
+      responses));
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("ios/testing/data/http_server_files/"));
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
@@ -175,7 +201,7 @@ void ClearRelevantData() {
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
                                expectedCount:0
                                    inStorage:BookmarkStorageType::kAccount];
-  const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
+  const GURL URL = self.testServer->GetURL("/hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
 
   // Sign in to sync, after a bookmark has been injected in the sync server.
@@ -228,13 +254,10 @@ void ClearRelevantData() {
 // that the created sessions entities are correct.
 - (void)testSyncUploadOpenTabs {
   // Create map of canned responses and set up the test HTML server.
-  const GURL URL1 = web::test::HttpServer::MakeUrl("http://page1");
-  const GURL URL2 = web::test::HttpServer::MakeUrl("http://page2");
-  std::map<GURL, std::string> responses = {
-      {URL1, std::string("page 1")},
-      {URL2, std::string("page 2")},
-  };
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL URL1 = self.testServer->GetURL("/page1");
+  const GURL URL2 = self.testServer->GetURL("/page2");
+  _responses["/page1"] = "page 1";
+  _responses["/page2"] = "page 2";
 
   // Load both URLs in separate tabs.
   [ChromeEarlGrey loadURL:URL1];
@@ -273,9 +296,11 @@ void ClearRelevantData() {
 
   // Visit a URL before turning on Sync.
   [ChromeEarlGrey loadURL:preSyncURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Navigate away from that URL.
   [ChromeEarlGrey loadURL:whileSyncURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
 
   // Sign in and wait for sync to become active.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -329,8 +354,8 @@ void ClearRelevantData() {
 
 // Tests download of two legacy bookmarks with the same item id.
 - (void)testDownloadTwoPre2015BookmarksWithSameItemId {
-  const GURL URL1 = web::test::HttpServer::MakeUrl("http://page1.com");
-  const GURL URL2 = web::test::HttpServer::MakeUrl("http://page2.com");
+  const GURL URL1 = self.testServer->GetURL("/page1.com");
+  const GURL URL2 = self.testServer->GetURL("/page2.com");
   NSString* title1 = @"title1";
   NSString* title2 = @"title2";
 
