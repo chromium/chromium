@@ -9,6 +9,7 @@
 #include "chrome/browser/autofill/android/at_memory_bottom_sheet_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 
 namespace autofill {
 namespace {
@@ -18,22 +19,23 @@ class MockAtMemoryBottomSheetDelegate : public AtMemoryBottomSheetDelegate {
   MOCK_METHOD(void, OnDismissed, (), (override));
 };
 
-class AtMemoryBottomSheetBridgeTest : public ::testing::Test {
+class AtMemoryBottomSheetBridgeTest : public testing::Test {
  protected:
   void SetUp() override {
-    bridge_ = std::make_unique<AtMemoryBottomSheetBridge>(nullptr);
+    window_ = ui::WindowAndroid::CreateForTesting();
+    bridge_ = std::make_unique<AtMemoryBottomSheetBridge>(window_->get());
   }
 
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
   std::unique_ptr<AtMemoryBottomSheetBridge> bridge_;
 };
 
 TEST_F(AtMemoryBottomSheetBridgeTest, OnDismissedCallsDelegate) {
   auto delegate = std::make_unique<MockAtMemoryBottomSheetDelegate>();
   MockAtMemoryBottomSheetDelegate* delegate_ptr = delegate.get();
-  bridge_->RequestShowContent(std::move(delegate));
 
   EXPECT_CALL(*delegate_ptr, OnDismissed());
-  bridge_->OnDismissed(nullptr);
+  bridge_->RequestShowContent(std::move(delegate));
 }
 
 }  // namespace

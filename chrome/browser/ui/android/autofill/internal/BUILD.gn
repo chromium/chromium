@@ -13,6 +13,13 @@ android_library("java") {
   ]
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorOptionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialog.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
@@ -54,6 +61,7 @@ generate_jni("jni_headers") {
     "//chrome/browser/ui",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
@@ -65,6 +73,7 @@ generate_jni("jni_headers") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
@@ -84,6 +93,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/ephemeraltab:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -102,6 +112,7 @@ robolectric_library("junit") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/at_memory_bottom_sheet.xml",
     "java/res/layout/authenticator_option.xml",
     "java/res/layout/authenticator_selection_dialog.xml",
     "java/res/layout/autofill_error_dialog.xml",

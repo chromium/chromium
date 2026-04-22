@@ -6,28 +6,45 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
+#include "base/check.h"
 #include "chrome/browser/autofill/android/at_memory_bottom_sheet_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/autofill/internal/jni_headers/AtMemoryBottomSheetBridge_jni.h"
 
 namespace autofill {
 
 AtMemoryBottomSheetBridge::AtMemoryBottomSheetBridge(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    ui::WindowAndroid* window_android) {
+  CHECK(window_android);
+  java_object_ = Java_AtMemoryBottomSheetBridge_Constructor(
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      window_android->GetJavaObject());
+}
 
-AtMemoryBottomSheetBridge::~AtMemoryBottomSheetBridge() = default;
+AtMemoryBottomSheetBridge::~AtMemoryBottomSheetBridge() {
+  if (java_object_) {
+    Java_AtMemoryBottomSheetBridge_destroy(base::android::AttachCurrentThread(),
+                                           java_object_);
+  }
+}
 
 void AtMemoryBottomSheetBridge::RequestShowContent(
     std::unique_ptr<AtMemoryBottomSheetDelegate> delegate) {
   delegate_ = std::move(delegate);
-  // TODO(crbug.com/502801668): Implement JNI call to show the bottom sheet.
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AtMemoryBottomSheetBridge_show(env, java_object_);
 }
 
 void AtMemoryBottomSheetBridge::OnDismissed(JNIEnv* env) {
   if (delegate_) {
     delegate_->OnDismissed();
-    ResetDelegate();
   }
+  ResetDelegate();
 }
 
 void AtMemoryBottomSheetBridge::ResetDelegate() {
@@ -35,3 +52,5 @@ void AtMemoryBottomSheetBridge::ResetDelegate() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AtMemoryBottomSheetBridge)
