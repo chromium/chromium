@@ -53,6 +53,10 @@ type:*SkBlockComRef*
 type:*RemoveIUnknown*
 src:*atlcomcli.h
 
+# TODO(crbug.com/504680934): Figure out, probably add _LIBCPP_NO_CFI upstream,
+# roll in, then remove this. Fires when called from __assume_valid_range.
+fun:*__assume_aligned*
+
 # src/base/win/event_trace_provider_unittest.cc
 type:*EtwTraceProvider*
 
