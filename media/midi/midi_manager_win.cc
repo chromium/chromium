@@ -723,6 +723,11 @@ MidiManagerWin::~MidiManagerWin() {
   if (instance_id_ == kInvalidInstanceId)
     return;
 
+  // Behind the lock below, we can safely access all members for finalization
+  // even on the I/O thread. This also ensures that no bound task runs on
+  // TaskRunner concurrently while destructing the instance.
+  base::AutoLock lock(*GetTaskLock());
+
   // Unregisters on the I/O thread. OnDevicesChanged() won't be called any more.
   CHECK(thread_runner_->BelongsToCurrentThread());
   base::SystemMonitor::Get()->RemoveDevicesChangedObserver(this);
@@ -738,20 +743,12 @@ MidiManagerWin::~MidiManagerWin() {
 
   // Invalidate instance bound tasks.
   {
-    base::AutoLock lock(*GetInstanceIdLock());
+    base::AutoLock lock_id(*GetInstanceIdLock());
     CHECK_EQ(instance_id_, g_active_instance_id);
     g_active_instance_id = kInvalidInstanceId;
     CHECK_EQ(this, g_manager_instance);
     g_manager_instance = nullptr;
   }
-
-  // Ensures that no bound task runs on TaskRunner so to destruct the instance
-  // safely.
-  // Tasks that did not started yet will do nothing after invalidate the
-  // instance ID above.
-  // Behind the lock below, we can safely access all members for finalization
-  // even on the I/O thread.
-  base::AutoLock lock(*GetTaskLock());
 }
 
 void MidiManagerWin::StartInitialization() {
