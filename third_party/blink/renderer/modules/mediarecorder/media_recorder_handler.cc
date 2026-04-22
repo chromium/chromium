@@ -1133,32 +1133,66 @@ void MediaRecorderHandler::OnSourceReadyStateChanged() {
 void MediaRecorderHandler::OnVideoFrameForTesting(
     scoped_refptr<media::VideoFrame> frame,
     const TimeTicks& timestamp) {
-  for (const auto& recorder : video_recorders_) {
+  if (video_recorders_.empty()) {
+    return;
+  }
+  Vector<std::unique_ptr<VideoTrackRecorder>> recorders;
+  recorders.swap(video_recorders_);
+  for (const auto& recorder : recorders) {
     recorder->OnVideoFrameForTesting(frame, timestamp,
                                      /*allow_vea_encoder=*/true);
+  }
+  if (recording_ && video_recorders_.empty()) {
+    video_recorders_.swap(recorders);
   }
 }
 
 void MediaRecorderHandler::OnEncodedVideoFrameForTesting(
     scoped_refptr<EncodedVideoFrame> frame,
     const base::TimeTicks& timestamp) {
-  for (const auto& recorder : video_recorders_) {
+  if (video_recorders_.empty()) {
+    return;
+  }
+  Vector<std::unique_ptr<VideoTrackRecorder>> recorders;
+  recorders.swap(video_recorders_);
+  for (const auto& recorder : recorders) {
     recorder->OnEncodedVideoFrameForTesting(base::TimeTicks::Now(), frame,
                                             timestamp);
+  }
+  if (recording_ && video_recorders_.empty()) {
+    video_recorders_.swap(recorders);
   }
 }
 
 void MediaRecorderHandler::OnAudioBusForTesting(
     const media::AudioBus& audio_bus,
     const base::TimeTicks& timestamp) {
-  for (const auto& recorder : audio_recorders_)
+  if (audio_recorders_.empty()) {
+    return;
+  }
+  Vector<std::unique_ptr<AudioTrackRecorder>> recorders;
+  recorders.swap(audio_recorders_);
+  for (const auto& recorder : recorders) {
     recorder->OnData(audio_bus, timestamp);
+  }
+  if (recording_ && audio_recorders_.empty()) {
+    audio_recorders_.swap(recorders);
+  }
 }
 
 void MediaRecorderHandler::SetAudioFormatForTesting(
     const media::AudioParameters& params) {
-  for (const auto& recorder : audio_recorders_)
+  if (audio_recorders_.empty()) {
+    return;
+  }
+  Vector<std::unique_ptr<AudioTrackRecorder>> recorders;
+  recorders.swap(audio_recorders_);
+  for (const auto& recorder : recorders) {
     recorder->OnSetFormat(params);
+  }
+  if (recording_ && audio_recorders_.empty()) {
+    audio_recorders_.swap(recorders);
+  }
 }
 
 void MediaRecorderHandler::Trace(Visitor* visitor) const {
