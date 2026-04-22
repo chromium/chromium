@@ -34,9 +34,13 @@ and if it is done by default:
   states are still kept up-to-date. Provides a few testing hooks to fake some os
   integration fetching.
 - `FakeExtensionsManager` (default): Fakes interaction with the extensions
-  system.
+  system and prevents tests from hanging by instantly fulfilling readiness
+  checks that would otherwise wait for the real `ExtensionSystem`.
 - `FakeWebAppDatabaseFactory` (default): Provides an in-memory database for
   testing.
+- `TestFileUtils` (optional): Tracks file deletion operations directly,
+  especially useful for intercepting OS integration cleanup paths without
+  interacting with the real OS filesystem. Set via `SetFileUtils()`.
 
 There are some other dependencies that are owned/faked with a different model:
 

@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -148,6 +149,25 @@ int WebAppDatabase::GetCurrentDatabaseVersion() {
   return 7;
 }
 
+void WebAppDatabase::SetDatabaseVersionForTesting(int version,
+                                                  base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(opened_);
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(version);
+  write_batch->WriteData(std::string(kDatabaseMetadataKey),
+                         metadata.SerializeAsString());
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(
+          &WebAppDatabase::OnDataWritten, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(
+              [](base::OnceClosure cb, bool success) { std::move(cb).Run(); },
+              std::move(callback))));
+}
+
 WebAppDatabase::ProtobufState::ProtobufState() = default;
 WebAppDatabase::ProtobufState::~ProtobufState() = default;
 WebAppDatabase::ProtobufState::ProtobufState(ProtobufState&&) = default;
@@ -182,7 +202,8 @@ WebAppDatabase::ProtobufState WebAppDatabase::ParseProtobufs(
   return state;
 }
 
-void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
+WebAppDatabase::MigrationResult WebAppDatabase::MigrateDatabase(
+    ProtobufState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Migration should happen when we have gotten a `store_`, but haven't
   // finished opening the database yet.
@@ -260,10 +281,12 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
   }
 
   int expected_version = declined_to_upgrade ? 6 : GetCurrentDatabaseVersion();
-  CHECK_EQ(state.metadata.version(), expected_version)
-      << "Mismatch between web app database state metadata version: "
-      << state.metadata.version()
-      << " and current version: " << expected_version;
+  if (state.metadata.version() != expected_version) {
+    DLOG(ERROR) << "Mismatch between web app database state metadata version: "
+                << state.metadata.version()
+                << " and current version: " << expected_version;
+    return MigrationResult::kDowngradeDetected;
+  }
 
   if (did_change_metadata || !changed_apps.empty()) {
     std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
@@ -281,6 +304,7 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
         base::BindOnce(&WebAppDatabase::OnDataWritten,
                        weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
   }
+  return MigrationResult::kSuccess;
 }
 
 void WebAppDatabase::MigrateInstallSourceAddUserInstalled(
@@ -742,7 +766,8 @@ void WebAppDatabase::OnDatabaseOpened(
     log_->Append(base::DictValue()
                      .Set("message", "WebApps LevelDB open error")
                      .Set("error", error->ToString()));
-    error_callback_.Run(*error);
+    std::move(callback).Run(Registry(), nullptr,
+                            WebAppDatabaseOpenResult::kOpenError, {});
     return;
   }
 
@@ -763,12 +788,55 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
     log_->Append(base::DictValue()
                      .Set("message", "WebApps LevelDB read error")
                      .Set("error", error->ToString()));
-    error_callback_.Run(*error);
+    std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps;
+    if (data_records) {
+      ProtobufState state = ParseProtobufs(*data_records);
+      for (const auto& [app_id, app_proto] : state.apps) {
+        if (app_proto.has_sync_data() &&
+            app_proto.sync_data().has_start_url()) {
+          salvaged_apps.emplace_back(app_id,
+                                     GURL(app_proto.sync_data().start_url()));
+        }
+      }
+    }
+    // The recovery code will re-initialize a new data store object. While
+    // opening two WEB_APPS data stores simultaneously might have worked in
+    // tests and during initial manual testing, it is prudent to destroy this
+    // instance first. This ensures we only ever have one store open at a time,
+    // preventing potential violations of sync system invariants.
+    store_.reset();
+    std::move(callback).Run(Registry(), nullptr,
+                            WebAppDatabaseOpenResult::kReadError,
+                            std::move(salvaged_apps));
     return;
   }
 
   ProtobufState state = ParseProtobufs(*data_records);
-  MigrateDatabase(state);
+
+  std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps;
+  for (const auto& [app_id, app_proto] : state.apps) {
+    if (app_proto.has_sync_data() && app_proto.sync_data().has_start_url()) {
+      salvaged_apps.emplace_back(app_id,
+                                 GURL(app_proto.sync_data().start_url()));
+    }
+  }
+
+  MigrationResult migration_result = MigrateDatabase(state);
+  switch (migration_result) {
+    case MigrationResult::kSuccess:
+      break;
+    case MigrationResult::kDowngradeDetected:
+      // The recovery code will re-initialize a new data store object. While
+      // opening two WEB_APPS data stores simultaneously might have worked in
+      // tests and during initial manual testing, it is prudent to destroy this
+      // instance first. This ensures we only ever have one store open at a
+      // time, preventing potential violations of sync system invariants.
+      store_.reset();
+      std::move(callback).Run(Registry(), nullptr,
+                              WebAppDatabaseOpenResult::kDowngradeDetected,
+                              std::move(salvaged_apps));
+      return;
+  }
 
   Registry registry;
   for (const auto& [app_id, app_proto] : state.apps) {
@@ -790,7 +858,9 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
   opened_ = true;
   // This should be a tail call: a callback code may indirectly call |this|
   // methods, like WebAppDatabase::Write()
-  std::move(callback).Run(std::move(registry), std::move(metadata_batch));
+  std::move(callback).Run(std::move(registry), std::move(metadata_batch),
+                          WebAppDatabaseOpenResult::kSuccess,
+                          std::move(salvaged_apps));
 }
 
 void WebAppDatabase::OnDataWritten(

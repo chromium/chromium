@@ -34,6 +34,12 @@ class ExtensionInstallGate {
 // dependencies), and tests can fake this functionality without needing to use
 // the whole Extensions system.
 //
+// IMPORTANT: All WebAppProvider code that depends on the extensions system MUST
+// go through this interface instead of calling `extensions::` KeyedService
+// APIs directly. This ensures that test fakes (`FakeExtensionsManager`) are
+// properly utilized and tests do not hang waiting for an uninitialized global
+// `ExtensionSystem`.
+//
 // TODO(http://crbug.com/454081171): Make tests for the implementation, and move
 // all remaining extensions functionality the WebAppProvider system uses to this
 // manager.

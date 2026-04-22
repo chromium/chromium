@@ -36,6 +36,7 @@ class ExtensionsManager;
 class ExternallyManagedAppManager;
 class FakeWebAppProvider;
 class FileUtilsWrapper;
+enum class WebAppDatabaseOpenResult;
 class GeneratedIconFixManager;
 class IsolatedWebAppDevInstallManager;
 class IsolatedWebAppPolicyManager;
@@ -280,7 +281,10 @@ class WebAppProvider : public KeyedService {
 
   // Start sync bridge. All other subsystems depend on it.
   void StartSyncBridge();
-  void OnSyncBridgeReady();
+  void OnSyncBridgeReady(
+      WebAppDatabaseOpenResult open_result,
+      std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps);
+  void OnDatabaseCorruptionRecovered();
 
   void CheckIsConnected() const;
 

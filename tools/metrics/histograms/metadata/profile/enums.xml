@@ -333,6 +333,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Create failure all"/>
   <int value="8" label="Webdata payment manifest DB error"/>
   <int value="9" label="Webdata account autofill DB error"/>
+  <int value="10" label="Web App DB error"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_error_dialog.h:ProfileErrorType) -->
@@ -382,6 +383,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="kWaitingForGlicView"/>
   <int value="42" label="kWaitingForBookmarksImportOnFirstRun"/>
   <int value="43" label="kSkillsDialog"/>
+  <int value="44" label="kWebAppDatabaseCorruptionRecovery"/>
 </enum>
 
 <!-- LINT.IfChange(ProfileManagementFlowStep) -->

@@ -547,6 +547,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/commands/scheduler/apply_pending_manifest_update_result.h:ApplyPendingManifestUpdateResult) -->
 
+<!-- LINT.IfChange(WebAppDatabaseOpenResult) -->
+
+<enum name="WebAppDatabaseOpenResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="OpenError"/>
+  <int value="2" label="ReadError"/>
+  <int value="3" label="DowngradeDetected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/web_app_database.h:WebAppDatabaseOpenResult) -->
+
 <enum name="WebAppIconDownloaderResult">
   <int value="0" label="Success"/>
   <int value="1" label="PrimaryPageChanged"/>

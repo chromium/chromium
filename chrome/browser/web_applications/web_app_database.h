@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +21,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
-
+#include "url/gurl.h"
 namespace syncer {
 class ModelError;
 class MetadataBatch;
@@ -27,11 +29,25 @@ class MetadataChangeList;
 }  // namespace syncer
 
 namespace web_app {
-
 class AbstractWebAppDatabaseFactory;
 class PersistableLog;
 class WebApp;
 struct RegistryUpdateData;
+
+// LINT.IfChange(WebAppDatabaseOpenResult)
+enum class WebAppDatabaseOpenResult {
+  kSuccess = 0,
+  // There was an error opening the database, so no datastore was created.
+  kOpenError = 1,
+  // There was an error reading in all of the initial web app data to populate
+  // the registry.
+  kReadError = 2,
+  // A database downgrade was detected via the database version, and the state
+  // must be reset.
+  kDowngradeDetected = 3,
+  kMaxValue = kDowngradeDetected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppDatabaseOpenResult)
 
 namespace proto {
 class WebApp;
@@ -57,7 +73,9 @@ class WebAppDatabase {
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   using RegistryOpenedCallback = base::OnceCallback<void(
       Registry registry,
-      std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch,
+      WebAppDatabaseOpenResult result,
+      std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps)>;
   // Open existing or create new DB. Read all data and return it via callback.
   void OpenDatabase(RegistryOpenedCallback callback);
 
@@ -79,6 +97,8 @@ class WebAppDatabase {
   //   without fragments.
   static int GetCurrentDatabaseVersion();
 
+  void SetDatabaseVersionForTesting(int version, base::OnceClosure callback);
+
  private:
   struct ProtobufState {
     ProtobufState();
@@ -93,7 +113,12 @@ class WebAppDatabase {
   ProtobufState ParseProtobufs(
       const syncer::DataTypeStore::RecordList& data_records) const;
 
-  void MigrateDatabase(ProtobufState& state);
+  enum class MigrationResult {
+    kSuccess,
+    kDowngradeDetected,
+  };
+
+  MigrationResult MigrateDatabase(ProtobufState& state);
   void MigrateInstallSourceAddUserInstalled(
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);

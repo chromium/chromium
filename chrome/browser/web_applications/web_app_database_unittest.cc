@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -19,11 +20,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
@@ -35,6 +39,9 @@
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -52,6 +59,8 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -324,6 +333,90 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
 
   EXPECT_EQ(base::ToString(*roundtrip_app),
             base::ToString(*app_with_empty_downloaded_sizes));
+}
+
+MATCHER_P(FilePathContainsPath, path, "") {
+  return testing::ExplainMatchResult(
+      testing::Property(&base::FilePath::AsUTF8Unsafe,
+                        testing::HasSubstr(path)),
+      arg, result_listener);
+}
+
+TEST_F(WebAppDatabaseTest, DowngradeCorruptionRecovery) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoErrorDialogs);
+
+  constexpr int kNumApps = 3;
+  fake_provider().UseRealOsIntegrationManager();
+  auto disable_sync_install_and_missing_os_integration = WebAppSyncBridge::
+      DisableResumeSyncInstallAndMissingOsIntegrationForTesting();
+  auto disable_generated_icon_fixes =
+      GeneratedIconFixManager::DisableGeneratedIconFixesForTesting();
+#if BUILDFLAG(IS_CHROMEOS)
+  auto disable_run_on_os_login =
+      WebAppRunOnOsLoginManager::SkipStartupForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  base::HistogramTester histogram_tester;
+
+  // 1. Write the apps and metadata.
+  Registry registry =
+      WriteWebApps(kNumApps, /*exclude_fields_with_side_effects=*/true);
+
+  // 2. Overwrite the database metadata to simulate a downgrade from a future
+  // version.
+  {
+    auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+    proto::DatabaseMetadata metadata;
+    metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion() + 1);
+    write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
+                           metadata.SerializeAsString());
+    WriteBatch(std::move(write_batch));
+  }
+
+  // 3. Keep track of the file utils deletions.
+  auto test_file_utils = base::MakeRefCounted<TestFileUtils>();
+  fake_provider().SetFileUtils(test_file_utils);
+
+  // 4. Start the WebAppProvider to trigger the startup sequence.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // 5. Verify that the profile error dialog was shown.
+  EXPECT_EQ(fake_ui_manager().num_show_profile_error_dialog_calls(), 1);
+
+  // 6. Wait for the background cleanup task to complete.
+  // The WebAppProvider should now have an empty registry and the store should
+  // be cleared.
+  EXPECT_TRUE(registrar().is_empty());
+
+  // 7. Verify the OS integration cleanup and file deletion was done.
+  EXPECT_FALSE(test_file_utils->deleted_files().empty());
+  std::vector<testing::Matcher<base::FilePath>> expected_deleted_files;
+  for (const auto& [app_id, app] : registry) {
+    std::string manifest_resources_dir_name =
+        base::FilePath(FILE_PATH_LITERAL("Manifest Resources"))
+            .AppendASCII(app_id)
+            .AsUTF8Unsafe();
+    expected_deleted_files.push_back(
+        FilePathContainsPath(manifest_resources_dir_name));
+
+    std::string os_integration_dir_name =
+        base::FilePath()
+            .AppendASCII(GenerateApplicationNameFromAppId(app_id))
+            .AsUTF8Unsafe();
+    expected_deleted_files.push_back(
+        FilePathContainsPath(os_integration_dir_name));
+  }
+  // Check that out of all the files deleted by the system, the ones we expect
+  // to be deleted are in there.
+  EXPECT_THAT(test_file_utils->deleted_files(),
+              testing::IsSupersetOf(expected_deleted_files));
+
+  // 8. Verify prefs were cleared.
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetDict(prefs::kWebAppsPreferences).empty());
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetDict(prefs::kWebAppsDailyMetrics).empty());
 }
 
 }  // namespace web_app

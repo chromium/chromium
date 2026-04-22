@@ -126,6 +126,9 @@ void WebAppPrefGuardrails::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kWebAppsAppAgnosticMlState);
   registry->RegisterDictionaryPref(
       prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+  // NOTE: If you add new prefs here that should be cleared during database
+  // corruption recovery, make sure to update
+  // `RemoveWebAppJob::RemoveForCorruptDatabase`.
 }
 
 // static

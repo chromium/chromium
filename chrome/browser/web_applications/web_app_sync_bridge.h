@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -18,12 +19,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/webapps/common/web_app_id.h"
+#include "url/gurl.h"
 
 namespace base {
 class Time;
@@ -152,7 +155,10 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   [[nodiscard]] ScopedRegistryUpdate BeginUpdate(
       CommitCallback callback = base::DoNothing());
 
-  void Init(base::OnceClosure callback);
+  using InitCallback = base::OnceCallback<void(
+      WebAppDatabaseOpenResult result,
+      std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps)>;
+  void Init(InitCallback callback);
 
   // Non testing code should use SetUserDisplayModeCommand instead.
   void SetAppUserDisplayModeForTesting(
@@ -267,9 +273,12 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   void UpdateSync(const RegistryUpdateData& update_data,
                   syncer::MetadataChangeList* metadata_change_list);
 
-  void OnDatabaseOpened(base::OnceClosure callback,
-                        Registry registry,
-                        std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnDatabaseOpened(
+      InitCallback callback,
+      Registry registry,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch,
+      WebAppDatabaseOpenResult result,
+      std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps);
 
   void EnsureShortcutAppToDiyAppMigration();
 

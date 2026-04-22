@@ -12,6 +12,7 @@
 // END should ALWAYS be the last element in this enum. This is important because
 // this enum is used to back a histogram, and these are implicit assumptions
 // made in terms of how enumerated histograms are defined.
+// LINT.IfChange(ProfileErrorType)
 enum class ProfileErrorType {
   HISTORY = 0,
   PREFERENCES = 1,
@@ -23,8 +24,10 @@ enum class ProfileErrorType {
   CREATE_FAILURE_ALL = 7,
   DB_PAYMENT_MANIFEST_WEB_DATA = 8,
   DB_ACCOUNT_AUTOFILL_WEB_DATA = 9,
-  kMaxValue = DB_ACCOUNT_AUTOFILL_WEB_DATA,
+  DB_WEB_APP_DATA = 10,
+  kMaxValue = DB_WEB_APP_DATA,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileErrorType)
 
 // Shows an error dialog corresponding to the inability to open some portion of
 // the profile.

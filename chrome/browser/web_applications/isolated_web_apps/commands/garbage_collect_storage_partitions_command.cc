@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -60,11 +59,9 @@ void GarbageCollectStoragePartitionsCommand::ResetStorageGarbageCollectPref() {
 }
 
 void GarbageCollectStoragePartitionsCommand::OnPrefReset() {
-  extensions::OnExtensionSystemReady(
-      profile_,
-      base::BindOnce(
-          &GarbageCollectStoragePartitionsCommand::DoGarbageCollection,
-          weak_factory_.GetWeakPtr()));
+  lock_->extensions_manager().OnExtensionSystemReady(base::BindOnce(
+      &GarbageCollectStoragePartitionsCommand::DoGarbageCollection,
+      weak_factory_.GetWeakPtr()));
 }
 
 void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {

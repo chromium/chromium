@@ -158,6 +158,12 @@ class FakeWebAppUiManager : public WebAppUiManager {
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
+  void ShowProfileErrorDialogForCorruptDB() override;
+
+  int num_show_profile_error_dialog_calls() const {
+    return num_show_profile_error_dialog_calls_;
+  }
+
   void ShowIntentPicker(const GURL& url,
                         content::WebContents* web_contents,
                         ShowIntentPickerBubbleCallback callback) override;
@@ -181,6 +187,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
       Profile* profile,
       const std::string& app_id) override;
 
+  FakeWebAppUiManager* AsFakeWebAppUiManagerForTesting() override;
+
  private:
   base::flat_map<webapps::AppId, size_t> app_id_to_num_windows_map_;
   // Closures waiting to be called when all windows for a given `webapps::AppId`
@@ -193,6 +201,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       notify_on_all_app_windows_closed_callback_ = base::DoNothing();
 
   int num_reparent_tab_calls_ = 0;
+  int num_show_profile_error_dialog_calls_ = 0;
   OnLaunchWebAppCallback on_launch_web_app_callback_;
 };
 

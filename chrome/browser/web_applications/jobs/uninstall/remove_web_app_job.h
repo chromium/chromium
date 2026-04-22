@@ -16,6 +16,7 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 
 class Profile;
+class GURL;
 
 namespace web_app {
 
@@ -23,8 +24,32 @@ class RemoveInstallSourceJob;
 
 // This should VERY rarely be used directly, and instead just used from other
 // jobs once all install managements are removed.
+//
+// NOTE: All removal operations must be implemented in both the job body
+// (e.g. `SynchronizeAndUninstallOsHooks`, `OnIconDataDeleted`, etc.) AND
+// in the static `RemoveForCorruptDatabase` method. This is because
+// `RemoveForCorruptDatabase` must be able to perform a "headless" cleanup of
+// OS integration, icons, and other assets using only the salvaged `app_id`s
+// when the database is too corrupted to load the full `WebApp` objects.
 class RemoveWebAppJob : public UninstallJob {
  public:
+  // Uninstalls all web apps from the database, deletes the database on disk,
+  // and queues up tasks to delete all OS integration and storage partitions.
+  // Note: This relies on `provider.database_factory()` to get the correct
+  // DataTypeStore (either global or test fake) and will set
+  // `prefs::kShouldGarbageCollectStoragePartitions` which schedules a command
+  // that waits for the Extension System to be ready.
+  //
+  // A lock is not needed here because the entries in `salvaged_apps` are
+  // corrupted apps that do not show up on the WebAppRegistrar. While we are
+  // performing OS integration cleanup on them, they cannot conflict with
+  // normal web app operations because they are not known to the rest of the
+  // system.
+  static void RemoveForCorruptDatabase(
+      WebAppProvider& provider,
+      const std::vector<std::pair<webapps::AppId, GURL>>& salvaged_apps,
+      base::OnceClosure callback);
+
   // `webapps::IsUserUninstall(uninstall_source)` indicates that this operation
   // is not a byproduct of removing the last install source from a web app via
   // external management and will be treated as a user uninstall.

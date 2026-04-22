@@ -32,6 +32,7 @@ class TestFileUtils : public FileUtilsWrapper {
                  base::span<const uint8_t> file_data) override;
   bool ReadFileToString(const base::FilePath& path,
                         std::string* contents) override;
+  bool DeleteFile(const base::FilePath& path, bool recursive) override;
   bool DeleteFileRecursively(const base::FilePath& path) override;
 
   static constexpr int kNoLimit = -1;
@@ -44,6 +45,10 @@ class TestFileUtils : public FileUtilsWrapper {
 
   TestFileUtils* AsTestFileUtils() override;
 
+  const std::vector<base::FilePath>& deleted_files() const {
+    return deleted_files_;
+  }
+
  private:
   ~TestFileUtils() override;
 
@@ -51,6 +56,7 @@ class TestFileUtils : public FileUtilsWrapper {
   std::optional<bool> delete_file_recursively_result_;
   absl::flat_hash_map<base::FilePath, bool> delete_file_recursively_results_;
   int remaining_disk_space_ = kNoLimit;
+  std::vector<base::FilePath> deleted_files_;
 };
 
 }  // namespace web_app

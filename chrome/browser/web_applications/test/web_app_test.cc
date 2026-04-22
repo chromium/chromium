@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -73,4 +74,9 @@ web_app::FakeWebContentsManager& WebAppTest::fake_web_contents_manager() const {
 web_app::OsIntegrationTestOverrideImpl& WebAppTest::fake_os_integration()
     const {
   return os_integration_test_override_->test_override();
+}
+
+web_app::FakeWebAppUiManager& WebAppTest::fake_ui_manager() const {
+  return CHECK_DEREF(
+      fake_provider().GetUiManager().AsFakeWebAppUiManagerForTesting());
 }

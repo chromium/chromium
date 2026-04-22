@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_extensions_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -299,6 +300,8 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
       switches::kDisableDefaultApps);
 
   SetDatabaseFactory(std::make_unique<FakeWebAppDatabaseFactory>());
+
+  SetExtensionsManager(std::make_unique<FakeExtensionsManager>());
 
   SetWebContentsManager(std::make_unique<FakeWebContentsManager>());
 

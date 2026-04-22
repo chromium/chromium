@@ -30,6 +30,9 @@ void UserUninstalledPreinstalledWebAppPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kUserUninstalledPreinstalledWebAppPref);
+  // NOTE: If you add new prefs here that should be cleared during database
+  // corruption recovery, make sure to update
+  // `RemoveWebAppJob::RemoveForCorruptDatabase`.
 }
 
 void UserUninstalledPreinstalledWebAppPrefs::Add(

@@ -188,6 +188,9 @@ void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
       prefs::kIsolatedWebAppPendingInitializationCount, 0);
   registry->RegisterBooleanPref(prefs::kIsolatedWebAppUserInstallationEnabled,
                                 true);
+  // NOTE: If you add new prefs here that should be cleared during database
+  // corruption recovery, make sure to update
+  // `RemoveWebAppJob::RemoveForCorruptDatabase`.
 }
 
 // static

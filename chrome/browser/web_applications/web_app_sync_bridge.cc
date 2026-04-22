@@ -199,7 +199,7 @@ void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider> pass_key,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebAppSyncBridge::Init(base::OnceClosure initialized_callback) {
+void WebAppSyncBridge::Init(InitCallback initialized_callback) {
   database_->OpenDatabase(base::BindOnce(&WebAppSyncBridge::OnDatabaseOpened,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          std::move(initialized_callback)));
@@ -534,10 +534,35 @@ void WebAppSyncBridge::UpdateSync(
 }
 
 void WebAppSyncBridge::OnDatabaseOpened(
-    base::OnceClosure initialized_callback,
+    InitCallback callback,
     Registry registry,
-    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-  DCHECK(database_->is_opened());
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch,
+    WebAppDatabaseOpenResult result,
+    std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps) {
+  DCHECK(database_->is_opened() ||
+         result != WebAppDatabaseOpenResult::kSuccess);
+
+  // Report errors to sync.
+  switch (result) {
+    case WebAppDatabaseOpenResult::kSuccess:
+      break;
+    case WebAppDatabaseOpenResult::kOpenError:
+      ReportErrorToChangeProcessor(syncer::ModelError(
+          FROM_HERE,
+          syncer::ModelError::Type::kDataTypeStoreBackendDbOpenFailed));
+      break;
+    case WebAppDatabaseOpenResult::kReadError:
+      ReportErrorToChangeProcessor(syncer::ModelError(
+          FROM_HERE,
+          syncer::ModelError::Type::kDataTypeStoreBackendDbReadFailed));
+      break;
+    case WebAppDatabaseOpenResult::kDowngradeDetected:
+      break;
+  }
+  if (result != WebAppDatabaseOpenResult::kSuccess) {
+    std::move(callback).Run(result, std::move(salvaged_apps));
+    return;
+  }
 
   // Provide sync metadata to the processor _before_ any local changes occur.
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
@@ -546,7 +571,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   // Database migrations happen inside WebAppDatabase::MigrateDatabase.
 
-  std::move(initialized_callback).Run();
+  std::move(callback).Run(WebAppDatabaseOpenResult::kSuccess, {});
 
   // Already have data stored in web app system and shouldn't expect further
   // callbacks once `IsTrackingMetadata` is true.

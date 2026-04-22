@@ -55,7 +55,7 @@ class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
   virtual bool ReadFileToString(const base::FilePath& path,
                                 std::string* contents);
 
-  bool DeleteFile(const base::FilePath& path, bool recursive);
+  virtual bool DeleteFile(const base::FilePath& path, bool recursive);
 
   virtual bool DeleteFileRecursively(const base::FilePath& path);
 

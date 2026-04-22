@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
@@ -33,11 +34,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
@@ -45,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -62,7 +66,10 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -84,7 +91,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #endif
 namespace webapps {
@@ -121,7 +127,8 @@ WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
     return provider;
   }
 
-  base::RunLoop run_loop;
+  // Nestable is required for the tasks scheduled in the database recovery code.
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   return provider;
@@ -474,12 +481,33 @@ void WebAppProvider::StartSyncBridge() {
       base::BindOnce(&WebAppProvider::OnSyncBridgeReady, AsWeakPtr()));
 }
 
-void WebAppProvider::OnSyncBridgeReady() {
+void WebAppProvider::OnSyncBridgeReady(
+    WebAppDatabaseOpenResult open_result,
+    std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps) {
   DCHECK(!on_registry_ready_.is_signaled());
+  base::UmaHistogramEnumeration("WebApp.Database.OpenResult", open_result);
 
-  // Perform database migrations once the sync bridge is ready, but before
-  // starting the rest of the subsystems and notifying that the registry is
-  // ready.
+  switch (open_result) {
+    case WebAppDatabaseOpenResult::kSuccess:
+    case WebAppDatabaseOpenResult::kOpenError:
+      // No error handling yet for errors during data store opening, as we have
+      // no access to the database. Likely this doesn't occur in the wild, as
+      // this would cause a variety of crashes.
+      break;
+    case WebAppDatabaseOpenResult::kReadError:
+    case WebAppDatabaseOpenResult::kDowngradeDetected:
+      ui_manager_->ShowProfileErrorDialogForCorruptDB();
+
+      RemoveWebAppJob::RemoveForCorruptDatabase(
+          *this, std::move(salvaged_apps),
+          base::BindOnce(&WebAppProvider::OnDatabaseCorruptionRecovered,
+                         AsWeakPtr()));
+      return;
+  }
+
+    // Perform database migrations once the sync bridge is ready, but before
+    // starting the rest of the subsystems and notifying that the registry is
+    // ready.
 #if BUILDFLAG(IS_CHROMEOS)
   web_app::migrations::MigrateAdobeExpressFromOemInstallToDefault(
       sync_bridge_.get());
@@ -547,6 +575,13 @@ void WebAppProvider::OnSyncBridgeReady() {
           base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
                          AsWeakPtr()),
           base::RandTimeDeltaUpTo(base::Minutes(20)));
+}
+
+void WebAppProvider::OnDatabaseCorruptionRecovered() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  sync_bridge_ = std::make_unique<WebAppSyncBridge>(registrar_.get());
+  sync_bridge_->SetProvider(base::PassKey<WebAppProvider>(), *this);
+  StartSyncBridge();
 }
 
 void WebAppProvider::CheckIsConnected() const {

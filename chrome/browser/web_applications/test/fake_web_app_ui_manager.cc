@@ -249,6 +249,10 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
   std::move(callback).Run(webapps::UninstallResultCode::kAppRemoved);
 }
 
+void FakeWebAppUiManager::ShowProfileErrorDialogForCorruptDB() {
+  ++num_show_profile_error_dialog_calls_;
+}
+
 void FakeWebAppUiManager::ShowIntentPicker(
     const GURL& url,
     content::WebContents* web_contents,
@@ -272,5 +276,9 @@ void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     Browser* browser,
     Profile* profile,
     const std::string& app_id) {}
+
+FakeWebAppUiManager* FakeWebAppUiManager::AsFakeWebAppUiManagerForTesting() {
+  return this;
+}
 
 }  // namespace web_app

@@ -60,6 +60,9 @@ class WebAppRunOnOsLoginManager;
 // * All access to `WebContents` is redirected to the `FakeWebContentsManager`
 //   (accessible via `GetFakeWebContentsManager()`), which stores & returns
 //   results for any interaction here.
+// * Integration with the Extensions system is intercepted by
+//   `FakeExtensionsManager` to prevent hangs waiting for the real global
+//   system.
 //
 // Other features & notes:
 // * FakeWebAppProvider is used by default in unit tests, as the

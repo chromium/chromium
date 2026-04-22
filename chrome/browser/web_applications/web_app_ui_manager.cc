@@ -76,4 +76,8 @@ void WebAppUiManager::NotifyReadyToCommitNavigation(
     observer.OnReadyToCommitNavigation(app_id, navigation_handle);
 }
 
+FakeWebAppUiManager* WebAppUiManager::AsFakeWebAppUiManagerForTesting() {
+  return nullptr;
+}
+
 }  // namespace web_app

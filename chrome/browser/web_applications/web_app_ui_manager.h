@@ -42,7 +42,7 @@ namespace webapps {
 class MlInstallOperationTracker;
 }
 namespace web_app {
-
+class FakeWebAppUiManager;
 class WithAppResources;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
@@ -105,7 +105,9 @@ enum class LaunchWebAppWindowSetting {
 // done, the results are returned directly or returned by calling a callback
 // argument. This ensures that state changing complexity all lives in the WebApp
 // system internals, and also allows unit tests to test those operations easy
-// while this subsystem is faked using the FakeWebAppUiManager.
+// while this subsystem is faked using the FakeWebAppUiManager, accessible in
+// unit tests via the FakeWebAppProvider or `AsFakeWebAppUiManagerForTesting()`
+// below.
 class WebAppUiManager {
  public:
   using ShowIntentPickerBubbleCallback = base::OnceCallback<void(bool)>;
@@ -317,6 +319,8 @@ class WebAppUiManager {
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) = 0;
 
+  virtual void ShowProfileErrorDialogForCorruptDB() = 0;
+
   // This assumes the app is already installed. The callback is called with
   // true when the user chooses to open the app, otherwise, false is called.
   virtual void ShowIntentPicker(const GURL& url,
@@ -350,6 +354,10 @@ class WebAppUiManager {
       Browser* browser,
       Profile* profile,
       const std::string& app_id) = 0;
+
+  // Safe upcasting to the 'fake' version. This is overridden in
+  // FakeWebAppUiManager
+  virtual FakeWebAppUiManager* AsFakeWebAppUiManagerForTesting();
 
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;

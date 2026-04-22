@@ -175,6 +175,8 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
+  void ShowProfileErrorDialogForCorruptDB() override;
+
   void ShowIntentPicker(const GURL& url,
                         content::WebContents* web_contents,
                         ShowIntentPickerBubbleCallback callback) override;

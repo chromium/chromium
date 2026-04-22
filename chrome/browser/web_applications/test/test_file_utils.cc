@@ -66,7 +66,13 @@ bool TestFileUtils::ReadFileToString(const base::FilePath& path,
   return FileUtilsWrapper::ReadFileToString(path, contents);
 }
 
+bool TestFileUtils::DeleteFile(const base::FilePath& path, bool recursive) {
+  deleted_files_.push_back(path);
+  return FileUtilsWrapper::DeleteFile(path, recursive);
+}
+
 bool TestFileUtils::DeleteFileRecursively(const base::FilePath& path) {
+  deleted_files_.push_back(path);
   auto it = delete_file_recursively_results_.find(path);
   if (it != delete_file_recursively_results_.end()) {
     return it->second;
