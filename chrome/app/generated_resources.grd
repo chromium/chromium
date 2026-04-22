@@ -4186,22 +4186,22 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP" desc="Tooltip for the JS Optimizations chip in the toolbar when it's disabled.">
         JavaScript optimizations are disabled.
       </message>
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_TITLE" desc="Title for the V8 optimization bubble.">
-        V8 optimization is off
+      <message name="IDS_JS_OPTIMIZATION_BUBBLE_TITLE" desc="Title for the JavaScript optimization disabled bubble.">
+        JavaScript optimization is off
       </message>
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_POLICY_BODY" desc="Body text for the V8 optimization bubble when disabled by enterprise policy.">
+      <message name="IDS_JS_OPTIMIZATION_BUBBLE_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled by enterprise policy.">
         JavaScript optimization is off for this site.
       </message>
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_BODY_NON_POLICY_BODY" desc="Body text for the V8 optimization bubble when disabled for other reasons.">
+      <message name="IDS_JS_OPTIMIZATION_BUBBLE_BODY_NON_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled for other reasons.">
         JavaScript optimization is off for this site. Enable for better performance.
       </message>
      <if expr="not use_titlecase">
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON" desc="Button text to enable V8 optimization for the current site.">
+      <message name="IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON" desc="Button text to enable JavaScript optimization for the current site.">
         Allow for this site
       </message>
     </if>
     <if expr="use_titlecase">
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON" desc="In Title Case: Button text to enable V8 optimization for the current site.">
+      <message name="IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON" desc="In Title Case: Button text to enable JavaScript optimization for the current site.">
         Allow for This Site
       </message>
     </if>
