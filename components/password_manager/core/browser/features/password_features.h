@@ -193,6 +193,9 @@ BASE_DECLARE_FEATURE(kPasswordStorePropagatesActionableErrors);
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 
+// Prevents password manager from showing save/update UI on federated login.
+BASE_DECLARE_FEATURE(kPreventPasswordManagerOnFederatedLogin);
+
 // Updates password change flow to await for local ML model availability. The
 // model has a superior performance compared to existing password manager
 // classifications.

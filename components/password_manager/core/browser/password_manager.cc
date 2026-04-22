@@ -1274,6 +1274,13 @@ void PasswordManager::NotifyStorePasswordCalled() {
   DropFormManagers();
 }
 
+void PasswordManager::OnNonPasswordLoginDetected() {
+  if (base::FeatureList::IsEnabled(
+          features::kPreventPasswordManagerOnFederatedLogin)) {
+    ResetSubmittedManager();
+  }
+}
+
 #if BUILDFLAG(IS_IOS)
 // LINT.IfChange(update_password_state_for_text_change)
 void PasswordManager::UpdateStateOnUserInput(

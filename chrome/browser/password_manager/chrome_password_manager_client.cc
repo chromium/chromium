@@ -1948,9 +1948,7 @@ void ChromePasswordManagerClient::OnNonPasswordLoginDetected() {
     return;
   }
 
-  // TODO(crbug.com/498593355): Propagate the call to the password manager. Only
-  // the password manager click from the last opener will handle the federated
-  // login.
+  password_manager_.OnNonPasswordLoginDetected();
 }
 
 void ChromePasswordManagerClient::OnFieldTypesDetermined(

@@ -1727,6 +1727,64 @@ TEST_P(PasswordManagerTest, FormSubmit) {
       ElementsAre(Pair(form.signon_realm, ElementsAre(FormMatches(form)))));
 }
 
+TEST_P(PasswordManagerTest, NonPasswordLoginSuppressesSavePrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPreventPasswordManagerOnFederatedLogin);
+
+  auto mock_factory =
+      std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
+  manager()->set_leak_factory(std::move(mock_factory));
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  OnPasswordFormSubmitted(form.form_data);
+
+  manager()->OnNonPasswordLoginDetected();
+
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(PasswordManagerTest, NonPasswordLoginNoSuppressionWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreventPasswordManagerOnFederatedLogin);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  OnPasswordFormSubmitted(form.form_data);
+
+  manager()->OnNonPasswordLoginDetected();
+
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).WillOnce(Return(true));
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_P(PasswordManagerTest, IsPasswordFieldDetectedOnPage) {
   FormData form_data(MakeSimpleFormData());
   EXPECT_FALSE(manager()->IsPasswordFieldDetectedOnPage());

@@ -232,6 +232,9 @@ class PasswordManager : public PasswordManagerInterface {
   // Notifies that Credential Management API function store() is called.
   void NotifyStorePasswordCalled() override;
 
+  // Notifies that a non-password login was detected (e.g. FedCM or OAuth).
+  void OnNonPasswordLoginDetected();
+
   // Returns form cache containing information about parsed password forms on
   // the web page.
   PasswordFormCache* GetPasswordFormCache() override;
