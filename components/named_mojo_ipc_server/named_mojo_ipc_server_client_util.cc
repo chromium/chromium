@@ -57,7 +57,9 @@ mojo::PlatformChannelEndpoint ConnectToServer(
 // static
 mojo::PlatformChannelEndpoint ConnectToServer(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return ConnectToServer({.server_name = server_name});
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = server_name;
+  return ConnectToServer(options);
 }
 
 }  // namespace named_mojo_ipc_server

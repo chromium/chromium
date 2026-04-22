@@ -271,7 +271,9 @@ base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
     }
   }
 
-  auto endpoint = mojo::NamedPlatformChannel({socket_path.value()});
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = socket_path.value();
+  auto endpoint = mojo::NamedPlatformChannel(options);
   // TODO(cmtm): use NamedPlatformChannel to bootstrap mojo connection after
   // libchrome uprev in android.
   base::ScopedFD socket_fd =

@@ -106,8 +106,10 @@ void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
 bool NamedMojoServerEndpointConnectorLinux::TryStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = options_.server_name;
   mojo::PlatformChannelServerEndpoint server_endpoint =
-      mojo::NamedPlatformChannel({options_.server_name}).TakeServerEndpoint();
+      mojo::NamedPlatformChannel(options).TakeServerEndpoint();
   if (!server_endpoint.is_valid()) {
     return false;
   }

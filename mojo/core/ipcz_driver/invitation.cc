@@ -109,31 +109,38 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
 // given a handle to a connected named pipe. It may return an invalid process
 // object if either the handle does not refer to a named pipe or the handle
 // refers to a named pipe that is not connected.
-base::Process OpenRemoteProcess(const MojoInvitationTransportEndpoint& endpoint,
-                                bool remote_is_server) {
-  base::ProcessId remote_process_id = 0;
+base::Process OpenRemoteProcess(
+    const MojoInvitationTransportEndpoint& endpoint) {
   // Extract the handle to the connected named pipe from mojo invitation
   // transport endpoint.
   HANDLE handle =
       LongToHandle(static_cast<long>(endpoint.platform_handles[0].value));
-  auto get_remote_pid = remote_is_server ? &GetNamedPipeServerProcessId
-                                         : &GetNamedPipeClientProcessId;
-  // Try to get the remote client process id given the extracted handle via
-  // GetNamedPipe(Server|Client)ProcessId API.
-  if ((!get_remote_pid(handle, &remote_process_id) ||
-       remote_process_id == base::Process::Current().Pid())) {
-    DVLOG(2) << "Failed to get remote process id via the connected named pipe";
+
+  base::ProcessId client_pid = 0;
+  base::ProcessId server_pid = 0;
+  base::ProcessId current_pid = base::GetCurrentProcId();
+
+  if (!GetNamedPipeClientProcessId(handle, &client_pid)) {
+    PLOG(ERROR) << "GetNamedPipeClientProcessId failed";
+    return base::Process();
+  }
+  if (!GetNamedPipeServerProcessId(handle, &server_pid)) {
+    PLOG(ERROR) << "GetNamedPipeServerProcessId failed";
     return base::Process();
   }
 
-  if (remote_process_id == 0) {
-    DVLOG(2) << "Remote process id is invalid";
+  // The remote PID is whichever one isn't us.
+  base::ProcessId remote_pid =
+      (client_pid == current_pid) ? server_pid : client_pid;
+
+  if (remote_pid == 0 || remote_pid == current_pid) {
+    DLOG(ERROR) << "Could not identify remote process ID.";
     return base::Process();
   }
 
   // Try to open the remote process.
   base::Process remote_process =
-      base::Process::OpenWithAccess(remote_process_id, PROCESS_DUP_HANDLE);
+      base::Process::OpenWithAccess(remote_pid, PROCESS_DUP_HANDLE);
   if (!remote_process.IsValid()) {
     DVLOG(2) << "Remote process is invalid";
     return base::Process();
@@ -287,8 +294,7 @@ MojoResult Invitation::Send(
   // in such case, rely on the connected named pipe to get the remote process
   // id, then open and set the remote process.
   if (!remote_process.IsValid()) {
-    remote_process =
-        OpenRemoteProcess(*transport_endpoint, /* remote_is_server= */ false);
+    remote_process = OpenRemoteProcess(*transport_endpoint);
   }
 #endif
 
@@ -422,8 +428,7 @@ MojoHandle Invitation::Accept(
   base::Process remote_process;
 #if BUILDFLAG(IS_WIN)
   if (is_elevated) {
-    remote_process =
-        OpenRemoteProcess(*transport_endpoint, /* remote_is_server= */ true);
+    remote_process = OpenRemoteProcess(*transport_endpoint);
   }
 #endif
   if (remote_process.IsValid()) {

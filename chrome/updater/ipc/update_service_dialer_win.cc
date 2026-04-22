@@ -84,12 +84,13 @@ void ConnectMojoImpl(
     }
 
     server = result;
-    return named_mojo_ipc_server::ConnectToServer({
-        .server_name = is_internal_service
-                           ? GetUpdateServiceInternalServerName(scope)
-                           : GetUpdateServiceServerName(scope),
-        .allow_impersonation = true,
-    });
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name = is_internal_service
+                              ? GetUpdateServiceInternalServerName(scope)
+                              : GetUpdateServiceServerName(scope);
+    options.allow_impersonation = true;
+    options.verify_server_privilege = true;
+    return named_mojo_ipc_server::ConnectToServer(options);
   }();
 
   if (tries >= 1 && !endpoint) {

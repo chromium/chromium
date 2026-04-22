@@ -112,8 +112,10 @@ mach_port_t NamedMojoServerEndpointConnectorMac::port() {
 bool NamedMojoServerEndpointConnectorMac::TryStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = options_.server_name;
   mojo::PlatformChannelServerEndpoint server_endpoint =
-      mojo::NamedPlatformChannel({options_.server_name}).TakeServerEndpoint();
+      mojo::NamedPlatformChannel(options).TakeServerEndpoint();
   if (!server_endpoint.is_valid() ||
       !server_endpoint.platform_handle().is_valid_mach_receive()) {
     return false;

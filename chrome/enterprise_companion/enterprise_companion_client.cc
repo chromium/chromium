@@ -103,8 +103,16 @@ void ConnectWithRetries(
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = server_name;
+  options.verify_server_privilege = true;
+  mojo::PlatformChannelEndpoint endpoint =
+      named_mojo_ipc_server::ConnectToServer(options);
+#else
   mojo::PlatformChannelEndpoint endpoint =
       named_mojo_ipc_server::ConnectToServer(server_name);
+#endif
   if (endpoint.is_valid()) {
     std::move(callback).Run(std::move(endpoint));
     return;
@@ -132,7 +140,14 @@ void ConnectToServer(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](const mojo::NamedPlatformChannel::ServerName& server_name) {
+#if BUILDFLAG(IS_WIN)
+            mojo::NamedPlatformChannel::Options options;
+            options.server_name = server_name;
+            options.verify_server_privilege = true;
+            return named_mojo_ipc_server::ConnectToServer(options);
+#else
             return named_mojo_ipc_server::ConnectToServer(server_name);
+#endif
           },
           server_name)
           .Then(base::BindPostTaskToCurrentDefault(

@@ -45,10 +45,11 @@ void ConnectMojoImpl(
       return std::nullopt;
     }
 
-    return named_mojo_ipc_server::ConnectToServer(
-        {.server_name = is_internal_service
-                            ? GetUpdateServiceInternalServerName(scope)
-                            : GetUpdateServiceServerName(scope)});
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name = is_internal_service
+                              ? GetUpdateServiceInternalServerName(scope)
+                              : GetUpdateServiceServerName(scope);
+    return named_mojo_ipc_server::ConnectToServer(options);
   }();
 
   if (!endpoint) {
