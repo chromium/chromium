@@ -218,8 +218,10 @@ class ContextualTasksComposeboxHandler
   // The URL of the current suggested tab context.
   std::optional<GURL> current_suggestion_;
 
-  // The message to be sent to the webview once uploads are complete.
-  std::optional<lens::ClientToAimMessage> pending_message_;
+  // The pending query request info to be sent once uploads are complete.
+  std::unique_ptr<contextual_search::ContextualSearchContextController::
+                      CreateClientToAimRequestInfo>
+      pending_query_request_info_;
 
   // Set of tabs still delayed. Is set of tab id's, while `delayed_tabs_`
   // is map of token to tab id. We do not always have access to file token
