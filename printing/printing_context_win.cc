@@ -417,12 +417,15 @@ mojom::ResultCode PrintingContextWin::RenderPage(const PrintedPage& page,
         content_area.y() - page_setup.printable_area().y(),
         page.shrink_factor());
 
-    if (::StartPage(context_) <= 0)
+    if (::StartPage(context_) <= 0) {
       return mojom::ResultCode::kFailed;
-    bool played_back = page.metafile()->SafePlayback(context_);
-    DCHECK(played_back);
-    if (::EndPage(context_) <= 0)
+    }
+    if (!page.metafile()->SafePlayback(context_)) {
       return mojom::ResultCode::kFailed;
+    }
+    if (::EndPage(context_) <= 0) {
+      return mojom::ResultCode::kFailed;
+    }
   }
 
   return mojom::ResultCode::kSuccess;
