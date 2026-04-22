@@ -49,6 +49,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -1178,27 +1179,48 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     return false;
   }
 
-  void* src_data = nullptr;
+  AHardwareBuffer_Planes planes;
   int fence = -1;
-  int ret = AHardwareBuffer_lock(hardware_buffer,
-                                 AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, fence,
-                                 nullptr, &src_data);
+  int ret = AHardwareBuffer_lockPlanes(hardware_buffer,
+                                       AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
+                                       fence, nullptr, &planes);
   if (ret != 0) {
     return false;
   }
 
-  const uint8_t* src_y = static_cast<uint8_t*>(src_data);
-  const int src_y_stride = desc.stride;
-  const int src_uv_stride = desc.stride;
+  absl::Cleanup uncloker = [&]() {
+    AHardwareBuffer_unlock(hardware_buffer, nullptr);
+  };
+
+  // We support only NV12, which correspond to AHardwareBuffer_Planes:
+  // * planeCount == 3 (note, that while format is interleaved, AHB format is
+  //   3-planar)
+  // * plane 0 -- pixelStride = 1; Each pixel in plane 1 is 1 byte (Y).
+  // * plane 1 and 2 -- pixelStride = 2; Because it's interleaved U and V.
+  // * plane 1 and 2 strides are the same. Because it's the same memory plane
+  // * plane[2].data starts at plane[1] shifted one byte;
+
+  if (planes.planeCount != 3 || planes.planes[0].pixelStride != 1 ||
+      planes.planes[1].pixelStride != 2 || planes.planes[2].pixelStride != 2 ||
+      planes.planes[1].rowStride != planes.planes[2].rowStride) {
+    return false;
+  }
+
+  if (static_cast<uint8_t*>(planes.planes[2].data) -
+          static_cast<uint8_t*>(planes.planes[1].data) !=
+      1) {
+    return false;
+  }
+
   const int dst_stride = desc.width;
 
   int result = libyuv::NV12Copy(
-      src_y, src_y_stride, UNSAFE_TODO(src_y + src_y_stride * desc.height),
-      src_uv_stride, dst_buffer.data(), dst_stride,
+      static_cast<uint8_t*>(planes.planes[0].data), planes.planes[0].rowStride,
+      static_cast<uint8_t*>(planes.planes[1].data), planes.planes[1].rowStride,
+      dst_buffer.data(), dst_stride,
       dst_buffer.subspan(desc.height * dst_stride).data(), dst_stride,
       desc.width, desc.height);
 
-  AHardwareBuffer_unlock(hardware_buffer, &fence);
   return result == 0;
 }
 
