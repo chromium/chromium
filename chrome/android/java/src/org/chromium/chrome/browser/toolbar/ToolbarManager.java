@@ -2402,11 +2402,14 @@ public class ToolbarManager
 
         var bottomBarContainerOneshotSupplier =
                 new OneshotSupplierImpl<BottomControlsContentDelegate>();
+
+        // TODO(crbug.com/504612877): Pass the action registry once we register actions.
         BottomBarContainerCoordinator bottomBarContainerCoordinator =
                 new BottomBarContainerCoordinator(
                         bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
                         mBottomControlsStacker::requestLayerUpdate,
-                        mCurrentTabSupplier);
+                        mCurrentTabSupplier,
+                        mAppThemeColorProvider);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {

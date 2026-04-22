@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
@@ -56,6 +57,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private BottomControlsVisibilityController mVisibilityController;
     @Mock private Callback<Object> mOnModelTokenChange;
     @Mock private Tab mTab;
+    @Mock private ThemeColorProvider mThemeColorProvider;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -77,7 +79,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
                                             mRequestLayerUpdateCallback,
-                                            mTabSupplier);
+                                            mTabSupplier,
+                                            mThemeColorProvider);
                         });
     }
 
