@@ -455,7 +455,7 @@ AX_TEST_F(
       assertTrue(webRange.isWebRange());
     });
 
-// Disabled due to being flaky on ChromeOS. See https://crbug.com/1227435.
+// Disabled due to being flaky on ChromeOS. See https://crbug.com/40777058.
 AX_TEST_F(
     'AccessibilityExtensionCursorsTest', 'DISABLED_SingleDocSelection',
     async function() {

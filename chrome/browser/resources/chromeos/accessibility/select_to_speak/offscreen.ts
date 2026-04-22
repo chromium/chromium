@@ -83,7 +83,7 @@ class AudioAndCopyHandler {
       this.lastReadClipboardDataTime_ = new Date(0);
       // Clear the clipboard data by copying nothing (the current document).
       // Do this in a timeout to avoid a recursive warning per
-      // https://crbug.com/363288.
+      // https://crbug.com/41101400.
       setTimeout(() => this.clearClipboard_(), 0);
 
       // @ts-ignore: TODO(crbug.com/270623046): clipboardData can be null.

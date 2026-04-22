@@ -74,7 +74,7 @@ ChromeVoxMV2LearnModeTest = class extends ChromeVoxE2ETest {
   }
 };
 
-// TODO(crbug.com/1128926, crbug.com/1172387):
+// TODO(crbug.com/40719928, crbug.com/1172387):
 // Test times out flakily.
 AX_TEST_F(
     'ChromeVoxMV2LearnModeTest', 'DISABLED_KeyboardInput', async function() {

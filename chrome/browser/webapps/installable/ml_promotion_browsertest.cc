@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
                                             GURL(url::kAboutBlankURL));
 }
 
-// Test for crbug.com/1472629, where an already open dialog would cause
+// Test for crbug.com/40069486, where an already open dialog would cause
 // the CHECK in MLInstallOperationTracker::OnMlResultForInstallation
 // to fail, since the operation tracker would outlive the results of the
 // pipeline.

@@ -168,7 +168,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
    * Close button click handler.
    */
   private onCloseClicked_(): void {
-    // TODO(wzang): Remove this after crbug.com/900640 is fixed.
+    // TODO(wzang): Remove this after crbug.com/41423700 is fixed.
     if (this.isPowerwashRequired_) {
       return;
     }

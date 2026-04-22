@@ -74,7 +74,7 @@ class PrefetchPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-// TODO(http://crbug.com/1025737) Flaky on Mac.
+// TODO(http://crbug.com/40107984) Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HistoryPlumbing DISABLED_HistoryPlumbing
 #else

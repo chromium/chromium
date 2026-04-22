@@ -2426,7 +2426,7 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
   });
 
   // Note: SearchSuggestionParser::ParseSuggestResults swaps the content and
-  // answer fields on Desktop. See https://crbug.com/1325124#c1.
+  // answer fields on Desktop. See https://crbug.com/40225355#c1.
   // As a result of the field flip, the Calculator answer is only permitted
   // to be the default suggestion on the Desktop.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP)

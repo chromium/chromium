@@ -346,7 +346,7 @@ void TabLifecycleUnitSource::OnTabChangedAt(tabs::TabInterface* tab,
 
 void TabLifecycleUnitSource::OnBrowserClosed(BrowserWindowInterface* browser) {
   // An active browser may be removed without OnBrowserActivated() being
-  // invoked. crbug.com/1206458
+  // invoked. crbug.com/40055769
   UpdateFocusedTab();
 }
 

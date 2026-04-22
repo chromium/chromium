@@ -429,7 +429,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // user-visible text, so this does not always work. Instead, we must
     // fix the Blink bug where focus offset is not specific enough to
     // say which node is selected and at what charOffset. See
-    // https://crbug.com/803160 for more.
+    // https://crbug.com/41365548 for more.
 
     const startPosition = NodeUtils.getDeepEquivalentForSelection(
         startObject!, startOffset, true);
@@ -1775,7 +1775,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       return false;
     }
     // Do not show panel on system UI. System UI can be problematic due to
-    // auto-dismissing behavior (see http://crbug.com/1157148), but also
+    // auto-dismissing behavior (see http://crbug.com/40736283), but also
     // navigation controls do not work well for control-rich interfaces that are
     // light on text (and therefore no sentence and paragraph structures).
     return !nodes.some(n => n.root && n.root.role === RoleType.DESKTOP);

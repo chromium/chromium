@@ -3499,7 +3499,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 }
 
 // Does a navigation to a page which records a WebFeature before commit.
-// Regression test for https://crbug.com/1043018.
+// Regression test for https://crbug.com/40115086.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PreCommitWebFeature) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -4237,7 +4237,7 @@ INSTANTIATE_TEST_SUITE_P(
                        blink::kChromeUINetworkErrorURL,
                        blink::kChromeUIProcessInternalsURL}));
 
-// Test is flaky. https://crbug.com/1260953
+// Test is flaky. https://crbug.com/40202043
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_WIN)
 #define MAYBE_PageLCPAnimatedImage DISABLED_PageLCPAnimatedImage

@@ -531,7 +531,7 @@ class BookmarkManagerMediator
 
         updateShoppingFilterVisible();
 
-        // TODO(https://crbug.com/1413463): This logic is here to keep the same execution order
+        // TODO(https://crbug.com/40255666): This logic is here to keep the same execution order
         // from when it was in the original adapter. It doesn't conceptually make sense to be here,
         // and should happen earlier.
         addUiObserver(mBookmarkUiObserver);

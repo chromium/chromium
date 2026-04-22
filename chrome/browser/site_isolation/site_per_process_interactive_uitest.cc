@@ -1350,7 +1350,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   EXPECT_EQ("none", GetFullscreenElementId(grandchild));
 }
 
-// https://crbug.com/1087392: Flaky for ASAN and TSAN
+// https://crbug.com/40694840: Flaky for ASAN and TSAN
 #if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
 #define MAYBE_FullscreenElementInABAAndExitViaEscapeKey \
   DISABLED_FullscreenElementInABAAndExitViaEscapeKey
@@ -1517,7 +1517,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // Test that deleting a RenderWidgetHost that holds the mouse lock won't cause a
 // crash. https://crbug.com/40472780.
 
-// Flaky on multiple builders. https://crbug.com/1059632
+// Flaky on multiple builders. https://crbug.com/40678582
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        DISABLED_RenderWidgetHostDeletedWhileMouseLocked) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1627,7 +1627,7 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-// TODO(crbug.com/1423184, crbug.com/327338993): Fix flaky test.
+// TODO(crbug.com/40897346, crbug.com/327338993): Fix flaky test.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
@@ -1991,9 +1991,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 }
 
 // Check that window.focus works for cross-process popups.
-// Flaky on ChromeOS debug and ASAN builds. https://crbug.com/1326293
-// Flaky on Linux https://crbug.com/1336109.
-// Flaky on Win https://crbug.com/1337725.
+// Flaky on ChromeOS debug and ASAN builds. https://crbug.com/40840456
+// Flaky on Linux https://crbug.com/40847510.
+// Flaky on Win https://crbug.com/40848559.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(IS_CHROMEOS) &&                  \
      (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))

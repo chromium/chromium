@@ -115,8 +115,8 @@ static const base::Time kStartTime = base::Time::Now();
 static const base::Time kLastHourTime = kStartTime - base::Hours(1);
 
 // This enum is used in the place of base::Time because using base::Time
-// as a test param causes problems on Fuchsia. See https://crbug.com/1308948 for
-// details.
+// as a test param causes problems on Fuchsia. See https://crbug.com/40219262
+// for details.
 enum TimeEnum {
   kDefault,
   kStart,
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   TestSiteData("Cookie", GetParam());
 }
 
-// Regression test for https://crbug.com/1216406.
+// Regression test for https://crbug.com/40770468.
 // TODO(crbug.com/413259587): Re-enable this test once the flakiness is fixed.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserContextDestructionVsCookieRemoval \
@@ -1045,7 +1045,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   // will tear down some mojo::Remote(s), which will end up running the closures
   // returned from CreateTaskCompletionClosureForMojo (see the previous test
   // step), which will run BrowsingDataRemoverImpl::OnTaskComplete.  In
-  // https://crbug.com/1216406 OnTaskComplete would attempt to use its
+  // https://crbug.com/40770468 OnTaskComplete would attempt to use its
   // `browser_context_` (half-way destructed at this point) to get a
   // StoragePartition and this would lead to DumpWithoutCrashing initially (and
   // potentially crashes down the line).
@@ -1357,7 +1357,7 @@ const std::vector<std::string> kStorageTypes{
 IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
                        PRE_StorageRemovedFromDisk) {
   // Checking leveldb content fails in most cases. See
-  // https://crbug.com/1238325.
+  // https://crbug.com/40784064.
   CheckUserDirectoryForString(kLocalHost, {},
                               /*check_leveldb_content=*/false);
   ASSERT_EQ(0, GetSiteDataCount());

@@ -9,7 +9,7 @@ let ProcessingRoot;
  * @fileoverview
  *
  * This file is deprecated and existing usages should be removed (see
- * https://crbug.com/1128151). Do not add any additional usages of this file.
+ * https://crbug.com/40719449). Do not add any additional usages of this file.
  *
  * This is a simple template engine inspired by JsTemplates
  * optimized for i18n.

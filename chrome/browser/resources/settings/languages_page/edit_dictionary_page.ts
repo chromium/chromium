@@ -186,7 +186,7 @@ export class SettingsEditDictionaryPageElement extends
 
     // This is a workaround to ensure the dom-if is set to true before items
     // are rendered so that focus works correctly in Polymer 2; see
-    // https://crbug.com/912523.
+    // https://crbug.com/41430384.
     if (wasEmpty && added.length > 0) {
       this.hasWords_ = true;
     }

@@ -31,7 +31,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
   <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
        be nicer to use Lit's conditional rendering. However, that breaks
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
-       the msan builder. See crbug.com/1169070. -->
+       the msan builder. See crbug.com/40743659. -->
   <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
       .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
   </ntp-logo>

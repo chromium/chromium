@@ -43,7 +43,7 @@ import {getTemplate} from './appearance_page.html.js';
 
 /**
  * This is the absolute difference maintained between standard and
- * fixed-width font sizes. http://crbug.com/91922.
+ * fixed-width font sizes. http://crbug.com/40608310.
  */
 const SIZE_DIFFERENCE_FIXED_STANDARD: number = 3;
 

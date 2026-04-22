@@ -227,7 +227,7 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
 
 std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
   std::set<GURL> result;
-  // TODO (crbug/1288416): Enable this for android.
+  // TODO (crbug.com/40211511): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [profile, &result](BrowserWindowInterface* browser) {

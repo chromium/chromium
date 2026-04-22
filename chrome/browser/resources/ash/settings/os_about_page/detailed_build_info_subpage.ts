@@ -199,7 +199,8 @@ export class SettingsDetailedBuildInfoSubpageElement extends
 
   private updateChannelInfo_(): void {
     // canChangeChannel() call is expected to be low-latency, so fetch this
-    // value by itself to ensure UI consistency (see https://crbug.com/848750).
+    // value by itself to ensure UI consistency (see
+    // https://crbug.com/41392307).
     this.aboutPageBrowserProxy_.canChangeChannel().then(canChangeChannel => {
       this.canChangeChannel_ = canChangeChannel;
     });

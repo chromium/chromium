@@ -266,7 +266,7 @@ void BackgroundFetchDelegateImpl::DoCleanUpUi(const std::string& job_id) {
   ui_state_map_.erase(job_id);
   // Note that the entry in `ui_state_map_` will leak if OnUiFinished is never
   // called, and it's not called when the notification is dismissed without
-  // being clicked. See crbug.com/1190390
+  // being clicked. See crbug.com/40174140
 }
 
 void BackgroundFetchDelegateImpl::UpdateOfflineItem(const std::string& job_id) {

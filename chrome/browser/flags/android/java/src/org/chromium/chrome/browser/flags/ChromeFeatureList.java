@@ -1586,7 +1586,7 @@ public abstract class ChromeFeatureList {
 
     // Devices from this OEM--and potentially others--sometimes crash when we call
     // `Activity#enterPictureInPictureMode` on Android R. So, we disable the feature on those
-    // devices. See: https://crbug.com/1519164.
+    // devices. See: https://crbug.com/41492145.
     public static final StringCachedFeatureParam
             sCctMinimizedEnabledByDefaultManufacturerExcludeList =
                     newStringCachedFeatureParam(

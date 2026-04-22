@@ -106,7 +106,7 @@ public class BookmarkManagerCoordinator
             // fade animation. Theoretically we could clear it and let the RecyclerView continue
             // normally, but it seems sometimes this is called after bind, and the transient
             // state is really just the fade in animation of the new content. For more details
-            // see https://crbug.com/1496181. Instead, return true to tell the RecyclerView to
+            // see https://crbug.com/40075653. Instead, return true to tell the RecyclerView to
             // reuse the view regardless. The view binding code should be robust enough to
             // handle an in progress animation anyway.
             return true;

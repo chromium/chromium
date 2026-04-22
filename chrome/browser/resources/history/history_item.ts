@@ -144,7 +144,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     const path = e.composedPath();
     // VoiceOver has issues with click events within elements that have a role
     // of row, so this event listeners has to be on the row itself.
-    // (See crbug.com/1185827.)
+    // (See crbug.com/40753378.)
     let inItemContainer = false;
     for (let i = 0; i < path.length; i++) {
       const elem = path[i] as HTMLElement;

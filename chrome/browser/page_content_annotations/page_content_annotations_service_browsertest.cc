@@ -75,7 +75,7 @@ namespace {
 using ::testing::UnorderedElementsAre;
 
 // Different platforms may execute float models slightly differently, and this
-// results in a noticeable difference in the scores. See crbug.com/1307251.
+// results in a noticeable difference in the scores. See crbug.com/40828310.
 const double kMaxScoreErrorBetweenPlatforms = 0.1;
 
 class TestPageContentAnnotationsObserver

@@ -483,7 +483,7 @@ void ServiceResolverImplMac::StopResolving() {
   // weak delegate during deallocation, so a subsequently-deallocated delegate
   // attempts to clear the pointer to itself in an NSNetServiceBrowser that's
   // already gone.
-  // https://crbug.com/657495, https://openradar.appspot.com/28943305
+  // https://crbug.com/41281878, https://openradar.appspot.com/28943305
   _browser.delegate = nil;
 
   // Ensure the delegate clears all references to itself, which it had added as
@@ -601,7 +601,7 @@ void ServiceResolverImplMac::StopResolving() {
   // delegate during deallocation, so a subsequently-deallocated delegate
   // attempts to clear the pointer to itself in an NSNetService that's already
   // gone.
-  // https://crbug.com/657495, https://openradar.appspot.com/28943305
+  // https://crbug.com/41281878, https://openradar.appspot.com/28943305
   _service.delegate = nil;
   _service = nil;
 }

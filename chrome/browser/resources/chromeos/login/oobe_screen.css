@@ -32,7 +32,7 @@
   visibility: hidden;
 }
 
-/* Fixes performance problem caused by http://crbug.com/229405 . */
+/* Fixes performance problem caused by http://crbug.com/40312140 . */
 .step.hidden .throbber,
 .step.hidden .spinner,
 .step.hidden .inline-spinner {

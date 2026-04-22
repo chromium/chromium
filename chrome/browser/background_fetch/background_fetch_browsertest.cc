@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
   EXPECT_FALSE(guid.empty());
 }
 
-// Flaky on linux: crbug.com/1182296
+// Flaky on linux: crbug.com/40751374
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_RecordBackgroundFetchUkmEvent \
   DISABLED_RecordBackgroundFetchUkmEvent
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// Flaky on Mac: https://crbug.com/1259680
+// Flaky on Mac: https://crbug.com/40201535
 #define MAYBE_OfflineItemCollection_SingleFileMetadata \
   DISABLED_OfflineItemCollection_SingleFileMetadata
 #else
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(offline_item.progress.max.value(), kDownloadedResourceSizeInBytes);
 }
 
-// The test is flaky on all platforms. https://crbug.com/1161385.
+// The test is flaky on all platforms. https://crbug.com/40738789.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
     DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalSmallerThanActualSize) {

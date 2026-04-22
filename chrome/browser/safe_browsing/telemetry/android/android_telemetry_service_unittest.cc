@@ -453,7 +453,7 @@ TEST_F(AndroidTelemetryServiceTest, AppVerification) {
                    .has_app_verification_enabled());
 }
 
-// Regression test for https://crbug.com/1173145#c17.
+// Regression test for https://crbug.com/40746010#c17.
 TEST_F(AndroidTelemetryServiceTest,
        OnDownloadUpdated_ObserverNotRemovedIfDownloadIsNotCompleted) {
   // Disable Safe Browsing so we can log the telemetry outcome metric.

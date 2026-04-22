@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
 
 // Checks that we do not attempt to delete SessionService data when processing a
 // foreign history delete.
-// Test for crbug.com/1424800.
+// Test for crbug.com/40063610.
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
                        ForeignHistoryDeleteDoesNotDeleteSessionServiceData) {
   AddNavigations(browser(), {url_a_, url_b_, url_c_, url_d_});

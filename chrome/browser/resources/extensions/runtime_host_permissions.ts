@@ -204,7 +204,7 @@ export class ExtensionsRuntimeHostPermissionsElement extends CrLitElement {
 
     // Only show granted hosts in the list.
     // TODO(devlin): For extensions that request a finite set of hosts,
-    // display them in a toggle list. https://crbug.com/891803.
+    // display them in a toggle list. https://crbug.com/41418731.
     return this.permissions.hosts.filter(control => control.granted)
         .map(control => control.host)
         .sort();

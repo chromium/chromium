@@ -1341,7 +1341,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private onSelectedModeChange_(newModeIndex: number): void {
     // We want to ignore all value changes to the pref due to the slider being
-    // dragged. See http://crbug/845712 for more info.
+    // dragged. See http://crbug.com/40577551 for more info.
     if (this.currentSelectedModeIndex_ === newModeIndex) {
       return;
     }
@@ -1445,7 +1445,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   private onMirroredClick_(event: Event): void {
     // Blur the control so that when the transition animation completes and
-    // the UI is focused, the control does not receive focus. crbug.com/785070
+    // the UI is focused, the control does not receive focus. crbug.com/41355419
     (event.currentTarget as CrCheckboxElement).blur();
 
     const mirrorModeInfo: MirrorModeInfo = {

@@ -35,7 +35,7 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // For Chrome, the presence of a Local State file should not influence whether
-  // the first run dialog is shown. See crbug.com/1221483.
+  // the first run dialog is shown. See crbug.com/40186863.
   bool SetUpUserDataDirectory() override {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);

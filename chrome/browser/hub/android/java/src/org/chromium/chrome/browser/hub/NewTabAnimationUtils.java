@@ -50,7 +50,7 @@ public class NewTabAnimationUtils {
      * @return The {@link ColorInt} for the new tab animation background.
      */
     public static @ColorInt int getBackgroundColor(Context context, boolean isIncognito) {
-        // See crbug.com/1507124 for Home Surface Background Color.
+        // See crbug.com/40947813 for Home Surface Background Color.
         return isIncognito
                 ? ChromeColors.getPrimaryBackgroundColor(context, isIncognito)
                 : ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(context);

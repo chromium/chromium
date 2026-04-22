@@ -222,7 +222,7 @@ TEST_F(PasswordGenerationControllerTest, IsNotRecreatedForSameWebContents) {
 }
 
 TEST_F(PasswordGenerationControllerTest, RelaysAutomaticGenerationAvailable) {
-  // TODO (crbug.com/1421753): Test this is for the
+  // TODO (crbug.com/40259397): Test this is for the
   // PasswordGenerationBottomSheet flag disabled. Add one more test for the case
   // after the bottom sheet is dismissed.
   EXPECT_CALL(mock_manual_filling_controller_,

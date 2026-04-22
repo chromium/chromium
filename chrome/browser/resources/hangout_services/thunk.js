@@ -140,7 +140,7 @@ function onProcessCpu(port) {
   function processListener(processes) {
     if (tabPid === undefined) {
       // getProcessIdForTab sometimes fails, and does not call the callback.
-      // (Tracked at https://crbug.com/368855.)
+      // (Tracked at https://crbug.com/41104685.)
       // This call retries it on each process update until it succeeds.
       chrome.processes.getProcessIdForTab(port.sender.tab.id, function(x) {
         tabPid = x;

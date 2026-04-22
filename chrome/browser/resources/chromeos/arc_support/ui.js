@@ -184,7 +184,7 @@ cr.define('cr.ui', function() {
 
   /**
    * Users complain they occasionaly use doubleclicks instead of clicks
-   * (http://crbug.com/140364). To fix it we freeze click handling for
+   * (http://crbug.com/40251613). To fix it we freeze click handling for
    * the doubleclick time interval.
    * @param {MouseEvent} e Initial click event.
    */
@@ -216,7 +216,7 @@ cr.define('cr.ui', function() {
   }
 
   // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
+  console.warn('crbug.com/40167175, non-JS module files deprecated.');
   return {
     decorate: decorate,
     define: define,

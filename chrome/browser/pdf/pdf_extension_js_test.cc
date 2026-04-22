@@ -469,7 +469,7 @@ class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
   }
 };
 
-// Regression test for https://crbug.com/1239148.
+// Regression test for https://crbug.com/40193740.
 IN_PROC_BROWSER_TEST_P(PDFExtensionWebUICodeCacheJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
 }

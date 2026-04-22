@@ -86,10 +86,11 @@ public class LanguageItem {
     }
 
     /**
-     * Return true if this LanguageItem is a base language that supports translate.
-     * This filters out country variants that are not differentiated by Translate even if their base
-     * language is (e.g. en-GB, en-IN, or es-MX).
-     * Todo(crbug.com/1180262): Make mSupportTranslate equivalent to this flag.
+     * Return true if this LanguageItem is a base language that supports translate. This filters out
+     * country variants that are not differentiated by Translate even if their base language is
+     * (e.g. en-GB, en-IN, or es-MX). Todo(crbug.com/40169868): Make mSupportTranslate equivalent to
+     * this flag.
+     *
      * @return Whether or not this Language item is a base translatable language.
      */
     public boolean isSupportedBaseTranslateLanguage() {

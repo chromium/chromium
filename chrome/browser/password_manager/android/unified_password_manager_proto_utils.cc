@@ -92,7 +92,7 @@ std::optional<FormData> DeserializeFormData(base::DictValue& serialized_data) {
       return std::nullopt;
     }
     field.set_name(base::UTF8ToUTF16(*field_name));
-    // TODO(crbug.com/1353392): Why does the Password Manager
+    // TODO(crbug.com/40858431): Why does the Password Manager
     // (de)serialize form control types?
     field.set_form_control_type(
         autofill::StringToFormControlTypeDiscouraged(*field_type)

@@ -147,7 +147,7 @@ export class EditableLine {
     const parents: AutomationNode[] = [this.startContainer_!];
 
     // Keep track of visited nodes to ensure we don't visit the same node twice.
-    // Workaround for crbug.com/1203840.
+    // Workaround for crbug.com/40179729.
     const visited = new WeakSet();
     if (this.lineStart_) {
       visited.add(this.lineStart_);

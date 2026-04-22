@@ -249,7 +249,7 @@ bool DevToolsToolboxDelegate::HandleKeyboardEvent(
   return false;
 #else
   if (event.windows_key_code == 0x08) {
-    // Do not navigate back in history on Windows (http://crbug.com/74156).
+    // Do not navigate back in history on Windows (http://crbug.com/40529649).
     return false;
   }
   BrowserWindow* window = GetInspectedBrowserWindow();

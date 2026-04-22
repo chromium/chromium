@@ -113,7 +113,7 @@ export class PrefsManager {
   /**
    * Migrates Select-to-Speak rate and pitch settings to global Text-to-Speech
    * settings. This is a one-time migration that happens on upgrade to M70.
-   * See http://crbug.com/866550.
+   * See http://crbug.com/41403286.
    */
   private migrateToGlobalTtsSettings_(rateStr: string, pitchStr: string): void {
     if (this.migrationInProgress_) {
@@ -177,7 +177,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise<void>((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_rate', stsRate,
-                      '' /* unused, see crbug.com/866161 */, success => {
+                      '' /* unused, see crbug.com/40586037 */, success => {
                         if (success) {
                           resolve();
                         } else {
@@ -188,7 +188,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise<void>((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_pitch', stsPitch,
-                      '' /* unused, see crbug.com/866161 */, success => {
+                      '' /* unused, see crbug.com/40586037 */, success => {
                         if (success) {
                           resolve();
                         } else {

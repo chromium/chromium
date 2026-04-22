@@ -232,7 +232,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
         } catch (e) {
           // Swallow the invalid URL error and return early. This prevents the
           // uncaught error from causing a runtime error as seen in
-          // crbug.com/1257170.
+          // crbug.com/40200545.
           return;
         }
         args.lineNumber =

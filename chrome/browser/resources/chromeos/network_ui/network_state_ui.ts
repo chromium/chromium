@@ -445,7 +445,7 @@ class NetworkStateUiElement extends PolymerElement {
     if (state) {
       // |state.type| is expected to be the string "etherneteap", which is not
       // supported by the rest of this UI. Use the kEthernet constant instead.
-      // See https://crbug.com/1213176.
+      // See https://crbug.com/40768609.
       state.type = NetworkType.kEthernet;
       states.push(state);
     }

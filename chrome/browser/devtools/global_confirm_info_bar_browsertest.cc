@@ -212,7 +212,7 @@ class TestConfirmInfoBarDelegateWithLink : public TestConfirmInfoBarDelegate {
 };
 
 // Verifies that clicking a link in a global infobar does not crash. Regression
-// test for http://crbug.com/1393765.
+// test for http://crbug.com/40881161.
 IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, ClickLink) {
   // Show an infobar with a link.
   ASSERT_EQ(1, GetTabCount());

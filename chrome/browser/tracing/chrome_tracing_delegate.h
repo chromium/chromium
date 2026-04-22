@@ -15,7 +15,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #else
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck crbug.com/40147906
 #endif
 
 class BrowserWindowInterface;

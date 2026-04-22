@@ -42,7 +42,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/language/settings/NeverTranslateListFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/SelectLanguageFragment.java",
 
-    # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
+    # Todo(https://crbug.com/40168592): Remove cyclical dependancy with Translate bridge.
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
     "java/src/org/chromium/chrome/browser/translate/TranslationObserver.java",
   ]

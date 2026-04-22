@@ -13,7 +13,7 @@
   left: 0;
   overflow: auto;
   padding: 20px;
-  /* TODO(dbeam): remove perspective when http://crbug.com/374970 is fixed. */
+  /* TODO(dbeam): remove perspective when http://crbug.com/40366323 is fixed. */
   perspective: 1px;
   position: fixed;
   right: 0;
@@ -24,7 +24,7 @@
 /* Used to slide in the overlay. */
 .overlay.transparent .page {
   /* TODO(flackr): Add perspective(500px) rotateX(5deg) when accelerated
-   * compositing is enabled on chrome:// pages. See http://crbug.com/116800. */
+   * compositing is enabled on chrome:// pages. See http://crbug.com/40164808. */
   transform: scale(0.99) translateY(-20px);
 }
 
@@ -105,7 +105,7 @@ html[dir='rtl'] .overlay .page > .close-button {
   /* TODO(flackr): Pages like sync-setup and delete user collapse the margin
    * above the top of the page. Use padding instead to make sure that the
    * headers of these pages have the correct spacing, but this should not be
-   * necessary. See http://crbug.com/119029. */
+   * necessary. See http://crbug.com/40755911. */
   margin: 0;
   padding: 14px 17px 14px;
   text-shadow: white 0 1px 2px;
@@ -157,7 +157,7 @@ html[dir='rtl'] .overlay .page .action-area {
 
 /* On OSX 10.7, hidden scrollbars may prevent the user from realizing that the
  * overlay contains scrollable content. To resolve this, style the scrollbars on
- * OSX so they are always visible. See http://crbug.com/123010. */
+ * OSX so they are always visible. See http://crbug.com/40190198. */
 <if expr="is_macosx or is_ios">
 .overlay .page .content-area::-webkit-scrollbar {
   -webkit-appearance: none;

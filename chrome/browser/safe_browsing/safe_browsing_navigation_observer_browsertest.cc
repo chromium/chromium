@@ -3256,7 +3256,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   EXPECT_TRUE(referrer_chain.Get(1).is_url_removed_by_policy());
 }
 
-// Test failure on macOS: crbug.com/1287901
+// Test failure on macOS: crbug.com/40816558
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AppendRecentNavigationsToEmptyReferrerChain \
   DISABLED_AppendRecentNavigationsToEmptyReferrerChain

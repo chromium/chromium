@@ -322,7 +322,7 @@ export class EnterpriseEnrollmentElement extends
       // We run the tab remapping logic inside of the webview so that the
       // simulated tab events will use the webview tab-stops. Simulated tab
       // events created from the webui treat the entire webview as one tab
-      // stop. Real tab events do not do this. See crbug.com/543865.
+      // stop. Real tab events do not do this. See crbug.com/41209667.
       this.authView.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],

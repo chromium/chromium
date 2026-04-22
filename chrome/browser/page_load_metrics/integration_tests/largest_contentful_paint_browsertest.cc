@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(
                    /*expected=*/false);
 }
 
-// crbug.com/1373885: This test is unreliable on ChromeOS, Linux and Mac
+// crbug.com/40871999: This test is unreliable on ChromeOS, Linux and Mac
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                        DISABLED_LargestContentfulPaint_IsVideo) {
   test_is_animated("/is_video.html", blink::LargestContentfulPaintType::kVideo,
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
   TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+// (https://crbug.com/40246907): Flaky on mac12-arm64-rel M1 Mac CQ.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DataURIType DISABLED_DataURIType
 #else
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType) {
   TestImage(imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+// (https://crbug.com/40246907): Flaky on mac12-arm64-rel M1 Mac CQ.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DataURIType_SVG DISABLED_DataURIType_SVG
 #else
@@ -741,8 +741,8 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
   TestImage(imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-// (https://crbug.com/1405307): Flaky on ChromeOS, Linux, and Windows as well.
+// (https://crbug.com/40246907): Flaky on mac12-arm64-rel M1 Mac CQ.
+// (https://crbug.com/40886555): Flaky on ChromeOS, Linux, and Windows as well.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
                        DISABLED_DataURIType_Video) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |

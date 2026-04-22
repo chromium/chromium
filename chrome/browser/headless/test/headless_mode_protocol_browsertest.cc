@@ -202,7 +202,7 @@ void HeadlessModeProtocolBrowserTest::ProcessTestResult(
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
 HEADLESS_MODE_PROTOCOL_TEST(FocusEvent, "input/focus-event.js")
 
-// Flaky crbug/1431857
+// Flaky crbug.com/40902570
 HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
                             "input/focus-blur-notifications.js")
 
@@ -260,7 +260,7 @@ class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
 
 #if BUILDFLAG(IS_WIN)
     // Screencast tests fail on Windows unless GPU compositing is disabled,
-    // see https://crbug.com/1411976 and https://crbug.com/1502651.
+    // see https://crbug.com/40255057 and https://crbug.com/40943029.
     UseSoftwareCompositing();
 #endif
   }

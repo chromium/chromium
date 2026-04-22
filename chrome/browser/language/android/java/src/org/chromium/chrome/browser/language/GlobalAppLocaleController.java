@@ -106,7 +106,7 @@ public class GlobalAppLocaleController {
         Configuration config = new Configuration();
         // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
         // that applyOverrideConfiguration() does not interpret it as an overridden value.
-        // https://crbug.com/834191
+        // https://crbug.com/40572279
         config.fontScale = 0;
 
         LocaleUtils.updateConfig(base, config, mOverrideLanguage);
@@ -130,7 +130,7 @@ public class GlobalAppLocaleController {
             config.densityDpi = resources.getConfiguration().densityDpi;
         }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
-        // method {@link Resources#updateConfiguration} is used. (crbug.com/1075390#c20).
+        // method {@link Resources#updateConfiguration} is used. (crbug.com/40687612#c20).
         // TODO(crbug.com/40152130): Use #createConfigurationContext once that method is fixed.
         resources.updateConfiguration(config, resources.getDisplayMetrics());
         // Update default locales so {@links LocaleList#getDefault} returns the correct value.

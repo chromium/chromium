@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_automation) {
   ShowAndVerifyUi();
 }
 
-// Consistently failing on Windows https://crbug.com/1462107.
+// Consistently failing on Windows https://crbug.com/40921752.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_tab_sharing DISABLED_InvokeUi_tab_sharing
 #else
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 
-// Consistently failing on Windows https://crbug.com/1462107.
+// Consistently failing on Windows https://crbug.com/40921752.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_multiple_infobars DISABLED_InvokeUi_multiple_infobars
 #else

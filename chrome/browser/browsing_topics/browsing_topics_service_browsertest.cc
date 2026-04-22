@@ -1243,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(result, kExpectedApiResult);
 }
 
-// Regression test for crbug/1339735.
+// Regression test for crbug.com/40849882.
 IN_PROC_BROWSER_TEST_F(
     BrowsingTopicsBrowserTest,
     TopicsAPIInvokedInMainFrameUnloadHandler_NoRendererCrash) {

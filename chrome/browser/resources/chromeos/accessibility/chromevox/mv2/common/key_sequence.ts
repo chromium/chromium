@@ -387,7 +387,7 @@ export class KeySequence {
       keyEvent: KeyboardEvent | EventLikeObject, modifier: string): boolean {
     // We need to check the key event modifier and the keyCode because Linux
     // will not set the keyEvent.modKey property if it is the modKey by itself.
-    // This bug filed as crbug.com/74044
+    // This bug filed as crbug.com/40529198
     switch (modifier) {
       case 'ctrlKey':
         return (keyEvent.ctrlKey || keyEvent.keyCode === KeyCode.CONTROL);

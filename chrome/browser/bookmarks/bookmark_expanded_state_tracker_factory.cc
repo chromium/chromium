@@ -47,7 +47,7 @@ BookmarkExpandedStateTrackerFactory::~BookmarkExpandedStateTrackerFactory() =
 void BookmarkExpandedStateTrackerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Don't sync this, as otherwise, due to a limitation in sync, it
-  // will cause a deadlock (see http://crbug.com/97955).  If we truly
+  // will cause a deadlock (see http://crbug.com/41468329).  If we truly
   // want to sync the expanded state of folders, it should be part of
   // bookmark sync itself (i.e., a property of the sync folder nodes).
   registry->RegisterListPref(bookmarks::prefs::kBookmarkEditorExpandedNodes);

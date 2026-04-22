@@ -93,7 +93,7 @@ public class ContentLanguagesPreference extends Preference {
                             .withEnabled(languageCount > 1)
                             .build());
 
-            // Add movement options even if not in accessibility mode https://crbug.com/1440469.
+            // Add movement options even if not in accessibility mode https://crbug.com/40909332.
             // Add "Move to top" and "Move up" menu when it's not the first one.
             if (position > 0) {
                 menuItems.add(buildSimpleMenuItem(R.string.menu_item_move_to_top));

@@ -120,7 +120,7 @@ void FallbackTaskProvider::ShowPendingTask(Task* task) {
     // Log when we use the secondary task provider, to help drive this count to
     // zero and have providers for all known processes.
     // TODO(avi): Turn this into a DCHECK and remove the log once there are
-    // providers for all known processes. See https://crbug.com/1083509.
+    // providers for all known processes. See https://crbug.com/40131424.
     base::UmaHistogramBoolean("BrowserRenderProcessHost.LabeledInTaskManager",
                               false);
     LOG(ERROR)
@@ -164,7 +164,7 @@ void FallbackTaskProvider::OnTaskAddedBySource(Task* task,
 
   // Log when a primary task is shown instead, to provide a point of comparison
   // for cases the secondary task is shown. Remove when there are providers for
-  // for all known processes. See https://crbug.com/1083509.
+  // for all known processes. See https://crbug.com/40131424.
   base::UmaHistogramBoolean("BrowserRenderProcessHost.LabeledInTaskManager",
                             true);
 

@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForAllowedOrigin) {
   ExpectPosition(fake_latitude(), fake_longitude());
 }
 
-// Crashes on Win only.  http://crbug.com/1014506
+// Crashes on Win only.  http://crbug.com/40653217
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PromptForOffTheRecord DISABLED_PromptForOffTheRecord
 #else
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, IFramesWithCachedPosition) {
 
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, InvalidUrlRequest) {
   // Tests that an invalid URL (e.g. from a popup window) is rejected
-  // correctly. Also acts as a regression test for http://crbug.com/40478
+  // correctly. Also acts as a regression test for http://crbug.com/40380048
   set_html_for_tests("/geolocation/invalid_request_url.html");
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
 
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, InvalidUrlRequest) {
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptBeforeStart) {
-  // See http://crbug.com/42789
+  // See http://crbug.com/40391285
   set_html_for_tests("/geolocation/two_iframes.html");
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   LoadIFrames();
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest,
                        GrantToDenyToGrantDoesNotRemainBlocked) {
-  // https://crbug.com/1475743
+  // https://crbug.com/40070500
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   ASSERT_TRUE(WatchPositionAndGrantPermission());
   ExpectPosition(fake_latitude(), fake_longitude());

@@ -121,7 +121,7 @@ export class LineChart {
     /**
      * Passive event will disable |preventDefault()|, set passive to false to
      * make sure this feature is disabled. The default value of passive is true
-     * on some Chromebooks. see https://crbug.com/761698.
+     * on some Chromebooks. see https://crbug.com/40538366.
      * @param {Element} element
      * @param {string} name
      * @param {function(Event): undefined} handler
@@ -160,7 +160,7 @@ export class LineChart {
   onWheel_(event) {
     event.preventDefault();
     /* WheelEvent.deltaMode will never be set to anything else but
-     * DOM_DELTA_PIXEL. See crbug.com/227454 */
+     * DOM_DELTA_PIXEL. See crbug.com/40311553 */
     if (event.deltaMode !== WheelEvent.DOM_DELTA_PIXEL) {
       console.warn(
           'WheelEvent.deltaMode is not set to WheelEvent.DOM_DELTA_PIXEL.');

@@ -1858,7 +1858,7 @@ class FormatUrlForClipboardTest
 const FormatUrlForClipboardTestData kFormatUrlForClipboardTestData[]{
     {"http://www.foo.com/", "http://www.foo.com/", "HttpNoEscapes"},
     // Percent-encoded ASCII characters are no longer unescaped.
-    // See https://crbug.com/1252531.
+    // See https://crbug.com/40198802.
     {"http://www.foo.com/%61%62%63", "http://www.foo.com/%61%62%63",
      "HttpNoEscape"},
     {"https://www.foo.com/abc%20def", "https://www.foo.com/abc%20def",
@@ -1870,7 +1870,7 @@ const FormatUrlForClipboardTestData kFormatUrlForClipboardTestData[]{
     {"file://stuff.host.co/my%2Bshare/foo.txt",
      "file://stuff.host.co/my%2Bshare/foo.txt", "FileEscapedSpecialCharacters"},
     // Percent-encoded ASCII characters are no longer unescaped.
-    // See https://crbug.com/1252531.
+    // See https://crbug.com/40198802.
     {"file://stuff.host.co/my%2Dshare/foo.txt",
      "file://stuff.host.co/my%2Dshare/foo.txt", "FileNoEscape"},
     {"mailto:me@foo.com", "me@foo.com", "MailToNoEscapes"},

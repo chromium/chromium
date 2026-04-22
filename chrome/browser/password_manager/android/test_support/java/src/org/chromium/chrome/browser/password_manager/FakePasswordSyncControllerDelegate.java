@@ -11,7 +11,7 @@ public class FakePasswordSyncControllerDelegate implements PasswordSyncControlle
     @Override
     public void notifyCredentialManagerWhenSyncing(
             String accountName, Runnable successCallback, Callback<Exception> failureCallback) {
-        // TODO crbug.com/1336641: Fill in this method with more logic,
+        // TODO crbug.com/40847858: Fill in this method with more logic,
         //  as it's needed for integration testing
         successCallback.run();
     }
@@ -19,7 +19,7 @@ public class FakePasswordSyncControllerDelegate implements PasswordSyncControlle
     @Override
     public void notifyCredentialManagerWhenNotSyncing(
             Runnable successCallback, Callback<Exception> failureCallback) {
-        // TODO crbug.com/1336641: Fill in this method with more logic,
+        // TODO crbug.com/40847858: Fill in this method with more logic,
         //  as it's needed for integration testing
         successCallback.run();
     }

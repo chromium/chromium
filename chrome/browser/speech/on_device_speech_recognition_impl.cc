@@ -24,11 +24,11 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"  // nogncheck crbug.com/1125897
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/speech/on_device_speech_recognition_util.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"  // nogncheck crbug.com/1125897
+#include "components/content_settings/core/browser/host_content_settings_map.h"  // nogncheck crbug.com/40147906
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/soda/soda_util.h"

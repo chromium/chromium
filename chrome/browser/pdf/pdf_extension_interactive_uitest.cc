@@ -114,7 +114,7 @@ class TabChangedWaiter : public TabStripModelObserver {
 }  // namespace
 
 // TODO(crbug.com/333802743): re-enable the test
-// For crbug.com/1038918
+// For crbug.com/40113375
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        DISABLED_CtrlPageUpDownSwitchesTabs) {
   content::RenderFrameHost* extension_host = LoadPdfInNewTabGetExtensionHost(

@@ -75,7 +75,7 @@ export class KeyboardUtils {
 
     // The networks list in the Chrome OOBE has an iron-list which uses arrow
     // keys to navigate elements. Tab events will remove focus from the list.
-    // See crbug.com/1083145
+    // See crbug.com/40131276
     if (document.activeElement ===
             document.getElementById('network-selection') &&
         document.activeElement?.shadowRoot?.activeElement?.tagName ===

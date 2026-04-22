@@ -793,7 +793,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
       internal::kHistogramFromGWSCumulativeLayoutShiftMainFrame, 25, 1);
 }
 
-// Disabled due to flakiness: https://crbug.com/1092018
+// Disabled due to flakiness: https://crbug.com/40698074
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NewNavigationBeforeCommit DISABLED_NewNavigationBeforeCommit
 #else

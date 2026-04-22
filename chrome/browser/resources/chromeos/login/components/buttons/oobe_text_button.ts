@@ -18,7 +18,7 @@
  *
  * Attributes:
  *  'disabled' - button is disabled when the attribute is set.
- *  (See crbug.com/900640)
+ *  (See crbug.com/41423700)
  *  'inverse' - makes text white and background blue.
  *  'text-key' - ID of localized string to be used as button text.
  *  'border' - adds border to the button.

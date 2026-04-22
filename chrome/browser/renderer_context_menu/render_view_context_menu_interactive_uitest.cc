@@ -112,7 +112,7 @@ class ContextMenuUiTest : public InteractiveBrowserTest {
   }
 };
 
-// This is a regression test for https://crbug.com/1257907.  It tests using
+// This is a regression test for https://crbug.com/40200861.  It tests using
 // "Open link in new tab" context menu item in a subframe, to follow a link
 // that should stay in the same SiteInstance (e.g. "about:blank", or "data:"
 // URL).  This test is somewhat similar to ChromeNavigationBrowserTest's
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   // in the cross-site subframe.  This preparation to some extent
   // duplicates/replicates the code in RenderFrameHostImpl::ShowContextMenu.
   //
-  // Note that the repro steps in https://crbug.com/1257907 resulted in a
+  // Note that the repro steps in https://crbug.com/40200861 resulted in a
   // navigation to about:blank#blocked because of how a navigation to
   // javascript: URL gets rewritten by RenderProcessHost::FilterURL calls.
   // Directly navigating to an about:blank URL is just as good for replicating a
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   //
   // Note that we can't use TestRenderViewContextMenu (like some other tests),
   // because this wouldn't exercise the product code responsible for the
-  // https://crbug.com/1257907 bug (it wouldn't go through
+  // https://crbug.com/40200861 bug (it wouldn't go through
   // ChromeWebContentsViewDelegateViews::ShowContextMenu).
   std::unique_ptr<content::WebContentsViewDelegate> view_delegate =
       CreateWebContentsViewDelegate(web_contents);

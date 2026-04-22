@@ -123,7 +123,7 @@ export class AddSupervisionUi extends PolymerElement {
 
       // Sets focus on the inner webview, so that ChromeVox users don't need to
       // navigate through multiple containers when linear navigating through the
-      // page (https://crbug.com/1231798).
+      // page (https://crbug.com/40779876).
       // We want the dialog content to be automatically announced once loaded.
       // ChromeVox automatically reads all content when it enters a role=dialog
       // div. If the webview is focused too soon, there's no content to read

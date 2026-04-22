@@ -194,7 +194,7 @@ export class AppElement extends CrLitElement {
               this.getRequiredElement<HTMLImageElement>('#screenshot-image');
           image.src = URL.createObjectURL(blob!);
           // Only set the alt text when the src url is available, otherwise we'd
-          // get a broken image picture instead. crbug.com/773985.
+          // get a broken image picture instead. crbug.com/41349393.
           image.alt = 'screenshot';
           image.classList.toggle(
               'wide-screen', image.width > MAX_SCREENSHOT_WIDTH);
@@ -384,7 +384,7 @@ export class AppElement extends CrLitElement {
 
   /**
    * Called when user opens the file dialog. Hide 'attach-error' before file
-   * dialog is open to prevent a11y bug https://crbug.com/1020047
+   * dialog is open to prevent a11y bug https://crbug.com/40656276
    */
   private onOpenFileDialog() {
     this.getRequiredElement('#attach-error').hidden = true;

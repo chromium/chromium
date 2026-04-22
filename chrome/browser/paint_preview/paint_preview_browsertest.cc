@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   }
 }
 
-// https://crbug.com/1146573 reproduction. If a renderer crashes,
+// https://crbug.com/40730161 reproduction. If a renderer crashes,
 // WebContentsObserver::RenderFrameDeleted. Paint preview implements this in an
 // observer which in turn releases the capture handle which can cause the
 // WebContents to be reloaded on Android where we have auto-reload. This reload

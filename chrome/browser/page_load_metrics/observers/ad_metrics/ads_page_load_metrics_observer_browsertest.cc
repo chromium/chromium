@@ -1185,7 +1185,7 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
                            OriginStatusWithThrottling::kUnknownAndUnthrottled);
 }
 
-// Flakily fails (crbug.com/1099758)
+// Flakily fails (crbug.com/40702619)
 // Test that a throttled ad with a different origin as the main page is
 // marked as throttled, with indeterminate creative origin status.
 IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
       OriginStatus::kUnknown, OriginStatusWithThrottling::kUnknownAndThrottled);
 }
 
-// Disabled due to flakiness https://crbug.com/1229601
+// Disabled due to flakiness https://crbug.com/40778479
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(
       OriginStatus::kUnknown, OriginStatusWithThrottling::kUnknownAndThrottled);
 }
 
-// Flakily fails. https://crbug.com/1099545
+// Flakily fails. https://crbug.com/40137551
 // Test that an ad creative with a different origin as the main page,
 // but nested in a same-origin root ad frame, such that its root ad frame
 // is outside the main frame but not throttled (because the root is
@@ -1294,7 +1294,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                   ukm::builders::AdFrameLoad::kStatus_UserActivationName));
 }
 
-// See https://crbug.com/1193885.
+// See https://crbug.com/40758137.
 // TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
@@ -2418,7 +2418,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies that reports are sent to all children.
-// crbug.com/1189635: flaky on win and linux.
+// crbug.com/40755559: flaky on win and linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
   DISABLED_HeavyAdInterventionFired_ReportsToAllChildren

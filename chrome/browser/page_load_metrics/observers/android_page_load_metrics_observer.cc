@@ -86,7 +86,7 @@ AndroidPageLoadMetricsObserver::OnHidden(
 
 void AndroidPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  // TODO(http://crbug.com/1363952): Java side WebContents insntace obtained
+  // TODO(http://crbug.com/40238907): Java side WebContents insntace obtained
   // via GetJavaWebContents() was already released here, and newly created wrong
   // instance will be obtained in the following calls.
   ReportBufferedMetrics(timing);

@@ -1091,7 +1091,7 @@ class InputMethodObserverForShowIme : public InputMethodObserverBase {
 // text service framework on Windows based on whether TSF edit control has focus
 // or not. On Windows we have implemented TSF1 on Chromium that takes care of
 // IME compositions, handwriting panels, SIP visibility etc. Please see
-// (https://crbug.com/1007958) for more details.
+// (https://crbug.com/40649743) for more details.
 #if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        CorrectlyShowVirtualKeyboardIfEnabled) {

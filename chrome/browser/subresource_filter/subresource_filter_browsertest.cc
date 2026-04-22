@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 // Disable the test as it's flaky on Win7 dbg.
-// crbug.com/1068185
+// crbug.com/40125372
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_RendererDebugURL_NoLeakedThrottlePtrs \
   DISABLED_RendererDebugURL_NoLeakedThrottlePtrs
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
       // TODO(alexmt): Enable this test case. Currently disabled as there is no
       // guarantee that the descendant's navigation starts after the parent's
-      // navigation ends (see crbug.com/1101569).
+      // navigation ends (see crbug.com/40138406).
       // Child of popup with doc.write-aborted load
       // "popupLoadsDisallowedResourceAsDescendant('http://b.com/slow?100');",
 
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 // Perform a hash change before the initial URL of a frame is navigated. Ensure
-// we don't trip any CHECKs (crbug.com/1237409) and that filtering works as
+// we don't trip any CHECKs (crbug.com/40193093) and that filtering works as
 // expected.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        SameDocumentBeforeInitialNavigation) {

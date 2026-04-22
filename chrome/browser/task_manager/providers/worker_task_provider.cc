@@ -24,7 +24,7 @@ void WorkerTaskProvider::OnProfileAdded(Profile* profile) {
 
   // It is possible for this method to be called multiple times for the same
   // profile, if the profile loads an extension during initialization which also
-  // triggers this logic path. https://crbug.com/1065798.
+  // triggers this logic path. https://crbug.com/40682007.
   if (observed_profiles_.IsObservingSource(profile))
     return;
 

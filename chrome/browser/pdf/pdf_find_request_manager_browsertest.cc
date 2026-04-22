@@ -104,7 +104,7 @@ class PdfFindRequestManagerTestWithPdfPartialLoading
 };
 
 // Tests searching in a full-page PDF.
-// Flaky on Windows ASAN: crbug.com/1030368.
+// Flaky on Windows ASAN: crbug.com/40109961.
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FindInPDF DISABLED_FindInPDF
 #else
@@ -169,7 +169,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 }
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
-// https://crbug.com/1027173.
+// https://crbug.com/40108622.
 // TODO(crbug.com/40926030): flaky on Linux debug.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_FindInChunkedPDF DISABLED_FindInChunkedPDF
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
   EXPECT_EQ(1, results.number_of_matches);
 }
 
-// Regression test for crbug.com/1352097.
+// Regression test for crbug.com/40857563.
 IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, SingleResultFindNext) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");

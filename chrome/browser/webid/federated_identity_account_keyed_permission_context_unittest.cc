@@ -304,9 +304,9 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
 }
 
 // Test that FederatedIdentityAccountKeyedPermissionContext can recover from
-// crbug.com/1381130
+// crbug.com/40245060
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
-  // crbug.com/1381130 only occurred when RP=IDP.
+  // crbug.com/40245060 only occurred when RP=IDP.
   const url::Origin site = url::Origin::Create(GURL("https://example.com"));
   std::string account{"conestogo"};
 

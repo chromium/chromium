@@ -375,7 +375,7 @@ export class Viewport {
   private getViewportRect_(): ViewportRect {
     const zoom = this.getZoom();
     // Zoom can be 0 in the case of a PDF that is in a hidden iframe. Avoid
-    // returning undefined values in this case. See https://crbug.com/1202725.
+    // returning undefined values in this case. See https://crbug.com/40763077.
     if (zoom === 0) {
       return {
         x: 0,

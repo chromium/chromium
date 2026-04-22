@@ -54,7 +54,7 @@ namespace {
 constexpr char kServiceName[] = "SharingService";
 
 // Removes old encryption info with empty authorized_entity to avoid DCHECK.
-// See http://crbug/987591
+// See http://crbug.com/40637555
 void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
   gcm::GCMEncryptionProvider* encryption_provider =
       gcm_driver->GetEncryptionProviderInternal();

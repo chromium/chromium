@@ -31,7 +31,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
-#include "chrome/services/speech/internal/server_based_recognition_recognizer.h"  // nogncheck crbug.com/1125897
+#include "chrome/services/speech/internal/server_based_recognition_recognizer.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
 
 namespace speech {

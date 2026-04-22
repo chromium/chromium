@@ -246,7 +246,7 @@ TEST_F(MultiProfileCredentialsFilterTest, NonGaia) {
 }
 
 // Returns false for an invalid email address.
-// Regression test for https://crbug.com/1401924
+// Regression test for https://crbug.com/40884453
 TEST_F(MultiProfileCredentialsFilterTest, InvalidEmail) {
   // Disallow profile creation to prevent the intercept.
   g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,

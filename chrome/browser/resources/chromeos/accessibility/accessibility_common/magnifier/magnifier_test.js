@@ -57,7 +57,7 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
-// Flaky: http://crbug.com/1171635
+// Flaky: http://crbug.com/40745215
 AX_TEST_F(
     'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToFocusedElement',
     async function() {
@@ -89,7 +89,7 @@ AX_TEST_F(
       assertTrue(RectUtil.contains(bounds, banana.location));
     });
 
-// Disabled - flaky: https://crbug.com/1145612
+// Disabled - flaky: https://crbug.com/40729575
 AX_TEST_F(
     'MagnifierE2ETest', 'DISABLED_MovesDockedMagnifierToActiveDescendant',
     async function() {

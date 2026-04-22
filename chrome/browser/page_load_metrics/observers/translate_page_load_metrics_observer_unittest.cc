@@ -306,4 +306,4 @@ TEST_F(TranslatePageLoadMetricsObserverTest, PrerenderAndActivation) {
 }
 
 // TODO(curranmax): Add unit tests that confirm behavior when the hidden/shown.
-// status of the tab changes. https://crbug.com/1114868.
+// status of the tab changes. https://crbug.com/40144098.

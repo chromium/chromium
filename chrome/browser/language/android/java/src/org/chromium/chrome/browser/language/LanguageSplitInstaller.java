@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Singleton class to manage installing language splits. This is temporary to start testing Play
  * Store downloads. |SplitCompatEngine| should be modified to support language split installs,
- * https://crbug.com/1186903, or a test suite should be added to this class.
+ * https://crbug.com/40172694, or a test suite should be added to this class.
  */
 @NullMarked
 public class LanguageSplitInstaller {

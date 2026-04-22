@@ -268,7 +268,8 @@ export class SettingsPersonalizationOptionsElement extends
 
   private showSearchSuggestToggle_(): boolean {
     if (pageVisibility?.privacy === undefined) {
-      // pageVisibility isn't defined in non-Guest profiles (crbug.com/1288911).
+      // pageVisibility isn't defined in non-Guest profiles
+      // (crbug.com/40211731).
       return true;
     }
     return (pageVisibility.privacy as PrivacyPageVisibility).searchPrediction;

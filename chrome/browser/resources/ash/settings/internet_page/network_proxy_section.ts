@@ -207,7 +207,7 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     }
     // We currently do not accurately determine the source if the policy
     // controlling the proxy setting, so always show the 'allow shared'
-    // toggle for shared networks. http://crbug.com/662529.
+    // toggle for shared networks. http://crbug.com/40492211.
     return true;
   }
 

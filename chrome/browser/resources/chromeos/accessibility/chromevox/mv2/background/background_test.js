@@ -279,7 +279,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F('ChromeVoxMV2BackgroundTest', 'CaretNavigation', async function() {
-  // TODO(plundblad): Add braille expectations when crbug.com/523285 is fixed.
+  // TODO(plundblad): Add braille expectations when crbug.com/41196347 is fixed.
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksAndHeadingsDoc);
   mockFeedback.expectSpeech('start');

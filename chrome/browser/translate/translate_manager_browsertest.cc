@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
 
 // Test that the translation was successful in an about:blank page.
 // This is a regression test for https://crbug.com/41447825.
-// Disabled due to flakiness: https://crbug.com/1202065.
+// Disabled due to flakiness: https://crbug.com/40762691.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
                        DISABLED_PageTranslationAboutBlank) {
   ASSERT_TRUE(AddTabAtIndex(

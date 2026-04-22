@@ -190,7 +190,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     // extensions stored in manager.ts for a brief moment (not visible to the
     // user). As a result, `item` here may be null even though `id` points to
     // an extension inside `manager.ts`. If this happens, do not focus anything.
-    // Observed in crbug.com/1482580.
+    // Observed in crbug.com/40072254.
     if (!item) {
       return false;
     }

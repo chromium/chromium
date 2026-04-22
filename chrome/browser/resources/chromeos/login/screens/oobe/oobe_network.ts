@@ -295,7 +295,7 @@ class NetworkScreen extends NetworkScreenBase {
       }
     }, 300);
     // Timeout is a workaround to correctly propagate focus to
-    // RendererFrameHostImpl see https://crbug.com/955129 for details.
+    // RendererFrameHostImpl see https://crbug.com/40624127 for details.
   }
 
   /**

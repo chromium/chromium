@@ -90,6 +90,6 @@ cr.define('cr', function() {
   let EventTrackerEntry;
 
   // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
+  console.warn('crbug.com/40167175, non-JS module files deprecated.');
   return {EventTracker};
 });

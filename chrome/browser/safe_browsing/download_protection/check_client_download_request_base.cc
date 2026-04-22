@@ -289,7 +289,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     *reason = DownloadCheckResultReason::REASON_DEEP_SCAN_PROMPT;
     // Always set the token if Chrome should prompt for deep scanning.
     // Otherwise, client Safe Browsing reports may be missed when the
-    // verdict is SAFE. See https://crbug.com/1485218.
+    // verdict is SAFE. See https://crbug.com/40933155.
     *token = response.token();
   }
 
@@ -306,7 +306,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     *reason = DownloadCheckResultReason::REASON_IMMEDIATE_DEEP_SCAN;
     // Always set the token if Chrome should prompt for deep scanning.
     // Otherwise, client Safe Browsing reports may be missed when the
-    // verdict is SAFE. See https://crbug.com/1485218.
+    // verdict is SAFE. See https://crbug.com/40933155.
     *token = response.token();
   }
 

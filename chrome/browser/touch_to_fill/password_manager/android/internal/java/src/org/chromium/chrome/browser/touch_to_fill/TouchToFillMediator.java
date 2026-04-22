@@ -451,7 +451,8 @@ class TouchToFillMediator {
     // for which the user hasn't been notified yet.
     private static List<Credential> getSharedPasswordsThatRequireNotification(
             List<CredentialBase> credentials) {
-        // TODO(http://crbug.com/1504098) : Add render test for a bottom sheet with shared passwords
+        // TODO(http://crbug.com/40944605) : Add render test for a bottom sheet with shared
+        // passwords
         // after the UI is complete.
         List<Credential> sharedCredentials = new ArrayList<>();
         for (CredentialBase credential : credentials) {

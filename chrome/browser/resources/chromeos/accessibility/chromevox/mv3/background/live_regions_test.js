@@ -285,7 +285,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', async function() {
   await mockFeedback.replay();
 });
 
-// Flaky: https://crbug.com/945199
+// Flaky: https://crbug.com/40619839
 AX_TEST_F(
     'ChromeVoxLiveRegionsTest', 'DISABLED_LiveStatusOff', async function() {
       const mockFeedback = this.createMockFeedback();

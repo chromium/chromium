@@ -256,7 +256,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
     this.updateFilteredTabs_();
 
-    // http://crbug.com/1481787: Dispatch the search event to update the
+    // http://crbug.com/40072096: Dispatch the search event to update the
     // internal value to make CrSearchFieldMixin function correctly.
     this.getSearchInput().dispatchEvent(
         new CustomEvent('search', {composed: true, detail: this.searchText_}));

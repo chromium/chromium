@@ -101,7 +101,7 @@ void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
 }
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordRejected() {
-  // TODO (crbug.com/1495639) Trigger Keyboard Accessory here.
+  // TODO (crbug.com/40937805) Trigger Keyboard Accessory here.
 }
 
 void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {

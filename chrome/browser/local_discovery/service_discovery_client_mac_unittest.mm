@@ -177,7 +177,7 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseServiceRecord) {
   EXPECT_EQ(kIp, description.address.host());
 }
 
-// https://crbug.com/586628
+// https://crbug.com/41239403
 TEST_F(ServiceDiscoveryClientMacTest, ParseInvalidUnicodeRecord) {
   const uint8_t record_bytes[] = {
     3, 'a', '=', 'b',

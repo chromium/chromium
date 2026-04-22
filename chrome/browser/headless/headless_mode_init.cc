@@ -79,7 +79,7 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
 
     // Explicitly specify unique user data dir because if there is no one
     // provided, Chrome will fall back to the default one which will prevent
-    // parallel headless processes execution, see https://crbug.com/1477376.
+    // parallel headless processes execution, see https://crbug.com/40280278.
     if (!command_line.HasSwitch(::switches::kUserDataDir) &&
         !command_line.HasSwitch(::switches::kProcessType)) {
       if (auto result = CreateUniqueUserDataDir(); !result.has_value()) {

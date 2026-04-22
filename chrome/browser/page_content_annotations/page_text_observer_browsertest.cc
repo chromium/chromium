@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
-  // This test can be flaky (crbug.com/1187264), and it always seems to be
+  // This test can be flaky (crbug.com/40754218), and it always seems to be
   // caused by the renderer never finishing the page load and is thus outside
   // the control of this feature. Thorough testing shows that this flake does
   // not repeat itself, so running the test an extra time is sufficient.

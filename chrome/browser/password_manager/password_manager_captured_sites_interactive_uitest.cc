@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
 
 // This test is called with a dynamic list and may be empty during the Autofill
 // run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
-// crbug/1192206
+// crbug.com/40174793
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     CapturedSitesPasswordManagerBrowserTest);
 INSTANTIATE_TEST_SUITE_P(All,
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(CapturedSitesAutomatedPasswordChangeBrowserTest,
 
 // This test is instantiated with a dynamic list and will be empty during the
 // Password run instance, so adding
-// GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la crbug.com/1192206
+// GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la crbug.com/40174793
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     CapturedSitesAutomatedPasswordChangeBrowserTest);
 INSTANTIATE_TEST_SUITE_P(All,

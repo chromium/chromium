@@ -349,7 +349,7 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
   CreatePasswordEditDialog();
 
   // Password edit dialog factory method can return nullptr when web_contents
-  // is not attached to a window. See crbug.com/1049090 for details.
+  // is not attached to a window. See crbug.com/40672358 for details.
   if (!password_edit_dialog_) {
     return;
   }

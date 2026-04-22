@@ -23,7 +23,7 @@ namespace companion {
 // the mojo connection upon finishing searching, to remove the annotation
 // agent. In the follow-up, we will implement a new type of annotation agent
 // that only performs text search without highlighting text.
-// See crbug.com/1430306.
+// See crbug.com/40901665.
 class TextFinder : public blink::mojom::AnnotationAgentHost {
  public:
   // The callback type invoked when text search in the renderer is finished. The

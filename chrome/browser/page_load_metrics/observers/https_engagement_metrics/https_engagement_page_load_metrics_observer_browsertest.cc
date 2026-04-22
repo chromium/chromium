@@ -483,8 +483,7 @@ IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
   EXPECT_EQ(0, ratio_bucket);
 }
 
-
-// Flaky on linux-chromeos-rel. crbug/1215539
+// Flaky on linux-chromeos-rel. crbug.com/40769988
 #if defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AlwaysInBackground DISABLED_AlwaysInBackground
 #else

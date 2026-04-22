@@ -365,7 +365,7 @@ void SharesheetService::OnAppIconsLoaded(
     std::vector<TargetInfo> targets) {
   gfx::NativeWindow native_window = std::move(get_native_window_callback).Run();
   // Note that checking |native_window| is not sufficient: |widget| can be null
-  // even when |native_window| is 'true': https://crbug.com/1375887#c11
+  // even when |native_window| is 'true': https://crbug.com/40873333#c11
   views::Widget* const widget =
       views::Widget::GetWidgetForNativeWindow(native_window);
   if (!widget) {

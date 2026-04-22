@@ -531,7 +531,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
      */
     onContentLoad_(e) {
       // |this.webview_.contentWindow| may be null after network error screen
-      // is shown. See crbug.com/770999.
+      // is shown. See crbug.com/40542871.
       if (this.webview_.contentWindow) {
         PostMessageChannel.init(this.webview_.contentWindow);
       } else {

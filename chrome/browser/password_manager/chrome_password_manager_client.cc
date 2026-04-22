@@ -1563,7 +1563,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
               element_bounds_in_top_frame_space, ui_data.text_direction,
               /*show_password_suggestions=*/
               ui_data.is_generation_element_password_type)) {
-    // (see crbug.com/1338105)
+    // (see crbug.com/40229464)
     if (popup_controller_) {
       popup_controller_->GeneratedPasswordRejected();
     }
@@ -1893,7 +1893,7 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
 }
 
 void ChromePasswordManagerClient::WebContentsDestroyed() {
-  // crbug/1090011
+  // crbug.com/40133549
   // Drop the connection before the WebContentsObserver destructors are invoked.
   // Other classes may contain callbacks to the Mojo methods. Those callbacks
   // don't like to be destroyed earlier than the pipe itself.

@@ -360,7 +360,7 @@ void ChromePasswordProtectionService::SetSyncPasswordHash(
     const std::string& sync_password_hash) {
 // The following code is disabled on Android. RefreshTokenIsAvailable cannot be
 // used in unit tests, because it needs to interact with system accounts.
-// Considering avoid running it during unit tests. See: crbug.com/1009957.
+// Considering avoid running it during unit tests. See: crbug.com/40101266.
 #if !BUILDFLAG(IS_ANDROID)
   // This code is shared by the normal ctor and testing ctor.
   sync_password_hash_ = sync_password_hash;

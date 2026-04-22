@@ -234,7 +234,7 @@ void RemoveNavigationEntries(Profile* profile,
   // deleted entries.
   // However deletion of foreign visits specifically can occur during startup
   // and clearing session service data will delete the user's previous session
-  // with no ability to rebuild/recover (see crbug.com/1424800). Foreign visits
+  // with no ability to rebuild/recover (see crbug.com/40063610). Foreign visits
   // can't be part of the local session so there is no risk of retaining the
   // session service data in this case.
   if (deletion_info.deletion_reason() !=

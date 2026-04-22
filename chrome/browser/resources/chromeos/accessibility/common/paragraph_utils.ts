@@ -85,7 +85,7 @@ export class ParagraphUtils {
     if (first === undefined || second === undefined) {
       return false;
     }
-    // TODO: Clean up this check after crbug.com/774308 is resolved.
+    // TODO: Clean up this check after crbug.com/41349572 is resolved.
     // At that point we will only need to check for display:block or
     // inline-block.
     if (((first.display === 'block' || first.display === 'inline-block') &&

@@ -438,7 +438,7 @@ export class SpeechController {
 
   // Play text of these axNodeIds. When finished, read and highlight to read the
   // following text.
-  // TODO: crbug.com/1474951 - Investigate using AXRange.GetText to get text
+  // TODO: crbug.com/40927698 - Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
   private highlightAndPlayMessage_(
       isInterrupted: boolean = false,
@@ -520,7 +520,7 @@ export class SpeechController {
 
   private playText_(utteranceText: string) {
     // This check is needed due limits of TTS audio for remote voices. See
-    // crbug.com/1176078 for more details.
+    // crbug.com/40747712 for more details.
     // Since the TTS bug only impacts remote voices, no need to check for
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled

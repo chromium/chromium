@@ -189,7 +189,7 @@ void AMPPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   if (!navigation_handle->HasCommitted())
     return;
 
-  // Ignore same document navigations; see crbug.com/1104365
+  // Ignore same document navigations; see crbug.com/40705062
   if (navigation_handle->IsSameDocument())
     return;
 

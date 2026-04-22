@@ -1002,7 +1002,7 @@ BrowserWindowInterface* CreateBrowserWithTabs(int num_tabs) {
 }  // namespace
 
 // Do not run in debug or ASAN builds to avoid timeouts due to multiple
-// navigations. https://crbug.com/1106485
+// navigations. https://crbug.com/40706359
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DiscardTabsWithMinimizedWindow \
   DISABLED_DiscardTabsWithMinimizedWindow
@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 }
 
 // Do not run in debug or ASAN builds to avoid timeouts due to multiple
-// navigations. https://crbug.com/1106485
+// navigations. https://crbug.com/40706359
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DiscardTabsWithOccludedWindow \
   DISABLED_DiscardTabsWithOccludedWindow

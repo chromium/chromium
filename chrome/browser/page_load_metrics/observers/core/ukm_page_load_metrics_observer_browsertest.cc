@@ -136,7 +136,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRedirectRequest(
 }
 }  // namespace
 
-// Regression test for crbug.com/1029959.
+// Regression test for crbug.com/40661610.
 IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                        MainFrameHadCookies_CrossOriginCookiesOnRedirect) {
   net::EmbeddedTestServer redirect_server(net::EmbeddedTestServer::TYPE_HTTP);

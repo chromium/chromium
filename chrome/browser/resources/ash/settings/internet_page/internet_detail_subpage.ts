@@ -641,7 +641,7 @@ export class SettingsInternetDetailPageElement extends
     requestAnimationFrame(() => {
       // Clear network properties before navigating away to ensure that a future
       // navigation back to the details page does not show a flicker of
-      // incorrect text. See https://crbug.com/905986.
+      // incorrect text. See https://crbug.com/41426690.
       this.managedProperties_ = undefined;
       this.propertiesReceived_ = false;
 

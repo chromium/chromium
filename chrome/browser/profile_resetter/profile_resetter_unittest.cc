@@ -766,7 +766,7 @@ TEST_F(ConfigParserTest, ParseConfig) {
 
 // Return an invalid response from the fetch request and delete the
 // Fetcher object in the callback, which mimics how ResetSettingsHandler uses
-// the class. See https://crbug.com/1491296.
+// the class. See https://crbug.com/40935719.
 TEST_F(ConfigParserTest, InvalidResponseDeleteFromCallback) {
   const GURL url("http://test");
   auto head = network::mojom::URLResponseHead::New();

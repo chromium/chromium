@@ -157,7 +157,7 @@ public class BookmarkModelTest {
     @UiThreadTest
     @Feature({"Bookmark"})
     public void testMoveBookmarksMixed() {
-        // Inspired by https://crbug.com/1441847 where a move during a search would have bookmarks
+        // Inspired by https://crbug.com/40910218 where a move during a search would have bookmarks
         // from a mixed set of parent folders. Need to be able to handle interleaving url bookmarks
         // where only some of which are in the same destination folder.
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "fa");
@@ -219,7 +219,7 @@ public class BookmarkModelTest {
 
         mBookmarkModel.deleteBookmarks(bookmarkA);
 
-        // This line is problematic, see: https://crbug.com/824559
+        // This line is problematic, see: https://crbug.com/41378185
         mBookmarkModel.deleteBookmarks(bookmarkA, bookmarkB);
 
         Assert.assertNull(mBookmarkModel.getBookmarkById(bookmarkA));

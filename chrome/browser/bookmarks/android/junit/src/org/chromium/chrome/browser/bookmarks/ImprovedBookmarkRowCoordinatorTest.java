@@ -215,7 +215,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     @Test
     public void testFolder_compactConversionString() {
-        // Need to be careful when formatting user generating content, https://crbug.com/1509959.
+        // Need to be careful when formatting user generating content, https://crbug.com/41482558.
         BookmarkId folderId = new BookmarkId(100, BookmarkType.NORMAL);
         BookmarkItem folder =
                 new BookmarkItem(

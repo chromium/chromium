@@ -174,7 +174,7 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
 };
 
 #if BUILDFLAG(IS_ANDROID)
-// See https://crbug.com/1432023 for tracking bug.
+// See https://crbug.com/40902685 for tracking bug.
 #define MAYBE_PrefChange DISABLED_PrefChange
 #else
 #define MAYBE_PrefChange PrefChange
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 #endif
 
-// Failing crbug.com/1456542.
+// Failing crbug.com/40917994.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        DISABLED_History) {
   // No history saved in incognito mode.

@@ -2136,7 +2136,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
 }
 
 // Verifies deleting does not crash if BookmarkModel has not been loaded.
-// Regression test for: https://crbug.com/1207632.
+// Regression test for: https://crbug.com/40181383.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        DeleteBookmarksDoesNothingWhenModelNotLoaded) {
   TestingProfile* profile = GetProfileManager()->CreateTestingProfile(

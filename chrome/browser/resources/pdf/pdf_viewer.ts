@@ -412,7 +412,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     super();
 
-    // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
+    // TODO(dpapad): Add tests after crbug.com/40142584 is fixed.
     this.sidenavCollapsed_ = Boolean(Number.parseInt(
         LocalStorageProxyImpl.getInstance().getItem(
             LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY)!,
@@ -1517,7 +1517,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected onSidenavToggleClick_() {
     this.sidenavCollapsed_ = !this.sidenavCollapsed_;
 
-    // Workaround for crbug.com/1119944, so that the PDF plugin resizes only
+    // Workaround for crbug.com/40145705, so that the PDF plugin resizes only
     // once when the sidenav is opened/closed.
     const container = this.shadowRoot.querySelector('#sidenav-container')!;
     if (!this.sidenavCollapsed_) {

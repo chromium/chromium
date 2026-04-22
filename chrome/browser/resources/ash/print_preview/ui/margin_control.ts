@@ -147,7 +147,7 @@ export class PrintPreviewMarginControlElement extends
     if (pts !== null && valueInPts === Math.round(pts)) {
       // If the textbox's value represents the same value in pts as the new one,
       // don't reset. This allows the "undo" command to work as expected, see
-      // https://crbug.com/452844.
+      // https://crbug.com/41154323.
       return;
     }
 

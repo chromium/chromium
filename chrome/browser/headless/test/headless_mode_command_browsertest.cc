@@ -354,7 +354,7 @@ class HeadlessModeScreenshotCommandBrowserTest
 #if BUILDFLAG(IS_WIN)
   void SetUp() override {
     // Use software compositing instead of GL which causes blank screenshots on
-    // Windows, especially under ASAN. See https://crbug.com/1442606 and
+    // Windows, especially under ASAN. See https://crbug.com/40267033 and
     // https://crbug.com/328195816.
     UseSoftwareCompositing();
 

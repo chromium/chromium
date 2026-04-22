@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, OpenHelpPage) {
 // Tests that closing the tab with WebContents that was used to construct
 // the AccessibilityLabelsBubbleModel does not cause any problems when
 // opening the Help page.
-// This is a regression test for crbug.com/1212500.
+// This is a regression test for crbug.com/40055975.
 // Note that we do not need to test what happens when the whole browser
 // closes, because when the last tab in a window closes it will close the
 // bubble widget too.

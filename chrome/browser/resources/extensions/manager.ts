@@ -511,7 +511,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   // When an item is removed while on the 'item list' page, move focus to the
   // next item in the list with `listId` if available. If no items are in that
   // list, focus to the search bar as a fallback.
-  // This is a fix for crbug.com/1416324 which causes focus to linger on a
+  // This is a fix for crbug.com/40063067 which causes focus to linger on a
   // deleted element, which is then read by the screen reader.
   private focusAfterItemRemoved_(listId: string, index: number) {
     // A timeout is used so elements are focused after the DOM is updated.

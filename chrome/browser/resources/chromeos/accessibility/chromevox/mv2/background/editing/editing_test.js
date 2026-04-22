@@ -654,7 +654,7 @@ AX_TEST_F('ChromeVoxMV2EditingTest', 'RichTextSelectByLine', async function() {
   // Use digit strings like "11111" and "22222" because the character widths
   // of digits are always the same. This means the test can move down one line
   // middle of "11111" and reliably hit a given character position in "22222",
-  // regardless of font configuration. https://crbug.com/898213
+  // regardless of font configuration. https://crbug.com/41422323
   const root = await this.runWithLoadedTree(`
     <div>
       <button id="go">Go</button>
@@ -1330,7 +1330,7 @@ AX_TEST_F('ChromeVoxMV2EditingTest', 'GrammarErrors', async function() {
   await mockFeedback.replay();
 });
 
-// Flaky test, crbug.com/1098642.
+// Flaky test, crbug.com/40702035.
 AX_TEST_F(
     'ChromeVoxMV2EditingTest', 'DISABLED_CharacterTypedAfterNewLine',
     async function() {
@@ -1790,7 +1790,7 @@ AX_TEST_F('ChromeVoxMV2EditingTest', 'Separator', async function() {
   await mockFeedback.replay();
 });
 
-// Test for the issue in crbug.com/1203840. This case was causing an infinite
+// Test for the issue in crbug.com/40179729. This case was causing an infinite
 // loop in ChromeVox's editable line data computation. This test ensures we
 // workaround potential infinite loops correctly, and should be removed once the
 // proper fix is implemented in blink.

@@ -500,7 +500,8 @@ constexpr std::string_view kStorageTypes[] = {
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        StorageDoesntWriteToDisk) {
-  // Checking leveldb content fails in most cases. See https://crbug.com/1238325
+  // Checking leveldb content fails in most cases. See
+  // https://crbug.com/40784064
   CheckUserDirectoryForString(kLocalHost, {},
                               /*check_leveldb_content=*/false);
   ASSERT_EQ(0, GetSiteDataCount());

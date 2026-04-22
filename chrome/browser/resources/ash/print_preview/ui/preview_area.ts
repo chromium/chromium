@@ -515,7 +515,7 @@ export class PrintPreviewPreviewAreaElement extends
     // should adjust scroll position of PDF preview and positions of
     // MarginContgrols here, or restructure the HTML so that the PDF review
     // and MarginControls are on the single scrollable container.
-    // crbug.com/601341
+    // crbug.com/40464055
     this.scrollTop = 0;
     this.scrollLeft = 0;
 

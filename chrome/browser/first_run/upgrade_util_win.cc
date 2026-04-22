@@ -219,7 +219,7 @@ Microsoft::WRL::ComPtr<IUnknown> CreateGoogleUpdate3Web() {
 bool InvokeGoogleUpdateForRename() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // This has been identified as very slow on some startups. Detailed trace
-  // events below try to shine a light on each steps. crbug.com/1252004
+  // events below try to shine a light on each steps. crbug.com/40792898
   TRACE_EVENT0("startup", "upgrade_util::InvokeGoogleUpdateForRename");
 
   Microsoft::WRL::ComPtr<IUnknown> unknown = CreateGoogleUpdate3Web();

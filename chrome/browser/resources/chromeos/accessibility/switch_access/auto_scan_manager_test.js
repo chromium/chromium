@@ -47,7 +47,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
   }
 };
 
-// https://crbug.com/1452024: Flaky on linux-chromeos-rel/linux-chromeos-dbg
+// https://crbug.com/40916090: Flaky on linux-chromeos-rel/linux-chromeos-dbg
 TEST_F('SwitchAccessAutoScanManagerTest', 'DISABLED_SetEnabled', function() {
   this.runWithLoadedDesktop(() => {
     assertFalse(
@@ -75,7 +75,7 @@ TEST_F('SwitchAccessAutoScanManagerTest', 'DISABLED_SetEnabled', function() {
   });
 });
 
-// https://crbug.com/1408940: Flaky on linux-chromeos-dbg
+// https://crbug.com/40888769: Flaky on linux-chromeos-dbg
 GEN('#ifndef NDEBUG');
 GEN('#define MAYBE_SetEnabledMultiple DISABLED_SetEnabledMultiple');
 GEN('#else');
@@ -125,7 +125,7 @@ TEST_F(
       });
     });
 
-// https://crbug.com/1408940: Flaky on linux-chromeos-dbg
+// https://crbug.com/40888769: Flaky on linux-chromeos-dbg
 GEN('#ifndef NDEBUG');
 GEN('#define MAYBE_RestartIfRunningMultiple DISABLED_RestartIfRunningMultiple');
 GEN('#else');
@@ -157,7 +157,7 @@ TEST_F(
       });
     });
 
-// https://crbug.com/1408940: Flaky on linux-chromeos-dbg
+// https://crbug.com/40888769: Flaky on linux-chromeos-dbg
 GEN('#ifndef NDEBUG');
 GEN('#define MAYBE_RestartIfRunningWhenOff DISABLED_RestartIfRunningWhenOff');
 GEN('#else');
@@ -178,7 +178,7 @@ TEST_F(
       });
     });
 
-// https://crbug.com/1408940: Flaky on linux-chromeos-dbg
+// https://crbug.com/40888769: Flaky on linux-chromeos-dbg
 GEN('#ifndef NDEBUG');
 GEN('#define MAYBE_SetPrimaryScanTime DISABLED_SetPrimaryScanTime');
 GEN('#else');

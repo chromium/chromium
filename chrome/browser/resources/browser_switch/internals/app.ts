@@ -331,7 +331,7 @@ function formatTime(dateNumber: number): string {
  * Gets the English name of the alternate browser.
  */
 function getAltBrowserName(): string {
-  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath
+  // TODO (crbug.com/40200942): if you change the AlternativeBrowserPath
   // policy, then loadTimeData can contain stale data. It won't update
   // until you refresh (despite the rest of the page auto-updating).
   return loadTimeData.getString('altBrowserName') || 'alternative browser';
@@ -341,7 +341,7 @@ function getAltBrowserName(): string {
  * Gets the English name of the browser.
  */
 function getBrowserName(): string {
-  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath
+  // TODO (crbug.com/40200942): if you change the AlternativeBrowserPath
   // policy, then loadTimeData can contain stale data. It won't update
   // until you refresh (despite the rest of the page auto-updating).
   return loadTimeData.getString('browserName');

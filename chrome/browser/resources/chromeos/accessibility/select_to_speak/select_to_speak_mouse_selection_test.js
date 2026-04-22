@@ -26,7 +26,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     await new Promise(resolve => {
       chrome.settingsPrivate.setPref(
           PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
-          '' /* unused, see crbug.com/866161 */, () => resolve());
+          '' /* unused, see crbug.com/40586037 */, () => resolve());
     });
     if (!selectToSpeak.prefsManager_.enhancedVoicesDialogShown()) {
       // TODO(b/267705784): This shouldn't happen, but sometimes the

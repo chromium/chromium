@@ -14,7 +14,7 @@
 namespace {
 const char kConsoleMessage[] =
     "A SafeBrowsing warning is pending on this page, so an attempted download "
-    "was cancelled. See https://crbug.com/1081317 for details.";
+    "was cancelled. See https://crbug.com/40691288 for details.";
 }
 
 namespace safe_browsing {

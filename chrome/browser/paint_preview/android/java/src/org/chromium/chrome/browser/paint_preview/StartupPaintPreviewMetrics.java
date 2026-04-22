@@ -59,7 +59,7 @@ public class StartupPaintPreviewMetrics {
 
         /**
          * Called on the first paint of a paint preview in the case where the first paint was not
-         * recorded. Added to aid in investigating crbug.com/1273097.
+         * recorded. Added to aid in investigating crbug.com/40806757.
          */
         void onUnrecordedFirstPaint();
     }

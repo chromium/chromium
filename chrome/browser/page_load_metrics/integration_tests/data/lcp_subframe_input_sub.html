@@ -3,7 +3,7 @@
 <script>
   var last_url = null;
   const test_step_1 = async () => {
-    // Workaround for crbug.com/1149053: wait for IntersectionObserver to say
+    // Workaround for crbug.com/40731630: wait for IntersectionObserver to say
     // that we are visible before loading the <img>.
     await new Promise(resolve => {
       new IntersectionObserver(list => {

@@ -17,7 +17,7 @@ AccessibilityExtensionAutomationTreeWalkerTest =
   testGenCppIncludes() {
     super.testGenCppIncludes.call();
 
-    // See https://crbug.com/981953 for details.
+    // See https://crbug.com/41469637 for details.
     GEN(`
   #if !defined(NDEBUG)
   #define MAYBE_Forward DISABLED_Forward

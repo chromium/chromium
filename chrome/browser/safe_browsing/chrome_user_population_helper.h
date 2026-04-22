@@ -29,7 +29,7 @@ enum class NoCachedPopulationReason {
 // A cache of the ChromeUserPopulation is used to validate that we are
 // consistently populating the same values into Safe Browsing pings. This should
 // be cleared whenever we expect the correct value of the ChromeUserPopulation
-// to be cleared. See crbug/1208532.
+// to be cleared. See crbug.com/40766086.
 void ClearCachedUserPopulation(Profile* profile,
                                NoCachedPopulationReason reason);
 

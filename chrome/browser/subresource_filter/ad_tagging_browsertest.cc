@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that the children of a frame with its initial load aborted due to a
 // window.stop are reported correctly as vanilla or ad frames.
-// This test is flaky. See crbug.com/1069346.
+// This test is flaky. See crbug.com/40683973.
 IN_PROC_BROWSER_TEST_F(
     AdTaggingBrowserTest,
     ChildrenOfFrameWithWindowStopAbortedLoad_StillCorrectlyTagged) {

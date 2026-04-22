@@ -92,7 +92,7 @@ export class PromoCardElement extends PromoCardElementBase {
     super.connectedCallback();
     // If this is a shortcut promo we should listen to display mode changes to
     // close it automatically when shortcut is installed from another place.
-    // Check crbug.com/1493264 for more details when it can happen.
+    // Check crbug.com/40075033 for more details when it can happen.
     if (this.promoCard.id === PromoCardId.SHORTCUT) {
       isOpenedAsShortcut.addEventListener('change', this.close_.bind(this));
     }

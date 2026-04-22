@@ -313,7 +313,7 @@ TEST_F(GalleryWatchManagerTest, RemoveAllWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-// Fails on ChromeOS: crbug.com/1207878
+// Fails on ChromeOS: crbug.com/40765782
 TEST_F(GalleryWatchManagerTest, DISABLED_DropWatchOnGalleryRemoved) {
   if (!GalleryWatchesSupported())
     return;

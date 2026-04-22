@@ -23,7 +23,7 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
     await new Promise(resolve => {
       chrome.settingsPrivate.setPref(
           PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
-          '' /* unused, see crbug.com/866161 */, () => resolve());
+          '' /* unused, see crbug.com/40586037 */, () => resolve());
     });
 
     if (!selectToSpeak.prefsManager_.enhancedVoicesDialogShown()) {

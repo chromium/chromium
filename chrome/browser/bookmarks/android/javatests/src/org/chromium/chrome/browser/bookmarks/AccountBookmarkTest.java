@@ -82,7 +82,8 @@ public class AccountBookmarkTest {
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(
             message =
-                    "Enable this test when reading list is available w/o restart crbug.com/1510547")
+                    "Enable this test when reading list is available w/o restart"
+                        + " crbug.com/41483140")
     public void testOpenFromReadingListAndNavigateBack() throws Exception {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountReadingListFolder() != null);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(

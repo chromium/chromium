@@ -1438,7 +1438,7 @@ export class Authenticator extends EventTarget {
       };
 
       // |this.webview_.contentWindow| may be null after network error
-      // screen is shown. See crbug.com/770999.
+      // screen is shown. See crbug.com/40542871.
       if (this.webview_.contentWindow) {
         this.webview_.contentWindow.postMessage(msg, currentUrl);
       } else {

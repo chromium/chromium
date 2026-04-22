@@ -266,7 +266,7 @@ export class NodeNavigationUtils {
    * sentence, the function returns content from the start of the previous
    * sentence.
    * TODO(leileilei@google.com): Handle the edge case where the user navigates
-   * to next sentence from the end of a document, see http://crbug.com/1160962.
+   * to next sentence from the end of a document, see http://crbug.com/40738506.
    * @param direction Direction to search for the next sentence.
    *     If set to forward, we look for the sentence start after the current
    *     position. Otherwise, we look for the sentence start before the current

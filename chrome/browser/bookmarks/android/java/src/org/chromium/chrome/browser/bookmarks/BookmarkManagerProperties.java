@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class BookmarkManagerProperties {
     public static final WritableObjectPropertyKey<BatchUploadCardCoordinator>
             BATCH_UPLOAD_CARD_COORDINATOR = new WritableObjectPropertyKey<>();
-    // TODO(https://crbug.com/1416611): Replace with individual fields.
+    // TODO(https://crbug.com/40256938): Replace with individual fields.
     public static final WritableObjectPropertyKey<BookmarkListEntry> BOOKMARK_LIST_ENTRY =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<BookmarkId> BOOKMARK_ID =
@@ -28,7 +28,7 @@ public class BookmarkManagerProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
-    // TODO(https://crbug.com/1416611): Rework this property to not just expose functionality.
+    // TODO(https://crbug.com/40256938): Rework this property to not just expose functionality.
     public static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER =
             new WritableObjectPropertyKey<>();
 

@@ -243,7 +243,7 @@ INSTANTIATE_TEST_SUITE_P(SitePerProcess,
 #define MAYBE_ShutdownWhileOpen ShutdownWhileOpen
 #endif
 
-// Regression test for http://crbug.com/13361
+// Regression test for http://crbug.com/40847504
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_ShutdownWhileOpen) {
   ShowTaskManager();
 }
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeHostedAppTabBeforeReload) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
 }
 
-// Regression test for http://crbug.com/18693.
+// Regression test for http://crbug.com/40970634.
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, ReloadExtension) {
   ShowTaskManager();
   ASSERT_TRUE(LoadExtension(
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_IdleWakeups) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
-// Crashes on multiple builders.  http://crbug.com/1025346
+// Crashes on multiple builders.  http://crbug.com/40107830
 // Checks that task manager counts utility process JS heap size.
 IN_PROC_BROWSER_TEST_F(TaskManagerUtilityProcessBrowserTest,
                        DISABLED_UtilityJSHeapMemory) {

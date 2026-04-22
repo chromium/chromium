@@ -14,7 +14,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
-#include "components/soda/soda_util.h"  // nogncheck crbug.com/1125897
+#include "components/soda/soda_util.h"  // nogncheck crbug.com/40147906
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
