@@ -376,6 +376,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                                 ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON,
                                 contextMenuIcon)
                         .with(
+                                ExtensionsMenuItemProperties.PRIMARY_ACTION_ON_CLICK,
+                                (view) -> mMenuBridge.executeAction(entry.id))
+                        .with(
                                 ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK,
                                 (buttonView, isOn) ->
                                         mMenuBridge.onExtensionToggleSelected(entry.id, isOn))

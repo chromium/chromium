@@ -51,6 +51,16 @@ public class ExtensionsMenuBridge implements Destroyable {
         LifetimeAssert.destroy(mLifetimeAssert);
     }
 
+    /**
+     * Executes the extension action.
+     *
+     * @param extensionId The ID of the extension to execute.
+     */
+    public void executeAction(String extensionId) {
+        ExtensionsMenuBridgeJni.get()
+                .executeAction(mNativeExtensionsMenuDelegateAndroid, extensionId);
+    }
+
     /** Returns the icon for the given extension index from native. */
     public @Nullable Bitmap getActionIcon(int actionIndex) {
         return ExtensionsMenuBridgeJni.get()
@@ -297,7 +307,12 @@ public class ExtensionsMenuBridge implements Destroyable {
         /** Destroys the native ExtensionsMenuDelegateAndroid. */
         void destroy(long nativeExtensionsMenuDelegateAndroid);
 
-        // Returns the icon for an extension's action at actionIndex.
+        /** Executes the extension action. */
+        void executeAction(
+                long nativeExtensionsMenuDelegateAndroid,
+                @JniType("std::string") String extensionId);
+
+        /** Returns the icon for an extension's action at actionIndex. */
         @Nullable Bitmap getActionIcon(long nativeExtensionsMenuDelegateAndroid, int actionIndex);
 
         /** Returns the extension site permissions state from native. */

@@ -79,6 +79,12 @@ void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
+void ExtensionsMenuDelegateAndroid::ExecuteAction(
+    JNIEnv* env,
+    const extensions::ExtensionId& extension_id) {
+  menu_model_->ExecuteAction(extension_id);
+}
+
 ScopedJavaLocalRef<jobject> ExtensionsMenuDelegateAndroid::GetActionIcon(
     JNIEnv* env,
     int action_index) {

@@ -32,6 +32,9 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener>
             CONTEXT_MENU_BUTTON_ON_CLICK = new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<View.OnClickListener> PRIMARY_ACTION_ON_CLICK =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey SITE_ACCESS_TOGGLE_CHECKED =
             new WritableBooleanPropertyKey();
 
@@ -63,6 +66,7 @@ public class ExtensionsMenuItemProperties {
                 TITLE,
                 CONTEXT_MENU_BUTTON_ICON,
                 CONTEXT_MENU_BUTTON_ON_CLICK,
+                PRIMARY_ACTION_ON_CLICK,
                 SITE_ACCESS_TOGGLE_CHECKED,
                 SITE_ACCESS_TOGGLE_ON_CLICK,
                 SITE_ACCESS_TOGGLE_STATUS,
