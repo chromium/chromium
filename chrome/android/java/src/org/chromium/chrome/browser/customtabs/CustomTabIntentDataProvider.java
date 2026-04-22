@@ -508,7 +508,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 : roundedCornersPosition;
     }
 
-    private static boolean hasTranslucentBackgroundColor(Intent intent) {
+    static boolean hasTranslucentBackgroundColor(Intent intent) {
         try {
             return intent.hasExtra(EXTRA_TRANSLUCENT_BACKGROUND);
         } catch (Throwable t) {
