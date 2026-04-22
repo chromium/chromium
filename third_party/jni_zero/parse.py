@@ -517,7 +517,7 @@ def _make_called_by_native_regex(is_javap):
   sb = []
   if not is_javap:
     sb.append(r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
-              r'(?:\("(?P<annotation_value>.*)"\))?'
+              r'(?:\(".*"\))?'
               r'(?P<method_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?')
   # Enfore a space after the type params to account for:
   # <T extends java.lang.Comparable<? super T>>

@@ -22,7 +22,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 @UsedReflectively
-public @interface CalledByNativeUnchecked {
-    /** Legacy / unused. */
-    String value() default "";
-}
+public @interface CalledByNativeUnchecked {}

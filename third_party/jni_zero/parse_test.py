@@ -217,6 +217,8 @@ public class Test {
 package org.jni_zero;
 public class Outer<T1> {
     public static class Inner<T2> {
+        // No longer accepts a value, but we still parse it to not break
+        // WebRTC's copy of the annotation.
         @CalledByNative("Inner")
         public T2 foo(T1 arg) {}
     }

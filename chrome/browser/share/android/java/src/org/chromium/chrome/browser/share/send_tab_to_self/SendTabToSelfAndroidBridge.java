@@ -27,7 +27,7 @@ public class SendTabToSelfAndroidBridge {
     /** Interface for a callback to receive the result of a send tab to self operation. */
     @FunctionalInterface
     public interface CommitConfirmationCallback {
-        @CalledByNative("CommitConfirmationCallback")
+        @CalledByNative
         void onResult(@SendTabToSelfResult int result);
     }
 
