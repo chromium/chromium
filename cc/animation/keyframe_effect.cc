@@ -214,20 +214,9 @@ void KeyframeEffect::UpdateTickingState() {
   }
 }
 
-void KeyframeEffect::Pause(base::TimeDelta hold_time,
-                           PauseCondition pause_condition) {
+void KeyframeEffect::Pause(base::TimeDelta hold_time) {
   bool did_pause = false;
   for (auto& keyframe_model : keyframe_models()) {
-    // TODO(crbug.com/40688021): KeyframeEffect is paused with local time for
-    // scroll-linked animations. To make sure the start event of a keyframe
-    // model is sent to blink, we should not set its run state to PAUSED until
-    // such event is sent. This should be revisited once KeyframeEffect is able
-    // to tick scroll-linked keyframe models directly.
-    if (pause_condition == PauseCondition::kAfterStart &&
-        (keyframe_model->run_state() ==
-             gfx::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY ||
-         keyframe_model->run_state() == gfx::KeyframeModel::STARTING))
-      continue;
     keyframe_model->Pause(hold_time);
     did_pause = true;
   }
