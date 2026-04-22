@@ -80,17 +80,9 @@ class TabsEventRouterPlatformDelegate
 
  private:
   // Methods called from OnTabStripModelChanged.
-  void DispatchTabInsertedAt(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index,
-                             bool active);
   void DispatchTabReplacedAt(content::WebContents* old_contents,
                              content::WebContents* new_contents,
                              int index);
-
-  // "Synthetic" event. Called from DispatchTabInsertedAt if new tab is
-  // detected.
-  void TabCreatedAt(content::WebContents* contents, int index, bool active);
 
   // The platform-agnostic TabsEventRouter.
   // TODO(https://crbug.com/473593117): This should go away; it's just here
