@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
+#include "url/gurl.h"
 
 namespace password_manager {
 class HttpAuthManager;
@@ -28,6 +29,7 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
  public:
   ChromeHttpAuthHandler(const std::u16string& authority,
                         const std::u16string& explanation,
+                        const GURL& challenger_url,
                         LoginHandler::LoginModelData* login_model_data);
 
   ChromeHttpAuthHandler(const ChromeHttpAuthHandler&) = delete;
@@ -78,6 +80,7 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   base::android::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
   std::u16string authority_;
   std::u16string explanation_;
+  GURL challenger_url_;
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.

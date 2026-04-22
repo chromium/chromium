@@ -42,8 +42,10 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.browser_ui.http_auth.R;
+import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -211,6 +213,44 @@ public class ChromeHttpAuthHandlerTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH,
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME
+    })
+    public void testAutofillUrlProvidedWhenFeatureOriginEnabled() throws Exception {
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.AVAILABLE);
+
+        ChromeHttpAuthHandler handler = triggerAuth();
+        verifyAuthDialogVisibility(handler, true);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            handler, hasAutofillImportance(View.IMPORTANT_FOR_AUTOFILL_YES));
+                    Criteria.checkThat(handler, hasAutofillUrl(mTestServer.getURL("/")));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
+    @DisableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME)
+    public void testAutofillUrlProvidedWhenFeatureOriginDisabled() throws Exception {
+        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                AndroidAutofillAvailabilityStatus.AVAILABLE);
+
+        ChromeHttpAuthHandler handler = triggerAuth();
+        verifyAuthDialogVisibility(handler, true);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            handler, hasAutofillImportance(View.IMPORTANT_FOR_AUTOFILL_YES));
+                    Criteria.checkThat(handler, hasAutofillUrl(mTestServer.getURL("/auth-basic")));
+                });
+    }
+
     private static Matcher<ChromeHttpAuthHandler> hasAutofillImportance(int expectedImportance) {
         return new TypeSafeMatcher<ChromeHttpAuthHandler>() {
             @Override
@@ -232,6 +272,28 @@ public class ChromeHttpAuthHandlerTest {
             @Override
             public void describeTo(Description description) {
                 description.appendText("has autofill importance of " + expectedImportance);
+            }
+        };
+    }
+
+    private static Matcher<ChromeHttpAuthHandler> hasAutofillUrl(String expectedUrl) {
+        return new TypeSafeMatcher<ChromeHttpAuthHandler>() {
+            @Override
+            protected boolean matchesSafely(ChromeHttpAuthHandler handler) {
+                LoginPrompt prompt = handler.getLoginPromptForTesting();
+                if (prompt == null) return false;
+                AlertDialog dialog = prompt.getDialogForTesting();
+                if (dialog == null) return false;
+                AlertDialogEditText usernameView = dialog.findViewById(R.id.username);
+                if (usernameView == null || usernameView.getUrlForTesting() == null) {
+                    return false;
+                }
+                return usernameView.getUrlForTesting().getSpec().equals(expectedUrl);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has autofill url " + expectedUrl);
             }
         };
     }

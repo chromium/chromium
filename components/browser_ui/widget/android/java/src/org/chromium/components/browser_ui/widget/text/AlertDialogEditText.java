@@ -33,6 +33,10 @@ public class AlertDialogEditText extends AppCompatEditText {
         mUrl = url;
     }
 
+    public @Nullable GURL getUrlForTesting() {
+        return mUrl;
+    }
+
     @Override
     @SuppressLint("NewApi")
     public void onProvideAutofillStructure(ViewStructure structure, int flags) {

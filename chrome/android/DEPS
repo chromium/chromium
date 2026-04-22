@@ -88,6 +88,12 @@ specific_include_rules = {
     "+chrome/browser/xsurface/android",
   ],
 
+  # LINT.IfChange
+  "ChromeHttpAuthHandler.*\.java": [
+    "+components/android_autofill",
+  ],
+  # LINT.ThenChange(//components/android_autofill/browser/android_autofill_features.cc)
+
   # Tests and test-oriented classes are allowed to rely on ChromeActivity for DEPS. When committing
   # a file that doesn't conform to these patterns, add an allow rule to the DEPS file to the
   # testing directory.

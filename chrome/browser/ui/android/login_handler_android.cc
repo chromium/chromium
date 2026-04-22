@@ -17,6 +17,7 @@
 #include "net/base/auth.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 using net::AuthChallengeInfo;
@@ -56,7 +57,8 @@ class LoginHandlerAndroid : public LoginHandler {
     // Notify WindowAndroid that HTTP authentication is required.
     if (tab && window) {
       chrome_http_auth_handler_ = std::make_unique<ChromeHttpAuthHandler>(
-          authority, explanation, login_model_data);
+          authority, explanation, auth_info().challenger.GetURL(),
+          login_model_data);
       chrome_http_auth_handler_->Init(this);
       chrome_http_auth_handler_->ShowDialog(tab->GetJavaObject(),
                                             window->GetJavaObject());

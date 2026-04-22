@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeHttpAuthHandler_jni.h"
@@ -28,10 +29,12 @@ using base::android::ScopedJavaLocalRef;
 ChromeHttpAuthHandler::ChromeHttpAuthHandler(
     const std::u16string& authority,
     const std::u16string& explanation,
+    const GURL& challenger_url,
     LoginHandler::LoginModelData* login_model_data)
     : observer_(nullptr),
       authority_(authority),
       explanation_(explanation),
+      challenger_url_(challenger_url),
       auth_manager_(login_model_data ? login_model_data->model.get()
                                      : nullptr) {
   if (login_model_data) {
@@ -64,7 +67,8 @@ void ChromeHttpAuthHandler::ShowDialog(const JavaRef<jobject>& tab_android,
                                        const JavaRef<jobject>& window_android) {
   JNIEnv* env = AttachCurrentThread();
   Java_ChromeHttpAuthHandler_showDialog(env, java_chrome_http_auth_handler_,
-                                        tab_android, window_android);
+                                        tab_android, window_android,
+                                        challenger_url_);
 }
 
 void ChromeHttpAuthHandler::CloseDialog() {
