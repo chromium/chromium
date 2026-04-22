@@ -1636,7 +1636,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 // Returns whether to show the add menu with addresses and entities.
 - (bool)shouldShowAddMenu {
-  return _entityDataManager != nullptr;
+  return _entityDataManager != nullptr && [self canModifyEnhancedAutofill];
 }
 
 // Updates the add button in the toolbar based on whether the add menu should be
