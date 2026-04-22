@@ -21,15 +21,15 @@ namespace glic {
 
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
-    GlicInstance::UiDelegate* ui_delegate,
+    GlicInstance* glic_instance,
     GlicMetrics* metrics)
     : GlicSharingManagerCoordinator(
           profile,
-          ui_delegate,
+          glic_instance,
           metrics,
 #if !BUILDFLAG(IS_ANDROID)
-          new GlicFocusedBrowserManagerImpl(ui_delegate, profile),
-          new GlicFocusedBrowserManagerImpl(ui_delegate, profile)
+          new GlicFocusedBrowserManagerImpl(glic_instance, profile),
+          new GlicFocusedBrowserManagerImpl(glic_instance, profile)
 #else
           false
 #endif
@@ -38,7 +38,7 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
 
 GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     Profile* profile,
-    GlicInstance::UiDelegate* ui_delegate,
+    GlicInstance* glic_instance,
     GlicMetrics* metrics,
 #if !BUILDFLAG(IS_ANDROID)
     GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
@@ -49,7 +49,7 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
     )
     : pinned_tab_manager_(
           std::make_unique<GlicPinnedTabManagerImpl>(profile,
-                                                     ui_delegate,
+                                                     glic_instance,
                                                      metrics)),
 #if !BUILDFLAG(IS_ANDROID)
       detached_mode_sharing_manager_(

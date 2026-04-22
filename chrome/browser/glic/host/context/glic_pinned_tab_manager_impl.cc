@@ -288,12 +288,11 @@ class GlicPinnedTabManagerImpl::UpdateThrottler {
   base::TimeDelta current_delay_ = kInitialDelay;
 };
 
-GlicPinnedTabManagerImpl::GlicPinnedTabManagerImpl(
-    Profile* profile,
-    GlicInstance::UiDelegate* ui_delegate,
-    GlicMetrics* metrics)
+GlicPinnedTabManagerImpl::GlicPinnedTabManagerImpl(Profile* profile,
+                                                   GlicInstance* glic_instance,
+                                                   GlicMetrics* metrics)
     : profile_(profile),
-      ui_delegate_(ui_delegate),
+      glic_instance_(glic_instance),
       metrics_(metrics),
       max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
@@ -635,7 +634,7 @@ bool GlicPinnedTabManagerImpl::IsValidForSharing(
 }
 
 bool GlicPinnedTabManagerImpl::IsGlicWindowShowing() {
-  return ui_delegate_->IsShowing();
+  return glic_instance_->IsShowing();
 }
 
 }  // namespace glic
