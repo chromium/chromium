@@ -77,6 +77,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1052,6 +1053,16 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
     // and we should have the URL set in case it can match in the verdict cache
     // manager.
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+    content::NavigationEntry* nav_entry =
+        web_contents()->GetController().GetLastCommittedEntry();
+    bool is_reload = nav_entry && ui::PageTransitionCoreTypeIs(
+                                      nav_entry->GetTransitionType(),
+                                      ui::PAGE_TRANSITION_RELOAD);
+
+    if (current_url_ == rfh->GetLastCommittedURL() && !is_reload) {
+      base::UmaHistogramBoolean("SBClientPhishing.SameURLAtPrimaryPageChanged",
+                                true);
+    }
     current_url_ = rfh->GetLastCommittedURL();
     return;
   }

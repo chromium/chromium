@@ -1403,6 +1403,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.SameURLAtPrimaryPageChanged" enum="Boolean"
+    expires_after="2027-04-21">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the URL at the primary main frame remained the same when
+    PrimaryPageChanged occurred on a non-refresh navigation.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing{RequestType}"
     enum="BooleanIsPhishing" expires_after="2026-09-13">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still

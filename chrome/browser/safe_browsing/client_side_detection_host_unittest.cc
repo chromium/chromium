@@ -5350,4 +5350,40 @@ TEST_F(ClientSideDetectionHostPriorityTest, BypassTiers) {
       ClientSideDetectionType::VIBRATION_API, 0);
 }
 
+class ClientSideDetectionHostNewObserversTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostNewObserversTest() {
+    feature_list_.InitAndEnableFeature(kClientSideDetectionNewObservers);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ClientSideDetectionHostNewObserversTest, SameURLAtPrimaryPageChanged) {
+  base::HistogramTester histogram_tester;
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+
+  // Navigate to URL1 and commit.
+  NavigateAndCommit(url);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.SameURLAtPrimaryPageChanged", 0);
+
+  // Navigate to the same URL without reload.
+  NavigateAndCommit(url);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.SameURLAtPrimaryPageChanged", true, 1);
+
+  // Navigate to the same URL with reload transition.
+  controller().LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_RELOAD,
+                       std::string());
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+
+  // Histogram count should not increase.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.SameURLAtPrimaryPageChanged", true, 1);
+}
+
 }  // namespace safe_browsing
