@@ -15,9 +15,7 @@ class SidePanelBookmarksTest : public WebUIMochaFocusTest {
 };
 
 // TODO(crbug.com/40882667): Flaky on Mac and Linux dbg. Re-enable this test.
-// TODO(crbug.com/504706479): Flaky on Windows.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
-    BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ShoppingList DISABLED_ShoppingList
 #else
 #define MAYBE_ShoppingList ShoppingList
