@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CONTEXTUAL_SEARCH_DESKTOP_QUERY_CONTEXTUALIZER_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 
@@ -13,11 +14,15 @@ namespace contextual_search {
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
 
+class BrowserWindowInterface;
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
 namespace contextual_tasks {
+
+class ContextualTasksContextService;
 
 // A shared implementation of QueryContextualizer::Delegate for Desktop.
 // It uses tabs::TabHandle to interact with tabs and delegates page context
@@ -33,7 +38,9 @@ class DesktopQueryContextualizerDelegate
 
   DesktopQueryContextualizerDelegate(
       GetSessionHandleCallback get_session_callback,
-      GetViewportEncodingOptionsCallback get_viewport_options_callback);
+      GetViewportEncodingOptionsCallback get_viewport_options_callback,
+      ContextualTasksContextService* service,
+      BrowserWindowInterface* browser_window_interface);
   ~DesktopQueryContextualizerDelegate() override;
 
   // QueryContextualizer::Delegate:
@@ -48,12 +55,19 @@ class DesktopQueryContextualizerDelegate
   GetTabViewportEncodingOptionsForQueryContextualizer() override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateSessionHandleForQueryContextualizer() override;
+  void GetRelevantTabsForQuery(
+      const std::string& query_text,
+      const std::vector<GURL>& attached_context_urls,
+      base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
+          callback) override;
 
  private:
   tabs::TabInterface* GetTab(QueryContextualizer::TabId id);
 
   GetSessionHandleCallback get_session_callback_;
   GetViewportEncodingOptionsCallback get_viewport_options_callback_;
+  raw_ptr<ContextualTasksContextService> service_;
+  base::WeakPtr<BrowserWindowInterface> browser_window_interface_;
 };
 
 }  // namespace contextual_tasks

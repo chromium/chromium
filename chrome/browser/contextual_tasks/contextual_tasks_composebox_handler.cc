@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
@@ -185,7 +186,11 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
               &ContextualTasksComposeboxHandler::GetContextualSessionHandle,
               base::Unretained(this)),
           base::BindRepeating(
-              &ContextualSearchboxHandler::CreateImageEncodingOptions))),
+              &ContextualSearchboxHandler::CreateImageEncodingOptions),
+          contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+              profile),
+          webui::GetBrowserWindowInterface(
+              web_ui_interface->GetWebUIWebContents()))),
       recontextualizer_(std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_,
           desktop_delegate_.get())) {
@@ -360,7 +365,8 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
             // so we ignore it here.
             handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
           },
-          base::Unretained(this), query, task_id, overlay_token));
+          base::Unretained(this), query, task_id, overlay_token),
+      /*enable_smart_tab_selection=*/false);
 }
 
 contextual_tasks::ContextualTasksService*
