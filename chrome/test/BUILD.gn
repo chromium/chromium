@@ -5381,7 +5381,6 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos|.
     if (is_chromeos) {
       sources += [
-        "../browser/accessibility/media_app/ax_media_app_untrusted_service_browsertest.cc",
         "../browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation_browsertest.cc",
         "../browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation_kiosk_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
@@ -5568,6 +5567,7 @@ if (!is_android) {
         "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
         "//ash/webui/system_apps/public:system_web_app_type",
         "//ash/webui/web_applications/test:test_support",
+        "//chrome/browser/accessibility/media_app:browser_tests",
         "//chrome/browser/accessibility/media_app/test:test_support",
         "//chrome/browser/apps/almanac_api_client:browser_tests",
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",

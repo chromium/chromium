@@ -20,6 +20,7 @@ source_set("test_support") {
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//chrome/browser",
+    "//chrome/browser/accessibility/media_app",
     "//chrome/browser/screen_ai/public:test_support",
     "//content/public/browser",
     "//services/screen_ai/buildflags",

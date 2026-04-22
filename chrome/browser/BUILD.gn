@@ -3214,11 +3214,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "accessibility/media_app/ax_media_app.h",
-      "accessibility/media_app/ax_media_app_service_factory.cc",
-      "accessibility/media_app/ax_media_app_service_factory.h",
-      "accessibility/media_app/ax_media_app_untrusted_service.cc",
-      "accessibility/media_app/ax_media_app_untrusted_service.h",
       "apps/digital_goods/digital_goods_factory_impl.cc",
       "apps/digital_goods/digital_goods_factory_impl.h",
       "apps/digital_goods/digital_goods_impl.cc",
@@ -3328,6 +3323,7 @@ static_library("browser") {
       "//ash/webui/vc_background_ui",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/accessibility/media_app",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/app_service/app_install:implementation",

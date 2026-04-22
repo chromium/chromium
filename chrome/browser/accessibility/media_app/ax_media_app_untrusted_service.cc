@@ -25,8 +25,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser.h"         // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_finder.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

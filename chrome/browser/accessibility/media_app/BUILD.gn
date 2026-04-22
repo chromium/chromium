@@ -1,0 +1,67 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+source_set("media_app") {
+  public = [
+    "ax_media_app.h",
+    "ax_media_app_service_factory.h",
+    "ax_media_app_untrusted_service.h",
+  ]
+
+  sources = [
+    "ax_media_app_service_factory.cc",
+    "ax_media_app_untrusted_service.cc",
+  ]
+
+  deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser",
+    "//extensions/browser/api/automation_internal",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/native_window_tracker",
+    "//ui/strings:auto_image_annotation_strings",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "ax_media_app_untrusted_service_browsertest.cc" ]
+
+  deps = [
+    ":media_app",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//chrome/browser/accessibility/media_app/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/display",
+    "//ui/gfx",
+    "//url",
+  ]
+}
