@@ -110,6 +110,9 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   NSLayoutConstraint* _locationBarHeightConstraint;
   // The constraint for the bottom padding of the toolbar.
   NSLayoutConstraint* _locationBarBottomPaddingConstraint;
+  // The constraint for the top padding of the toolbar when collapsed above the
+  // keyboard.
+  NSLayoutConstraint* _locationBarTopConstraint;
 
   // Constraints for the tabGroupIndicator.
   NSLayoutConstraint* _tabGroupIndicatorActiveToolbarConstraint;
@@ -430,8 +433,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
                     forNotification:(NSNotification*)notification {
   if (locationIndicatorVisible) {
+    _locationBarBottomPaddingConstraint.active = NO;
+    _locationBarTopConstraint.active = YES;
     [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
   } else {
+    _locationBarTopConstraint.active = NO;
+    _locationBarBottomPaddingConstraint.active = YES;
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
     [GetFirstResponder() resignFirstResponder];
   }
@@ -737,6 +744,9 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       constraintEqualToAnchor:self.view.bottomAnchor
                      constant:-kToolbarPadding];
   _locationBarBottomPaddingConstraint.active = YES;
+
+  _locationBarTopConstraint = [_locationBarContainer.topAnchor
+      constraintEqualToAnchor:self.view.topAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
     [_leadingStackView.centerYAnchor
