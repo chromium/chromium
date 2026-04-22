@@ -44,6 +44,8 @@ inline constexpr std::string_view kDeveloper = "developer";
 
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
+inline constexpr std::string_view kSetEstimatedSizeValue =
+    "set-estimated-size-value";
 extern const char kStartupEventHandle[];
 
 }  // namespace switches

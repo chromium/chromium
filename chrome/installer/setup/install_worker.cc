@@ -561,6 +561,10 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                          KEY_WOW64_32KEY, L"InstallLocation",
                                          install_path.value(), true);
 
+    install_list->AddSetRegValueWorkItem(
+        reg_root, uninstall_reg, KEY_WOW64_32KEY, L"EstimatedSize",
+        static_cast<DWORD>(install_params.estimated_size), true);
+
     std::wstring chrome_icon = ShellUtil::FormatIconLocation(
         install_path.Append(kChromeExe),
         install_static::GetAppIconResourceIndex());

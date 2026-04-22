@@ -66,6 +66,9 @@
         "Version": {
           "type": "SZ",
           "data": "$MINI_INSTALLER_FILE_VERSION"
+        },
+        "EstimatedSize": {
+          "type": "DWORD"
         }
       },
       "wow_key": "KEY_WOW64_32KEY"
