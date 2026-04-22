@@ -147,7 +147,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kOwnerTapToClickEnabled, true);
   // TODO(jamescook): Move ownership and registration into ash.
-  registry->RegisterStringPref(::prefs::kLogoutStartedLast, std::string());
+  registry->RegisterStringPref(ash::prefs::kLogoutStartedLast, std::string());
   registry->RegisterStringPref(ash::prefs::kSigninScreenTimezone,
                                std::string());
   registry->RegisterIntegerPref(

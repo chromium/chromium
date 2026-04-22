@@ -2422,10 +2422,6 @@ inline constexpr char kServerBackedDeviceState[] = "server_backed_device_state";
 inline constexpr char kCustomizationDefaultWallpaperURL[] =
     "customization.default_wallpaper_url";
 
-// System uptime, when last logout started.
-// This is saved to file and cleared after chrome process starts.
-inline constexpr char kLogoutStartedLast[] = "chromeos.logout-started";
-
 // A boolean preference controlling Android status reporting.
 inline constexpr char kReportArcStatusEnabled[] =
     "arc.status_reporting_enabled";

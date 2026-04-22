@@ -2805,6 +2805,10 @@ inline constexpr char kLastSessionLength[] = "session.last_session_length";
 // on shutdown so that it could be reported on the next run.
 inline constexpr char kLastSessionType[] = "session.last_session_type";
 
+// System uptime, when last logout started.
+// This is saved to file and cleared after chrome process starts.
+inline constexpr char kLogoutStartedLast[] = "chromeos.logout-started";
+
 // Holds the maximum session time in milliseconds. If this pref is set, the
 // user is logged out when the maximum session time is reached. The user is
 // informed about the remaining time by a countdown timer shown in the ash

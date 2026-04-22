@@ -15,6 +15,7 @@ static_library("boot_times_recorder") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common",
     "//chromeos/ash/components/metrics",

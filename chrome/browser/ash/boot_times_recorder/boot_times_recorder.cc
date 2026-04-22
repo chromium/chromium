@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/time/time.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -48,7 +48,7 @@ const std::string GetTabUrl(RenderWidgetHost* rwh) {
 // Clear saved logout-started metric in Local State. This method is called when
 // logout-state was written to file.
 void ClearLogoutStartedLastPreference(PrefService& local_state) {
-  local_state.ClearPref(prefs::kLogoutStartedLast);
+  local_state.ClearPref(ash::prefs::kLogoutStartedLast);
 }
 
 }  // namespace
@@ -127,7 +127,7 @@ void BootTimesRecorder::AddLoginTimeMarkerWithURL(const char* marker_name,
 
 void BootTimesRecorder::OnChromeProcessStart(PrefService& local_state) {
   const std::string logout_started_last_str =
-      local_state.GetString(prefs::kLogoutStartedLast);
+      local_state.GetString(ash::prefs::kLogoutStartedLast);
   if (logout_started_last_str.empty())
     return;
 
@@ -163,7 +163,7 @@ void BootTimesRecorder::OnLogoutStarted(PrefService* state) {
   const std::string uptime =
       LoginEventRecorder::Stats::GetCurrentStats().SerializeToString();
   if (!uptime.empty())
-    state->SetString(prefs::kLogoutStartedLast, uptime);
+    state->SetString(ash::prefs::kLogoutStartedLast, uptime);
 }
 
 void BootTimesRecorder::RecordCurrentStats(const std::string& name) {
