@@ -283,6 +283,8 @@ extern NSString* const kPersonTwoSymbol;
 extern NSString* const kSquareFilledOnSquareSymbol;
 extern NSString* const kPauseButton;
 extern NSString* const kPlayButton;
+extern NSString* const kPauseFillSymbol;
+extern NSString* const kPlayFillSymbol;
 extern NSString* const kFolderSymbol;
 extern NSString* const kFolderBadgePlusSymbol;
 extern NSString* const kCartSymbol;

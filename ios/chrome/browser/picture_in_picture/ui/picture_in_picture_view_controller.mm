@@ -7,6 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 
+#import "base/cancelable_callback.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
@@ -17,16 +18,27 @@
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_mutator.h"
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_player_view.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Key path for time control status.
 NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
+// Key path for video rect.
+NSString* const kKeyPathVideoRect = @"videoRect";
 // Delay to wait before checking if the app was restored from picture in
 // picture or manually (App switcher, App icon...).
 constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(50);
+// Delay to wait before auto-hiding controls.
+constexpr base::TimeDelta kControlsHideDelay = base::Seconds(3);
+// Duration for controls fade animation.
+constexpr NSTimeInterval kControlsAnimationDuration = 0.3;
+// Point size for play/pause button symbol.
+constexpr CGFloat kPlayPauseButtonPointSize = 25.0;
 // Accessibility label for the picture in picture view controller.
 NSString* accessibilityLabel(PictureInPictureFeature feature) {
   switch (feature) {
@@ -68,6 +80,12 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   BOOL _appWasRestored;
   // The time when picture in picture started.
   base::TimeTicks _pipStartTime;
+  // The overlay view for controls.
+  UIView* _controlsOverlayView;
+  // The play/pause button.
+  UIButton* _playPauseButton;
+  // The closure to hide controls after a delay.
+  base::CancelableOnceClosure _hideControlsClosure;
 }
 
 - (instancetype)initWithTitle:(NSString*)title
@@ -100,6 +118,9 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  // Set the frame of the controls overlay to match the actual video content
+  // rect.
+  _controlsOverlayView.frame = _playerView.playerLayer.videoRect;
 }
 
 #pragma mark - Public
@@ -161,19 +182,154 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   _pipController.delegate = self;
   _pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
 
+  // Add observer for accessibility focus changes to show controls.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(accessibilityElementFocused:)
+             name:UIAccessibilityElementFocusedNotification
+           object:nil];
+
   // Add observer for time control status to detect when the player is playing.
   [_player addObserver:self
             forKeyPath:kKeyPathTimeControlStatus
                options:NSKeyValueObservingOptionNew
                context:nil];
 
+  // Add observer for video rect changes to update overlay frame.
+  [_playerView.playerLayer addObserver:self
+                            forKeyPath:kKeyPathVideoRect
+                               options:NSKeyValueObservingOptionNew
+                               context:nil];
+
+  [self configureControls];
+
   // Start playing the video.
   [_player play];
+}
+
+// Configures the controls overlay and button.
+- (void)configureControls {
+  // Create overlay.
+  _controlsOverlayView = [[UIView alloc] init];
+  _controlsOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.4];
+  _controlsOverlayView.alpha = 0.0;
+  [self.contentView addSubview:_controlsOverlayView];
+
+  // Create play/pause button.
+  _playPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  _playPauseButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _playPauseButton.alpha = 0.0;
+  _playPauseButton.tintColor = [UIColor whiteColor];
+
+  UIImage* pauseImage =
+      DefaultSymbolWithPointSize(kPauseFillSymbol, kPlayPauseButtonPointSize);
+  [_playPauseButton setImage:pauseImage forState:UIControlStateNormal];
+  _playPauseButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PAUSE);
+
+  [_playPauseButton addTarget:self
+                       action:@selector(togglePlayPause)
+             forControlEvents:UIControlEventTouchUpInside];
+
+  [self.contentView addSubview:_playPauseButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_playPauseButton.centerXAnchor
+        constraintEqualToAnchor:_playerView.centerXAnchor],
+    [_playPauseButton.centerYAnchor
+        constraintEqualToAnchor:_playerView.centerYAnchor],
+    [_playPauseButton.widthAnchor
+        constraintEqualToConstant:kPlayPauseButtonPointSize * 2],
+    [_playPauseButton.heightAnchor
+        constraintEqualToConstant:kPlayPauseButtonPointSize * 2],
+  ]];
+
+  _playPauseButton.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.5];
+  _playPauseButton.layer.cornerRadius = kPlayPauseButtonPointSize;
+  _playPauseButton.clipsToBounds = YES;
+
+  // Add tap gesture to toggle controls.
+  UITapGestureRecognizer* tapGesture =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(toggleControls)];
+  [self.contentView addGestureRecognizer:tapGesture];
+  self.contentView.userInteractionEnabled = YES;
+
+  [self showControls];
+}
+
+// Sets the alpha of the controls.
+- (void)setControlsAlpha:(CGFloat)alpha {
+  _controlsOverlayView.alpha = alpha;
+  _playPauseButton.alpha = alpha;
+}
+
+// Shows controls with animation and auto-hides after a delay.
+- (void)showControls {
+  __weak __typeof(self) weakSelf = self;
+
+  [UIView animateWithDuration:kControlsAnimationDuration
+                   animations:^{
+                     [weakSelf setControlsAlpha:1.0];
+                   }];
+
+  // Cancel any pending hide task and schedule a new one.
+  _hideControlsClosure.Reset(base::BindOnce(^{
+    [weakSelf hideControls];
+  }));
+
+  // Only schedule the hide task if VoiceOver is not running.
+  if (!UIAccessibilityIsVoiceOverRunning()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, _hideControlsClosure.callback(), kControlsHideDelay);
+  }
+}
+
+// Hides controls with animation.
+- (void)hideControls {
+  // Cancel any pending hide task if we are hiding manually.
+  _hideControlsClosure.Cancel();
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kControlsAnimationDuration
+                   animations:^{
+                     [weakSelf setControlsAlpha:0.0];
+                   }];
+}
+
+// Toggles controls visibility.
+- (void)toggleControls {
+  if (_controlsOverlayView.alpha > 0.0) {
+    [self hideControls];
+  } else {
+    [self showControls];
+  }
+}
+
+// Toggles play/pause.
+- (void)togglePlayPause {
+  if (_player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
+    [_player pause];
+    UIImage* playImage =
+        DefaultSymbolWithPointSize(kPlayFillSymbol, kPlayPauseButtonPointSize);
+    [_playPauseButton setImage:playImage forState:UIControlStateNormal];
+    _playPauseButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PLAY);
+  } else {
+    [_player play];
+    UIImage* pauseImage =
+        DefaultSymbolWithPointSize(kPauseFillSymbol, kPlayPauseButtonPointSize);
+    [_playPauseButton setImage:pauseImage forState:UIControlStateNormal];
+    _playPauseButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PAUSE);
+  }
+  [self showControls];
 }
 
 // Handles the app restore after picture in picture.
 - (void)handleAppRestore {
   if (_restoredFromPictureInPicture) {
+    [self showControls];
     [self recordAppRestoration:PictureInPictureAppRestoration::
                                    kPictureInPictureFullscreenButton];
     return;
@@ -190,11 +346,32 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   }
 }
 
-// Removes the observer for time control status.
+// Handles accessibility focus changes.
+- (void)accessibilityElementFocused:(NSNotification*)notification {
+  id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
+  id unfocusedElement =
+      notification.userInfo[UIAccessibilityUnfocusedElementKey];
+
+  // Show controls when player view or play/pause button is focused.
+  if (focusedElement == _playerView || focusedElement == _playPauseButton) {
+    [self showControls];
+    return;
+  }
+
+  // Hide controls when player view or play/pause button is unfocused.
+  if (unfocusedElement == _playerView || unfocusedElement == _playPauseButton) {
+    [self hideControls];
+  }
+}
+
+// Removes the observer for time control status and accessibility focus.
 - (void)dealloc {
   [_player removeObserver:self
                forKeyPath:kKeyPathTimeControlStatus
                   context:nil];
+  [_playerView.playerLayer removeObserver:self
+                               forKeyPath:kKeyPathVideoRect
+                                  context:nil];
 }
 
 // Observes the time control status of the player and trigger feature
@@ -211,6 +388,13 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
         FROM_HERE, base::BindOnce(^{
           [weakSelf triggerFeatureDestination];
         }));
+    return;
+  }
+
+  // Invalidates the view layout when the video rect renders to update the
+  // overlay frame.
+  if ([keyPath isEqualToString:kKeyPathVideoRect]) {
+    [self.view setNeedsLayout];
     return;
   }
 

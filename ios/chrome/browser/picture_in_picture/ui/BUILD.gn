@@ -16,7 +16,9 @@ source_set("ui") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/picture_in_picture/public",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [
