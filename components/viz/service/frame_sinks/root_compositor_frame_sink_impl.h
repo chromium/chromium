@@ -152,7 +152,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
-      bool hw_support_for_multiple_refresh_rates);
+      bool hw_support_for_multiple_refresh_rates,
+      bool enable_video_conference_matcher);
 
   void UpdateFrameIntervalDeciderSettings();
   void FrameIntervalDeciderResultCallback(
@@ -251,6 +252,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // `FrameIntervalDecider`. Absent if the display does not support those
   // features.
   std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
+
+  bool enable_video_conference_matcher_ = false;
 };
 
 }  // namespace viz

@@ -45,6 +45,10 @@ struct RootCompositorFrameSinkParams {
   [EnableIf=is_android]
   bool create_input_receiver = false;
 
+  // Whether to enable the heuristic for detecting video conferencing in the
+  // frame interval decider.
+  bool enable_video_conference_matcher = false;
+
   [EnableIf=is_android]
   float refresh_rate;
 

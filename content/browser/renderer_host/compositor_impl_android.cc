@@ -81,6 +81,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "ui/android/window_android.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/display/display.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/screen.h"
@@ -793,6 +794,10 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   if (!is_offscreen_rendering_ &&
       input::InputUtils::IsTransferInputToVizSupported()) {
     root_params->create_input_receiver = true;
+  }
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    root_params->enable_video_conference_matcher = true;
   }
 
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
