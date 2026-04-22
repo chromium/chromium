@@ -64,4 +64,12 @@ void FakeIOSPasskeyClient::SetInterstitialProceeds(bool proceeds) {
 
 void FakeIOSPasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {}
 
+bool FakeIOSPasskeyClient::IsGpmPasskeySavingEnabled() const {
+  return gpm_passkey_saving_enabled_;
+}
+
+void FakeIOSPasskeyClient::SetGpmPasskeySavingEnabled(bool enabled) {
+  gpm_passkey_saving_enabled_ = enabled;
+}
+
 }  // namespace webauthn

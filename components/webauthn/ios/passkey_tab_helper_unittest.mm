@@ -523,4 +523,17 @@ TEST_F(PasskeyTabHelperTest, NoCreationInterstitial) {
       kWebAuthenticationIOSContentAreaEventHistogram, 0);
 }
 
+TEST_F(PasskeyTabHelperTest, HandleRegistrationDefersWhenGpmDisabled) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  client_->SetGpmPasskeySavingEnabled(false);
+
+  passkey_tab_helper()->HandleCreateRequestedEvent(
+      BuildRegistrationRequestParams({}));
+
+  EXPECT_FALSE(client_->DidShowCreationBottomSheet());
+  EXPECT_FALSE(client_->DidFetchKeys());
+}
+
 }  // namespace webauthn

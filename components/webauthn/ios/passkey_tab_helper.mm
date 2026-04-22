@@ -344,6 +344,15 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
 
   PasskeyRequestParams::RequestType request_type = params.Type();
+
+  // This check is performed after the Incognito interstitial (if applicable)
+  // has been shown and the user has chosen to proceed. This is intentional
+  // as we only want to enforce these policies when we are ready to proceed
+  // with GPM saving.
+  if (!client_->IsGpmPasskeySavingEnabled()) {
+    DeferToRenderer(std::move(request_info), request_type);
+    return;
+  }
   CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalCreate ||
         request_type == PasskeyRequestParams::RequestType::kModal);
   bool is_conditional =

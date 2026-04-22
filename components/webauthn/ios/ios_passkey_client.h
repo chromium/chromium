@@ -69,6 +69,10 @@ class IOSPasskeyClient {
   // Cancels the passkey request matching the given `request_info`.
   virtual void CancelPasskeyRequest(RequestInfo request_info) = 0;
 
+  // Returns whether passkeys can be saved to Google Password Manager based on
+  // enterprise policies and sync status.
+  virtual bool IsGpmPasskeySavingEnabled() const = 0;
+
  protected:
   IOSPasskeyClient() = default;
 };

@@ -10,11 +10,14 @@
 #import "base/memory/raw_ptr.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
@@ -26,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/web/public/web_state.h"
@@ -179,4 +183,22 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
 
 void IOSChromePasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {
   [command_handler_ cancelPasskeyRequest:std::move(request_info)];
+}
+
+bool IOSChromePasskeyClient::IsGpmPasskeySavingEnabled() const {
+  PrefService* prefs = profile_->GetPrefs();
+  if (!prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService) ||
+      !prefs->GetBoolean(password_manager::prefs::kCredentialsEnablePasskeys)) {
+    return false;
+  }
+  // Use the original profile to check sync status, as the Incognito profile
+  // does not have a SyncService, but passkey saving in Incognito still saves
+  // to the user's account if they choose to proceed.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_->GetOriginalProfile());
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kPasswords)) {
+    return false;
+  }
+  return true;
 }

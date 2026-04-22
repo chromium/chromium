@@ -33,6 +33,7 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   void ShowInterstitial(InterstitialCallback callback) override;
   void AllowPasskeyCreationInfobar(bool allowed) override;
   void CancelPasskeyRequest(RequestInfo request_info) override;
+  bool IsGpmPasskeySavingEnabled() const override;
 
   id<IOSPasskeyClientCommands> GetCommandHandler() const;
 

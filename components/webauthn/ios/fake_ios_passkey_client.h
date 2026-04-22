@@ -26,8 +26,10 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void CancelPasskeyRequest(RequestInfo request_info) override;
 
   void AllowPasskeyCreationInfobar(bool allowed) override;
+  bool IsGpmPasskeySavingEnabled() const override;
 
   bool DidShowSuggestionBottomSheet() const;
+  void SetGpmPasskeySavingEnabled(bool enabled);
   bool DidShowCreationBottomSheet() const;
   bool DidFetchKeys() const;
   bool DidShowInterstitial() const;
@@ -39,6 +41,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool fetch_keys_called_ = false;
   bool show_interstitial_called_ = false;
   bool interstitial_proceeds_ = true;
+  bool gpm_passkey_saving_enabled_ = true;
 };
 
 }  // namespace webauthn

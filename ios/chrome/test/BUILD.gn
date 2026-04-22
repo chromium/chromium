@@ -630,6 +630,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/web_state_list/model:unit_tests",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler:unit_tests",
     "//ios/chrome/browser/webauthn/coordinator:unit_tests",
+    "//ios/chrome/browser/webauthn/model:unit_tests",
     "//ios/chrome/browser/webauthn/public:unit_tests",
     "//ios/chrome/browser/webauthn/ui:unit_tests",
     "//ios/chrome/browser/webui/model:unit_tests",

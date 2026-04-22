@@ -34,6 +34,7 @@ source_set("ios_chrome_passkey_client") {
   deps = [
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
     "//components/password_manager/ios",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
@@ -44,6 +45,7 @@ source_set("ios_chrome_passkey_client") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/web/public",
@@ -52,4 +54,23 @@ source_set("ios_chrome_passkey_client") {
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_passkey_client_unittest.mm" ]
+  deps = [
+    ":ios_chrome_passkey_client",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
