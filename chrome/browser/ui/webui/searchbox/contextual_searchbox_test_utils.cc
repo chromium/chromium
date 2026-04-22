@@ -17,6 +17,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 
 std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
     content::BrowserContext* /*context*/) {
@@ -125,7 +126,11 @@ void MockQueryController::FakeCreateSearchUrl(
     base::OnceCallback<void(GURL)> callback) {
   std::string query = search_url_request_info->query_text;
   base::ReplaceChars(query, " ", "+", &query);
-  std::move(callback).Run(GURL("https://www.google.com/search?q=" + query));
+  GURL result_url("https://www.google.com/search?q=" + query);
+  if (search_url_request_info->search_url_type == SearchUrlType::kAim) {
+    result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
+  }
+  std::move(callback).Run(result_url);
 }
 
 content::WebContents* TestWebContentsDelegate::OpenURLFromTab(
