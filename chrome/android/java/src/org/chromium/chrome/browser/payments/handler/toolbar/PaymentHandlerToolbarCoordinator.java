@@ -156,7 +156,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                 maliciousContentStatus,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
-                /* useLockIconForSecureState= */ true);
+                /* useLockIconForSecureState= */ true,
+                /* isShowingHttpsFirstWarning= */ false);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.

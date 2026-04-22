@@ -561,6 +561,7 @@ if (is_android) {
       "android/java/res/drawable/enterprise_management.xml",
       "android/java/res/drawable/ic_settings_tune_24dp.xml",
       "android/java/res/drawable/omnibox_dangerous.xml",
+      "android/java/res/drawable/omnibox_no_encryption.xml",
       "android/java/res/drawable/omnibox_not_secure_warning.xml",
       "android/java/res/values-sw600dp/dimens.xml",
       "android/java/res/values/colors.xml",

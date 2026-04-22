@@ -169,6 +169,10 @@ public class PageInfoConnectionController
         rowParams.subtitle = subtitle;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
+        boolean isShowingHttpsFirstWarning =
+                mDelegate.isHttpsFirstDialogUiEnabled()
+                        && SecurityStateModel.isHttpsOnlyModeUpgradedForWebContents(mWebContents);
+
         // Page info should always show lock icon as the connection security indicator.
         rowParams.iconResId =
                 SecurityStatusIcon.getSecurityIconResource(
@@ -178,7 +182,8 @@ public class PageInfoConnectionController
                                         mWebContents),
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ true);
+                        /* useLockIconForSecureState= */ true,
+                        isShowingHttpsFirstWarning);
         rowParams.iconTint = getSecurityIconColor(securityLevel);
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

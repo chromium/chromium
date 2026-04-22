@@ -437,7 +437,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         () -> maliciousContentStatus,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ false);
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ false);
 
         assertEquals(
                 expectedIcon,
@@ -482,7 +483,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         () -> maliciousContentStatus,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ false);
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ false);
         assertEquals(
                 expectedIcon,
                 (int) mModel.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));

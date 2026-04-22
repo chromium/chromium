@@ -64,6 +64,7 @@
 #include "components/safety_check/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/sensitive_content/features.h"
@@ -511,6 +512,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kReportNotificationContentDetectionData,
     &safe_browsing::kShowWarningsForSuspiciousNotifications,
     &safety_check::features::kSafetyHub,
+    &security_interstitials::features::kHttpsFirstDialogUi,
     &segmentation_platform::features::kAndroidAppIntegrationModule,
     &segmentation_platform::features::kAndroidTipsNotifications,
     &segmentation_platform::features::kAndroidTipsNotificationsV2,

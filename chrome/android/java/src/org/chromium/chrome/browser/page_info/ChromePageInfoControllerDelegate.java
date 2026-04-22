@@ -411,6 +411,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return mProfile.isOffTheRecord();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isHttpsFirstDialogUiEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_DIALOG_UI);
+    }
+
     private PageInfoRowView.ViewParams getAppInfoRowParams(
             PageInfoMainController mainController, PageInfoRowView appInfoRow, String packageName) {
         Resources resources = appInfoRow.getContext().getResources();

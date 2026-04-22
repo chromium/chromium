@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--
+    Scale the vector contents to give them an effective size of 20dp within our
+    total size of 24dp. 0.833 is 20/24 and 17 is the center of the viewport.
+    -->
+    <group
+        android:scaleX="0.833"
+        android:scaleY="0.833"
+        android:pivotX="17"
+        android:pivotY="17">
+        <path
+            android:fillColor="@android:color/black"
+            android:pathData="m20 17.148-2-2V10h-5.148l-2-2H15V6c0-.832-.29-1.543-.863-2.125q-.861-.874-2.114-.875-1.247.002-2.097.863-.851.86-.852 2.137v.227L7.25 4.398a5.05 5.05 0 0 1 1.875-2.46C10.008 1.313 10.977 1 12.023 1c1.387 0 2.559.488 3.528 1.46Q16.999 3.927 17 6v2h1q.824 0 1.414.586Q20 9.176 20 10Zm.5 6.153-1.55-1.551a4 4 0 0 1-.5.188Q18.222 22 18 22H6q-.824 0-1.414-.586A1.94 1.94 0 0 1 4 20V10q0-.626.363-1.148.363-.528.938-.75L.699 3.5l1.403-1.398 19.796 19.796ZM17.148 20l-3.671-3.727a1.996 1.996 0 0 1-1.426.578q-.828-.002-1.414-.59a1.93 1.93 0 0 1-.586-1.41q0-.426.148-.789a2 2 0 0 1 .426-.636L7.148 10H6v10Zm-1.722-7.426" />
+    </group>
+</vector>

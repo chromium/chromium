@@ -27,7 +27,8 @@ public class SecurityStatusIconUnitTest {
                         () -> ConnectionMaliciousContentStatus.NONE,
                         /* isSmallDevice= */ true,
                         /* skipIconForNeutralState= */ true,
-                        /* useLockIconForSecureState= */ false);
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ false);
         assertEquals(0, iconResource);
     }
 
@@ -39,8 +40,22 @@ public class SecurityStatusIconUnitTest {
                         () -> ConnectionMaliciousContentStatus.NONE,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ true);
+                        /* useLockIconForSecureState= */ true,
+                        /* isShowingHttpsFirstWarning= */ false);
         assertEquals(R.drawable.omnibox_https_valid_lock, iconResource);
+    }
+
+    @Test
+    public void testGetSecurityIconResource_Warning_HttpsFirstWarning() {
+        int iconResource =
+                SecurityStatusIcon.getSecurityIconResource(
+                        ConnectionSecurityLevel.WARNING,
+                        () -> ConnectionMaliciousContentStatus.NONE,
+                        /* isSmallDevice= */ false,
+                        /* skipIconForNeutralState= */ false,
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ true);
+        assertEquals(R.drawable.omnibox_no_encryption, iconResource);
     }
 
     @Test
@@ -109,7 +124,8 @@ public class SecurityStatusIconUnitTest {
                         () -> maliciousContentStatus,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ false);
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ false);
         assertEquals(expectedIconResource, iconResource);
     }
 }

@@ -46,6 +46,11 @@ public class SecurityStateModel {
         return SecurityStateModelJni.get().getMaliciousContentStatusForWebContents(webContents);
     }
 
+    public static boolean isHttpsOnlyModeUpgradedForWebContents(@Nullable WebContents webContents) {
+        if (webContents == null) return false;
+        return SecurityStateModelJni.get().isHttpsOnlyModeUpgradedForWebContents(webContents);
+    }
+
     private SecurityStateModel() {}
 
     @NativeMethods
@@ -57,6 +62,9 @@ public class SecurityStateModel {
 
         @ConnectionSecurityLevel
         int getSecurityLevelForWebContents(
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
+
+        boolean isHttpsOnlyModeUpgradedForWebContents(
                 @JniType("content::WebContents*") @Nullable WebContents webContents);
     }
 }

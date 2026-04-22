@@ -205,4 +205,11 @@ public abstract class PageInfoControllerDelegate {
     public abstract @Nullable FragmentManager getFragmentManager();
 
     public abstract boolean isIncognito();
+
+    /**
+     * @return Whether the HttpsFirstDialogUi feature is enabled.
+     */
+    public boolean isHttpsFirstDialogUiEnabled() {
+        return false;
+    }
 }

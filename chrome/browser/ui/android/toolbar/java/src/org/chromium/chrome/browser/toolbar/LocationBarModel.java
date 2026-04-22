@@ -27,6 +27,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -789,13 +790,18 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         boolean skipIconForNeutralState = mNtpDelegate.isCurrentlyVisible();
+        boolean isShowingHttpsFirstWarning =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_DIALOG_UI)
+                        && SecurityStateModel.isHttpsOnlyModeUpgradedForWebContents(
+                                getActiveWebContents());
 
         return SecurityStatusIcon.getSecurityIconResource(
                 securityLevel,
                 maliciousContentStatus,
                 isSmallDevice,
                 skipIconForNeutralState,
-                /* useLockIconForSecureState= */ false);
+                /* useLockIconForSecureState= */ false,
+                isShowingHttpsFirstWarning);
     }
 
     @Override

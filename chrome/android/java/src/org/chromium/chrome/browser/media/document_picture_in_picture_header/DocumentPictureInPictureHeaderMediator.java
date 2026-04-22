@@ -296,7 +296,8 @@ public class DocumentPictureInPictureHeaderMediator
                         () -> maliciousContentStatus,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ false));
+                        /* useLockIconForSecureState= */ false,
+                        /* isShowingHttpsFirstWarning= */ false));
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
                 SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(securityLevel));

@@ -5,6 +5,7 @@
 #include "components/security_state/content/android/security_state_client.h"
 #include "components/security_state/content/android/security_state_model_delegate.h"
 #include "components/security_state/content/content_utils.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
 
@@ -89,6 +90,20 @@ static int32_t JNI_SecurityStateModel_GetSecurityLevelForWebContents(
     content::WebContents* web_contents) {
   return security_state::internal::GetSecurityLevelForWebContentsInternal(
       web_contents, security_state::internal::GetSecurityStateModelDelegate());
+}
+
+static bool JNI_SecurityStateModel_IsHttpsOnlyModeUpgradedForWebContents(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+  if (!helper) {
+    return false;
+  }
+  return helper->GetVisibleSecurityState()->is_https_only_mode_upgraded;
 }
 
 DEFINE_JNI(SecurityStateModel)
