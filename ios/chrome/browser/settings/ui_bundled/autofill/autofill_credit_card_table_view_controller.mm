@@ -805,7 +805,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 // Opens new view controller `AutofillAddCreditCardViewController` for fillig
 // credit card details.
 - (void)handleAddPayment {
-  if (_settingsAreDismissed) {
+  if (_settingsAreDismissed || _addCreditCardCoordinator) {
     return;
   }
 

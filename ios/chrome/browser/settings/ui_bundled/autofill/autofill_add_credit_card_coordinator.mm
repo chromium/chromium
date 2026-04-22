@@ -127,6 +127,11 @@
   [self showActionSheetAlert];
 }
 
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate autofillAddCreditCardCoordinatorWantsToBeStopped:self];
+}
+
 #pragma mark - Helper Methods
 
 - (void)showActionSheetAlert {
