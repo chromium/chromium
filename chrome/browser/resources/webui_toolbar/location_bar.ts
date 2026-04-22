@@ -79,7 +79,6 @@ export class LocationBarElement extends CrLitElement {
     this.trackedElementManager_.stopTracking(this.$.omnibox);
   }
 
-
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('locationBarState')) {

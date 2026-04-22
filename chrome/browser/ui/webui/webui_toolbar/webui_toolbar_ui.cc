@@ -240,10 +240,11 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 const std::vector<ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() {
   static const base::NoDestructor<std::vector<ui::ElementIdentifier>> ids(
-      {kLocationBarElementId, kOmniboxElementId, kReloadButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId, kToolbarHomeButtonElementId,
-       kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
-       kSharedTabGroupFeedbackElementId, kSharedTabGroupCommentsActionElementId,
+      {kLocationBarElementId, kLocationIconElementId, kOmniboxElementId,
+       kReloadButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarHomeButtonElementId, kToolbarBackButtonElementId,
+       kToolbarForwardButtonElementId, kSharedTabGroupFeedbackElementId,
+       kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();

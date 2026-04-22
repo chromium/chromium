@@ -38,6 +38,7 @@
   overflow: hidden;
 
   outline: none;
+  user-select: none; /* Disables text selection on double-click/drag */
 
   /* Disables the default browser tap highlight so that our custom InkDrop
      overlay provides the sole visual feedback for taps. */
@@ -56,17 +57,28 @@
   }
 }
 
-/* An invisible overlay that mimics the native views::InkDrop behavior.
-   Instead of modifying the container's background color directly on
-   hover/active, apply a semi-transparent background to this overlay so it
-   elegantly blends with the base background color (which is critical for the
-   solid red Dangerous state to match native views implementation). */
+/* An invisible overlay that mimics the native views::InkDrop highlight
+   (hover state). */
+#container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: transparent;
+  /* Matches views::kHighlightFadeOutOnHoverChangeDuration (250ms) */
+  transition: background-color 250ms ease-in-out;
+}
+
+/* An invisible overlay that mimics the native views::InkDrop ripple
+   (pressed state). */
 #container::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   background-color: transparent;
+  /* Matches views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT (300ms) */
+  transition: background-color 300ms ease-in-out;
 }
 
 :host([has-text]) #container {
@@ -87,19 +99,42 @@
       var(--location-bar-page-info-icon-dangerous-trailing-padding);
 }
 
-:host([clickable]:hover) #container::after {
+/* --- HOVER LAYER (HOVER HIGHLIGHT) ---
+   Native Views applies the highlight on hover AND when the ripple is active
+   (SHOW_ON_RIPPLE mode). */
+:host([clickable]:hover) #container::before,
+:host([clickable]:active) #container::before,
+:host([clickable][anchor-highlighted]) #container::before {
   background-color: var(--color-omnibox-icon-hover);
 }
 
-:host([clickable]:active) #container::after {
-  background-color: var(--color-omnibox-icon-pressed);
-}
-
-:host([is-text-dangerous][clickable]:hover) #container::after {
+:host([is-text-dangerous][clickable]:hover) #container::before,
+:host([is-text-dangerous][clickable]:active) #container::before,
+:host([is-text-dangerous][clickable][anchor-highlighted]) #container::before {
   background-color: var(--color-omnibox-security-chip-ink-drop-hover);
 }
 
+/* --- PRESSED LAYER (RIPPLE) ---
+   Native Views composites the ripple on top of the hover highlight. */
+:host([clickable]:active) #container::after {
+  background-color: var(--color-omnibox-icon-pressed);
+  transition: none; /* Instant press */
+}
+
 :host([is-text-dangerous][clickable]:active) #container::after {
+  background-color: var(--color-omnibox-security-chip-ink-drop-ripple);
+  transition: none;
+}
+
+/* Anchor highlighted state (bubble open) holds the pressed color.
+   Includes [clickable] to match the specificity of the :hover rule,
+   ensuring the highlight color isn't overridden when the mouse hovers
+   over the open bubble's anchor. */
+:host([clickable][anchor-highlighted]) #container::after {
+  background-color: var(--color-omnibox-icon-pressed);
+}
+
+:host([is-text-dangerous][clickable][anchor-highlighted]) #container::after {
   background-color: var(--color-omnibox-security-chip-ink-drop-ripple);
 }
 

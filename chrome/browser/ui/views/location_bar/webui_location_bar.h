@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -78,7 +79,8 @@ class WebUILocationBar : public LocationBar,
   // Left hand side (LHS) chip events (called from WebUIToolbarWebView)
   void OnLhsChipMousePressed(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
-  void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+                        bool is_mouse_interaction);
   void OnLhsChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipCollapseAnimationEnded(
@@ -108,6 +110,9 @@ class WebUILocationBar : public LocationBar,
   // pushes it to the WebUI.
   void UpdateLhsChipsState();
 
+  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
+                              bool reload_prompt);
+
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
@@ -128,6 +133,9 @@ class WebUILocationBar : public LocationBar,
 
   security_state::SecurityLevel last_update_security_level_ =
       security_state::NONE;
+
+  base::TimeTicks last_page_info_bubble_close_time_;
+  bool suppress_lhs_chip_clicked_ = false;
 
   base::WeakPtrFactory<WebUILocationBar> weak_ptr_factory_{this};
 };

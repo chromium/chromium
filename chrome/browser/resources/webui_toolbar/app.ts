@@ -32,6 +32,7 @@ import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 
 export {
+  BrowserProxyImpl,
   LocationBarElement,
   OmniboxTextColor,
   ReadonlyOmniboxElement,

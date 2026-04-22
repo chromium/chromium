@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
@@ -25,9 +27,12 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_entry.h"
 #include "ui/base/interaction/element_events.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/mouse_constants.h"
 
 namespace {
 
@@ -319,12 +324,86 @@ LocationBarTesting* WebUILocationBar::GetLocationBarForTesting() {
 
 void WebUILocationBar::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
-  NOTIMPLEMENTED();
+  if (identifier == toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
+    // Determine if the Page Info bubble was dismissed by this exact mouse
+    // press.
+    // 1. If the bubble is STILL open when this IPC arrives, it's about to
+    // close.
+    // 2. If the bubble was already closed by the native OS due to focus loss
+    //    milliseconds before this IPC arrived, we check the close time.
+    // We use the native kMinimumTimeBetweenButtonClicks (100ms) to safely
+    // bridge the asynchronous WebUI IPC gap without inventing magic numbers.
+    //
+    // Note: If the user mouses down and drags out without releasing, this
+    // flag remains true. This is safe because it will be unconditionally
+    // overwritten by the next OnLhsChipMousePressed IPC when they click again.
+    suppress_lhs_chip_clicked_ =
+        (PageInfoBubbleView::GetShownBubbleType() !=
+         PageInfoBubbleView::BUBBLE_NONE) ||
+        (base::TimeTicks::Now() - last_page_info_bubble_close_time_ <
+         views::kMinimumTimeBetweenButtonClicks);
+  }
+}
+
+void WebUILocationBar::OnPageInfoBubbleClosed(
+    views::Widget::ClosedReason closed_reason,
+    bool reload_prompt) {
+  last_page_info_bubble_close_time_ = base::TimeTicks::Now();
+
+  // TODO(crbug.com/495419742): If `reload_prompt` is true, and the user closed
+  // the bubble by pressing ESC or clicking the Close button, we should
+  // refocus the location bar so the user can tab into the "You should reload
+  // this page" infobar rather than being dumped back out into a stale webpage.
+  // See `LocationBarView::OnPageInfoBubbleClosed` for the implementation.
 }
 
 void WebUILocationBar::OnLhsChipClicked(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
-  NOTIMPLEMENTED();
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    bool is_mouse_interaction) {
+  if (identifier != toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
+    return;
+  }
+
+  // Prevent reopening the bubble if it was just closed by this exact click.
+  // We only suppress mouse interactions because keyboard activations (e.g.
+  // pressing Enter) do not cause native focus loss and therefore don't suffer
+  // from this race condition. This matches the native Views implementation in
+  // IconLabelBubbleView::IsTriggerableEvent.
+  if (is_mouse_interaction) {
+    if (suppress_lhs_chip_clicked_) {
+      suppress_lhs_chip_clicked_ = false;
+      return;
+    }
+  }
+
+  // WebContents can be null during window teardown/startup, or if the tab
+  // crashed/closed while this asynchronous IPC was in flight. We return early
+  // rather than CHECKing to avoid crashing the browser in these edge cases.
+  content::WebContents* contents = GetWebContents();
+  if (!contents) {
+    return;
+  }
+  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
+  if (!entry || entry->IsInitialEntry()) {
+    return;
+  }
+
+  ui::TrackedElement* location_bar_element = GetAnchorOrNull();
+
+  std::unique_ptr<PageInfoBubbleSpecification> specification =
+      PageInfoBubbleSpecification::Builder(
+          location_bar_element ? views::BubbleAnchor(location_bar_element)
+                               : views::BubbleAnchor(toolbar_view_),
+          toolbar_view_->GetWidget()->GetNativeWindow(), contents,
+          entry->GetVirtualURL())
+          .AddPageInfoClosingCallback(
+              base::BindOnce(&WebUILocationBar::OnPageInfoBubbleClosed,
+                             weak_ptr_factory_.GetWeakPtr()))
+          .Build();
+  views::BubbleDialogDelegateView* const bubble =
+      PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
+  bubble->SetHighlightedElement(kLocationIconElementId);
+  bubble->GetWidget()->Show();
 }
 
 void WebUILocationBar::OnLhsChipExpandAnimationEnded(

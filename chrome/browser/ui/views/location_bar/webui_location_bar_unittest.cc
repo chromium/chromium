@@ -73,6 +73,15 @@ class WebUILocationBarTest : public testing::Test {
     return fetcher_->GetNavigationControlsState();
   }
 
+  bool GetSuppressLhsChipClicked() const {
+    return location_bar_->suppress_lhs_chip_clicked_;
+  }
+
+  void SimulatePageInfoBubbleClosed() {
+    location_bar_->OnPageInfoBubbleClosed(
+        views::Widget::ClosedReason::kCloseButtonClicked, false);
+  }
+
   content::BrowserTaskEnvironment browser_threads_;
   TestingProfile profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
@@ -145,4 +154,36 @@ TEST_F(WebUILocationBarTest, HasSecurityStateChanged) {
   // Force an update to sync them back up.
   location_bar_->OnChanged();
   EXPECT_FALSE(location_bar_->HasSecurityStateChanged());
+}
+
+TEST_F(WebUILocationBarTest, MouseClickSuppression) {
+  // By default, suppression is false.
+  EXPECT_FALSE(GetSuppressLhsChipClicked());
+
+  // A mouse press on the chip should NOT suppress if the bubble wasn't just
+  // closed.
+  location_bar_->OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon);
+  EXPECT_FALSE(GetSuppressLhsChipClicked());
+
+  // Simulate the bubble being closed right now.
+  SimulatePageInfoBubbleClosed();
+
+  // A mouse press immediately after closing should trigger suppression.
+  location_bar_->OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon);
+  EXPECT_TRUE(GetSuppressLhsChipClicked());
+
+  // A non-mouse click (e.g., keyboard Enter) should NOT consume the suppression
+  // flag.
+  location_bar_->OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
+      /*is_mouse_interaction=*/false);
+  EXPECT_TRUE(GetSuppressLhsChipClicked());
+
+  // A true mouse click SHOULD consume the suppression flag and return early.
+  location_bar_->OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
+      /*is_mouse_interaction=*/true);
+  EXPECT_FALSE(GetSuppressLhsChipClicked());
 }

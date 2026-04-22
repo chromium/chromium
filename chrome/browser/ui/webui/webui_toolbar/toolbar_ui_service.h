@@ -40,7 +40,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnLhsChipMousePressed(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipClicked(
-        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+        bool is_mouse_interaction) = 0;
     virtual void OnLhsChipExpandAnimationEnded(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
     virtual void OnLhsChipCollapseAnimationEnded(
@@ -78,8 +79,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
   void OnLhsChipMousePressed(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
-  void OnLhsChipClicked(
-      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+  void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+                        bool is_mouse_interaction) override;
   void OnLhsChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipCollapseAnimationEnded(

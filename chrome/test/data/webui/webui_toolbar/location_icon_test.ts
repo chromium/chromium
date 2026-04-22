@@ -5,15 +5,33 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {SecurityChipIcon} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, LhsChipIdentifier, SecurityChipIcon} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LocationIconElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+
+class TestToolbarUiHandler extends TestBrowserProxy {
+  constructor() {
+    super(['onLhsChipMousePressed', 'onLhsChipClicked']);
+  }
+
+  onLhsChipMousePressed(id: LhsChipIdentifier) {
+    this.methodCalled('onLhsChipMousePressed', id);
+  }
+
+  onLhsChipClicked(id: LhsChipIdentifier, isMouseInteraction: boolean) {
+    this.methodCalled('onLhsChipClicked', [id, isMouseInteraction]);
+  }
+}
 
 suite('LocationIconTest', function() {
   let locationIcon: LocationIconElement;
+  let toolbarUiHandler: TestToolbarUiHandler;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    toolbarUiHandler = new TestToolbarUiHandler();
+    BrowserProxyImpl.setInstance({toolbarUIHandler: toolbarUiHandler} as any);
 
     locationIcon = document.createElement('location-icon');
     document.body.appendChild(locationIcon);
@@ -114,5 +132,52 @@ suite('LocationIconTest', function() {
     await microtasksFinished();
 
     assertFalse(locationIcon.hasAttribute('clickable'));
+
+    const container =
+        locationIcon.shadowRoot.querySelector<HTMLElement>('#container');
+    assertTrue(!!container);
+
+    container.dispatchEvent(new PointerEvent('pointerdown'));
+    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+
+    container.click();
+    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+  });
+
+  test('Click events', async function() {
+    locationIcon.state = {
+      icon: SecurityChipIcon.kHttp,
+      securityLevel: 0,
+      text: '',
+      isClickable: true,
+      isTextDangerous: false,
+    };
+    await microtasksFinished();
+
+    const container =
+        locationIcon.shadowRoot.querySelector<HTMLElement>('#container');
+    assertTrue(!!container);
+
+    container.dispatchEvent(new PointerEvent('pointerdown'));
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+    assertEquals(
+        LhsChipIdentifier.kLocationIcon,
+        toolbarUiHandler.getArgs('onLhsChipMousePressed')[0]);
+
+    container.click();
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    assertEquals(
+        LhsChipIdentifier.kLocationIcon,
+        toolbarUiHandler.getArgs('onLhsChipClicked')[0][0]);
+    assertFalse(toolbarUiHandler.getArgs('onLhsChipClicked')[0][1]);
+
+    // Simulate mouse interaction
+    const clickEvent = new PointerEvent('click', {pointerType: 'mouse'});
+    container.dispatchEvent(clickEvent);
+    assertEquals(2, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    assertEquals(
+        LhsChipIdentifier.kLocationIcon,
+        toolbarUiHandler.getArgs('onLhsChipClicked')[1][0]);
+    assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[1][1]);
   });
 });

@@ -116,9 +116,10 @@ void ToolbarUIService::OnLhsChipMousePressed(
 }
 
 void ToolbarUIService::OnLhsChipClicked(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    bool is_mouse_interaction) {
   if (delegate_) {
-    delegate_->OnLhsChipClicked(identifier);
+    delegate_->OnLhsChipClicked(identifier, is_mouse_interaction);
   }
 }
 

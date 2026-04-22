@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -25,6 +26,7 @@ class WebUIToolbarWebViewInteractiveTest : public InteractiveBrowserTest {
   WebUIToolbarWebViewInteractiveTest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUILocationBar,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
          features::kInitialWebUISyncNavStartToCommit},
@@ -38,6 +40,37 @@ class WebUIToolbarWebViewInteractiveTest : public InteractiveBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       LocationIconOpensPageInfo) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarWebViewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInstrumentedWebViewId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kShouldDeferShowState);
+
+  RunTestSequence(
+      WaitForShow(kWebUIToolbarElementIdentifier),
+      WithView(kWebUIToolbarElementIdentifier,
+               [](WebUIToolbarWebView* parent) {
+                 parent->GetWebViewForTesting()->SetProperty(
+                     views::kElementIdentifierKey, kInstrumentedWebViewId);
+               }),
+      InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
+                              /*wait_for_ready=*/true),
+      PollStateUntil(
+          kShouldDeferShowState,
+          [this]() {
+            auto* manager = InitialWebUIManager::From(browser());
+            CHECK(manager);
+            return manager->RequestDeferShow(base::DoNothing());
+          },
+          false),
+      ExecuteJsAt(kWebUIToolbarWebViewId,
+                  DeepQuery{"toolbar-app", "location-bar", "location-icon",
+                            "#container"},
+                  "el => el.click()"),
+      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
+}
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarWebViewId);

@@ -405,6 +405,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",

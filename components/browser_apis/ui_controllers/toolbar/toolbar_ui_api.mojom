@@ -60,7 +60,12 @@ interface ToolbarUIService {
   OnLhsChipMousePressed(LhsChipIdentifier identifier);
 
   // Called when an LHS chip is clicked.
-  OnLhsChipClicked(LhsChipIdentifier identifier);
+  // `is_mouse_interaction` is true if the click was triggered by a mouse event.
+  // This is used to differentiate between mouse clicks and keyboard activations
+  // (e.g., pressing Enter) because mouse clicks require specific handling to
+  // prevent reopening the Page Info bubble if the click itself just closed it
+  // due to native focus loss.
+  OnLhsChipClicked(LhsChipIdentifier identifier, bool is_mouse_interaction);
 
   // Called when an expand animation finishes.
   OnLhsChipExpandAnimationEnded(LhsChipIdentifier identifier);
