@@ -9,11 +9,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "ntp_tiles_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
   "ios_most_visited_sites_factory\.cc": [
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
     "+services/data_decoder/public/cpp/data_decoder.h",
