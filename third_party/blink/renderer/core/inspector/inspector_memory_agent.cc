@@ -68,7 +68,12 @@ protocol::Response InspectorMemoryAgent::getDOMCounters(
 }
 
 protocol::Response InspectorMemoryAgent::forciblyPurgeJavaScriptMemory() {
-  for (const auto& page : Page::OrdinaryPages()) {
+  // Copy Page::OrdinaryPages() to avoid UAF. Synchronous JS
+  // execution during iteration can create new pages, which causes rehashing
+  // of the OrdinaryPages() set and invalidates the iterator.
+  // See crbug.com/502089411
+  Page::PageSet pages(Page::OrdinaryPages());
+  for (const auto& page : pages) {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       LocalFrame* local_frame = DynamicTo<LocalFrame>(frame);
