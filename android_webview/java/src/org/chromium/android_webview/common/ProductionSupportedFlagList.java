@@ -1184,6 +1184,10 @@ public final class ProductionSupportedFlagList {
                         + " defer it until the next step like"
                         + " NotifyBytesRead, based on the parameter values."),
         Flag.baseFeature(
+                "IgnoreQuicCryptoConfigMemoryPressure",
+                "If true, ignore memory pressure for all network isolation partitions in the Quic"
+                        + " session cache."),
+        Flag.baseFeature(
                 "WebViewFetchOriginTrialsComponent",
                 "Enable fetching the Origin Trials configuration update component."),
         Flag.baseFeature(

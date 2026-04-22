@@ -581,6 +581,14 @@ void QuicSessionPool::QuicCryptoClientConfigOwner::OnMemoryPressure(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kIgnoreQuicCryptoConfigMemoryPressure)) {
+    // We are experimenting with ignoring memory pressure for all network
+    // isolation partitions to improve the cache hit rate of all Quic sessions,
+    // especially for memory-constrained devices.
+    return;
+  }
+
   if (network_anonymization_key_.network_isolation_partition() ==
           NetworkIsolationPartition::kDnsOverHttps &&
       base::FeatureList::IsEnabled(
