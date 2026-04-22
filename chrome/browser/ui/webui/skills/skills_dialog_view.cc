@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -52,6 +53,9 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
   web_view_->LoadInitialURL(GURL(std::string(chrome::kChromeUISkillsURL) +
                                  chrome::kChromeUISkillsDialogPath));
   web_view_->GetWebContents()->SetDelegate(this);
+  zoom::ZoomController::CreateForWebContents(web_view_->GetWebContents());
+  zoom::ZoomController::FromWebContents(web_view_->GetWebContents())
+      ->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
   web_view_->EnableSizingFromWebContents(kWebViewMinSize, kWebViewMaxSize);
   AddChildView(std::move(web_view));
 }
