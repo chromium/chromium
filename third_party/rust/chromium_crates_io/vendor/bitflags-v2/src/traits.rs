@@ -245,7 +245,7 @@ pub trait Flags: Sized + 'static {
         Self::all().bits() | self.bits() == self.bits()
     }
 
-    /// Whether any set bits in a source flags value are also set in a target flags value.
+    /// Whether any set bits in `other` are also set in `self`.
     fn intersects(&self, other: Self) -> bool
     where
         Self: Sized,
@@ -253,7 +253,7 @@ pub trait Flags: Sized + 'static {
         self.bits() & other.bits() != Self::Bits::EMPTY
     }
 
-    /// Whether all set bits in a source flags value are also set in a target flags value.
+    /// Whether all set bits in `other` are also set in `self`.
     fn contains(&self, other: Self) -> bool
     where
         Self: Sized,
@@ -269,7 +269,7 @@ pub trait Flags: Sized + 'static {
         *self = Self::from_bits_truncate(self.bits());
     }
 
-    /// The bitwise or (`|`) of the bits in two flags values.
+    /// The bitwise or (`|`) of the bits in `self` and `other`.
     fn insert(&mut self, other: Self)
     where
         Self: Sized,
@@ -277,7 +277,7 @@ pub trait Flags: Sized + 'static {
         *self = Self::from_bits_retain(self.bits()).union(other);
     }
 
-    /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+    /// The intersection of `self` with the complement of `other` (`&!`).
     ///
     /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
     /// `remove` won't truncate `other`, but the `!` operator will.
@@ -288,7 +288,7 @@ pub trait Flags: Sized + 'static {
         *self = Self::from_bits_retain(self.bits()).difference(other);
     }
 
-    /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+    /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
     fn toggle(&mut self, other: Self)
     where
         Self: Sized,
@@ -316,19 +316,19 @@ pub trait Flags: Sized + 'static {
         *self = Self::empty();
     }
 
-    /// The bitwise and (`&`) of the bits in two flags values.
+    /// The bitwise and (`&`) of the bits in `self` and `other`.
     #[must_use]
     fn intersection(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() & other.bits())
     }
 
-    /// The bitwise or (`|`) of the bits in two flags values.
+    /// The bitwise or (`|`) of the bits in `self` and `other`.
     #[must_use]
     fn union(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() | other.bits())
     }
 
-    /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+    /// The intersection of `self` with the complement of `other` (`&!`).
     ///
     /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
     /// `difference` won't truncate `other`, but the `!` operator will.
@@ -337,13 +337,13 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(self.bits() & !other.bits())
     }
 
-    /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+    /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
     #[must_use]
     fn symmetric_difference(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() ^ other.bits())
     }
 
-    /// The bitwise negation (`!`) of the bits in a flags value, truncating the result.
+    /// The bitwise negation (`!`) of the bits in `self`, truncating the result.
     #[must_use]
     fn complement(self) -> Self {
         Self::from_bits_truncate(!self.bits())

@@ -1,3 +1,15 @@
+# 2.11.1
+
+## What's Changed
+* Bless compile-fail tests for current beta by @DanielEScherzer in https://github.com/bitflags/bitflags/pull/478
+* example_generated.rs: add missing third slash for doc comment by @DanielEScherzer in https://github.com/bitflags/bitflags/pull/477
+* Clarify self and other in method docs by @KodrAus in https://github.com/bitflags/bitflags/pull/481
+
+## New Contributors
+* @DanielEScherzer made their first contribution in https://github.com/bitflags/bitflags/pull/478
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.11.0...2.11.1
+
 # 2.11.0
 
 ## What's Changed

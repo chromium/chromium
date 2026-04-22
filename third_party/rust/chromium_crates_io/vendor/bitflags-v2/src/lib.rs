@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.11.0"
+version = "2.11.1"
 ```
 
 ## Crate features
@@ -676,7 +676,7 @@ macro_rules! __impl_bitflags {
             pub fn from_name($name: &str) -> $crate::__private::core::option::Option<Self>
                 $from_name_body
 
-            /// Whether all bits in this flags value are unset.
+            /// Whether all bits in `self` are unset.
             #[inline]
             pub const fn is_empty(&$self) -> bool
                 $is_empty_body
@@ -686,23 +686,22 @@ macro_rules! __impl_bitflags {
             pub const fn is_all(&$self) -> bool
                 $is_all_body
 
-            /// Whether any set bits in a source flags value are also set in a target flags value.
+            /// Whether any set bits in `other` are also set in `self`.
             #[inline]
             pub const fn intersects(&$self, $other: Self) -> bool
                 $intersects_body
 
-            /// Whether all set bits in a source flags value are also set in a target flags value.
+            /// Whether all set bits in `other` are also set in `self`.
             #[inline]
             pub const fn contains(&$self, $other: Self) -> bool
                 $contains_body
 
-            /// The bitwise or (`|`) of the bits in two flags values.
+            /// The bitwise or (`|`) of the bits in `self` and `other`.
             #[inline]
             pub fn insert(&mut $self, $other: Self)
                 $insert_body
 
-            /// The intersection of a source flags value with the complement of a target flags
-            /// value (`&!`).
+            /// The intersection of `self` with the complement of `other` (`&!`).
             ///
             /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
             /// `remove` won't truncate `other`, but the `!` operator will.
@@ -710,7 +709,7 @@ macro_rules! __impl_bitflags {
             pub fn remove(&mut $self, $other: Self)
                 $remove_body
 
-            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+            /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
             #[inline]
             pub fn toggle(&mut $self, $other: Self)
                 $toggle_body
@@ -720,20 +719,19 @@ macro_rules! __impl_bitflags {
             pub fn set(&mut $self, $other: Self, $value: bool)
                 $set_body
 
-            /// The bitwise and (`&`) of the bits in two flags values.
+            /// The bitwise and (`&`) of the bits in `self` and `other`.
             #[inline]
             #[must_use]
             pub const fn intersection($self, $other: Self) -> Self
                 $intersection_body
 
-            /// The bitwise or (`|`) of the bits in two flags values.
+            /// The bitwise or (`|`) of the bits in `self` and `other`.
             #[inline]
             #[must_use]
             pub const fn union($self, $other: Self) -> Self
                 $union_body
 
-            /// The intersection of a source flags value with the complement of a target flags
-            /// value (`&!`).
+            /// The intersection of `self` with the complement of `other` (`&!`).
             ///
             /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
             /// `difference` won't truncate `other`, but the `!` operator will.
@@ -742,13 +740,13 @@ macro_rules! __impl_bitflags {
             pub const fn difference($self, $other: Self) -> Self
                 $difference_body
 
-            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+            /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
             #[inline]
             #[must_use]
             pub const fn symmetric_difference($self, $other: Self) -> Self
                 $symmetric_difference_body
 
-            /// The bitwise negation (`!`) of the bits in a flags value, truncating the result.
+            /// The bitwise negation (`!`) of the bits in `self`, truncating the result.
             #[inline]
             #[must_use]
             pub const fn complement($self) -> Self

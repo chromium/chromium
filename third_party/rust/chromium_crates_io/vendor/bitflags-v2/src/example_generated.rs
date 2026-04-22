@@ -18,7 +18,7 @@ __declare_internal_bitflags! {
 
 __impl_internal_bitflags! {
     Field0: u32, Flags {
-        // Field `A`.
+        /// Field `A`.
         ///
         /// This flag has the value `0b00000001`.
         const A = 0b00000001;

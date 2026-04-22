@@ -379,7 +379,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitOr for $PublicBitFlags {
             type Output = Self;
 
-            /// The bitwise or (`|`) of the bits in two flags values.
+            /// The bitwise or (`|`) of the bits in `self` and `other`.
             #[inline]
             fn bitor(self, other: $PublicBitFlags) -> Self {
                 self.union(other)
@@ -388,7 +388,7 @@ macro_rules! __impl_public_bitflags_ops {
 
         $(#[$outer])*
         impl $crate::__private::core::ops::BitOrAssign for $PublicBitFlags {
-            /// The bitwise or (`|`) of the bits in two flags values.
+            /// The bitwise or (`|`) of the bits in `self` and `other`.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
                 self.insert(other);
@@ -399,7 +399,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitXor for $PublicBitFlags {
             type Output = Self;
 
-            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+            /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
             #[inline]
             fn bitxor(self, other: Self) -> Self {
                 self.symmetric_difference(other)
@@ -408,7 +408,7 @@ macro_rules! __impl_public_bitflags_ops {
 
         $(#[$outer])*
         impl $crate::__private::core::ops::BitXorAssign for $PublicBitFlags {
-            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
+            /// The bitwise exclusive-or (`^`) of the bits in `self` and `other`.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
                 self.toggle(other);
@@ -419,7 +419,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitAnd for $PublicBitFlags {
             type Output = Self;
 
-            /// The bitwise and (`&`) of the bits in two flags values.
+            /// The bitwise and (`&`) of the bits in `self` and `other`.
             #[inline]
             fn bitand(self, other: Self) -> Self {
                 self.intersection(other)
@@ -428,7 +428,7 @@ macro_rules! __impl_public_bitflags_ops {
 
         $(#[$outer])*
         impl $crate::__private::core::ops::BitAndAssign for $PublicBitFlags {
-            /// The bitwise and (`&`) of the bits in two flags values.
+            /// The bitwise and (`&`) of the bits in `self` and `other`.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
                 *self = Self::from_bits_retain(self.bits()).intersection(other);
@@ -439,7 +439,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::Sub for $PublicBitFlags {
             type Output = Self;
 
-            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+            /// The intersection of `self` with the complement of `other` (`&!`).
             ///
             /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
             /// `difference` won't truncate `other`, but the `!` operator will.
@@ -451,7 +451,7 @@ macro_rules! __impl_public_bitflags_ops {
 
         $(#[$outer])*
         impl $crate::__private::core::ops::SubAssign for $PublicBitFlags {
-            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+            /// The intersection of `self` with the complement of `other` (`&!`).
             ///
             /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
             /// `difference` won't truncate `other`, but the `!` operator will.
@@ -465,7 +465,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::Not for $PublicBitFlags {
             type Output = Self;
 
-            /// The bitwise negation (`!`) of the bits in a flags value, truncating the result.
+            /// The bitwise negation (`!`) of the bits in `self`, truncating the result.
             #[inline]
             fn not(self) -> Self {
                 self.complement()
