@@ -32,6 +32,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.InnerGlowDrawable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -577,10 +578,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 TabUiThemeProvider.getEmptyThumbnailColor(
                         mContext, false, true, /* colorId= */ null));
 
-        mActingOverlayDrawable =
-                assumeNonNull(
-                        AppCompatResources.getDrawable(
-                                mContext, R.drawable.actor_overlay_background));
+        mActingOverlayDrawable = InnerGlowDrawable.createGtsPreviewGlow(mContext);
         mSparkIconDrawable =
                 assumeNonNull(
                         AppCompatResources.getDrawable(mContext, R.drawable.ic_spark_blue_16dp));

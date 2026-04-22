@@ -10,5 +10,4 @@ found in the LICENSE file.
     android:id="@+id/actor_overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/actor_overlay_background"
     android:visibility="gone" />

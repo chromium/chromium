@@ -23,7 +23,6 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="fitXY"
-            android:src="@drawable/actor_overlay_background"
             android:background="@drawable/actor_thumbnail_overlay_outline"
             android:clipToOutline="true"
             app:layout_constraintTop_toTopOf="parent"

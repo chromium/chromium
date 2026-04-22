@@ -60,7 +60,7 @@ public class ActorOverlayViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(3)
+                    .setRevision(4)
                     .build();
 
     @Mock private TabModelSelector mTabModelSelector;

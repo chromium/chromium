@@ -25,4 +25,15 @@ found in the LICENSE file.
     <dimen name="actor_control_icon_margin_end">12dp</dimen>
     <dimen name="actor_control_text_margin_end">4dp</dimen>
     <dimen name="actor_control_description_margin_top">2dp</dimen>
+
+    <!-- Actor Border Glow -->
+    <dimen name="actor_glow_soft_blur">80dp</dimen>
+    <dimen name="actor_glow_soft_spread">30dp</dimen>
+    <dimen name="actor_glow_strong_blur">20dp</dimen>
+    <dimen name="actor_glow_strong_spread">4dp</dimen>
+
+    <dimen name="actor_gts_glow_soft_blur">40dp</dimen>
+    <dimen name="actor_gts_glow_soft_spread">10dp</dimen>
+    <dimen name="actor_gts_glow_strong_blur">12dp</dimen>
+    <dimen name="actor_gts_glow_strong_spread">2dp</dimen>
 </resources>

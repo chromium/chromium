@@ -34,6 +34,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.InnerGlowDrawable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -356,6 +357,8 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
             actorContainer = fastFindViewById(R.id.actor_ui_container);
 
             assumeNonNull(actorContainer);
+            ImageView thumbnailOverlay = actorContainer.findViewById(R.id.actor_thumbnail_overlay);
+            thumbnailOverlay.setImageDrawable(InnerGlowDrawable.createGtsPreviewGlow(getContext()));
             contentView.bringChildToFront(actorContainer);
         }
         return actorContainer;

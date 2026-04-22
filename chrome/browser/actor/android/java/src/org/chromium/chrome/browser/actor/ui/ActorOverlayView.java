@@ -20,6 +20,7 @@ public class ActorOverlayView extends FrameLayout {
         super(context, attrs);
         setClickable(true);
         setFocusable(true);
+        setBackground(InnerGlowDrawable.createMainWebpageGlow(context));
     }
 
     /**

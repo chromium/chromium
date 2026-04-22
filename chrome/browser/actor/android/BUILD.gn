@@ -37,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayView.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayViewBinder.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/InnerGlowDrawable.java",
     "java/src/org/chromium/chrome/browser/actor/ui/PeekViewUiState.java",
   ]
 
@@ -120,7 +121,6 @@ source_set("android") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/actor_gts_tab_indicator_background.xml",
-    "java/res/drawable/actor_overlay_background.xml",
     "java/res/drawable/actor_thumbnail_overlay_outline.xml",
     "java/res/layout/actor_control_layout.xml",
     "java/res/layout/actor_gts_tab_indicator.xml",

@@ -76,7 +76,7 @@ public class TabGridViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     public TabGridViewRenderTest(boolean isNightModeEnabled) {
