@@ -60,8 +60,11 @@ StyleColor ToStyleColor(const RGBATuple& tuple) {
 }
 
 Color FallbackColorForCurrentColor(const SVGElement& target_element) {
+  // As a workaround, always use the unvisited 'color' when resolving a
+  // potential 'currentcolor' value to prevent leaking :visited state.
   if (const ComputedStyle* target_style = target_element.GetComputedStyle()) {
-    return target_style->VisitedDependentColor(GetCSSPropertyColor());
+    return GetCSSPropertyColor().ColorIncludingFallback(
+        /*visited_link=*/false, *target_style, /*is_current_color=*/nullptr);
   }
   return Color::kTransparent;
 }
