@@ -52,7 +52,6 @@
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -722,13 +721,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion, query_form_.global_id(), query_field_.global_id());
       break;
     case SuggestionType::kFillExistingPlusAddress:
-      if (AutofillPlusAddressDelegate* plus_address_delegate =
-              manager_->client().GetPlusAddressDelegate()) {
-        plus_address_delegate->RecordAutofillSuggestionEvent(
-            AutofillPlusAddressDelegate::SuggestionEvent::
-                kExistingPlusAddressChosen);
-        plus_address_delegate->DidFillPlusAddress();
-      }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
@@ -1204,7 +1196,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
             autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
                 kEmailSelected);
       }
-
 
       AutofillForm(suggestion.type, suggestion.payload, metadata,
                    /*is_preview=*/false, GetTriggerSource());

@@ -337,21 +337,6 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
             expected);
 }
 
-// Ensure that, by default, the plus address service is not available.
-// The positive case (feature enabled) will be tested in plus_addresses browser
-// tests; this test is intended to ensure the default state does not behave
-// unexpectedly.
-TEST_F(ChromeAutofillClientTest,
-       PlusAddressDefaultFeatureStateMeansNullPlusAddressService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  PlusAddressServiceFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-  EXPECT_EQ(client()->GetPlusAddressDelegate(), nullptr);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 // Test the scenario when the plus address survey delay is not configured. The
 // random delay of the survey should be between the 10s and 60s.

@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
@@ -145,7 +144,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
-  AutofillPlusAddressDelegate* GetPlusAddressDelegate() final;
   accessibility_annotator::AccessibilityQueryService*
   GetAccessibilityQueryService() override;
   PasswordManagerDelegate* GetPasswordManagerDelegate(

@@ -42,7 +42,6 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -205,10 +204,6 @@ class TestAutofillClientTemplate : public T {
 
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
-  }
-
-  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override {
-    return plus_address_delegate_.get();
   }
 
   accessibility_annotator::AccessibilityQueryService*
@@ -613,11 +608,6 @@ class TestAutofillClientTemplate : public T {
     test_shared_loader_factory_ = url_loader_factory;
   }
 
-  void set_plus_address_delegate(
-      std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate) {
-    plus_address_delegate_ = std::move(plus_address_delegate);
-  }
-
   void set_accessibility_query_service(
       std::unique_ptr<accessibility_annotator::AccessibilityQueryService>
           accessibility_query_service) {
@@ -690,7 +680,6 @@ class TestAutofillClientTemplate : public T {
       metrics::ProfileMetricsContext(1)};
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
-  std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
   std::unique_ptr<accessibility_annotator::AccessibilityQueryService>
       accessibility_query_service_;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;

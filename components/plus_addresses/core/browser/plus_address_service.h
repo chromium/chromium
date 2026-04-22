@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SERVICE_H_
 #define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SERVICE_H_
 
+#include <map>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 
@@ -25,8 +26,7 @@ namespace plus_addresses {
 // This interface defines the public API for a service that manages plus
 // addresses.
 // Not intended for widespread use.
-class PlusAddressService : public KeyedService,
-                           public autofill::AutofillPlusAddressDelegate {
+class PlusAddressService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -107,6 +107,27 @@ class PlusAddressService : public KeyedService,
 
   // Returns true if the feature is supported for the user.
   virtual bool IsEnabled() const = 0;
+
+  // Checks whether `potential_plus_address` is a known plus address.
+  virtual bool IsPlusAddress(
+      const std::string& potential_plus_address) const = 0;
+
+  // Checks whether `value` matches the the plus address string format.
+  virtual bool MatchesPlusAddressFormat(const std::u16string& value) const = 0;
+
+  // Returns whether plus address filling is supported for the given `origin`.
+  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
+
+  // Returns the number of the plus addresses created by the user for the
+  // current profile.
+  virtual size_t GetPlusAddressesCount() = 0;
+
+  // Returns survey specific data for plus address HaTS surveys. Subsequent
+  // calls can return different data.
+  virtual std::map<std::string, std::string> GetPlusAddressHatsData() const = 0;
+
+  // Called when a plus address was filled into a web input field.
+  virtual void DidFillPlusAddress() = 0;
 };
 
 }  // namespace plus_addresses

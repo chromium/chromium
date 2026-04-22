@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
@@ -95,7 +94,6 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
     autofill::AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field,
-    autofill::AutofillPlusAddressDelegate::SuggestionContext suggestion_context,
     autofill::PasswordFormClassification::Type form_type,
     SuggestionType suggestion_type,
     size_t plus_address_count) {
@@ -142,8 +140,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
       .SetManagedProfile(account_info.IsManaged() == signin::Tribool::kTrue)
       .SetPasswordFormType(std::to_underlying(form_type))
       .SetPlusAddressCount(
-          std::to_underlying(ToPlusAddressCountBucket(plus_address_count)))
-      .SetSuggestionContext(std::to_underlying(suggestion_context));
+          std::to_underlying(ToPlusAddressCountBucket(plus_address_count)));
   records_[&manager].insert_or_assign(field, std::move(record));
 }
 

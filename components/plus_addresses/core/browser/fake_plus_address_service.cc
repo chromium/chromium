@@ -65,21 +65,6 @@ autofill::Suggestion FakePlusAddressService::GetManagePlusAddressSuggestion()
   return Suggestion(autofill::SuggestionType::kManagePlusAddress);
 }
 
-void FakePlusAddressService::RecordAutofillSuggestionEvent(
-    SuggestionEvent suggestion_event) {
-  NOTIMPLEMENTED();
-}
-
-void FakePlusAddressService::OnPlusAddressSuggestionShown(
-    autofill::AutofillManager& manager,
-    autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    SuggestionContext suggestion_context,
-    autofill::PasswordFormClassification::Type form_type,
-    autofill::SuggestionType suggestion_type) {
-  NOTIMPLEMENTED();
-}
-
 void FakePlusAddressService::DidFillPlusAddress() {
   did_fill_plus_address_suggestion_ = true;
 }

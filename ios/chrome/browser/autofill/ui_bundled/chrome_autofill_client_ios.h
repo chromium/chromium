@@ -153,7 +153,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   const AutofillAblationStudy& GetAblationStudy() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
   bool ShouldFormatForLargeKeyboardAccessory() const override;
-  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
   // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
   // platform is not supported.
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(

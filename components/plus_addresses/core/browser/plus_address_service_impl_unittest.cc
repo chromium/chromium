@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
@@ -82,7 +81,6 @@
 namespace plus_addresses {
 namespace {
 
-using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
 using affiliations::FacetURI;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
@@ -1058,17 +1056,6 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-// Tests that a user action is recorded when a plus address suggestion fill is
-// reported.
-TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
-  base::UserActionTester user_action_tester;
-  service().RecordAutofillSuggestionEvent(
-      SuggestionEvent::kExistingPlusAddressChosen);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.FillStandaloneSuggestionAccepted"),
-            1);
-}
 
 // Tests the content of the "Manage plus addresses..." suggestion.
 TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {

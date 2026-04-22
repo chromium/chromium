@@ -111,7 +111,6 @@
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
@@ -144,6 +143,7 @@
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/pref_service.h"
@@ -459,18 +459,6 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #else
   return nullptr;
 #endif
-}
-
-AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
-  // The `PlusAddressServiceFactory` should also ensure the service is not
-  // created without the feature enabled, but being defensive here to avoid
-  // surprises.
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
-    return nullptr;
-  }
-  return PlusAddressServiceFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
 }
 
 accessibility_annotator::AccessibilityQueryService*

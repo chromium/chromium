@@ -323,15 +323,7 @@ void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
 
 std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses) {
-  std::vector<Suggestion> suggestions = GetSuggestions(plus_addresses);
-  const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
-                                                            &Suggestion::type);
-
-  using enum AutofillPlusAddressDelegate::SuggestionEvent;
-  if (suggestion_types.contains(SuggestionType::kFillExistingPlusAddress)) {
-    RecordAutofillSuggestionEvent(kExistingPlusAddressSuggested);
-  }
-  return suggestions;
+  return GetSuggestions(plus_addresses);
 }
 
 Suggestion PlusAddressServiceImpl::GetManagePlusAddressSuggestion() const {
@@ -545,63 +537,6 @@ bool PlusAddressServiceImpl::IsSupportedOrigin(
 
   return origin.scheme() == url::kHttpsScheme ||
          origin.scheme() == url::kHttpScheme;
-}
-
-void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
-    SuggestionEvent suggestion_event) {
-  using enum autofill::AutofillPlusAddressDelegate::SuggestionEvent;
-  switch (suggestion_event) {
-    case kRefreshPlusAddressInlineClicked:
-      base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
-      return;
-    case kExistingPlusAddressSuggested:
-      base::RecordAction(base::UserMetricsAction(
-          "PlusAddresses.StandaloneFillSuggestionShown"));
-      return;
-    case kCreateNewPlusAddressSuggested: {
-      if (setting_service_->GetHasAcceptedNotice()) {
-        base::RecordAction(
-            base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
-      } else {
-        base::RecordAction(base::UserMetricsAction(
-            "PlusAddresses.CreateSuggestionFirstTimeNoticeShown"));
-      }
-      return;
-    }
-    case kCreateNewPlusAddressInlineSuggested:
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.CreateSuggestionShown"));
-      return;
-    case kExistingPlusAddressChosen:
-      base::RecordAction(base::UserMetricsAction(
-          "PlusAddresses.FillStandaloneSuggestionAccepted"));
-      return;
-    case kCreateNewPlusAddressChosen:
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.CreateSuggestionAccepted"));
-      return;
-    case kCreateNewPlusAddressInlineChosen:
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
-      return;
-    case kErrorDuringReserve:
-    case kCreateNewPlusAddressInlineReserveLoadingStateShown:
-      return;
-  }
-  NOTREACHED();
-}
-
-void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
-    autofill::AutofillManager& manager,
-    autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    SuggestionContext suggestion_context,
-    autofill::PasswordFormClassification::Type form_type,
-    autofill::SuggestionType suggestion_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  submission_logger_.OnPlusAddressSuggestionShown(
-      manager, form, field, suggestion_context, form_type, suggestion_type,
-      /*plus_address_count=*/plus_address_cache_.Size());
 }
 
 void PlusAddressServiceImpl::DidFillPlusAddress() {

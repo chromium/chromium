@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -309,8 +308,6 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
     bool& has_invalid_field_types,
     bool& has_multiple_distinct_email_addresses,
     bool& has_address_related_fields) const {
-  AutofillPlusAddressDelegate* plus_address_delegate =
-      client_->GetPlusAddressDelegate();
   base::flat_map<FieldType, ValueForImport> preceding_values;
 
   // Tracks if subsequent phone number fields should be ignored,
@@ -333,14 +330,6 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
     if (field->WasAutofilledWithFallback()) {
       continue;
     }
-    // When the experimental plus addresses feature is enabled, and the value is
-    // a plus address, exclude it from the resulting address profile.
-    if (plus_address_delegate &&
-        (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
-         plus_address_delegate->MatchesPlusAddressFormat(value))) {
-      continue;
-    }
-
     FieldType field_type = field->Type().GetAddressType();
     // Only address types are relevant in this function, other types are treated
     // in different flows.

@@ -85,7 +85,6 @@ class FormEventLoggerBase {
   // impossible to dispatch virtual functions into the derived classes.
   virtual void OnDestroyed();
 
-  // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
   void SetAblationStatus(AblationGroup ablation_group,
                          AblationGroup conditional_ablation_group);

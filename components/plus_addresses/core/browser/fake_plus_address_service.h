@@ -12,6 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,29 +28,22 @@ class FakePlusAddressService : public PlusAddressService {
   static constexpr char kFakeProfileId[] = "123";
   static constexpr char kFacet[] = "https://facet.bar";
 
-  // autofill::AutofillPlusAddressDelegate:
+  // PlusAddressService:
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
   bool MatchesPlusAddressFormat(const std::u16string& value) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
-  bool IsFieldEligibleForPlusAddress(
-      const autofill::AutofillField& field) const override;
-  void GetAffiliatedPlusAddresses(
-      const url::Origin& origin,
-      base::OnceCallback<void(std::vector<std::string>)> callback) override;
-  std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
-      const std::vector<std::string>& plus_addresses) override;
-  autofill::Suggestion GetManagePlusAddressSuggestion() const override;
-  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
-  void OnPlusAddressSuggestionShown(
-      autofill::AutofillManager& manager,
-      autofill::FormGlobalId form,
-      autofill::FieldGlobalId field,
-      SuggestionContext suggestion_context,
-      autofill::PasswordFormClassification::Type form_type,
-      autofill::SuggestionType suggestion_type) override;
-  void DidFillPlusAddress() override;
   size_t GetPlusAddressesCount() override;
   std::map<std::string, std::string> GetPlusAddressHatsData() const override;
+  void DidFillPlusAddress() override;
+
+  bool IsFieldEligibleForPlusAddress(
+      const autofill::AutofillField& field) const;
+  void GetAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::vector<std::string>)> callback);
+  std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
+      const std::vector<std::string>& plus_addresses);
+  autofill::Suggestion GetManagePlusAddressSuggestion() const;
 
   // PlusAddressService:
   void AddObserver(PlusAddressService::Observer* o) override;

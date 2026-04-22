@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -523,67 +522,6 @@ TEST_F(AddressFormDataImporterTest, InvalidPhoneNumber) {
                                              {profile_without_number});
 }
 
-// Tests that active plus addresses are not part of the values captured during
-// form submissions.
-TEST_F(AddressFormDataImporterTest, ActivePlusAddressesExcluded) {
-  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
-
-  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
-  // `autofill_client()` to use it.
-  auto plus_address_delegate =
-      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-  ON_CALL(*plus_address_delegate, IsPlusAddress)
-      .WillByDefault([&kDummyPlusAddress](const std::string& address) {
-        return address == kDummyPlusAddress;
-      });
-  autofill_client().set_plus_address_delegate(std::move(plus_address_delegate));
-
-  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
-  // excluded from imports.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kDummyPlusAddress);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // Create a default profile, but remove the email address, since extraction
-  // should skip the known plus address.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.ClearFields({EMAIL_ADDRESS});
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
-
-// Tests that strings matching the plus address format are not part of the
-// values captured during form submissions.
-TEST_F(AddressFormDataImporterTest, MatchedPlusAddressesExcluded) {
-  const std::string kMatchedPlusAddress = "plus+plus@grelay.com";
-
-  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
-  // `autofill_client()` to use it.
-  auto plus_address_delegate =
-      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-  ON_CALL(*plus_address_delegate, IsPlusAddress)
-      .WillByDefault([](const std::string& address) {
-        return address.ends_with("@grelay.com");
-      });
-  autofill_client().set_plus_address_delegate(std::move(plus_address_delegate));
-
-  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
-  // excluded from imports.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kMatchedPlusAddress);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // Create a default profile, but remove the email address, since extraction
-  // should skip the known plus address.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.ClearFields({EMAIL_ADDRESS});
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
 
 // ImportAddressProfiles tests.
 TEST_F(AddressFormDataImporterTest, ImportStructuredNameProfile) {

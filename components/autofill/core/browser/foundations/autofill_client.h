@@ -101,7 +101,6 @@ class AutofillManager;
 class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
-class AutofillPlusAddressDelegate;
 class AutofillAiManager;
 class AutofillAiModelCache;
 class AutofillAiModelExecutor;
@@ -423,10 +422,6 @@ class AutofillClient {
   }
 
   virtual IdentityCredentialDelegate* GetIdentityCredentialDelegate();
-
-  // Returns the `AutofillPlusAddressDelegate` associated with the profile of
-  // the window of this tab.
-  virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
 
   // Returns the `AccessibilityQueryService` associated with the profile of
   // the window of this tab.
