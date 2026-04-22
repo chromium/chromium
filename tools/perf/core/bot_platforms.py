@@ -667,7 +667,8 @@ def _crossbench_loading(estimated_runtime: int = 750,
   return CrossbenchConfig('loading.crossbench',
                           'loading',
                           estimated_runtime=estimated_runtime,
-                          flags=flags)
+                          flags=flags,
+                          auto_enable_field_trials=False)
 
 
 @_register('embedder.crossbench')
@@ -676,7 +677,8 @@ def _crossbench_embedder(estimated_runtime: int = 900,
   return CrossbenchConfig('embedder.crossbench',
                           'embedder',
                           estimated_runtime=estimated_runtime,
-                          flags=flags)
+                          flags=flags,
+                          auto_enable_field_trials=False)
 
 
 @_register('gma.embedder.crossbench')
@@ -685,7 +687,8 @@ def _crossbench_gma_embedder(estimated_runtime: int = 900,
   return CrossbenchConfig('gma.embedder.crossbench',
                           'embedder',
                           estimated_runtime=estimated_runtime,
-                          flags=flags)
+                          flags=flags,
+                          auto_enable_field_trials=False)
 
 
 @_register('devtools_frontend.crossbench')
