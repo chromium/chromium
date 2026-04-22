@@ -27,6 +27,7 @@ build_webui_tests("build") {
     "highlight_menu_test.ts",
     "highlighter_test.ts",
     "readability_anchors_integration_test.ts",
+    "readability_content_processing_test.ts",
     "readability_image_classifier_test.ts",
     "keyboard_util_test.ts",
     "language_menu_test.ts",

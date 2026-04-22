@@ -362,6 +362,13 @@ IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
+                       ReadabilityContentProcessing) {
+  RunSidePanelTest(
+      "side_panel/read_anything/readability_content_processing_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
                        ReadabilityAnchorsIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_anchors_integration_test.js",

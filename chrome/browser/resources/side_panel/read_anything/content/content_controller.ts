@@ -13,6 +13,7 @@ import {isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js'
 import {LinkStatus, ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {NodeStore} from './node_store.js';
+import {removeExtraneousElementsFrom} from './readability_content_processing.js';
 import {ReadabilityImageClassifier} from './readability_image_classifier.js';
 
 const DATA_PREFIX = 'data-';
@@ -312,14 +313,24 @@ export class ContentController {
       // Ensure link visibility is updated with user preferences.
       this.updateLinksForReadability(contentContainer);
 
-      // TODO(crbug.com/40910704): Remove ReadabilityImageClassifier once we
-      // share code with mobile's Reading Mode.
-      ReadabilityImageClassifier.processImagesIn(contentContainer);
+      this.applyReadabilityContentPostProcessing_(contentContainer);
       this.updateReadAloudState(contentFragment);
       this.listeners_.forEach(l => l.onContentChange());
       return contentFragment;
     }
     return null;
+  }
+
+  private applyReadabilityContentPostProcessing_(
+      contentContainer: HTMLElement) {
+    if (!isDistilledByReadability()) {
+      return;
+    }
+
+    // TODO(crbug.com/478229109): Remove duplicated code once we share code with
+    // mobile's Reading Mode.
+    removeExtraneousElementsFrom(contentContainer);
+    ReadabilityImageClassifier.processImagesIn(contentContainer);
   }
 
   updateContentForScreen2x(shadowRoot?: ShadowRoot): Node|null {
