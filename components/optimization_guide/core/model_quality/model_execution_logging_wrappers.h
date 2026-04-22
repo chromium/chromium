@@ -38,7 +38,9 @@ void ExecuteModelWithLogging(
     ModelBasedCapabilityKey feature,
     const RequestProto& request,
     std::optional<base::TimeDelta> execution_timeout,
-    ModelExecutionCallbackWithLogging<ModelExecutionProto> callback) {
+    ModelExecutionCallbackWithLogging<ModelExecutionProto> callback,
+    ModelExecutionServiceType service_type =
+        ModelExecutionServiceType::kDefault) {
   auto model_execution_proto = std::make_unique<ModelExecutionProto>();
   *model_execution_proto->mutable_request() = request;
   OptimizationGuideModelExecutionResultCallback internal_callback =
@@ -76,9 +78,10 @@ void ExecuteModelWithLogging(
                                     std::move(model_execution_proto));
           },
           std::move(callback), std::move(model_execution_proto));
-  executor->ExecuteModel(feature, request,
-                         {.execution_timeout = execution_timeout},
-                         std::move(internal_callback));
+  executor->ExecuteModel(
+      feature, request,
+      {.execution_timeout = execution_timeout, .service_type = service_type},
+      std::move(internal_callback));
 }
 
 }  // namespace optimization_guide

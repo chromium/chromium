@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/types/expected.h"
@@ -51,6 +52,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                     const google::protobuf::MessageLite& request_metadata,
                     const ModelExecutionOptions& options,
                     OptimizationGuideModelExecutionResultCallback callback) {
+        EXPECT_EQ(options.service_type, ModelExecutionServiceType::kDefault);
         std::move(callback).Run(OptimizationGuideModelExecutionResult(
                                     AnyWrapProto(response),
                                     std::make_unique<proto::ModelExecutionInfo>(
@@ -88,6 +90,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                    const google::protobuf::MessageLite& request_metadata,
                    const ModelExecutionOptions& options,
                    OptimizationGuideModelExecutionResultCallback callback) {
+        EXPECT_EQ(options.service_type, ModelExecutionServiceType::kDefault);
         std::move(callback).Run(
             OptimizationGuideModelExecutionResult(
                 base::unexpected(OptimizationGuideModelExecutionError::
@@ -120,6 +123,26 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
   ExecuteModelWithLogging(model_executor(),
                           ModelBasedCapabilityKey::kTabOrganization, request,
                           std::nullopt, std::move(callback));
+}
+
+TEST_F(ModelExecutionLoggingWrappersTest,
+       ExecuteModelWithLogging_CustomServiceType) {
+  EXPECT_CALL(*model_executor(),
+              ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
+                           An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce([](ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const ModelExecutionOptions& options,
+                   OptimizationGuideModelExecutionResultCallback callback) {
+        EXPECT_EQ(options.service_type, ModelExecutionServiceType::kPrivateAi);
+        std::move(callback).Run(OptimizationGuideModelExecutionResult(),
+                                /*log_entry=*/nullptr);
+      });
+
+  proto::TabOrganizationRequest request;
+  ExecuteModelWithLogging<proto::TabOrganizationLoggingData>(
+      model_executor(), ModelBasedCapabilityKey::kTabOrganization, request,
+      std::nullopt, base::DoNothing(), ModelExecutionServiceType::kPrivateAi);
 }
 
 }  // namespace

@@ -79,11 +79,16 @@ void AutofillAiModelExecutorImpl::GetPredictions(
           base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(form_data))
               .Then(base::BindOnce(std::move(on_model_executed), form_id));
+  optimization_guide::ModelExecutionServiceType service_type =
+      base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)
+          ? optimization_guide::ModelExecutionServiceType::kPrivateAi
+          : optimization_guide::ModelExecutionServiceType::kDefault;
+
   optimization_guide::ExecuteModelWithLogging(
       &model_executor_.get(),
       optimization_guide::ModelBasedCapabilityKey::kFormsClassifications,
       request, features::kAutofillAiServerModelExecutionTimeout.Get(),
-      std::move(wrapper_callback));
+      std::move(wrapper_callback), service_type);
 }
 
 base::WeakPtr<AutofillAiModelExecutor>

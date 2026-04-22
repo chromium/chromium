@@ -121,6 +121,34 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
       AutofillAiModelExecutionStatus::kSuccessNonEmptyResult, 1);
 }
 
+TEST_F(AutofillAiModelExecutorImplTest, PrivateAiServiceType) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiUsePrivateAi);
+
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   OptimizationGuideModelExecutionResultCallback callback) {
+        EXPECT_EQ(options.service_type,
+                  optimization_guide::ModelExecutionServiceType::kPrivateAi);
+        std::move(callback).Run(OptimizationGuideModelExecutionResult(),
+                                /*log_entry=*/nullptr);
+      });
+
+  MockOnModelExecutedCallback on_model_executed;
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
+
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+}
+
 // Tests that if the field index of a prediction is out of bounds of the
 // fields in the `FormData`, then nothing is written to the cache.
 TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
