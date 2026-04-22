@@ -57,6 +57,9 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.util.ColorUtils;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 /**
  * Maintains the status bar color for a {@link Window}.
  *
@@ -72,6 +75,8 @@ public class StatusBarColorController
                 TopResumedActivityChangedObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
+
+    private static final Map<Activity, Integer> sTaskDescriptionColors = new WeakHashMap<>();
 
     /** Provides the base status bar color. */
     public interface StatusBarColorProvider {
@@ -110,6 +115,7 @@ public class StatusBarColorController
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
     private @ColorInt int mBackgroundColorForNtp;
+    private @ColorInt int mTaskDescriptionBackgroundColor = Color.TRANSPARENT;
 
     // A flag to force using a light status bar icon color for NTP. When a customized background
     // image is set for NTP, a light status bar icon color is used. However, when NTP is scrolling
@@ -490,6 +496,26 @@ public class StatusBarColorController
                 mActivity,
                 statusBarColor,
                 mForceLightIconColorForNtp && isStandardNtp() && !mIsOmniboxFocused);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            @ColorInt
+            int tabStripColor =
+                    TabUiThemeUtil.getTabStripBackgroundColor(
+                            mWindow.getContext(),
+                            mIsIncognitoBranded,
+                            AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                            mIsTopResumedActivity);
+
+            @ColorInt int opaqueBgColor = ColorUtils.getOpaqueColor(tabStripColor);
+
+            if (mTaskDescriptionBackgroundColor != opaqueBgColor) {
+                mTaskDescriptionBackgroundColor = opaqueBgColor;
+                mActivity.setTaskDescription(
+                        new ActivityManager.TaskDescription.Builder()
+                                .setBackgroundColor(opaqueBgColor)
+                                .build());
+            }
+        }
     }
 
     /**
@@ -623,10 +649,21 @@ public class StatusBarColorController
             UiUtils.setStatusBarColor(window, color);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            var taskDescription =
-                    new ActivityManager.TaskDescription.Builder().setStatusBarColor(color).build();
-            activity.setTaskDescription(taskDescription);
+        @ColorInt int opaqueColor = ColorUtils.getOpaqueColor(color);
+        Integer currentPrimaryColor = sTaskDescriptionColors.get(activity);
+
+        if (currentPrimaryColor == null || currentPrimaryColor != opaqueColor) {
+            sTaskDescriptionColors.put(activity, opaqueColor);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                activity.setTaskDescription(
+                        new ActivityManager.TaskDescription.Builder()
+                                .setPrimaryColor(opaqueColor)
+                                .setStatusBarColor(opaqueColor)
+                                .build());
+            } else {
+                activity.setTaskDescription(
+                        new ActivityManager.TaskDescription(null, null, opaqueColor));
+            }
         }
     }
 
