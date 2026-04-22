@@ -57,6 +57,8 @@ class TabModalDialogViewAndroid : public TabModalDialogView {
           callback_on_button_clicked,
       base::OnceClosure callback_on_cancelled);
 
+  void Show();
+
   std::unique_ptr<TabModalDialogViewAndroid> dialog_;
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
   JavaObjectWeakGlobalRef jwindow_weak_ref_;
