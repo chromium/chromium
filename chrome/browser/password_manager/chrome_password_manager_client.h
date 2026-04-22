@@ -418,6 +418,8 @@ class ChromePasswordManagerClient
     apply_client_side_prediction_override_ = true;
   }
 
+  void OnNonFedCmFederatedLogin();
+
  protected:
   // Callable for tests.
   explicit ChromePasswordManagerClient(content::WebContents* web_contents);
@@ -514,6 +516,8 @@ class ChromePasswordManagerClient
   void PropagatePredictionsToPasswordManager(autofill::AutofillManager& manager,
                                              autofill::FormGlobalId form_id,
                                              FieldTypeSource source);
+
+  void OnNonPasswordLoginDetected();
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;

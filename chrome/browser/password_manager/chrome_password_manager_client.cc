@@ -1924,7 +1924,15 @@ void ChromePasswordManagerClient::ResourceLoadComplete(
 }
 
 void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
-  // If the federated login flow happens in the popup window, the owner of the
+  OnNonPasswordLoginDetected();
+}
+
+void ChromePasswordManagerClient::OnNonFedCmFederatedLogin() {
+  OnNonPasswordLoginDetected();
+}
+
+void ChromePasswordManagerClient::OnNonPasswordLoginDetected() {
+  // If the login flow happens in the popup window, the owner of the
   // window needs to handle the notification because the window usually gets
   // destroyed right after the login.
   content::RenderFrameHost* opener_rfh = web_contents()->GetOpener();
@@ -1936,7 +1944,7 @@ void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
           ? ChromePasswordManagerClient::FromWebContents(opener_web_contents)
           : nullptr;
   if (opener_client) {
-    opener_client->OnFedCmFederatedLogin(success);
+    opener_client->OnNonPasswordLoginDetected();
     return;
   }
 
