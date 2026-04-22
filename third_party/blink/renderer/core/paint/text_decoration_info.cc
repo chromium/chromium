@@ -250,11 +250,12 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
   decoration.is_flipped_underline_and_overline = flip_underline_and_overline_;
 
   // Compute the |Font| and its properties.
-  font_ = font_override_ ? font_override_ : decorating_box_style_->GetFont();
-  DCHECK(font_);
-  const SimpleFontData* font_data = font_->PrimaryFont();
+  const Font* font =
+      font_override_ ? font_override_ : decorating_box_style_->GetFont();
+  DCHECK(font);
+  const SimpleFontData* font_data = font->PrimaryFont();
   decoration.font_data = font_data;
-  decoration.computed_font_size = font_->GetFontDescription().ComputedSize();
+  decoration.computed_font_size = font->GetFontDescription().ComputedSize();
   decoration.ascent =
       font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
 

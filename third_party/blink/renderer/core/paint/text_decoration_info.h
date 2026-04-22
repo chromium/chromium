@@ -172,7 +172,6 @@ class CORE_EXPORT TextDecorationInfo {
   const TextDecorationLine selection_decoration_line_ =
       TextDecorationLine::kNone;
   const Color selection_decoration_color_;
-  const Font* font_ = nullptr;
 
   // These "overrides" fields force using the specified style or font instead
   // of the one from the decorating box. Note that using them means that the
