@@ -5838,14 +5838,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "ios-shop-card-impression-limits",
-    "owners": [
-      "davidjm@google.com",
-      "gloriafang@google.com"
-    ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "ios-skip-fre-default-browser-promo-in-eea",
     "owners": ["gujen@google.com", "bmcclure@google.com", "bling-mony-pod@google.com"],
     "expiry_milestone": 150

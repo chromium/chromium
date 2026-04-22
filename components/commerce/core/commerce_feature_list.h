@@ -40,7 +40,6 @@ extern const base::FeatureParam<bool> kPriceInsightsShowFeedback;
 extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 BASE_DECLARE_FEATURE(kTabResumptionShopCard);
-BASE_DECLARE_FEATURE(kShopCardImpressionLimits);
 
 std::string ShopCardExperiment();
 

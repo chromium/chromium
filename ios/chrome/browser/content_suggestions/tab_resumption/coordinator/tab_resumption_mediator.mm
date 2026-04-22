@@ -292,30 +292,7 @@ void ConfigureTabResumptionItemForShopCard(
   }
 }
 
-bool IsShopCardImpressionLimitsEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits) &&
-         (commerce::kShopCardVariation.Get().contains(
-              commerce::kShopCardArm3) ||
-          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
-          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5);
-}
 
-int GetImpressionLimit() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      commerce::kTabResumptionShopCard, commerce::kShopCardMaxImpressions,
-      kShopCardMaxImpressions);
-}
-
-const char* GetImpressionLimitPref() {
-  if (commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3)) {
-    return tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions;
-  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    return tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions;
-  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) {
-    return tab_resumption_prefs::kTabResumptionRegularUrlImpressions;
-  }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -393,7 +370,7 @@ class TabResumptionMediatorProxy {
   raw_ptr<page_image_service::ImageService> _pageImageService;
   // Other KeyedServices.
   raw_ptr<OptimizationGuideService> _optimizationGuideService;
-  raw_ptr<ImpressionLimitService> _impressionLimitService;
+
   raw_ptr<commerce::ShoppingService> _shoppingService;
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
   raw_ptr<PushNotificationService> _pushNotificationService;
@@ -423,7 +400,6 @@ class TabResumptionMediatorProxy {
              identityManager:(signin::IdentityManager*)identityManager
                      browser:(Browser*)browser
     optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
-      impressionLimitService:(ImpressionLimitService*)impressionLimitService
              shoppingService:(commerce::ShoppingService*)shoppingService
                bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
      pushNotificationService:(PushNotificationService*)pushNotificationService
@@ -470,7 +446,7 @@ class TabResumptionMediatorProxy {
       _optimizationGuideService->RegisterOptimizationTypes(
           {optimization_guide::proto::PRICE_TRACKING});
     }
-    _impressionLimitService = impressionLimitService;
+
     _shoppingService = shoppingService;
     _bookmarkModel = bookmarkModel;
     _pushNotificationService = pushNotificationService;
@@ -503,7 +479,7 @@ class TabResumptionMediatorProxy {
   _webStateList = nullptr;
   _pageImageService = nullptr;
   _optimizationGuideService = nullptr;
-  _impressionLimitService = nullptr;
+
   _shoppingService = nullptr;
   _bookmarkModel = nullptr;
   _pushNotificationService = nullptr;
@@ -739,12 +715,6 @@ class TabResumptionMediatorProxy {
       recordTabResumptionImpressionWithCustomization:
           static_cast<TabResumptionConfig*>(magicStackModule).shopCardData
                                              atIndex:index];
-
-  if (IsShopCardImpressionLimitsEnabled() && index == 0 &&
-      _impressionLimitService) {
-    _impressionLimitService->LogImpressionForURL(self.itemConfig.tabURL,
-                                                 GetImpressionLimitPref());
-  }
 }
 
 #pragma mark - Boolean Observer
@@ -871,16 +841,6 @@ class TabResumptionMediatorProxy {
 
 - (void)fetchShopCardDataForItemIfApplicable:(TabResumptionConfig*)item
                                          url:(const GURL&)resumptionURL {
-  if (IsShopCardImpressionLimitsEnabled() && _impressionLimitService) {
-    // TODO(crbug.com/408252386) Add unit tests for impression count
-    // integration.
-    std::optional<int> count = _impressionLimitService->GetImpressionCount(
-        resumptionURL, GetImpressionLimitPref());
-    if (count.has_value() && count.value() >= GetImpressionLimit()) {
-      return;
-    }
-  }
-
   if (commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3) ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
     GURL url = resumptionURL;

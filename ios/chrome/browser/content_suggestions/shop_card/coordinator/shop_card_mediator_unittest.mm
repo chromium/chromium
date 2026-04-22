@@ -55,7 +55,7 @@ class ShopCardMediatorTest : public PlatformTest {
  public:
   ShopCardMediatorTest() {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features*/ {commerce::kShopCardImpressionLimits},
+        /* enabled_features*/ {},
         /* disabled_features*/ {});
 
     TestProfileIOS::Builder builder;

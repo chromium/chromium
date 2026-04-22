@@ -1607,11 +1607,6 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
-const char kShopCardImpressionLimitsName[] =
-    "Enables ShopCard Impression limits";
-const char kShopCardImpressionLimitsDescription[] =
-    "Limits the number of times ShopCards can be shown in the Magic Stack";
-
 const char kShopCardName[] = "Enables Tab Resumption ShopCard";
 const char kShopCardDescription[] =
     "Enables being able to show Tab Resumption ShopCard in the Magic Stack";

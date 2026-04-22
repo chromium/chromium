@@ -78,7 +78,7 @@ class ImpressionLimitServiceTest : public PlatformTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features*/ {commerce::kShopCardImpressionLimits},
+        /* enabled_features*/ {},
         /* disabled_features*/ {});
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
     client->SetIsSyncFeatureEnabledIncludingBookmarks(true);

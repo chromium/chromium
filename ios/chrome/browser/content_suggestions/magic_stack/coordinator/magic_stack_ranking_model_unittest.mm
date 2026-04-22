@@ -315,7 +315,6 @@ class MagicStackRankingModelTest : public PlatformTest {
                  identityManager:identityManager
                          browser:browser_.get()
         optimizationGuideService:nil
-          impressionLimitService:nil
                  shoppingService:nil
                    bookmarkModel:nil
          pushNotificationService:nil

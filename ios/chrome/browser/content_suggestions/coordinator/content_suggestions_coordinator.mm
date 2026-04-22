@@ -381,10 +381,6 @@ using segmentation_platform::TipIdentifier;
                        browser:self.browser
       optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
                                    profile)
-        impressionLimitService:
-            base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)
-                ? ImpressionLimitServiceFactory::GetForProfile(profile)
-                : nil
                shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                    profile)
                  bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)

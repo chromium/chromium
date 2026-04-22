@@ -10,7 +10,7 @@
 class AuthenticationService;
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
-class ImpressionLimitService;
+
 @protocol NewTabPageActionsDelegate;
 class OptimizationGuideService;
 class PrefService;
@@ -61,7 +61,6 @@ class IdentityManager;
              identityManager:(signin::IdentityManager*)identityManager
                      browser:(Browser*)browser
     optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
-      impressionLimitService:(ImpressionLimitService*)impressionLimitService
              shoppingService:(commerce::ShoppingService*)shoppingService
                bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
      pushNotificationService:(PushNotificationService*)pushNotificationService

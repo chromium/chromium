@@ -1859,10 +1859,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kTabResumptionShopCard,
                                     kShopCardOverrideOptions,
                                     "TabResumptionShopCard")},
-    {"ios-shop-card-impression-limits",
-     flag_descriptions::kShopCardImpressionLimitsName,
-     flag_descriptions::kShopCardImpressionLimitsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(commerce::kShopCardImpressionLimits)},
+
     {"ios-segmentation-ephemeral-card-ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,

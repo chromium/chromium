@@ -980,9 +980,6 @@ extern const char kShareInVerbatimMatchDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
-extern const char kShopCardImpressionLimitsName[];
-extern const char kShopCardImpressionLimitsDescription[];
-
 extern const char kShopCardName[];
 extern const char kShopCardDescription[];
 

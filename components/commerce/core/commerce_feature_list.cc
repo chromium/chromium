@@ -157,9 +157,6 @@ BASE_FEATURE(kDiscountAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 // Shopping variations to Tab resumption.
 BASE_FEATURE(kTabResumptionShopCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Impression limits on ShopCards
-BASE_FEATURE(kShopCardImpressionLimits, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
