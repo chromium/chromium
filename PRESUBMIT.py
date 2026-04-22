@@ -2117,8 +2117,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
-        pattern=(r'/FindBrowserWithUiElementContext|'
-                 r'FindBrowserWithTab|'
+        pattern=(r'/FindBrowserWithTab|'
                  r'FindBrowserWithGroup|'
                  r'FindTabbedBrowser|'
                  r'FindAnyBrowser|'
