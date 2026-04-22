@@ -265,8 +265,9 @@ class LegacyOutputAdapter:
     if self._current_proccess_fn:
       self._current_proccess_fn(line)
       self._last_line = line
+      cols = self._terminal_columns if self._terminal_columns > 0 else 80
       self._last_line_teriminal_lines = int(
-          (len(line) - 1) / self._terminal_columns) + 1
+          (len(line) - 1) / cols) + 1
     if line.startswith(self.STEP_CLOSED_TEXT):
       # Text outside of steps will use the last processor otherwise
       self._current_log_level = logging.DEBUG
