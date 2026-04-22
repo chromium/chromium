@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -1484,7 +1485,8 @@ public class AutofillProfilesFragmentTest {
         onView(withText("Done")).perform(click());
         ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(sEntityDataManager)
-                .addOrUpdateEntityInstance(any(), localSaveFallbackCaptor.capture());
+                .addOrUpdateEntityInstance(
+                        any(), anyInt(), anyInt(), localSaveFallbackCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
 

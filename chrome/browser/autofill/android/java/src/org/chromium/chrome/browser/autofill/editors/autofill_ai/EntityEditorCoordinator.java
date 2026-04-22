@@ -31,8 +31,13 @@ public class EntityEditorCoordinator {
          * The user committed changes by pressing the "Done" button.
          *
          * @param entityInstance the entity instance with all updates applied.
+         * @param descriptionStringId the resource ID of the string used to describe the storage
+         *     used.
+         * @param acceptButtonStringId the resource ID of the string used as the accept button for
+         *     the consent.
          */
-        default void onDone(EntityInstance entityInstance) {}
+        default void onDone(
+                EntityInstance entityInstance, int descriptionStringId, int acceptButtonStringId) {}
 
         /**
          * The user has confirmed deletion of this entity instance.

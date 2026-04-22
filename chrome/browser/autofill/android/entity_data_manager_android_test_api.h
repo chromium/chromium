@@ -23,10 +23,12 @@ class EntityDataManagerAndroidTestApi {
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
       EntityInstance::RecordType targeted_record_type,
+      int description_string_id = 0,
+      int accept_button_string_id = 0,
       base::OnceClosure on_local_save_fallback = base::DoNothing()) {
     entity_data_manager_android_->AddOrUpdateEntityInstance(
-        std::move(entity_instance), targeted_record_type,
-        std::move(on_local_save_fallback));
+        std::move(entity_instance), targeted_record_type, description_string_id,
+        accept_button_string_id, std::move(on_local_save_fallback));
   }
 
  private:

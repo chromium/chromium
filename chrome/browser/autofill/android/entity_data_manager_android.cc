@@ -23,6 +23,7 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -37,12 +38,14 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -56,9 +59,10 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
     const jni_zero::JavaRef<jobject>& obj,
     const GoogleGroupsManager* google_groups_manager,
     PrefService* prefs,
-    const signin::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     const syncer::SyncService* sync_service,
     const account_settings::AccountSettingService* account_setting_service,
+    consent_auditor::ConsentAuditor* consent_auditor,
     bool is_off_the_record,
     WalletPassAccessManager* wallet_pass_access_manager,
     EntityDataManager* entity_data_manager)
@@ -68,6 +72,7 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       account_setting_service_(account_setting_service),
+      consent_auditor_(consent_auditor),
       is_off_the_record_(is_off_the_record),
       wallet_pass_access_manager_(wallet_pass_access_manager),
       entity_data_manager_(CHECK_DEREF(entity_data_manager)) {
@@ -116,6 +121,7 @@ static int64_t JNI_EntityDataManager_Init(JNIEnv* env,
           profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
           SyncServiceFactory::GetForProfile(profile),
           AccountSettingServiceFactory::GetForBrowserContext(profile),
+          ConsentAuditorFactory::GetForProfile(profile),
           profile->IsOffTheRecord(),
           WalletPassAccessManagerFactory::GetForProfile(profile),
           entity_data_manager);
@@ -182,6 +188,8 @@ void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jEntity,
+    int32_t description_string_id,
+    int32_t accept_button_string_id,
     base::OnceClosure on_local_save_fallback) {
   EntityInstanceAndroid entity_android =
       EntityInstanceAndroid::FromJavaEntityInstance(env, jEntity);
@@ -197,12 +205,15 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
           EntityInstance::EntityId(entity_android.guid)));
 
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
+                            description_string_id, accept_button_string_id,
                             std::move(on_local_save_fallback));
 }
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     EntityInstance entity_instance,
     EntityInstance::RecordType targeted_record_type,
+    int description_string_id,
+    int accept_button_string_id,
     base::OnceClosure on_local_save_fallback) {
   if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     const bool is_masked_storage_supported = IsMaskedStorageSupported(
@@ -211,11 +222,15 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     // settings. Therefore, we only ever "Save" them. Any downstream "Update"
     // attempts are inapplicable.
     if (is_masked_storage_supported) {
-      // TODO(crbug.com/467563385): Handle consent logging when
-      // wallet::features::kWalletApiPrivatePassesConsent is enabled, for now
-      // pass a random/default session id as it is a no-op.
+      consent_auditor::ConsentAuditor::SessionId session_id;
+      if (base::FeatureList::IsEnabled(
+              wallet::features::kWalletApiPrivatePassesConsent)) {
+        session_id = RecordWalletPrivatePassConsent(
+            description_string_id, accept_button_string_id, *consent_auditor_,
+            *identity_manager_);
+      }
       wallet_pass_access_manager_->SaveWalletEntityInstance(
-          entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
+          entity_instance, session_id,
           base::BindOnce(
               &EntityDataManagerAndroid::OnSavePrivatePassToWalletFinished,
               weak_ptr_factory_.GetWeakPtr(), std::move(on_local_save_fallback),

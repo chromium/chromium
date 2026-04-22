@@ -86,9 +86,17 @@ public class EntityDataManagerTest {
     @Test
     public void testAddOrUpdateEntityInstance() {
         Runnable localSaveFallback = () -> {};
-        mEntityDataManager.addOrUpdateEntityInstance(mEntityInstance, localSaveFallback);
+        int descriptionStringId = 123;
+        int acceptButtonStringId = 456;
+        mEntityDataManager.addOrUpdateEntityInstance(
+                mEntityInstance, descriptionStringId, acceptButtonStringId, localSaveFallback);
         verify(mEntityDataManagerJniMock)
-                .addOrUpdateEntityInstance(NATIVE_PTR, mEntityInstance, localSaveFallback);
+                .addOrUpdateEntityInstance(
+                        NATIVE_PTR,
+                        mEntityInstance,
+                        descriptionStringId,
+                        acceptButtonStringId,
+                        localSaveFallback);
     }
 
     @Test

@@ -21,6 +21,10 @@
 class GoogleGroupsManager;
 class PrefService;
 
+namespace consent_auditor {
+class ConsentAuditor;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -46,9 +50,10 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
       const jni_zero::JavaRef<jobject>& obj,
       const GoogleGroupsManager* google_groups_manager,
       PrefService* prefs,
-      const signin::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       const syncer::SyncService* sync_service,
       const account_settings::AccountSettingService* account_setting_service,
+      consent_auditor::ConsentAuditor* consent_auditor,
       bool is_off_the_record,
       WalletPassAccessManager* wallet_pass_access_manager,
       EntityDataManager* entity_data_manager);
@@ -85,8 +90,15 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // because of a failed server call or because the user became ineligible,
   // the `on_local_save_fallback` is run, which displays the user a feedback
   // message about their data being stored locally instead.
+  // `description_string_id` and `accept_button_string_id` are the resource IDs
+  // of the strings used in the UI while creating the description and the button
+  // to accept it. Note that these resources IDs are only used for logging
+  // purposes, in the case of adding a new private entity that will stored in
+  // Google Wallet.
   void AddOrUpdateEntityInstance(JNIEnv* env,
                                  const jni_zero::JavaRef<jobject>& jEntity,
+                                 int32_t description_string_id,
+                                 int32_t accept_button_string_id,
                                  base::OnceClosure on_local_save_fallback);
 
   // Gets information about all entities to be displayed in the management
@@ -159,9 +171,16 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // `targeted_record_type` will `kServerWallet`, which will lead to the
   // `on_local_save_fallback` being run, displaying a feedback message to users
   // to let them know the entity was stored locally instead.
+  // `description_string_id` and `accept_button_string_id` are the resource IDs
+  // of the strings used in the UI while creating the description and the button
+  // to accept it. Note that these resources IDs are only used for logging
+  // purposes, in the case of adding a new private entity that will stored in
+  // Google Wallet.
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
       EntityInstance::RecordType targeted_record_type,
+      int description_string_id,
+      int accept_button_string_id,
       base::OnceClosure on_local_save_fallback);
 
   // Called after an attempt to save a private pass to Google Wallet.
@@ -182,10 +201,11 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
 
   const raw_ptr<const GoogleGroupsManager> google_groups_manager_;
   const raw_ptr<PrefService> prefs_;
-  const raw_ptr<const signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<const syncer::SyncService> sync_service_;
   const raw_ptr<const account_settings::AccountSettingService>
       account_setting_service_;
+  const raw_ptr<consent_auditor::ConsentAuditor> consent_auditor_;
   const bool is_off_the_record_;
   const raw_ptr<WalletPassAccessManager> wallet_pass_access_manager_;
 

@@ -159,14 +159,20 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 }
 
                 @Override
-                public void onDone(EntityInstance entityInstance) {
+                public void onDone(
+                        EntityInstance entityInstance,
+                        int descriptionStringId,
+                        int acceptButtonStringId) {
                     EntityDataManager entityDataManager =
                             EntityDataManagerFactory.getForProfile(getProfile());
                     if (entityDataManager == null) {
                         return;
                     }
                     entityDataManager.addOrUpdateEntityInstance(
-                            entityInstance, () -> onLocalSaveFallback());
+                            entityInstance,
+                            descriptionStringId,
+                            acceptButtonStringId,
+                            () -> onLocalSaveFallback());
                 }
 
                 @Override

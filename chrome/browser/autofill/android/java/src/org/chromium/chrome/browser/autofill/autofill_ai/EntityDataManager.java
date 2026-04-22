@@ -94,11 +94,19 @@ public class EntityDataManager implements Destroyable {
     }
 
     /** Saves or update an entity. */
-    public void addOrUpdateEntityInstance(EntityInstance entity, Runnable onLocalSaveFallback) {
+    public void addOrUpdateEntityInstance(
+            EntityInstance entity,
+            int descriptionStringId,
+            int acceptButtonStringId,
+            Runnable onLocalSaveFallback) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
                 .addOrUpdateEntityInstance(
-                        mNativeEntityDataManagerAndroid, entity, onLocalSaveFallback);
+                        mNativeEntityDataManagerAndroid,
+                        entity,
+                        descriptionStringId,
+                        acceptButtonStringId,
+                        onLocalSaveFallback);
     }
 
     /**
@@ -290,6 +298,8 @@ public class EntityDataManager implements Destroyable {
         void addOrUpdateEntityInstance(
                 long nativeEntityDataManagerAndroid,
                 EntityInstance entity,
+                int descriptionStringId,
+                int acceptButtonStringId,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
 
         @JniType("std::vector<EntityInstanceWithLabels>")
