@@ -41,7 +41,7 @@ BASE_FEATURE(kGmsCoreLocationRequestParamOverride,
 
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether to enable Web Serial API for wired devices on Android.
-BASE_FEATURE(kWebSerialWiredDevicesAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebSerialWiredDevicesAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
