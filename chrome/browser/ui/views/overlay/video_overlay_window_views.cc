@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -52,6 +53,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
+#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -2022,6 +2024,11 @@ void VideoOverlayWindowViews::SetPlaybackControlsVisibility(bool is_visible) {
 
   show_playback_controls_ = is_visible;
   OnUpdateControlsBounds();
+}
+
+void VideoOverlayWindowViews::SetImmersiveVideoOptions(
+    blink::mojom::ImmersiveOptionsPtr options) {
+  NOTREACHED();
 }
 
 void VideoOverlayWindowViews::OnNativeWidgetDestroying() {

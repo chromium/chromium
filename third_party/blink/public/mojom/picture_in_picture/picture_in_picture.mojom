@@ -9,6 +9,29 @@ import "services/media_session/public/mojom/media_session.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Represents the stereo mode for immersive Picture-in-Picture playback.
+enum ImmersiveStereoMode {
+  kMono = 0,
+  kMultiviewLeftPrimary = 1,
+  kMultiviewRightPrimary = 2,
+  kSideBySide = 3,
+  kTopBottom = 4,
+};
+
+// Represents the projection type for immersive Picture-in-Picture playback.
+enum ImmersiveProjectionType {
+  kQuad = 0,
+  kSphere = 1,
+  kHemisphere = 2,
+  kCustom = 3,
+};
+
+// Represents the options for an immersive Picture-in-Picture session.
+struct ImmersiveOptions {
+  ImmersiveStereoMode stereo_mode;
+  ImmersiveProjectionType projection_type;
+};
+
 // PictureInPictureSessionObserver is associated to a PictureInPictureSession at
 // its creation. It receives all the events associated to the session lifetime.
 interface PictureInPictureSessionObserver {
@@ -68,6 +91,8 @@ interface PictureInPictureService {
   //                video is displayed in physical pixels. This does not need
   //                to be exact; it will only be used to help the visual
   //                transition into picture in picture.
+  // immersive_options: Options for starting an immersive Picture-in-Picture
+  //                    session.
   //
   // TODO: Now that we are passing |player_remote|, it should be possible to get
   // rid of |player_id| once the few remaining uses of it in the browser process
@@ -79,6 +104,8 @@ interface PictureInPictureService {
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,
       pending_remote<PictureInPictureSessionObserver> observer,
-      gfx.mojom.Rect source_bounds)
-          => (pending_remote<PictureInPictureSession>? session, gfx.mojom.Size size);
+      gfx.mojom.Rect source_bounds,
+      ImmersiveOptions? immersive_options)
+          => (pending_remote<PictureInPictureSession>? session,
+              gfx.mojom.Size size);
 };

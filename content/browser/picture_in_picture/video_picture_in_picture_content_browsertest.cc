@@ -96,6 +96,9 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetPlaybackControlsVisibility(bool is_visible) override {
     playback_controls_visible_ = is_visible;
   }
+  MOCK_METHOD(void,
+              SetImmersiveVideoOptions,
+              (blink::mojom::ImmersiveOptionsPtr options));
 
   bool playback_controls_visible() const { return playback_controls_visible_; }
 

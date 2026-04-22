@@ -13,6 +13,7 @@
 #include "content/public/browser/overlay_window.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
+#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -92,6 +93,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
   void SetPlaybackControlsVisibility(bool is_visible) override {}
+  void SetImmersiveVideoOptions(
+      blink::mojom::ImmersiveOptionsPtr options) override {}
 
   void Initialize(JNIEnv* env,
                   const base::android::JavaRef<jobject>& self,

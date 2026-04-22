@@ -127,6 +127,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(NextSlide, void());
   MOCK_METHOD1(SeekTo, void(base::TimeDelta time));
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
+  MOCK_CONST_METHOD0(IsImmersive, bool());
   void GetMediaImage(
       const media_session::MediaImage& image,
       int minimum_size_px,

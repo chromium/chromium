@@ -135,7 +135,7 @@ class TabWebContentsDelegateAndroid
   void OnFindTabHelperDestroyed(find_in_page::FindTabHelper* helper) override;
 
   bool ShouldEnableEmbeddedMediaExperience() const;
-  bool IsPictureInPictureEnabled() const;
+  bool IsPictureInPictureEnabled() const override;
   bool CanShowAppBanners() const;
 
   // Returns true if this tab is currently presented in the context of custom

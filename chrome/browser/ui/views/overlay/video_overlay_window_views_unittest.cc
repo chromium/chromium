@@ -161,6 +161,7 @@ class TestVideoPictureInPictureWindowController
     return std::nullopt;
   }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
+  MOCK_METHOD(bool, IsImmersive, (), (const, override));
   void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 
  private:

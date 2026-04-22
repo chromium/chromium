@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
+#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -940,6 +941,12 @@ class CONTENT_EXPORT WebContentsDelegate {
   // If this returns non-null, overrides the behavior of
   // WebContents::GetResponsibleWebContents.
   virtual WebContents* GetResponsibleWebContents(WebContents* web_contents);
+
+  // Returns true if Picture-in-Picture is enabled.
+  virtual bool IsPictureInPictureEnabled() const;
+
+  // Returns true if immersive playback is enabled.
+  virtual bool IsImmersivePlaybackEnabled() const;
 
  protected:
   virtual ~WebContentsDelegate();

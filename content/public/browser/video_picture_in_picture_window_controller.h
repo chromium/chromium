@@ -84,6 +84,9 @@ class VideoPictureInPictureWindowController
   virtual void SetOnWindowCreatedNotifyObserversCallback(
       base::OnceClosure on_window_created_notify_observers_callback) = 0;
 
+  // Returns whether the current Picture-in-Picture session is immersive.
+  virtual bool IsImmersive() const = 0;
+
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to
   // create an instance.

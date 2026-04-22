@@ -20,8 +20,8 @@ class PictureInPictureServiceMock {
     this.interceptor_.start();
   }
 
-  async startSession(playerId, surfaceId, naturalSize, showPlayPauseButton,
-        observer, callback) {
+  async startSession(playerId, playerRemote, surfaceId, naturalSize,
+      showPlayPauseButton, observer, sourceBounds, immersiveOptions) {
     return {session: null, size: {width: 0, height: 0}};
   }
 };

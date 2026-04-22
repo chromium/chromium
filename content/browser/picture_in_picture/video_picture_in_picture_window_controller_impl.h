@@ -62,6 +62,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   VideoOverlayWindow* GetWindowForTesting() override;
   void UpdateLayerBounds() override;
   bool IsPlayerActive() override;
+  bool IsImmersive() const override;
   WebContents* GetWebContents() override;
   WebContents* GetChildWebContents() override;
   bool TogglePlayPause() override;
@@ -144,6 +145,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
       bool show_play_pause_button,
       mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
       const gfx::Rect& source_bounds,
+      blink::mojom::ImmersiveOptionsPtr immersive_options,
       mojo::PendingRemote<blink::mojom::PictureInPictureSession>*
           session_remote,
       gfx::Size* window_size);
@@ -255,6 +257,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;
+
+  // Whether the current Picture-in-Picture session is in immersive mode.
+  bool is_immersive_ = false;
 
   // Callback to notify the observers about the video PiP window creation event.
   base::OnceClosure on_window_created_notify_observers_callback_;

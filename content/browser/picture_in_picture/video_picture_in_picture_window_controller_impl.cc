@@ -168,6 +168,10 @@ bool VideoPictureInPictureWindowControllerImpl::IsPlayerActive() {
       active_session_->player_id().value());
 }
 
+bool VideoPictureInPictureWindowControllerImpl::IsImmersive() const {
+  return is_immersive_;
+}
+
 WebContents* VideoPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
@@ -288,14 +292,36 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
     const gfx::Rect& source_bounds,
+    blink::mojom::ImmersiveOptionsPtr immersive_options,
     mojo::PendingRemote<blink::mojom::PictureInPictureSession>* session_remote,
     gfx::Size* window_size) {
-  auto result = GetWebContentsImpl()->EnterPictureInPicture();
+  if (window_) {
+    // We shouldn't be switching between standard and immersive
+    // Picture-in-Picture modes if a window already exists. Immersive mode is
+    // currently only supported on Android XR, where Picture-in-Picture is
+    // disabled. Furthermore, the window types for these modes are different and
+    // cannot be reused.
+    if (IsImmersive() != !immersive_options.is_null()) {
+      mojo::ReportBadMessage("Inconsistent immersive state in StartSession");
+      return PictureInPictureResult::kNotSupported;
+    }
+  }
+
+  is_immersive_ = !immersive_options.is_null();
+
+  PictureInPictureResult result = PictureInPictureResult::kNotSupported;
+  WebContentsDelegate* delegate = web_contents()->GetDelegate();
+  if (delegate && (IsImmersive() ? delegate->IsImmersivePlaybackEnabled()
+                                 : delegate->IsPictureInPictureEnabled())) {
+    result = GetWebContentsImpl()->EnterPictureInPicture();
+  }
 
   // Picture-in-Picture may not be supported by all embedders, so we should only
   // create the session if the EnterPictureInPicture request was successful.
-  if (result != PictureInPictureResult::kSuccess)
+  if (result != PictureInPictureResult::kSuccess) {
+    is_immersive_ = false;
     return result;
+  }
 
   if (active_session_) {
     active_session_->Disconnect();
@@ -316,6 +342,12 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
             this);
   }
   DCHECK(window_) << "Picture in Picture requires a valid window.";
+
+  // If this is an immersive Picture-in-Picture session, set the immersive
+  // options on the window.
+  if (immersive_options) {
+    window_->SetImmersiveVideoOptions(std::move(immersive_options));
+  }
 
   // If the window is closed by the system, then the picture in picture session
   // will end. The renderer must call `StartSession()` again.
@@ -341,6 +373,7 @@ void VideoPictureInPictureWindowControllerImpl::OnServiceDeleted(
   active_session_->Shutdown();
   active_session_ = nullptr;
   pip_session_media_position_ = std::nullopt;
+  is_immersive_ = false;
 }
 
 void VideoPictureInPictureWindowControllerImpl::SetShowPlayPauseButton(
@@ -627,6 +660,7 @@ void VideoPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
   active_session_->Shutdown();
   active_session_ = nullptr;
   pip_session_media_position_ = std::nullopt;
+  is_immersive_ = false;
 }
 
 void VideoPictureInPictureWindowControllerImpl::CloseInternal(
