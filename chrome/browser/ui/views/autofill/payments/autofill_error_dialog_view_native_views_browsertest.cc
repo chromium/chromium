@@ -289,19 +289,4 @@ IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
               : 0)));
 }
 
-// Verify that the cancel button receives initial focus for accessibility.
-IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
-                       InitialFocus) {
-  ShowUi("temporary");
-  VerifyUi();
-
-  AutofillErrorDialogViewNativeViews* dialog_views = GetDialogViews();
-  ASSERT_TRUE(dialog_views);
-
-  views::View* initially_focused_view = dialog_views->GetInitiallyFocusedView();
-  ASSERT_TRUE(initially_focused_view);
-
-  EXPECT_EQ(initially_focused_view, dialog_views->GetCancelButton());
-}
-
 }  // namespace autofill

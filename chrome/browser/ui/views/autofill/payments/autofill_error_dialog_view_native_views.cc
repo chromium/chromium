@@ -102,8 +102,11 @@ std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
   return controller_ ? controller_->GetTitle() : std::u16string();
 }
 
-views::View* AutofillErrorDialogViewNativeViews::GetInitiallyFocusedView() {
-  return GetCancelButton();
+void AutofillErrorDialogViewNativeViews::OnWidgetInitialized() {
+  views::DialogDelegateView::OnWidgetInitialized();
+  if (auto* cancel_button = GetCancelButton()) {
+    cancel_button->RequestFocus();
+  }
 }
 
 base::WeakPtr<AutofillErrorDialogView>
