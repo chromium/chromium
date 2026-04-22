@@ -488,6 +488,13 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
     return;
   }
 
+  // Aggregate types are exempt from the complex ctor/dtor checks despite the
+  // potential for binary bloat to allow the use of designated initializers.
+  if (options_.relax_ctor_checks_for_aggregates &&
+      IsRecursivelyAggregate(record)) {
+    return;
+  }
+
   // Skip records that derive from ignored base classes.
   if (HasIgnoredBases(record)) {
     return;
@@ -618,6 +625,21 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
       }
     }
   }
+}
+
+bool FindBadConstructsConsumer::IsRecursivelyAggregate(CXXRecordDecl* record) {
+  if (!record->isAggregate()) {
+    return false;
+  }
+  // Also make sure all base classes are aggregates, which `isAggregate()` does
+  // not currently enforce.
+  for (const auto& base : record->bases()) {
+    CXXRecordDecl* base_record = base.getType()->getAsCXXRecordDecl();
+    if (base_record && !IsRecursivelyAggregate(base_record)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 SuppressibleDiagnosticBuilder

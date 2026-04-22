@@ -93,6 +93,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.enable_match_profiling = true;
     } else if (arg == "check-std-ranges-pipe-operator") {
       options_.check_std_ranges_pipe_operator = true;
+    } else if (arg == "relax-ctor-checks-for-aggregates") {
+      options_.relax_ctor_checks_for_aggregates = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

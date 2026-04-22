@@ -1,0 +1,28 @@
+In file included from aggregate_ctor.cpp:5:
+./aggregate_ctor.h:22:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+struct VirtualNotAggregate {
+^
+./aggregate_ctor.h:22:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+./aggregate_ctor.h:33:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+struct PrivateNotAggregate {
+^
+./aggregate_ctor.h:33:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+./aggregate_ctor.h:44:3: warning: [chromium-style] Complex constructor has an inlined body.
+  UserDeclaredNotAggregate() {}
+  ^
+./aggregate_ctor.h:43:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+struct UserDeclaredNotAggregate {
+^
+./aggregate_ctor.h:63:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+struct DerivedNotAggregate1 : VirtualNotAggregate {
+^
+./aggregate_ctor.h:63:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+./aggregate_ctor.h:72:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+struct DerivedNotAggregate2 : PrivateNotAggregate {
+^
+./aggregate_ctor.h:72:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+./aggregate_ctor.h:81:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line constructor.
+struct DerivedNotAggregate3 : UserDeclaredNotAggregate {
+^
+./aggregate_ctor.h:81:1: warning: [chromium-style] Complex class/struct needs an explicit out-of-line destructor.
+12 warnings generated.

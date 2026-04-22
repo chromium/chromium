@@ -75,6 +75,8 @@ class FindBadConstructsConsumer
   void CheckCtorDtorWeight(clang::SourceLocation record_location,
                            clang::CXXRecordDecl* record);
 
+  bool IsRecursivelyAggregate(clang::CXXRecordDecl* record);
+
   // Returns a diagnostic builder that only emits the diagnostic if the spelling
   // location (the actual characters that make up the token) is not in an
   // ignored file. This is useful for situations where the token might originate

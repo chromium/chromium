@@ -1,2 +1,1 @@
--target i386-pc-win32
 -Xclang -plugin-arg-find-bad-constructs -Xclang relax-ctor-checks-for-aggregates
