@@ -184,6 +184,15 @@ declare_args() {
   clang_warning_suppression_file = ""
 }
 
+declare_args() {
+  # Whether to enable strict deps checks. This ensures that your dependencies
+  # are correctly declared (no missing deps and no accessing transitive deps).
+  enable_strict_deps = false
+}
+if (enable_strict_deps) {
+  generate_modulemap = "textual"
+}
+
 # ==============================================================================
 # TOOLCHAIN SETUP
 # ==============================================================================
@@ -604,6 +613,9 @@ foreach(_target_type,
         if (!defined(strict_deps) || strict_deps) {
           configs += [ "//build/modules:strict_deps" ]
         }
+        if (!defined(invoker.generate_modulemap) && defined(generate_modulemap)) {
+          generate_modulemap = generate_modulemap
+        }
       }
 
       # Consumed by the unsafe-buffers plugin during compile.
@@ -729,6 +741,9 @@ foreach(_target_type,
         # Strict deps check requires libcxx modules.
         if (!defined(strict_deps) || strict_deps) {
           configs += [ "//build/modules:strict_deps" ]
+        }
+        if (!defined(invoker.generate_modulemap) && defined(generate_modulemap)) {
+          generate_modulemap = generate_modulemap
         }
       }
 

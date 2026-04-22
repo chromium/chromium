@@ -53,10 +53,6 @@ declare_args() {
   # Unified modules controls whether we unify sysroot, libc++, and builtins
   # into a single module.
   use_unified_system_module = false
-
-  # Whether to enable strict deps checks. This ensures that your dependencies
-  # are correctly declared (no missing deps and no accessing transitive deps).
-  enable_strict_deps = false
 }
 
 if (enable_strict_deps) {
