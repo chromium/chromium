@@ -83,10 +83,14 @@ void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
                                          DigitalIdentityCallback callback) {
   TRACE_EVENT("content.digitalcredentials",
               "DigitalIdentityProviderAndroid::Get");
-  callback_ = std::move(callback);
-
   std::optional<std::string> request_str = base::WriteJson(request);
-  CHECK(request_str.has_value());
+  if (!request_str.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(RequestStatusForMetrics::kErrorInvalidJson));
+    return;
+  }
+
+  callback_ = std::move(callback);
 
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
   if (web_contents && web_contents->GetTopLevelNativeWindow()) {
@@ -104,9 +108,14 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
                                             DigitalIdentityCallback callback) {
   TRACE_EVENT("content.digitalcredentials",
               "DigitalIdentityProviderAndroid::Create");
-  callback_ = std::move(callback);
   std::optional<std::string> request_str = base::WriteJson(request);
-  CHECK(request_str.has_value());
+  if (!request_str.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(RequestStatusForMetrics::kErrorInvalidJson));
+    return;
+  }
+
+  callback_ = std::move(callback);
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
   if (web_contents && web_contents->GetTopLevelNativeWindow()) {
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
