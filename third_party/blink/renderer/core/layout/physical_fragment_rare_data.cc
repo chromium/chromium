@@ -167,6 +167,7 @@ PhysicalFragmentRareData::RareField::RareField(
     union {
       std::unique_ptr<int> pointer;
       LayoutUnit units[4];
+      Vector<int> vector;
     };
     uint8_t type;
   };
