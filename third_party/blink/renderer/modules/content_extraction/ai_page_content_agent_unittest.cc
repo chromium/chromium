@@ -4214,12 +4214,14 @@ TEST_F(AIPageContentAgentTest,
 TEST_F(AIPageContentAgentTest,
        NodeIdAllowlist_EmptyOptionsSuppressTypeBasedIds) {
   // With explicit but empty options, regular structural nodes should not emit
-  // ids.
+  // ids. The APC root still needs one so later metadata can point back to it.
   LoadNodeIdPolicyParagraphFixture();
 
   GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   const auto& root = ContentRootNode();
+  ASSERT_TRUE(root.content_attributes);
+  ASSERT_TRUE(root.content_attributes->dom_node_id.has_value());
   ASSERT_EQ(root.children_nodes.size(), 1u);
   const auto& paragraph = *root.children_nodes[0];
   EXPECT_FALSE(paragraph.content_attributes->dom_node_id.has_value());

@@ -2292,6 +2292,11 @@ bool AIPageContentAgent::ContentBuilder::ShouldEmitNodeIdForOutput(
     return true;
   }
 
+  // The LayoutView-backed root must stay addressable in selective mode.
+  if (object.IsLayoutView()) {
+    return true;
+  }
+
   // Actionable nodes participate in tool execution and need an id.
   if (actionable_mode() && attributes.node_interaction_info) {
     return true;
