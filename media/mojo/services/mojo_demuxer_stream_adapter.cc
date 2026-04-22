@@ -129,9 +129,17 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
   if (!buffer) {
     DVLOG(1) << __func__ << ": null buffer";
     buffer_queue_.clear();
-    std::move(read_cb_).Run(kAborted, {});
+    std::move(read_cb_).Run(kError, {});
     return;
   }
+
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    DVLOG(1) << __func__ << ": Subsamples do not match buffer size";
+    buffer_queue_.clear();
+    std::move(read_cb_).Run(kError, {});
+    return;
+  }
+
   buffer_queue_.push_back(buffer);
 
   if (buffer_queue_.size() < actual_read_count_) {

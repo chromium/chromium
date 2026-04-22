@@ -132,7 +132,11 @@ void MojoDecoderBufferReader::ReadDecoderBuffer(
 
   scoped_refptr<DecoderBuffer> media_buffer(
       mojo_buffer.To<scoped_refptr<DecoderBuffer>>());
-  DCHECK(media_buffer);
+  if (!media_buffer) {
+    std::move(read_cb).Run(nullptr);
+    OnPipeError(MOJO_RESULT_INVALID_ARGUMENT);
+    return;
+  }
 
   if (MediaTraceIsEnabled() && !media_buffer->end_of_stream()) {
     TRACE_EVENT_BEGIN(

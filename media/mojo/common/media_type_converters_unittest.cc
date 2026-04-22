@@ -172,10 +172,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
   const char kIv[] = "0123456789abcdef";
 
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.push_back(SubsampleEntry(10, 20));
-  subsamples.push_back(SubsampleEntry(30, 40));
-  subsamples.push_back(SubsampleEntry(50, 60));
+  std::vector<SubsampleEntry> subsamples = {SubsampleEntry(5, 8)};
 
   // Original.
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
@@ -207,10 +204,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
   const char kIv[] = "0123456789abcdef";
 
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.push_back(SubsampleEntry(10, 20));
-  subsamples.push_back(SubsampleEntry(30, 40));
-  subsamples.push_back(SubsampleEntry(50, 60));
+  std::vector<SubsampleEntry> subsamples = {SubsampleEntry(5, 8)};
 
   auto pattern = EncryptionPattern::Create(1, 2);
 
@@ -299,6 +293,30 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_DISCRETE) {
 
   // Compare.
   CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
+}
+
+// This test ensures that a `mojom::DecoderBuffer` with maliciously oversized
+// subsamples is correctly rejected during conversion to a C++ `DecoderBuffer`,
+// resulting in a `nullptr` return.
+TEST(MediaTypeConvertersTest, RejectOOBSubsample) {
+  const size_t kDataSize = 100;
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(kDataSize);
+
+  std::vector<SubsampleEntry> subsamples;
+  // Set a malicious DecryptConfig with subsamples larger than data size
+  subsamples.push_back(SubsampleEntry(50, 500));
+
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      "key_id", "0123456789abcdef", subsamples));
+
+  // Convert to Mojom
+  mojom::DecoderBufferPtr mojo_buffer = mojom::DecoderBuffer::From(*buffer);
+
+  // Convert back to DecoderBuffer
+  scoped_refptr<DecoderBuffer> converted_buffer =
+      mojo_buffer.To<scoped_refptr<DecoderBuffer>>();
+
+  EXPECT_FALSE(converted_buffer);
 }
 
 }  // namespace media

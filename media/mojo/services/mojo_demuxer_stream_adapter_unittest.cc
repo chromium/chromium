@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/mojo_demuxer_stream_adapter.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -10,11 +12,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/decrypt_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/mock_filters.h"
+#include "media/base/subsample_entry.h"
 #include "media/base/test_helpers.h"
 #include "media/mojo/clients/mojo_demuxer_stream_impl.h"
-#include "media/mojo/services/mojo_demuxer_stream_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunOnceCallback;
@@ -205,6 +208,39 @@ TEST_F(MojoDemuxerStreamAdapterTest, EnableBitstreamConverter) {
   EXPECT_CALL(*stream_, EnableBitstreamConverter());
   mojo_stream_adapter_->EnableBitstreamConverter();
   loop.RunUntilIdle();
+}
+
+// This test verifies that the `MojoDemuxerStreamAdapter` properly identifies
+// and stops a read operation when presented with a `DecoderBuffer` containing
+// malformed subsample data.
+TEST_F(MojoDemuxerStreamAdapterTest, ReadAbortedOnOOBSubsample) {
+  Initialize(DemuxerStream::Type::AUDIO);
+
+  base::RunLoop abort_read_loop;
+  DemuxerStream::DecoderBufferVector buffers;
+
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(100);
+  std::vector<SubsampleEntry> subsamples;
+  // Set a malicious DecryptConfig with subsamples describing more bytes than
+  // data size
+  subsamples.emplace_back(SubsampleEntry(50, 500));
+  buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+      "key_id", "0123456789abcdef", subsamples));
+
+  buffers.push_back(buffer);
+
+  EXPECT_CALL(*stream_, OnRead(_))
+      .WillOnce(RunOnceCallback<0>(DemuxerStream::Status::kOk, buffers));
+
+  auto done_cb = base::BindLambdaForTesting(
+      [&](DemuxerStream::Status status,
+          DemuxerStream::DecoderBufferVector read_buffers) {
+        EXPECT_EQ(status, DemuxerStream::Status::kError);
+        EXPECT_TRUE(read_buffers.empty());
+        abort_read_loop.QuitWhenIdle();
+      });
+  ReadBuffer(1, done_cb);
+  abort_read_loop.Run();
 }
 
 }  // namespace media
