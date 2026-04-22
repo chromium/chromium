@@ -680,15 +680,18 @@
       [assistantView.topAnchor constraintEqualToAnchor:view.topAnchor
                                               constant:0];
 
+  NSLayoutConstraint* proportionalWidth = [assistantView.widthAnchor
+      constraintEqualToAnchor:view.widthAnchor
+                   multiplier:kAssistantSidePanelWidthMultiplier];
+  proportionalWidth.priority = UILayoutPriorityDefaultHigh;
+
   _assistantPanelConstraints = @[
     _assistantLeadingConstraint,
     _assistantTopConstraint,
     [assistantView.bottomAnchor
         constraintEqualToAnchor:view.bottomAnchor
                        constant:-kAssistantContainerMargin],
-    [assistantView.widthAnchor
-        constraintEqualToAnchor:view.widthAnchor
-                     multiplier:kAssistantSidePanelWidthMultiplier],
+    proportionalWidth,
     [assistantView.widthAnchor
         constraintLessThanOrEqualToConstant:kAssistantSidePanelMaxWidth],
   ];
