@@ -514,6 +514,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       BOOL itemIsValid = !missingFields.contains(
           autofill::AttributeType(dateItem.attributeType));
+      if (!_setEditItemsCompleted) {
+        itemIsValid = YES;
+      }
       if (dateItem.hasValidValueStatus != itemIsValid) {
         dateItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:dateItem];
