@@ -425,10 +425,9 @@ TEST_F(CastMediaControllerTest, IgnoreInsecureImages) {
 
   EXPECT_CALL(*status_observer_, OnMediaStatusUpdated(_))
       .WillOnce([&](const mojom::MediaStatusPtr& status) {
-        ASSERT_EQ(2u, status->images.size());
+        ASSERT_EQ(1u, status->images.size());
         EXPECT_EQ("https://example.com/1.png",
                   status->images.at(0)->url.spec());
-        EXPECT_EQ("http://localhost/2.png", status->images.at(1)->url.spec());
       });
   SetMediaStatus(std::move(status_value));
   VerifyAndClearExpectations();

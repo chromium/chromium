@@ -254,8 +254,8 @@ void CastMediaController::UpdateMediaStatus(
 
       GURL url(*url_string);
 
-      // Ensure the URL is valid and uses a safe scheme (HTTP/HTTPS).
-      if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+      // Ensure the URL is valid and uses a safe scheme (HTTPS).
+      if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
         continue;
       }
 
