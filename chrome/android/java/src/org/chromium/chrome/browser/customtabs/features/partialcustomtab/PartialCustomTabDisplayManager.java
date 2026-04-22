@@ -78,7 +78,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
-    private final Supplier<TouchEventProvider> mTouchEventProvider;
+    private final Supplier<@Nullable TouchEventProvider> mTouchEventProvider;
     private final Supplier<@Nullable Tab> mTab;
     private boolean mIsInPip;
     private final BooleanSupplier mIsEnteringPip;
@@ -86,7 +86,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     public PartialCustomTabDisplayManager(
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
-            Supplier<TouchEventProvider> touchEventProvider,
+            Supplier<@Nullable TouchEventProvider> touchEventProvider,
             Supplier<@Nullable Tab> tab,
             OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback,

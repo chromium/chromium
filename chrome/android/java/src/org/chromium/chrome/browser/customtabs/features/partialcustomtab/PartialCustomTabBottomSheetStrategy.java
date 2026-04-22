@@ -115,7 +115,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final @Px int mUnclampedInitialHeight;
     private final boolean mIsFixedHeight;
-    private final Supplier<TouchEventProvider> mTouchEventProvider;
+    private final Supplier<@Nullable TouchEventProvider> mTouchEventProvider;
     private final Supplier<@Nullable Tab> mTab;
 
     private CustomTabToolbar.HandleStrategy mHandleStrategy;
@@ -149,7 +149,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     public PartialCustomTabBottomSheetStrategy(
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
-            Supplier<TouchEventProvider> touchEventProvider,
+            Supplier<@Nullable TouchEventProvider> touchEventProvider,
             Supplier<@Nullable Tab> tab,
             OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback,
@@ -397,7 +397,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         dragHandle.setOnClickListener(v -> onDragBarTapped());
 
         if (mContentScrollMayResizeTab) {
-            mTouchEventProvider.get().addTouchEventObserver(this);
+            var touchEventProvider = mTouchEventProvider.get();
+            assumeNonNull(touchEventProvider);
+            touchEventProvider.addTouchEventObserver(this);
         }
         updateDragBarVisibility();
 
@@ -1013,8 +1015,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void destroy() {
-        if (mContentScrollMayResizeTab && mTouchEventProvider.get() != null) {
-            mTouchEventProvider.get().removeTouchEventObserver(this);
+        if (mContentScrollMayResizeTab) {
+            var provider = mTouchEventProvider.get();
+            if (provider != null) {
+                provider.removeTouchEventObserver(this);
+            }
         }
     }
 

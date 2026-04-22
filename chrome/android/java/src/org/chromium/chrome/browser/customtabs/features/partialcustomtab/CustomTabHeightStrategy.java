@@ -50,7 +50,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     public static CustomTabHeightStrategy createStrategy(
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
-            Supplier<TouchEventProvider> touchEventProvider,
+            Supplier<@Nullable TouchEventProvider> touchEventProvider,
             Supplier<@Nullable Tab> tab,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
