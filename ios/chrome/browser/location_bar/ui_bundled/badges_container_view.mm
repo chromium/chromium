@@ -54,6 +54,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   UIView* _badgeBackgroundView;
   UIView* _availableStateOverlay;
   UIView* _separatorView;
+  UIView* _placeholderViewWrapper;
   BOOL _disableProactiveOverlay;
 
   /// Whether the contextual panel entrypoint should be visible. The placeholder
@@ -84,6 +85,12 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
     [self addSubview:_containerStackView];
     AddSameConstraints(self, _containerStackView);
+    _placeholderViewWrapper = [[UIView alloc] init];
+    _placeholderViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
+    [_containerStackView addSubview:_placeholderViewWrapper];
+    [_placeholderViewWrapper.heightAnchor
+        constraintEqualToAnchor:_containerStackView.heightAnchor]
+        .active = YES;
 
     if (IsProactiveSuggestionsFrameworkEnabled()) {
       _separatorView = [[UIView alloc] init];
@@ -271,8 +278,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     return;
   }
 
-  if (_placeholderView && [_placeholderView superview] == _containerStackView) {
-    [_containerStackView removeArrangedSubview:_placeholderView];
+  if (_placeholderView &&
+      [_placeholderView superview] == _placeholderViewWrapper) {
     [_placeholderView removeFromSuperview];
   }
 
@@ -280,11 +287,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   if (_placeholderView) {
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
     SetViewHiddenIfNecessary(_placeholderView, YES);
-    [_containerStackView addArrangedSubview:_placeholderView];
-    [NSLayoutConstraint activateConstraints:@[
-      [_placeholderView.heightAnchor
-          constraintEqualToAnchor:_containerStackView.heightAnchor]
-    ]];
+    [_placeholderViewWrapper addSubview:_placeholderView];
+    AddSameConstraints(_placeholderViewWrapper, _placeholderView);
   }
   [self updateViewsVisibility];
 }
