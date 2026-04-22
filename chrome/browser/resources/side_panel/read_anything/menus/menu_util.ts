@@ -31,7 +31,7 @@ export interface ToolbarMenu {
 // descriptive.
 // Returns the index of the item in menuArray that contains the given data.
 export function getIndexOfSetting(
-    menuArray: Array<MenuStateItem<any>>, dataToFind: any): number {
+    menuArray: Array<MenuStateItem<unknown>>, dataToFind: unknown): number {
   return menuArray.findIndex((item) => (item.data === dataToFind));
 }
 
@@ -39,7 +39,7 @@ export function getIndexOfSetting(
 // the given data does not exist in the menuArray anymore, returns the first
 // index.
 export function getIndexOrDefault(
-    menuArray: Array<MenuStateItem<any>>, data: any): number {
+    menuArray: Array<MenuStateItem<unknown>>, data: unknown): number {
   const index = getIndexOfSetting(menuArray, data);
 
   if (index < 0 && menuArray.length > 0) {

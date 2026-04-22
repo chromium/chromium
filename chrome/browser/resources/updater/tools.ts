@@ -96,7 +96,7 @@ export function formatRelativeDate(date: Date): string {
  * @param val2 Value to compare with val1.
  * @return Whether the values are recursively equal.
  */
-export function deepEqual(val1: any, val2: any): boolean {
+export function deepEqual(val1: unknown, val2: unknown): boolean {
   if (val1 === val2) {
     return true;
   }
@@ -109,7 +109,8 @@ export function deepEqual(val1: any, val2: any): boolean {
   }
 
   if (val1 instanceof Object && val2 instanceof Object) {
-    return objectsEqual(val1, val2);
+    return objectsEqual(
+        val1 as Record<string, unknown>, val2 as Record<string, unknown>);
   }
 
   return false;
@@ -118,7 +119,7 @@ export function deepEqual(val1: any, val2: any): boolean {
 /**
  * @return Whether the arrays are recursively equal.
  */
-function arraysEqual(arr1: any[], arr2: any[]): boolean {
+function arraysEqual(arr1: unknown[], arr2: unknown[]): boolean {
   if (arr1.length !== arr2.length) {
     return false;
   }
@@ -136,7 +137,7 @@ function arraysEqual(arr1: any[], arr2: any[]): boolean {
  * @return Whether the objects are recursively equal.
  */
 function objectsEqual(
-    obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
+    obj1: Record<string, unknown>, obj2: Record<string, unknown>): boolean {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) {

@@ -75,11 +75,11 @@ export class Page extends EventTarget {
     this.title = title;
     this.pageDivName = pageDivName;
     const element = getRequiredElement(this.pageDivName);
+    this.pageDiv = element as HTMLElement & {page: Page | null};
     // |pageDiv.page| is set to the page object (this) when the page is
     // visible to track which page is being shown when multiple pages can
     // share the same underlying div.
-    (element as any).page = null;
-    this.pageDiv = element as HTMLElement & {page: Page | null};
+    this.pageDiv.page = null;
   }
 
   /**

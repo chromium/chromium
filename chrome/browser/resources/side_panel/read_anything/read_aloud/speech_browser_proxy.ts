@@ -7,7 +7,7 @@ export interface SpeechBrowserProxy {
   getVoices(): SpeechSynthesisVoice[];
   pause(): void;
   resume(): void;
-  setOnVoicesChanged(onvoiceschanged: (event: Event) => any): void;
+  setOnVoicesChanged(onvoiceschanged: (event: Event) => void): void;
   speak(utterance: SpeechSynthesisUtterance): void;
 }
 
@@ -34,7 +34,7 @@ export class SpeechBrowserProxyImpl implements SpeechBrowserProxy {
     this.synth_.resume();
   }
 
-  setOnVoicesChanged(onvoiceschanged: (event: Event) => any) {
+  setOnVoicesChanged(onvoiceschanged: (event: Event) => void) {
     this.synth_.onvoiceschanged = onvoiceschanged;
   }
 

@@ -57,7 +57,7 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   }
 
   accessor currentSelectedIndex: number = 0;
-  accessor menuItems: Array<MenuStateItem<any>> = [];
+  accessor menuItems: Array<MenuStateItem<unknown>> = [];
   accessor nonModal: boolean = false;
   accessor closeOnClick: boolean = true;
 
@@ -88,24 +88,26 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     }
   }
 
-  protected isItemSelected_(index: number, item: MenuStateItem<any>): boolean {
+  protected isItemSelected_(index: number, item: MenuStateItem<unknown>):
+      boolean {
     // Only use currentSelectedIndex if item.selected is undefined.
     return item.selected ?? (index === this.currentSelectedIndex);
   }
 
-  protected doesItemHaveIcon_(item: MenuStateItem<any>): boolean {
+  protected doesItemHaveIcon_(item: MenuStateItem<unknown>): boolean {
     return item.icon !== undefined;
   }
 
-  protected itemIcon_(item: MenuStateItem<any>): string {
+  protected itemIcon_(item: MenuStateItem<unknown>): string {
     return item.icon === undefined ? '' : item.icon;
   }
 
-  protected doesItemHaveHeader_(item: MenuStateItem<any>): boolean {
+  protected doesItemHaveHeader_(item: MenuStateItem<unknown>): boolean {
     return chrome.readingMode.isLineFocusEnabled && !!item.header;
   }
 
-  protected doesItemHaveHeaderSeparator_(item: MenuStateItem<any>): boolean {
+  protected doesItemHaveHeaderSeparator_(item: MenuStateItem<unknown>):
+      boolean {
     return chrome.readingMode.isLineFocusEnabled && !!item.header?.separator;
   }
 }

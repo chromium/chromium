@@ -39,7 +39,7 @@ export class ObjectFieldsetElement extends CustomElement {
     return this.hasAttribute('show-all');
   }
 
-  get value(): Record<string, any>|null {
+  get value(): Record<string, unknown>|null {
     return this.dataset['value'] ? JSON.parse(this.dataset['value']) : null;
   }
 
@@ -58,7 +58,8 @@ export class ObjectFieldsetElement extends CustomElement {
     fieldset.innerHTML = window.trustedTypes!.emptyHTML;
 
     const nameMap = JSON.parse(this.dataset['nameMap']!);
-    const valueObject: Record<string, any> = JSON.parse(this.dataset['value']);
+    const valueObject: Record<string, unknown> =
+        JSON.parse(this.dataset['value']);
     assert(valueObject);
     Object.keys(valueObject).forEach((propName) => {
       const value = valueObject[propName];

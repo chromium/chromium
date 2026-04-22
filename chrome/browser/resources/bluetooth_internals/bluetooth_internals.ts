@@ -160,9 +160,10 @@ function setupAdapterSystem(response: {info: AdapterInfo}) {
     const event = e as CustomEvent<{property: AdapterProperty, value: boolean}>;
     assert(adapterPage);
 
-    const oldValue = adapterPage.adapterFieldSet.value as AdapterInfo;
-    const newValue = Object.assign({}, oldValue);
-    (newValue as any)[event.detail.property] = event.detail.value;
+    const oldValue =
+        adapterPage.adapterFieldSet.value as unknown as AdapterInfo;
+    const newValue: AdapterInfo = Object.assign({}, oldValue);
+    newValue[event.detail.property] = event.detail.value;
     adapterPage.setAdapterInfo(newValue);
 
     if (event.detail.property === AdapterProperty.POWERED) {

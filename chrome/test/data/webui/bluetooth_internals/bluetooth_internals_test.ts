@@ -488,7 +488,7 @@ suite('bluetooth_internals', function() {
 
   test('AdapterPage_AdapterChanged', function() {
     assertTrue(!!adapterBroker);
-    const adapterInfo = adapterFieldSet.value as AdapterInfo;
+    const adapterInfo = adapterFieldSet.value as unknown as AdapterInfo;
     assertTrue(!!adapterInfo);
 
     adapterInfo.present = !adapterInfo.present;
@@ -502,7 +502,7 @@ suite('bluetooth_internals', function() {
 
   test('AdapterPage_AdapterChanged_RepeatTwice', function() {
     assertTrue(!!adapterBroker);
-    const adapterInfo = adapterFieldSet.value as AdapterInfo;
+    const adapterInfo = adapterFieldSet.value as unknown as AdapterInfo;
     assertTrue(!!adapterInfo);
 
     adapterInfo.present = !adapterInfo.present;

@@ -621,19 +621,13 @@ template("build_webui") {
         # Note: DO NOT add new entries to the list below.
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
-        "//chrome/browser/resources/bluetooth_internals",
         "//chrome/browser/resources/glic",
-        "//chrome/browser/resources/history",
-        "//chrome/browser/resources/lens/shared",
-        "//chrome/browser/resources/new_tab_page/untrusted",
         "//chrome/browser/resources/pdf",
         "//chrome/browser/resources/print_preview",
         "//chrome/browser/resources/settings",
         "//chrome/browser/resources/settings_shared",
-        "//chrome/browser/resources/side_panel/read_anything",
         "//chrome/browser/resources/tab_search",
         "//chrome/browser/resources/tab_strip",
-        "//chrome/browser/resources/updater",
         "//ui/webui/resources/cr_components/composebox",
         "//ui/webui/resources/cr_components/searchbox",
         "//ui/webui/resources/cr_elements",

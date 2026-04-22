@@ -13,6 +13,7 @@ import type {DeviceInfo} from './device.mojom-webui.js';
 import type {DeviceCollection} from './device_collection.js';
 import {getTemplate} from './device_table.html.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
+import type {UUID} from './uuid.mojom-webui.js';
 
 const COLUMNS = {
   NAME: 0,
@@ -202,22 +203,22 @@ export class DeviceTableElement extends CustomElement {
       const propName = header.dataset['field']!;
 
       const parts = propName.split('.');
-      let obj: any = device;
+      let obj: unknown = device;
       while (obj != null && parts.length > 0) {
         const part = parts.shift()!;
-        obj = obj[part];
+        obj = (obj as Record<string, unknown>)[part];
       }
 
       if (propName === 'isGattConnected') {
         obj = obj ? 'Connected' : 'Not Connected';
       } else if (propName === 'serviceUuids') {
-        obj = formatServiceUuids(obj);
+        obj = formatServiceUuids(obj as UUID[] | null);
       } else if (propName === 'manufacturerDataMap') {
-        obj = formatManufacturerDataMap(obj);
+        obj = formatManufacturerDataMap(obj as Record<string, number[]>);
       }
 
       const cell = row.cells[i]!;
-      cell.textContent = obj == null ? 'Unknown' : obj;
+      cell.textContent = obj == null ? 'Unknown' : String(obj);
       cell.dataset['label'] = header.textContent!;
     }
   }

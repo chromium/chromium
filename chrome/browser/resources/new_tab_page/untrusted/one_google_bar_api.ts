@@ -18,7 +18,7 @@ interface Gbar {
 
 interface Task {
   fnName: string;
-  args: any[];
+  args: unknown[];
 }
 
 export interface OneGoogleBarApi {
@@ -65,19 +65,16 @@ export function createOneGoogleBarApi(abp: boolean): OneGoogleBarApi {
       ],
     } as Definition,
   ].reduce((topLevelApi, def) => {
-    (topLevelApi as Record<string, any>)[def.name] =
-        def.fns.reduce((apiPart, [name, fnName]) => {
-          apiPart[name] = callApi.bind(null, def.apiName, fnName);
-          return apiPart;
-        }, {} as IndexableApi);
+    topLevelApi[def.name] = def.fns.reduce((apiPart, [name, fnName]) => {
+      apiPart[name] = callApi.bind(null, def.apiName, fnName);
+      return apiPart;
+    }, {} as IndexableApi);
     return topLevelApi;
-  }, {} as {bar: Bar});
+  }, {} as Record<string, IndexableApi>) as unknown as {bar: Bar};
 
-  const asyncBar: AsyncBar =
-      [['setDarkMode', 'pp']].reduce((bar: any, [name, fnName]) => {
-        bar[name!] = callAsyncBarApi.bind(null, fnName!);
-        return bar;
-      }, {} as Bar);
+  const asyncBar: AsyncBar = {
+    setDarkMode: callAsyncBarApi.bind(null, 'pp'),
+  };
 
   let queuedTask: Task|null = null;
 

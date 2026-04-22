@@ -22,6 +22,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -740,16 +741,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected onToolbarKeydown_(e: KeyboardEvent) {
     const toolbar = this.$.toolbarContainer;
-    const buttons =
-        Array.from(toolbar.querySelectorAll<HTMLElement>('.toolbar-button'));
+    const buttons = Array.from(
+        // TODO(crbug.com/342411653): Update the loading spinner to be inside a
+        // button and update the querySelectorAll to use just '.toolbar-button'.
+        toolbar.querySelectorAll<CrIconButtonElement|CrButtonElement>(
+            'cr-icon-button.toolbar-button, cr-button.toolbar-button'));
     assert(buttons, 'no toolbar buttons');
 
     // Only allow focus on the currently visible and actionable elements.
-    const focusableElements = buttons.filter(el => {
+    const focusableElements: HTMLElement[] = buttons.filter(el => {
       return (el.clientHeight > 0) && (el.clientWidth > 0) &&
           (el.getBoundingClientRect().right < toolbar.clientWidth) &&
           (el.style.visibility !== 'hidden') && (el.style.display !== 'none') &&
-          (!(el as any).disabled) && (el.className !== 'separator');
+          (!el.disabled) && (el.className !== 'separator');
     });
 
     // Allow focusing the more options menu if it's visible.

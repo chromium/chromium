@@ -229,7 +229,7 @@ export function showSnackbar(
   return newSnackbar;
 }
 
-(window as any)['showSnackbar'] = showSnackbar;
+Object.assign(window, {showSnackbar});
 
 /**
  * TODO(crbug.com/40498702): Add ability to specify parent element to Snackbar.
