@@ -564,6 +564,12 @@ bool IsGeminiDynamicSettingsEnabled() {
 
 BASE_FEATURE(kActorTools, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(std::string,
+                   kDisabledTools,
+                   &kActorTools,
+                   "DisabledTools",
+                   "");
+
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
 }
@@ -579,8 +585,7 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
     return true;
   }
 
-  std::string disabled_tools =
-      base::GetFieldTrialParamValueByFeature(kActorTools, "DisabledTools");
+  std::string disabled_tools = kDisabledTools.Get();
   if (disabled_tools.empty()) {
     return false;
   }
