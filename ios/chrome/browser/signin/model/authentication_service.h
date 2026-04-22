@@ -106,13 +106,17 @@ class AuthenticationService : public KeyedService,
   // Returns true if the user is signed in.
   // While the AuthenticationService is in background, this will reload the
   // credentials to ensure the value is up to date.
-  bool HasPrimaryIdentity(signin::ConsentLevel consent_level) const;
+  // TODO(crbug.com/40066949): Remove ConsentLevel param.
+  bool HasPrimaryIdentity(
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) const;
 
   // Returns true if the user is signed in and the identity is considered
   // managed.
   // Virtual for testing.
+  // TODO(crbug.com/40066949): Remove version with ConsentLevel param.
   virtual bool HasPrimaryIdentityManaged(
       signin::ConsentLevel consent_level) const;
+  virtual bool HasPrimaryIdentityManaged() const;
 
   // Returns true if data from the signed-in period should be cleared on
   // sign-out.
@@ -121,8 +125,10 @@ class AuthenticationService : public KeyedService,
   // Retrieves the identity of the currently authenticated user or `nil` if
   // the user is not authenticated.
   // Virtual for testing.
+  // TODO(crbug.com/40066949): Remove version with ConsentLevel param.
   virtual id<SystemIdentity> GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
+  virtual id<SystemIdentity> GetPrimaryIdentity() const;
 
   // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
   // at `access_point`. Virtual for testing.

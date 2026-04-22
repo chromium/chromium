@@ -134,8 +134,7 @@ class AuthenticationServiceTest : public PlatformTest {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
-    EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-        signin::ConsentLevel::kSignin));
+    EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
@@ -166,15 +165,11 @@ class AuthenticationServiceTest : public PlatformTest {
   void MarkSignedinUserMigratedFromSyncing() {
     profile_->GetPrefs()->SetString(
         prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
-        authentication_service()
-            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-            .gaiaId.ToString());
+        authentication_service()->GetPrimaryIdentity().gaiaId.ToString());
     profile_->GetPrefs()->SetString(
         prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
         base::SysNSStringToUTF8(
-            authentication_service()
-                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                .userEmail));
+            authentication_service()->GetPrimaryIdentity().userEmail));
   }
 
   // Simulates that fetching access token for `identity` fails with a given
@@ -299,10 +294,8 @@ class AuthenticationServiceTest : public PlatformTest {
 };
 
 TEST_F(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity());
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
 }
 
 TEST_F(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
@@ -311,8 +304,7 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
       identity(0), signin_metrics::AccessPoint::kFullscreenSigninPromo);
   VerifyLastSigninTimestamp();
 
-  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
-                               signin::ConsentLevel::kSignin));
+  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity());
 
   std::string user_email = base::SysNSStringToUTF8([identity(0) userEmail]);
   AccountInfo account_info =
@@ -321,8 +313,7 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   EXPECT_EQ(identity(0).gaiaId, account_info.gaia);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity());
   histogram_tester_.ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::kFullscreenSigninPromo, 1);
@@ -357,8 +348,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
@@ -379,12 +369,10 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
                                                         run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
@@ -431,8 +419,7 @@ TEST_F(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   // Sign in.
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kStartPage);
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity());
   VerifyLastSigninTimestamp();
 
   // Remove the signed in identity while in background, and check that
@@ -443,8 +430,7 @@ TEST_F(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   ASSERT_TRUE(identity_forgotten.Wait());
   WaitForPrimaryIdentityToBeRemoved();
 
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
 }
 
 // Tests that MDM errors are correctly cleared on foregrounding, sending
@@ -525,8 +511,7 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut_ClearDataFromSignin) {
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kStartPage);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged());
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
@@ -565,8 +550,7 @@ TEST_F(AuthenticationServiceTest,
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kStartPage);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged());
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
@@ -639,8 +623,7 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut_MigratedFromSyncing) {
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kStartPage);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged());
   VerifyLastSigninTimestamp();
 
   // Mark the signed-in user as "migrated from previously syncing".
@@ -741,15 +724,13 @@ TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   // User not signed out as `identity(1)` isn't the primary account.
   FireAccessTokenRefreshFailed(identity(1), mdm_error);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity());
   EXPECT_EQ(invocation_counter, 0u);
 
   // User signed out as `identity_` is the primary account.
   FireAccessTokenRefreshFailed(identity(0), mdm_error);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
   EXPECT_EQ(invocation_counter, 1u);
 }
 
@@ -823,8 +804,7 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   EXPECT_FALSE(account_manager_->HasIdentities());
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity());
   EXPECT_EQ(1, observer_test.GetOnPrimaryAccountRestrictedCounter());
   authentication_service()->RemoveObserver(&observer_test);
 }

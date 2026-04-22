@@ -14,7 +14,7 @@ id<SystemIdentity> GetPrimarySystemIdentity(
     ChromeAccountManagerService* account_manager) {
   CHECK(identity_manager);
   CHECK(account_manager);
-  if (!identity_manager->HasPrimaryAccount(consent_level)) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return nil;
   }
 
@@ -22,10 +22,17 @@ id<SystemIdentity> GetPrimarySystemIdentity(
   // the CoreAccountInfo returned by GetPrimaryAccountInfo(...) should be
   // valid. This return should be a CHECK(...).
   const CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(consent_level);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (account_info.gaia.empty()) {
     return nil;
   }
 
   return account_manager->GetIdentityWithGaiaID(account_info.gaia);
+}
+
+id<SystemIdentity> GetPrimarySystemIdentity(
+    signin::IdentityManager* identity_manager,
+    ChromeAccountManagerService* account_manager) {
+  return GetPrimarySystemIdentity(signin::ConsentLevel::kSignin,
+                                  identity_manager, account_manager);
 }

@@ -136,8 +136,7 @@ void AuthenticationService::Initialize(
   // the device while Chrome wasn't running.
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
-  crash_keys::SetCurrentlySignedIn(
-      HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  crash_keys::SetCurrentlySignedIn(HasPrimaryIdentity());
 
   account_manager_service_observation_.Observe(account_manager_service_.get());
 
@@ -190,8 +189,7 @@ void AuthenticationService::Initialize(
       [shared_defaults objectForKey:app_group::kPrimaryAccount];
 
   if (!primary_account || primary_account.length == 0) {
-    id<SystemIdentity> identity =
-        GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = GetPrimaryIdentity();
     if (!identity.gaiaId.empty()) {
       [shared_defaults setObject:identity.gaiaId.ToNSString()
                           forKey:app_group::kPrimaryAccount];
@@ -334,15 +332,19 @@ bool AuthenticationService::ShouldReauthPromptForSignInAndSync() const {
 
 bool AuthenticationService::HasPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
-  return GetPrimaryIdentity(consent_level) != nil;
+  return GetPrimaryIdentity() != nil;
 }
 
 bool AuthenticationService::HasPrimaryIdentityManaged(
     signin::ConsentLevel consent_level) const {
   return identity_manager_
-             ->FindExtendedAccountInfo(
-                 identity_manager_->GetPrimaryAccountInfo(consent_level))
+             ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+                 signin::ConsentLevel::kSignin))
              .IsManaged() == signin::Tribool::kTrue;
+}
+
+bool AuthenticationService::HasPrimaryIdentityManaged() const {
+  return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }
 
 bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
@@ -351,14 +353,17 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
   // 1. The user is signed in with a managed account.
   // 2. The app management configuration key is present.
   // Note: data will be cleared from the time of sign-in in this case.
-  return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin) &&
+  return HasPrimaryIdentityManaged() &&
          !policy::PlatformManagementService::GetInstance()->IsManaged();
 }
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
-  return GetPrimarySystemIdentity(consent_level, identity_manager_,
-                                  account_manager_service_);
+  return GetPrimarySystemIdentity(identity_manager_, account_manager_service_);
+}
+
+id<SystemIdentity> AuthenticationService::GetPrimaryIdentity() const {
+  return GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 void AuthenticationService::SignIn(id<SystemIdentity> identity,
@@ -446,8 +451,7 @@ void AuthenticationService::SignOut(
   // bookmarks.
   ResetLastUsedBookmarkFolder(pref_service_);
 
-  const bool is_managed =
-      HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+  const bool is_managed = HasPrimaryIdentityManaged();
   const bool is_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
           identity_manager_, pref_service_);
@@ -527,7 +531,7 @@ AuthenticationService::PerformProfileInitializationIfNecessary() {
                : ProfileInitializationOutcome::kPersonalProfileNewlyInitialized;
   }
 
-  const bool is_signed_in = HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  const bool is_signed_in = HasPrimaryIdentity();
   if (is_signed_in) {
     // Nothing to do if the managed profile is already signed in.
     return was_already_initialized
@@ -659,7 +663,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
     return;
   }
 
-  if (![identity isEqual:GetPrimaryIdentity(signin::ConsentLevel::kSignin)]) {
+  if (![identity isEqual:GetPrimaryIdentity()]) {
     return;
   }
 
@@ -722,8 +726,7 @@ void AuthenticationService::HandleForgottenIdentity(
   }
 
   // Tests if the primary identity still exists.
-  id<SystemIdentity> authenticated_identity =
-      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> authenticated_identity = GetPrimaryIdentity();
   if (authenticated_identity &&
       ![authenticated_identity isEqual:invalid_identity]) {
     // `authenticated_identity` exists and is a valid identity. Nothing to do
@@ -863,7 +866,6 @@ bool AuthenticationService::IsPersonalProfile() {
 }
 
 NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {
-  return GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-             ? account_manager_service_->GetAllIdentities()
-             : @[];
+  return GetPrimaryIdentity() ? account_manager_service_->GetAllIdentities()
+                              : @[];
 }
