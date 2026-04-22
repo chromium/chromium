@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import org.jni_zero.NativeMethods;
 
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
@@ -106,6 +108,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private @Nullable Rect mPromptEnforcedBounds;
     private @Nullable Integer mMinPromptWidthPx;
     private @Nullable Integer mMinPromptHeightPx;
+    private @MonotonicNonNull DocumentPictureInPictureNightModeStateProvider
+            mNightModeStateProvider;
 
     private static @Nullable WebContents sWebContentsForTesting;
     private static @Nullable WebContents sParentWebContentsForTesting;
@@ -749,6 +753,19 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         mConfig = newConfig;
     }
 
+    @Override
+    protected void initializeNightModeStateProvider() {
+        if (mNightModeStateProvider != null) {
+            mNightModeStateProvider.initialize(getDelegate());
+        }
+    }
+
+    @Override
+    protected NightModeStateProvider createNightModeStateProvider() {
+        mNightModeStateProvider = new DocumentPictureInPictureNightModeStateProvider();
+        return mNightModeStateProvider;
+    }
+
     @CallSuper
     @Override
     public void recreate() {
@@ -830,5 +847,22 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         void onActivityStart(WebContents parentWebContent, WebContents webContents);
 
         void onBackToTab();
+    }
+
+    static class DocumentPictureInPictureNightModeStateProvider implements NightModeStateProvider {
+        public void initialize(AppCompatDelegate delegate) {
+            delegate.setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        @Override
+        public boolean isInNightMode() {
+            return true;
+        }
+
+        @Override
+        public void addObserver(Observer observer) {}
+
+        @Override
+        public void removeObserver(Observer observer) {}
     }
 }
