@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +40,6 @@ import android.view.WindowMetrics;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -195,26 +199,25 @@ public class PopupCreatorImplUnitTest {
         Intent sentIntent = captor.getValue();
         Bundle sentOptions = optionsCaptor.getValue();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
                 new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
                 sentIntent.getComponent());
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
                 CustomTabsUiType.POPUP,
                 sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
                 Intent.FLAG_ACTIVITY_NEW_TASK,
                 sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
                         + " window features",
                 windowFeatures,
                 new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
-        Assert.assertEquals("The extra is not in intent", 1, sentIntent.getIntExtra("extra", 0));
-        Assert.assertEquals(
-                "The option is not in options bundle", 2, sentOptions.getInt("option", 0));
+        assertEquals("The extra is not in intent", 1, sentIntent.getIntExtra("extra", 0));
+        assertEquals("The option is not in options bundle", 2, sentOptions.getInt("option", 0));
     }
 
     @Test
@@ -226,19 +229,19 @@ public class PopupCreatorImplUnitTest {
         verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
         Intent sentIntent = captor.getValue();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
                 new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
                 sentIntent.getComponent());
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
                 CustomTabsUiType.POPUP,
                 sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
                 Intent.FLAG_ACTIVITY_NEW_TASK,
                 sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
                         + " window features",
                 windowFeatures,
@@ -255,24 +258,24 @@ public class PopupCreatorImplUnitTest {
         verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
         final Intent sentIntent = captor.getValue();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
                 new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
                 sentIntent.getComponent());
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
                 CustomTabsUiType.POPUP,
                 sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
                 Intent.FLAG_ACTIVITY_NEW_TASK,
                 sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
                         + " window features",
                 windowFeatures,
                 new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
-        Assert.assertEquals(
+        assertEquals(
                 "The intent sent to reparenting task doesn't specify Incognito CCT Caller ID",
                 IncognitoCctCallerId.CONTEXTUAL_POPUP,
                 sentIntent.getIntExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, -1));
@@ -297,11 +300,11 @@ public class PopupCreatorImplUnitTest {
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
                 DISPLAY_ID,
                 activityOptions.getLaunchDisplayId());
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions are incorrect",
                 windowBounds,
                 activityOptions.getLaunchBounds());
@@ -314,11 +317,11 @@ public class PopupCreatorImplUnitTest {
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The launch display ID specified in ActivityOptions should be invalid",
                 Display.INVALID_DISPLAY,
                 activityOptions.getLaunchDisplayId());
-        Assert.assertNull(
+        assertNull(
                 "The launch bounds specified in ActivityOptions should be null",
                 activityOptions.getLaunchBounds());
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
@@ -330,7 +333,7 @@ public class PopupCreatorImplUnitTest {
 
         WindowFeatures windowFeatures = new WindowFeatures(null, null, null, 100);
 
-        Assert.assertFalse(
+        assertFalse(
                 "moveTabToNewPopup should have returned false",
                 mPopupCreator.moveTabToNewPopup(mTab, windowFeatures));
         verify(mReparentingTask, never()).begin(any(), any(), any(), any());
@@ -351,12 +354,12 @@ public class PopupCreatorImplUnitTest {
 
         Rect launchBounds = activityOptions.getLaunchBounds();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions have not preserved the provided"
                         + " width",
                 windowBounds.width(),
                 launchBounds.width());
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions have not preserved the provided"
                         + " height",
                 windowBounds.height(),
@@ -377,7 +380,7 @@ public class PopupCreatorImplUnitTest {
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
-        Assert.assertTrue(
+        assertTrue(
                 "The launch bounds specified in ActivityOptions do not fit inside display",
                 displayLocalBounds.contains(launchBounds));
     }
@@ -395,7 +398,7 @@ public class PopupCreatorImplUnitTest {
         mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
-        Assert.assertTrue(
+        assertTrue(
                 "The launch bounds specified in ActivityOptions do not fit inside display",
                 displayLocalBounds.contains(launchBounds));
     }
@@ -416,7 +419,7 @@ public class PopupCreatorImplUnitTest {
 
         Rect launchBounds = activityOptions.getLaunchBounds();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions are incorrect",
                 windowBounds,
                 launchBounds);
@@ -439,7 +442,7 @@ public class PopupCreatorImplUnitTest {
         final Rect targetBounds =
                 new Rect(100 - 12, 200 - 34, 400 + 56, 600 + 78); // left, top, right, bottom
 
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions have not been preserved and outset"
                         + " by given window insets",
                 targetBounds,
@@ -456,7 +459,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
@@ -473,7 +476,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
@@ -489,7 +492,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(75 + 20 + 9 + 78)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
@@ -506,7 +509,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(75 + 20 + 9 + 156)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
@@ -532,7 +535,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
@@ -559,7 +562,7 @@ public class PopupCreatorImplUnitTest {
          *     0,
          *     -(left inset + right inset),
          *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        Assert.assertEquals(
+        assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
                 PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
@@ -585,11 +588,11 @@ public class PopupCreatorImplUnitTest {
                         0,
                         (300 + 12 + 56) * 2,
                         (400 + 34 + 78) * 2 + 20 + 9); // left, top, right, bottom
-        Assert.assertEquals(
+        assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
                 EXTERNAL_DISPLAY_ID,
                 activityOptions.getLaunchDisplayId());
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions is incorrect",
                 targetBounds,
                 activityOptions.getLaunchBounds());
@@ -615,11 +618,11 @@ public class PopupCreatorImplUnitTest {
                         0,
                         (300 + 12 + 56) * 2,
                         (400 + 78) * 2 + 75 + 20 + 9); // left, top, right, bottom
-        Assert.assertEquals(
+        assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
                 EXTERNAL_DISPLAY_ID,
                 activityOptions.getLaunchDisplayId());
-        Assert.assertEquals(
+        assertEquals(
                 "The launch bounds specified in ActivityOptions is incorrect",
                 targetBounds,
                 activityOptions.getLaunchBounds());
@@ -644,7 +647,7 @@ public class PopupCreatorImplUnitTest {
         ContextUtils.initApplicationContextForTests(mContext);
         final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
 
-        Assert.assertFalse(
+        assertFalse(
                 "moveWebContentsToNewDocumentPictureInPictureWindow should have returned false",
                 mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                         null, mWebContents, windowOptions));
@@ -678,7 +681,7 @@ public class PopupCreatorImplUnitTest {
                 sentIntent.getBundleExtra(DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY);
         PictureInPictureWindowOptions options = new PictureInPictureWindowOptions(optionsBundle);
 
-        Assert.assertEquals("Cached bounds should be applied", cachedBounds, options.windowBounds);
+        assertEquals("Cached bounds should be applied", cachedBounds, options.windowBounds);
     }
 
     @Test
@@ -686,7 +689,7 @@ public class PopupCreatorImplUnitTest {
         final Intent intent = mock(Intent.class);
         final Bundle ao = new Bundle();
 
-        Assert.assertTrue(
+        assertTrue(
                 "tryStartActivity should have returned true due to success",
                 mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
@@ -698,7 +701,7 @@ public class PopupCreatorImplUnitTest {
         final Bundle ao = new Bundle();
         doThrow(new SecurityException()).when(mContext).startActivity(intent, ao);
 
-        Assert.assertFalse(
+        assertFalse(
                 "tryStartActivity should have returned false due to an exception being thrown",
                 mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
@@ -712,7 +715,7 @@ public class PopupCreatorImplUnitTest {
         doThrow(e).when(mContext).startActivity(intent, ao);
         doReturn(true).when(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
 
-        Assert.assertFalse(
+        assertFalse(
                 "tryStartActivity should have returned false due to an exception being thrown",
                 mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
@@ -728,10 +731,10 @@ public class PopupCreatorImplUnitTest {
         doReturn(false).when(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
 
         final AndroidRuntimeException thrown =
-                Assert.assertThrows(
+                assertThrows(
                         AndroidRuntimeException.class,
                         () -> mPopupCreator.tryStartActivity(mContext, intent, ao));
-        Assert.assertEquals(e, thrown);
+        assertEquals(e, thrown);
         verify(mContext).startActivity(intent, ao);
     }
 
@@ -743,10 +746,10 @@ public class PopupCreatorImplUnitTest {
         doThrow(e).when(mContext).startActivity(intent, ao);
 
         final RuntimeException thrown =
-                Assert.assertThrows(
+                assertThrows(
                         RuntimeException.class,
                         () -> mPopupCreator.tryStartActivity(mContext, intent, ao));
-        Assert.assertEquals(e, thrown);
+        assertEquals(e, thrown);
         verify(mContext).startActivity(intent, ao);
     }
 
@@ -764,7 +767,7 @@ public class PopupCreatorImplUnitTest {
         verify(mReparentingTask).begin(captor.capture(), any(), any(), any());
         final Context sentContext = captor.getValue();
 
-        Assert.assertTrue(
+        assertTrue(
                 "The Context passed to ReparentingTask#begin should be an Activity",
                 sentContext instanceof Activity);
     }
@@ -807,7 +810,7 @@ public class PopupCreatorImplUnitTest {
         // Assuming density = 1.0f from setup() -> 200px diffs
         // New right = 210 + 200 = 410
         // New bottom = 320 + 200 = 520
-        Assert.assertEquals(new Rect(10, 20, 410, 520), targetBounds);
+        assertEquals(new Rect(10, 20, 410, 520), targetBounds);
     }
 
     private void setupMocksForAdjustWindowBounds(
