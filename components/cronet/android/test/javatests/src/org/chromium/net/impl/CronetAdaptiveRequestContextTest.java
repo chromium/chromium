@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -310,6 +312,28 @@ public class CronetAdaptiveRequestContextTest {
         String url = "https://random-host.com/random-path";
         URI expectedUri = URI.create(url);
         assertEquals(expectedUri, mContext.getUriIfAdaptive(url));
+    }
+
+    @Test
+    @SmallTest
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetAdaptiveRequestContext.ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME,
+                        value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void reportFallbackUsed_toasts() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        CronetAdaptiveRequestContext spyContext = spy(mContext);
+        String url = "https://example.com/path";
+
+        spyContext.reportFallbackUsed(url, 12345L);
+        verify(spyContext).maybeShowDevToast("example.com", "/path", false);
+
+        spyContext.reportFallbackUsed(url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        verify(spyContext).maybeShowDevToast("example.com", "/path", true);
     }
 
     private CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles computeStreamNetworkHandles(
