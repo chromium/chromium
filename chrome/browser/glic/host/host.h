@@ -151,7 +151,7 @@ class Host : public GlicSharingManagerProvider {
     virtual void OnUserInputSubmitted(mojom::WebClientMode mode) = 0;
 
     virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
-    virtual GlicInstanceMetrics* instance_metrics() = 0;
+    virtual GlicInstanceMetrics& instance_metrics() = 0;
     virtual GlicInstanceMetricsBackwardsCompatibility&
     instance_metrics_backwards_compatibility() = 0;
 
@@ -262,7 +262,7 @@ class Host : public GlicSharingManagerProvider {
 
   Host::InstanceDelegate& instance_delegate();
 
-  GlicInstanceMetrics* instance_metrics() {
+  GlicInstanceMetrics& instance_metrics() {
     return instance_delegate().instance_metrics();
   }
 
@@ -496,7 +496,7 @@ class Host : public GlicSharingManagerProvider {
 
   // The instance that owns this host.
   raw_ptr<InstanceDelegate> instance_delegate_;
-  // May be null for hosts which are bound to chrome://glic tabs.
+  // Never null, GlicInstance owns this.
   raw_ptr<GlicInstance> glic_instance_;
 
   // Null before `Initialize()` and after `Shutdown()`.

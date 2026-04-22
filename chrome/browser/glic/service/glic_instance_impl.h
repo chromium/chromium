@@ -229,7 +229,7 @@ class GlicInstanceImpl : public GlicInstance,
   void PrepareForOpen() override;
   void OnUserInputSubmitted(mojom::WebClientMode mode) override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
-  glic::GlicInstanceMetrics* instance_metrics() override;
+  glic::GlicInstanceMetrics& instance_metrics() override;
   glic::GlicInstanceMetricsBackwardsCompatibility&
   instance_metrics_backwards_compatibility() override;
   void OnSelectionAreasChanged(int count) override;

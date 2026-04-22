@@ -1356,9 +1356,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void RecordSkillsWebClientEvent(
       glic::mojom::SkillsWebClientEvent action) override {
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->RecordSkillsWebClientEvent(action);
-    }
+    host().instance_metrics().RecordSkillsWebClientEvent(action);
   }
 
   void CreateActorTab(int32_t task_id,
@@ -1684,10 +1682,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStarted() override {
     host().instance_metrics_backwards_compatibility().OnResponseStarted();
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->RecordAttachedContextTabCount(
-          sharing_manager().GetNumPinnedTabs());
-    }
+    host().instance_metrics().RecordAttachedContextTabCount(
+        sharing_manager().GetNumPinnedTabs());
   }
 
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
@@ -1718,7 +1714,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnActionSubmitted(bool is_retry) override {
-    host().instance_metrics()->OnActionSubmitted(is_retry);
+    host().instance_metrics().OnActionSubmitted(is_retry);
   }
 
   void ScrollTo(mojom::ScrollToParamsPtr params,

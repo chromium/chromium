@@ -711,7 +711,7 @@ class MAYBE_GlicAnnotationManagerUiTest
   GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile()) \
       ->metrics()                                                       \
       ->method(__VA_ARGS__);                                            \
-  GetGlicInstanceImpl()->instance_metrics()->method(__VA_ARGS__);
+  GetGlicInstanceImpl()->instance_metrics().method(__VA_ARGS__);
 
   void OnUserInputSubmitted(mojom::WebClientMode mode) {
     FORWARD_METRICS_CALL(OnUserInputSubmitted, mode);

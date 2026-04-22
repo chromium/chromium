@@ -562,7 +562,7 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
       last_active_instance_->GetTimeSinceLastActive() <
           features::kGlicDefaultToLastActiveConversationMaxRecency.Get() &&
       !last_active_instance_->IsActuating()) {
-    last_active_instance_->instance_metrics()->OnDaisyChain(
+    last_active_instance_->instance_metrics().OnDaisyChain(
         DaisyChainSource::kLastActiveInstance,
         /*success=*/true, tab,
         /*source_tab=*/nullptr);
@@ -629,7 +629,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
   auto* instance_ptr = instance.get();
   instances_[instance->id()] = std::move(instance);
   // TODO(harringtond): Figure out what to do about this metric.
-  instance_ptr->instance_metrics()->OnInstanceCreatedWithoutWarming();
+  instance_ptr->instance_metrics().OnInstanceCreatedWithoutWarming();
   return instance_ptr;
 }
 
@@ -792,7 +792,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
 
   target_instance->RegisterConversation(std::move(info), base::DoNothing());
   target_instance->Show(mutable_options);
-  target_instance->instance_metrics()->OnSwitchToConversation(mutable_options);
+  target_instance->instance_metrics().OnSwitchToConversation(mutable_options);
   std::move(callback).Run(std::nullopt);
 }
 
@@ -950,7 +950,7 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
   side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
   instance->Show(ShowOptions{side_panel_options});
 
-  instance->instance_metrics()->OnDaisyChain(
+  instance->instance_metrics().OnDaisyChain(
       DaisyChainSource::kNewTab,
       /*success=*/true, creation_event.new_tab, creation_event.old_tab);
 }

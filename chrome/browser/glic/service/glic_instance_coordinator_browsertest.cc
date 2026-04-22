@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorDefaultToLastActiveBrowserTest,
             1);
 
   // Simulate user input to trigger first action metric.
-  instance2->instance_metrics()->OnUserInputSubmitted(
+  instance2->instance_metrics().OnUserInputSubmitted(
       mojom::WebClientMode::kText);
 
   histogram_tester.ExpectUniqueSample(
