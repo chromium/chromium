@@ -26,6 +26,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
+#include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -41,21 +42,6 @@ using ::testing::_;
 
 constexpr char kPhoneNameOne[] = "Pixel";
 constexpr char kPhoneNameTwo[] = "Galaxy";
-
-class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
- public:
-  SessionSyncServiceMock() = default;
-  ~SessionSyncServiceMock() override = default;
-
-  MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
-  MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
-  MOCK_METHOD1(
-      SubscribeToForeignSessionsChanged,
-      base::CallbackListSubscription(const base::RepeatingClosure& cb));
-  MOCK_METHOD0(ScheduleGarbageCollection, void());
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::DataTypeControllerDelegate>());
-};
 
 multidevice::RemoteDeviceRef CreatePhoneDevice(const std::string& pii_name) {
   multidevice::RemoteDeviceRefBuilder builder;
@@ -167,7 +153,8 @@ class BrowserTabsModelProviderImplTest
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
 
   testing::NiceMock<syncer::MockSyncService> mock_sync_service_;
-  testing::NiceMock<SessionSyncServiceMock> mock_session_sync_service_;
+  testing::NiceMock<sync_sessions::MockSessionSyncService>
+      mock_session_sync_service_;
   std::unique_ptr<BrowserTabsModelProviderImpl> provider_;
 
   testing::NiceMock<sync_sessions::MockOpenTabsUIDelegate>
