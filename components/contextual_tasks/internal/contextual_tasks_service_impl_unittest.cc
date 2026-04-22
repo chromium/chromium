@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -61,7 +62,7 @@ class MockAimEligibilityService : public AimEligibilityService {
                               nullptr,
                               nullptr,
                               "en-US",
-                              {}) {}
+                              AimEligibilityService::Configuration()) {}
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
   MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
 
@@ -69,8 +70,10 @@ class MockAimEligibilityService : public AimEligibilityService {
   // as they are implemented in ChromeAimEligibilityService which is the one
   // provided by the KeyedService factory. We therefore need to implement them
   // in this unit test.
-  std::string GetCountryCode() const override { return "US"; }
   std::string GetLocaleImpl() const override { return "en-US"; }
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
 };
 
 class MockAiThreadSyncBridge : public AiThreadSyncBridge {
@@ -144,6 +147,8 @@ class ContextualTasksServiceImplTest : public testing::Test {
   ~ContextualTasksServiceImplTest() override = default;
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        "variations-override-country", "US");
     identity_test_environment_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
 

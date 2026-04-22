@@ -382,6 +382,7 @@ static_library("browser") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
+    "//components/variations/service",
     "//components/vector_icons",
     "//extensions/buildflags",
     "//net",

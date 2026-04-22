@@ -48,6 +48,10 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
         is_server_eligible_(is_server_eligible),
         server_eligibility_enabled_(server_eligibility_enabled) {}
 
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+
   ~TestingAimEligibilityService() override = default;
 
   bool IsAimLocallyEligible() const override { return is_locally_eligible_; }

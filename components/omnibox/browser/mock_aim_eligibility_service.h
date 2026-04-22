@@ -30,8 +30,12 @@ class MockAimEligibilityService : public AimEligibilityService {
               RegisterEligibilityChangedCallback,
               (base::RepeatingClosure),
               (override));
-  MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
+
   MOCK_METHOD(std::string, GetLocaleImpl, (), (const, override));
+  MOCK_METHOD(variations::VariationsService*,
+              GetVariationsService,
+              (),
+              (const, override));
   MOCK_METHOD(bool, HasAimUrlParams, (const GURL& url), (const, override));
   MOCK_METHOD(const omnibox::AimEligibilityResponse&,
               GetMostRecentResponse,

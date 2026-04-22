@@ -29,6 +29,8 @@ MockAimEligibilityService::MockAimEligibilityService(
   ON_CALL(*this, IsFuseboxEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, GetSearchboxConfig())
       .WillByDefault(testing::Return(&mock_config));
+  ON_CALL(*this, GetVariationsService())
+      .WillByDefault(testing::Return(nullptr));
 }
 
 MockAimEligibilityService::~MockAimEligibilityService() = default;

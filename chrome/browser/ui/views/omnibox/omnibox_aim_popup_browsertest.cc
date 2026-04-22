@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -19,6 +20,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -33,7 +35,7 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
       /*template_url_service=*/nullptr,
       /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
       AimEligibilityService::Configuration{});
-  ON_CALL(*service, GetCountryCode()).WillByDefault(testing::Return("US"));
+  ON_CALL(*service, IsAimEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*service, GetLocaleImpl()).WillByDefault(testing::Return("en-US"));
   return service;
 }
@@ -46,6 +48,12 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
                                     omnibox::internal::kWebUIOmniboxPopup},
                                    {});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    g_browser_process->variations_service()->OverrideStoredPermanentCountry(
+        "us");
   }
 
   void SetUpInProcessBrowserTestFixture() override {

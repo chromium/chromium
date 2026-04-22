@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -27,14 +28,6 @@ IOSChromeAimEligibilityService::IOSChromeAimEligibilityService(
 
 IOSChromeAimEligibilityService::~IOSChromeAimEligibilityService() = default;
 
-std::string IOSChromeAimEligibilityService::GetCountryCode() const {
-  if (experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return "us";
-  }
-  return base::SysNSStringToUTF8(
-      [[NSLocale currentLocale].countryCode lowercaseString]);
-}
-
 std::string IOSChromeAimEligibilityService::GetLocaleImpl() const {
   std::string locale;
   if (experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
@@ -50,4 +43,11 @@ std::string IOSChromeAimEligibilityService::GetLocaleImpl() const {
   }
   base::ReplaceChars(locale, "_", "-", &locale);
   return locale;
+}
+
+variations::VariationsService*
+IOSChromeAimEligibilityService::GetVariationsService() const {
+  return GetApplicationContext()
+             ? GetApplicationContext()->GetVariationsService()
+             : nullptr;
 }

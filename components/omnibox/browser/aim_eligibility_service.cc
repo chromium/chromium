@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -235,9 +236,7 @@ bool IsInputTypeAllowed(const omnibox::SearchboxConfig& config,
 // static
 bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     const AimEligibilityService* aim_eligibility_service,
-    const base::Feature& feature,
-    const std::optional<std::reference_wrapper<const base::Feature>>
-        feature_en_us) {
+    const base::Feature& feature) {
   if (!aim_eligibility_service) {
     return false;
   }
@@ -389,6 +388,21 @@ std::string AimEligibilityService::GetLocale() const {
          "not underscores: "
       << locale;
   return locale;
+}
+
+std::string AimEligibilityService::GetCountryCode() const {
+  std::string country_code =
+      variations::GetCurrentCountryCode(GetVariationsService());
+  base::UmaHistogramBoolean("Omnibox.AimEligibility.CountryCodeEmpty",
+                            country_code.empty());
+  // The server side sanitizer expects ZZ to be capitalized, so ZZ is capital
+  // while the rest of the country codes are converted to lower case.
+  if (country_code.empty() ||
+      base::EqualsCaseInsensitiveASCII(country_code, "zz")) {
+    return "ZZ";
+  }
+
+  return base::ToLowerASCII(country_code);
 }
 
 bool AimEligibilityService::IsLanguage(const std::string& language) const {

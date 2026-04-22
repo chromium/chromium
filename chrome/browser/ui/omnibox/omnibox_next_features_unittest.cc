@@ -255,6 +255,10 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
                                     /*configuration=*/{}),
         is_aim_eligible_(is_aim_eligible) {}
 
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+
   bool IsAimEligible() const override { return is_aim_eligible_; }
   bool IsFuseboxEligible() const override { return is_aim_eligible_; }
   bool IsAimAllowedByDse() const override { return is_aim_eligible_; }
