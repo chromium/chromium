@@ -305,6 +305,7 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/google_chrome_webstore.icon",
         "google_chrome/google_docs.icon",
         "google_chrome/google_drive.icon",
+        "google_chrome/google_drive_monochrome.icon",
         "google_chrome/google_g_logo.icon",
         "google_chrome/google_g_logo_monochrome.icon",
         "google_chrome/google_keep_note.icon",
