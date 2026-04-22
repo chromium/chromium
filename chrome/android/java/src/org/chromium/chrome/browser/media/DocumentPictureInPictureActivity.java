@@ -10,14 +10,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager.AppTask;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -46,7 +44,6 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
@@ -56,6 +53,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.toolbar.AppThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -100,6 +98,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private @MonotonicNonNull PictureInPictureWindowOptions mWindowOptions;
     private @MonotonicNonNull AppHeaderCoordinator mAppHeaderCoordinator;
     private @MonotonicNonNull DocumentPictureInPictureHeaderCoordinator mHeaderCoordinator;
+    private @MonotonicNonNull AppThemeColorProvider mAppThemeColorProvider;
     private boolean mIsRecreating;
     private boolean mIsFromActivityRecreation;
     private @MonotonicNonNull Configuration mConfig;
@@ -246,6 +245,10 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         getPersistentInstanceState(),
                         edgeToEdgeStateProvider,
                         null);
+
+        mAppThemeColorProvider =
+                new AppThemeColorProvider(this, getLifecycleDispatcher(), mAppHeaderCoordinator);
+        mAppThemeColorProvider.onIncognitoStateChanged(mInitiatorTab.isIncognitoBranded());
     }
 
     private void goIntoPinnedMode() {
@@ -304,12 +307,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         .setWebContentsDelegate(new DocumentPictureInPictureWebContentsDelegate())
                         .build());
 
-        Context context =
-                NightModeUtils.wrapContextWithNightModeConfig(
-                        this, R.style.Theme_Chromium_Activity, /* nightMode= */ true);
         View rootLayout =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.document_picture_in_picture_main_layout, null);
+                getLayoutInflater().inflate(R.layout.document_picture_in_picture_main_layout, null);
         FrameLayout contentLayout =
                 rootLayout.findViewById(R.id.document_picture_in_picture_content);
         contentLayout.addView(
@@ -322,6 +321,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 new DocumentPictureInPictureHeaderCoordinator(
                         findViewById(R.id.document_picture_in_picture_header),
                         assumeNonNull(mAppHeaderCoordinator),
+                        assumeNonNull(mAppThemeColorProvider),
                         /* context= */ this,
                         /* delegate= */ this,
                         !assumeNonNull(mWindowOptions).disallowReturnToOpener,
@@ -694,6 +694,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         if (mHeaderCoordinator != null) {
             mHeaderCoordinator.destroy();
             mHeaderCoordinator = null;
+        }
+
+        if (mAppThemeColorProvider != null) {
+            mAppThemeColorProvider.destroy();
+            mAppThemeColorProvider = null;
         }
 
         super.onDestroy();

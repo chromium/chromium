@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Log;
@@ -17,7 +18,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -44,11 +45,14 @@ import java.util.List;
  */
 @NullMarked
 public class DocumentPictureInPictureHeaderMediator
-        implements DesktopWindowStateManager.AppHeaderObserver {
+        implements DesktopWindowStateManager.AppHeaderObserver,
+                ThemeColorProvider.ThemeColorObserver,
+                ThemeColorProvider.TintObserver {
     private static final String TAG = "DocumentPiPHdrMdtr";
     private final PropertyModel mModel;
     private @MonotonicNonNull AppHeaderState mCurrentHeaderState;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final ThemeColorProvider mThemeColorProvider;
     private final Context mContext;
     private final DocumentPictureInPictureHeaderDelegate mDelegate;
     private final Rect mBackToTabRect = new Rect();
@@ -65,12 +69,14 @@ public class DocumentPictureInPictureHeaderMediator
     public DocumentPictureInPictureHeaderMediator(
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
+            ThemeColorProvider themeColorProvider,
             Context context,
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
             WebContents openerWebContents,
             WebContents webContents) {
         mModel = model;
+        mThemeColorProvider = themeColorProvider;
         mContext = context;
         mDelegate = delegate;
         mOpenerWebContents = openerWebContents;
@@ -109,16 +115,13 @@ public class DocumentPictureInPictureHeaderMediator
                 DocumentPictureInPictureHeaderProperties.URL_STRING,
                 getUrlString(mOpenerWebContents.getVisibleUrl()));
 
-        int backgroundColor = ContextCompat.getColor(mContext, R.color.default_bg_color_dark);
-        mDesktopWindowStateManager.updateForegroundColor(backgroundColor);
-        mModel.set(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR, backgroundColor);
-        mModel.set(
-                DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST,
-                ThemeUtils.getThemedToolbarIconTint(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
-        mModel.set(
-                DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME,
-                BrandedColorScheme.DARK_BRANDED_THEME);
+        mThemeColorProvider.addThemeColorObserver(this);
+        mThemeColorProvider.addTintObserver(this);
+        onThemeColorChanged(mThemeColorProvider.getThemeColor(), /* shouldAnimate= */ false);
+        onTintChanged(
+                mThemeColorProvider.getTint(),
+                mThemeColorProvider.getActivityFocusTint(),
+                mThemeColorProvider.getBrandedColorScheme());
 
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
@@ -136,6 +139,7 @@ public class DocumentPictureInPictureHeaderMediator
                 };
     }
 
+    // TODO(crbug.com/477855428): Resize pip window if width doesn't fit header content.
     @Override
     public void onAppHeaderStateChanged(@Nullable AppHeaderState newState) {
         if (newState == null) return;
@@ -162,6 +166,22 @@ public class DocumentPictureInPictureHeaderMediator
                 DocumentPictureInPictureHeaderProperties.IS_SHOWN,
                 mCurrentHeaderState.isInDesktopWindow());
         setHeaderHeightAndSpacing();
+    }
+
+    @Override
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+        mDesktopWindowStateManager.updateForegroundColor(color);
+        mModel.set(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR, color);
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mModel.set(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST, activityFocusTint);
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME, brandedColorScheme);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -284,6 +304,8 @@ public class DocumentPictureInPictureHeaderMediator
 
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
+        mThemeColorProvider.removeThemeColorObserver(this);
+        mThemeColorProvider.removeTintObserver(this);
         mOpenerWebContentsObserver.observe(null);
         mWebContentsObserver.observe(null);
     }
