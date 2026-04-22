@@ -71,7 +71,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       uint64_t client_tracing_id,
       bool is_gpu_host,
       bool enable_extra_handles_validation,
-      const gfx::GpuExtraInfo& gpu_extra_info);
+      const gfx::GpuExtraInfo& gpu_extra_info,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info);
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
   // we don't want to do that in tests.
@@ -194,6 +196,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
     return shared_image_stub_.get();
   }
 
+  const gpu::GPUInfo& gpu_info() const { return gpu_info_; }
+  const gpu::GpuFeatureInfo& gpu_feature_info() const {
+    return gpu_feature_info_;
+  }
+
+  const gpu::SharedImageCapabilities& shared_image_capabilities() const {
+    CHECK(shared_image_stub_);
+    return shared_image_capabilities_;
+  }
+
   void CreateCommandBuffer(
       mojom::CreateCommandBufferParamsPtr init_params,
       int32_t routing_id,
@@ -226,7 +238,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              uint64_t client_tracing_id,
              bool is_gpu_host,
              bool enable_extra_handles_validation,
-             const gfx::GpuExtraInfo& gpu_extra_info);
+             const gfx::GpuExtraInfo& gpu_extra_info,
+             const gpu::GPUInfo& gpu_info,
+             const gpu::GpuFeatureInfo& gpu_feature_info);
 
   void OnDestroyCommandBuffer(int32_t route_id);
 
@@ -263,6 +277,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // The id of the client who is on the other side of the channel.
   const int32_t client_id_;
+
+  const gpu::GPUInfo gpu_info_;
+  const gpu::GpuFeatureInfo gpu_feature_info_;
+  gpu::SharedImageCapabilities shared_image_capabilities_;
 
   // The tracing ID used for memory allocations associated with this client.
   const uint64_t client_tracing_id_;

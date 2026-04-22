@@ -185,6 +185,9 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUCompatibilityMode);
 
 GPU_CONFIG_EXPORT bool IsGraphiteContextThreadSafe();
+
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSendGPUChannelEarly);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

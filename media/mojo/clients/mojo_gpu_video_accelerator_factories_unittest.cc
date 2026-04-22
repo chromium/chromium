@@ -126,9 +126,6 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
  public:
   explicit TestGpuChannelHost(gpu::mojom::GpuChannel& gpu_channel)
       : GpuChannelHost(0 /* channel_id */,
-                       gpu::GPUInfo(),
-                       gpu::GpuFeatureInfo(),
-                       gpu::SharedImageCapabilities(),
                        mojo::ScopedMessagePipeHandle(
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}

@@ -896,7 +896,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
   auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
       channel_token, client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, gpu_extra_info_);
+      enable_extra_handles_validation, gpu_extra_info_, gpu_info_,
+      gpu_feature_info_);
 
   if (!gpu_channel) {
     // This returns a null handle, which is treated by the client as a failure

@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/command_buffer_trace_utils.h"
@@ -30,25 +31,46 @@ using base::AutoLock;
 
 namespace gpu {
 
-GpuChannelHost::GpuChannelHost(
+scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
+    int channel_id,
+    mojo::ScopedMessagePipeHandle handle,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  auto host = base::WrapRefCounted(new GpuChannelHost(
+      channel_id, std::move(handle), std::move(io_task_runner)));
+  gpu::GPUInfo gpu_info;
+  gpu::GpuFeatureInfo gpu_feature_info;
+  gpu::SharedImageCapabilities shared_image_capabilities;
+  if (!host->GetGpuChannel().GetGPUInfo(&gpu_info, &gpu_feature_info,
+                                        &shared_image_capabilities)) {
+    return nullptr;
+  }
+  host->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
+  return host;
+}
+
+scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
     int channel_id,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::SharedImageCapabilities& shared_image_capabilities,
+    mojo::ScopedMessagePipeHandle handle,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  auto host = base::WrapRefCounted(new GpuChannelHost(
+      channel_id, std::move(handle), std::move(io_task_runner)));
+  host->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
+  return host;
+}
+
+GpuChannelHost::GpuChannelHost(
+    int channel_id,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_thread_(io_task_runner
                      ? io_task_runner
                      : base::SingleThreadTaskRunner::GetCurrentDefault()),
       channel_id_(channel_id),
-      gpu_info_(gpu_info),
-      gpu_feature_info_(gpu_feature_info),
       listener_(nullptr, base::OnTaskRunnerDeleter(io_thread_)),
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
-      shared_image_interface_(
-          this,
-          static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface),
-          shared_image_capabilities),
       sync_point_graph_validation_enabled_(
           features::IsSyncPointGraphValidationEnabled()) {
   if (features::IsLegacyIpcDisabled()) {
@@ -82,8 +104,21 @@ GpuChannelHost::GpuChannelHost(
 
   next_image_id_.GetNext();
   for (int32_t i = 0;
-       i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i)
+       i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i) {
     next_route_id_.GetNext();
+  }
+}
+
+void GpuChannelHost::SetInfo(
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
+  gpu_info_ = gpu_info;
+  gpu_feature_info_ = gpu_feature_info;
+  shared_image_interface_ = std::make_unique<SharedImageInterfaceProxy>(
+      this,
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface),
+      shared_image_capabilities);
 }
 
 mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
@@ -378,7 +413,7 @@ void GpuChannelHost::TerminateGpuProcessForTesting() {
 scoped_refptr<SharedImageInterface>
 GpuChannelHost::CreateClientSharedImageInterface() {
   return base::MakeRefCounted<ClientSharedImageInterface>(
-      &shared_image_interface_, this);
+      shared_image_interface_.get(), this);
 }
 
 GpuChannelHost::~GpuChannelHost() = default;

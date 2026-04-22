@@ -8,7 +8,10 @@ import "gpu/ipc/common/capabilities.mojom";
 import "gpu/ipc/common/constants.mojom";
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/context_type.mojom";
+import "gpu/ipc/common/gpu_feature_info.mojom";
+import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/shared_image_capabilities.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/shared_image_pool_id.mojom";
 import "gpu/ipc/common/shared_image_pool_client_interface.mojom";
@@ -100,6 +103,12 @@ interface GpuChannel {
   // Returns a globally unique token which can be used by other interfaces to
   // securely identify this GpuChannel endpoint within the GPU process.
   [Sync] GetChannelToken() => (mojo_base.mojom.UnguessableToken token);
+
+  // Returns the GPU information of the GPU process.
+  [Sync, NoInterrupt] GetGPUInfo() => (
+         gpu.mojom.GpuInfo gpu_info,
+         gpu.mojom.GpuFeatureInfo gpu_feature_info,
+         gpu.mojom.SharedImageCapabilities shared_image_capabilities);
 
   // A simple no-op message used as a fence to ensure all previously sent
   // messages have been received.

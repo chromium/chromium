@@ -937,4 +937,10 @@ BASE_FEATURE(kConfigurableGPUWatchdogTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kConfigurableGPUWatchdogTimeoutSeconds{
     &kConfigurableGPUWatchdogTimeout, "watchdog_timeout_seconds", 30};
+
+// Enables the optimization where GPU channels are sent to renderer processes
+// early when the renderer process is being initialized, instead of waiting
+// for the renderer to request the GPU channel to the browser process.
+BASE_FEATURE(kSendGPUChannelEarly, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

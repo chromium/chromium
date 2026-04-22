@@ -148,6 +148,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void CrashForTesting() override;
   void TerminateForTesting() override;
   void GetChannelToken(GetChannelTokenCallback callback) override;
+  void GetGPUInfo(GetGPUInfoCallback callback) override;
   void Flush(FlushCallback callback) override;
   void GetSharedMemoryForFlushId(
       GetSharedMemoryForFlushIdCallback callback) override;
@@ -490,6 +491,19 @@ void GpuChannelMessageFilter::GetChannelToken(
   std::move(callback).Run(channel_token_);
 }
 
+void GpuChannelMessageFilter::GetGPUInfo(GetGPUInfoCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(features::kSendGPUChannelEarly));
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run(gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities());
+    return;
+  }
+  std::move(callback).Run(gpu_channel_->gpu_info(),
+                          gpu_channel_->gpu_feature_info(),
+                          gpu_channel_->shared_image_capabilities());
+}
+
 void GpuChannelMessageFilter::GetSharedMemoryForFlushId(
     GetSharedMemoryForFlushIdCallback callback) {
   CHECK(shared_memory_controller_);
@@ -671,11 +685,15 @@ GpuChannel::GpuChannel(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     bool enable_extra_handles_validation,
-    const gfx::GpuExtraInfo& gpu_extra_info)
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info)
     : gpu_channel_manager_(gpu_channel_manager),
       scheduler_(scheduler),
       sync_point_manager_(sync_point_manager),
       client_id_(client_id),
+      gpu_info_(gpu_info),
+      gpu_feature_info_(gpu_feature_info),
       client_tracing_id_(client_tracing_id),
       task_runner_(task_runner),
       io_task_runner_(io_task_runner),
@@ -725,12 +743,15 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     bool enable_extra_handles_validation,
-    const gfx::GpuExtraInfo& gpu_extra_info) {
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
       client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, gpu_extra_info));
+      enable_extra_handles_validation, gpu_extra_info, gpu_info,
+      gpu_feature_info));
 
   if (!gpu_channel->CreateSharedImageStub(gpu_extra_info)) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";
@@ -901,6 +922,8 @@ bool GpuChannel::CreateSharedImageStub(
   }
   shared_image_stub_->SetGpuExtraInfo(gpu_extra_info);
   filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
+  shared_image_capabilities_ =
+      shared_image_stub_->factory()->MakeCapabilities();
   return true;
 }
 

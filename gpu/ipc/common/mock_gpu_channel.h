@@ -22,6 +22,7 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD0(CrashForTesting, void());
   MOCK_METHOD0(TerminateForTesting, void());
   MOCK_METHOD1(GetChannelToken, void(GetChannelTokenCallback));
+  MOCK_METHOD1(GetGPUInfo, void(GetGPUInfoCallback));
   MOCK_METHOD0(Flush, bool());
 
   MOCK_METHOD1(GetSharedMemoryForFlushId,

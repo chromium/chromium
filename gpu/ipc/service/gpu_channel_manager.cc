@@ -36,7 +36,9 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/memory_stats.h"
@@ -484,7 +486,9 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     bool enable_extra_handles_validation,
-    const gfx::GpuExtraInfo& gpu_extra_info) {
+    const gfx::GpuExtraInfo& gpu_extra_info,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Remove existing GPU channel with same client id before creating
@@ -502,7 +506,8 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, gpu_extra_info);
+      enable_extra_handles_validation, gpu_extra_info, gpu_info,
+      gpu_feature_info);
 
   if (!gpu_channel)
     return nullptr;
