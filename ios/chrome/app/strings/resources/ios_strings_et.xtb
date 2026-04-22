@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Tegevuste haldamine</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Kontode vahel vahetamiseks puudutage kontoikooni</translation>
+<translation id="135806768612505061">Kõik vahelehed</translation>
 <translation id="1358106883354237005">Hallatud konto</translation>
 <translation id="1358214951266274152">Külastage kopeeritud linki</translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Paroolide jagamine</translation>
 <translation id="1554043146674176775">Lülita AI-režiim välja</translation>
 <translation id="1554477036522844996">Uus aken</translation>
+<translation id="1554605811306591212">Kohalduvad meie <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> ja <ph name="PRIVACY_NOTICE" />. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu.</translation>
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1565371473877914088">Uus inkognito vaheleht</translation>
 <translation id="1567960978791353852">Kuva lugemisrežiim</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">See kaust on tühi</translation>
 <translation id="1864266050569350424">Saidil, kuhu olete parooli salvestanud, puudutage sisselogimise paroolivälja.</translation>
 <translation id="1866700949421703765">Lüliti Lülita lugemisrežiim sisse peitmine</translation>
+<translation id="1869050523388525800">Ekraaniotsing on saadaval ainult siis, kui Google on määratud teie vaikeotsingumootoriks. Saate oma vaikeotsingumootorit muuta jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lamp</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Kutsuge pereliikmeid</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Järjehoidjate salvestamiseksoma kontole kustutage kasutamata järjehoidjad.</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3904270275864974753">Karusselli muutmine</translation>
+<translation id="3905384981098338147">AI-režiimi ajalugu</translation>
 <translation id="3909222758573607742">Salvestage kontole paroole ja muid üksusi</translation>
 <translation id="3913463964270756493">Peida valik Otsige ekraanilt Google Lensiga</translation>
 <translation id="3914640181019354363">Aadresside tuvastamine</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Kasutage klaviatuuri</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
 <translation id="4416582610654027550">Sisestage kehtiv URL</translation>
+<translation id="441868831736628555">Privaatsusteatis</translation>
 <translation id="4420409367264901497">Muuda järjehoidjat</translation>
 <translation id="4425365312778464779">Seda kontot hallatakse</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Välju vahelehtede vahetist</translation>
 <translation id="5148717509369231739">Safari importimine</translation>
 <translation id="5152483358138813104">Logige kõikides seadmetes kiiremini sisse</translation>
+<translation id="515315847398512535">Ekraaniotsing on teie konto jaoks välja lülitatud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5155502059906700593">Võite vahetada aadressiriba asukohta, et kuvada see üleval või all.</translation>
 <translation id="5157638238828697074">Midagi läks valesti. Rakendust ei õnnestunud avada.</translation>
 <translation id="5163417375525818870">PDF-id</translation>
@@ -1313,7 +1319,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5647702255748985085">Kas soovite grupist lahkuda?</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5652623411397330904">Sinu jälgitavad tooted ilmuvad siin.</translation>
-<translation id="5653100054596780862">Kõik vahelehed</translation>
 <translation id="5656431592348714536">Täiustatud kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307">Kohalduvad <ph name="GOOGLE_TERMS" /> ja <ph name="GEMINI_APPS_PRIVACY" />. Gemini võib teha vigu, seega kontrollige see teave üle.</translation>
@@ -1511,6 +1516,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6307241780749477694">Kõigile oma paroolidele selles seadmes juurdepääsemiseks kinnitage oma isik</translation>
 <translation id="6316141353357700666">Valige kuvatavast loendist parool, mida soovite kasutada.</translation>
 <translation id="6321526113093607004">Lisa järjehoidjatesse</translation>
+<translation id="6327249202318869726">Gemini on teie konto jaoks välja lülitatud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="6331836477476466332">Teie turvalisem ja võimsam brauser</translation>
 <translation id="6335744088476213315">Sellel kaardil kuvatakse tooted, mida olete hiljuti vaadanud ning mille jälgimisest ja hinnalanguse märguannetest võite huvitatud olla</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
@@ -1788,6 +1794,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7261217796641151584">Grupi jagamine</translation>
 <translation id="7266578100016339897">See aitab segadust vältida. Seda saab igal ajal seadetes muuta.</translation>
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
+<translation id="7275307913765547631">Korea asukohatingimused</translation>
 <translation id="728025568708172005">Alusta tutvustust</translation>
 <translation id="7280980607183752256">Seda faili ei saa importida.</translation>
 <translation id="7281202269687163394">Teie privaatsus ja Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7996239959906074962">Seadistage …</translation>
 <translation id="800361585186029508">Sisestatud URL-id avatakse Google Chrome'is.</translation>
 <translation id="8005666035647241369">Selle seadme Google'i paroolihaldurile</translation>
+<translation id="8006265839264939135">Tingimused</translation>
 <translation id="8010488806779226127">Avastage funktsioone, mis aitavad teil sirvimisel rohkem ära teha</translation>
 <translation id="8011489434346330032">Veebiinspektor</translation>
 <translation id="8014007212279733632">Kinnitage oma isik, et täita delikaatne teabe automaatselt</translation>

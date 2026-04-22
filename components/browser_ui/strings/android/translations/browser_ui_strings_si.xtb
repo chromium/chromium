@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">සුරැකි විශාලන මට්ටම් මකන්න ද?</translation>
 <translation id="3362437373201486687">බ්ලූටූත් උපාංග සඳහා ස්කෑන් කරමින්</translation>
 <translation id="3368138297038111198">කවුළුවක් බෙදා ගැනීම</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{අඩු මතකය නිසා අයිතම {TOTAL_COUNT}න් 1ක් පෙන්වමින්}one{අඩු මතකය නිසා අයිතම {TOTAL_COUNT}න් #ක් පෙන්වමින්}other{අඩු මතකය නිසා අයිතම {TOTAL_COUNT}න් #ක් පෙන්වමින්}}</translation>
 <translation id="3386292677130313581">අඩවි වලට ඔබගේ ස්ථානය දැන ගැනීමට ඉඩ දීමට පෙර විමසන්න (නිර්දේශිතයි)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">තෙවන පාර්ශ්ව කුකීස් අවහිර කර ඇත</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">එපා ස්තූතියි</translation>
 <translation id="7804248752222191302">වෙබ් අඩවියක් ඔබේ කැමරාව භාවිත කරයි</translation>
 <translation id="7805832099057502789">නව පටිති පිටු පෙනුම පහළ පත්‍රය සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
-<translation id="7807060072011926525">Google විසින් සපයනු ලැබේ</translation>
 <translation id="7809029041571842593">නව පටිති පිටු කාඩ්පත් පහළ පත්‍රය අර්ධ උසින් විවෘත කර ඇත</translation>
 <translation id="7815680994978050279">හානිකර බාගැනීම් අවහිර කරන ලදී</translation>
 <translation id="7835852323729233924">මාධ්‍ය ධාවනය</translation>

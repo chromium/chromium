@@ -125,6 +125,7 @@ Se a política for definida como "1", DisabledForBrowser, o processo do navegado
 
 Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Ativar o recebimento de pesquisas da Navegação segura</translation>
+<translation id="1069651607236021905">Forçar a prioridade de primeiro plano para origens específicas</translation>
 <translation id="107045325503547419">Depende do processo de lançamento do recurso.</translation>
 <translation id="1073983258515362346">Envia informações sobre as luzes de fundo de um dispositivo.
 
@@ -728,14 +729,6 @@ Se esta política não for definida, o seletor de emojis será ativado para usu�
 <translation id="1523587744262636189">porta 10080 (pode ser desbloqueada até 01/04/2022)</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
-<translation id="1526766414933532012">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
-
-Se a política for desativada, a configuração de medição de anúncios também será desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncios no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
-
-Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação da API Attribution Reporting.</translation>
 <translation id="1532928374875633053">Permite definir uma lista de padrões de URL que especificam os sites que vão conceder automaticamente a permissão para posicionamento de janelas. Isso vai ampliar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
       Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
@@ -2202,6 +2195,15 @@ salvo na pasta "Downloads".
 Se esta política não for definida ou for definida como false, a impressão silenciosa será desativada.
 Assim, a janela de visualização de impressão não será fechada automaticamente e vai exigir
 que uma seleção seja feita como de costume.</translation>
+<translation id="2451322901390143329">Controla se os Web Workers criados a partir de URLs de dados recebem uma origem opaca exclusiva.
+
+Os Web Workers podem ser criados usando um URL de dados que contém o script do worker. Antes, esses workers herdavam a origem da página que os criou, permitindo que eles acessassem o mesmo armazenamento local, cookies e outros dados vinculados à origem. Para melhorar a segurança e manter a conformidade com a especificação HTML, o Chrome vai mudar o comportamento padrão no marco 149. Agora, os workers criados com URLs de dados terão uma origem única e opaca. Isso os isola dos dados da página do criador.
+
+Se essa política for ativada ou deixada sem definição, o novo comportamento padrão (mais seguro) será usado, e os Web Workers criados com URLs de dados terão uma origem opaca exclusiva.
+
+Se essa política for desativada, o Chrome vai reverter para o comportamento legado, e os Web Workers criados com URLs de dados vão herdar a origem do criador. Isso permite que os administradores resolvam temporariamente problemas de compatibilidade se os aplicativos internos forem interrompidos devido à mudança de segurança.
+
+Essa política é temporária e será removida na etapa 157.</translation>
 <translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
@@ -5478,6 +5480,17 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
           diferentes desta política.
           </translation>
 <translation id="4578265298946081589">Não é reinicializado quando o usuário sai.</translation>
+<translation id="4580711645933054901">Esta política permite especificar uma lista de padrões de URL. O conteúdo da web em segundo plano que corresponder a esses padrões será forçado a ser executado com prioridade de primeiro plano.
+
+Se a política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> for ativada, esta lista será ignorada, porque todas as guias serão forçadas a ter prioridade de primeiro plano.
+
+Se a política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> for desativada ou não for definida, apenas o conteúdo que corresponder aos padrões nesta lista será forçado.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Esta política só considera as origens, por isso, os caminhos ou parâmetros de consulta no padrão são ignorados. Esquema, host e porta são aceitos.
+
+Se a lista estiver vazia ou não for definida, nenhum conteúdo em segundo plano será forçado a ter prioridade de primeiro plano.</translation>
 <translation id="4581507927311097234">O tempo, em milissegundos, sem entrada do usuário até que a tela seja desligada.</translation>
 <translation id="4582027661281685066">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6329,14 +6342,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5067143124345820993">Lista de permissões de login de usuário</translation>
 <translation id="50689955292091946">Ativar o teclado virtual de acessibilidade na tela de login</translation>
-<translation id="5069453818168036580">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos por sites pode ser desativada para os usuários.
-
-Se ela for desativada, a configuração de anúncios sugeridos por sites também será desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos por sites no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
-
-Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação da API Protected Audience.</translation>
 <translation id="5069522005630249098">Esta configuração decide quantos dados do usuário são mantidos após a desativação do <ph name="LACROS_NAME" />.
 
       Se a política for definida como <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou for deixada sem definição, a migração de dados de versões anteriores não vai ser realizada.
@@ -6466,6 +6471,7 @@ Os domínios precisam estar no formato de um nome de domínio totalmente qualifi
 
 Domínios com formato incorreto serão ignorados.</translation>
 <translation id="5163002264923337812">Ativar o antigo fluxo de login baseado na Web</translation>
+<translation id="5163120075537316507">As origens opacas para URLs de dados em Web Workers estão desativadas (comportamento legado obsoleto)</translation>
 <translation id="5163889437570441600">Permite que o conteúdo seja transmitido usando o <ph name="PRODUCT_NAME" />.
 
           Se essa política for definida como falsa, os usuários não poderão transmitir conteúdo para o dispositivo deles. Se essa política for definida como verdadeira, os usuários poderão transmitir conteúdo. Se essa política não for definida, os usuários não poderão transmitir conteúdo para dispositivos ChromeOS inscritos, mas poderão transmitir para dispositivos não inscritos.</translation>
@@ -7132,6 +7138,17 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoin
 <translation id="5542235730745104308">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> vai usar páginas de erro alternativas integradas no navegador, como "Página não encontrada". Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> nunca vai usar páginas de erro alternativas.
 
 Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, ficará ativa, mas os usuários poderão mudá-la.</translation>
+<translation id="5543124658694855168">Definir esta política permite que as empresas substituam o valor retornado pela
+<ph name="CPU_PERFORMANCE_API_NAME" /> (ou seja,
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />,
+consulte https://github.com/WICG/cpu-performance para saber mais detalhes).
+
+Se esta política for ativada, o valor de
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />
+será substituído pelo valor especificado. Se a política não for ativada,
+o cálculo padrão do nível de desempenho será usado.
+
+Os valores possíveis para esta política são de 0 a 4.</translation>
 <translation id="5544059132156503357">A definição da política designa quais tipos de criptografia têm permissão ao solicitar tickets do Kerberos de um servidor do <ph name="MS_AD_NAME" />.
 
 Se a política for definida como:
@@ -7439,6 +7456,7 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
 <translation id="5706929446669049441">Desativa o compartilhamento de credenciais do usuário</translation>
 <translation id="57072195677044908">Desativa a separação de perfis</translation>
 <translation id="5708969689202733975">Configurar os modos de desbloqueio rápido permitidos</translation>
+<translation id="5714281972278520176">Ativar origens opacas para URLs de dados em Web Workers</translation>
 <translation id="5714563837055244378">Ativar o compartilhamento do Android para apps da Web.</translation>
 <translation id="5715739768416614900">Ativar as ferramentas de solução de problemas em quiosques.</translation>
 <translation id="5717973246079053225">Desativar os relatórios de nuvem do perfil gerenciado</translation>
@@ -8334,6 +8352,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>
+<translation id="6293411231114989812">As origens opacas para URLs de dados em Web Workers estão ativadas (novo comportamento padrão)</translation>
 <translation id="6299147100249359151">Permitir a detecção do escopo da política.</translation>
 <translation id="6299554629216555326">Configurações de gerenciamento de janelas</translation>
 <translation id="6302021021024941085">Desativar as ferramentas de solução de problemas em quiosques.</translation>
@@ -10677,6 +10696,7 @@ Essa política pode ser substituída para origens específicas de Apps Isolados 
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de desligamento da tela (se definido) e ao intervalo de inatividade.</translation>
 <translation id="7680437377926096177">Suprimir a caixa de diálogo para saída na última janela fechada.</translation>
+<translation id="7681075922820376711">Substituição do nível de desempenho da CPU</translation>
 <translation id="7682409626897786151">Permite definir uma lista de padrões de URL que especificam sites com permissão para usar a geração de chaves. Se um padrão de URL estiver em KeygenBlockedForUrls, isso vai modificar essas exceções.
 
           Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo da política DefaultKeygenSetting, caso ela esteja definida, ou da configuração pessoal do usuário.
@@ -11556,16 +11576,6 @@ Essas políticas devem ser usadas estritamente para configurar instâncias do <p
 Não é necessário definir essas configurações manualmente. Modelos fáceis de usar para Windows, Mac e Linux estão disponíveis para download em <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o provisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261008508574620157">Uma política para controlar se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> vai ser mostrada aos usuários.
-A solicitação é um fluxo de bloqueio de usuários que informa sobre as configurações do <ph name="PRIVACY_SANDBOX_NAME" />. Consulte <ph name="PRIVACY_SANDBOX_URL" /> para conferir detalhes sobre a iniciativa do Chrome de descontinuar cookies de terceiros.
-
-Se a política for desativada, o <ph name="PRODUCT_NAME" /> não vai mostrar a solicitação do <ph name="PRIVACY_SANDBOX_NAME" />.
-Se ela for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai determinar se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> aparece, e depois ela será mostrada (se possível).
-
-Se uma das seguintes políticas for definida, esta precisará ser desativada:
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Esta política fornecerá acesso à página de teste da política.
 Enquanto as políticas forem testadas nesta página, todas as outras serão ignoradas.
 O recurso estará disponível apenas no canal Canary.
@@ -12238,14 +12248,6 @@ Esta política é uma medida temporária e será removida após alguns marcos.</
       Se a política for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, já que códigos desconhecidos e possivelmente hostis poderão ser carregados nos processos do navegador <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos do navegador <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
 
       Observação: leia mais sobre políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies (link em inglês).</translation>
-<translation id="8672039014434141545">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios pode ser desativada para os usuários.
-
-Se a política for desativada, a configuração de temas de anúncios também vai ser desativada para os usuários.
-Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.
-
-A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
-
-Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a desativação da API Topics.</translation>
 <translation id="8672321184841719703">Versão de atualização automática de destino</translation>
 <translation id="867410340948518937">Segundo fator universal (U2F, na sigla em inglês)</translation>
 <translation id="8675599659717867329">Desativar relatórios</translation>

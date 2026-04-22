@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">खात्यांदरम्यान स्विच करण्यासाठी, तुमच्या खाते आयकनवर टॅप करा</translation>
+<translation id="135806768612505061">सर्व टॅब</translation>
 <translation id="1358106883354237005">व्यवस्थापित केलेले खाते</translation>
 <translation id="1358214951266274152">तुम्ही कॉपी केलेल्या लिंकला भेट द्या</translation>
 <translation id="1360432990279830238">साइन आउट करून सिंक बंद करायचे आहे का?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">पासवर्ड शेअर करा</translation>
 <translation id="1554043146674176775">AI मोड बंद करा</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
+<translation id="1554605811306591212">आमचे <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> आणि <ph name="PRIVACY_NOTICE" /> लागू होतात. Gemini हे AI आहे आणि ते लोकांच्या बाबतीतदेखील चुका करू शकते.</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
 <translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
 <translation id="1567960978791353852">वाचन मोड दाखवा</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1864266050569350424">तुम्ही जिथे पासवर्ड सेव्ह केले आहेत त्या साइटवर, साइन-इन पासवर्ड फील्डवर टॅप करा.</translation>
 <translation id="1866700949421703765">वाचन मोड सुरू करा हे लपवा</translation>
+<translation id="1869050523388525800">Google हे तुमचे डीफॉल्ट सर्च इंजीन म्हणून सेट केलेले असते, तेव्हाच शोध स्क्रीन उपलब्ध असते. तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये तुमचे डीफॉल्ट सर्च इंजीन बदलू शकता.</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">कुटुंब सदस्यांना आमंत्रित करा</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">तुमच्या खात्यामध्ये बुकमार्क सेव्ह करण्यासाठी, तुमचे न वापरलेले बुकमार्क हटवा</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3904270275864974753">कॅरावसल संपादित करा</translation>
+<translation id="3905384981098338147">AI मोड इतिहास</translation>
 <translation id="3909222758573607742">खात्यामध्ये पासवर्ड आणि इतर आयटम सेव्ह करा</translation>
 <translation id="3913463964270756493">Google Lens वापरून शोध स्क्रीन लपवा</translation>
 <translation id="3914640181019354363">पत्ते डिटेक्ट करा</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">कीबोर्ड वापरा</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4416582610654027550">योग्य URL टाइप करा</translation>
+<translation id="441868831736628555">गोपनीयता सूचना</translation>
 <translation id="4420409367264901497">बुकमार्क संपादित करा</translation>
 <translation id="4425365312778464779">हे खाते व्यवस्थापित केले जात आहे</translation>
 <translation id="4430277756566635951">सध्या <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} आणि इतर एक}other{{domain} आणि इतर {count}}}</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="4828431027673677473">तुमच्या स्वारस्यांवर आधारित उत्पादने</translation>
+<translation id="4829420936835028285">टॅब गट संपादित करा</translation>
 <translation id="4833786495304741580">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते.</translation>
 <translation id="483689884442613745">सेव्ह करा…</translation>
 <translation id="4840495572919996524">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही आता तुमच्या Google खातेमध्ये सिंक केले जाणार नाही</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">टॅब स्विचरमधून बाहेर पडा</translation>
 <translation id="5148717509369231739">Safari संबंधित इंपोर्ट</translation>
 <translation id="5152483358138813104">तुमच्या सर्व डिव्हाइसवर अधिक जलद साइन इन करा</translation>
+<translation id="515315847398512535">तुमच्या खात्यासाठी शोध स्क्रीन बंद केली आहे. अधिक माहितीसाठी तुमच्या ॲडमिनशी संपर्क साधा.</translation>
 <translation id="5155502059906700593">तुमच्या अ‍ॅड्रेस बारची जागा सर्वात वरती किंवा तळाशी स्विच करा.</translation>
 <translation id="5157638238828697074">काहीतरी चुकले. अ‍ॅप्लिकेशन उघडता आले नाही.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1313,7 +1320,6 @@
 <translation id="5647702255748985085">गट सोडायचा आहे का?</translation>
 <translation id="5648166631817621825">अखेरच्या 7 दिवसांमधील</translation>
 <translation id="5652623411397330904">तुम्ही माग ठेवत असलेली उत्पादने येथे दिसतील.</translation>
-<translation id="5653100054596780862">सर्व टॅब</translation>
 <translation id="5656431592348714536">वर्धित केलेले कॅलेंडर</translation>
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> आणि <ph name="GEMINI_APPS_PRIVACY" /> लागू होतात. Gemini चुका करू शकते, त्यामुळे ते दोनदा तपासा.</translation>
@@ -1512,6 +1518,7 @@
 <translation id="6307241780749477694">तुम्हाला या डिव्हाइसवर तुमचे सर्व पासवर्ड मिळवण्यासाठी तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6316141353357700666">दिसणाऱ्या सूचीमधून तुम्हाला वापरायचा असलेला पासवर्ड निवडा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
+<translation id="6327249202318869726">तुमच्या खात्यासाठी Gemini बंद केले आहे. अधिक माहितीसाठी तुमच्या ॲडमिनशी संपर्क साधा.</translation>
 <translation id="6331836477476466332">तुमच्यासाठी सुरक्षित, आणखी प्रभावी ब्राउझर</translation>
 <translation id="6335744088476213315">हे कार्ड तुम्ही अलीकडे पाहिलेली उत्पादने दाखवते आणि किमती कमी होण्यासंबंधित सूचना मिळवण्यासाठी माग ठेवण्यात स्वारस्य असू शकते</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
@@ -1789,6 +1796,7 @@
 <translation id="7261217796641151584">गट शेअर करा</translation>
 <translation id="7266578100016339897">यामुळे तुम्हाला टापटीप राहण्यात मदत होते. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
+<translation id="7275307913765547631">कोरियन स्थान अटी</translation>
 <translation id="728025568708172005">आसपास फेरफटका मारा</translation>
 <translation id="7280980607183752256">ही फाइल इंपोर्ट करता आली नाही</translation>
 <translation id="7281202269687163394">तुमची गोपनीयता आणि Gemini.</translation>
@@ -2004,6 +2012,7 @@
 <translation id="7996239959906074962">सेट करा…</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>
 <translation id="8005666035647241369">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
+<translation id="8006265839264939135">अटी</translation>
 <translation id="8010488806779226127">तुम्ही ब्राउझ करता तसे तुम्हाला आणखी गोष्टी करण्यात मदत करू शकतात अशी वैशिष्ट्ये एक्सप्लोर करा</translation>
 <translation id="8011489434346330032">वेब इन्स्पेक्टर</translation>
 <translation id="8014007212279733632">संवेदनशील माहिती ऑटोफिल करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>

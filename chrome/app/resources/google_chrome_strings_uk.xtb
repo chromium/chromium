@@ -416,6 +416,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="547202872422499512">Тепер Chrome активується під час запуску Windows, щоб ви могли відразу переглядати вебсторінки. Цю функцію можна вимкнути в налаштуваннях.</translation>
 <translation id="5486346529181556467">Повідомляйте про сайти, які вважаєте шкідливими, щоб покращувати безпеку в Інтернеті для всіх. Докладніше про <ph name="BEGIN_LINK" />правила Google щодо небезпечних сайтів<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">лівий верхній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="TOP" />% згори</translation>
+<translation id="5529390769101499214">Щоб керувати розширеннями, натисніть "Розширення" в головному меню Chrome.</translation>
 <translation id="5550137307985173298">Натисніть кнопку "Налаштувати Chrome" на сторінці нової вкладки, щоб змінити вигляд вебпереглядача</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Помилка: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
@@ -502,6 +503,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6235018212288296708">Вхідне правило для Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="624230925347970731">Незабаром Chrome закриється</translation>
 <translation id="6247557882553405851">Google Менеджер паролів</translation>
+<translation id="6248988683584659830">Налаштування пошуку</translation>
 <translation id="6251759518630934363">Попереджає вас про небезпечні сайти, навіть раніше невідомі Google, аналізуючи більше даних від сайтів, ніж системи стандартного захисту. Ви можете пропустити попередження Chrome.</translation>
 <translation id="6277547788421725101">Хтось із батьків вимкнув "Дозволи для сайтів, додатків і розширень" для Chrome</translation>
 <translation id="627882678981830918">Керуйте налаштуваннями Chrome. Зробіть Chrome вебпереглядачем за умовчанням.</translation>
@@ -665,6 +667,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7792336732117553384">&amp;Керувати профілями Chrome</translation>
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7804364787702057554">Ваш обліковий запис у Chrome</translation>
+<translation id="7804947029129221742">Пошукову систему змінено за межами Chrome. Щоб захистити вас, вебпереглядач Chrome скинув її до початкового значення за умовчанням. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Видалити з Chrome…</translation>
 <translation id="7827099906024714326">Chrome має підтвердити вашу особу, перш ніж деякі дані можна буде зберігати в обліковому записі Google і використовувати на всіх ваших пристроях. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7832314606810669113">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть у Chrome. Після входу цю закладку буде збережено в обліковому записі Google.</translation>
@@ -786,7 +789,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8999117580775242387">Якщо протокол HTTPS недоступний, Chrome використовуватиме незахищене з’єднання без попередження</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
-<translation id="9010418943148193727">Пошукову систему за умовчанням змінено за межами Chrome. Щоб захистити вас, Chrome скинув її.</translation>
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>
 <translation id="9090566250983691233">Чому Chrome блокує деякі файли</translation>

@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">एक्सटेंशन निर्देशिका को प्रोफ़ाइल में नहीं ले जा सका.</translation>
 <translation id="1610570795592207282">स्क्रिप्ट के लिए css '<ph name="RELATIVE_PATH" />' को लोड नहीं किया जा सका.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" एक्‍सटेंशन को आयात नहीं किया जा सका, क्‍योंकि वह एक शेयर किया गया मॉड्यूल नहीं है</translation>
+<translation id="1757786065507923842">माता-पिता की अनुमति के लिए अनुरोध नहीं किया जा सका.</translation>
 <translation id="1803557475693955505">पेजभूमि पेज '<ph name="BACKGROUND_PAGE" />' को लोड नहीं कर सका.</translation>
 <translation id="1875387611427697908">इसे केवल <ph name="CHROME_WEB_STORE" /> से ही जोड़ा जा सकता है</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" इंस्‍टॉल करने में असमर्थ क्‍योंकि "<ph name="IMPORT_NAME" />" द्वारा इसकी अनुमति नहीं है</translation>
 <translation id="2159915644201199628">इमेज को डीकोड नहीं किया जा सका: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">आपके माता-पिता ने इस एक्सटेंशन को अनुमति नहीं दी है</translation>
 <translation id="2350172092385603347">स्थानीय भाषा में लिखा गया है, लेकिन default_locale मेनिफ़ेस्ट में तय नहीं की गई थी.</translation>
 <translation id="2576842806987913196">इस नाम वाली CRX फ़ाइल पहले से ही मौजूद है.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
 <translation id="3174723475300476613">आपके संगठन ने इस एक्सटेंशन का ऐक्सेस ब्लॉक किया है.</translation>
 <translation id="3242289508736283383">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाला ऐप्लिकेशन ChromeOS कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
+<translation id="3364986687961713424">आपके एडमिन से: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> (क्रमांक <ph name="SERIAL_NUMBER" />) विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुंजी के लिए इनपुट मान, एक मान्य पाथ होना चाहिए.</translation>

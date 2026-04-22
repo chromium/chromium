@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">ບໍ່ສາມາດຍ້າຍໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍເພີ່ມເຕີມໄປເປັນໂປຣໄຟລ໌ໄດ້.</translation>
 <translation id="1610570795592207282">ບໍ່ສາມາດໂຫຼດ css '<ph name="RELATIVE_PATH" />' ສໍາລັບສະຄຣິບໄດ້.</translation>
 <translation id="1616298854599875024">ບໍ່ສາມາດນຳເຂົ້າສ່ວນຂະຫຍາຍ "<ph name="IMPORT_NAME" />" ໄດ້ ເພາະວ່າມັນບໍ່ແມ່ນໂມດູນທີ່ໃຊ້ຮ່ວມກັນ</translation>
+<translation id="1757786065507923842">ຄຳຮ້ອງຂໍການອະນຸຍາດພໍ່ແມ່ບໍ່ສຳເລັດ.</translation>
 <translation id="1803557475693955505">ບໍ່ສາມາດໂຫຼດໜ້າພື້ນຫຼັງໄດ້ '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">ສາມາດເພີ່ມອັນນີ້ໄດ້ຈາກ <ph name="CHROME_WEB_STORE" /> ເທົ່ານັ້ນ</translation>
 <translation id="2131077480075264">ບໍ່ສາມາດຕິດຕັ້ງ "<ph name="APP_NAME" />" ໄດ້ ເພາະວ່າມັນບໍ່ໄດ້ຮັບອະນຸຍາດໂດຍ "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">ຜູ້ປົກຄອງຂອງທ່ານບໍ່ໄດ້ອະນຸມັດສ່ວນຂະຫຍາຍນີ້</translation>
 <translation id="2350172092385603347">ໃຊ້ການຈໍາກັດແລ້ວ, ແຕ່ default_locale ບໍ່ໄດ້ກໍານົດຢູ່ໃນໃບລາຍການ.</translation>
 <translation id="2576842806987913196">ມີ​​ໄຟລ​໌ CRX ເປັນ​ຊື່​ນີ້ຢູ່ແລ້ວ​.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ​ຜູ້​ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">ອົງກອນຂອງທ່ານບລັອກການເຂົ້າເຖິງສ່ວນຂະຫຍາຍນີ້ໄວ້.</translation>
 <translation id="3242289508736283383">ຕ້ອງຕິດຕັ້ງແອັບທີ່ມີ​ຄຸນ​ສົມ​ບັດ manifest 'kiosk_only' ຢູ່ໃນໂໝດ kiosk ຂອງ ChromeOS</translation>
+<translation id="3364986687961713424">ຈາກຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງເປັນຊ່ອງທາງທີ່ຖືກຕ້ອງ.</translation>

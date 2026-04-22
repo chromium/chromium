@@ -125,6 +125,7 @@ Jika kebijakan disetel ke 1 - DisabledForBrowser, proses browser <ph name="PRODU
 
 Catatan: Baca selengkapnya tentang kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="1068801725746725727">Aktifkan penerimaan survei Safe Browsing</translation>
+<translation id="1069651607236021905">Menerapkan prioritas latar depan untuk origin tertentu</translation>
 <translation id="107045325503547419">Bergantung pada proses peluncuran fitur.</translation>
 <translation id="1073983258515362346">Melaporkan informasi tentang lampu latar perangkat.
 
@@ -731,14 +732,6 @@ Jika kebijakan ini tidak disetel, Pemilih emoji akan diaktifkan untuk pengguna n
 <translation id="1523587744262636189">port 10080 (blokir dapat dibatalkan hingga 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
-<translation id="1526766414933532012">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
-
-Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
-Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
-
-Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
-
-Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 dengan penghentian penggunaan Attribution Reporting API.</translation>
 <translation id="1532928374875633053">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang akan otomatis memberikan izin penempatan jendela. Hal ini akan memperluas kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
       Untuk mengetahui informasi selengkapnya tentang pola URL situs yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga jalur apa pun di pola URL akan diabaikan.
@@ -2208,6 +2201,15 @@ disimpan ke folder Download.
 Jika kebijakan ini tidak disetel atau disetel ke salah (false), pencetakan
 senyap akan dinonaktifkan, yang tidak otomatis menutup jendela pratinjau cetak dan mengharuskan
 pengguna untuk membuat pilihan seperti biasa.</translation>
+<translation id="2451322901390143329">Mengontrol apakah Web Worker yang dibuat dari URL data akan diberi origin unik yang buram.
+
+Web Worker dapat dibuat menggunakan URL data yang berisi skrip worker. Sebelumnya, worker ini mewarisi origin halaman yang membuatnya, sehingga mereka dapat mengakses penyimpanan lokal, cookie, dan data lain yang terikat dengan origin yang sama. Untuk meningkatkan keamanan dan menyesuaikan dengan spesifikasi HTML, Chrome mengubah perilaku defaultnya di pencapaian 149 sehingga worker yang dibuat dari URL data kini akan memiliki origin unik yang buram. Tindakan ini memisahkan worker dari data halaman kreator.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, perilaku default baru (yang lebih aman) akan digunakan, dan Web Worker yang dibuat dari URL data akan memiliki origin unik yang buram.
+
+Jika kebijakan ini disetel ke Nonaktif, Chrome akan kembali ke perilaku lama, dan Web Worker yang dibuat dari URL data akan mewarisi origin pembuatnya. Hal ini memungkinkan administrator untuk mengatasi masalah kompatibilitas untuk sementara jika aplikasi internal tidak berfungsi karena perubahan keamanan.
+
+Kebijakan ini bersifat sementara dan akan dihapus di pencapaian 157.</translation>
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
@@ -5490,6 +5492,17 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
           tidak berbahaya.
           </translation>
 <translation id="4578265298946081589">Jangan reboot saat pengguna logout.</translation>
+<translation id="4580711645933054901">Kebijakan ini memungkinkan Anda menentukan daftar pola URL. Konten web latar belakang yang cocok dengan pola ini akan dijalankan secara paksa pada prioritas latar depan.
+
+Jika kebijakan <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> disetel ke aktif, daftar ini akan diabaikan karena semua tab akan dipaksa ke prioritas latar depan.
+
+Jika <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> disetel ke nonaktif atau tidak disetel, hanya konten yang cocok dengan pola dalam daftar ini yang akan dipaksakan.
+
+Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Kebijakan ini hanya mencocokkan berdasarkan origin, sehingga semua jalur atau parameter kueri dalam pola diabaikan. Skema, host, dan port didukung.
+
+Jika daftar ini kosong atau tidak disetel, tidak ada konten latar belakang yang dipaksa ke prioritas latar depan.</translation>
 <translation id="4581507927311097234">Durasi waktu tanpa input pengguna sebelum layar dinonaktifkan, dalam milidetik.</translation>
 <translation id="4582027661281685066">Daftar Pola URL. Permintaan yang dimulai dari situs yang disajikan dengan pencocokan origin tidak tunduk pada pemeriksaan <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6343,14 +6356,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5067143124345820993">Daftar putih pengguna masuk</translation>
 <translation id="50689955292091946">Aktifkan keyboard virtual aksesibilitas di layar login</translation>
-<translation id="5069453818168036580">Kebijakan untuk mengontrol apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
-
-Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Iklan yang disarankan situs akan dinonaktifkan untuk pengguna Anda.
-Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
-
-Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
-
-Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Protected Audience API.</translation>
 <translation id="5069522005630249098">Setelan ini menentukan jumlah data pengguna yang disimpan setelah <ph name="LACROS_NAME" /> dinonaktifkan.
 
       Jika kebijakan ini disetel ke <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> atau tidak disetel, migrasi data mundur tidak akan dilakukan.
@@ -6480,6 +6485,7 @@ Domain diharapkan dalam bentuk nama domain yang sepenuhnya memenuhi syarat (FQDN
 
 Domain dengan format yang salah akan diabaikan.</translation>
 <translation id="5163002264923337812">Aktifkan alur login berbasis web lama</translation>
+<translation id="5163120075537316507">Origin buram untuk URL data di Web Worker dinonaktifkan (perilaku lama yang tidak digunakan lagi)</translation>
 <translation id="5163889437570441600">Mengizinkan konten ditransmisikan ke perangkat menggunakan <ph name="PRODUCT_NAME" />.
 
           Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat mentransmisikan konten ke perangkat mereka. Jika kebijakan ini disetel ke Benar (True), pengguna akan diizinkan untuk mentransmisikan konten. Jika kebijakan ini tidak disetel, pengguna tidak diizinkan untuk mentransmisikan konten ke perangkat ChromeOS terdaftar, tetapi dapat melakukan transmisi ke perangkat yang tidak terdaftar.</translation>
@@ -7151,6 +7157,17 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu SharePoint dan One
 <translation id="5542235730745104308">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan menggunakan halaman error alternatif yang telah disertakan dalam browser tersebut (seperti "halaman tidak ditemukan"). Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan pernah menggunakan halaman error alternatif.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya. Jika tidak disetel, kebijakan akan aktif tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="5543124658694855168">Jika kebijakan ini disetel, perusahaan dapat mengganti nilai yang ditampilkan oleh
+<ph name="CPU_PERFORMANCE_API_NAME" /> (yaitu,
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />,
+lihat https://github.com/WICG/cpu-performance untuk mengetahui detailnya).
+
+Jika kebijakan ini disetel, nilai
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />
+akan diganti ke nilai yang ditentukan. Jika kebijakan ini tidak disetel
+perhitungan tingkat performa default akan digunakan.
+
+Nilai yang mungkin untuk kebijakan ini adalah 0 hingga 4.</translation>
 <translation id="5544059132156503357">Jika kebijakan disetel, jenis enkripsi yang diizinkan akan ditentukan saat meminta tiket Kerberos dari server <ph name="MS_AD_NAME" />.
 
 Jika kebijakan disetel ke:
@@ -7458,6 +7475,7 @@ Kebijakan ini memengaruhi alur login dan autentikasi layar kunci.</translation>
 <translation id="5706929446669049441">Nonaktifkan berbagi kredensial pengguna</translation>
 <translation id="57072195677044908">Menonaktifkan pemisahan profil</translation>
 <translation id="5708969689202733975">Mengonfigurasi mode buka kunci cepat yang diizinkan</translation>
+<translation id="5714281972278520176">Aktifkan origin buram untuk URL data di Web Worker</translation>
 <translation id="5714563837055244378">Aktifkan berbagi Aplikasi Android ke Aplikasi Web.</translation>
 <translation id="5715739768416614900">Aktifkan alat pemecahan masalah Kios.</translation>
 <translation id="5717973246079053225">Nonaktifkan pelaporan cloud profil terkelola</translation>
@@ -8359,6 +8377,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="6287128640500683781">Izinkan semua pengguna login</translation>
 <translation id="6287310684159482272">Setelan cookie</translation>
 <translation id="6287742528823584153">Aktifkan Layanan <ph name="PRODUCT_NAME" /> dan luncurkan desktop jarak jauh saat login</translation>
+<translation id="6293411231114989812">Origin buram untuk URL data di Web Worker diaktifkan (perilaku default baru)</translation>
 <translation id="6299147100249359151">Izinkan deteksi cakupan Kebijakan.</translation>
 <translation id="6299554629216555326">Setelan Pengelolaan Jendela</translation>
 <translation id="6302021021024941085">Nonaktifkan alat pemecahan masalah Kios.</translation>
@@ -10656,6 +10675,10 @@ Kebijakan yang perlu digabungkan juga harus disetel di <ph name="POLICY_LIST_MUL
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pelaporan akan dinonaktifkan.
       Baik disetel maupun tidak disetel, aturan yang ditentukan dengan batasan tingkat ALLOW di DataLeakPreventionRulesList tidak akan melaporkan peristiwa.</translation>
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
+<translation id="7649831723389657756">Jika kebijakan ini disetel, hal ini akan menentukan origin mana yang akan mengizinkan semua skema autentikasi HTTP yang didukung <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Format pola origin sesuai dengan format ini (<ph name="URL_SCHEME_FORMAT_LINK" />). Hingga 1.000 pengecualian dapat ditentukan di <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Karakter pengganti diizinkan untuk komponen host (misalnya, '*:8000' cocok dengan semua host di port 8000). Untuk mencocokkan semua skema atau semua port, hapus komponen sepenuhnya (misalnya, 'example.com' cocok dengan skema dan port apa pun). Nama host (misalnya, 'example.com') juga cocok dengan subdomainnya. Untuk mencocokkan host secara persis dan mengecualikan subdomainnya, tambahkan titik di depannya (misalnya, '.example.com'). Untuk mencocokkan semua origin, gunakan satu tanda bintang ('*').</translation>
 <translation id="7657261947024629645">Mengoptimalkan performa.</translation>
 <translation id="76580522298425324">Mengizinkan screenshot tanpa gestur pengguna sebelumnya</translation>
 <translation id="7661379728107156839">Kompleksitas Rendah</translation>
@@ -10704,6 +10727,7 @@ Kebijakan ini dapat diganti untuk origin Aplikasi Web Terisolasi (IWA) tertentu 
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7680437377926096177">Sembunyikan dialog logout saat jendela terakhir ditutup.</translation>
+<translation id="7681075922820376711">Penggantian untuk tingkat performa CPU</translation>
 <translation id="7682409626897786151">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang diizinkan menggunakan pembuatan kunci. Jika terdapat di 'KeygenBlockedForUrls', pola URL akan menggantikan pengecualian ini.
 
           Jika kebijakan ini tidak disetel, nilai default global akan digunakan untuk semua situs, yaitu dari kebijakan 'DefaultKeygenSetting' jika disetel atau dari konfigurasi pribadi pengguna jika kebijakan 'DefaultKeygenSetting' tidak disetel.
@@ -11578,16 +11602,6 @@ Kebijakan ini khusus ditujukan untuk mengonfigurasi instance internal <ph name="
 Setelan ini tidak perlu dikonfigurasi secara manual! Template untuk Windows, Mac dan Linux yang mudah digunakan dapat didownload dari <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GPO, meski menyediakan kebijakan melalui registry tetap didukung untuk instance Windows yang bergabung dalam domain <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261008508574620157">Kebijakan untuk mengontrol apakah pengguna Anda akan melihat perintah <ph name="PRIVACY_SANDBOX_NAME" />.
-Perintah ini adalah alur pemblokiran pengguna yang menginformasikan setelan <ph name="PRIVACY_SANDBOX_NAME" /> kepada pengguna Anda. Lihat <ph name="PRIVACY_SANDBOX_URL" /> untuk mengetahui detail upaya Chrome menghentikan penggunaan cookie pihak ketiga.
-
-Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menampilkan perintah <ph name="PRIVACY_SANDBOX_NAME" />.
-Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menentukan apakah perintah <ph name="PRIVACY_SANDBOX_NAME" /> dapat ditampilkan atau tidak, lalu menampilkannya jika memungkinkan.
-
-Kebijakan ini harus disetel ke Nonaktif jika salah satu kebijakan berikut disetel:
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Kebijakan ini akan memberikan akses ke halaman pengujian kebijakan.
 Saat kebijakan diuji di halaman ini, semua kebijakan lainnya akan diabaikan.
 Fitur ini hanya akan tersedia di saluran Canary.
@@ -12260,14 +12274,6 @@ Kebijakan ini merupakan tindakan sementara dan akan dihapus setelah beberapa ver
       Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses browser <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses browser <ph name="PRODUCT_NAME" />.
 
       Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
-<translation id="8672039014434141545">Kebijakan untuk mengontrol apakah setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
-
-Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Topik iklan akan dinonaktifkan untuk pengguna Anda.
-Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
-
-Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.
-
-Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Topics API.</translation>
 <translation id="8672321184841719703">Versi Update Otomatis Target</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8675599659717867329">Nonaktifkan pelaporan</translation>

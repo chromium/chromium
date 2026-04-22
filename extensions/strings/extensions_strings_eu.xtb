@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Ezin izan da luzapenen direktorioa profilera eraman.</translation>
 <translation id="1610570795592207282">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" css fitxategia.</translation>
 <translation id="1616298854599875024">Ezin izan da inportatu "<ph name="IMPORT_NAME" />" luzapena, ez baita partekatutako modulua</translation>
+<translation id="1757786065507923842">Gurasoaren baimena eskatzeko prozesuak huts egin du.</translation>
 <translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> dendatik soilik gehi daiteke</translation>
 <translation id="2131077480075264">Ezin izan da "<ph name="APP_NAME" />" instalatu "<ph name="IMPORT_NAME" />" zerrendan ez dagoelako</translation>
 <translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Gurasoak ez du onartu luzapena</translation>
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
 <translation id="2576842806987913196">Badago izen hori duen CRX fitxategi bat.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="3174723475300476613">Luzapen honetarako sarbidea blokeatu du zure erakundeak.</translation>
 <translation id="3242289508736283383">kiosk_only manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-ren kiosko moduan</translation>
+<translation id="3364986687961713424">Zure administratzaileak hau dio: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak balio duen bide-izen bat izan behar du.</translation>

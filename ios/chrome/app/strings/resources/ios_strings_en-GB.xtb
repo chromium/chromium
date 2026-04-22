@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">To switch between accounts, tap your account icon</translation>
+<translation id="135806768612505061">All tabs</translation>
 <translation id="1358106883354237005">Managed account</translation>
 <translation id="1358214951266274152">Visit link that you copied</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Share passwords</translation>
 <translation id="1554043146674176775">Turn off AI Mode</translation>
 <translation id="1554477036522844996">New window</translation>
+<translation id="1554605811306591212">Our <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> and <ph name="PRIVACY_NOTICE" /> apply. Gemini is AI and can make mistakes, including about people.</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1565371473877914088">New Incognito tab</translation>
 <translation id="1567960978791353852">Show Reading mode</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1864266050569350424">On a site where you've saved a password, tap the sign-in password field.</translation>
 <translation id="1866700949421703765">Hide Turn on reading mode</translation>
+<translation id="1869050523388525800">Search screen is only available when Google is set as your default search engine. You can change your default search engine in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invite family members</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">To save bookmarks in your account, delete your unused bookmarks</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit carousel</translation>
+<translation id="3905384981098338147">AI Mode history</translation>
 <translation id="3909222758573607742">Save passwords and other items in account</translation>
 <translation id="3913463964270756493">Hide Search screen with Google Lens</translation>
 <translation id="3914640181019354363">Detect addresses</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Use keyboard</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
 <translation id="4416582610654027550">Type a valid URL</translation>
+<translation id="441868831736628555">Privacy Notice</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">This account is managed</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="4828431027673677473">Products based on your interests</translation>
+<translation id="4829420936835028285">Edit tab group</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="483689884442613745">Save…</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
 <translation id="5148717509369231739">Safari import</translation>
 <translation id="5152483358138813104">Sign in faster across your devices</translation>
+<translation id="515315847398512535">Search screen is turned off for your account. Contact your admin for more information.</translation>
 <translation id="5155502059906700593">Switch the position of your address bar to the top or bottom.</translation>
 <translation id="5157638238828697074">Something went wrong. The application couldn’t be opened.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1313,7 +1320,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5647702255748985085">Leave group?</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5652623411397330904">The products that you track will show up here.</translation>
-<translation id="5653100054596780862">All tabs</translation>
 <translation id="5656431592348714536">Enhanced calendar</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> and the <ph name="GEMINI_APPS_PRIVACY" /> apply. Gemini can make mistakes, so double-check it.</translation>
@@ -1511,6 +1517,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
 <translation id="6321526113093607004">Add to bookmarks</translation>
+<translation id="6327249202318869726">Gemini is turned off for your account. Contact your admin for more information.</translation>
 <translation id="6331836477476466332">A safer, more powerful browser for you</translation>
 <translation id="6335744088476213315">This card shows products that you've recently viewed and may be interested in tracking to get price drop alerts</translation>
 <translation id="6337234675334993532">Encryption</translation>
@@ -1788,6 +1795,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7261217796641151584">Share group</translation>
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
+<translation id="7275307913765547631">Korean Location Terms</translation>
 <translation id="728025568708172005">Show me around</translation>
 <translation id="7280980607183752256">This file can't be imported</translation>
 <translation id="7281202269687163394">Your privacy and Gemini.</translation>
@@ -2003,6 +2011,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7996239959906074962">Set up…</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
+<translation id="8006265839264939135">Terms</translation>
 <translation id="8010488806779226127">Explore features that can help you do more as you browse</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verify that it's you to autofill sensitive info</translation>

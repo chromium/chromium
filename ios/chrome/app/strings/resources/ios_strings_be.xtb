@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Кіраваць дзеяннямі</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Каб змяніць уліковы запіс, націсніце на значок уліковага запісу</translation>
+<translation id="135806768612505061">Усе ўкладкі</translation>
 <translation id="1358106883354237005">Уліковы запіс пад кіраваннем</translation>
 <translation id="1358214951266274152">Перайсці па скапіраванай спасылцы</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Абагульвайце паролі</translation>
 <translation id="1554043146674176775">Выключыць рэжым AI</translation>
 <translation id="1554477036522844996">Новае акно</translation>
+<translation id="1554605811306591212">Прымяняюцца нашы <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> і <ph name="PRIVACY_NOTICE" />. Gemini – гэта штучны інтэлект, ён можа рабіць памылкі, у тым ліку адносна інфармацыі пра людзей.</translation>
 <translation id="1558391695376153246">Закрыць укладкі інкогніта</translation>
 <translation id="1565371473877914088">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="1567960978791353852">Паказваць рэжым чытання</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1864266050569350424">На старонцы ўваходу на сайт с захаваным паролем націсніце на поле для ўводу пароля.</translation>
 <translation id="1866700949421703765">Схаваць кнопку "Уключыць рэжым чытання"</translation>
+<translation id="1869050523388525800">Пошук па экране даступны толькі тады, калі Google з’яўляецца стандартнай пошукавай сістэмай. Змяніць стандартную пошукавую сістэму можна ў <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Запрасіце ўдзельнікаў сямейнай групы</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Каб захаваць закладкі ва ўліковым запісе, выдаліце тыя, якімі вы не карыстаецеся</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904270275864974753">Змяніць карусель</translation>
+<translation id="3905384981098338147">Гісторыя рэжыму AI</translation>
 <translation id="3909222758573607742">Захаванне пароляў і іншых даных ва ўліковым запісе</translation>
 <translation id="3913463964270756493">Схаваць "Пошук змесціва экрана з дапамогай Google Аб’ектыва"</translation>
 <translation id="3914640181019354363">Выяўляць адрасы</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Выкарыстаць клавіятуру</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4416582610654027550">Увядзіце правільны URL-адрас</translation>
+<translation id="441868831736628555">Паведамленне аб прыватнасці</translation>
 <translation id="4420409367264901497">Рэдагаваць закладку</translation>
 <translation id="4425365312778464779">Гэты ўліковы запіс знаходзіцца пад кіраваннем</translation>
 <translation id="4430277756566635951">Зараз выбрана: <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Выйсці з пераключальніка ўкладак</translation>
 <translation id="5148717509369231739">Імпарт у Safari</translation>
 <translation id="5152483358138813104">Уваходзьце ў свае прылады хутчэй</translation>
+<translation id="515315847398512535">Пошук па экране выключаны для вашага ўліковага запісу. Па дадатковую інфармацыю звярніцеся да адміністратара.</translation>
 <translation id="5155502059906700593">Адрасны радок можна перамясціць уверх або ўніз.</translation>
 <translation id="5157638238828697074">Адбылася памылка. Не ўдалося адкрыць праграму.</translation>
 <translation id="5163417375525818870">Файлы PDF</translation>
@@ -1313,7 +1319,6 @@
 <translation id="5647702255748985085">Пакінуць групу?</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5652623411397330904">Тавары, якія вы адсочваеце, будуць паказвацца тут.</translation>
-<translation id="5653100054596780862">Усе ўкладкі</translation>
 <translation id="5656431592348714536">Палепшаны Каляндар</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5665739277590037307">Прымяняюцца <ph name="GOOGLE_TERMS" /> і <ph name="GEMINI_APPS_PRIVACY" />. Gemini можа рабіць памылкі, таму пераправярайце атрыманыя звесткі.</translation>
@@ -1511,6 +1516,7 @@
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
 <translation id="6316141353357700666">Выберыце патрэбны пароль са спіса.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
+<translation id="6327249202318869726">Сэрвіс Gemini выключаны для вашага ўліковага запісу. Па дадатковую інфармацыю звярніцеся да адміністратара.</translation>
 <translation id="6331836477476466332">Больш бяспечны і эфектыўны прагляд у інтэрнэце</translation>
 <translation id="6335744088476213315">На гэтай картцы паказаны тавары, якія вы нядаўна праглядалі. Магчыма, вам будзе цікава адсочваць іх і атрымліваць абвесткі аб зніжэнні цэн.</translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
@@ -1788,6 +1794,7 @@
 <translation id="7261217796641151584">Абагуліць групу</translation>
 <translation id="7266578100016339897">Гэта дзеянне дапамагае захоўваць парадак. Змяніць гэты параметр можна ў любы час у наладах.</translation>
 <translation id="7272437679830969316">Не ўдалося спраўдзіць вашу асобу. Пароль не скапіраваны.</translation>
+<translation id="7275307913765547631">Умовы выкарыстання геаданых у Карэі</translation>
 <translation id="728025568708172005">Паказаць усё</translation>
 <translation id="7280980607183752256">Не ўдаецца імпартаваць гэты файл</translation>
 <translation id="7281202269687163394">Ваша прыватнасць і Gemini.</translation>
@@ -2003,6 +2010,7 @@
 <translation id="7996239959906074962">Наладзіць…</translation>
 <translation id="800361585186029508">Адкрывае ўведзеныя URL-адрасы ў Google Chrome.</translation>
 <translation id="8005666035647241369">У Менеджары пароляў Google на гэтай прыладзе</translation>
+<translation id="8006265839264939135">Умовы</translation>
 <translation id="8010488806779226127">Паспрабуйце функцыі, якія зробяць ваш прагляд у інтэрнэце больш эфектыўным</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Каб выкарыстоўваць функцыю аўтаматычнага запаўнення канфідэнцыяльнай інфармацыі, вам трэба пацвердзіць сваю асобу</translation>

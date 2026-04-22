@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">หากต้องการสลับบัญชี ให้แตะไอคอนบัญชี</translation>
+<translation id="135806768612505061">แท็บทั้งหมด</translation>
 <translation id="1358106883354237005">บัญชีที่มีการจัดการ</translation>
 <translation id="1358214951266274152">เข้าชมลิงก์ที่คุณคัดลอก</translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">แชร์รหัสผ่าน</translation>
 <translation id="1554043146674176775">ปิดโหมด AI</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
+<translation id="1554605811306591212"><ph name="TERMS" /> <ph name="KOREAN_LOCATION_TERMS" /> และ<ph name="PRIVACY_NOTICE" />ของเรามีผลบังคับใช้ Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1567960978791353852">แสดงโหมดการอ่าน</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1864266050569350424">ในเว็บไซต์ที่คุณบันทึกรหัสผ่านไว้ ให้แตะช่องรหัสผ่านสำหรับลงชื่อเข้าใช้</translation>
 <translation id="1866700949421703765">ซ่อน "เปิดโหมดการอ่าน"</translation>
+<translation id="1869050523388525800">การค้นหาบนหน้าจอจะใช้ได้เฉพาะเมื่อตั้งค่า Google เป็นเครื่องมือค้นหาเริ่มต้น คุณเปลี่ยนเครื่องมือค้นหาเริ่มต้นได้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="1872096359983322073">แฟลช</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" /></translation>
 <translation id="1881621406744213161">เชิญสมาชิกในครอบครัว</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">หากต้องการบันทึกบุ๊กมาร์กในบัญชี ให้ลบบุ๊กมาร์กที่ไม่ได้ใช้</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3904270275864974753">แก้ไขภาพสไลด์</translation>
+<translation id="3905384981098338147">ประวัติการใช้โหมด AI</translation>
 <translation id="3909222758573607742">บันทึกรหัสผ่านและรายการอื่นๆ ในบัญชี</translation>
 <translation id="3913463964270756493">ซ่อนหน้าจอ Search ด้วย Google Lens</translation>
 <translation id="3914640181019354363">ตรวจหาที่อยู่</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">ใช้แป้นพิมพ์</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4416582610654027550">พิมพ์ URL ที่ถูกต้อง</translation>
+<translation id="441868831736628555">ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว</translation>
 <translation id="4420409367264901497">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="4425365312778464779">บัญชีนี้มีการจัดการ</translation>
 <translation id="4430277756566635951">เลือก <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} และอีก 1 แท็บ}other{{domain} และอีก {count} แท็บ}}</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="4828431027673677473">ผลิตภัณฑ์ที่อิงตามความสนใจของคุณ</translation>
+<translation id="4829420936835028285">แก้ไขกลุ่มแท็บ</translation>
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="483689884442613745">บันทึก…</translation>
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">ออกจากตัวสลับแท็บ</translation>
 <translation id="5148717509369231739">การนำเข้าจาก Safari</translation>
 <translation id="5152483358138813104">ลงชื่อเข้าใช้อุปกรณ์ต่างๆ ได้เร็วขึ้น</translation>
+<translation id="515315847398512535">การค้นหาบนหน้าจอปิดอยู่สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="5155502059906700593">สลับตำแหน่งแถบที่อยู่เป็นด้านบนหรือด้านล่าง</translation>
 <translation id="5157638238828697074">เกิดข้อผิดพลาด เปิดแอปพลิเคชันไม่ได้</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1313,7 +1320,6 @@
 <translation id="5647702255748985085">ออกจากกลุ่มใช่ไหม</translation>
 <translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
-<translation id="5653100054596780862">แท็บทั้งหมด</translation>
 <translation id="5656431592348714536">ปฏิทินที่มีประสิทธิภาพมากขึ้น</translation>
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5665739277590037307">เป็นไปตาม<ph name="GOOGLE_TERMS" />และ<ph name="GEMINI_APPS_PRIVACY" /> Gemini อาจทำผิดพลาดได้ ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง</translation>
@@ -1511,6 +1517,7 @@
 <translation id="6307241780749477694">โปรดยืนยันว่าเป็นคุณเพื่อรับรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="6316141353357700666">เลือกรหัสผ่านที่ต้องการใช้จากรายการที่ปรากฏ</translation>
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
+<translation id="6327249202318869726">Gemini ปิดใช้งานอยู่สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="6331836477476466332">เบราว์เซอร์ที่ปลอดภัยและทรงพลังมากขึ้นสำหรับคุณ</translation>
 <translation id="6335744088476213315">การ์ดนี้แสดงผลิตภัณฑ์ที่คุณดูล่าสุดและอาจสนใจติดตามเพื่อรับการแจ้งเตือนเมื่อราคาต่ำลง</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
@@ -1788,6 +1795,7 @@
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
+<translation id="7275307913765547631">ข้อกำหนดในการให้บริการตำแหน่งในประเทศเกาหลี</translation>
 <translation id="728025568708172005">แสดงเส้นทาง</translation>
 <translation id="7280980607183752256">นำเข้าไฟล์นี้ไม่ได้</translation>
 <translation id="7281202269687163394">ความเป็นส่วนตัวของคุณกับ Gemini</translation>
@@ -2003,6 +2011,7 @@
 <translation id="7996239959906074962">ตั้งค่า…</translation>
 <translation id="800361585186029508">เปิด URL ที่ป้อนใน Google Chrome</translation>
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
+<translation id="8006265839264939135">ข้อกำหนด</translation>
 <translation id="8010488806779226127">สำรวจฟีเจอร์ที่จะช่วยให้คุณทำสิ่งต่างๆ ได้มากขึ้นขณะท่องเว็บ</translation>
 <translation id="8011489434346330032">เครื่องมือตรวจสอบเว็บ</translation>
 <translation id="8014007212279733632">ยืนยันว่าเป็นคุณเพื่อป้อนข้อมูลที่ละเอียดอ่อนโดยอัตโนมัติ</translation>

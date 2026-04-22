@@ -415,6 +415,7 @@
 <translation id="547202872422499512">Chrome wird jetzt beim Starten von Windows geöffnet, damit du sofort mit dem Surfen beginnen kannst. Dies lässt sich in den Einstellungen deaktivieren.</translation>
 <translation id="5486346529181556467">Wenn du eine Website meldest, die deiner Meinung nach schädlich ist, trägst du dazu bei, die Onlinesicherheit für alle zu verbessern. <ph name="BEGIN_LINK" />Weitere Informationen zu den Richtlinien von Google für unsichere Websites<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
+<translation id="5529390769101499214">Klicke zum Verwalten deiner Erweiterungen im Chrome-Hauptmenü auf „Erweiterungen“.</translation>
 <translation id="5550137307985173298">Wenn du Chrome einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chrome anpassen“</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Fehler beim Starten: Achte darauf, dass du das Installationsprogramm nicht als Admin ausführst.</translation>
@@ -501,6 +502,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
 <translation id="624230925347970731">Chrome wird bald geschlossen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
+<translation id="6248988683584659830">In den Einstellungen suchen</translation>
 <translation id="6251759518630934363">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst festlegen, dass Warnungen von Chrome übersprungen werden.</translation>
 <translation id="6277547788421725101">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert</translation>
 <translation id="627882678981830918">Chrome anpassen und verwalten. Chrome als Standardbrowser festlegen.</translation>
@@ -664,6 +666,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7792336732117553384">Chrome-Profile &amp;verwalten</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
+<translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
 <translation id="7827099906024714326">Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="7832314606810669113">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Lesezeichen wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
@@ -785,7 +788,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8992769679401294069">Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="8999117580775242387">Wenn HTTPS nicht verfügbar ist, verwendet Chrome eine unsichere Verbindung ohne Warnung</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>
-<translation id="9010418943148193727">Deine Standardsuchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die Änderung rückgängig gemacht.</translation>
 <translation id="9014771989710951291">Chrome wird von mehreren Organisationen verwaltet</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary schließen</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>

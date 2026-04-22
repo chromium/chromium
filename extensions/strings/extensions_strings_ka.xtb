@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
 <translation id="1610570795592207282">css „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
 <translation id="1616298854599875024">გაფართოების „<ph name="IMPORT_NAME" />“ იმპორტირება ვერ მოხერხდა, რადგან ის არ არის გაზიარებული მოდული</translation>
+<translation id="1757786065507923842">მშობლის ნებართვის მოთხოვნა ვერ მოხერხდა.</translation>
 <translation id="1803557475693955505">ფონური გვერდი ვერ ჩაიტვირთა „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">ამის დამატება შესაძლებელია მხოლოდ <ph name="CHROME_WEB_STORE" />-დან</translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />“-ის ინსტალაცია შეუძლებელია, რადგან იგი არ არის ნებადართული „<ph name="IMPORT_NAME" />“-ის მიერ</translation>
 <translation id="2159915644201199628">გამოსახულების გაშიფვრა ვერ მოხერხდა: „<ph name="IMAGE_NAME" />“</translation>
+<translation id="2193567467390483943">თქვენმა მშობელმა არ დაადასტურა ეს გაფართოება</translation>
 <translation id="2350172092385603347">გამოყენებულია ლოკალიზაცია, მაგრამ ნაგულისხმევი ლოკალი არ არის მითითებული მანიფესტში.</translation>
 <translation id="2576842806987913196">უკვე არსებობს CRX ფაილი ამ სახელით.</translation>
 <translation id="2662876636500006917">Chrome-ის ვებ მაღაზია</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
+<translation id="3364986687961713424">თქვენი ადმინისტრატორისგან: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">შეყვანილი მნიშვნელობა პირადი გასაღებისთვის უნდა იყოს სწორი მისამართი.</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Vols suprimir els nivells de zoom desats?</translation>
 <translation id="3362437373201486687">S'estan cercant dispositius Bluetooth</translation>
 <translation id="3368138297038111198">S'està compartint una finestra</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{S'està mostrant 1 d’{TOTAL_COUNT} element perquè hi ha poca memòria}other{S'estan mostrant # de {TOTAL_COUNT} elements perquè hi ha poca memòria}}</translation>
 <translation id="3386292677130313581">Pregunta abans de permetre que els llocs web sàpiguen la teva ubicació (opció recomanada)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Galetes de tercers bloquejades</translation>
@@ -654,7 +655,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7804248752222191302">Un lloc web està utilitzant la càmera</translation>
 <translation id="7805832099057502789">Full inferior de l'aparença de la pàgina Pestanya nova obert a alçada completa</translation>
-<translation id="7807060072011926525">Proporcionat per Google</translation>
 <translation id="7809029041571842593">Full inferior de les targetes de la pàgina Pestanya nova obert a mitja alçada</translation>
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7835852323729233924">Reproduint contingut multimèdia</translation>

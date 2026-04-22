@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Slette lagr. zoomnivåer?</translation>
 <translation id="3362437373201486687">Skanner etter Bluetooth-enheter</translation>
 <translation id="3368138297038111198">Deler et vindu</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Viser 1 av {TOTAL_COUNT} elementer på grunn av lite minne}other{Viser # av {TOTAL_COUNT} elementer på grunn av lite minne}}</translation>
 <translation id="3386292677130313581">Spør før nettsteder får vite posisjonen min (anbefales)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Informasjonskapsler fra tredjeparter er blokkert</translation>
@@ -654,7 +655,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
 <translation id="7805832099057502789">Nytt faneområde som er åpnet i bunnarket vises med full høyde</translation>
-<translation id="7807060072011926525">Levert av Google</translation>
 <translation id="7809029041571842593">Feltet nederst for kort på Ny fane-siden er åpnet i halv høyde</translation>
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7835852323729233924">Spiller av medier</translation>

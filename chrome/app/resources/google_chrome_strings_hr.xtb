@@ -416,6 +416,7 @@
 <translation id="547202872422499512">Chrome se sada pokreće kad se pokrene Windows kako biste mogli odmah početi pregledavati. To možete isključiti u postavkama.</translation>
 <translation id="5486346529181556467">Poboljšajte online sigurnost za sve kad prijavite web-lokaciju za koju mislite da je štetna. Saznajte više o <ph name="BEGIN_LINK" />Googleovim pravilima o nesigurnim web-lokacijama<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">gornji lijevi kut područja za pretraživanje: lijevo <ph name="LEFT" />%, vrh <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Upravljajte svojim proširenjima tako da u glavnom izborniku Chromea kliknete Proširenja.</translation>
 <translation id="5550137307985173298">Kliknite gumb Prilagodi Chrome na stranici Nova kartica da biste Chromeu dali novi izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Pogreška pri pokretanju: pokrenite instalacijski program kao običan korisnik, a ne kao administrator.</translation>
@@ -502,6 +503,7 @@
 <translation id="6235018212288296708">Ulazno pravilo kako bi Google Chrome dopustio mDNS promet.</translation>
 <translation id="624230925347970731">Chrome će se uskoro zatvoriti</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
+<translation id="6248988683584659830">Pretraživanje postavki</translation>
 <translation id="6251759518630934363">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
 <translation id="6277547788421725101">Tvoj je roditelj isključio postavku "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chrome</translation>
 <translation id="627882678981830918">Prilagodite Chrome i upravljajte njime. Postavite Chrome kao zadani preglednik.</translation>
@@ -665,6 +667,7 @@
 <translation id="7792336732117553384">Upravljanje profili&amp;ma na Chromeu</translation>
 <translation id="7801699035218095297">Google Chrome pokušava kopirati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="7804364787702057554">Vaš račun u Chromeu</translation>
+<translation id="7804947029129221742">Tražilica je promijenjena izvan Chromea. Radi vaše zaštite Chrome je poništio tu postavku i vratio je na izvornu zadanu vrijednost. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Ukloni iz Chromea...</translation>
 <translation id="7827099906024714326">Chrome treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="7832314606810669113">Da biste mogli pristupati svojim oznakama i drugim podacima na svim svojim uređajima, prijavite se u Chrome. Oznaka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
@@ -786,7 +789,6 @@ Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sa
 <translation id="8992769679401294069">Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali Chromeove podatke spremljene na vašem Google računu.</translation>
 <translation id="8999117580775242387">Kad HTTPS nije dostupan, Chrome će upotrebljavati nesigurnu vezu bez upozorenja</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea dostupno je # dana}few{Ažuriranje Chromea dostupno je # dana}other{Ažuriranje Chromea dostupno je # dana}}</translation>
-<translation id="9010418943148193727">Zadana tražilica promijenjena je izvan Chromea. Radi vaše zaštite Chrome je poništio tu postavku.</translation>
 <translation id="9014771989710951291">Više organizacija upravlja Chromeom</translation>
 <translation id="9066987883552592250">Zatvorite Gemini u verziji preglednika Chrome Canary</translation>
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke datoteke</translation>

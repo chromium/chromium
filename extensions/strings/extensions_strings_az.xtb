@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Artırmanı birbaşa qovluğa daşıya bilmədi.</translation>
 <translation id="1610570795592207282">Skript üçün css "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" artırmasını import etmək olmur, çünki o paylaşılmış modul deyil</translation>
+<translation id="1757786065507923842">Valideyn icazəsi sorğusu alınmadı.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="1875387611427697908">Bu, yalnız <ph name="CHROME_WEB_STORE" /> ünvanından əlavə edilə bilər</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tərəfindən icazə verilmədiyi üçün "<ph name="APP_NAME" />" quraşdırıla bilməz</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">Valideyniniz bu artırmanı təsdiqləmədi</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
 <translation id="2576842806987913196">Bu ad ilə CRX faylı artıq mövcuddur.</translation>
 <translation id="2662876636500006917">Chrome Veb Market</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
 <translation id="3174723475300476613">Bu artırmaya giriş təşkilatınız tərəfindən bloklanıb.</translation>
 <translation id="3242289508736283383">"Yalnız_kiosk" funksiyası olan tətbiqlər ChromeOS kiosk rejimində quraşdırılmalıdır</translation>
+<translation id="3364986687961713424">Admininizdən: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> <ph name="PRODUCT_NAME" /> vendordan (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Şəxsi açar üçün giriş dəyəri düzgün yol olmalıdır.</translation>

@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Uzantı dizini profile taşınamadı.</translation>
 <translation id="1610570795592207282">Komut dosyası için "<ph name="RELATIVE_PATH" />" CSS'si yüklenemedi.</translation>
 <translation id="1616298854599875024">Paylaşılan bir modül olmadığından "<ph name="IMPORT_NAME" />" uzantısı içe aktarılamıyor</translation>
+<translation id="1757786065507923842">Ebeveyn izni isteği başarısız oldu.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arka plan sayfası yüklenemedi.</translation>
 <translation id="1875387611427697908">Bu yalnızca <ph name="CHROME_WEB_STORE" /> kullanılarak eklenebilir</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tarafından izin verilmediğinden "<ph name="APP_NAME" />" yüklenemiyor</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">Anne veya babanız bu uzantıyı onaylamadı</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
 <translation id="2576842806987913196">Bu adla bir CRX dosyası zaten var.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="3174723475300476613">Bu uzantıya erişim, kuruluşunuz tarafından engellendi.</translation>
 <translation id="3242289508736283383">"kiosk_only" manifest özelliğine sahip uygulamalar ChromeOS kiosk modunda yüklenmelidir</translation>
+<translation id="3364986687961713424">Yöneticinizden: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> kimliğine sahip üretici firma tarafından sağlanan <ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>

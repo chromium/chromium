@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Toimintavalinnat</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Jos haluat vaihtaa tiliä, napauta tilikuvaketta</translation>
+<translation id="135806768612505061">Välilehdet</translation>
 <translation id="1358106883354237005">Hallinnoitu tili</translation>
 <translation id="1358214951266274152">Avaa kopioitu linkki</translation>
 <translation id="1360432990279830238">Kirjaudu ulos ja lopeta synkronointi?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Salasanojen jakaminen</translation>
 <translation id="1554043146674176775">Laita tekoälytila pois päältä</translation>
 <translation id="1554477036522844996">Uusi ikkuna</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> ja <ph name="PRIVACY_NOTICE" /> ovat voimassa. Gemini on tekoäly ja voi tehdä virheitä, myös ihmisiin liittyen.</translation>
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
 <translation id="1565371473877914088">Uusi incognito-välilehti</translation>
 <translation id="1567960978791353852">Näytä lukutila</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Tämä kansio on tyhjä</translation>
 <translation id="1864266050569350424">Napauta kirjautumiskenttää sivustolla, jolle olet tallentanut salasanan.</translation>
 <translation id="1866700949421703765">Piilota "Laita lukutila päälle"</translation>
+<translation id="1869050523388525800">Hakunäyttö on käytettävissä vain, kun Google on oletushakukoneena. Voit vaihtaa oletushakukonetta <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Taskulamppu</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Kutsu perheenjäseniä</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Jos haluat tallentaa kirjanmerkkejä tilillesi, poista käyttämättömät kirjanmerkit</translation>
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3904270275864974753">Muokkaa karusellia</translation>
+<translation id="3905384981098338147">Tekoälytilan historia</translation>
 <translation id="3909222758573607742">Tallenna salasanat ja muut tilin kohteet</translation>
 <translation id="3913463964270756493">Piilota Google Lens -hakunäyttö</translation>
 <translation id="3914640181019354363">Tunnista osoitteet</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Käytä näppäimistöä</translation>
 <translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
 <translation id="4416582610654027550">Kirjoita kelvollinen URL-osoite</translation>
+<translation id="441868831736628555">Tietosuojailmoitus</translation>
 <translation id="4420409367264901497">Muokkaa kirjanmerkkiä</translation>
 <translation id="4425365312778464779">Tämä on hallinnoitu tili</translation>
 <translation id="4430277756566635951">Tällä hetkellä valittuna <ph name="EMAIL" />. Valitse tili.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Sulje välilehden vaihtaja</translation>
 <translation id="5148717509369231739">Safarin tuominen</translation>
 <translation id="5152483358138813104">Kirjaudu sisään nopeammin kaikilla laitteillasi</translation>
+<translation id="515315847398512535">Hakunäyttö on laitettu pois päältä tililläsi. Pyydä lisätietoja järjestelmänvalvojalta.</translation>
 <translation id="5155502059906700593">Vaihda osoitepalkin paikkaa ylä- tai alareunassa.</translation>
 <translation id="5157638238828697074">Jotain meni pieleen. Sovelluksen avaaminen epäonnistui.</translation>
 <translation id="5163417375525818870">PDF-tiedostot</translation>
@@ -1313,7 +1319,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5647702255748985085">Haluatko poistua ryhmästä?</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5652623411397330904">Seuraamasi tuotteet näkyvät täällä.</translation>
-<translation id="5653100054596780862">Välilehdet</translation>
 <translation id="5656431592348714536">Parannettu kalenteri</translation>
 <translation id="5659593005791499971">Sähköposti</translation>
 <translation id="5665739277590037307">Huomioi <ph name="GOOGLE_TERMS" /> ja <ph name="GEMINI_APPS_PRIVACY" />. Gemini voi tehdä virheitä, joten tarkista sen vastaukset.</translation>
@@ -1511,6 +1516,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6307241780749477694">Vahvista henkilöllisyytesi, jotta saat pääsyn kaikkiiin salasanoihisi tällä laitteella</translation>
 <translation id="6316141353357700666">Valitse näkyviin tulevasta listasta salasana, jota haluat käyttää.</translation>
 <translation id="6321526113093607004">Lisää kirjanmerkkeihin</translation>
+<translation id="6327249202318869726">Gemini on laitettu pois päältä tililläsi. Pyydä lisätietoja järjestelmänvalvojalta.</translation>
 <translation id="6331836477476466332">Turvallisempi ja tehokkaampi selain</translation>
 <translation id="6335744088476213315">Tässä kortissa näkyvät tuotteet, joita olet äskettäin katsonut ja joiden hintaa saatat haluta seurata saadaksesi ilmoituksia hinnanlaskusta</translation>
 <translation id="6337234675334993532">Salaus</translation>
@@ -1788,6 +1794,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7261217796641151584">Jaa ryhmä</translation>
 <translation id="7266578100016339897">Näin pysyt järjestyksessä. Voit muuttaa tätä asetuksista koska tahansa.</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
+<translation id="7275307913765547631">Koreaa koskevat sijaintiehdot</translation>
 <translation id="728025568708172005">Esittele paikkaa</translation>
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
 <translation id="7281202269687163394">Yksityisyys ja Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7996239959906074962">Ota käyttöön…</translation>
 <translation id="800361585186029508">Avaa syötetyt URL-osoitteet Google Chromessa.</translation>
 <translation id="8005666035647241369">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
+<translation id="8006265839264939135">Ehdot</translation>
 <translation id="8010488806779226127">Tutustu ominaisuuksiin, joiden avulla voit tehdä enemmän selatessa</translation>
 <translation id="8011489434346330032">Web Inspector ‑tarkastustyökalu</translation>
 <translation id="8014007212279733632">Vahvista henkilöllisyytesi, jotta arkaluontoiset tiedot voidaan täyttää automaattisesti</translation>

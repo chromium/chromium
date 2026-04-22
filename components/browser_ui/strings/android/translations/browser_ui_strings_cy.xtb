@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Dileu lefelau chwyddo sydd wedi'u cadw?</translation>
 <translation id="3362437373201486687">Wrthi'n sganio am ddyfeisiau Bluetooth</translation>
 <translation id="3368138297038111198">Rhannu ffenestr</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Yn dangos 1 o {TOTAL_COUNT} eitem oherwydd cof isel}zero{Yn dangos # o {TOTAL_COUNT} eitem oherwydd cof isel}two{Yn dangos # o {TOTAL_COUNT} eitem oherwydd cof isel}few{Yn dangos # o {TOTAL_COUNT} eitem oherwydd cof isel}many{Yn dangos # o {TOTAL_COUNT} eitem oherwydd cof isel}other{Yn dangos # o {TOTAL_COUNT} eitem oherwydd cof isel}}</translation>
 <translation id="3386292677130313581">Gofyn cyn caniatáu i wefannau wybod eich lleoliad (argymhellir)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Mae cwcis trydydd parti wedi'u rhwystro</translation>
@@ -654,7 +655,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7804248752222191302">Mae gwefan yn defnyddio'ch camera</translation>
 <translation id="7805832099057502789">Ymddangosiad dalen waelod tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
-<translation id="7807060072011926525">Darperir gan Google</translation>
 <translation id="7809029041571842593">Dalen waelod cardiau tudalen tab newydd wedi'i hagor ar hanner uchder</translation>
 <translation id="7815680994978050279">Rhwystrwyd lawrlwythiad peryglus</translation>
 <translation id="7835852323729233924">Chwarae cyfryngau</translation>

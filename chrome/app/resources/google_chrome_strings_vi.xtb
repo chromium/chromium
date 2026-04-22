@@ -420,6 +420,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="547202872422499512">Chrome hiện khởi chạy khi Windows khởi động để bạn có thể bắt đầu duyệt web ngay lập tức. Bạn có thể tắt lựa chọn này trong phần cài đặt.</translation>
 <translation id="5486346529181556467">Cải thiện mức độ an toàn trên mạng cho mọi người khi bạn báo cáo một trang web mà bạn cho là có hại. Tìm hiểu thêm về <ph name="BEGIN_LINK" />chính sách của Google về trang web không an toàn.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
+<translation id="5529390769101499214">Quản lý các tiện ích bằng cách nhấp vào phần Tiện ích trong trình đơn chính của Chrome.</translation>
 <translation id="5550137307985173298">Nhấp vào nút Tuỳ chỉnh Chrome trên Trang thẻ mới để mang lại giao diện mới cho Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
@@ -506,6 +507,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6235018212288296708">Quy tắc kết nối để Google Chrome cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="624230925347970731">Chrome sắp đóng</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
+<translation id="6248988683584659830">Tìm kiếm cài đặt</translation>
 <translation id="6251759518630934363">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chrome.</translation>
 <translation id="6277547788421725101">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chrome</translation>
 <translation id="627882678981830918">Tuỳ chỉnh và kiểm soát Chrome. Đặt Chrome làm trình duyệt mặc định.</translation>
@@ -669,6 +671,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7792336732117553384">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="7801699035218095297">Google Chrome đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
+<translation id="7804947029129221742">Công cụ tìm kiếm của bạn đã bị thay đổi từ bên ngoài Chrome. Để bảo vệ bạn, Chrome đã đặt lại công cụ này về chế độ mặc định ban đầu. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Xóa khỏi Chrome...</translation>
 <translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
 <translation id="7832314606810669113">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
@@ -790,7 +793,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8992769679401294069">Dữ liệu đã được mã hoá bằng cụm mật khẩu của bạn. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của bạn.</translation>
 <translation id="8999117580775242387">Khi không có giao thức HTTPS, Chrome sẽ sử dụng kết nối không an toàn mà không cảnh báo bạn</translation>
 <translation id="8999208279178790196">{0,plural, =0{Đã có bản cập nhật Chrome}=1{Đã có bản cập nhật Chrome}other{Đã có bản cập nhật Chrome từ # ngày trước}}</translation>
-<translation id="9010418943148193727">Công cụ tìm kiếm mặc định của bạn đã bị thay đổi từ bên ngoài Chrome. Để bảo vệ bạn, Chrome đã đặt lại công cụ này.</translation>
 <translation id="9014771989710951291">Nhiều tổ chức quản lý Chrome</translation>
 <translation id="9066987883552592250">Đóng Gemini trong Chrome Canary</translation>
 <translation id="9090566250983691233">Tìm hiểu lý do Chrome chặn một số tệp</translation>

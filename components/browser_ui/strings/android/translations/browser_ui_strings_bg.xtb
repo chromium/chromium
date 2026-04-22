@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Нива на мащаба: Изтрив.?</translation>
 <translation id="3362437373201486687">Сканира се за устройства с Bluetooth</translation>
 <translation id="3368138297038111198">Споделя се прозорец</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Поради недостиг на памет се показва 1 от {TOTAL_COUNT} елемента}other{Поради недостиг на памет се показват # от {TOTAL_COUNT} елемента}}</translation>
 <translation id="3386292677130313581">Извеждане на запитване, преди на сайтовете да се разреши достъп до местоположението ви (препоръчително)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7804248752222191302">Сайт използва камерата ви</translation>
 <translation id="7805832099057502789">Долният лист с облика на новия раздел в браузъра е отворен на пълната височина</translation>
-<translation id="7807060072011926525">Предоставено от Google</translation>
 <translation id="7809029041571842593">Долният лист с картите за нов раздел в браузъра е отворен на половината височина</translation>
 <translation id="7815680994978050279">Блокирано е опасно изтегляне</translation>
 <translation id="7835852323729233924">Възпроизвеждане на мултимедия</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Delete saved zoom levels?</translation>
 <translation id="3362437373201486687">Scanning for Bluetooth devices</translation>
 <translation id="3368138297038111198">Sharing a window</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Showing 1 of {TOTAL_COUNT} items due to low memory}other{Showing # of {TOTAL_COUNT} items due to low memory}}</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
@@ -654,7 +655,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
 <translation id="7805832099057502789">New tab page appearance bottom sheet opened at full height</translation>
-<translation id="7807060072011926525">Provided by Google</translation>
 <translation id="7809029041571842593">New tab page cards bottom sheet opened at half height</translation>
 <translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7835852323729233924">Playing media</translation>

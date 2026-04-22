@@ -236,7 +236,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1358187717814494928">Krijo fletë</translation>
 <translation id="1358223345833465883">Motori yt i kërkimit në Chromium</translation>
 <translation id="1359836962251219822">Kuzhinë dhe ngrënie</translation>
-<translation id="136059610328993645">Informacionet e tua ruhen te "Portofoli i Google" për <ph name="ACCOUNT" />. Mund t'i përdorësh ato nëpër shërbimet e Google për t'i plotësuar më shpejt formularët.</translation>
 <translation id="1360955481084547712">Hap një dritare të re të fshehtë për të shfletuar në mënyrë private</translation>
 <translation id="1361528602584216624">Kufiri për Pix: <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Mënyrat e pagesës të disponueshme për t'u zgjedhur për të vazhduar me pagesën janë hapur në lartësi të plotë.</translation>
@@ -498,6 +497,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1756026472674246267">Hape lidhjen në një skedë të re</translation>
 <translation id="1756555787993603971">Tani mund të përdorësh një kartë virtuale për t'i përfunduar blerjen në mënyrë më të sigurt me plotësimin automatik.</translation>
 <translation id="175656076281618225">Magjia</translation>
+<translation id="1757269861068472918">Të ndahen skedat në çdo bashkëbisedim?</translation>
 <translation id="1757773103848038814">Fonti me hapësirë fikse</translation>
 <translation id="1757935267918149452">Butoni "Ndrysho fjalëkalimin e Google". Aktivizoje për të ndryshuar fjalëkalimin e "Llogarisë sate të Google"</translation>
 <translation id="1762779605905950734">Emri i rrugës</translation>
@@ -515,6 +515,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1803254472779303354">Kyçja e miut lejohet</translation>
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1804258830776932716">Aktivizo Pix duke e lidhur llogarinë tënde me shpejtësi</translation>
+<translation id="180427761654372420">Kur është aktiv, Chrome do të identifikojë dhe do të përdorë automatikisht skedat e tua përkatëse për përgjigje më të mira.</translation>
 <translation id="1806174020048213474">Ky aplikacion po kërkon leje për të instaluar kredencialet e Wi-Fi. Pas konfigurimit, pajisja jote <ph name="DEVICE_TYPE" /> do të lidhet automatikisht me rrjetet pjesëmarrëse Wi-Fi. Për t'i hequr këto kredenciale, çinstalo aplikacionin.</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
@@ -526,6 +527,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1812975699435941848">Arsim dhe trajnime në fushën e mjekësisë</translation>
 <translation id="1816436748874040213">Mund të kërkojë që të lëvizë dhe zmadhojë skedat e ndara</translation>
 <translation id="1816707915923025275">Shkruaj @history për të kërkuar në historikun tënd të shfletimit</translation>
+<translation id="1816849970130491878">Mund të kursesh kohë duke aktivizuar ndarjen e skedave automatikisht për të gjitha bashkëbisedimet.</translation>
 <translation id="1817364650920811003">Roli: Këshillë për Chrome. Etiketa e qasshmërisë: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Zhblloko</translation>
 <translation id="1818585559878922121">Filma dokumentarë</translation>
@@ -1214,6 +1216,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2915496182262110498">Pikturimi</translation>
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
 <translation id="2917630513638801879">Gurkali 1</translation>
+<translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2919185931486062599">Gjueti dhe qitje</translation>
 <translation id="2922350208395188000">Certifikata e serverit nuk mund të kontrollohet.</translation>
 <translation id="2922792708490674">{0,plural, =1{Shkarkimi i skedarit është bllokuar}other{Shkarkimi i <ph name="FILE_COUNT" /> skedarëve është bllokuar}}</translation>
@@ -1300,7 +1303,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
 <translation id="3039406992698062762">Udhëtime familjare</translation>
-<translation id="3040435070100611531">Dokumentet dixhitale të "Portofolit të Google"</translation>
 <translation id="3041176923638368519">Shiko kushtet për përfitimet për kartat</translation>
 <translation id="3041584414879052436">Lista e lëshuesve të "Bli tani, paguaj më vonë" është mbyllur.</translation>
 <translation id="3041612393474885105">Informacioni i certifikatës</translation>
@@ -1619,6 +1621,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3543935938072367282">Përfundo blerjen më shpejt me plotësimin automatik</translation>
 <translation id="3547442767634383572">Përmbledhja e profilit të punës</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
+<translation id="3547854697327105403">Ndaj skedat përkatëse në çdo bashkëbisedim</translation>
 <translation id="3549904448933807997">Informacionet e shfletuesve dhe profileve (duke përfshirë profilet personale dhe të punës)</translation>
 <translation id="3552155506104542239">Paralajmërim: Kjo politikë është në konflikt me <ph name="POLICY_NAME" /> dhe nuk do të ketë asnjë efekt në aplikacionet për Android. Në rast të kundërt, kjo politikë funksionon siç pritet.</translation>
 <translation id="3552297013052089404">Fonti sans-serif</translation>
@@ -1997,6 +2000,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4113354056388982663">Përditësim kritik i performancës i Android</translation>
 <translation id="4114007503059268298">Dëshiron që ta ruash këtë kartë te "Llogaria jote e Google" dhe në këtë pajisje?</translation>
 <translation id="4114146879518089587">Vazhdo te sajti</translation>
+<translation id="4115378294792113321">E purpurt e errët</translation>
 <translation id="4116663294526079822">Lejoje gjithmonë në këtë faqe</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
@@ -2279,6 +2283,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4542971377163063093">Tabakaja 6</translation>
 <translation id="4543072026714825470">Për të paguar më shpejt herën tjetër, ruaje kartën dhe adresën tënde të faturimit në "Llogarinë tënde të Google".</translation>
 <translation id="4546730006268514143">Koha e transferimit skadoi</translation>
+<translation id="4547989603022124809">Të aktivizohet ndarja e skedave për këtë bashkëbisedim?</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{Krijuar 1 ditë më parë}other{Krijuar {NUM_DAYS} ditë më parë}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Po përdor kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
@@ -2447,6 +2452,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4832388034239846146">Përditëso Chrome për të ndarë grupet e skedave</translation>
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
 <translation id="4832961164064927107">Skara dhe pjekja në skarë</translation>
+<translation id="4835568975547260025">Chrome do të ndajë skedat e hapura përkatëse si parazgjedhje për të të ndihmuar të marrësh përgjigje më të personalizuara për pyetjet e tua.</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4844937814014739139">Lëvizja dhe zmadhimi në skedat e ndara</translation>
@@ -2552,6 +2558,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4995474875135717171">Modifikuar:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar kërkimin te sajti dhe motorin e parazgjedhur të kërkimit</translation>
 <translation id="4998950033665438990">Në një anë</translation>
+<translation id="5000497292978544380">"Modaliteti i IA-së" i "Kërko në Google"</translation>
 <translation id="5001338033791319371">Për të dalë nga ekrani i plotë dhe për të shikuar shkarkimin, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
 <translation id="5002932099480077015">Nëse aktivizohet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
@@ -2655,7 +2662,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5147633291963801297">Shiko uljet e çmimeve në panelin anësor</translation>
 <translation id="5148809049217731050">E kthyer lart</translation>
 <translation id="5148889558173091794">Organizata jote e ka bllokuar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse ai shkel një politikë. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="5151771770689442215">Historiku im i "Kërko në Google"</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">Tregtarë dhe supermarkete masive</translation>
 <translation id="5158275234811857234">Kapak</translation>
@@ -2723,6 +2729,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Politika e administratorit nuk rekomandon kopjimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon kopjimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Grupi i skedave "<ph name="GROUP_NAME" />" nuk ofrohet më</translation>
+<translation id="5260842098960755113">Bashkëbisedimi u mbyll</translation>
 <translation id="5262342527470539728">Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Kërkohet rishikimi përpara ngarkimit</translation>
 <translation id="5266128565379329178">Lidhje lart</translation>
@@ -2789,6 +2796,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5363148545938487338">Salesforce</translation>
 <translation id="5363309033720083897">Porta seriale e lejuar nga administratori yt</translation>
 <translation id="5363532265530011914">Çorapë dhe geta</translation>
+<translation id="5370560471646081222">Sajtet që shton këtu nuk do të referohen për përgjigje, edhe nëse skeda është e hapur.</translation>
 <translation id="5371425731340848620">Përditëso kartën</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ndryshoi një skedë</translation>
 <translation id="5374324662289354619">Faqet e korrigjimit të brendshëm janë çaktivizuar aktualisht.</translation>
@@ -3440,7 +3448,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6366710531182496394">Dy kapje me tel majtas</translation>
 <translation id="6367196786591004737">Fshi hyrjen</translation>
 <translation id="6370022303958842211">Veprimet e qasjes te pajisja si p.sh. identifikimet (duke përfshirë arsyet e dështimit të identifikimit), daljet, kyçjet dhe shkyçjet</translation>
-<translation id="6372779601614872746">Ndaj skedat e hapura përkatëse</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6374865374745447009">menaxhimi i dritareve</translation>
 <translation id="6376881782310775282">Serveri i zhvillimit për këtë aplikacion është i paarritshëm</translation>
@@ -3487,6 +3494,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6428450836711225518">Verifiko numrin e telefonit</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Ndrysho fjalëkalimin e Google</translation>
+<translation id="6431556523611594411">Ndaj skedat e hapura</translation>
 <translation id="6432297414176614592">Më shumë rreth temave të reklamave</translation>
 <translation id="6432831586648556868">Punë në sektorin e shitjeve dhe të marketingut</translation>
 <translation id="6433490469411711332">Redakto informacionin e kontaktit</translation>
@@ -3624,7 +3632,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6655085656059574817">Mbajtja e llogarisë të lidhur të ndihmon të paguash më shpejt me <ph name="BNPL_ISSUER_NAME" />, por mund ta shkëputësh atë duke shkuar në <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6656935431494847393">Përfshin informacione si rezervimet e fluturimeve dhe informacionet e automjetit</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
-<translation id="6659156657345021268">Informacionet e tua ruhen vetëm në pajisjen tënde. Do të kesh mundësinë që t'i ruash ato te "Portofoli" herën tjetër kur të plotësosh një formular përkatës.</translation>
 <translation id="6659246032834639189">Ky çmim është i ulët</translation>
 <translation id="6660413144148052430">vendndodhja</translation>
 <translation id="6662457027866368246">Ruli i parë</translation>
@@ -3747,7 +3754,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
 <translation id="6854691830678097752">Për përfundim më të shpejtë të blerjes, ruaje këtë kod CVC në llogarinë tënde, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="6855951327659224749">Pastro formularin për të përdorur opsionin e "Paguaj më vonë"</translation>
 <translation id="6857776781123259569">Menaxho fjalëkalimet...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Mund të kërkojë të kalojë në modalitetin "figurë brenda figurës"</translation>
@@ -3774,6 +3780,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6893057134494550310">Letër alumini e laminuar</translation>
 <translation id="6893204630281237373">Për të çaktivizuar aplikacionin për pagesë në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Karta jote është konfirmuar</translation>
+<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES_IN_GROUP" /> në grupin "<ph name="GROUP_HEADER" />".</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6897140037006041989">Agjenti i përdoruesit</translation>
 <translation id="6898699227549475383">Organizata (O)</translation>
@@ -3813,6 +3820,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6950684638814147129">Gabim gjatë paraqitjes së vlerës JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Rivendos të gjitha</translation>
 <translation id="6954049078461159956">Hokej</translation>
+<translation id="6954269228996542693">Paketat e gjuhës po shkarkohen... <ph name="PERCENT" />%</translation>
 <translation id="695582302419398462">Karton (me dy mure)</translation>
 <translation id="6957153644870901611">Aktivizo plotësimin automatik të përmirësuar për të plotësuar automatikisht më shumë fusha</translation>
 <translation id="6957887021205513506">Certifikata e serverit duket se është e rreme.</translation>
@@ -4061,7 +4069,6 @@ Detaje shtesë:
 <translation id="7353601530677266744">Linja e komandave</translation>
 <translation id="7359588939039777303">Reklamat janë të bllokuara.</translation>
 <translation id="7360451453306104998">Kur Google gjen zbritjet që ofrohen, ato do të shfaqen gjatë përfundimit të blerjes</translation>
-<translation id="7362039113312920489">Rishiko dhe menaxho</translation>
 <translation id="7362281996276843968">Ky grup është i mbyllur</translation>
 <translation id="7363096869660964304">Sidoqoftë, ti nuk je i padukshëm. Kalimi në modalitetin "e fshehtë" nuk e fsheh shfletimin tënd nga punëdhënësi yt, ofruesi i shërbimit të internetit apo uebsajtet që viziton.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
@@ -4142,6 +4149,7 @@ Detaje shtesë:
 <translation id="7450577240311017924">Butoni "Menaxho sinkronizimin". Aktivizoje për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
 <translation id="745208957946308667">Loja Dino, shtyp tastin e hapësirës për të luajtur</translation>
+<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES_IN_GROUP" /> në grupin "<ph name="GROUP_HEADER" />".</translation>
 <translation id="7453032093368223821">Menaxho të dhënat e tjera</translation>
 <translation id="7453849010505253492">Ky server nuk mund të vërtetonte që është <ph name="DOMAIN" /> sepse po përdor një certifikatë sigurie që nuk është e besuar nga Chrome ose nga konfigurimi i sistemit tënd për enkriptimin e trafikut të uebit. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Shiko certifikatën<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Llogaria në renë kompjuterike</translation>
@@ -4568,6 +4576,7 @@ Detaje shtesë:
 <translation id="8091372947890762290">Aktivizimi është në pritje në server</translation>
 <translation id="8092254339843485299">6 x 8 inç</translation>
 <translation id="8094917007353911263">Rrjeti që po përdor mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8095168258866348967">Paketat e gjuhës po instalohen...</translation>
 <translation id="809543534949702122">Historiku i kërkimeve</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
@@ -4655,6 +4664,7 @@ Detaje shtesë:
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="824968735947741546">Po përkthen nga <ph name="SOURCE" /> (zbuluar automatikisht) në <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Kjo adresë është ruajtur aktualisht në këtë pajisje. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
+<translation id="8250533425540303610"><ph name="LANGUAGE" /> po instalohet...</translation>
 <translation id="8251493595871259082">Plotëso adresën tënde duke shkruar më pak</translation>
 <translation id="8252991034201168845">Butoni "Menaxho cilësimet e qasshmërisë"; shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS</translation>
 <translation id="8253091569723639551">Adresa e faturimit është e detyrueshme</translation>
@@ -5072,6 +5082,7 @@ Detaje shtesë:
 <translation id="893332455753468063">Shto emër</translation>
 <translation id="8938242527120341116">Filtrat e përmbajtjes të pajisjes sate bllokuan <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Administratori yt ka lejuar që <ph name="APP_NAME" /> të grumbullojë të dhënat e diagnostikimit për të përmirësuar përvojën e produktit. Shiko <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> për më shumë informacion.</translation>
+<translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>
 <translation id="8949410982325929394">Toni</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Një uebsajt sapo kërkoi qasje te <ph name="REQUEST_TYPE" />. Na ndihmo të përmirësojmë mënyrën se si uebsajtet kërkojnë qasje duke plotësuar këtë anketë 1-minutëshe.</translation>
@@ -5251,6 +5262,7 @@ Detaje shtesë:
 <translation id="9210825002219699214">Udhëtime ajrore</translation>
 <translation id="9213433120051936369">Personalizo pamjen</translation>
 <translation id="9215416866750762878">Një aplikacion e pengon Chrome që të lidhet në mënyrë të sigurt me këtë sajt</translation>
+<translation id="9217513960785028513">Pyet <ph name="ENGINE_NAME" /> ose shkruaj URL-në</translation>
 <translation id="92178312226016010">Po e monitoron këtë produkt.</translation>
 <translation id="9218430445555521422">Cakto si parazgjedhje</translation>
 <translation id="9219103736887031265">Imazhet</translation>

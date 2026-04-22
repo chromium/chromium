@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">શું ઝૂમ લેવલ ડિલીટ કરીએ?</translation>
 <translation id="3362437373201486687">બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="3368138297038111198">વિન્ડો શેર કરી રહ્યાં છીએ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{ઓછી મેમરીને કારણે {TOTAL_COUNT}માંથી 1 આઇટમ બતાવી રહ્યાં છીએ}one{ઓછી મેમરીને કારણે {TOTAL_COUNT}માંથી # આઇટમ બતાવી રહ્યાં છીએ}other{ઓછી મેમરીને કારણે {TOTAL_COUNT}માંથી # આઇટમ બતાવી રહ્યાં છીએ}}</translation>
 <translation id="3386292677130313581">સાઇટને તમારા સ્થાનને જાણવાની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપેલો છે)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ત્રીજા પક્ષની કુકી બ્લૉક કરેલી છે</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7805832099057502789">નવા ટૅબ પેજ દેખાવની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
-<translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
 <translation id="7809029041571842593">નવા ટૅબ પેજ કાર્ડની બોટમ શીટ અડધી ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
 <translation id="7835852323729233924">મીડિયા ચલાવી રહ્યાં છીએ</translation>

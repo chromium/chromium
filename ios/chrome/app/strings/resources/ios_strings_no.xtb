@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Trykk på kontoikonet for å bytte mellom kontoer</translation>
+<translation id="135806768612505061">Alle faner</translation>
 <translation id="1358106883354237005">Administrert konto</translation>
 <translation id="1358214951266274152">Besøk linken du kopierte</translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Del passord</translation>
 <translation id="1554043146674176775">Slå av AI-modus</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> og <ph name="PRIVACY_NOTICE" /> gjelder. Gemini er AI og kan gjøre feil, også om personer.</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1567960978791353852">Vis lesemodus</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Denne mappen er tom</translation>
 <translation id="1864266050569350424">På et nettsted der du har lagret et passord, trykker du på feltet for påloggingspassord.</translation>
 <translation id="1866700949421703765">Skjul «Slå på lesemodus»</translation>
+<translation id="1869050523388525800">Søkeskjermen er bare tilgjengelig når Google er angitt som standard søkemotor. Du kan endre standard søkemotor i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Du må slette de ubrukte bokmerkene dine for å lagre bokmerker i kontoen din</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Rediger karusell</translation>
+<translation id="3905384981098338147">Logg for AI-modus</translation>
 <translation id="3909222758573607742">Lagre passord og andre elementer i kontoen</translation>
 <translation id="3913463964270756493">Skjul søkeskjermen med Google Lens</translation>
 <translation id="3914640181019354363">Finn adresser</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Bruk tastaturet</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4416582610654027550">Skriv inn en gyldig nettadresse</translation>
+<translation id="441868831736628555">Merknad om personvern</translation>
 <translation id="4420409367264901497">Rediger bokmerke</translation>
 <translation id="4425365312778464779">Denne kontoen administreres</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt. Velg en konto.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Gå ut av fanevelgeren</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5152483358138813104">Logg på raskere på alle enhetene dine</translation>
+<translation id="515315847398512535">Søkeskjermen er slått av for kontoen din. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5155502059906700593">Flytt adressefeltet til toppen eller bunnen.</translation>
 <translation id="5157638238828697074">Noe gikk galt. Kunne ikke åpne appen.</translation>
 <translation id="5163417375525818870">PDF-filer</translation>
@@ -1313,7 +1319,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5647702255748985085">Vil du forlate gruppen?</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
-<translation id="5653100054596780862">Alle faner</translation>
 <translation id="5656431592348714536">Forbedret kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gjelder. Gemini kan gjøre feil, så dobbeltsjekk svaret.</translation>
@@ -1511,6 +1516,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6307241780749477694">Bekreft at det er deg, for å få alle passordene dine på denne enheten</translation>
 <translation id="6316141353357700666">Velg passordet du vil bruke, på listen som vises.</translation>
 <translation id="6321526113093607004">Legg til i bokmerker</translation>
+<translation id="6327249202318869726">Gemini er deaktivert for kontoen. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="6331836477476466332">En tryggere og kraftigere nettleser for deg</translation>
 <translation id="6335744088476213315">Dette kortet viser produkter du nylig har sett på, og som du kanskje vil spore for å få varsler om avslag</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -1788,6 +1794,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjelper deg med å holde orden. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="7272437679830969316">Kan ikke bekrefte identiteten din. Passordet er ikke kopiert.</translation>
+<translation id="7275307913765547631">koreanske vilkår for posisjonstjenester</translation>
 <translation id="728025568708172005">Vis meg rundt</translation>
 <translation id="7280980607183752256">Denne filen kan ikke importeres</translation>
 <translation id="7281202269687163394">Personvernet ditt og Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7996239959906074962">Konfigurer…</translation>
 <translation id="800361585186029508">Åpner de oppgitte nettadressene i Google Chrome.</translation>
 <translation id="8005666035647241369">I Google Passordlagring på denne enheten</translation>
+<translation id="8006265839264939135">Vilkår</translation>
 <translation id="8010488806779226127">Utforsk funksjoner som kan hjelpe deg med å gjøre mer mens du surfer</translation>
 <translation id="8011489434346330032">Nettinspektør</translation>
 <translation id="8014007212279733632">Bekreft at det er deg, for å autofylle sensitiv informasjon</translation>

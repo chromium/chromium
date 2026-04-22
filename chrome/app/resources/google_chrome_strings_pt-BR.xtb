@@ -416,6 +416,7 @@
 <translation id="547202872422499512">Agora o Chrome é iniciado junto com o Windows para você começar a navegar na hora. Desative essa opção nas configurações quando quiser.</translation>
 <translation id="5486346529181556467">Ao denunciar sites que podem ser perigosos, você melhora a segurança on-line de todo mundo. Saiba mais sobre a <ph name="BEGIN_LINK" />política do Google para sites não seguros<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
+<translation id="5529390769101499214">Gerencie suas extensões clicando em Extensões no menu principal do Chrome.</translation>
 <translation id="5550137307985173298">Clique no botão "Personalizar o Chrome" na página "Nova guia" para mudar o visual do navegador</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
@@ -502,6 +503,7 @@
 <translation id="6235018212288296708">Regra interna do Google Chrome que permite o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome será fechado em breve</translation>
 <translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
+<translation id="6248988683584659830">Pesquise nas configurações</translation>
 <translation id="6251759518630934363">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="6277547788421725101">Seu familiar responsável desativou a opção "Permissões para sites, apps e extensões" no Chrome</translation>
 <translation id="627882678981830918">Personalize e controle o Chrome. Defina esse navegador como o padrão.</translation>
@@ -665,6 +667,7 @@
 <translation id="7792336732117553384">&amp;Gerenciar perfis do Chrome</translation>
 <translation id="7801699035218095297">O Google Chrome está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="7804364787702057554">Sua conta no Chrome</translation>
+<translation id="7804947029129221742">Seu mecanismo de pesquisa foi alterado fora do Chrome. Para sua segurança, o Chrome redefiniu essa configuração para o padrão original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Remover do Chrome</translation>
 <translation id="7827099906024714326">O Chrome precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7832314606810669113">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome. Este favorito será salvo na sua Conta do Google depois que você fizer login.</translation>
@@ -786,7 +789,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8992769679401294069">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8999117580775242387">Quando HTTPS não está disponível, o Chrome usa uma conexão sem segurança sem nenhum aviso</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uma atualização do Chrome está disponível}=1{Uma atualização do Chrome está disponível}one{Uma atualização do Chrome está disponível há # dia}other{Uma atualização do Chrome está disponível há # dias}}</translation>
-<translation id="9010418943148193727">Seu mecanismo de pesquisa padrão foi alterado fora do Chrome. Para sua proteção, o Chrome redefiniu essa configuração.</translation>
 <translation id="9014771989710951291">Várias organizações gerenciam o Chrome</translation>
 <translation id="9066987883552592250">Fechar o Gemini no Chrome Canary</translation>
 <translation id="9090566250983691233">Saiba por que o Chrome bloqueia alguns arquivos</translation>

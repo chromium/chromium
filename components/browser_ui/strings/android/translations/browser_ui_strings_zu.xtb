@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Sula amazinga okusondeza</translation>
 <translation id="3362437373201486687">Iskena amadivayisi e-Bluetooth</translation>
 <translation id="3368138297038111198">Yabelana ngewindi</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Ibonisa into e-1 kwezingu-{TOTAL_COUNT} ngenxa yenkumbulo ephansi}one{Ibonisa izinto ezingu-# kwezingu-{TOTAL_COUNT} ngenxa yenkumbulo ephansi}other{Ibonisa izinto ezingu-# kwezingu-{TOTAL_COUNT} ngenxa yenkumbulo ephansi}}</translation>
 <translation id="3386292677130313581">Buza ngaphambi kokuvumela amasayithi ukuthi azi indawo yakho (kunconyiwe)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Amakhukhi enkampani yangaphandle avinjiwe</translation>
@@ -654,7 +655,6 @@ Ukuvikela Okuthuthukile kulawula la masethingi eChrome:</translation>
 <translation id="780301667611848630">Cha ngiyabonga</translation>
 <translation id="7804248752222191302">Isayithi lisebenzisa ikhamera yakho</translation>
 <translation id="7805832099057502789">Ubude bokubonakala kweshidi eliphansi ekhasini lethebhu entsha buvulwe bonke</translation>
-<translation id="7807060072011926525">Kuhlinzekwe yi-Google</translation>
 <translation id="7809029041571842593">Ishidi eliphansi lamakhadi ekhasi lethebhu entsha livulwe ngobude obuphakathi nendawo</translation>
 <translation id="7815680994978050279">Ukulanda okuyingozi kuvinjiwe</translation>
 <translation id="7835852323729233924">Ukudlala imidiya</translation>

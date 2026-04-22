@@ -699,6 +699,7 @@
 <translation id="1471034383866732283">વાંચન મોડ આ પેજ પર મુખ્ય કન્ટેન્ટ શોધી શકતું નથી</translation>
 <translation id="1472675084647422956">વધુ બતાવો</translation>
 <translation id="1473223074251193484">ઇન્ટરનેટ શેર કરવાની સુવિધાનું કન્ફિગ્યુરેશન સેટ કરો</translation>
+<translation id="1473616112002966036">&amp;વીડિયો ફ્રેમ</translation>
 <translation id="1473927070149284123">ફરી પ્રયાસ કરો અથવા મેન્યુઅલી નેટવર્ક સાથે કનેક્ટ કરો</translation>
 <translation id="1474785664565228650">માઇક્રોફોનના સેટિંગમાં ફેરફાર કરવા માટે, Parallelsનું ડેસ્કટૉપ ફરીથી લૉન્ચ કરવાની આવશ્યકતા રહેશે. આગળ વધવા માટે, Parallelsનું ડેસ્કટૉપ ફરીથી લૉન્ચ કરો.</translation>
 <translation id="1476088332184200792">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
@@ -1043,6 +1044,7 @@
 <translation id="1703666494654169921">સાઇટને વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ કે ડેટાનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1704097193565924901">કૅપિટલ કરો</translation>
 <translation id="1704230497453185209">સાઇટને સાઉન્ડ વગાડવાની મંજૂરી આપશો નહીં</translation>
+<translation id="1706015824809136764">ટૂલબાર શૉર્ટકટ પર Gemini પિન કરો</translation>
 <translation id="1706586824377653884">તમારા વ્યવસ્થાપક દ્વારા ઉમેરાયેલ</translation>
 <translation id="170658918174941828">તમે ઉપર શામેલ કરવા માટે પસંદ કરો તેવી કોઇપણ માહિતી ઉપરાંત, તમારું Chrome વર્ઝન, ઑપરેટિંગ સિસ્ટમ વર્ઝન, કાસ્ટ સેટિંગ, મીરરીંગ કાર્યપ્રદર્શનની આંકડાકીય માહિતી અને સંચાર ચૅનલ નિદાનના લૉગ સબમિટ કરવામાં આવશે. આ પ્રતિસાદનો ઉપયોગ સમસ્યાઓના નિદાન કરવા અને સુવિધાને બહેતર બનાવવામાં સહાય માટે કરવામાં આવે છે. સ્પષ્ટપણે અથવા તો અકસ્માતે, તમે સબમિટ કરેલી કોઇપણ વ્યક્તિગત માહિતીને અમારી પ્રાઇવસી પૉલિસીઓ મુજબ સુરક્ષિત રાખવામાં આવશે. આ પ્રતિસાદ સબમિટ કરીને, તમે સંમત થાઓ છો કે Google તમે પ્રદાન કરેલા પ્રતિસાદનો ઉપયોગ કોઇપણ Google પ્રોડક્ટ અથવા સેવાને બહેતર બનાવવા માટે કરી શકે છે.</translation>
 <translation id="17081583771848899">લૉન્ચર + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1110,7 +1112,6 @@
 <translation id="1756963401828337401">કૅપ્ચર કરવા માટે સ્ક્રીન પસંદ કરો</translation>
 <translation id="1757132445735080748">Linuxનું સેટઅપ પૂર્ણ કરવા માટે, ChromeOS Flex અપડેટ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="175772926354468439">થીમ ચાલુ કરો</translation>
-<translation id="1757786065507923842">માતાપિતાની પરવાનગી વિનંતી નિષ્ફળ થઈ.</translation>
 <translation id="17584710573359123">Chrome વેબ સ્ટોરમાં જુઓ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />નું <ph name="REMAPPING_OPTION" /> પર ફરીથી મૅપિંગ કરવામાં આવ્યું.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ના એકાઉન્ટ</translation>
@@ -1546,6 +1547,7 @@
 <translation id="204914487372604757">શૉર્ટકટ બનાવો </translation>
 <translation id="2049573977943974163">શું "<ph name="EXTENSION_NAME" />" ચાલુ કરીએ?</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
+<translation id="2050394140692183739">ટૂલબારનો વર્તમાન શૉર્ટકટ</translation>
 <translation id="2051555741181591333">ઑટોમૅટિક રીતે હૉટસ્પૉટ બંધ કરો</translation>
 <translation id="2051669996101374349">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો. તમે વિગતવાર સુરક્ષાનું સેટિંગ ચાલુ કરેલું હોવાથી તમે આ સેટિંગ બદલી શકતા નથી.</translation>
 <translation id="2052572566310583903">તમારા અન્ય ડિવાઇસ પર ઇન્સ્ટૉલ કરેલી</translation>
@@ -1753,7 +1755,6 @@
 <translation id="219283042927675668">ગ્રૂપમાંના ટૅબ</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> તમારા નવા ટૅબ પેજને મેનેજ કરી રહ્યાં છે, જે નવા ટૅબમાં ખુલે છે</translation>
 <translation id="2192982266585216032">&amp;ચુકવણીઓ</translation>
-<translation id="2193567467390483943">તમારા માતાપિતાએ આ એક્સ્ટેન્શન મંજૂર કર્યું નથી</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195331105963583686">તેમ તે સમય પછી પણ આ <ph name="DEVICE_TYPE" />નો ઉપયોગ કરી શકશો પણ હવેથી ઑટોમૅટિક સૉફ્ટવેર અને સુરક્ષા અપડેટ મળશે નહીં</translation>
 <translation id="2198625180564913276">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -1839,6 +1840,7 @@
 <translation id="2253927598983295051"><ph name="APP_NAME" /> વડે શું શેર કરવું તે પસંદ કરો</translation>
 <translation id="2255077166240162850">આ ડિવાઇસ ભિન્ન ડોમેન અથવા મોડમાં લૉક કર્યું હતું.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
+<translation id="2256049182613019001">વાંચન મોડ બંધ કરો (<ph name="SHORTCUT" />)</translation>
 <translation id="2256115617011615191">હવે ફરીથી પ્રારંભ કરો</translation>
 <translation id="2257053455312861282">સ્કૂલનું એકાઉન્ટ ઉમેરવાથી, માતાપિતા યોગ્ય નિયંત્રણો હેઠળ કાર્ય થતું હોવા છતાં, વિદ્યાર્થી તરીકે વેબસાઇટ, એક્સ્ટેન્શન અને ઍપમાં સરળતાથી સાઇન-ઇન કરી શકાય છે.</translation>
 <translation id="225716114209817872">મહત્તમ</translation>
@@ -3023,6 +3025,7 @@
 <translation id="3038628620670416486">તમારા માઉસ પર બટન શોધો</translation>
 <translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
 <translation id="303955801043931176">ટેબ બંધ કર્યું છે</translation>
+<translation id="3040435070100611531">Google Walletમાંના તમારા પાસ</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="3042097545107738107">ચાર્જિંગની ઑપ્ટિમાઇઝ કરેલી વ્યૂહરચના બદલો.</translation>
 <translation id="3043016484125065343">તમારા બુકમાર્ક જોવા માટે સાઇન ઇન કરો</translation>
@@ -3441,7 +3444,6 @@
 <translation id="3362651095484543782">Gemini છોડવા અથવા તેના પર પાછા ફરવા માટે, કીબોર્ડ શૉર્ટકટનો ઉપયોગ કરો.</translation>
 <translation id="3362915550009543917">શાંત પીળાશ પડતા રંગમાં દેખાતું કોઈ ઑઇલ પેઇન્ટિંગ, જે શાંતતા અને બૌદ્ધિકતાનું પ્રતીક હોય.</translation>
 <translation id="3363202073972776113">આ નવી પ્રોફાઇલ તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="3364986687961713424">તમારા વ્યવસ્થાપક તરફથી: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl અથવા Altનો ઉપયોગ કરો</translation>
 <translation id="3365651640097487828">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="3368662179834713970">મકાન</translation>
@@ -4231,6 +4233,7 @@
 <translation id="3874532133373654352">તમારી સંસ્થા, આ સુવિધાઓ દ્વારા એકત્રિત કરવામાં આવેલા ડેટાનો ઉપયોગ કેવી રીતે કરવામાં આવી શકે છે તે મેનેજ કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">આ સુવિધા AIનો ઉપયોગ કરે છે અને તે પ્રાયોગિક છે</translation>
 <translation id="3875511946736639169">છબીઓ બતાવવાનું ચાલુ કરો</translation>
+<translation id="3875777964669698078">ટ્રાન્સ્ક્રાઇબ કરી રહ્યાં છીએ...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />ને બ્રાઉઝરની નવી ટૅબમાં ખૂલવા માટે સેટ કરવામાં આવી છે, સંબંધિત લિંક પણ બ્રાઉઝરમાં ખૂલશે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">વિન્ડોનું કદ ઉપરની બાજુએ બદલ્યું</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ના ડિવાઇસ માટે નજીકના શેર સેટિંગ, <ph name="USER_EMAIL" /> એકાઉન્ટ હેઠળ શેર કરવામાં આવી રહ્યાં છે.</translation>
@@ -4720,6 +4723,7 @@
 <translation id="4241224519481557898">કૅટેગરી</translation>
 <translation id="4242145785130247982">એકથી વધુ ક્લાયન્ટ પ્રમાણપત્રોને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4242245038391716252">એક્સ્ટેન્શન દ્વારા ડાઉનલોડ કરવામાં આવ્યું: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">હવે તમે તમારા ટૅબ પર માઉસ લઈ જઈને તેને મોટા કરી શકો છો. આને ચાલુ કરવા માટે, અહીં રાઇટ ક્લિક કરો.</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4242577469625748426">આ ડિવાઇસ પર પૉલિસી સેટિંગ ઇન્સ્ટોલ કરવામાં નિષ્ફળ ગયું: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> દ્વારા તમારા <ph name="BEGIN_LINK" />બ્રાઉઝર તેમજ પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
@@ -5433,6 +5437,7 @@
 <translation id="4739639199548674512">ટિકિટ</translation>
 <translation id="4740546261986864539">તાજેતરમાં ખોલવામાં આવેલું</translation>
 <translation id="4742334355511750246">છબીઓ બતાવવાની મંજૂરી નથી</translation>
+<translation id="4742599569576370821">&amp;વીડિયો ફ્રેમ</translation>
 <translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4743990041512863976">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />સિસ્ટમનો માઇક્રોફોનનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
@@ -6324,6 +6329,7 @@
 <translation id="5372990315769030589">શું "<ph name="EXTENSION_NAME" />"ને જાળવીએ?</translation>
 <translation id="5375318608039113175">આ સંપર્કોની સાથે 'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે લિંક કરવામાં આવેલું ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.</translation>
 <translation id="5375374982898812658">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
+<translation id="5375517140689139594">વાંચન મોડ (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">તમે બૉટ નથી તેની ચકાસણી કરવામાં સહાય કરી શકે એવી સાઇટ</translation>
 <translation id="5376094717770783089">ઍક્સેસની વિનંતી કરે છે</translation>
 <translation id="5376169624176189338">પાછળ જવા માટે ક્લિક કરો, ઇતિહાસ જોવા માટે દબાવી રાખો</translation>
@@ -6401,6 +6407,7 @@
 <translation id="5423753908060469325">&amp;શૉર્ટકટ બનાવો...</translation>
 <translation id="5423829801105537712">જોડણીની મૂળભૂત તપાસ</translation>
 <translation id="5425042808445046667">ડાઉનલોડ કરવાનું ચાલુ રાખો</translation>
+<translation id="542570217857307910">હવે તમે તમારા ટૅબ પર માઉસ લઈ જઈને તેને મોટા કરી શકો છો. આને બંધ કરવા માટે, અહીં રાઇટ ક્લિક કરો.</translation>
 <translation id="5425863515030416387">સમગ્ર ઉપકરણોમાં સરળતાથી સાઇન ઇન કરો</translation>
 <translation id="5427278936122846523">હંમેશાં અનુવાદ કરો</translation>
 <translation id="5427459444770871191">&amp;ઘડિયાળની દિશામાં ફેરવો</translation>
@@ -6591,6 +6598,7 @@
 <translation id="5555639311269196631">હૉટસ્પૉટ બંધ કરો</translation>
 <translation id="5555760010546505198">વિપરીત રંગમાં બદલવું, રંગ સુધારણા, મેગ્નિફાયર અને ડિસ્પ્લેના સેટિંગ</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> ચાલુ કરો</translation>
+<translation id="5556191579768914260">ભૂલ બતાવો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="555671485580955310">ઇતિહાસ અને ટૅબને સિંક કરો</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
@@ -6973,7 +6981,6 @@
 <translation id="583673505367439042">સાઇટ તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="5836999627049108525">જેમાંથી અનુવાદ કરવાનો હોય, એ ભાષા</translation>
 <translation id="583756221537636748">કેસ</translation>
-<translation id="5839104899226944765">વાંચન મોડ બંધ કરો</translation>
 <translation id="5840656138956959276">બહેતર બનાવેલી: ફરજિયાત</translation>
 <translation id="5840680448799937675">ફાઇલો તો હંમેશાં ઑફલાઇન શેર કરી શકાશે જ</translation>
 <translation id="5841270259333717135">ઇથરનેટ ગોઠવો</translation>
@@ -8131,6 +8138,7 @@ USB ડિવાઇસ</translation>
 <translation id="6657180931610302174">વપરાશકર્તાનું નામ ઉમેરીએ?</translation>
 <translation id="6657240842932274095">સિસ્ટમ સર્વિસને તમારા લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
+<translation id="6658957691413122395">Geminiનું કદ બદલી રહ્યાં છીએ...</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" એક્સ્ટેન્શન દ્વારા આ પેજ નાનું-મોટું કર્યું હતું</translation>
 <translation id="6659594942844771486">ટૅબ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - કૅમેરા રેકોર્ડિંગ</translation>
@@ -9536,7 +9544,6 @@ USB ડિવાઇસ</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" />ને ઉમેર્યા</translation>
 <translation id="7642778300616172920">સંવેદનશીલ કન્ટેન્ટ છુપાવો</translation>
 <translation id="7643117827468520640">આ શરતો રિવ્યૂ કરો</translation>
-<translation id="7644953783774050577">કોઈપણ પસંદ ન કરો</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (માલિક)</translation>
 <translation id="7645681574855902035">Linuxનું બૅકઅપ રદ કરી રહ્યાં છીએ</translation>
 <translation id="7646425900255826066">જ્યારે તમે Chromeમાં સાઇન ઇન કરેલું હોય, ત્યારે તમે Google Password Manager વડે પાસવર્ડ સાચવી શકો છો</translation>

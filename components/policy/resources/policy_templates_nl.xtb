@@ -123,6 +123,7 @@ Als je het beleid instelt op 1 - DisabledForBrowser, wordt voorkomen dat het bro
 
 Let op: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Ontvangst van Safe Browsing-enquêtes aanzetten</translation>
+<translation id="1069651607236021905">Voorgrondprioriteit afdwingen voor specifieke herkomsten</translation>
 <translation id="107045325503547419">Afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
 
@@ -702,14 +703,6 @@ Als dit beleid niet is ingesteld, wordt de emoji-kiezer aangezet voor normale ge
 <translation id="1523587744262636189">poort 10080 (blokkering kan worden opgeheven tot 01-04-2022)</translation>
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
-<translation id="1526766414933532012">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting aan- of uitzetten op hun apparaat.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.
-
-Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Attribution Reporting API.</translation>
 <translation id="1532928374875633053">Hiermee kun je een lijst met URL-patronen opgeven van sites waarvoor het recht voor vensterplaatsing automatisch wordt verleend. Dit biedt sites de mogelijkheid om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
       Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
@@ -2123,6 +2116,15 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2450392422484526374">Als je dit beleid instelt op Waar, wordt stil afdrukken aangezet. Het venster voor afdrukvoorbeeld wordt dan meteen gesloten als het wordt geopend en er wordt afgedrukt naar de standaardprinter met de standaardopties. Als de standaardprinter Opslaan als pdf is, wordt het bestand opgeslagen in de map Downloads.
 
 Als je dit beleid niet instelt of instelt op Onwaar, wordt stil afdrukken uitgezet. Het venster voor afdrukvoorbeeld wordt dan niet automatisch gesloten en de gebruiker moet zoals gewoonlijk een selectie maken.</translation>
+<translation id="2451322901390143329">Hiermee wordt bepaald of Web Workers die zijn gemaakt op basis van gegevens-URL's een unieke ondoorzichtige oorsprong krijgen toegewezen.
+
+Web Workers kunnen worden gemaakt met een gegevens-URL die het script van de worker bevat. Eerder namen deze workers de oorsprong over van de pagina die ze had gemaakt, waardoor ze toegang hadden tot dezelfde lokale opslag, cookies en andere aan de oorsprong gebonden gegevens. Chrome verandert het standaardgedrag in mijlpaal 149 om de beveiliging te verbeteren en af te stemmen op de HTML-specificatie. Workers die zijn gemaakt op basis van gegevens-URL's hebben nu een unieke, ondoorzichtige oorsprong. Zo worden ze geïsoleerd van de gegevens van de makerpagina.
+
+Als je dit beleid toepast of niet instelt, wordt het nieuwe standaardgedrag (beter beveiligd) gebruikt en hebben Web Workers die zijn gemaakt op basis van gegevens-URL's een unieke ondoorzichtige oorsprong.
+
+Als je dit beleid niet toepast, keert Chrome terug naar het oude gedrag en nemen Web Workers die zijn gemaakt op basis van gegevens-URL's de oorsprong van hun maker over. Zo kunnen beheerders compatibiliteitsproblemen tijdelijk oplossen als interne apps niet meer werken door de beveiligingswijziging.
+
+Dit beleid is tijdelijk en wordt verwijderd in mijlpaal 157.</translation>
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
@@ -5283,6 +5285,17 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
           Houd er rekening mee dat het beleid wordt toegepast per weergaveprogrammaproces en dat de meest recente waarde van de beleidsinstelling van kracht is als een weergaveprogrammaproces wordt gestart. Volledig opnieuw opstarten is vereist om ervoor te zorgen dat op alle geladen tabbladen een consistente beleidsinstelling wordt toegepast. Dit heeft geen negatieve invloed op processen die met andere waarden van dit beleid worden uitgevoerd.
           </translation>
 <translation id="4578265298946081589">Niet opnieuw opstarten na uitloggen gebruiker.</translation>
+<translation id="4580711645933054901">Met dit beleid kun je een lijst met URL-patronen instellen. Webcontent op de achtergrond die overeenkomt met deze patronen, wordt gedwongen uitgevoerd met prioriteit op de voorgrond.
+
+Als je het beleid <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> toepast, wordt deze lijst genegeerd omdat alle tabbladen prioriteit op de voorgrond krijgen.
+
+Als <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> uitstaat of niet is ingesteld, wordt alleen content die overeenkomt met de patronen in deze lijst geforceerd.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.
+
+Dit beleid zoekt alleen overeenkomsten op basis van de oorsprong, dus elk pad of elke queryparameter in het patroon wordt genegeerd. Schema, host en poort worden ondersteund.
+
+Als deze lijst leeg is of niet is ingesteld, wordt er geen achtergrondcontent uitgevoerd met prioriteit op de voorgrond.</translation>
 <translation id="4581507927311097234">De tijdsduur zonder gebruikersinvoer waarna het scherm uitgaat (in milliseconden)</translation>
 <translation id="4582027661281685066">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="PRIVATE_NETWORK_ACCESS" />-controles.
 
@@ -6073,14 +6086,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
 <translation id="50689955292091946">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm aanzetten</translation>
-<translation id="5069453818168036580">Beleid waarmee je kunt bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor door sites voorstelde advertenties uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties op hun apparaat aan- of uitzetten.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.
-
-Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Protected Audience API.</translation>
 <translation id="5069522005630249098">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
 
       Als het beleid is ingesteld op <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> of niet is ingesteld, wordt er geen achterwaartse gegevensmigratie uitgevoerd.
@@ -6208,6 +6213,7 @@ De domeinen moeten de indeling hebben van een volledige domeinnaam (FQDN, fully 
 
 Domeinen met een onjuiste indeling worden genegeerd.</translation>
 <translation id="5163002264923337812">Oud online inlogproces gebruiken</translation>
+<translation id="5163120075537316507">Ondoorzichtige oorsprongen voor gegevens-URL's in Web Workers zijn uitgezet (beëindigd verouderd gedrag)</translation>
 <translation id="5163889437570441600">Hiermee sta je toe dat content naar het apparaat wordt gecast met <ph name="PRODUCT_NAME" />.
 
           Als dit beleid is ingesteld op False, kunnen gebruikers geen content naar hun apparaat casten. Als dit beleid is ingesteld op True, kunnen ze dit wel. Als dit beleid niet is ingesteld, kunnen gebruikers geen content casten naar ingeschreven Chrome OS-apparaten, maar wel naar niet-ingeschreven apparaten.</translation>
@@ -6857,6 +6863,13 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart SharePoin
 <translation id="5542235730745104308">Als je het beleid instelt op True, gebruikt <ph name="PRODUCT_NAME" /> alternatieve foutpagina's die zijn ingebouwd (zoals Pagina niet gevonden). Als je het beleid instelt op False, gebruikt <ph name="PRODUCT_NAME" /> nooit alternatieve foutpagina's.
 
 Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt het toegepast maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="5543124658694855168">Als je dit beleid instelt, kunnen bedrijven de waarde overschrijven die wordt geretourneerd door de <ph name="CPU_PERFORMANCE_API_NAME" /> (bijv.
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />,
+ga naar https://github.com/WICG/cpu-performance voor meer informatie).
+
+Als je dit beleid instelt, wordt de waarde van <ph name="CPU_PERFORMANCE_GETTER_NAME" /> overschreven door de ingevoerde waarde. Als je het beleid niet instelt, wordt de standaardberekening van prestatieniveaus gebruikt.
+
+De mogelijke waarden voor dit beleid zijn 0 tot 4.</translation>
 <translation id="5544059132156503357">Als je het beleid instelt, geef je aan welke typen versleuteling zijn toegestaan wanneer Kerberos-tickets van een <ph name="MS_AD_NAME" />-server worden aangevraagd.
 
 Als je het beleid instelt op:
@@ -7162,6 +7175,7 @@ Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het 
 <translation id="5706929446669049441">Delen van inloggegevens van gebruikers uitzetten</translation>
 <translation id="57072195677044908">Zet profielscheiding uit</translation>
 <translation id="5708969689202733975">Toegestane modi voor snel ontgrendelen configureren</translation>
+<translation id="5714281972278520176">Ondoorzichtige oorsprongen voor gegevens-URL's in Web Workers aanzetten</translation>
 <translation id="5714563837055244378">Delen van Android-apps naar web-apps aanzetten.</translation>
 <translation id="5715739768416614900">Kiosk-tools voor probleemoplossing aanzetten.</translation>
 <translation id="5717973246079053225">Cloudrapportage voor beheerde profielen uitzetten</translation>
@@ -8001,6 +8015,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="6287128640500683781">Elke gebruiker toestaan in te loggen</translation>
 <translation id="6287310684159482272">Instellingen voor cookies</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" />-service aanzetten en extern bureau starten bij inloggen</translation>
+<translation id="6293411231114989812">Ondoorzichtige oorsprongen voor gegevens-URL's in Web Workers zijn aangezet (nieuw standaardgedrag)</translation>
 <translation id="6299147100249359151">Detectie van beleidsbereik toestaan.</translation>
 <translation id="6299554629216555326">Instellingen voor vensterbeheer</translation>
 <translation id="6302021021024941085">Kiosk-tools voor probleemoplossing uitzetten.</translation>
@@ -10159,7 +10174,7 @@ Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph
 <translation id="7649831723389657756">Als je het beleid instelt, wordt gespecificeerd voor welke herkomsten alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
 
       Maak het herkomstpatroon op volgens deze indeling (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8000 komt overeen met alle hosts op poort 8000). Als je alle schema's of alle poorten wilt matchen, laat je de component helemaal weg (bijvoorbeeld example.com komt overeen met elk schema en elke poort). Een hostnaam (bijvoorbeeld example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .example.com). Als je alle oorsprongen wilt matchen, gebruik je één asterisk (*).</translation>
+      Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8000 komt overeen met alle hosts op poort 8000). Als je alle schema's of alle poorten wilt matchen, laat je de component helemaal weg (bijvoorbeeld example.com komt overeen met elk schema en elke poort). Een hostnaam (bijvoorbeeld example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .example.com). Als je alle herkomsten wilt matchen, gebruik je één asterisk (*).</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7661379728107156839">Weinig complex</translation>
@@ -10208,6 +10223,7 @@ Dit beleid kan worden overschreven voor specifieke geïsoleerde web-app-oorspron
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
 <translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
+<translation id="7681075922820376711">Overschrijven voor het CPU-prestatieniveau</translation>
 <translation id="7682409626897786151">Hiermee kun je een lijst met URL-patronen opgeven van sites die sleutels mogen genereren. Als een URL-patroon in KeygenBlockedForUrls wordt vermeld, worden deze uitzonderingen overschreven.
 
           Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites. Deze vind je in het beleid DefaultKeygenSetting (als dit is ingesteld) of in de persoonlijke configuratie van de gebruiker.
@@ -11056,16 +11072,6 @@ Deze beleidsregels zijn uitsluitend bedoeld voor het configureren van instanties
 Je hoeft deze instellingen niet handmatig te configureren. Je kunt gebruiksvriendelijke templates voor Windows, Mac en Linux downloaden via <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, maar het toewijzen van beleidsregels via een register wordt nog steeds ondersteund voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein.</translation>
-<translation id="8261008508574620157">Beleid om te bepalen of je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-prompt te zien krijgen.
-De prompt is een proces met gebruikersblokkering dat je gebruikers informeert over de <ph name="PRIVACY_SANDBOX_NAME" />-instellingen. Bekijk <ph name="PRIVACY_SANDBOX_URL" /> voor meer informatie over de aanpak van Chrome om cookies van derden te beëindigen.
-
-Als je dit beleid niet toepast, laat <ph name="PRODUCT_NAME" /> de <ph name="PRIVACY_SANDBOX_NAME" />-prompt niet zien.
-Als je dit beleid toepast of niet instelt, bepaalt <ph name="PRODUCT_NAME" /> of de <ph name="PRIVACY_SANDBOX_NAME" />-prompt kan worden getoond of niet, en laat deze daarna zien (indien mogelijk).
-
-Als een van de volgende beleidsregels is ingesteld, moet je dit beleid uitzetten:
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Dit beleid geeft toegang tot de testpagina voor beleid. Als beleid op deze pagina wordt getest, worden alle andere beleidsregels genegeerd.
 Deze functie is alleen beschikbaar op het Canary-kanaal.
 
@@ -11711,14 +11717,6 @@ Dit beleid is een tijdelijke maatregel en wordt na een aantal mijlpalen verwijde
       Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" />, omdat onbekende en potentieel schadelijke code kan worden geladen in het browserproces van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in het browserproces van <ph name="PRODUCT_NAME" /> moet worden uitgevoerd.
 
       Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
-<translation id="8672039014434141545">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen kan worden uitgezet voor je gebruikers.
-
-Als je dit beleid niet toepast, wordt de instelling voor advertentieonderwerpen uitgezet voor je gebruikers.
-Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen aan- of uitzetten op hun apparaat.
-
-Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.
-
-Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Topics API.</translation>
 <translation id="8672321184841719703">Doelversie voor automatische updates</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8675599659717867329">Rapportage uitzetten</translation>

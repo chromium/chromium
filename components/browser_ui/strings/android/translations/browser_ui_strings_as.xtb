@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">ছেভ কৰি থোৱা জুমৰ স্তৰ মচিবনে?</translation>
 <translation id="3362437373201486687">ব্লুটুথ ডিভাইচ স্কেন কৰি থকা হৈছে</translation>
 <translation id="3368138297038111198">এখন ৱিণ্ড’ শ্বেয়াৰ কৰি থকা হৈছে</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{মেম’ৰী কম থকাৰ কাৰণে {TOTAL_COUNT} টা বস্তুৰ ১ টা দেখুৱাই থকা হৈছে}one{মেম’ৰী কম থকাৰ কাৰণে {TOTAL_COUNT} টা বস্তুৰ # টা দেখুৱাই থকা হৈছে}other{মেম’ৰী কম থকাৰ কাৰণে {TOTAL_COUNT} টা বস্তুৰ # টা দেখুৱাই থকা হৈছে}}</translation>
 <translation id="3386292677130313581">ছাইটসমূহে আপোনাৰ অৱস্থান জনাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7805832099057502789">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
-<translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
 <translation id="7809029041571842593">নতুন টেবৰ পৃষ্ঠাখনৰ কাৰ্ডসমূহৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7835852323729233924">মিডিয়া প্লে’ হৈ আছে</translation>

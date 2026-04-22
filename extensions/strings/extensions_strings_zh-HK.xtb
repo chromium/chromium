@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="1610570795592207282">無法載入指令碼的 css「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
+<translation id="1757786065507923842">家長權限要求失敗。</translation>
 <translation id="1803557475693955505">無法載入背景頁面「<ph name="BACKGROUND_PAGE" />」。</translation>
 <translation id="1875387611427697908">只能從 <ph name="CHROME_WEB_STORE" /> 新增</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
+<translation id="2193567467390483943">家長未核准此擴充程式</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
 <translation id="2576842806987913196">已有 CRX 檔案使用這個名稱。</translation>
 <translation id="2662876636500006917">Chrome 網上應用程式商店</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">你的機構已封鎖此擴充程式的存取權。</translation>
 <translation id="3242289508736283383">含有「kiosk_only」資訊清單屬性的應用程式必須在 Chrome OS Kiosk 模式中安裝</translation>
+<translation id="3364986687961713424">來自管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">來自供應商 <ph name="VENDOR_ID" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>

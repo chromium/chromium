@@ -228,7 +228,6 @@
 <translation id="3296368748942286671">Chromium 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3313189106987092621">Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
-<translation id="3322413454779348750">Chromium 외부에서 기본 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chromium에서 기본 검색엔진을 재설정했습니다.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">사용자 계정의 Chromium 데이터</translation>
 <translation id="3369405342922656244">이미지 검색으로 이 페이지 검색하기</translation>
@@ -476,6 +475,7 @@
 <translation id="6241367896540709610">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="6245734527075554892">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
+<translation id="6248988683584659830">설정 검색</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="6270547683008298381">이러한 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chromium에서 이러한 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6281746429495226318">Chromium 프로필 맞춤설정</translation>
@@ -512,6 +512,7 @@
 <translation id="6542839706527980775">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chromium 정보가 보관됩니다.</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="6564039629497156115">이 설정의 변경사항은 Chromium을 다시 시작하면 적용됩니다.</translation>
+<translation id="6567032987737689854">Chromium 기본 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리하세요.</translation>
 <translation id="656935081669708576">다른 Chromium 프로필의 비밀번호를 보도록 전환할 수 있습니다.</translation>
 <translation id="6570579332384693436">맞춤법 오류를 수정하기 위해 Chromium에서 사용자가 입력하는 텍스트를 Google로 전송합니다.</translation>
 <translation id="6598877126913850652">Chromium 알림 설정으로 이동</translation>
@@ -635,6 +636,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7810005234485217901">이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="7828947555739565424">이 계정을 사용하는 Chromium 프로필이 기기에 이미 존재합니다</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
+<translation id="7847673590271334840">Chromium 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chromium에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Chromium을 맞춤설정하여 새로운 디자인으로 변경하세요.</translation>
 <translation id="7859018312476869945">주소 표시줄이나 검색창에 검색어를 입력하면 Chromium은 더 나은 추천 검색어를 제공하기 위해 사용자가 입력한 내용을 기본 검색엔진으로 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="7867198900892795913">Chromium을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Hapus tingkat zoom tersimpan?</translation>
 <translation id="3362437373201486687">Memindai perangkat Bluetooth</translation>
 <translation id="3368138297038111198">Membagikan jendela</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Menampilkan 1 dari {TOTAL_COUNT} item karena kekurangan memori}other{Menampilkan # dari {TOTAL_COUNT} item karena kekurangan memori}}</translation>
 <translation id="3386292677130313581">Minta izin sebelum mengizinkan situs mengetahui lokasi Anda (disarankan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookie pihak ketiga diblokir</translation>
@@ -654,7 +655,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7804248752222191302">Situs menggunakan kamera Anda</translation>
 <translation id="7805832099057502789">Panel bawah tampilan halaman tab baru terbuka sepenuhnya</translation>
-<translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7809029041571842593">Panel bawah kartu halaman tab baru terbuka setengah</translation>
 <translation id="7815680994978050279">Download berbahaya diblokir</translation>
 <translation id="7835852323729233924">Media yang sedang diputar</translation>

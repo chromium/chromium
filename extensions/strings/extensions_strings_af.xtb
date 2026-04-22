@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Kon nie uitbreidinggids na profiel skuif nie.</translation>
 <translation id="1610570795592207282">Kon nie css “<ph name="RELATIVE_PATH" />” vir skrip laai nie.</translation>
 <translation id="1616298854599875024">Kan nie uitbreiding "<ph name="IMPORT_NAME" />" invoer nie, want dit is nie 'n gedeelde module nie</translation>
+<translation id="1757786065507923842">Kon nie ouertoestemmingversoek uitvoer nie.</translation>
 <translation id="1803557475693955505">Kon nie plaaslike agtergrondbladsy '<ph name="BACKGROUND_PAGE" />' laai nie.</translation>
 <translation id="1875387611427697908">Dit kan net van die <ph name="CHROME_WEB_STORE" /> af bygevoeg word</translation>
 <translation id="2131077480075264">Kan nie "<ph name="APP_NAME" />" installeer nie omdat dit nie deur "<ph name="IMPORT_NAME" />" toegelaat word nie</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Jou ouer het nie hierdie uitbreiding goedgekeur nie</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
 <translation id="2576842806987913196">Daar is reeds 'n CRX-lêer met hierdie naam.</translation>
 <translation id="2662876636500006917">Chrome Webwinkel</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Toegang tot hierdie uitbreiding word deur jou organisasie geblokkeer.</translation>
 <translation id="3242289508736283383">App met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
+<translation id="3364986687961713424">Vanaf jou administrateur: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>

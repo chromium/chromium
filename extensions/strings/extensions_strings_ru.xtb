@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Не удалось переместить каталог расширений в профиль.</translation>
 <translation id="1610570795592207282">Не удалось загрузить CSS (<ph name="RELATIVE_PATH" />) для скрипта.</translation>
 <translation id="1616298854599875024">Не удалось импортировать расширение "<ph name="IMPORT_NAME" />", поскольку это не общий модуль</translation>
+<translation id="1757786065507923842">Не удалось запросить разрешение родителя.</translation>
 <translation id="1803557475693955505">Не удалось загрузить страницу фона "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Это приложение или расширение можно установить только из сервиса "<ph name="CHROME_WEB_STORE" />".</translation>
 <translation id="2131077480075264">Невозможно установить <ph name="APP_NAME" />: нет разрешения от <ph name="IMPORT_NAME" /></translation>
 <translation id="2159915644201199628">Не удалось декодировать изображение: <ph name="IMAGE_NAME" /></translation>
+<translation id="2193567467390483943">Родитель не одобрил это расширение.</translation>
 <translation id="2350172092385603347">Локализация используется, однако в манифесте не указан атрибут default_locale.</translation>
 <translation id="2576842806987913196">Файл CRX с таким именем уже существует.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Доступ к этому расширению заблокирован вашей организацией.</translation>
 <translation id="3242289508736283383">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска Chrome OS.</translation>
+<translation id="3364986687961713424">Сообщение от администратора: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Входное значение закрытого ключа должно предоставлять собой допустимый путь.</translation>

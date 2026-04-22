@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Poistetaanko tallennetut zoomaustasot?</translation>
 <translation id="3362437373201486687">Haetaan Bluetooth-laitteita</translation>
 <translation id="3368138297038111198">Jaetaan ikkunaa</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Näytetään 1/{TOTAL_COUNT} kohdetta vähäisen muistin vuoksi}other{Näytetään #/{TOTAL_COUNT} kohdetta vähäisen muistin vuoksi}}</translation>
 <translation id="3386292677130313581">Pyydä lupaa, kun sivustot yrittävät käyttää sijaintiasi (suositus).</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Kolmannen osapuolen evästeet estetty</translation>
@@ -654,7 +655,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
 <translation id="7805832099057502789">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu koko näytölle</translation>
-<translation id="7807060072011926525">Googlen tarjoama</translation>
 <translation id="7809029041571842593">Uusi välilehti ‐sivun korttien alapaneeli avattu puoliksi</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>

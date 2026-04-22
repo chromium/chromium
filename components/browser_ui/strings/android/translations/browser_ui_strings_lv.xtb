@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Vai dzēst saglabātos tālummaiņas līmeņus?</translation>
 <translation id="3362437373201486687">Notiek Bluetooth ierīču meklēšana…</translation>
 <translation id="3368138297038111198">Notiek loga kopīgošana…</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Tiek rādīts 1 vienums no {TOTAL_COUNT}, jo atmiņā ir maz vietas.}zero{Tiek rādīti # vienumi no {TOTAL_COUNT}, jo atmiņā ir maz vietas.}one{Tiek rādīts # vienums no {TOTAL_COUNT}, jo atmiņā ir maz vietas.}other{Tiek rādīti # vienumi no {TOTAL_COUNT}, jo atmiņā ir maz vietas.}}</translation>
 <translation id="3386292677130313581">Jautāt, pirms atļaut vietnēm uzzināt jūsu atrašanās vietu (ieteicams)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Trešo pušu sīkfaili ir bloķēti</translation>
@@ -654,7 +655,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804248752222191302">Kāda vietne izmanto jūsu kameru</translation>
 <translation id="7805832099057502789">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
-<translation id="7807060072011926525">Nodrošina Google</translation>
 <translation id="7809029041571842593">Jaunas cilnes lapas kartīšu ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="7815680994978050279">Tika bloķēta bīstama lejupielāde</translation>
 <translation id="7835852323729233924">Multivides atskaņošana</translation>

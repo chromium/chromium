@@ -424,6 +424,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="547202872422499512">Sasa Chrome hufunguka unapowasha Windows ili uanze kuvinjari papo hapo. Unaweza kuzima hii katika Mipangilio.</translation>
 <translation id="5486346529181556467">Imarisha usalama wa mtandaoni kwa kila mtu unaporipoti tovuti unayofikiri kuwa ni hatari. Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />sera ya Google dhidi ya tovuti zisizo salama.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">kona ya juu kushoto ya eneo la utafutaji: kushoto asilimia <ph name="LEFT" />, juu asilimia <ph name="TOP" /></translation>
+<translation id="5529390769101499214">Dhibiti viendelezi vyako kwa kubofya Viendelezi kwenye menyu kuu ya Chrome.</translation>
 <translation id="5550137307985173298">Bofya kitufe cha Badilisha Chrome upendavyo kwenye Ukurasa Mpya wa Kichupo ili uipe Chrome mwonekano mpya</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Hitilafu ya kuwasha: tafadhali washa kisakinishaji kama mtumiaji wa kawaida, si kama msimamizi.</translation>
@@ -510,6 +511,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6235018212288296708">Sheria ya ndani ya Google Chrome ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="624230925347970731">Chrome itafungwa hivi karibuni</translation>
 <translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="6248988683584659830">Mipangilio ya utafutaji</translation>
 <translation id="6251759518630934363">Hukutahadharisha kuhusu tovuti hatari, hata zile ambazo hazikutambuliwa na Google hapo awali, kwa kuchambua data zaidi kutoka kwenye tovuti kuliko ulinzi wa kawaida. Unaweza kuchagua kuruka tahadhari za Chrome.</translation>
 <translation id="6277547788421725101">Mzazi wako amezima "Ruhusa za tovuti, programu na viendelezi" kwenye Chrome</translation>
 <translation id="627882678981830918">Dhibiti na uweke mapendeleo kwenye Chrome. Ifanye Chrome iwe kivinjari chako chaguomsingi.</translation>
@@ -673,6 +675,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7792336732117553384">Dhibiti Wasifu Kwenye Chrome</translation>
 <translation id="7801699035218095297">Google Chrome inajaribu kunakili manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="7804364787702057554">Akaunti yako katika Chrome</translation>
+<translation id="7804947029129221742">Mtambo wako wa kutafuta umebadilishiwa nje ya Chrome. Ili kukulinda, Chrome imeubadilisha kuwa mtambo chaguomsingi halisi. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Ondoa kwenye Chrome...</translation>
 <translation id="7827099906024714326">Chrome inahitaji kuthibitisha kuwa ni wewe kabla ya kuhifadhi baadhi ya data kwenye Akaunti yako ya Google na kuitumia kwenye vifaa vyako vyote. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="7832314606810669113">Ili upate alamisho zako na mengineyo kwenye vifaa vyako vyote, ingia katika Chrome. Alamisho hii itahifadhiwa kwenye Akaunti yako ya Google ukishaingia katika akaunti.</translation>
@@ -794,7 +797,6 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8992769679401294069">Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utumie na kuhifadhi data ya Chrome kwenye Akaunti yako ya Google.</translation>
 <translation id="8999117580775242387">Wakati kiendelezi cha HTTPS hakipatikani, Chrome itatumia muunganisho usio salama bila kukutahadharisha</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
-<translation id="9010418943148193727">Mtambo wako chaguomsingi wa kutafuta ulibadilishwa kutoka nje ya Chrome. Ili kukulinda, Chrome imeuweka upya.</translation>
 <translation id="9014771989710951291">Mashirika mengi yanadhibiti Chrome</translation>
 <translation id="9066987883552592250">Funga Gemini Kwenye Chrome Canary (toleo la jaribio)</translation>
 <translation id="9090566250983691233">Fahamu kwa nini Chrome huzuia baadhi ya faili</translation>

@@ -424,6 +424,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="547202872422499512">Ahora Chrome se inicia cuando se inicia Windows para que puedas empezar a navegar al instante. Puedes desactivar esta opción en la configuración.</translation>
 <translation id="5486346529181556467">Mejora la seguridad online de todos los usuarios denunciando los sitios que creas que son dañinos. Consulta más información sobre la <ph name="BEGIN_LINK" />política de Google sobre sitios que no son seguros<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">esquina superior izquierda del área de búsqueda: un <ph name="LEFT" /> % a la izquierda y un <ph name="TOP" /> % arriba</translation>
+<translation id="5529390769101499214">Para gestionar tus extensiones, haz clic en Extensiones en el menú principal de Chrome.</translation>
 <translation id="5550137307985173298">Haz clic en el botón Personalizar Chrome de la página Nueva pestaña para cambiar el diseño de Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
 <translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
@@ -510,6 +511,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6235018212288296708">Regla entrante para que Google Chrome permita tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará dentro de poco</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
+<translation id="6248988683584659830">Buscar ajustes</translation>
 <translation id="6251759518630934363">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
 <translation id="6277547788421725101">Tus padres han desactivado Permisos de sitios web, aplicaciones y extensiones en Chrome</translation>
 <translation id="627882678981830918">Personaliza y controla Chrome. Establece Chrome como navegador predeterminado.</translation>
@@ -673,6 +675,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7792336732117553384">&amp;Gestionar perfiles de Chrome</translation>
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="7804364787702057554">Tu cuenta en Chrome</translation>
+<translation id="7804947029129221742">Tu buscador se ha cambiado desde fuera de Chrome. Para protegerte, Chrome lo ha restablecido a su valor predeterminado original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Desinstalar de Chrome...</translation>
 <translation id="7827099906024714326">Chrome debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="7832314606810669113">Inicia sesión en Chrome para acceder a tus marcadores y otros en todos tus dispositivos. Este marcador se guardará en tu cuenta de Google cuando inicies sesión.</translation>
@@ -794,7 +797,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8992769679401294069">Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chrome en tu cuenta de Google.</translation>
 <translation id="8999117580775242387">Si HTTPS no está disponible, Chrome usará una conexión no segura sin avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
-<translation id="9010418943148193727">Tu buscador predeterminado se ha cambiado desde fuera de Chrome. Para protegerte, Chrome lo ha restablecido.</translation>
 <translation id="9014771989710951291">Varias organizaciones gestionan Chrome</translation>
 <translation id="9066987883552592250">Cerrar Gemini en Chrome Canary</translation>
 <translation id="9090566250983691233">Averigua por qué bloquea Chrome algunos archivos</translation>

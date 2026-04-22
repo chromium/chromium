@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">No s'ha pogut desplaçar el directori d'extensions al perfil.</translation>
 <translation id="1610570795592207282">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de CSS per a l'script.</translation>
 <translation id="1616298854599875024">L'extensió <ph name="IMPORT_NAME" /> no es pot importar perquè no és un mòdul compartit</translation>
+<translation id="1757786065507923842">No s'ha pogut sol·licitar el permís parental.</translation>
 <translation id="1803557475693955505">No s'ha pogut carregar la pàgina en segon pla "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Només pot afegir-se des de <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">No s'ha pogut instal·lar <ph name="APP_NAME" /> perquè <ph name="IMPORT_NAME" /> no ho permet.</translation>
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">El teu pare o mare no ha aprovat aquesta extensió</translation>
 <translation id="2350172092385603347">S'ha utilitzat localització, però no s'ha especificat default_locale al manifest.</translation>
 <translation id="2576842806987913196">Ja hi ha un fitxer CRX amb aquest nom.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">La teva organització ha bloquejat l'accés a aquesta extensió.</translation>
 <translation id="3242289508736283383">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
+<translation id="3364986687961713424">De part de l'administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor d'entrada per a la clau privada ha de ser un camí vàlid.</translation>

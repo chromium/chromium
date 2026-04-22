@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">管理活動</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">如要切換帳戶，請輕觸帳戶圖示</translation>
+<translation id="135806768612505061">所有分頁</translation>
 <translation id="1358106883354237005">代管帳戶</translation>
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">分享密碼</translation>
 <translation id="1554043146674176775">關閉 AI 模式</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
+<translation id="1554605811306591212">須遵守 Google 的《<ph name="TERMS" />》、《<ph name="KOREAN_LOCATION_TERMS" />》和《<ph name="PRIVACY_NOTICE" />》。Gemini 是 AI，可能會出錯 (包括人物相關資訊)。</translation>
 <translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="1565371473877914088">新無痕分頁</translation>
 <translation id="1567960978791353852">顯示閱讀模式</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">這個資料夾是空的</translation>
 <translation id="1864266050569350424">在已儲存密碼的網站上，輕觸「登入密碼」欄位。</translation>
 <translation id="1866700949421703765">隱藏「開啟閱讀模式」</translation>
+<translation id="1869050523388525800">必須將 Google 設為預設搜尋引擎，才能使用搜尋畫面功能。你可以前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」變更預設搜尋引擎。</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">邀請家庭成員</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">如要將書籤儲存到帳戶，請刪除未使用的書籤</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪轉介面</translation>
+<translation id="3905384981098338147">AI 模式記錄</translation>
 <translation id="3909222758573607742">將密碼和其他項目儲存到帳戶</translation>
 <translation id="3913463964270756493">隱藏「用 Google 智慧鏡頭搜尋畫面內容」</translation>
 <translation id="3914640181019354363">偵測地址</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">使用鍵盤</translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
 <translation id="4416582610654027550">請輸入有效的網址</translation>
+<translation id="441868831736628555">隱私權聲明</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
 <translation id="4425365312778464779">這是代管帳戶</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">退出分頁切換工具</translation>
 <translation id="5148717509369231739">從 Safari 匯入</translation>
 <translation id="5152483358138813104">在所有裝置上快速登入</translation>
+<translation id="515315847398512535">你的帳戶已停用搜尋畫面功能，詳情請洽詢管理員。</translation>
 <translation id="5155502059906700593">網址列可以放在頂端，也可以移到底部。</translation>
 <translation id="5157638238828697074">發生錯誤，無法開啟應用程式。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1313,7 +1319,6 @@
 <translation id="5647702255748985085">要退出群組嗎？</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5652623411397330904">你追蹤的產品會顯示在這裡。</translation>
-<translation id="5653100054596780862">所有分頁</translation>
 <translation id="5656431592348714536">加強型日曆</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5665739277590037307">適用《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 可能會&lt;br&gt;出錯，因此請查證回覆內容。</translation>
@@ -1511,6 +1516,7 @@
 <translation id="6307241780749477694">通過身分驗證，即可在這部裝置上存取所有密碼</translation>
 <translation id="6316141353357700666">從顯示清單中選取要使用的密碼。</translation>
 <translation id="6321526113093607004">加入書籤</translation>
+<translation id="6327249202318869726">你的帳戶已停用 Gemini，詳情請洽詢管理員。</translation>
 <translation id="6331836477476466332">更安全、更強大的瀏覽器</translation>
 <translation id="6335744088476213315">這張資訊卡會顯示你最近瀏覽過的產品，只要追蹤感興趣的項目，就能收到降價快訊</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -1788,6 +1794,7 @@
 <translation id="7261217796641151584">分享群組</translation>
 <translation id="7266578100016339897">這麼做可有效整理分頁，保持井然有序。你隨時可以前往「設定」變更這項設定。</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
+<translation id="7275307913765547631">韓國定位條款</translation>
 <translation id="728025568708172005">開始導覽</translation>
 <translation id="7280980607183752256">無法匯入這個檔案</translation>
 <translation id="7281202269687163394">個人隱私權與 Gemini。</translation>
@@ -2003,6 +2010,7 @@
 <translation id="7996239959906074962">設定…</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟輸入的網址。</translation>
 <translation id="8005666035647241369">儲存至這部裝置的 Google 密碼管理員</translation>
+<translation id="8006265839264939135">條款</translation>
 <translation id="8010488806779226127">探索各項功能，提升瀏覽體驗</translation>
 <translation id="8011489434346330032">網頁檢閱器</translation>
 <translation id="8014007212279733632">通過身分驗證才能自動填入私密資訊</translation>

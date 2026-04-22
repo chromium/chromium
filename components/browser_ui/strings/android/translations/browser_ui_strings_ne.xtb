@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">सेभ गरिएका जुम लेभल मेटाउने हो?</translation>
 <translation id="3362437373201486687">ब्लुटुथ डिभाइसहरू छन् कि छैनन् भनी जाँच गरिँदै छ</translation>
 <translation id="3368138297038111198">विन्डो सेयर गरिँदै छ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{मेमोरी कम भएकाले {TOTAL_COUNT} मध्ये एउटा वस्तु देखाइँदै छ}other{मेमोरी कम भएकाले {TOTAL_COUNT} मध्ये # वटा वस्तु देखाइँदै छन्}}</translation>
 <translation id="3386292677130313581">साइटहरूलाई तपाईँको स्थान थाहा पाउने अनुमति दिनु भन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7804248752222191302">कुनै साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="7805832099057502789">नयाँ ट्याब पेजमा देखिने पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
-<translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
 <translation id="7809029041571842593">नयाँ ट्याब पेज कार्डको पुछारको पाना आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7835852323729233924">प्ले भइरहेको मिडिया</translation>

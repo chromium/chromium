@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">ఎక్స్‌టెన్షన్ డైరెక్టరీని ప్రొఫైల్ లోపలికి తరలించలేకపోయింది.</translation>
 <translation id="1610570795592207282">స్క్రిప్ట్‌కు css '<ph name="RELATIVE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1616298854599875024">ఇది షేర్ చేసిన మాడ్యూల్ కానందున ఎక్స్‌టెన్షన్ "<ph name="IMPORT_NAME" />"ను దిగుమతి చేయడం సాధ్యపడలేదు</translation>
+<translation id="1757786065507923842">పేరెంట్ అనుమతి రిక్వెస్ట్ విఫలమైంది.</translation>
 <translation id="1803557475693955505">నేపథ్య పేజీ '<ph name="BACKGROUND_PAGE" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1875387611427697908">దీనిని <ph name="CHROME_WEB_STORE" /> నుండి మాత్రమే జోడించవచ్చు</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />"ను అనుమతించనందున దీన్ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">ఈ చిత్రం డీకోడ్ చేయబడదు: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">మీ తల్లి/తండ్రి ఈ ఎక్స్‌టెన్షన్‌ను ఆమోదించలేదు</translation>
 <translation id="2350172092385603347">స్థానికీకరణ ఉపయోగించబడుతుంది, అయితే మానిఫెస్ట్‌లో default_localeను పేర్కొనలేదు.</translation>
 <translation id="2576842806987913196">ఈ పేరుతో ఇప్పటికే CRX ఫైల్ ఉంది.</translation>
 <translation id="2662876636500006917">Chrome వెబ్ స్టోర్</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
 <translation id="3174723475300476613">ఈ ఎక్స్‌టెన్షన్‌కు యాక్సెస్‌ను మీ సంస్థ బ్లాక్ చేసింది.</translation>
 <translation id="3242289508736283383">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
+<translation id="3364986687961713424">మీ నిర్వాహకుడి నుండి: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే పాథ్‌గా ఉండాలి.</translation>

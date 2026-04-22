@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Impossibile spostare la directory dell'estensione nel profilo.</translation>
 <translation id="1610570795592207282">Impossibile caricare il CSS "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="1616298854599875024">Impossibile importare l'estensione "<ph name="IMPORT_NAME" />" perché non è un modulo condiviso</translation>
+<translation id="1757786065507923842">Richiesta di autorizzazione dei genitori non riuscita.</translation>
 <translation id="1803557475693955505">Impossibile caricare la pagina di sfondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">È possibile aggiungerla soltanto dal <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Impossibile installare "<ph name="APP_NAME" />" perché non è consentita da "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Il tuo genitore non ha approvato questa estensione</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
 <translation id="2576842806987913196">Esiste già un file CRX con questo nome.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">L'accesso a questa estensione è bloccato dalla tua organizzazione.</translation>
 <translation id="3242289508736283383">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS</translation>
+<translation id="3364986687961713424">Dal tuo amministratore: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>

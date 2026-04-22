@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Ayikwazanga ukuhambisa umkhombandlela wesandiso kuphrofayela.</translation>
 <translation id="1610570795592207282">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-css yesikripthi.</translation>
 <translation id="1616298854599875024">Ayikwazi ukungenisa isandiso se-"<ph name="IMPORT_NAME" />" ngoba akuyona imojuli eyabiwe</translation>
+<translation id="1757786065507923842">Isicelo semvume yomzali sihlulekile.</translation>
 <translation id="1803557475693955505">Ayikwazanga ukulayisha ikhasi elingemuva le-'<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Lokhu kungangezwa kuphela kusukela ku-<ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Ayikwazi ukufaka i-"<ph name="APP_NAME" />" ngoba ayivunyelwe yi-"<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Ayikwazanga ukukhipha ikhodi kusithombe: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">Umzali wakho akasigunyazanga lesi sandiso</translation>
 <translation id="2350172092385603347">Kusetshenziswe ukwenza okwasendaweni, kodwa okwasendaweni_okuzenzakalelayo azange kucaciswe ekuvezweni.</translation>
 <translation id="2576842806987913196">Sekuvele kukhona ifayela le-CRX elinale gama.</translation>
 <translation id="2662876636500006917">Isitolo sewebhu se-Chrome</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Ukufinyelela kulesi sandiso kuvinjwe inhlangano yakho.</translation>
 <translation id="3242289508736283383">Izinhelo zokusebenza ezinesibaluli se-manifest se-'kiosk_only' kumele sifakwe kumodi yekhiyoski ye-ChromeOS</translation>
+<translation id="3364986687961713424">Kuvela kumlawuli wakho: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>

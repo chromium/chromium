@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Ištrinti išsaugotus mastelio lygius?</translation>
 <translation id="3362437373201486687">Nuskaitoma ieškant „Bluetooth“ įrenginių</translation>
 <translation id="3368138297038111198">Bendrinamas langas</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Rodomas 1 elementas iš {TOTAL_COUNT} dėl atminties trūkumo}one{Rodomas # elementas iš {TOTAL_COUNT} dėl atminties trūkumo}few{Rodomi # elementai iš {TOTAL_COUNT} dėl atminties trūkumo}many{Rodoma # elemento iš {TOTAL_COUNT} dėl atminties trūkumo}other{Rodoma # elementų iš {TOTAL_COUNT} dėl atminties trūkumo}}</translation>
 <translation id="3386292677130313581">Klausti prieš leidžiant svetainėms žinoti vietą (rekomenduojama)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Trečiųjų šalių slapukai užblokuoti</translation>
@@ -654,7 +655,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804248752222191302">Svetainėje naudojamas jūsų fotoaparatas</translation>
 <translation id="7805832099057502789">Naujo skirtuko puslapio išvaizdos apatinis lapas atidarytas per visą aukštį</translation>
-<translation id="7807060072011926525">Pateikė „Google“</translation>
 <translation id="7809029041571842593">Naujo skirtuko puslapio kortelių apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7835852323729233924">Leidžiama medija</translation>

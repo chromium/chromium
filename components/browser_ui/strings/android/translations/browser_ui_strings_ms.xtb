@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Padamkan tahap zum yang disimpan?</translation>
 <translation id="3362437373201486687">Mengimbas peranti Bluetooth</translation>
 <translation id="3368138297038111198">Berkongsi tetingkap</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Memaparkan 1 daripada {TOTAL_COUNT} item disebabkan oleh memori yang rendah}other{Memaparkan # daripada {TOTAL_COUNT} item disebabkan oleh memori yang rendah}}</translation>
 <translation id="3386292677130313581">Tanya sebelum membenarkan tapak mengetahui lokasi anda (disyorkan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Kuki pihak ketiga disekat</translation>
@@ -654,7 +655,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
 <translation id="7805832099057502789">Helaian bawah penampilan halaman tab baharu dibuka pada ketinggian penuh</translation>
-<translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7809029041571842593">Helaian bawah kad halaman tab baharu dibuka pada ketinggian separuh</translation>
 <translation id="7815680994978050279">Muat turun berbahaya disekat</translation>
 <translation id="7835852323729233924">Memainkan media</translation>

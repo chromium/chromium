@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Upravljajte aktivnostima</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Promjena računa dodirom na ikonu računa</translation>
+<translation id="135806768612505061">Sve kartice</translation>
 <translation id="1358106883354237005">Upravljani račun</translation>
 <translation id="1358214951266274152">Posjetite link koji ste kopirali</translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinhronizaciju?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Dijelite lozinke</translation>
 <translation id="1554043146674176775">Isključivanje AI načina rada</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
+<translation id="1554605811306591212">Primjenjuju se naši <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> i <ph name="PRIVACY_NOTICE" />. Gemini je AI i može pogriješiti, uključujući informacije o osobama.</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
 <translation id="1567960978791353852">Prikazujte način rada za čitanje</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Ovaj folder je prazan</translation>
 <translation id="1864266050569350424">Na web lokaciji za koju ste sačuvali lozinku dodirnite polje za lozinku za prijavu.</translation>
 <translation id="1866700949421703765">Sakrij uključivanje načina rada za čitanje</translation>
+<translation id="1869050523388525800">Ekran pretraživanja je dostupan samo kada je Google postavljen kao zadani pretraživač. Možete promijeniti zadani pretraživač u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Svjetiljka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Pozovite članove porodice</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Da sačuvate oznake na računu, izbrišite oznake koje ne koristite</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3904270275864974753">Uredite rotirajući meni</translation>
+<translation id="3905384981098338147">Historija AI načina rada</translation>
 <translation id="3909222758573607742">Sačuvajte lozinke i druge stavke na račun</translation>
 <translation id="3913463964270756493">Sakrij ekran Pretraživanja putem Google Objektiva</translation>
 <translation id="3914640181019354363">Otkrij adrese</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Koristite tastaturu</translation>
 <translation id="4415276339145661267">Upravljajte Google računom</translation>
 <translation id="4416582610654027550">Upišite važeći URL</translation>
+<translation id="441868831736628555">Obavještenje o privatnosti</translation>
 <translation id="4420409367264901497">Uređivanje oznake</translation>
 <translation id="4425365312778464779">Ovim računom se upravlja</translation>
 <translation id="4430277756566635951">Trenutno je odabrano: <ph name="EMAIL" />. Odabir računa.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Napuštanje prebacivača kartica</translation>
 <translation id="5148717509369231739">Uvoz iz Safarija</translation>
 <translation id="5152483358138813104">Brže se prijavite na svim uređajima</translation>
+<translation id="515315847398512535">Ekran pretraživanja je isključen za vaš račun. Kontaktirajte administratora za više informacija.</translation>
 <translation id="5155502059906700593">Promijenite položaj trake za adresu u gornji ili donji dio.</translation>
 <translation id="5157638238828697074">Nešto nije uredu. Otvaranje aplikacije nije uspjelo.</translation>
 <translation id="5163417375525818870">PDF-ovi</translation>
@@ -1313,7 +1319,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5647702255748985085">Napustiti grupu?</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5652623411397330904">Ovdje će se prikazivati proizvodi koje pratite.</translation>
-<translation id="5653100054596780862">Sve kartice</translation>
 <translation id="5656431592348714536">Poboljšan kalendar</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5665739277590037307">Primjenjuju se <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini može pogriješiti, pa provjerite odgovor.</translation>
@@ -1511,6 +1516,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6307241780749477694">Potvrdite identitet da dobijete sve svoje lozinke na ovom uređaju</translation>
 <translation id="6316141353357700666">S prikazane liste odaberite lozinku koju želite upotrijebiti.</translation>
 <translation id="6321526113093607004">Dodaj u Oznake</translation>
+<translation id="6327249202318869726">Gemini je isključen za vaš račun. Kontaktirajte administratora za više informacija.</translation>
 <translation id="6331836477476466332">Sigurniji i moćniji preglednik za vas</translation>
 <translation id="6335744088476213315">Kartica prikazuje proizvode koje ste nedavno pregledali i koje možda želite pratiti da dobijete obavještenja o padovima cijena</translation>
 <translation id="6337234675334993532">Šifriranje</translation>
@@ -1788,6 +1794,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7261217796641151584">Dijelite grupu</translation>
 <translation id="7266578100016339897">Ovo vam pomaže da se organizirate. Možete promijeniti ovo u postavkama bilo kada.</translation>
 <translation id="7272437679830969316">Nije moguće potvrditi identitet. Lozinka nije kopirana.</translation>
+<translation id="7275307913765547631">Uslovi korištenja lokacije za Koreju</translation>
 <translation id="728025568708172005">Povedi me u obilazak</translation>
 <translation id="7280980607183752256">Fajl se ne može uvesti</translation>
 <translation id="7281202269687163394">Vaša privatnost i Gemini.</translation>
@@ -2003,6 +2010,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7996239959906074962">Postavljanje…</translation>
 <translation id="800361585186029508">Otvara unesene URL-ove u Google Chromeu.</translation>
 <translation id="8005666035647241369">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
+<translation id="8006265839264939135">Uslovi</translation>
 <translation id="8010488806779226127">Istražite funkcije koje vam mogu pomoći da budete efikasniji dok pregledate</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Potvrdite identitet da automatski popunjavate osjetljive informacije</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">¿Eliminar niveles de zoom guardados?</translation>
 <translation id="3362437373201486687">Buscando dispositivos Bluetooth</translation>
 <translation id="3368138297038111198">Compartiendo una ventana</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Mostrando 1 de {TOTAL_COUNT} elementos debido a memoria baja}other{Mostrando # de {TOTAL_COUNT} elementos debido a memoria baja}}</translation>
 <translation id="3386292677130313581">Preguntar antes de permitir que los sitios detecten tu ubicación (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookies de terceros bloqueadas</translation>
@@ -654,7 +655,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio web está usando tu cámara</translation>
 <translation id="7805832099057502789">Hoja inferior de apariencia de la página Nueva pestaña abierta a altura completa</translation>
-<translation id="7807060072011926525">Proporcionado por Google</translation>
 <translation id="7809029041571842593">Hoja inferior de las tarjetas de la página Nueva pestaña abierta a media altura</translation>
 <translation id="7815680994978050279">Descarga peligrosa bloqueada</translation>
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>

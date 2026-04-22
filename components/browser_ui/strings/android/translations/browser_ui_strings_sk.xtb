@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Chcete odstrániť uložené úrovne lupy?</translation>
 <translation id="3362437373201486687">Hľadajú sa zariadenia Bluetooth…</translation>
 <translation id="3368138297038111198">Zdieľa sa okno</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Pre nedostatok pamäte sa zobrazuje 1 z {TOTAL_COUNT} položiek}few{Pre nedostatok pamäte sa zobrazujú # z {TOTAL_COUNT} položiek}many{Showing # of {TOTAL_COUNT} items due to low memory}other{Pre nedostatok pamäte sa zobrazuje # z {TOTAL_COUNT} položiek}}</translation>
 <translation id="3386292677130313581">Pýtať sa, či chcete povoliť webu zisťovať vašu polohu (odporúčané)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Súbory cookie tretích strán sú blokované</translation>
@@ -654,7 +655,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
 <translation id="7805832099057502789">Dolný hárok vzhľadu stránky na novej karte je otvorený na celú výšku</translation>
-<translation id="7807060072011926525">Poskytuje Google</translation>
 <translation id="7809029041571842593">Dolný hárok kariet na stránke na novej karte je otvorený na polovičnú výšku</translation>
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7835852323729233924">Prehrávanie médií</translation>

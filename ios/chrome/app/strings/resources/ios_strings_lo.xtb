@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">ຈັດການການເຄື່ອນໄຫວ</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">ເພື່ອສະຫຼັບບັນຊີ, ໃຫ້ແຕະໄອຄອນບັນຊີຂອງທ່ານ</translation>
+<translation id="135806768612505061">ແຖບທັງໝົດ</translation>
 <translation id="1358106883354237005">ບັນຊີທີ່ມີການຈັດການ</translation>
 <translation id="1358214951266274152">ເຂົ້າເບິ່ງລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1360432990279830238">ອອກຈາກະລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນບໍ?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">ແບ່ງປັນລະຫັດຜ່ານ</translation>
 <translation id="1554043146674176775">ປິດໂໝດ AI</translation>
 <translation id="1554477036522844996">ໜ້າຈໍໃໝ່</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> ແລະ <ph name="PRIVACY_NOTICE" /> ຂອງພວກເຮົາຈະມີຜົນນຳໃຊ້. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້, ເຊິ່ງຮວມທັງການໃຫ້ຂໍ້ມູນກ່ຽວກັບຜູ້ຄົນ.</translation>
 <translation id="1558391695376153246">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1565371473877914088">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="1567960978791353852">ສະແດງໂໝດການອ່ານ</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1864266050569350424">ຢູ່ເວັບໄຊທີ່ທ່ານບັນທຶກລະຫັດຜ່ານໄວ້, ໃຫ້ແຕະຊ່ອງຂໍ້ມູນລະຫັດຜ່ານສຳລັບເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1866700949421703765">ເຊື່ອງ ເປີດໂໝດການອ່ານ</translation>
+<translation id="1869050523388525800">ການຊອກຫາໃນໜ້າຈໍຈະໃຊ້ໄດ້ສະເພາະເມື່ອຕັ້ງຄ່າ Google ເປັນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານເທົ່ານັ້ນ. ທ່ານສາມາດປ່ຽນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">ໄຟສາຍ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ເຊີນສະມາຊິກຄອບຄົວ</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">ເພື່ອບັນທຶກບຸກມາກໃນບັນຊີຂອງທ່ານ, ໃຫ້ລຶບບຸກມາກທີ່ທ່ານບໍ່ໄດ້ໃຊ້ອອກ</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3904270275864974753">ແກ້ໄຂລາຍການແບບເລື່ອນ</translation>
+<translation id="3905384981098338147">ປະຫວັດໂໝດ AI</translation>
 <translation id="3909222758573607742">ບັນທຶກລະຫັດຜ່ານ ແລະ ລາຍການອື່ນໆໃນບັນຊີ</translation>
 <translation id="3913463964270756493">ເຊື່ອງໜ້າຈໍຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="3914640181019354363">ກວດຫາທີ່ຢູ່</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">ໃຊ້ແປ້ນພິມ</translation>
 <translation id="4415276339145661267">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4416582610654027550">ພິມ URL ທີ່ຖືກຕ້ອງ</translation>
+<translation id="441868831736628555">ແຈ້ງ​ການ​ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="4420409367264901497">ແກ້ໄຂບຸກມາກ</translation>
 <translation id="4425365312778464779">ບັນຊີນີ້ມີການຈັດການ</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ເລືອກຢູ່ຕອນນີ້. ເລືອກບັນຊີ.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">ອອກຈາກຕົວປ່ຽນແຖບ</translation>
 <translation id="5148717509369231739">ການນຳເຂົ້າຈາກ Safari</translation>
 <translation id="5152483358138813104">ເຂົ້າສູ່ລະບົບໄດ້ໄວຂຶ້ນໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
+<translation id="515315847398512535">ການຊອກຫາໃນໜ້າຈໍຖືກປິດໄວ້ສຳລັບບັນຊີຂອງທ່ານ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="5155502059906700593">ສະຫຼັບຕຳແໜ່ງແຖບທີ່ຢູ່ຂອງທ່ານເປັນເທິງສຸດ ຫຼື ລຸ່ມສຸດ.</translation>
 <translation id="5157638238828697074">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ເປີດແອັບພລິເຄຊັນບໍ່ໄດ້.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1313,7 +1319,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5647702255748985085">ອອກຈາກກຸ່ມບໍ?</translation>
 <translation id="5648166631817621825">7 ມື້ທີ່ຜ່ານມາ</translation>
 <translation id="5652623411397330904">ສິນຄ້າທີ່ທ່ານຕິດຕາມຈະສະແດງຢູ່ບ່ອນນີ້.</translation>
-<translation id="5653100054596780862">ແຖບທັງໝົດ</translation>
 <translation id="5656431592348714536">ປະຕິທິນທີ່ປັບປຸງໃຫ້ດີຂຶ້ນແລ້ວ</translation>
 <translation id="5659593005791499971">ອີເມວ</translation>
 <translation id="5665739277590037307">ໂດຍເປັນໄປຕາມ <ph name="GOOGLE_TERMS" /> ແລະ <ph name="GEMINI_APPS_PRIVACY" />. Gemini ອາດເຮັດຜິດພາດໄດ້, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ.</translation>
@@ -1511,6 +1516,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6307241780749477694">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອຮັບລະຫັດຜ່ານທັງໝົດຂອງທ່ານຢູ່ອຸປະກອນເຄື່ອງນີ້</translation>
 <translation id="6316141353357700666">ເລືອກລະຫັດຜ່ານທີ່ທ່ານຕ້ອງການໃຊ້ຈາກລາຍຊື່ທີ່ປາກົດ.</translation>
 <translation id="6321526113093607004">ເພີ່ມໃສ່ບຸກມາກ</translation>
+<translation id="6327249202318869726">Gemini ຖືກປິດໄວ້ສຳລັບບັນຊີຂອງທ່ານ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="6331836477476466332">ໂປຣແກຣມທ່ອງເວັບທີ່ປອດໄພ ແລະ ຊົງພະລັງຍິ່ງຂຶ້ນສຳລັບທ່ານ</translation>
 <translation id="6335744088476213315">ບັດນີ້ສະແດງສິນຄ້າທີ່ທ່ານເບິ່ງເມື່ອບໍ່ດົນມານີ້ ແລະ ອາດຈະມີຄວາມສົນໃຈໃນການຕິດຕາມເພື່ອຮັບການແຈ້ງເຕືອນລາຄາລົງ</translation>
 <translation id="6337234675334993532">ການເຂົ້າລະຫັດ</translation>
@@ -1788,6 +1794,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7261217796641151584">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="7266578100016339897">ສິ່ງນີ້ຊ່ວຍໃຫ້ທ່ານຈັດລະບຽບໄດ້. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7272437679830969316">ບໍ່ສາມາດພິສູດຢືນຢັນຕົວຕົນຂອງທ່ານໄດ້. ບໍ່ໄດ້ສຳເນົາລະຫັດຜ່ານ.</translation>
+<translation id="7275307913765547631">ຂໍ້ກຳນົດສະຖານທີ່ເກົາຫຼີ</translation>
 <translation id="728025568708172005">ສະແດງໃຫ້ຂ້ອຍເຫັນຮອບໆ</translation>
 <translation id="7280980607183752256">ບໍ່ສາມາດນຳເຂົ້າໄຟລ໌ນີ້ໄດ້</translation>
 <translation id="7281202269687163394">ຄວາມເປັນສ່ວນຕົວຂອງທ່ານ ແລະ Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7996239959906074962">ຕັ້ງຄ່າ…</translation>
 <translation id="800361585186029508">ເປີດ URL ທີ່ປ້ອນໃນ Google Chrome.</translation>
 <translation id="8005666035647241369">ຫາຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
+<translation id="8006265839264939135">ຂໍ້ກຳນົດ</translation>
 <translation id="8010488806779226127">ສຳຫຼວດຄຸນສົມບັດທີ່ສາມາດຊ່ວຍໃຫ້ທ່ານເຮັດສິ່ງຕ່າງໆໄດ້ຫຼາຍຂຶ້ນໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="8011489434346330032">ຕົວກວດສອບເວັບ</translation>
 <translation id="8014007212279733632">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອຕື່ມຂໍ້ມູນລະອຽດອ່ອນໂດຍອັດຕະໂນມັດ</translation>

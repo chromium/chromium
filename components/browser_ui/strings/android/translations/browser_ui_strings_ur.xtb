@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">محفوظ کردہ زوم لیولز کو حذف کریں؟</translation>
 <translation id="3362437373201486687">بلوٹوتھ آلات کے لیے اسکین کی جا رہی ہیں</translation>
 <translation id="3368138297038111198">ونڈو کا اشتراک کیا جا رہا ہے</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{کم میموری کی وجہ سے {TOTAL_COUNT} آئٹمز میں سے 1 دکھایا جا رہا ہے}other{کم میموری کی وجہ سے {TOTAL_COUNT} آئٹمز میں سے # دکھایا جا رہا ہے}}</translation>
 <translation id="3386292677130313581">سائٹس کو آپ کا مقام جاننے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="3403537308306431953">%%‎ ‎<ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804248752222191302">ایک سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="7805832099057502789">نئے ٹیب کے صفحہ کی ہئیت کی نیچے کی شیٹ پوری اسکرین پر کھلی ہے</translation>
-<translation id="7807060072011926525">‏Google کے ذریعے فراہم کردہ</translation>
 <translation id="7809029041571842593">نئے ٹیب کے صفحہ کے کارڈز کی نیچے کی شیٹ نصف اسکرین پر کھلی ہے</translation>
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7835852323729233924">میڈیا کو چلایا جا رہا ہے</translation>

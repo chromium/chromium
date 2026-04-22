@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Kelola aktivitas</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Untuk berganti akun, ketuk ikon akun Anda</translation>
+<translation id="135806768612505061">Semua Tab</translation>
 <translation id="1358106883354237005">Akun Terkelola</translation>
 <translation id="1358214951266274152">Buka Link yang Anda Salin</translation>
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Berbagi sandi</translation>
 <translation id="1554043146674176775">Nonaktifkan Mode AI</translation>
 <translation id="1554477036522844996">Jendela Baru</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" />, dan <ph name="PRIVACY_NOTICE" /> kami berlaku. Gemini adalah AI dan dapat membuat kesalahan, termasuk tentang orang.</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
 <translation id="1565371473877914088">Tab Samaran Baru</translation>
 <translation id="1567960978791353852">Tampilkan Mode Baca</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1864266050569350424">Di situs tempat Anda menyimpan sandi, ketuk kolom sandi login.</translation>
 <translation id="1866700949421703765">Sembunyikan Aktifkan Mode Baca</translation>
+<translation id="1869050523388525800">Fitur Telusuri layar hanya tersedia jika Google disetel sebagai mesin telusur default. Anda dapat mengubah mesin telusur default di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Undang anggota keluarga</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Untuk menyimpan bookmark di akun Anda, hapus bookmark yang tidak digunakan</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit carousel</translation>
+<translation id="3905384981098338147">Histori Mode AI</translation>
 <translation id="3909222758573607742">Simpan sandi dan item lainnya di akun</translation>
 <translation id="3913463964270756493">Sembunyikan layar Penelusuran dengan Google Lens</translation>
 <translation id="3914640181019354363">Deteksi alamat</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Gunakan keyboard</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
 <translation id="4416582610654027550">Ketik URL yang valid</translation>
+<translation id="441868831736628555">Notifikasi Privasi</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">Akun ini dikelola</translation>
 <translation id="4430277756566635951">Saat ini <ph name="EMAIL" /> dipilih. Pilih akun.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Tutup pengalih tab</translation>
 <translation id="5148717509369231739">Impor Safari</translation>
 <translation id="5152483358138813104">Login lebih cepat di semua perangkat Anda</translation>
+<translation id="515315847398512535">Fitur Telusuri layar dinonaktifkan untuk akun Anda. Hubungi admin untuk mengetahui informasi selengkapnya.</translation>
 <translation id="5155502059906700593">Ganti posisi kolom URL ke bagian atas atau bawah.</translation>
 <translation id="5157638238828697074">Terjadi error. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1313,7 +1319,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5647702255748985085">Keluar dari grup?</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5652623411397330904">Produk yang Anda pantau akan muncul di sini.</translation>
-<translation id="5653100054596780862">Semua tab</translation>
 <translation id="5656431592348714536">Kalender yang Ditingkatkan</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> dan <ph name="GEMINI_APPS_PRIVACY" /> berlaku. Gemini dapat membuat kesalahan, jadi periksa kembali responsnya.</translation>
@@ -1511,6 +1516,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6307241780749477694">Verifikasi diri Anda untuk mendapatkan semua sandi di perangkat ini</translation>
 <translation id="6316141353357700666">Pilih sandi yang ingin Anda gunakan dari daftar yang muncul.</translation>
 <translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
+<translation id="6327249202318869726">Gemini dinonaktifkan untuk akun Anda. Hubungi admin untuk mengetahui informasi selengkapnya.</translation>
 <translation id="6331836477476466332">Browser yang lebih aman dan canggih untuk Anda</translation>
 <translation id="6335744088476213315">Kartu ini menampilkan produk yang baru-baru ini Anda lihat dan mungkin ingin Anda pantau untuk mendapatkan notifikasi penurunan harga</translation>
 <translation id="6337234675334993532">Enkripsi</translation>
@@ -1788,6 +1794,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7261217796641151584">Bagikan Grup</translation>
 <translation id="7266578100016339897">Tindakan ini membantu Anda tetap teratur. Anda dapat mengubahnya di setelan kapan saja.</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
+<translation id="7275307913765547631">Persyaratan Lokasi Korea</translation>
 <translation id="728025568708172005">Mulai Tur Terpandu</translation>
 <translation id="7280980607183752256">File ini tidak dapat diimpor</translation>
 <translation id="7281202269687163394">Privasi Anda &amp; Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7996239959906074962">Siapkan…</translation>
 <translation id="800361585186029508">Membuka URL yang dimasukkan di Google Chrome.</translation>
 <translation id="8005666035647241369">Ke Pengelola Sandi Google di perangkat ini</translation>
+<translation id="8006265839264939135">Persyaratan</translation>
 <translation id="8010488806779226127">Jelajahi fitur yang dapat membantu Anda melakukan lebih banyak hal saat menjelajah</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifikasi diri Anda untuk mengisi otomatis info sensitif</translation>

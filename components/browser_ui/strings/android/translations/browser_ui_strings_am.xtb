@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">የተቀመጡ የማጉላት-ደረጃዎች ይሰረዙ?</translation>
 <translation id="3362437373201486687">የብሉቱዝ መሣሪያዎችን በመቃኘት ላይ</translation>
 <translation id="3368138297038111198">መስኮት በማጋራት ላይ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{በዝቅተኛ ማህደረ ትውስታ ምክንያት ከ{TOTAL_COUNT} ንጥሎች 1 በማሳየት ላይ}one{በዝቅተኛ ማህደረ ትውስታ ምክንያት ከ{TOTAL_COUNT} ንጥሎች # በማሳየት ላይ}other{በዝቅተኛ ማህደረ ትውስታ ምክንያት ከ{TOTAL_COUNT} ንጥሎች # በማሳየት ላይ}}</translation>
 <translation id="3386292677130313581">ጣቢያዎች አካባቢዎን እንዲያውቁ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7804248752222191302">አንድ ጣቢያ ካሜራዎን እየተጠቀመ ነው</translation>
 <translation id="7805832099057502789">በሙሉ ቁመት የተከፈተ የአዲስ ትር ገፅ ካርዶች ግርጌ ሉህ</translation>
-<translation id="7807060072011926525">በGoogle የቀረበ</translation>
 <translation id="7809029041571842593">አዲስ የትር ገፅ ካርዶች የግርጌ ሉህ በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="7815680994978050279">አደገኛ ውርድ ታግዷል</translation>
 <translation id="7835852323729233924">ሚዲያን በማጫወት ላይ</translation>

@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">ניהול פעילות</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">כדי לעבור בין חשבונות, לוחצים על סמל החשבון</translation>
+<translation id="135806768612505061">כל הכרטיסיות</translation>
 <translation id="1358106883354237005">חשבון מנוהל</translation>
 <translation id="1358214951266274152">מעבר לקישור שהעתקת</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">שיתוף סיסמאות</translation>
 <translation id="1554043146674176775">‏השבתת מצב AI</translation>
 <translation id="1554477036522844996">חלון חדש</translation>
+<translation id="1554605811306591212">‏‫<ph name="TERMS" /> שלנו, <ph name="KOREAN_LOCATION_TERMS" /> ו<ph name="PRIVACY_NOTICE" /> חלים. ‫Gemini מבוסס על AI והוא עלול לטעות, גם בנוגע לאנשים.</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1565371473877914088">כרטיסייה פרטית חדשה</translation>
 <translation id="1567960978791353852">הצגת מצב הקריאה</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">התיקייה הזו ריקה</translation>
 <translation id="1864266050569350424">באתר שבו שמרת סיסמה, לוחצים על שדה הסיסמה לכניסה.</translation>
 <translation id="1866700949421703765">הסתרה של "הפעלת מצב קריאה"</translation>
+<translation id="1869050523388525800">‏מסך החיפוש זמין רק כשמנוע החיפוש של Google מוגדר כברירת המחדל. אפשר להחליף את מנוע החיפוש שמוגדר כברירת המחדל ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">הזמנת חברים לקבוצה המשפחתית</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">כדי לשמור סימניות בחשבון, צריך למחוק סימניות שלא בשימוש</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3904270275864974753">עריכת הקרוסלה</translation>
+<translation id="3905384981098338147">‏היסטוריית מצב AI</translation>
 <translation id="3909222758573607742">שמירת סיסמאות ופריטים אחרים בחשבון</translation>
 <translation id="3913463964270756493">‏הסתרת מסך החיפוש באמצעות Google Lens</translation>
 <translation id="3914640181019354363">זיהוי כתובות</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">שימוש במקלדת</translation>
 <translation id="4415276339145661267">‏לניהול החשבון שלך ב-Google</translation>
 <translation id="4416582610654027550">יש להקליד כתובת אתר חוקית</translation>
+<translation id="441868831736628555">הודעת פרטיות</translation>
 <translation id="4420409367264901497">עריכת סימנייה</translation>
 <translation id="4425365312778464779">החשבון הזה מנוהל</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">יציאה מהכלי למעבר בין כרטיסיות</translation>
 <translation id="5148717509369231739">‏ייבוא מ-Safari</translation>
 <translation id="5152483358138813104">כניסה מהירה יותר לכל המכשירים</translation>
+<translation id="515315847398512535">מסך החיפוש מושבת בחשבון שלך. כדי לקבל מידע נוסף, אפשר לפנות לאדמין.</translation>
 <translation id="5155502059906700593">אפשר להעביר את סרגל הכתובות לחלק העליון או התחתון של המסך.</translation>
 <translation id="5157638238828697074">משהו השתבש. לא ניתן לפתוח את האפליקציה.</translation>
 <translation id="5163417375525818870">‏קובצי PDF</translation>
@@ -1313,7 +1319,6 @@
 <translation id="5647702255748985085">רוצה לצאת מהקבוצה?</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5652623411397330904">המוצרים שבמעקב יופיעו כאן.</translation>
-<translation id="5653100054596780862">כל הכרטיסיות</translation>
 <translation id="5656431592348714536">יומן משודרג</translation>
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5665739277590037307">‏בכפוף ל<ph name="GOOGLE_TERMS" /> ול<ph name="GEMINI_APPS_PRIVACY" />. ‫Gemini עלול לטעות, אז כדאי לבדוק היטב את התשובות שלו.</translation>
@@ -1511,6 +1516,7 @@
 <translation id="6307241780749477694">כדי לקבל את כל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך</translation>
 <translation id="6316141353357700666">בוחרים את הסיסמה שבה רוצים להשתמש מתוך הרשימה שמופיעה.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
+<translation id="6327249202318869726">‏‫Gemini מושבת בחשבון שלך. כדי לקבל מידע נוסף, אפשר לפנות לאדמין.</translation>
 <translation id="6331836477476466332">דפדפן בטוח ומשופר בשבילך</translation>
 <translation id="6335744088476213315">בכרטיס הזה מוצגים מוצרים שצפית בהם לאחרונה וכדאי לעקוב אחריהם כדי לקבל התראות על הנחות</translation>
 <translation id="6337234675334993532">הצפנה</translation>
@@ -1788,6 +1794,7 @@
 <translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7266578100016339897">כך יהיה לך יותר קל לשמור על סדר. אפשר לשנות את הבחירה דרך ההגדרות בכל שלב.</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
+<translation id="7275307913765547631">התנאים לגבי מיקום למשתמשים מקוריאה</translation>
 <translation id="728025568708172005">התחלת סיור</translation>
 <translation id="7280980607183752256">אי אפשר לייבא את הקובץ הזה</translation>
 <translation id="7281202269687163394">‏הפרטיות שלך ו-Gemini.</translation>
@@ -1855,6 +1862,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏כדי לנעול את כרטיסיות המצב האנונימי, יש להגדיר Touch ID,‏ Face ID או קוד גישה.</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
+<translation id="7511099437872594216">כרטיסיות</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{אפשר להוסיף רק כרטיסייה אחת}one{אפשר להוסיף עד {COUNT} כרטיסיות}two{אפשר להוסיף עד {COUNT} כרטיסיות}other{אפשר להוסיף עד {COUNT} כרטיסיות}}</translation>
 <translation id="7512909159512473473">הזנת ביטוי סיסמה…</translation>
 <translation id="7514365320538308">הורדה</translation>
@@ -2002,6 +2010,7 @@
 <translation id="7996239959906074962">הגדרה של…</translation>
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
 <translation id="8005666035647241369">‏נשמרה במנהל הסיסמאות של Google במכשיר הזה</translation>
+<translation id="8006265839264939135">התנאים וההגבלות</translation>
 <translation id="8010488806779226127">תכונות שיעזרו לך לעשות יותר בזמן הגלישה</translation>
 <translation id="8011489434346330032">סוקר האינטרנט</translation>
 <translation id="8014007212279733632">כדי למלא אוטומטית מידע רגיש, צריך לאמת את הזהות</translation>

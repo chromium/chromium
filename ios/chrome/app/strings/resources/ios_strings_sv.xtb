@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Hantera aktivitet</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Tryck på kontoikonen för att byta mellan konton</translation>
+<translation id="135806768612505061">Alla flikar</translation>
 <translation id="1358106883354237005">Hanterat konto</translation>
 <translation id="1358214951266274152">Besök den kopierade länken</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Dela lösenord</translation>
 <translation id="1554043146674176775">Inaktivera AI-läge</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> och <ph name="PRIVACY_NOTICE" /> gäller. Gemini är AI och den kan göra misstag, inklusive om personer.</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
 <translation id="1565371473877914088">Ny inkognitoflik</translation>
 <translation id="1567960978791353852">Visa läsläget</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1864266050569350424">Tryck på fältet för inloggningslösenord på en webbplats där du har sparat ett lösenord.</translation>
 <translation id="1866700949421703765">Dölj Aktivera läsläget</translation>
+<translation id="1869050523388525800">Sökskärmen är bara tillgänglig när Google är inställd som standardsökmotor. Du kan ändra din standardsökmotor i <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjud in familjemedlemmar</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Radera oanvända bokmärken om du vill spara bokmärken i kontot</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Redigera snurra</translation>
+<translation id="3905384981098338147">Historik för AI-läget</translation>
 <translation id="3909222758573607742">Spara lösenord och andra objekt i kontot</translation>
 <translation id="3913463964270756493">Dölj sökskärmen med Google Lens</translation>
 <translation id="3914640181019354363">Identifiera adresser</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Använd tangentbordet</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4416582610654027550">Ange en giltig webbadress</translation>
+<translation id="441868831736628555">Integritetsmeddelande</translation>
 <translation id="4420409367264901497">Redigera bokmärke</translation>
 <translation id="4425365312778464779">Detta är ett hanterat konto</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Stäng Flikbyte</translation>
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5152483358138813104">Logga in snabbare på dina enheter</translation>
+<translation id="515315847398512535">Sökskärmen har inaktiverats för ditt konto. Kontakta administratören om du vill ha mer information.</translation>
 <translation id="5155502059906700593">Flytta adressfältet överst eller nederst på skärmen.</translation>
 <translation id="5157638238828697074">Något gick fel. Det gick inte att öppna appen.</translation>
 <translation id="5163417375525818870">PDF-filer</translation>
@@ -1313,7 +1319,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5647702255748985085">Vill du lämna gruppen?</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
-<translation id="5653100054596780862">Alla flikar</translation>
 <translation id="5656431592348714536">Förbättrad kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> och <ph name="GEMINI_APPS_PRIVACY" /> gäller. Gemini kan göra misstag, så dubbelkolla svaren.</translation>
@@ -1511,6 +1516,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6307241780749477694">Verifiera din identitet för att få alla dina lösenord på den här enheten</translation>
 <translation id="6316141353357700666">Välj det lösenord du vill använda i listan som visas.</translation>
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
+<translation id="6327249202318869726">Gemini har inaktiverats för ditt konto. Kontakta administratören om du vill ha mer information.</translation>
 <translation id="6331836477476466332">En säkrare och kraftfullare webbläsare för dig</translation>
 <translation id="6335744088476213315">Det här kortet visar produkter som du har tittat på nyligen och som du kanske vill bevaka för att få aviseringar om prissänkningar</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -1788,6 +1794,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7266578100016339897">Detta hjälper dig att hålla ordning. Du kan ändra detta i inställningarna när som helst.</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
+<translation id="7275307913765547631">Villkor för platstjänster i Sydkorea</translation>
 <translation id="728025568708172005">Visa mig</translation>
 <translation id="7280980607183752256">Det går inte att importera den här filen</translation>
 <translation id="7281202269687163394">Din integritet och Gemini.</translation>
@@ -2003,6 +2010,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7996239959906074962">Konfigurera …</translation>
 <translation id="800361585186029508">Öppnar de angivna webbadresserna i Google Chrome.</translation>
 <translation id="8005666035647241369">I Google Lösenordshantering på den här enheten</translation>
+<translation id="8006265839264939135">Villkor</translation>
 <translation id="8010488806779226127">Utforska funktioner som kan hjälpa dig att göra mer när du surfar</translation>
 <translation id="8011489434346330032">Webbinspektör</translation>
 <translation id="8014007212279733632">Verifiera din identitet för att autofylla känsliga uppgifter</translation>

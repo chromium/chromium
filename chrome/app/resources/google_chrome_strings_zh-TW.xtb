@@ -417,6 +417,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="547202872422499512">現在 Windows 啟動時會開啟 Chrome，讓你可以立即開始瀏覽。你可以前往設定頁面關閉這項功能。</translation>
 <translation id="5486346529181556467">回報有害網站，協助提升所有人的網路安全。進一步瞭解 <ph name="BEGIN_LINK" />Google 的不安全網站政策<ph name="END_LINK" />。</translation>
 <translation id="5524890928877629608">搜尋區域的左上角：左側 <ph name="LEFT" />%，頂端 <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">如要管理擴充功能，請點選 Chrome 主選單中的「擴充功能」。</translation>
 <translation id="5550137307985173298">點選新分頁的「自訂 Chrome」按鈕，即可變更 Chrome 外觀</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者身分 (非系統管理員) 執行安裝程式。</translation>
@@ -503,6 +504,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
+<translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6251759518630934363">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
 <translation id="6277547788421725101">你的家長已停用 Chrome 的「網站、應用程式和擴充功能的權限」設定</translation>
 <translation id="627882678981830918">自訂及管理 Chrome。將 Chrome 設為預設瀏覽器。</translation>
@@ -666,6 +668,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7792336732117553384">管理 Chrome 設定檔(&amp;M)</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="7804364787702057554">你在 Chrome 中的帳戶</translation>
+<translation id="7804947029129221742">搜尋引擎被 Chrome 以外的程式變更。Chrome 已將這項設定重設為原始預設值，保護你的安全。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">從 Chrome 中移除...</translation>
 <translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7832314606810669113">如要在所有裝置上存取書籤和其他資料，請登入 Chrome。登入後，這個書籤就會儲存到 Google 帳戶。</translation>
@@ -787,7 +790,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8992769679401294069">系統會使用通關密語加密資料。如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語。</translation>
 <translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
-<translation id="9010418943148193727">預設搜尋引擎被 Chrome 以外的程式變更。Chrome 已重設這項設定，保護你的安全。</translation>
 <translation id="9014771989710951291">Chrome 是由多個機構管理</translation>
 <translation id="9066987883552592250">關閉 Chrome 內建 Gemini (Canary 版)</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>

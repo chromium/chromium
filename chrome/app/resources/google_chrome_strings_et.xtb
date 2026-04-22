@@ -420,6 +420,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="547202872422499512">Chrome käivitub nüüd Windowsi käivitamisel, et saaksite kohe sirvimist alustada. Saate selle seadetes välja lülitada.</translation>
 <translation id="5486346529181556467">Kui teatate saidist, mis on teie arvates kahjulik, aitate kõigi jaoks veebiturvalisust parandada. Vaadake lisateavet <ph name="BEGIN_LINK" />Google'i ohtlike saitide eeskirjade kohta.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
+<translation id="5529390769101499214">Laienduste haldamiseks klõpsake Chrome'i peamenüüs valikul Laiendused.</translation>
 <translation id="5550137307985173298">Chrome'ile uue ilme andmiseks klõpsake uuel vahelehel nupul Chrome'i kohandamine</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
@@ -506,6 +507,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
 <translation id="624230925347970731">Chrome suletakse peagi</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
+<translation id="6248988683584659830">Otsige seadetest</translation>
 <translation id="6251759518630934363">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>
 <translation id="6277547788421725101">Sinu vanem lülitas Chrome'i puhul valiku „Saitide, rakenduste ja laienduste load” välja</translation>
 <translation id="627882678981830918">Kohandage ja hallake Chrome'i. Määrake Chrome vaikebrauseriks.</translation>
@@ -669,6 +671,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7792336732117553384">&amp;Chrome'i profiilide haldamine</translation>
 <translation id="7801699035218095297">Google Chrome püüab kopeerida paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="7804364787702057554">Teie konto Chrome'is</translation>
+<translation id="7804947029129221742">Teie otsingumootorit muudeti väljaspool Chrome'i. Chrome lähtestas selle teie kaitsmiseks algsele vaikeväärtusele. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome'ist eemaldamine ...</translation>
 <translation id="7827099906024714326">Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chrome teie isiku kinnitama. Kui logite praegu välja, siis need andmed kustutatakse.</translation>
 <translation id="7832314606810669113">Kõigis seadmetes oma järjehoidjate ja muu sisu kasutamiseks logige Chrome’i sisse. See järjehoidja salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
@@ -790,7 +793,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8992769679401294069">Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
 <translation id="8999117580775242387">Kui HTTPS pole saadaval, kasutab Chrome ebaturvalist ühendust ilma teid hoiatamata</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
-<translation id="9010418943148193727">Teie vaikeotsingumootorit muudeti väljaspool Chrome'i. Chrome lähtestas selle teie kaitsmiseks.</translation>
 <translation id="9014771989710951291">Chrome'i haldab mitu organisatsiooni</translation>
 <translation id="9066987883552592250">Sulgege teenuse Gemini Chrome'is Canary versioon</translation>
 <translation id="9090566250983691233">Vaadake, miks Chrome mõned failid blokeerib</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Kayıtlı yakınlaştırma seviyeleri silinsin mi?</translation>
 <translation id="3362437373201486687">Bluetooth cihazları taranıyor</translation>
 <translation id="3368138297038111198">Pencere paylaşılıyor</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Bellek az olduğu için {TOTAL_COUNT} öğeden 1 tanesi gösteriliyor}other{Bellek az olduğu için {TOTAL_COUNT} öğeden # tanesi gösteriliyor}}</translation>
 <translation id="3386292677130313581">Sitelerin, konumunuzu öğrenmesine izin verilmeden önce size sorulsun (önerilir)</translation>
 <translation id="3403537308306431953">%%<ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">Üçüncü taraf çerezleri engellendi</translation>
@@ -654,7 +655,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804248752222191302">Bir site kameranızı kullanıyor</translation>
 <translation id="7805832099057502789">Yeni sekme sayfası görünümü alt sayfası tam boyutta açıldı</translation>
-<translation id="7807060072011926525">Google tarafından sağlanır</translation>
 <translation id="7809029041571842593">Yeni sekme sayfası kartları alt sayfası, ekranın yarısına kadar açıldı</translation>
 <translation id="7815680994978050279">Tehlikeli indirme işlemi engellendi</translation>
 <translation id="7835852323729233924">Medya oynatma/çalma</translation>

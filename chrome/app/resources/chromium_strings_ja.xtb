@@ -224,7 +224,6 @@
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3313189106987092621">Chromium で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="3316771292331273802">Chromium のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chromium にログインしている場合、Google アカウントからはログアウトしません。サイトにあなたの情報を記憶させるには、<ph name="SETTINGS_LINK" />します。</translation>
-<translation id="3322413454779348750">デフォルトの検索エンジンが Chromium の外部から変更されました。ユーザー保護のため、Chromium でリセットしました。</translation>
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">アカウントの Chromium データ</translation>
 <translation id="3369405342922656244">画像検索でこのページを検索する</translation>
@@ -468,6 +467,7 @@
 <translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="6245734527075554892">Chromium に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
+<translation id="6248988683584659830">設定項目を検索</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6270547683008298381">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chromium でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6281746429495226318">Chromium プロフィールをカスタマイズ</translation>
@@ -504,6 +504,7 @@
 <translation id="6542839706527980775">Chromium の情報（ブックマーク、履歴、パスワードなど）はプロフィールごとに分けて保持されます</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
 <translation id="6564039629497156115">この設定の変更内容は、Chromium を再起動すると適用されます。</translation>
+<translation id="6567032987737689854">Chromium メインメニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="656935081669708576">別の Chromium プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
 <translation id="6570579332384693436">スペルミスを修正するために、テキスト欄に入力したテキストが Chromium から Google に送信されます</translation>
 <translation id="6598877126913850652">Chromium の通知設定に移動</translation>
@@ -627,6 +628,7 @@
 <translation id="7810005234485217901">画像検索を固定して簡単にアクセスできます</translation>
 <translation id="7828947555739565424">このアカウントの Chromium プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
+<translation id="7847673590271334840">検索エンジンが Chromium の外部から変更されました。ユーザーを保護するため、Chromium で元のデフォルトにリセットしました。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Chromium をカスタマイズしてレイアウトを変更</translation>
 <translation id="7859018312476869945">Chromium でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="7867198900892795913">Chromium を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>

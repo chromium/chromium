@@ -225,7 +225,6 @@
 <translation id="3296368748942286671">Continuar ejecutando aplicaciones en segundo plano cuando Chromium esté cerrado.</translation>
 <translation id="3313189106987092621">Chromium te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="3316771292331273802">Saldrás de la mayoría de los sitios cuando cierres todas las ventanas de Chromium, excepto tu Cuenta de Google si accediste a Chromium. Para permitir que los sitios te recuerden, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Se cambió tu motor de búsqueda predeterminado fuera de Chromium. Chromium lo restableció para protegerte.</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, superior <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
 <translation id="3369405342922656244">Buscar en esta página con la Búsqueda con imágenes</translation>
@@ -473,6 +472,7 @@
 <translation id="6241367896540709610">Chromium necesita permiso de acceso al almacenamiento para descargar archivos.</translation>
 <translation id="6245734527075554892">Revisa las URL y la lista de sitios no seguros almacenados en Chromium.</translation>
 <translation id="6248213926982192922">Establecer Chromium como navegador predeterminado</translation>
+<translation id="6248988683584659830">Configuración de la búsqueda</translation>
 <translation id="6268381023930128611">¿Salir de Chromium?</translation>
 <translation id="6270547683008298381">Estas pestañas están usando recursos adicionales. Para mejorar el rendimiento, permite que Chromium las desactive.</translation>
 <translation id="6281746429495226318">Personalizar tu perfil de Chromium</translation>
@@ -509,6 +509,7 @@
 <translation id="6542839706527980775">Cada perfil conserva su propia información de Chromium, como los favoritos, el historial, las contraseñas y más.</translation>
 <translation id="6563921047760808519">Más información sobre <ph name="BEGIN_LINK" />cómo Chromium mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Los cambios en este parámetro de configuración se aplicarán una vez que se reinicie Chromium.</translation>
+<translation id="6567032987737689854">Para administrar tus extensiones, haz clic en Extensiones en el menú principal de Chromium.</translation>
 <translation id="656935081669708576">Puedes cambiar a otro perfil de Chromium para ver las contraseñas</translation>
 <translation id="6570579332384693436">Para corregir los errores ortográficos, Chromium envía a Google lo que escribes en los campos de texto</translation>
 <translation id="6598877126913850652">Ir a la configuración de notificaciones Chromium</translation>
@@ -628,6 +629,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7810005234485217901">Puedes fijar la Búsqueda con imágenes para acceder fácilmente</translation>
 <translation id="7828947555739565424">Ya existe un perfil de Chromium con esta cuenta en este dispositivo</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
+<translation id="7847673590271334840">Se cambió tu motor de búsqueda fuera de Chromium. Chromium lo restableció a su configuración predeterminada original para protegerte. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Personaliza Chromium para darle un nuevo aspecto</translation>
 <translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="7867198900892795913">Chromium no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">ລຶບລະດັບການຊູມທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="3362437373201486687">ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth</translation>
 <translation id="3368138297038111198">ກໍາລັງແບ່ງປັນໜ້າຈໍ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{ກຳລັງສະແດງ 1 ຈາກທັງໝົດ {TOTAL_COUNT} ລາຍການເນື່ອງຈາກໜ່ວຍຄວາມຈຳເຫຼືອໜ້ອຍ}other{ກຳລັງສະແດງ # ຈາກທັງໝົດ {TOTAL_COUNT} ລາຍການເນື່ອງຈາກໜ່ວຍຄວາມຈຳເຫຼືອໜ້ອຍ}}</translation>
 <translation id="3386292677130313581">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊຮູ້ສະຖານທີ່ຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7804248752222191302">ເວັບໄຊກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
 <translation id="7805832099057502789">ຊີດລຸ່ມສຸດລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
-<translation id="7807060072011926525">ສະໜອງໃຫ້ໂດຍ Google</translation>
 <translation id="7809029041571842593">ຊີດລຸ່ມສຸດຂອງບັດໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ</translation>
 <translation id="7815680994978050279">ບລັອກການດາວໂຫຼດອັນຕະລາຍໄວ້ແລ້ວ</translation>
 <translation id="7835852323729233924">ກຳລັງຫຼິ້ນສື່</translation>

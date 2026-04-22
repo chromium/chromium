@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">ลบระดับการซูมที่บันทึกไว้ไหม</translation>
 <translation id="3362437373201486687">กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
 <translation id="3368138297038111198">กำลังแชร์หน้าต่าง</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{แสดง 1 จาก {TOTAL_COUNT} รายการเนื่องจากหน่วยความจำเหลือน้อย}other{แสดง # จาก {TOTAL_COUNT} รายการเนื่องจากหน่วยความจำเหลือน้อย}}</translation>
 <translation id="3386292677130313581">ถามก่อนอนุญาตให้เว็บไซต์ทราบตำแหน่งของคุณ (แนะนำ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">บล็อกคุกกี้ของบุคคลที่สามแล้ว</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">ไม่เป็นไร</translation>
 <translation id="7804248752222191302">มีเว็บไซต์กำลังใช้กล้อง</translation>
 <translation id="7805832099057502789">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่เปิดอยู่แบบเต็มความสูง</translation>
-<translation id="7807060072011926525">ให้บริการโดย Google</translation>
 <translation id="7809029041571842593">Bottom Sheet ของการ์ดหน้าแท็บใหม่เปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7835852323729233924">การเล่นสื่อ</translation>

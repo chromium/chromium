@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Не ўдалося перанесці каталог пашырэнняў у профіль.</translation>
 <translation id="1610570795592207282">Не ўдалося загрузіць файл CSS "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
 <translation id="1616298854599875024">Не ўдалося імпартаваць пашырэнне "<ph name="IMPORT_NAME" />": гэта не абагулены модуль</translation>
+<translation id="1757786065507923842">Не ўдалося запытаць бацькоўскі дазвол.</translation>
 <translation id="1803557475693955505">Не ўдалося загрузіць фонавую старонку "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Гэта можна дадаць толькі з <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Не атрымалася ўсталяваць праграму "<ph name="APP_NAME" />", бо "<ph name="IMPORT_NAME" />" яе не дазваляе</translation>
 <translation id="2159915644201199628">Не ўдалося дэкадаваць відарыс: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Твае бацькі не ўхвалілі гэта пашырэнне</translation>
 <translation id="2350172092385603347">Лакалізацыя выкарыстоўваецца, але ў маніфесце не вызначаны стандартныя рэгіянальныя налады (default_locale).</translation>
 <translation id="2576842806987913196">Файл CRX з такой назвай ужо ёсць.</translation>
 <translation id="2662876636500006917">Вэб-крама Chrome</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Ваша арганізацыя заблакіравала доступ да гэтага пашырэння.</translation>
 <translation id="3242289508736283383">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
+<translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>

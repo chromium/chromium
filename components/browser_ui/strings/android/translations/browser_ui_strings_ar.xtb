@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">حذف كل مستويات التكبير؟</translation>
 <translation id="3362437373201486687">جارٍ البحث عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="3368138297038111198">جارٍ مشاركة نافذة</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{يتم عرض عنصر واحد من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}zero{يتم عرض # عنصر من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}two{يتم عرض عنصرَين من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}few{يتم عرض # عناصر من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}many{يتم عرض # عنصرًا من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}other{يتم عرض # عنصر من إجمالي {TOTAL_COUNT} لأنّ الذاكرة منخفضة}}</translation>
 <translation id="3386292677130313581">السؤال قبل السماح للمواقع الإلكترونية بمعرفة الموقع الجغرافي (يُنصح به)</translation>
 <translation id="3403537308306431953">%% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">ملفات تعريف الارتباط الخارجية محظورة</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804248752222191302">هناك موقع إلكتروني يستخدم الكاميرا.</translation>
 <translation id="7805832099057502789">تم فتح البطاقة السفلية لمظهر صفحة "علامة تبويب جديدة" بطول الشاشة</translation>
-<translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
 <translation id="7809029041571842593">تم فتح البطاقة السفلية لبطاقات صفحة "علامة تبويب جديدة" في نصف الشاشة</translation>
 <translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7835852323729233924">تشغيل الوسائط</translation>

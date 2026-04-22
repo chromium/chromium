@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">保存したズームレベルを削除しますか？</translation>
 <translation id="3362437373201486687">Bluetooth デバイスをスキャンしています</translation>
 <translation id="3368138297038111198">ウィンドウを共有しています</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{メモリ不足のため、{TOTAL_COUNT} 個中 1 個のアイテムを表示しています}other{メモリ不足のため、{TOTAL_COUNT} 個中 # 個のアイテムを表示しています}}</translation>
 <translation id="3386292677130313581">サイトに現在地の認識を許可する前に確認する（推奨）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">利用しない</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7805832099057502789">新しいタブページの外観のボトムシートが画面全体に表示されています</translation>
-<translation id="7807060072011926525">Google から提供</translation>
 <translation id="7809029041571842593">新しいタブページのカードのボトムシートが画面の下半分に表示されています</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>

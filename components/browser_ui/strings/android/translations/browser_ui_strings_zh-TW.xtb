@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">要刪除儲存的縮放等級嗎？</translation>
 <translation id="3362437373201486687">正在掃描藍牙裝置</translation>
 <translation id="3368138297038111198">正在分享視窗</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{記憶體不足，因此只顯示 1 個項目 (共 {TOTAL_COUNT} 個)}other{記憶體不足，因此只顯示 # 個項目 (共 {TOTAL_COUNT} 個)}}</translation>
 <translation id="3386292677130313581">允許網站存取你的位置資訊前，必須先詢問你 (建議)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用你的攝影機</translation>
 <translation id="7805832099057502789">新分頁外觀底部功能表已完整開啟</translation>
-<translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7809029041571842593">新分頁資訊卡底部功能表已開啟，並顯示在畫面下半部</translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>

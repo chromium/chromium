@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Zarządzaj aktywnością</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Aby przełączyć się między kontami, kliknij ikonę konta</translation>
+<translation id="135806768612505061">Wszystkie karty</translation>
 <translation id="1358106883354237005">Konto zarządzane</translation>
 <translation id="1358214951266274152">Otwórz skopiowany link</translation>
 <translation id="1360432990279830238">Wylogować i wyłączyć synchronizację?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Udostępnianie haseł</translation>
 <translation id="1554043146674176775">Wyłącz Tryb AI</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
+<translation id="1554605811306591212">Obowiązują <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> i <ph name="PRIVACY_NOTICE" />. Gemini to AI i może popełniać błędy, także co do ludzi.</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
 <translation id="1565371473877914088">Nowa karta incognito</translation>
 <translation id="1567960978791353852">Pokaż Tryb czytania</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1864266050569350424">Na stronie, na której zapisano hasło, kliknij pole hasła do logowania.</translation>
 <translation id="1866700949421703765">Ukryj opcję Włącz Tryb czytania</translation>
+<translation id="1869050523388525800">Wyszukiwanie na ekranie jest dostępne tylko wtedy, gdy domyślną wyszukiwarką jest Google. Domyślną wyszukiwarkę możesz zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Aby zapisać zakładki na koncie, usuń zakładki, których nie używasz</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edytuj karuzelę</translation>
+<translation id="3905384981098338147">Historia Trybu AI</translation>
 <translation id="3909222758573607742">Zapisuj hasła i inne elementy na koncie</translation>
 <translation id="3913463964270756493">Ukryj funkcję Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="3914640181019354363">Wykrywanie adresów</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Użyj klawiatury</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4416582610654027550">Wpisz prawidłowy URL</translation>
+<translation id="441868831736628555">Informacje na temat ochrony prywatności</translation>
 <translation id="4420409367264901497">Edytuj zakładkę</translation>
 <translation id="4425365312778464779">To konto jest zarządzane</translation>
 <translation id="4430277756566635951">Obecnie wybrana liczba osób: <ph name="EMAIL" />. Wybierz konto.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Zamknij przełącznik kart</translation>
 <translation id="5148717509369231739">Import z Safari</translation>
 <translation id="5152483358138813104">Szybsze logowanie na różnych urządzeniach</translation>
+<translation id="515315847398512535">Wyszukiwanie na ekranie jest wyłączone na Twoim koncie. Aby uzyskać więcej informacji, skontaktuj się z administratorem.</translation>
 <translation id="5155502059906700593">Przenieś pasek adresu na górę lub na dół.</translation>
 <translation id="5157638238828697074">Coś poszło nie tak. Nie udało się otworzyć aplikacji.</translation>
 <translation id="5163417375525818870">Pliki PDF</translation>
@@ -1313,7 +1319,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5647702255748985085">Opuścić grupę?</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
-<translation id="5653100054596780862">Wszystkie karty</translation>
 <translation id="5656431592348714536">Ulepszony kalendarz</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665739277590037307">Obowiązują <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini może popełniać błędy, dlatego sprawdzaj odpowiedzi.</translation>
@@ -1511,6 +1516,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6307241780749477694">Aby pobrać wszystkie swoje hasła na to urządzenie, potwierdź swoją tożsamość</translation>
 <translation id="6316141353357700666">Wybierz z wyświetlonej listy hasło, którego chcesz użyć.</translation>
 <translation id="6321526113093607004">Dodaj do Zakładek</translation>
+<translation id="6327249202318869726">Gemini jest wyłączony na Twoim koncie. Aby uzyskać więcej informacji, skontaktuj się z administratorem.</translation>
 <translation id="6331836477476466332">Bezpieczniejsza i bardziej wydajna przeglądarka</translation>
 <translation id="6335744088476213315">Ta karta pokazuje produkty, które ostatnio oglądałeś(-aś) i które możesz chcieć śledzić, aby otrzymywać alerty o obniżkach cen</translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
@@ -1788,6 +1794,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7261217796641151584">Udostępnij grupę</translation>
 <translation id="7266578100016339897">To pomoże Ci zachować porządek. W dowolnej chwili możesz to zmienić w ustawieniach.</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
+<translation id="7275307913765547631">Warunki korzystania z usług lokalizacyjnych dla Korei</translation>
 <translation id="728025568708172005">Uruchom prezentację wstępną</translation>
 <translation id="7280980607183752256">Nie można zaimportować tego pliku</translation>
 <translation id="7281202269687163394">Twoja prywatność i Gemini.</translation>
@@ -2003,6 +2010,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7996239959906074962">Skonfiguruj…</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
+<translation id="8006265839264939135">Warunki</translation>
 <translation id="8010488806779226127">Poznaj funkcje, które ułatwią Ci korzystanie z przeglądarki</translation>
 <translation id="8011489434346330032">Inspektor sieci</translation>
 <translation id="8014007212279733632">Potwierdzaj tożsamość w celu autouzupełniania informacji poufnych</translation>

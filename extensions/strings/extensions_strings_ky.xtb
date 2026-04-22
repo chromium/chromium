@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Кеңейтүү каталогу профилге жылган жок.</translation>
 <translation id="1610570795592207282">Скрипт үчүн css '<ph name="RELATIVE_PATH" />' жүктөлбөй койду.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" кеңейтүүсү импорттолбой жатат, анткени ал бөлүшүлгөн модуль эмес</translation>
+<translation id="1757786065507923842">Ата-эненин уруксат сурамы ишке ашкан жок.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' фондук баракча жүктөлгөн жок.</translation>
 <translation id="1875387611427697908">Муну <ph name="CHROME_WEB_STORE" /> дарегинен гана кошсо болот</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" орното албайт, анткени ага "<ph name="IMPORT_NAME" />" тарабынан уруксат берилген эмес</translation>
 <translation id="2159915644201199628">Сүрөттүн коддору чечилген жок: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">Ата-энең бул кеңейтүүнү ырастаган жок</translation>
 <translation id="2350172092385603347">Жергиликтештирилген, бирок демейки_тил стандарты манифестте көрсөтүлбөй калган.</translation>
 <translation id="2576842806987913196">Мындай аталыштагы CRX файлы мурунтан эле бар.</translation>
 <translation id="2662876636500006917">Chrome Желе дүкөнү</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">Уюмуңуз бул кеңейтүүнү бөгөттөп койгон.</translation>
 <translation id="3242289508736283383">"Киоск_гана" деген манифести бар колдонмо ChromeOS киоск режиминде орнотулушу керек</translation>
+<translation id="3364986687961713424">Администраторуңуздан билдирүү: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Купуя ачкычтын киргизүү мааниси жарактуу жол болушу керек.</translation>

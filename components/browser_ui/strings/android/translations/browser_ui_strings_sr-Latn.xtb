@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Brišete nivoe zumiranja?</translation>
 <translation id="3362437373201486687">Traže se Bluetooth uređaji</translation>
 <translation id="3368138297038111198">Deli se prozor</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Prikazuje se 1 stavka od {TOTAL_COUNT} zbog nedostatka memorije}one{Prikazuje se # stavka od {TOTAL_COUNT} zbog nedostatka memorije}few{Prikazuju se # stavke od {TOTAL_COUNT} zbog nedostatka memorije}other{Prikazuje se # stavki od {TOTAL_COUNT} zbog nedostatka memorije}}</translation>
 <translation id="3386292677130313581">Pitaj pre nego što dozvoliš sajtovima da znaju lokaciju (preporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Kolačići treće strane su blokirani</translation>
@@ -654,7 +655,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Sajt koristi kameru</translation>
 <translation id="7805832099057502789">Donja tabela za izgled stranice nove kartice je otvorena na celom ekranu</translation>
-<translation id="7807060072011926525">Pruža Google</translation>
 <translation id="7809029041571842593">Donja tabela kartica na stranici nove kartice je otvorena do polovine ekrana</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7835852323729233924">Reprodukcija medija</translation>

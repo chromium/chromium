@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Ջնջե՞լ պահված մակարդակները</translation>
 <translation id="3362437373201486687">Bluetooth սարքերի որոնում…</translation>
 <translation id="3368138297038111198">Պատուհանի ցուցադրումը միացված է</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Քանի որ հիշությունը բավարար չէ, ցուցադրվում է 1 տարր՝ {TOTAL_COUNT}-ից}one{Քանի որ հիշությունը բավարար չէ, ցուցադրվում է # տարր՝ {TOTAL_COUNT}-ից}other{Քանի որ հիշությունը բավարար չէ, ցուցադրվում է # տարր՝ {TOTAL_COUNT}-ից}}</translation>
 <translation id="3386292677130313581">Հարցնել նախքան ձեր տեղադրությունը կայքերին հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Երրորդ կողմի քուքիներն արգելափակված են</translation>
@@ -654,7 +655,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7804248752222191302">Կայքն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="7805832099057502789">Նոր ներդիրի էջի ներքևի էկրանն ամբողջությամբ բացված է</translation>
-<translation id="7807060072011926525">Տրամադրված է Google-ի կողմից</translation>
 <translation id="7809029041571842593">Նոր ներդիրի էջի քարտերի ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="7815680994978050279">Արգելափակվել է վտանգավոր ներբեռնում</translation>
 <translation id="7835852323729233924">Մեդիա բովանդակության նվագարկում</translation>

@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Δεν ήταν δυνατή η μετακίνηση του καταλόγου επέκτασης στο προφίλ.</translation>
 <translation id="1610570795592207282">Δεν ήταν δυνατή η φόρτωση του css <ph name="RELATIVE_PATH" /> για το σενάριο.</translation>
 <translation id="1616298854599875024">Δεν είναι δυνατή η εισαγωγή της επέκτασης "<ph name="IMPORT_NAME" />", επειδή δεν είναι κοινόχρηστη λειτουργική μονάδα</translation>
+<translation id="1757786065507923842">Το αίτημα γονικής άδειας απέτυχε.</translation>
 <translation id="1803557475693955505">Δεν ήταν δυνατή η φόρτωση της σελίδας φόντου "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Η προσθήκη αυτού του στοιχείου είναι δυνατή μόνο από το <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Δεν είναι δυνατή η εγκατάσταση του "<ph name="APP_NAME" />" επειδή δεν επιτρέπεται από το "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Δεν ήταν δυνατή η αποκωδικοποίηση της εικόνας: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Ο γονέας σου δεν ενέκρινε αυτή την επέκταση</translation>
 <translation id="2350172092385603347">Χρησιμοποιήθηκε τοπική προσαρμογή, όμως δεν καθορίστηκε η τιμή "default_locale" στη δήλωση.</translation>
 <translation id="2576842806987913196">Υπάρχει ήδη ένα αρχείο CRX με αυτό το όνομα.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Άγνωστο προϊόν <ph name="PRODUCT_ID" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Η πρόσβαση σε αυτή την επέκταση έχει αποκλειστεί από τον οργανισμό σας.</translation>
 <translation id="3242289508736283383">Θα πρέπει να εγκατασταθεί μια εφαρμογή με χαρακτηριστικό μανιφέστου kiosk_only στη λειτουργία kiosk του Chrome OS</translation>
+<translation id="3364986687961713424">Από τον διαχειριστή σας: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> από τον πάροχο υπηρεσιών <ph name="VENDOR_ID" /> (σειριακός ρυθμός <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Η τιμή εισαγωγής για το ιδιωτικό κλειδί πρέπει να είναι έγκυρη διαδρομή.</translation>

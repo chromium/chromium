@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Xoá mức thu phóng đã lưu?</translation>
 <translation id="3362437373201486687">Đang quét tìm thiết bị Bluetooth</translation>
 <translation id="3368138297038111198">Đang chia sẻ một cửa sổ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Đang hiển thị 1/{TOTAL_COUNT} mục do sắp hết bộ nhớ}other{Đang hiển thị #/{TOTAL_COUNT} mục do sắp hết bộ nhớ}}</translation>
 <translation id="3386292677130313581">Hỏi trước khi cho phép các trang web biết vị trí của bạn (được đề xuất)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Đã chặn cookie của bên thứ ba</translation>
@@ -654,7 +655,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804248752222191302">Một trang web đang sử dụng máy ảnh của bạn</translation>
 <translation id="7805832099057502789">Bảng giao diện trang thẻ mới ở dưới cùng đã mở toàn bộ</translation>
-<translation id="7807060072011926525">Do Google cung cấp</translation>
 <translation id="7809029041571842593">Bảng thẻ trên trang Thẻ mới ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
 <translation id="7835852323729233924">Phát nội dung nghe nhìn</translation>

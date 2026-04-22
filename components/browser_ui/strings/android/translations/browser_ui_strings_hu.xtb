@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Törli a nagyítási szinteket?</translation>
 <translation id="3362437373201486687">Bluetooth-eszközök keresése…</translation>
 <translation id="3368138297038111198">Ablak megosztása…</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{A kevés memória miatt 1 elem látható ennyiből: {TOTAL_COUNT}}other{A kevés memória miatt # elem látható ennyiből: {TOTAL_COUNT}}}</translation>
 <translation id="3386292677130313581">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a tartózkodási helyhez való hozzáférést (ajánlott)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Harmadik féltől származó cookie-k letiltva</translation>
@@ -654,7 +655,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804248752222191302">Egy webhely használja az Ön kameráját</translation>
 <translation id="7805832099057502789">Az Új lap oldal megjelenésének alsó lapja teljes magasságban megnyitva</translation>
-<translation id="7807060072011926525">A Google biztosítja</translation>
 <translation id="7809029041571842593">Az Új lap oldal kártyáinak alsó lapja félmagasságban van megnyitva</translation>
 <translation id="7815680994978050279">Veszélyes letöltés letiltva</translation>
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>

@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Gerir atividade</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Para alternar entre contas, toque no ícone da sua conta</translation>
+<translation id="135806768612505061">Todos os separadores</translation>
 <translation id="1358106883354237005">Conta gerida</translation>
 <translation id="1358214951266274152">Aceder ao link que copiou</translation>
 <translation id="1360432990279830238">Terminar sessão e desativar a sincronização?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Partilhe palavras-passe</translation>
 <translation id="1554043146674176775">Desativar Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1554605811306591212">Aplicam-se os nossos <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> e <ph name="PRIVACY_NOTICE" />. O Gemini é IA e pode cometer erros, inclusive sobre pessoas.</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1565371473877914088">Novo separador de navegação anónima</translation>
 <translation id="1567960978791353852">Mostrar modo de leitura</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1864266050569350424">Num site onde guardou uma palavra-passe, toque no campo da palavra-passe de início de sessão.</translation>
 <translation id="1866700949421703765">Ocultar Ativar modo de leitura</translation>
+<translation id="1869050523388525800">O ecrã de pesquisa só está disponível quando o Google está definido como o motor de pesquisa predefinido. Pode alterar o motor de pesquisa predefinido nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Convide membros da família</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Para guardar marcadores na sua conta, elimine os marcadores não usados</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edite o carrossel</translation>
+<translation id="3905384981098338147">Histórico do Modo IA</translation>
 <translation id="3909222758573607742">Guarde palavras-passe e outros itens na conta</translation>
 <translation id="3913463964270756493">Ocultar ecrã de pesquisa com o Google Lens</translation>
 <translation id="3914640181019354363">Detetar moradas</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Usar teclado</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4416582610654027550">Introduza um URL válido.</translation>
+<translation id="441868831736628555">Aviso de Privacidade</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta conta é gerida</translation>
 <translation id="4430277756566635951">Seleção atual: <ph name="EMAIL" />. Selecione uma conta.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}other{{domain} e mais {count}}}</translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
 <translation id="4828431027673677473">Produtos com base nos seus interesses</translation>
+<translation id="4829420936835028285">Editar grupo de separadores</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="483689884442613745">Guardar…</translation>
 <translation id="4840495572919996524">Os seus marcadores, o histórico, as palavras-passe, entre outros, deixam de ser sincronizados com a sua Conta Google.</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">Sair do Switcher de separadores</translation>
 <translation id="5148717509369231739">Importação do Safari</translation>
 <translation id="5152483358138813104">Inicie sessão mais rapidamente em todos os seus dispositivos</translation>
+<translation id="515315847398512535">O ecrã de pesquisa está desativado para a sua conta. Contacte o seu administrador para mais informações.</translation>
 <translation id="5155502059906700593">Mude a posição da barra de endereço para a parte superior ou inferior.</translation>
 <translation id="5157638238828697074">Algo correu mal. Não foi possível abrir a aplicação.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -1313,7 +1320,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5647702255748985085">Sair do grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
 <translation id="5652623411397330904">Os produtos que monitorizar aparecem aqui.</translation>
-<translation id="5653100054596780862">Separadores</translation>
 <translation id="5656431592348714536">Calendário melhorado</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307">Aplicam-se os <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. O Gemini pode cometer erros, por isso, verifique as informações.</translation>
@@ -1511,6 +1517,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6307241780749477694">Valide a sua identidade para aceder a todas as suas palavras-passe neste dispositivo</translation>
 <translation id="6316141353357700666">Escolha a palavra-passe que quer usar na lista que é apresentada.</translation>
 <translation id="6321526113093607004">Adicionar aos Marcadores</translation>
+<translation id="6327249202318869726">O Gemini está desativado para a sua conta. Contacte o seu administrador para mais informações.</translation>
 <translation id="6331836477476466332">Um navegador mais seguro e poderoso para si</translation>
 <translation id="6335744088476213315">Este cartão mostra produtos que viu recentemente e que pode ter interesse em acompanhar para receber alertas de queda de preço</translation>
 <translation id="6337234675334993532">Encriptação</translation>
@@ -1788,6 +1795,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
+<translation id="7275307913765547631">Termos de Utilização da Localização Coreanos</translation>
 <translation id="728025568708172005">Iniciar visita guiada</translation>
 <translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
 <translation id="7281202269687163394">A sua privacidade e o Gemini.</translation>
@@ -2003,6 +2011,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URLs introduzidos no Google Chrome.</translation>
 <translation id="8005666035647241369">No Gestor de Palavras-passe da Google neste dispositivo</translation>
+<translation id="8006265839264939135">Termos</translation>
 <translation id="8010488806779226127">Explore funcionalidades que podem ajudar a fazer mais enquanto navega</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Validar a sua identidade para preencher automaticamente informações confidenciais</translation>

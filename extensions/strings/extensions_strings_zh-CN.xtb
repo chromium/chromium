@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="1610570795592207282">无法为脚本加载重叠样式表“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
+<translation id="1757786065507923842">向家长请求权限失败</translation>
 <translation id="1803557475693955505">无法加载背景页“<ph name="BACKGROUND_PAGE" />”。</translation>
 <translation id="1875387611427697908">只能通过<ph name="CHROME_WEB_STORE" />添加此项内容</translation>
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2159915644201199628">无法对图片解码：“<ph name="IMAGE_NAME" />”</translation>
+<translation id="2193567467390483943">你的家长未批准此扩展程序</translation>
 <translation id="2350172092385603347">已使用本地化功能，但未在清单中指定 default_locale。</translation>
 <translation id="2576842806987913196">已经有其他 CRX 文件使用了此名称。</translation>
 <translation id="2662876636500006917">Chrome 应用商店</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">您的组织禁止使用此扩展程序。</translation>
 <translation id="3242289508736283383">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
+<translation id="3364986687961713424">来自您的管理员：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397">来自供应商 <ph name="VENDOR_ID" /> 的<ph name="PRODUCT_NAME" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">私有密钥的输入值必须是有效的路径。</translation>

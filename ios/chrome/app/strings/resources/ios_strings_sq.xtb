@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Menaxho aktivitetin</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Për të ndërruar llogaritë, trokit ikonën e llogarisë sate</translation>
+<translation id="135806768612505061">Të gjitha skedat</translation>
 <translation id="1358106883354237005">Llogaria e menaxhuar</translation>
 <translation id="1358214951266274152">Vizito lidhjen që kopjove</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Ndaj fjalëkalimet</translation>
 <translation id="1554043146674176775">Çaktivizo "Modalitetin e IA-së"</translation>
 <translation id="1554477036522844996">Dritare e re</translation>
+<translation id="1554605811306591212">Zbatohen <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> dhe <ph name="PRIVACY_NOTICE" />. Gemini është IA dhe mund të bëjë gabime, duke përfshirë edhe për personat.</translation>
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1565371473877914088">Skedë e re "e fshehtë"</translation>
 <translation id="1567960978791353852">Shfaq "Modalitetin e leximit"</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Kjo dosje është bosh</translation>
 <translation id="1864266050569350424">Në një sajt ku ke ruajtur një fjalëkalim, trokit te fusha e fjalëkalimit të identifikimit.</translation>
 <translation id="1866700949421703765">Fshih "Aktivizo 'Modalitetin e leximit'"</translation>
+<translation id="1869050523388525800">Ekrani i kërkimit ofrohet vetëm kur Google është caktuar si motori i parazgjedhur i kërkimit. Mund ta ndryshosh motorin e parazgjedhur të kërkimit te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Elektriku</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Fto anëtarët e familjes</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Për të ruajtur faqeshënuesit në llogarinë tënde, fshi faqeshënuesit që nuk përdoren</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3904270275864974753">Modifiko karuselin</translation>
+<translation id="3905384981098338147">Historiku i "Modalitetit të IA-së"</translation>
 <translation id="3909222758573607742">Ruaj fjalëkalimet dhe artikujt e tjerë në llogari</translation>
 <translation id="3913463964270756493">Fshihe ekranin e "Kërko" me "Lenten e Google"</translation>
 <translation id="3914640181019354363">Zbulo adresat</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Përdor tastierën</translation>
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="4416582610654027550">Shkruaj një URL të vlefshme</translation>
+<translation id="441868831736628555">Njoftim i privatësisë</translation>
 <translation id="4420409367264901497">Redakto faqeshënuesin</translation>
 <translation id="4425365312778464779">Kjo llogari është e menaxhuar</translation>
 <translation id="4430277756566635951">Aktualisht është zgjedhur <ph name="EMAIL" />. Zgjidh një llogari.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Largohu nga "Ndërruesi i skedave"</translation>
 <translation id="5148717509369231739">Importimi në Safari</translation>
 <translation id="5152483358138813104">Identifikohu më shpejt nëpër pajisjet e tua</translation>
+<translation id="515315847398512535">Ekrani i kërkimit është çaktivizuar për llogarinë tënde. Kontakto me administratorin tënd për më shumë informacione.</translation>
 <translation id="5155502059906700593">Ndërroje pozicionin e shiritit të adresave në krye ose në fund.</translation>
 <translation id="5157638238828697074">Ndodhi një gabim. Aplikacioni nuk mund të hapej.</translation>
 <translation id="5163417375525818870">Skedarët PDF</translation>
@@ -1313,7 +1319,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5647702255748985085">Dëshiron të largohesh nga grupi?</translation>
 <translation id="5648166631817621825">7 ditët e fundit</translation>
 <translation id="5652623411397330904">Produktet që monitoron do të shfaqen këtu.</translation>
-<translation id="5653100054596780862">Skedat</translation>
 <translation id="5656431592348714536">Kalendari i përmirësuar</translation>
 <translation id="5659593005791499971">Mail-i</translation>
 <translation id="5665739277590037307">Zbatohen <ph name="GOOGLE_TERMS" /> dhe <ph name="GEMINI_APPS_PRIVACY" />. Gemini mund të bëjë gabime, kështu që kontrolloje përsëri.</translation>
@@ -1511,6 +1516,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6307241780749477694">Verifiko që je ti për të marrë të gjitha fjalëkalimet e tua në këtë pajisje</translation>
 <translation id="6316141353357700666">Zgjidh fjalëkalimin që dëshiron të përdorësh nga lista që shfaqet.</translation>
 <translation id="6321526113093607004">Shto te faqeshënuesit</translation>
+<translation id="6327249202318869726">Gemini është çaktivizuar për llogarinë tënde. Kontakto me administratorin tënd për më shumë informacione.</translation>
 <translation id="6331836477476466332">Një shfletues më i sigurt dhe më i fuqishëm për ty</translation>
 <translation id="6335744088476213315">Kjo kartë shfaq produktet që ke shikuar së fundi dhe që mund të të interesojnë t'i gjurmosh për të marrë sinjalizime për rëniet e çmimeve</translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
@@ -1788,6 +1794,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7261217796641151584">Ndaj grupin</translation>
 <translation id="7266578100016339897">Kjo të ndihmon të qëndrosh i organizuar. Mund ta ndryshosh këtë te cilësimet në çdo kohë.</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
+<translation id="7275307913765547631">"Kushtet e shërbimit për vendndodhjen" për Korenë</translation>
 <translation id="728025568708172005">Fillo turneun</translation>
 <translation id="7280980607183752256">Ky skedar nuk mund të importohet</translation>
 <translation id="7281202269687163394">Privatësia jote dhe Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7996239959906074962">Konfiguro…</translation>
 <translation id="800361585186029508">Hap URL-të e futura në Google Chrome.</translation>
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
+<translation id="8006265839264939135">Kushtet</translation>
 <translation id="8010488806779226127">Eksploro veçoritë që mund të të ndihmojnë të bësh më shumë gjëra ndërsa shfleton</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifiko që je ti për të plotësuar automatikisht informacionet delikate</translation>

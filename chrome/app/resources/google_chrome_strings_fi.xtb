@@ -416,6 +416,7 @@
 <translation id="547202872422499512">Chrome käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="5486346529181556467">Auta parantamaan kaikkien verkkoturvallisuutta ilmoittamalla sivustosta, jonka uskot olevan haitallinen. Lue lisää <ph name="BEGIN_LINK" />Googlen vaarallisia sivustoja koskevasta käytännöstä<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
+<translation id="5529390769101499214">Hallinnoi laajennuksia valitsemalla Chromen päävalikosta Laajennukset.</translation>
 <translation id="5550137307985173298">Muokkaa Chromen ulkoasua klikkaamalla Uusi välilehti ‐sivun Yksilöi Chromea ‐painiketta</translation>
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
 <translation id="5579324208890605088">Käynnistysvirhe: Suorita asennusohjelma tavallisena käyttäjänä, ei järjestelmänvalvojana.</translation>
@@ -502,6 +503,7 @@
 <translation id="6235018212288296708">Google Chromen saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="624230925347970731">Chrome suljetaan pian</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
+<translation id="6248988683584659830">Hae asetuksista</translation>
 <translation id="6251759518630934363">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
 <translation id="6277547788421725101">Vanhempasi on laittanut Chromen "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="627882678981830918">Yksilöi Chromea ja muuta sen asetuksia. Valitse Chrome oletusselaimeksi.</translation>
@@ -665,6 +667,7 @@
 <translation id="7792336732117553384">Hallinnoi Chrome-profiileja</translation>
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7804364787702057554">Tilisi Chromessa</translation>
+<translation id="7804947029129221742">Hakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome on nollannut sen alkuperäisiin oletusasetuksiin suojellakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Poista Chromesta…</translation>
 <translation id="7827099906024714326">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7832314606810669113">Kirjaudu sisään Chromeen, niin voit käyttää kirjanmerkkejä ja muita tietoja kaikilla laitteillasi. Tämä kirjanmerkki tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
@@ -786,7 +789,6 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8992769679401294069">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
 <translation id="8999117580775242387">Kun HTTPS ei ole käytettävissä, Chrome käyttää suojaamatonta yhteyttä ilman erillistä varoitusta</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
-<translation id="9010418943148193727">Oletushakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome nollasi sen suojellakseen sinua.</translation>
 <translation id="9014771989710951291">Useat organisaatiot ylläpitävät Chromea</translation>
 <translation id="9066987883552592250">Sulje Gemini in Chrome Canary</translation>
 <translation id="9090566250983691233">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>

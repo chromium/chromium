@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">सेव्ह केलेल्या झूम पातळ्या हटवायच्या?</translation>
 <translation id="3362437373201486687">ब्लूटूथ डिव्हाइससाठी स्कॅन करत आहे</translation>
 <translation id="3368138297038111198">विंडो शेअर करत आहे</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{कमी मेमरीमुळे {TOTAL_COUNT} पैकी १ आयटम दाखवत आहे}other{कमी मेमरीमुळे {TOTAL_COUNT} पैकी # आयटम दाखवत आहेत}}</translation>
 <translation id="3386292677130313581">साइटना तुमचे स्थान जाणून घेण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7805832099057502789">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
-<translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
 <translation id="7809029041571842593">नवीन टॅब पेज कार्डच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7835852323729233924">मीडिया प्ले करत आहे</translation>

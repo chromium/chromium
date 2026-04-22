@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Bestuur aktiwiteit</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Tik op jou rekeningikoon om tussen rekeninge te wissel</translation>
+<translation id="135806768612505061">Alle oortjies</translation>
 <translation id="1358106883354237005">Bestuurde rekening</translation>
 <translation id="1358214951266274152">Besoek skakel wat jy gekopieer het</translation>
 <translation id="1360432990279830238">Meld af en skakel sinkronisasie af?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Deel wagwoorde</translation>
 <translation id="1554043146674176775">Skakel KI-modus af</translation>
 <translation id="1554477036522844996">Nuwe venster</translation>
+<translation id="1554605811306591212">Ons <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> en <ph name="PRIVACY_NOTICE" /> is van toepassing. Gemini is KI en kan foute maak, insluitend oor mense.</translation>
 <translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
 <translation id="1565371473877914088">Nuwe incognito-oortjie</translation>
 <translation id="1567960978791353852">Wys Leesmodus</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Hierdie vouer is leeg</translation>
 <translation id="1864266050569350424">Tik op die aanmeldwagwoordveld op ’n werf waar jy ’n wagwoord gestoor het.</translation>
 <translation id="1866700949421703765">Versteek Skakel Leesmodus aan</translation>
+<translation id="1869050523388525800">Soekskerm is net beskikbaar wanneer Google as jou versteksoekenjin gestel is. Jy kan jou versteksoekenjin in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> verander.</translation>
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Nooi gesinslede</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Vee jou ongebruikte boekmerke uit om boekmerke in jou rekening te stoor</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3904270275864974753">Wysig draaiband</translation>
+<translation id="3905384981098338147">KI-modus-geskiedenis</translation>
 <translation id="3909222758573607742">Stoor wagwoorde en ander items in rekening</translation>
 <translation id="3913463964270756493">Versteek soekskerm met Google Lens</translation>
 <translation id="3914640181019354363">Bespeur adresse</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Gebruik sleutelbord</translation>
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
 <translation id="4416582610654027550">Voer 'n geldige URL in</translation>
+<translation id="441868831736628555">Privaatheidkennisgewing</translation>
 <translation id="4420409367264901497">Wysig boekmerk</translation>
 <translation id="4425365312778464779">Hierdie rekening word bestuur</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> is tans gekies. Kies ’n rekening.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Verlaat oortjiewisselaar</translation>
 <translation id="5148717509369231739">Safari-invoer</translation>
 <translation id="5152483358138813104">Meld vinniger aan op jou toestelle</translation>
+<translation id="515315847398512535">Soekskerm is afgeskakel vir jou rekening. Kontak jou admin vir meer inligting.</translation>
 <translation id="5155502059906700593">Verander die posisie van jou adresbalk na die bo- of onderkant.</translation>
 <translation id="5157638238828697074">Iets het skeefgeloop. Die app kon nie oopgemaak word nie.</translation>
 <translation id="5163417375525818870">PDF's</translation>
@@ -1313,7 +1319,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5647702255748985085">Verlaat groep?</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5652623411397330904">Die produkte wat jy naspoor, sal hier verskyn.</translation>
-<translation id="5653100054596780862">Alle oortjies</translation>
 <translation id="5656431592348714536">Versterkte Kalender</translation>
 <translation id="5659593005791499971">E-pos</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> en <ph name="GEMINI_APPS_PRIVACY" /> geld. Gemini kan foute maak, daarom moet jy dit dubbelkontroleer.</translation>
@@ -1511,6 +1516,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6307241780749477694">Verifieer dat dit jy is om al jou wagwoorde op hierdie toestel te kry</translation>
 <translation id="6316141353357700666">Kies uit die lys wat verskyn die wagwoord wat jy wil gebruik.</translation>
 <translation id="6321526113093607004">Voeg by Boekmerke</translation>
+<translation id="6327249202318869726">Gemini is afgeskakel vir jou rekening. Kontak jou admin vir meer inligting.</translation>
 <translation id="6331836477476466332">’n Veiliger, kragtiger blaaier vir jou</translation>
 <translation id="6335744088476213315">Hierdie kaart wys produkte waarna jy onlangs gekyk het en stel dalk belang in nasporing om opletberigte oor prysverlagings te kry</translation>
 <translation id="6337234675334993532">Enkriptering</translation>
@@ -1788,6 +1794,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7261217796641151584">Deel groep</translation>
 <translation id="7266578100016339897">Dit help jou om georganiseerd te bly. Jy kan dit enige tyd in instellings verander.</translation>
 <translation id="7272437679830969316">Kan nie jou identiteit verifieer nie. Wagwoord is nie gekopieer nie.</translation>
+<translation id="7275307913765547631">Koreaanse Liggingbepalings</translation>
 <translation id="728025568708172005">Wys my alles</translation>
 <translation id="7280980607183752256">Hierdie lêer kan nie ingevoer word nie</translation>
 <translation id="7281202269687163394">Jou privaatheid en Gemini.</translation>
@@ -2003,6 +2010,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7996239959906074962">Stel op …</translation>
 <translation id="800361585186029508">Maak die URL'e wat ingevoer is in Google Chrome oop.</translation>
 <translation id="8005666035647241369">Na Google Wagwoordbestuurder op hierdie toestel</translation>
+<translation id="8006265839264939135">Bepalings</translation>
 <translation id="8010488806779226127">Verken kenmerke wat jou kan help om meer te doen terwyl jy blaai</translation>
 <translation id="8011489434346330032">Webinspekteur</translation>
 <translation id="8014007212279733632">Verifieer dat dit jy is om sensitiewe inligting te outovul</translation>

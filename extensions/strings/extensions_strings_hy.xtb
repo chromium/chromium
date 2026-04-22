@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Չհաջողվեց պրոֆիլ տեղափոխել ընդլայնման գրացուցակը:</translation>
 <translation id="1610570795592207282">Չհաջողվեց բեռնել «<ph name="RELATIVE_PATH" />» CSS-ը սկրիպտի համար։</translation>
 <translation id="1616298854599875024">Անհնար է ներմուծել «<ph name="IMPORT_NAME" />» ընդլայնումը, քանի որ այն ընդհանուր մոդուլ չէ</translation>
+<translation id="1757786065507923842">Չհաջողվեց ուղարկել ծնողի թույլտվության հայտը։</translation>
 <translation id="1803557475693955505">Չհաջողվեց բեռնել հետնաշերտի էջը` «<ph name="BACKGROUND_PAGE" />»:</translation>
 <translation id="1875387611427697908">Սա կարող է ավելացվել միայն <ph name="CHROME_WEB_STORE" />-ից</translation>
 <translation id="2131077480075264">Անհնար է տեղադրել «<ph name="APP_NAME" />» հավելվածը, քանի որ այն արգելված է «<ph name="IMPORT_NAME" />»-ի կողմից</translation>
 <translation id="2159915644201199628">Չհաջողվեց ապակոդավորել պատկերը` «<ph name="IMAGE_NAME" />»</translation>
+<translation id="2193567467390483943">Ձեր ծնողը չի հաստատել այս ընդլայնումը</translation>
 <translation id="2350172092385603347">Տեղայնացումն օգտագործվում է, սակայն մանիֆեստում նշված չէ default_locale հատկանիշը:</translation>
 <translation id="2576842806987913196">Այս անունով CRX ֆայլ արդեն առկա է:</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
 <translation id="3174723475300476613">Ձեր կազմակերպությունն արգելափակել է այս ընդլայնման հասանելիությունը։</translation>
 <translation id="3242289508736283383">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS-ի կրպակի ռեժիմում</translation>
+<translation id="3364986687961713424">Ձեր ադմինիստրատորից. «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Մասնավոր բանալու համար ներածման արժեքը պետք է ճիշտ ուղի լինի:</translation>

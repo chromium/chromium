@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Kas kustutada salvestatud suumitasemed?</translation>
 <translation id="3362437373201486687">Bluetooth-seadmete otsimine</translation>
 <translation id="3368138297038111198">Akna jagamine</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Vähese mälu tõttu kuvatakse üks üksus {TOTAL_COUNT}-st.}other{Vähese mälu tõttu kuvatakse # üksust {TOTAL_COUNT}-st.}}</translation>
 <translation id="3386292677130313581">Küsi enne saitidele minu asukoha avaldamist (soovitatav)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
@@ -654,7 +655,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="780301667611848630">Tänan, ei</translation>
 <translation id="7804248752222191302">Sait kasutab teie kaamerat</translation>
 <translation id="7805832099057502789">Uue vahelehe välimuse alumine leht on avatud täiskõrguseni.</translation>
-<translation id="7807060072011926525">Pakub Google</translation>
 <translation id="7809029041571842593">Uue vahelehe kaartide alumine leht on avatud poolel kõrgusel</translation>
 <translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7835852323729233924">Meedia esitamine</translation>

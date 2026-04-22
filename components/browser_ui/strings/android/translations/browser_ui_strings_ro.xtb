@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Ștergi nivelurile de zoom salvate?</translation>
 <translation id="3362437373201486687">Se caută dispozitive Bluetooth</translation>
 <translation id="3368138297038111198">Se permite accesul la o fereastră</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Se afișează un articol din {TOTAL_COUNT} din cauza memoriei insuficiente}few{Se afișează # din {TOTAL_COUNT} articole din cauza memoriei insuficiente}other{Se afișează # din {TOTAL_COUNT} de articole din cauza memoriei insuficiente}}</translation>
 <translation id="3386292677130313581">Întreabă înainte de a permite site-urilor să afle locația (recomandat)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookie-urile terță parte au fost blocate</translation>
@@ -654,7 +655,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7804248752222191302">Un site folosește camera foto</translation>
 <translation id="7805832099057502789">Foaia din partea de jos cu aspectul paginii Filă nouă deschisă la înălțimea completă</translation>
-<translation id="7807060072011926525">Oferit de Google</translation>
 <translation id="7809029041571842593">Foaia din partea de jos a cardurilor din pagina Filă nouă deschisă la jumătate din înălțime</translation>
 <translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7835852323729233924">Se redă conținutul media</translation>

@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Fəaliyyəti idarə edin</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Hesablar arasında keçid etmək üçün hesab ikonasına toxunun</translation>
+<translation id="135806768612505061">Bütün tablar</translation>
 <translation id="1358106883354237005">İdarə olunan hesab</translation>
 <translation id="1358214951266274152">Kopyalanmış Linkə Daxil Olun</translation>
 <translation id="1360432990279830238">Sinxronizasiya deaktiv edilsin?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Parolları paylaşın</translation>
 <translation id="1554043146674176775">Sİ rejimini deaktiv edin</translation>
 <translation id="1554477036522844996">Yeni Pəncərə</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> və <ph name="PRIVACY_NOTICE" /> tətbiq olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər.</translation>
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
 <translation id="1565371473877914088">Yeni Anonim Tab</translation>
 <translation id="1567960978791353852">Oxu rejimini göstərin</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Qovluq boşdur</translation>
 <translation id="1864266050569350424">Parolu yadda saxladığınız saytda giriş parolu sahəsinə toxunun.</translation>
 <translation id="1866700949421703765">Oxu Rejimini aktiv edin seçimini gizlədin</translation>
+<translation id="1869050523388525800">Ekranda axtarış yalnız Google defolt axtarış sistemi kimi təyin edildikdə əlçatandır. <ph name="BEGIN_LINK" />Ayarlarda<ph name="END_LINK" /> defolt axtarış sistemini dəyişə bilərsiniz.</translation>
 <translation id="1872096359983322073">Fənər</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Ailə üzvlərini dəvət edin</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Əlfəcinləri hesabınızda yadda saxlamaq üçün istifadə olunmayan əlfəcinləri silin</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904270275864974753">Karuselə düzəliş edin</translation>
+<translation id="3905384981098338147">Sİ Rejimi Tarixçəsi</translation>
 <translation id="3909222758573607742">Parol və digər elementləri hesabda yadda saxlayın</translation>
 <translation id="3913463964270756493">Google Linza ilə Axtarış ekranını gizlədin</translation>
 <translation id="3914640181019354363">Ünvanların aşkarlanması</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Klaviatura istifadə edin</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4416582610654027550">Düzgün link daxil edin</translation>
+<translation id="441868831736628555">Məxfilik Bildirişi</translation>
 <translation id="4420409367264901497">Əlfəcinə düzəliş edin</translation>
 <translation id="4425365312778464779">Bu hesab idarə edilir</translation>
 <translation id="4430277756566635951">Seçilib: <ph name="EMAIL" />. Hesab seçin.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Tab keçiricisindən çıxın</translation>
 <translation id="5148717509369231739">Safari importu</translation>
 <translation id="5152483358138813104">Cihazlarınızda daha sürətli daxil olun</translation>
+<translation id="515315847398512535">Hesabınız üçün ekranda axtarış deaktiv edilib. Ətraflı məlumat üçün admininizlə əlaqə saxlayın.</translation>
 <translation id="5155502059906700593">Ünvan panelinin mövqeyini yuxarı və ya aşağı dəyişin.</translation>
 <translation id="5157638238828697074">Xəta oldu. Tətbiq açılmadı.</translation>
 <translation id="5163417375525818870">PDF-lər</translation>
@@ -1313,7 +1319,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5647702255748985085">Qrupdan çıxırsınız?</translation>
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5652623411397330904">İzlədiyiniz məhsullar burada görünəcək.</translation>
-<translation id="5653100054596780862">Bütün tablar</translation>
 <translation id="5656431592348714536">Təkmilləşdirilmiş Təqvim</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> və <ph name="GEMINI_APPS_PRIVACY" /> tətbiq olunur. Gemini səhvlərə yol verə bilər, ona görə də yenidən yoxlayın.</translation>
@@ -1511,6 +1516,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6307241780749477694">Bu cihazda bütün parollarınızı əldə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6316141353357700666">Göstərilən siyahıdan istifadə etmək istədiyiniz parolu seçin.</translation>
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
+<translation id="6327249202318869726">Gemini hesabınız üçün deaktiv edilib. Ətraflı məlumat üçün admininizlə əlaqə saxlayın.</translation>
 <translation id="6331836477476466332">Sizin üçün daha təhlükəsiz, daha güclü brauzer</translation>
 <translation id="6335744088476213315">Bu kart yaxın vaxtlarda baxdığınız məhsulları göstərir. Qiymət endirimi xəbərdarlığı almaq üçün onu izləmək istəyə bilərsiniz</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
@@ -1788,6 +1794,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
+<translation id="7275307913765547631">Koreya Məkan Şərtləri</translation>
 <translation id="728025568708172005">Mənə ətrafı göstərin</translation>
 <translation id="7280980607183752256">Bu fayl import edilə bilməz</translation>
 <translation id="7281202269687163394">Məxfiliyiniz və Gemini.</translation>
@@ -2003,6 +2010,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7996239959906074962">Ayarlayın…</translation>
 <translation id="800361585186029508">Google Chrome'da daxil edilən keçidləri açır.</translation>
 <translation id="8005666035647241369">Bu cihazda Google Parol Menecerinə</translation>
+<translation id="8006265839264939135">Şərtlər</translation>
 <translation id="8010488806779226127">Axtarış etdiyiniz zaman daha çox iş görməyinizə kömək edə biləcək funksiyaları araşdırın</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Həssas məlumatların avtomatik doldurulması üçün kimliyinizi doğrulayın</translation>

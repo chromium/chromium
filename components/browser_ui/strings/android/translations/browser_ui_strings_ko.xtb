@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">저장된 확대/축소 수준을 삭제하시겠어요?</translation>
 <translation id="3362437373201486687">블루투스 기기 검색 중</translation>
 <translation id="3368138297038111198">창 공유</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{메모리가 부족하여 {TOTAL_COUNT}개 항목 중 1개만 표시 중}other{메모리가 부족하여 {TOTAL_COUNT}개 항목 중 #개만 표시 중}}</translation>
 <translation id="3386292677130313581">사이트에서 내 위치를 파악하도록 허용하기 전에 확인(권장)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">서드 파티 쿠키 차단됨</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">나중에</translation>
 <translation id="7804248752222191302">사이트에서 카메라 사용 중</translation>
 <translation id="7805832099057502789">새 탭 페이지 모양 하단 시트가 전체 높이로 열림</translation>
-<translation id="7807060072011926525">Google 제공</translation>
 <translation id="7809029041571842593">새 탭 페이지 카드 하단 시트가 절반 높이로 열림</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7835852323729233924">재생 중인 미디어</translation>

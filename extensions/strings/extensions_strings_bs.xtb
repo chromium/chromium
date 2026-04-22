@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Prebacivanje direktorija ekstenzije u profil nije uspjelo.</translation>
 <translation id="1610570795592207282">Učitavanje CSS-a "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
 <translation id="1616298854599875024">Nije moguće uvesti ekstenziju "<ph name="IMPORT_NAME" />" jer ovo nije dijeljeni modul.</translation>
+<translation id="1757786065507923842">Zahtjev za odobrenje koje daje roditelj nije uspio.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu s pozadinama "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Ovo se može dodati samo iz usluge <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Nije moguće instalirati aplikaciju "<ph name="APP_NAME" />" jer to ne dozvoljava "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Dekodiranje slike nije uspjelo: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">Roditelj nije odobrio tu ekstenziju</translation>
 <translation id="2350172092385603347">Korištena je lokalizacija, ali u deklaraciji nije naveden default_locale.</translation>
 <translation id="2576842806987913196">Već postoji CRX fajl s istim nazivom.</translation>
 <translation id="2662876636500006917">Chrome Web trgovina</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Vaša organizacija je blokirala pristup ovoj ekstenziji.</translation>
 <translation id="3242289508736283383">Aplikacija s atributom deklaracije "kiosk_only" se mora instalirati u načinu rada kioska ChromeOS-a</translation>
+<translation id="3364986687961713424">Od vašeg administratora: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrijednost za privatni ključ mora biti važeća putanja.</translation>

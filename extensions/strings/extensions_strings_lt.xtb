@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Nepavyko perkelti plėtinio katalogo į profilį.</translation>
 <translation id="1610570795592207282">Nepavyko įkelti scenarijaus „css“ failo „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="1616298854599875024">Nepavyko importuoti plėtinio „<ph name="IMPORT_NAME" />“, nes tai nėra bendrinamas modulis</translation>
+<translation id="1757786065507923842">Nepavyko pateikti tėvų leidimo užklausos.</translation>
 <translation id="1803557475693955505">Nepavyko įkelti fono puslapio „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Tai galima pridėti tik iš sistemos <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Nepavyko įdiegti „<ph name="APP_NAME" />“, nes to neleidžia „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2159915644201199628">Nepavyko iššifruoti vaizdo: „<ph name="IMAGE_NAME" />“</translation>
+<translation id="2193567467390483943">Vienas iš tėvų nepatvirtino šio plėtinio</translation>
 <translation id="2350172092385603347">Naudotas lokalizavimas, bet deklaracijoje nenurodyta numatytoji lokalė.</translation>
 <translation id="2576842806987913196">CRX failas tokiu pavadinimu jau yra.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
 <translation id="3174723475300476613">Prieigą prie šio plėtinio užblokavo jūsų organizacija.</translation>
 <translation id="3242289508736283383">Programa su aprašo atributu „kiosk_only“ turi būti įdiegta „Chrome“ OS viešojo terminalo režimu</translation>
+<translation id="3364986687961713424">Iš administratoriaus: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020">„<ph name="PRODUCT_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privačiojo rakto įvesties vertė turi būti galiojantis kelias.</translation>

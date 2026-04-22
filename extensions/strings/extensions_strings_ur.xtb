@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">ایکسٹینشن ڈائرکٹری کو پروفائل میں منتقل نہیں کیا جا سکا۔</translation>
 <translation id="1610570795592207282">‏اسکرپٹ کے لیے CSS '<ph name="RELATIVE_PATH" />' لوڈ نہیں ہو سکا۔</translation>
 <translation id="1616298854599875024">ایکسٹینشن "<ph name="IMPORT_NAME" />" کو درآمد کرنے سے قاصر ہے کیونکہ یہ ایک اشتراک کردہ ماڈیول نہیں ہے</translation>
+<translation id="1757786065507923842">والدین کی اجازت کی درخواست ناکام ہو گئی۔</translation>
 <translation id="1803557475693955505">پس منظر کا صفحہ '<ph name="BACKGROUND_PAGE" />' لوڈ نہں کیا جا سکا۔</translation>
 <translation id="1875387611427697908">اس کو صرف <ph name="CHROME_WEB_STORE" /> سے شامل کیا جا سکتا ہے</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" کو انسٹال کرنے سے قاصر کیونکہ "<ph name="IMPORT_NAME" />" کے ذریعہ اس کی اجازت نہیں ہے</translation>
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">آپ کے والدین نے اس ایکسٹینشن کو منظور نہیں کیا</translation>
 <translation id="2350172092385603347">‏لوکلائزیشن کا استعمال کیا گیا، لیکن مینی فیسٹ میں default_locale کی وضاحت نہیں کی گئی۔</translation>
 <translation id="2576842806987913196">‏اس نام کی ایک CRX فائل پہلے سے موجود ہے۔</translation>
 <translation id="2662876636500006917">‏Chrome ویب اسٹور</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> وینڈر کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">آپ کی تنظیم نے اس ایکسٹینشن تک رسائی کو بلاک کر دیا ہے۔</translation>
 <translation id="3242289508736283383">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
+<translation id="3364986687961713424">آپ کے منتظم کی جانب سے: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">وینڈر <ph name="VENDOR_ID" /> کی جانب سے <ph name="PRODUCT_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">نجی کلید کیلئے ان پٹ قدر ایک درست پاتھ ہونا ضروری ہے۔</translation>

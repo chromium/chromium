@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">এক্সটেনশ্বন ডাইৰেক্টৰী প্ৰ’ফাইললৈ আঁতৰাব পৰা নগ’ল।</translation>
 <translation id="1610570795592207282">স্ক্ৰিপ্টৰ বাবে css ’<ph name="RELATIVE_PATH" />’ ল’ড কৰিব নোৱাৰিলে।</translation>
 <translation id="1616298854599875024">এক্সটেনশ্বন "<ph name="IMPORT_NAME" />" আমদানি কৰিব পৰা নগ'ল কাৰণ এইটো এটা শ্বেয়াৰ কৰা মডিউল নহয়</translation>
+<translation id="1757786065507923842">অভিভাৱকৰ অনুমতিৰ অনুৰোধটো বিফল হৈছে।</translation>
 <translation id="1803557475693955505">নেপথ্যৰ পৃষ্ঠা ’<ph name="BACKGROUND_PAGE" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="1875387611427697908">ইয়াক কেৱল <ph name="CHROME_WEB_STORE" />ৰ পৰাহে যোগ কৰিব পাৰি</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />"এ অনুমতি প্ৰদান নকৰাৰ বাবে "<ph name="APP_NAME" />" ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="2159915644201199628">ছবি ডিক’ড কৰিব পৰা নগ’ল: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">আপোনাৰ অভিভাৱকে এই এক্সটেনশ্বনটোত অনুমোদন জনোৱা নাই</translation>
 <translation id="2350172092385603347">ল’কেলাইজেশ্বন ব্যৱহাৰ কৰা হৈছে কিন্তু মেনিফেষ্টত default_locale নির্দিষ্ট কৰা হোৱা নাই।</translation>
 <translation id="2576842806987913196">এই নামটোৰ এটা CRX ফাইল ইতিমধ্যেই আছে।</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">আপোনাৰ প্ৰতিষ্ঠানে এই এক্সটেনশ্বনটোৰ এক্সেছ অৱৰোধ কৰিছে।</translation>
 <translation id="3242289508736283383">'kiosk_only' মেনিফেষ্টৰ বৈশিষ্ট্য থকা এপক ChromeOS কিঅ’স্ক ম’ডতেই ইনষ্টল কৰিব লাগে</translation>
+<translation id="3364986687961713424">আপোনাৰ প্ৰশাসকৰ পৰা: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">বিক্ৰেতা <ph name="VENDOR_ID" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য পথ হ'বই লাগিব।</translation>

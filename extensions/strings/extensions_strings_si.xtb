@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
 <translation id="1610570795592207282">ස්ක්‍රිප්ටය සඳහා css '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="1616298854599875024">බෙදා ගත් මොඩියුලයක් නොවන බැවින් "<ph name="IMPORT_NAME" />" දිගුව ආයාත කළ නොහැකිය</translation>
+<translation id="1757786065507923842">මාපිය අවසර ඉල්ලීම අසමත් විය.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
 <translation id="1875387611427697908">මෙය එක් කළ හැක්කේ <ph name="CHROME_WEB_STORE" /> වෙතින් පමණි</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" මගින් ඉඩ නොලැබෙන බැවින්  "<ph name="APP_NAME" />" ස්ථාපනය නොවේ.</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">ඔබේ මාපියවරු මෙම දිගුව අනුමත කළේ නැත</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
 <translation id="2576842806987913196">මෙය මෙනමින් දැනටමත් ඇති CRX  ගොනුවකි.</translation>
 <translation id="2662876636500006917">Chrome ජාල වෙලඳසැල</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">මෙම දිගුවට ප්‍රවේශය ඔබේ සංවිධානය විසින් අවහිර කර ඇත.</translation>
 <translation id="3242289508736283383">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම ChromeOS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
+<translation id="3364986687961713424">ඔබේ පරිපාලක වෙතින්: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" />  (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">පුද්ගලික යතුර සඳහා යෙදවුම් යතුර වලංගු මාර්ගයක් විය යුතුය.</translation>

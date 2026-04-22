@@ -123,6 +123,7 @@ Si cette règle est définie sur 1 - DisabledForBrowser, le processus de navig
 
 Remarque : pour en savoir plus sur les règles d'atténuation des risques liés aux processus, consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Activer la réception d'enquêtes sur la navigation sécurisée</translation>
+<translation id="1069651607236021905">Forcer la priorité au premier plan pour des origines spécifiques</translation>
 <translation id="107045325503547419">Dépendre du processus de lancement de la fonctionnalité.</translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
 
@@ -703,14 +704,6 @@ Si cette règle n'est pas configurée, le sélecteur d'emoji est activé pour le
 <translation id="1523587744262636189">port 10080 (peut être débloqué jusqu'au 01/04/2022)</translation>
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
-<translation id="1526766414933532012">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
-
-Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Attribution Reporting.</translation>
 <translation id="1532928374875633053">Permet de lister les formats d'URL des sites qui accordent automatiquement l'autorisation de positionnement des fenêtres. Cela étend la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Tout chemin d'accès dans le format d'URL est donc ignoré.
@@ -2125,6 +2118,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2450392422484526374">Si cette règle est définie sur "True", l'impression silencieuse est activée. La fenêtre d'aperçu avant impression se ferme immédiatement lorsqu'elle s'ouvre, et l'impression est lancée sur l'imprimante par défaut avec les options par défaut. Si l'imprimante par défaut est définie sur "Enregistrer au format PDF", le fichier sera enregistré dans le dossier "Téléchargements".
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur "False", l'impression silencieuse est désactivée. La fenêtre d'aperçu avant impression ne se ferme pas automatiquement et l'utilisateur doit sélectionner une option comme d'habitude.</translation>
+<translation id="2451322901390143329">Détermine si les scripts Web Worker créés à partir d'URL de données se voient attribuer une origine opaque unique.
+
+Ils peuvent être créés à l'aide d'une URL de données contenant le script du Worker. Auparavant, ces scripts héritaient de l'origine de la page qui les avait créés, ce qui leur permettait d'accéder au même stockage local, aux mêmes cookies et à d'autres données liées à l'origine. Pour améliorer la sécurité et respecter la spécification HTML, Chrome modifie son comportement par défaut dans la version 149 afin que les scripts créés à partir d'URL de données aient désormais une origine unique et opaque. Cela les isole des données issues de la page du créateur.
+
+Si cette règle est activée ou n'est pas configurée, le nouveau comportement par défaut (plus sécurisé) est utilisé, et les scripts Web Worker créés à partir d'URL de données ont une origine opaque unique.
+
+Si cette règle est désactivée, Chrome rétablit l'ancien comportement et les scripts Web Worker créés à partir d'URL de données héritent de l'origine de leur créateur. Cela permet aux administrateurs de résoudre temporairement les problèmes de compatibilité si les applications internes ne fonctionnent plus en raison des modifications de la sécurité.
+
+Cette règle est provisoire et sera supprimée dans la version 157.</translation>
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
@@ -5299,6 +5301,17 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://ch
           est sans danger.
           </translation>
 <translation id="4578265298946081589">Ne pas redémarrer en cas de déconnexion de l'utilisateur.</translation>
+<translation id="4580711645933054901">Cette règle vous permet de spécifier une liste de formats d'URL. Le contenu Web en arrière-plan correspondant à ces formats sera forcé de s'exécuter avec la priorité au premier plan.
+
+Si la règle <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est activée, cette liste est ignorée, car tous les onglets seront forcés en priorité au premier plan.
+
+Si <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est désactivée ou n'est pas définie, seul le contenu correspondant aux formats de cette liste sera forcé.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès ou paramètre de requête dans le format est ignoré. Le schéma, l'hôte et le port sont pris en charge.
+
+Si cette liste est vide ou n'est pas définie, aucun contenu en arrière-plan n'est forcé en priorité au premier plan.</translation>
 <translation id="4581507927311097234">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est éteint.</translation>
 <translation id="4582027661281685066">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6103,14 +6116,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
 <translation id="50689955292091946">Activer le clavier virtuel d'accessibilité sur l'écran de connexion</translation>
-<translation id="5069453818168036580">Règle permettant de décider si le paramètre des annonces suggérées par les sites de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre des annonces suggérées par les sites <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
-
-Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Protected Audience.</translation>
 <translation id="5069522005630249098">Ce paramètre détermine la quantité de données utilisateur conservées une fois <ph name="LACROS_NAME" /> désactivé.
 
       Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> ou n'est pas configurée, la rétromigration des données n'est pas effectuée.
@@ -6238,6 +6243,7 @@ Les domaines doivent être aux formats suivants : nom de domaine complet (FQDN)
 
 Les domaines dont le format est incorrect seront ignorés.</translation>
 <translation id="5163002264923337812">Activer l'ancienne procédure de connexion basée sur le Web</translation>
+<translation id="5163120075537316507">Les origines opaques pour les URL de données dans les scripts Web Worker sont désactivées (ancien comportement obsolète)</translation>
 <translation id="5163889437570441600">Permet de caster du contenu sur l'appareil avec <ph name="PRODUCT_NAME" />.
 
           Si cette règle est définie sur "False", les utilisateurs ne peuvent pas caster de contenu sur leur appareil. Si elle est définie sur "True", les utilisateurs sont autorisés à caster du contenu. Si elle n'est pas définie, les utilisateurs ne peuvent pas caster de contenu sur les appareils Chrome OS enregistrés, mais ils peuvent le faire sur des appareils non enregistrés.</translation>
@@ -6889,6 +6895,11 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte SharePoint et OneDriv
 <translation id="5542235730745104308">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> utilise les variantes de pages d'erreur intégrées (telles que "Page introuvable"). Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise jamais les variantes de pages d'erreur.
 
 Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, elle est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="5543124658694855168">La définition de cette règle permet aux entreprises de remplacer la valeur renvoyée par l‘<ph name="CPU_PERFORMANCE_API_NAME" /> (c'est-à-dire <ph name="CPU_PERFORMANCE_GETTER_NAME" />). Veuillez consulter https://github.com/WICG/cpu-performance pour en savoir plus.
+
+Si cette règle est configurée, la valeur de <ph name="CPU_PERFORMANCE_GETTER_NAME" /> est remplacée par la valeur spécifiée. Si la règle n'est pas définie, le calcul du niveau de performances par défaut est utilisé.
+
+Les valeurs possibles pour cette règle sont comprises entre 0 et 4.</translation>
 <translation id="5544059132156503357">Cette règle permet de désigner les types de chiffrement autorisés lors de la demande de tickets Kerberos envoyés par un serveur <ph name="MS_AD_NAME" />.
 
 Configurations possibles :
@@ -7195,6 +7206,7 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
 <translation id="5706929446669049441">Désactiver le partage des identifiants de l'utilisateur</translation>
 <translation id="57072195677044908">Désactive la séparation des profils</translation>
 <translation id="5708969689202733975">Configurer les modes de déverrouillage rapide autorisés</translation>
+<translation id="5714281972278520176">Activer les origines opaques pour les URL de données dans les scripts Web Worker</translation>
 <translation id="5714563837055244378">Activer le partage des applis Android vers les applis Web.</translation>
 <translation id="5715739768416614900">Activer les outils de dépannage de kiosque.</translation>
 <translation id="5717973246079053225">Désactiver la création de rapports cloud via un profil géré</translation>
@@ -8044,6 +8056,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
 <translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>
+<translation id="6293411231114989812">Les origines opaques pour les URL de données dans les scripts Web Worker sont activées (nouveau comportement par défaut)</translation>
 <translation id="6299147100249359151">Autorisez la détection du champ d'application des règles.</translation>
 <translation id="6299554629216555326">Paramètres de gestion des fenêtres</translation>
 <translation id="6302021021024941085">Désactiver les outils de dépannage de kiosque.</translation>
@@ -10202,6 +10215,10 @@ Les règles à fusionner doivent aussi être définies dans <ph name="POLICY_LIS
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le reporting sera désactivé.
       Les règles dont les niveaux de restriction ont été définis sur "ALLOW" dans DataLeakPreventionRulesList ne signaleront aucun événement dans les deux cas.</translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
+<translation id="7649831723389657756">Cette règle permet de spécifier les origines devant autoriser tous les schémas d'authentification HTTP pris en charge par <ph name="PRODUCT_NAME" />, indépendamment de la règle <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Indiquez l'origine en respectant le format suivant : <ph name="URL_SCHEME_FORMAT_LINK" />. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Les caractères génériques sont autorisés pour le composant hôte (par exemple, "*:8000" correspond à tous les hôtes sur le port 8000). Pour faire correspondre tous les schémas ou tous les ports, omettez entièrement le composant (par exemple, "example.com" correspond à n'importe quel schéma et n'importe quel port). Un nom d'hôte (par exemple, "example.com") correspond également à ses sous-domaines. Pour faire correspondre un hôte exactement et exclure ses sous-domaines, ajoutez un point devant (par exemple, ".example.com"). Pour faire correspondre toutes les origines, utilisez un astérisque unique ("*").</translation>
 <translation id="7657261947024629645">Privilégier les performances.</translation>
 <translation id="76580522298425324">Autoriser la capture d'écran sans geste préalable de l'utilisateur</translation>
 <translation id="7661379728107156839">Faible complexité</translation>
@@ -10250,6 +10267,7 @@ Pour les origines d'applications Web isolées spécifiques, cette règle peut ê
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'arrêt de l'écran (le cas échéant) et au délai d'inactivité.</translation>
 <translation id="7680437377926096177">Ne plus afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
+<translation id="7681075922820376711">Remplacement du niveau de performances du processeur</translation>
 <translation id="7682409626897786151">Permet de lister les formats d'URL pour lesquels les sites sont autorisés à utiliser la génération de clé. Les formats d'URL inclus dans la règle "KeygenBlockedForUrls" dérogent à cette règle.
 
           Si cette règle n'est pas configurée, la valeur globale par défaut est utilisée pour tous les sites à partir de la règle "DefaultKeygenSetting" si celle-ci est définie ou, à défaut, à partir de la configuration personnelle de l'utilisateur.
@@ -11101,16 +11119,6 @@ Ces règles sont strictement réservées à la configuration des instances de
 Il est inutile de configurer manuellement ces paramètres. Vous pouvez télécharger des modèles faciles à utiliser pour Windows, Mac et Linux sur <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Il est conseillé de configurer les règles sur Windows via GPO, même si la gestion des règles via le registre reste possible pour les instances de Windows associées à un domaine <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261008508574620157">Règle permettant de contrôler si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> est présentée à vos utilisateurs.
-L'invite est un flux qui bloque l'utilisateur pour l'informer des paramètres <ph name="PRIVACY_SANDBOX_NAME" />. Pour en savoir plus sur l'abandon des cookies tiers par Chrome, consultez la page <ph name="PRIVACY_SANDBOX_URL" />.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'affiche pas l'invite <ph name="PRIVACY_SANDBOX_NAME" />.
-Si elle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> détermine si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être affichée ou non, et l'affiche si possible.
-
-Si l'une des règles suivantes est définie, cette règle doit être désactivée :
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Cette règle permet d'accéder à la page de test des règles pendant que les règles y sont en cours de test. Toutes les autres règles sont ignorées.
 Cette fonctionnalité n'est disponible que dans la version Canary.
 
@@ -11756,14 +11764,6 @@ Cette règle est une mesure temporaire qui sera supprimée dans quelque temps.</
       Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du navigateur <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du navigateur <ph name="PRODUCT_NAME" />.
 
       Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
-<translation id="8672039014434141545">Règle permettant de décider si le paramètre des thèmes des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
-
-Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
-Si elle est activée ou qu'elle n'est pas configurée, les utilisateurs pourront activer ou désactiver le paramètre des thèmes des annonces <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
-
-Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.
-
-Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Topics.</translation>
 <translation id="8672321184841719703">Cibler une version pour les mises à jour automatiques</translation>
 <translation id="867410340948518937">U2F (Deuxième facteur universel)</translation>
 <translation id="8675599659717867329">Désactiver les rapports</translation>

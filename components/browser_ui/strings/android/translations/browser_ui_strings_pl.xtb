@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Usunąć zapisane poziomy powiększenia?</translation>
 <translation id="3362437373201486687">Skanuję w poszukiwaniu urządzeń Bluetooth</translation>
 <translation id="3368138297038111198">Udostępniam okno</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Z powodu małej ilości pamięci wyświetlam 1 z {TOTAL_COUNT} elementów}few{Z powodu małej ilości pamięci wyświetlam # z {TOTAL_COUNT} elementów}many{Z powodu małej ilości pamięci wyświetlam # z {TOTAL_COUNT} elementów}other{Z powodu małej ilości pamięci wyświetlam # z {TOTAL_COUNT} elementów}}</translation>
 <translation id="3386292677130313581">Pytaj, zanim udostępnisz stronom swoją lokalizację (zalecane)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Pliki cookie innych firm zostały zablokowane</translation>
@@ -654,7 +655,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7804248752222191302">Strona używa kamery</translation>
 <translation id="7805832099057502789">Plansza dolna wyglądu strony nowej karty otwarta na całą wysokość</translation>
-<translation id="7807060072011926525">Udostępniany przez Google</translation>
 <translation id="7809029041571842593">Plansza dolna kart na stronie nowej karty otwarta do połowy wysokości</translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>

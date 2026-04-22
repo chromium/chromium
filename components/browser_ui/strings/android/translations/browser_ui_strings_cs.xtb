@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Smazat uložené úrovně přiblížení?</translation>
 <translation id="3362437373201486687">Vyhledávání zařízení Bluetooth</translation>
 <translation id="3368138297038111198">Sdílení okna</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Kvůli nedostatku paměti se zobrazuje 1 z {TOTAL_COUNT} položek}few{Kvůli nedostatku paměti se zobrazují # z {TOTAL_COUNT} položek}many{Kvůli nedostatku paměti se zobrazuje # z {TOTAL_COUNT} položek}other{Kvůli nedostatku paměti se zobrazuje # z {TOTAL_COUNT} položek}}</translation>
 <translation id="3386292677130313581">Pokud web bude chtít znát vaši polohu, zobrazit dotaz (doporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Soubory cookie třetích stran jsou blokovány</translation>
@@ -654,7 +655,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7804248752222191302">Web používá váš fotoaparát</translation>
 <translation id="7805832099057502789">Spodní panel vzhledu stránky Nová karta otevřený na celou výšku</translation>
-<translation id="7807060072011926525">Poskytuje Google</translation>
 <translation id="7809029041571842593">Spodní panel Karty na stránce Nová karta otevřený na polovinu výšky</translation>
 <translation id="7815680994978050279">Bylo zablokováno stahování nebezpečného souboru</translation>
 <translation id="7835852323729233924">Přehrávání médií</translation>

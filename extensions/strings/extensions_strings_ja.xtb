@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
 <translation id="1610570795592207282">スクリプトの CSS「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="1616298854599875024">拡張機能「<ph name="IMPORT_NAME" />」は、共有モジュールではないためインポートできません</translation>
+<translation id="1757786065507923842">保護者の権限をリクエストできませんでした。</translation>
 <translation id="1803557475693955505">背景ページ「<ph name="BACKGROUND_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="1875387611427697908">これは <ph name="CHROME_WEB_STORE" /> からのみ追加できます</translation>
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="2159915644201199628">画像をデコードできませんでした: <ph name="IMAGE_NAME" /></translation>
+<translation id="2193567467390483943">保護者がこの拡張機能を承認しませんでした</translation>
 <translation id="2350172092385603347">言語/地域機能は使用されていますが、マニフェストに default_locale が指定されていません。</translation>
 <translation id="2576842806987913196">既にこの名前の CRX ファイルが存在しています。</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
 <translation id="3174723475300476613">この拡張機能へのアクセスは組織によってブロックされています。</translation>
 <translation id="3242289508736283383">「kiosk_only」マニフェスト属性が指定されているアプリは、ChromeOS キオスクモードでインストールする必要があります。</translation>
+<translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>

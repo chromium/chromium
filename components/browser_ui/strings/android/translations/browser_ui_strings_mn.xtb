@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Хадгалсан томруулах түвшнийг устгах уу?</translation>
 <translation id="3362437373201486687">Bluetooth төхөөрөмжүүдийг скан хийж байна</translation>
 <translation id="3368138297038111198">Цонх хуваалцаж байна</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Санах ой бага байгаа тул {TOTAL_COUNT}-с 1 зүйлийг харуулж байна}other{Санах ой бага байгаа тул {TOTAL_COUNT}-с # зүйлийг харуулж байна}}</translation>
 <translation id="3386292677130313581">Сайтууд байршил мэдэх зөвшөөрөл авах (санал болгосон)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Гуравдагч талын күүкинүүдийг блоклосон</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804248752222191302">Сайт таны камерыг ашиглаж байна</translation>
 <translation id="7805832099057502789">Шинэ таб хуудасны харагдах байдлын доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
-<translation id="7807060072011926525">Google-с олгосон</translation>
 <translation id="7809029041571842593">Шинэ таб хуудасны картын доод хүснэгтийг тал өндрөөр нээсэн</translation>
 <translation id="7815680994978050279">Аюултай таталтыг блоклосон</translation>
 <translation id="7835852323729233924">Медиаг тоглуулж байна</translation>

@@ -415,6 +415,7 @@
 <translation id="547202872422499512">Chrome uruchamia się teraz po uruchomieniu systemu Windows, dzięki czemu możesz od razu zacząć przeglądać strony. Możesz to wyłączyć w ustawieniach.</translation>
 <translation id="5486346529181556467">Zgłoś witrynę, która Twoim zdaniem jest szkodliwa, aby zwiększyć bezpieczeństwo online wszystkich użytkowników. Więcej informacji o <ph name="BEGIN_LINK" />zasadach Google dotyczących niebezpiecznych witryn<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Aby zarządzać rozszerzeniami, kliknij Rozszerzenia w menu głównym Chrome.</translation>
 <translation id="5550137307985173298">Kliknij przycisk Dostosuj Chrome na stronie nowej karty, aby zmienić wygląd przeglądarki</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
@@ -501,6 +502,7 @@
 <translation id="6235018212288296708">Reguła dla ruchu przychodzącego w Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
+<translation id="6248988683584659830">Ustawienia wyszukiwania</translation>
 <translation id="6251759518630934363">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="6277547788421725101">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chrome</translation>
 <translation id="627882678981830918">Dostosuj i kontroluj Chrome. Ustaw Chrome jako przeglądarkę domyślną.</translation>
@@ -664,6 +666,7 @@
 <translation id="7792336732117553384">Za&amp;rządzaj profilami Chrome</translation>
 <translation id="7801699035218095297">Google Chrome próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="7804364787702057554">Twoje konto w Chrome</translation>
+<translation id="7804947029129221742">Twoja wyszukiwarka została zmieniona poza Chrome. Aby Cię chronić, przeglądarka Chrome zresetowała to ustawienie do pierwotnej wartości domyślnej. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7827099906024714326">Aby niektóre dane mogły być zapisywane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chrome musi zweryfikować Twoją tożsamość. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
 <translation id="7832314606810669113">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. Ta zakładka zostanie zapisana na Twoim koncie Google, gdy się zalogujesz.</translation>
@@ -785,7 +788,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8992769679401294069">Dane zostały zaszyfrowane Twoim hasłem. Podaj je, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
 <translation id="8999117580775242387">Gdy protokół HTTPS będzie niedostępny, Chrome bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
-<translation id="9010418943148193727">Twoja domyślna wyszukiwarka została zmieniona poza Chrome. Aby Cię chronić, przeglądarka Chrome zresetowała to ustawienie.</translation>
 <translation id="9014771989710951291">Przeglądarką Chrome zarządza kilka organizacji</translation>
 <translation id="9066987883552592250">Zamknij Gemini w Chrome Canary</translation>
 <translation id="9090566250983691233">Dlaczego Chrome blokuje niektóre pliki</translation>

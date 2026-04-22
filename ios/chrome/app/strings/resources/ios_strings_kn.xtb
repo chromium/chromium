@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">ಚಟುವಟಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">ಖಾತೆಗಳ ನಡುವೆ ಬದಲಿಸಲು, ನಿಮ್ಮ ಖಾತೆಯ ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="135806768612505061">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1358106883354237005">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆ</translation>
 <translation id="1358214951266274152">ನೀವು ನಕಲಿಸಿದ ಲಿಂಕ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="1360432990279830238">ಸೈನ್ ಔಟ್ ಮಾಡಿ, ಸಿಂಕ್ ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1554043146674176775">AI ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
+<translation id="1554605811306591212">ನಮ್ಮ <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> ಮತ್ತು <ph name="PRIVACY_NOTICE" /> ಅನ್ವಯವಾಗುತ್ತವೆ. Gemini ಎಂಬುದು AI ಆಗಿದ್ದು, ಜನರ ಕುರಿತಾದ ವಿಚಾರದಲ್ಲಿಯೂ ಸೇರಿದಂತೆ ತಪ್ಪುಗಳನ್ನು ಮಾಡಬಹುದು.</translation>
 <translation id="1558391695376153246">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1565371473877914088">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="1567960978791353852">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1864266050569350424">ನೀವು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್‌ ಮಾಡಿದ ಸೈಟ್‌ನಲ್ಲಿ, ಸೈನ್‌-ಇನ್‌ ಪಾಸ್‌ವರ್ಡ್ ಫೀಲ್ಡ್‌ ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ.</translation>
 <translation id="1866700949421703765">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="1869050523388525800">Google ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿದಾಗ ಮಾತ್ರ ಹುಡುಕಾಟದ ಸ್ಕ್ರೀನ್ ಲಭ್ಯವಿರುತ್ತದೆ. <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ಕುಟುಂಬದ ಸದಸ್ಯರನ್ನು ಆಹ್ವಾನಿಸಿ</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು, ನಿಮ್ಮ ಬಳಕೆಯಾಗದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3904270275864974753">ಕರೋಸಲ್‌ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="3905384981098338147">AI ಮೋಡ್ ಇತಿಹಾಸ</translation>
 <translation id="3909222758573607742">ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3913463964270756493">Google Lens ಅನ್ನು ಬಳಸಿಕೊಂಡು ಹುಡುಕಾಟ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3914640181019354363">ವಿಳಾಸಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">ಕೀಬೋರ್ಡ್‌ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="4415276339145661267">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4416582610654027550">ಮಾನ್ಯವಾದ URL ಟೈಪ್ ಮಾಡಿ</translation>
+<translation id="441868831736628555">ಗೌಪ್ಯತೆಯ ಸೂಚನೆ</translation>
 <translation id="4420409367264901497">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4425365312778464779">ಈ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ಅನ್ನು ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ಮತ್ತು ಇತರೆ 1}one{{domain} ಮತ್ತು ಇತರೆ {count}}other{{domain} ಮತ್ತು ಇತರೆ {count}}}</translation>
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="4828431027673677473">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ಉತ್ಪನ್ನಗಳು</translation>
+<translation id="4829420936835028285">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4833786495304741580">ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="483689884442613745">ಸೇವ್‌ ಮಾಡಿ…</translation>
 <translation id="4840495572919996524">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್ ಮಾಡುವುದಿಲ್ಲ.</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">ಟ್ಯಾಬ್‌ ಸ್ವಿಚರ್‌ ಅನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="5148717509369231739">Safari ಆಮದು</translation>
 <translation id="5152483358138813104">ನಿಮ್ಮ ಸಾಧನಗಳಾದ್ಯಂತ ವೇಗವಾಗಿ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
+<translation id="515315847398512535">ನಿಮ್ಮ ಖಾತೆಗಾಗಿ ಹುಡುಕಾಟದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5155502059906700593">ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಮೇಲಕ್ಕೆ ಅಥವಾ ಕೆಳಕ್ಕೆ ಬದಲಾಯಿಸಿ.</translation>
 <translation id="5157638238828697074">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್‌ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="5163417375525818870">PDF ಗಳು</translation>
@@ -1313,7 +1320,6 @@
 <translation id="5647702255748985085">ಗುಂಪನ್ನು ತೊರೆಯಬೇಕೇ?</translation>
 <translation id="5648166631817621825">ಕಳೆದ 7 ದಿನಗಳು</translation>
 <translation id="5652623411397330904">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.</translation>
-<translation id="5653100054596780862">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5656431592348714536">ವರ್ಧಿತ ಕ್ಯಾಲೆಂಡರ್‌</translation>
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> ಮತ್ತು <ph name="GEMINI_APPS_PRIVACY" /> ಅನ್ವಯವಾಗುತ್ತವೆ. Gemini ತಪ್ಪುಗಳನ್ನು ಮಾಡಬಹುದು, ಹಾಗಾಗಿ ಅದರ ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಡಬಲ್ ಚೆಕ್ ಮಾಡಿ.</translation>
@@ -1511,6 +1517,7 @@
 <translation id="6307241780749477694">ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪಡೆಯುವುದಕ್ಕಾಗಿ ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6316141353357700666">ಕಾಣಿಸಿಕೊಳ್ಳುವ ಪಟ್ಟಿಯಿಂದ ನೀವು ಬಳಸಲು ಬಯಸುವ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆರಿಸಿ.</translation>
 <translation id="6321526113093607004">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
+<translation id="6327249202318869726">ನಿಮ್ಮ ಖಾತೆಗಾಗಿ Gemini ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="6331836477476466332">ನಿಮಗಾಗಿ ಸುರಕ್ಷಿತವಾದ, ಹೆಚ್ಚು ಶಕ್ತಿಯುತವಾದ ಬ್ರೌಸರ್</translation>
 <translation id="6335744088476213315">ಈ ಕಾರ್ಡ್ ನೀವು ಇತ್ತೀಚೆಗೆ ವೀಕ್ಷಿಸಿದ ಉತ್ಪನ್ನಗಳನ್ನು ತೋರಿಸುತ್ತದೆ ಮತ್ತು ದರ ಇಳಿಕೆಯ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯುವುದಕ್ಕಾಗಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಆಸಕ್ತಿ ಹೊಂದಿರಬಹುದು</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
@@ -1788,6 +1795,7 @@
 <translation id="7261217796641151584">ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7266578100016339897">ಇದು ನಿಮಗೆ ವ್ಯವಸ್ಥಿತವಾಗಿರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="7272437679830969316">ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನಕಲಿಸಲಾಗಿಲ್ಲ.</translation>
+<translation id="7275307913765547631">ಕೊರಿಯನ್ ಸ್ಥಳ ನಿಯಮಗಳು</translation>
 <translation id="728025568708172005">ನನಗೆ ಸುತ್ತಲೂ ತೋರಿಸಿ</translation>
 <translation id="7280980607183752256">ಈ ಫೈಲ್ ಅನ್ನು ಇಂಪೋರ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7281202269687163394">ನಿಮ್ಮ ಗೌಪ್ಯತೆ ಮತ್ತು Gemini.</translation>
@@ -2003,6 +2011,7 @@
 <translation id="7996239959906074962">ಸೆಟಪ್ ಮಾಡಿ…</translation>
 <translation id="800361585186029508">Google Chrome ನಲ್ಲಿ ಇನ್‌ಪುಟ್ ಮಾಡಿದ URL ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="8005666035647241369">ಈ ಸಾಧನದಲ್ಲಿ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕಕ್ಕೆ</translation>
+<translation id="8006265839264939135">ನಿಯಮಗಳು</translation>
 <translation id="8010488806779226127">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಇನ್ನಷ್ಟು ಮಾಡಲು ಸಹಾಯ ಮಾಡುವ ಫೀಚರ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="8011489434346330032">ವೆಬ್ ಇನ್ಸ್‌ಪೆಕ್ಟರ್</translation>
 <translation id="8014007212279733632">ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ಇದು ನೀವೇ ಹೌದು ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>

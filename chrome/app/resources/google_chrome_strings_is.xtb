@@ -424,6 +424,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="547202872422499512">Chrome ræsist nú þegar Windows ræsist, svo að þú getur byrjað að vafra samstundis. Þú getur slökkt á þessu í stillingunum.</translation>
 <translation id="5486346529181556467">Auktu netöryggi allra með því að tilkynna vefsvæði sem þú telur að sé skaðlegt. Nánar um <ph name="BEGIN_LINK" />reglur Google um óörugg vefsvæði.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Stjórnaðu viðbótunum þínum með því að smella á „Viðbætur“ á aðalvalmynd Chrome.</translation>
 <translation id="5550137307985173298">Smelltu á hnappinn „Sérsníða Chrome“ á síðu nýrra flipa til að gefa Chrome nýtt útlit</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
@@ -510,6 +511,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6235018212288296708">Regla á innleið til að láta Google Chrome leyfa mDNS-umferð.</translation>
 <translation id="624230925347970731">Chrome lokast bráðum</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
+<translation id="6248988683584659830">Leitarstillingar</translation>
 <translation id="6251759518630934363">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
 <translation id="6277547788421725101">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome</translation>
 <translation id="627882678981830918">Sérsníddu og stjórnaðu Chrome. Stilltu Chrome sem sjálfgefinn vafra.</translation>
@@ -673,6 +675,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7792336732117553384">&amp;Stjórna Chrome-prófílum</translation>
 <translation id="7801699035218095297">Google Chrome er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="7804364787702057554">Reikningurinn þinn í Chrome</translation>
+<translation id="7804947029129221742">Leitarvélinni þinni var breytt utan Chrome. Chrome endurstillti hana á upphafleg sjálfgefin gildi til að vernda þig. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Fjarlægja úr Chrome...</translation>
 <translation id="7827099906024714326">Chrome þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7832314606810669113">Skráðu þig inn á Chrome til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum Þetta bókamerki verður vistað á Google-reikningnum þínum eftir að þú skráir þig inn.</translation>
@@ -793,7 +796,6 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8992769679401294069">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="8999117580775242387">Ef HTTPS er ekki í boði mun Chrome notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
-<translation id="9010418943148193727">Sjálfgefnu leitarvélinni þinni var breytt utan Chrome. Chrome endurstillti hana til að vernda þig.</translation>
 <translation id="9014771989710951291">Mörg fyrirtæki hafa umsjón með Chrome</translation>
 <translation id="9066987883552592250">Loka Gemini í Chrome Canary</translation>
 <translation id="9090566250983691233">Kynntu þér hvers vegna Chrome lokar á sumar skrár</translation>

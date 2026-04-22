@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">No se pudo mover el directorio de extensiones al perfil</translation>
 <translation id="1610570795592207282">No se pudo cargar <ph name="RELATIVE_PATH" /> de CSS para la secuencia de comandos.</translation>
 <translation id="1616298854599875024">No se puede importar la extensión "<ph name="IMPORT_NAME" />" porque no es un módulo compartido</translation>
+<translation id="1757786065507923842">Se produjo un error en la solicitud de permiso parental.</translation>
 <translation id="1803557475693955505">No se pudo cargar la página de fondo '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Este elemento se puede agregar solamente desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">No se pudo instalar "<ph name="APP_NAME" />" porque no tiene permisos de "<ph name="IMPORT_NAME" />".</translation>
 <translation id="2159915644201199628">No se pudo decodificar la imagen "<ph name="IMAGE_NAME" />".</translation>
+<translation id="2193567467390483943">Tu madre o padre no aprobó esta extensión</translation>
 <translation id="2350172092385603347">Se utiliza localización, pero default_locale no se especificó en el manifiesto.</translation>
 <translation id="2576842806987913196">Ya existe una archivo CRX con este nombre.</translation>
 <translation id="2662876636500006917">Tienda virtual de Chrome</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Producto desconocido <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Tu organización bloqueó el acceso a esta extensión.</translation>
 <translation id="3242289508736283383">La app con el atributo del manifiesto "kiosk_only" se debe instalar en el modo kiosco del ChromeOS.</translation>
+<translation id="3364986687961713424">Mensaje de tu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Да се избрише зачуваниот зум?</translation>
 <translation id="3362437373201486687">Скенира за уреди со Bluetooth</translation>
 <translation id="3368138297038111198">Се споделува прозорец</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Се прикажува 1 од {TOTAL_COUNT} ставки поради недостиг на меморија}one{Се прикажуваат # од {TOTAL_COUNT} ставки поради недостиг на меморија}other{Се прикажуваат # од {TOTAL_COUNT} ставки поради недостиг на меморија}}</translation>
 <translation id="3386292677130313581">Прашај пред да дозволиш сајтовите да ја дознаат локацијата (се препорачува)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Колачињата од трети страни се блокирани</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804248752222191302">Сајтот ја користи камерата</translation>
 <translation id="7805832099057502789">Долниот лист со изглед на страница во нова картичка е отворен на целосна висина</translation>
-<translation id="7807060072011926525">Обезбедено од Google</translation>
 <translation id="7809029041571842593">Долниот лист со „Картички на страница во нова картичка“ е отворен на половина висина</translation>
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7835852323729233924">Пуштање аудиовизуелни содржини</translation>

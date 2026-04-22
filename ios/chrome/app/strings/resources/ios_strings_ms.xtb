@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Urus aktiviti</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Untuk menukar antara akaun, ketik ikon akaun anda</translation>
+<translation id="135806768612505061">Semua Tab</translation>
 <translation id="1358106883354237005">Akaun Terurus</translation>
 <translation id="1358214951266274152">Lawati Pautan yang Disalin</translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Kongsi kata laluan</translation>
 <translation id="1554043146674176775">Matikan AI Mode</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> dan <ph name="PRIVACY_NOTICE" /> kami dikenakan. Gemini ialah AI dan mungkin melakukan kesilapan, termasuk tentang orang.</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="1565371473877914088">Tab Inkognito Baharu</translation>
 <translation id="1567960978791353852">Tunjukkan Mod Membaca</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1864266050569350424">Ketik medan kata laluan log masuk pada laman yang menyimpan kata laluan anda.</translation>
 <translation id="1866700949421703765">Sembunyikan Hidupkan Mod Membaca</translation>
+<translation id="1869050523388525800">Skrin carian hanya tersedia apabila Google ditetapkan sebagai enjin carian lalai anda. Anda boleh menukar enjin carian lalai anda dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lampu suluh</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Undang ahli keluarga</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Untuk menyimpan penanda halaman dalam akaun anda, padamkan penanda halaman anda yang tidak digunakan</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit karusel</translation>
+<translation id="3905384981098338147">Sejarah AI Mode</translation>
 <translation id="3909222758573607742">Simpan kata laluan dan item lain dalam akaun</translation>
 <translation id="3913463964270756493">Sembunyikan skrin Carian dengan Google Lens</translation>
 <translation id="3914640181019354363">Kesan alamat</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Gunakan papan kekunci</translation>
 <translation id="4415276339145661267">Urus Google Account anda</translation>
 <translation id="4416582610654027550">Taip URL yang sah</translation>
+<translation id="441868831736628555">Notis Privasi</translation>
 <translation id="4420409367264901497">Edit Penanda Halaman</translation>
 <translation id="4425365312778464779">Akaun ini terurus</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> dipilih pada masa ini. Pilih akaun.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">Tinggalkan Penukar Tab</translation>
 <translation id="5148717509369231739">Import Safari</translation>
 <translation id="5152483358138813104">Log masuk dengan lebih pantas merentas peranti anda</translation>
+<translation id="515315847398512535">Carian skrin dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5155502059906700593">Tukar kedudukan bar alamat anda kepada bahagian atas atau bahagian bawah.</translation>
 <translation id="5157638238828697074">Ada masalah. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1313,7 +1319,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5647702255748985085">Tinggalkan kumpulan?</translation>
 <translation id="5648166631817621825">7 hari lalu</translation>
 <translation id="5652623411397330904">Produk yang anda jejaki akan dipaparkan di sini.</translation>
-<translation id="5653100054596780862">Semua tab</translation>
 <translation id="5656431592348714536">Kalendar Dipertingkatkan</translation>
 <translation id="5659593005791499971">E-mel</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> dan <ph name="GEMINI_APPS_PRIVACY" /> digunakan. Gemini mungkin melakukan kesilapan, maka semak semula respons yang diberikan.</translation>
@@ -1511,6 +1516,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6307241780749477694">Sahkan identiti anda untuk mendapatkan akses kepada semua kata laluan anda pada peranti ini</translation>
 <translation id="6316141353357700666">Pilih kata laluan yang mahu digunakan daripada senarai yang dipaparkan.</translation>
 <translation id="6321526113093607004">Tambahkan pada Penanda Halaman</translation>
+<translation id="6327249202318869726">Gemini dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="6331836477476466332">Penyemak imbas yang lebih selamat dan berkuasa untuk anda</translation>
 <translation id="6335744088476213315">Kad ini memaparkan produk yang telah anda lihat baru-baru ini dan anda mungkin berminat untuk menjejaki produk tersebut untuk mendapatkan makluman penurunan harga</translation>
 <translation id="6337234675334993532">Penyulitan</translation>
@@ -1788,6 +1794,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7261217796641151584">Kumpulan Kongsi</translation>
 <translation id="7266578100016339897">Langkah ini membantu anda kekal teratur. Anda boleh menukar pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="7272437679830969316">Tidak dapat mengesahkan identiti anda. Kata laluan tidak disalin.</translation>
+<translation id="7275307913765547631">Syarat Lokasi Korea</translation>
 <translation id="728025568708172005">Pengenalan</translation>
 <translation id="7280980607183752256">Fail ini tidak dapat diimport</translation>
 <translation id="7281202269687163394">Privasi anda &amp; Gemini.</translation>
@@ -2003,6 +2010,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7996239959906074962">Sediakan…</translation>
 <translation id="800361585186029508">Membuka URL yang dimasukkan dalam Google Chrome.</translation>
 <translation id="8005666035647241369">Kepada Pengurus Kata Laluan Google pada peranti ini</translation>
+<translation id="8006265839264939135">Syarat</translation>
 <translation id="8010488806779226127">Terokai ciri yang boleh membantu anda melakukan lebih banyak perkara sambil anda menyemak imbas</translation>
 <translation id="8011489434346330032">Pemeriksa Web</translation>
 <translation id="8014007212279733632">Sahkan identiti anda untuk membuat autolengkap maklumat sensitif</translation>

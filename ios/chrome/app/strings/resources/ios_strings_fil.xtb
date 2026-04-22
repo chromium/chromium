@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Para lumipat sa mga account, i-tap ang icon ng iyong account</translation>
+<translation id="135806768612505061">Lahat ng Tab</translation>
 <translation id="1358106883354237005">Pinamamahalaang Account</translation>
 <translation id="1358214951266274152">Bisitahin Ang Link Na Kinopya Mo</translation>
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Mag-share ng mga password</translation>
 <translation id="1554043146674176775">I-off ang AI Mode</translation>
 <translation id="1554477036522844996">Bagong Window</translation>
+<translation id="1554605811306591212">Nalalapat ang aming <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" />, at <ph name="PRIVACY_NOTICE" />. AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao.</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
 <translation id="1565371473877914088">Bagong Tab na Incognito</translation>
 <translation id="1567960978791353852">Ipakita ang Reading Mode</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Walang laman ang folder na ito</translation>
 <translation id="1864266050569350424">Sa site kung saan ka nag-save ng password, i-tap ang field ng password sa pag-sign in.</translation>
 <translation id="1866700949421703765">I-hide ang I-on ang Reading Mode</translation>
+<translation id="1869050523388525800">Available lang ang screen ng paghahanap kapag nakatakda ang Google bilang iyong default na search engine. Puwede mong baguhin ang iyong default na search engine sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Mag-imbita ng mga miyembro ng pamilya</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Para mag-save ng mga bookmark sa iyong account, i-delete ang mga hindi mo ginagamit na bookmark</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">I-edit ang carousel</translation>
+<translation id="3905384981098338147">History ng AI Mode</translation>
 <translation id="3909222758573607742">I-save ang mga password at iba pang item sa account</translation>
 <translation id="3913463964270756493">I-hide ang Maghanap sa screen gamit ang Google Lens</translation>
 <translation id="3914640181019354363">Mag-detect ng mga address</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Gamitin ang keyboard</translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4416582610654027550">Mag-type ng valid na URL</translation>
+<translation id="441868831736628555">Notification ng Privacy</translation>
 <translation id="4420409367264901497">I-edit ang Bookmark</translation>
 <translation id="4425365312778464779">Pinapamahalaan ang account na ito</translation>
 <translation id="4430277756566635951">Kasalukuyang pinili ang <ph name="EMAIL" />. Pumili ng account.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
 <translation id="4828431027673677473">Mga produkto batay sa iyong mga interes</translation>
+<translation id="4829420936835028285">I-edit ang Grupo ng Tab</translation>
 <translation id="4833786495304741580">Awtomatikong nagpapadala sa Google ng mga istatistika sa paggamit at ulat ng pag-crash.</translation>
 <translation id="483689884442613745">I-save…</translation>
 <translation id="4840495572919996524">Ang iyong mga bookmark, history, mga password, at higit pa ay hindi na masi-sync sa Google Account mo.</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">Umalis sa tab switcher</translation>
 <translation id="5148717509369231739">Pag-import mula sa Safari</translation>
 <translation id="5152483358138813104">Mas mabilis na mag-sign in sa iyong mga device</translation>
+<translation id="515315847398512535">Naka-off ang screen ng paghahanap para sa iyong account. Makipag-ugnayan sa iyong admin para sa higit pang impormasyon.</translation>
 <translation id="5155502059906700593">Ilipat ang posisyon ng iyong address bar sa itaas o ibaba.</translation>
 <translation id="5157638238828697074">Nagkaproblema. Hindi mabuksan ang application.</translation>
 <translation id="5163417375525818870">Mga PDF</translation>
@@ -1313,7 +1320,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5647702255748985085">Umalis sa grupo?</translation>
 <translation id="5648166631817621825">Nakalipas na 7 araw</translation>
 <translation id="5652623411397330904">Lalabas dito ang mga produktong sinusubaybayan mo.</translation>
-<translation id="5653100054596780862">Lahat ng tab</translation>
 <translation id="5656431592348714536">Pinahusay na Kalendaryo</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307">Nalalapat ang <ph name="GOOGLE_TERMS" /> at <ph name="GEMINI_APPS_PRIVACY" />. Puwedeng magkamali ang Gemini, kaya i-double check ito.</translation>
@@ -1511,6 +1517,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
 <translation id="6316141353357700666">Piliin ang password na gusto mong gamitin mula sa lalabas na listahan.</translation>
 <translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
+<translation id="6327249202318869726">Naka-off ang Gemini para sa iyong account. Makipag-ugnayan sa iyong admin para sa higit pang impormasyon.</translation>
 <translation id="6331836477476466332">Isang mas ligtas at mas mahusay na browser para sa iyo</translation>
 <translation id="6335744088476213315">Ipinapakita ng card na ito ang mga produktong tiningnan mo kamakailan at baka interesado kang subaybayan para makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
@@ -1788,6 +1795,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7261217796641151584">I-share ang Grupo</translation>
 <translation id="7266578100016339897">Makakatulong ito sa iyong manatiling organisado. Puwede mo itong baguhin sa mga setting anumang oras.</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
+<translation id="7275307913765547631">Mga Tuntunin ng Lokasyon sa Korea</translation>
 <translation id="728025568708172005">Simulan ang tour</translation>
 <translation id="7280980607183752256">Hindi mai-import ang file na ito</translation>
 <translation id="7281202269687163394">Ang iyong privacy at Gemini.</translation>
@@ -2003,6 +2011,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7996239959906074962">I-set up…</translation>
 <translation id="800361585186029508">Binubuksan ang mga inilagay na URL sa Google Chrome.</translation>
 <translation id="8005666035647241369">Sa Google Password Manager sa device na ito</translation>
+<translation id="8006265839264939135">Mga Tuntunin</translation>
 <translation id="8010488806779226127">Mag-explore ng mga features na makakatulong sa iyo na gumawa ng higit pa habang nagba-browse ka</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">I-verify na ikaw ito para mag-autofill ng sensitibong impormasyon</translation>

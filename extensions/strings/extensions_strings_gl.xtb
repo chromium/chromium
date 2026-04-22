@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
 <translation id="1610570795592207282">Non se puido cargar o CSS <ph name="RELATIVE_PATH" /> para o script.</translation>
 <translation id="1616298854599875024">Non se puido importar a extensión "<ph name="IMPORT_NAME" />" porque non é un módulo compartido</translation>
+<translation id="1757786065507923842">Produciuse un erro ao solicitar o permiso parental.</translation>
 <translation id="1803557475693955505">Erro ao cargar a páxina en segundo plano "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Este elemento só se pode engadir desde <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Non se pode instalar "<ph name="APP_NAME" />" debido a que "<ph name="IMPORT_NAME" />" non o permite</translation>
 <translation id="2159915644201199628">Non se puido descodificar a imaxe: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2193567467390483943">O teu pai ou nai non aprobou esta extensión</translation>
 <translation id="2350172092385603347">Localización utilizada, pero default_locale non se especificou no manifesto.</translation>
 <translation id="2576842806987913196">Xa hai un ficheiro CRX presente con este nome.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">A túa organización bloqueou o acceso a esta extensión.</translation>
 <translation id="3242289508736283383">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS</translation>
+<translation id="3364986687961713424">Do teu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada da clave privada debe ser unha ruta válida.</translation>

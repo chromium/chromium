@@ -227,7 +227,6 @@
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Standardsøkemotoren din er endret utenfor Chromium. For å beskytte deg har Chromium tilbakestilt den.</translation>
 <translation id="3352986031709923790">øverst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-data i kontoen din</translation>
 <translation id="3369405342922656244">Søk på denne siden med Bildesøk</translation>
@@ -475,6 +474,7 @@
 <translation id="6241367896540709610">Chromium må ha lagringstilgang for å kunne laste ned filer</translation>
 <translation id="6245734527075554892">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder</translation>
 <translation id="6248213926982192922">Gjør Chromium til standardnettleser</translation>
+<translation id="6248988683584659830">Søk i innstillingene</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6270547683008298381">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chromium gjøre dem inaktive.</translation>
 <translation id="6281746429495226318">Tilpass Chromium-profilen din</translation>
@@ -511,6 +511,7 @@
 <translation id="6542839706527980775">Hver profil har sin egen Chromium-informasjon, som bokmerker, logg, passord med mer</translation>
 <translation id="6563921047760808519">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chromium holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Endringer i denne innstillingen tas i bruk når Chromium startes på nytt.</translation>
+<translation id="6567032987737689854">Administrer utvidelsene dine ved å klikke på Utvidelser på hovedmenyen i Chromium.</translation>
 <translation id="656935081669708576">Du kan bytte til å se passord fra en annen Chromium-profil</translation>
 <translation id="6570579332384693436">For å rette opp i skrivefeil sender Chromium sender tekst du skriver i tekstfelt, til Google</translation>
 <translation id="6598877126913850652">Gå til innstillinger for Chromium-varsler</translation>
@@ -634,6 +635,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7810005234485217901">Du kan feste bildesøk for enklere tilgang</translation>
 <translation id="7828947555739565424">Det finnes allerede en Chromium-profil med denne kontoen på denne enheten</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847673590271334840">Søkemotoren er endret utenfor Chromium. For å beskytte deg har Chromium tilbakestilt den til den opprinnelige standardinnstillingen. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Tilpass Chromium for å gi den et nytt utseende</translation>
 <translation id="7859018312476869945">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="7867198900892795913">Chromium kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Gespeicherte Zoomstufen löschen?</translation>
 <translation id="3362437373201486687">Nach Bluetooth-Geräten wird gesucht</translation>
 <translation id="3368138297038111198">Fenster wird geteilt</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Aufgrund von wenig Speicherplatz wird 1 von {TOTAL_COUNT} Elementen angezeigt}other{Aufgrund von wenig Speicherplatz werden # von {TOTAL_COUNT} Elementen angezeigt}}</translation>
 <translation id="3386292677130313581">Nachfragen, bevor Websites mein Standort angezeigt wird (empfohlen)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Drittanbieter-Cookies blockiert</translation>
@@ -654,7 +655,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
 <translation id="7805832099057502789">Ansicht am unteren Rand – Darstellung „Neuer Tab“-Seite – in vollständiger Höhe geöffnet</translation>
-<translation id="7807060072011926525">Von Google bereitgestellt</translation>
 <translation id="7809029041571842593">Die Ansicht am unteren Rand mit den Karten auf der Seite „Neuer Tab“ ist halb geöffnet</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>

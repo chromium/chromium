@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Ungependa kufuta viwango vya ukuzaji ulivyohifadhi?</translation>
 <translation id="3362437373201486687">Inatafuta vifaa vyenye Bluetooth</translation>
 <translation id="3368138297038111198">Unawasilisha dirisha</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Inaonyesha kipengee 1 kati ya {TOTAL_COUNT} kwa sababu nafasi ya hifadhi inakaribia kuisha}other{Inaonyesha vipengee # kati ya {TOTAL_COUNT} kwa sababu nafasi ya hifadhi inakaribia kuisha}}</translation>
 <translation id="3386292677130313581">Uliza kabla ya kuruhusu tovuti zijue mahali ulipo (inapendekezwa)</translation>
 <translation id="3403537308306431953">Asilimia <ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">Vidakuzi vya mshirika mwingine vimezuiwa</translation>
@@ -654,7 +655,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
 <translation id="7805832099057502789">Safu ya chini ya mwonekano wa ukurasa wa kichupo kipya imefunguliwa katika skrini nzima</translation>
-<translation id="7807060072011926525">Imetolewa na Google</translation>
 <translation id="7809029041571842593">Umefungua safu ya chini ya kadi za ukurasa wa kichupo kipya katika skrini nusu</translation>
 <translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7835852323729233924">Kucheza maudhui</translation>

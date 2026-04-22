@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">ପ୍ରୋଫାଇଲ୍‌କୁ ଏକ୍ସଟେନ୍‌ସନ୍ ଡିରେକ୍ଟୋରୀ ପଠାଯାଇପାରିଲାନାହିଁ।</translation>
 <translation id="1610570795592207282">ସ୍କ୍ରିପ୍ଟ ପାଇଁ css '<ph name="RELATIVE_PATH" />'କୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1616298854599875024">ଏକ୍ସଟେନ୍‌ସନ୍ <ph name="IMPORT_NAME" /> ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିଲା ନାହିଁଁ କାରଣ ଏହା ଏକ ସେୟାର୍ କରାଯାଇଥିବା ମଡ୍ୟୁଲ୍ ନୁହେଁ</translation>
+<translation id="1757786065507923842">ବାପାମା'ଙ୍କ ଅନୁମତି ଅନୁରୋଧ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' ପୃଷ୍ଠପଟ ପୃଷ୍ଠା ଲୋଡ୍‌ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1875387611427697908">ଏହା କେବଳ <ph name="CHROME_WEB_STORE" />ରୁ ଯୋଗ କରାଯାଇପାରିବ</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" ଦ୍ୱାରା ଅନୁମତି ପ୍ରାପ୍ତ ହୋଇନଥିବା କାରଣ ଯୋଗୁଁ "<ph name="APP_NAME" />" ଇନ୍‌ଷ୍ଟଲ୍ କରିବାକୁ ଅକ୍ଷମ</translation>
 <translation id="2159915644201199628">ଛବି ଡିକୋଡ୍ କରିପାରିଲା ନାହିଁ: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">ତୁମ ବାପାମା ଏହି ଏକ୍ସଟେନସନକୁ ଅନୁମୋଦନ କରିନାହାଁନ୍ତି</translation>
 <translation id="2350172092385603347">ସ୍ଥାନୀୟକରଣ ବ୍ୟବହାର କରାଯାଇଛି, କିନ୍ତୁ ମାନିଫେଷ୍ଟରେ default_locale ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇନାହିଁ।</translation>
 <translation id="2576842806987913196">ପୂର୍ବରୁ ଏହି ନାମରେ ଏକ CRX ଫାଇଲ୍‌ ଅଛି।</translation>
 <translation id="2662876636500006917">Chrome ୱେବ୍ ଷ୍ଟୋର୍</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">ଭେଣ୍ଡର <ph name="VENDOR_ID" />ରୁ ଅଜଣା ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଏହି ଏକ୍ସଟେନସନକୁ ଆକ୍ସେସ ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="3242289508736283383">'kiosk_only' ମାନିଫେଷ୍ଟ ଆଟ୍ରିବ୍ୟୁଟ ଥିବା ଆପ ChromeOS କିଓସ୍କ ମୋଡରେ ଇନଷ୍ଟଲ କରାଯିବା ଉଚିତ</translation>
+<translation id="3364986687961713424">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଠାରୁ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ବିକ୍ରେତା <ph name="VENDOR_ID" />ଙ୍କ ତରଫରୁ <ph name="PRODUCT_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ବ୍ୟକ୍ତିଗତ କୀ ପାଇଁ ମୂଲ୍ୟ ନିଶ୍ଚିତରୂପେ ଏକ ବୈଧ ପାଥ୍‌ ହେବା ଆବଶ୍ୟକ।</translation>

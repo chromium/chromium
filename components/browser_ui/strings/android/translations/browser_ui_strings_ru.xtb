@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Удалить настройки?</translation>
 <translation id="3362437373201486687">Поиск устройств Bluetooth</translation>
 <translation id="3368138297038111198">Вы показываете окно</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Из-за нехватки памяти показан 1 объект из {TOTAL_COUNT}.}one{Из-за нехватки памяти показан # объект из {TOTAL_COUNT}.}few{Из-за нехватки памяти показано # объекта из {TOTAL_COUNT}.}many{Из-за нехватки памяти показано # объектов из {TOTAL_COUNT}.}other{Из-за нехватки памяти показано # объекта из {TOTAL_COUNT}.}}</translation>
 <translation id="3386292677130313581">Запрашивать разрешение на доступ к данным о местоположении (рекомендуется)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Сторонние файлы cookie заблокированы</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
 <translation id="7805832099057502789">Нижний экран с вариантами оформления для страницы быстрого доступа открыт полностью</translation>
-<translation id="7807060072011926525">Данные от Google</translation>
 <translation id="7809029041571842593">Нижний экран с карточками на странице быстрого доступа открыт наполовину</translation>
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7835852323729233924">Воспроизведение медиаконтента</translation>

@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Сақталған масштабтау деңгейлерін жою қажет пе?</translation>
 <translation id="3362437373201486687">Bluetooth құрылғылары сканерленуде</translation>
 <translation id="3368138297038111198">Терезені бөлісіп жатыр</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Жадтың аз болғанына байланысты 1/{TOTAL_COUNT} элемент көрсетіліп тұр.}other{Жадтың аз болғанына байланысты #/{TOTAL_COUNT} элемент көрсетіліп тұр.}}</translation>
 <translation id="3386292677130313581">Сайттар орналасқан орныңызды анықтау үшін рұқсат сұрайды (ұсынылады)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804248752222191302">Сайт камераны пайдаланып жатыр.</translation>
 <translation id="7805832099057502789">Толығымен ашылған жаңа қойынды беті көрінісінің төменгі парақшасы</translation>
-<translation id="7807060072011926525">Google ұсынған деректер</translation>
 <translation id="7809029041571842593">Жаңа қойынды бетінің карталары бар төменгі парақша жартылай ашылды.</translation>
 <translation id="7815680994978050279">Қауіпті жүктеп алу әрекеті бөгелді</translation>
 <translation id="7835852323729233924">Медиамазмұн ойнату</translation>

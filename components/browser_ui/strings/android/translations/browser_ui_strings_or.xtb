@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">ସେଭ କରାଯାଇଥିବା ଜୁମ ଲେଭେଲକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="3362437373201486687">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="3368138297038111198">ଏକ ୱିଣ୍ଡୋ ସେୟାର କରାଯାଉଛି</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{ମେମୋରୀ କମ ଥିବା ଯୋଗୁଁ {TOTAL_COUNT} ଆଇଟମରୁ 1 ଆଇଟମ ଦେଖାଯାଉଛି}other{ମେମୋରୀ କମ ଥିବା ଯୋଗୁଁ {TOTAL_COUNT} ଆଇଟମରୁ # ଆଇଟମ ଦେଖାଯାଉଛି}}</translation>
 <translation id="3386292677130313581">ସାଇଟ୍‍ଗୁଡ଼ିକ ଆପଣଙ୍କର ଲୋକେସନ୍‌ ଜାଣିବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍‌ କରାଯାଇଛି)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7804248752222191302">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7805832099057502789">ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଥିବା ନୂଆ ଟାବ ପୃଷ୍ଠା ଏପିଏରେନ୍ସ ବଟମ ସିଟ</translation>
-<translation id="7807060072011926525">Google ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି</translation>
 <translation id="7809029041571842593">ଅଧା ଖୋଲାଯାଇଥିବା ନୂଆ ଟାବ ପୃଷ୍ଠା କାର୍ଡ ବଟମ ସିଟ</translation>
 <translation id="7815680994978050279">ବିପଜ୍ଜନକ ଡାଉନ୍‌ଲୋଡ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="7835852323729233924">ମିଡିଆ ପ୍ଲେ ହେଉଛି</translation>

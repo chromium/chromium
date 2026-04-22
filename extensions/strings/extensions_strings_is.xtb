@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Ekki var hægt að færa viðbótamöppuna inn í prófílinn.</translation>
 <translation id="1610570795592207282">Ekki tókst að hlaða CSS-stílsniðið" „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="1616298854599875024">Ekki er hægt að flytja inn viðbótina „<ph name="IMPORT_NAME" />“ vegna þess að hún er ekki samnýtt eining</translation>
+<translation id="1757786065507923842">Beiðni um heimild frá foreldri mistókst.</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Þessu er aðeins hægt að bæta við úr <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264">Ekki er hægt að setja „<ph name="APP_NAME" />“ upp vegna þess að „<ph name="IMPORT_NAME" />“ leyfir það ekki</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
+<translation id="2193567467390483943">Foreldri þitt samþykkti ekki þessa viðbót</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
 <translation id="2576842806987913196">CRX-skrá með þessu heiti er þegar til staðar.</translation>
 <translation id="2662876636500006917">Vefverslun Chrome</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Fyrirtækið þitt hefur lokað á aðgang að þessari viðbót.</translation>
 <translation id="3242289508736283383">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu ChromeOS</translation>
+<translation id="3364986687961713424">Frá kerfisstjóra: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inntaksgildi einkalykils verður að vera gild slóð.</translation>

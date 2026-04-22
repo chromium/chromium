@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Methu â symud cyfeiriadur estyniadau i'r proffil.</translation>
 <translation id="1610570795592207282">Nid oedd modd llwytho'r css '<ph name="RELATIVE_PATH" />' ar gyfer sgript.</translation>
 <translation id="1616298854599875024">Methu â mewnforio'r estyniad "<ph name="IMPORT_NAME" />" gan nad yw'n fodiwl a rennir</translation>
+<translation id="1757786065507923842">Methodd y cais am ganiatâd rhiant.</translation>
 <translation id="1803557475693955505">Ni ellid llwytho'r dudalen gefndir '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Dim ond o'r <ph name="CHROME_WEB_STORE" /> y gellir ychwanegu hyn</translation>
 <translation id="2131077480075264">Methu â gosod "<ph name="APP_NAME" />" oherwydd na chaniateir gan " <ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">Ni chymeradwyodd dy riant yr estyniad hwn</translation>
 <translation id="2350172092385603347">Defnyddiwyd lleoleiddio, ond ni nodwyd default_locale yn y maniffest.</translation>
 <translation id="2576842806987913196">Mae ffeil CRX gyda'r enw hwn eisoes yn bodoli.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Mae mynediad at yr estyniad hwn wedi'i rwystro gan eich sefydliad.</translation>
 <translation id="3242289508736283383">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' ym modd Kiosk ChromeOS</translation>
+<translation id="3364986687961713424">Gan eich gweinyddwr: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> o'r gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Rhaid i werth mewnbwn allwedd breifat fod yn llwybr dilys.</translation>

@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">Tarixni boshqarish</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">Hisoblarni almashtirish uchun hisob belgisini bosing</translation>
+<translation id="135806768612505061">Varaqlar</translation>
 <translation id="1358106883354237005">Boshqariluvchi hisob</translation>
 <translation id="1358214951266274152">Nusxalangan havolani ochish</translation>
 <translation id="1360432990279830238">Chiqilsin va sinxronizatsiya uzilsinmi?</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">Parollarni ulashing</translation>
 <translation id="1554043146674176775">AI rejimini faolsizlantirish</translation>
 <translation id="1554477036522844996">Yangi oyna</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> va <ph name="PRIVACY_NOTICE" /> amal qiladi. Gemini – bu AI va u xato qilishi mumkin, jumladan, odamlar haqida ham.</translation>
 <translation id="1558391695376153246">Inkognito varaqlarni yopish</translation>
 <translation id="1565371473877914088">Yangi inkognito sahifa</translation>
 <translation id="1567960978791353852">Oʻqish rejimini chiqarish</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">Bu jild bo‘sh</translation>
 <translation id="1864266050569350424">Paroli saqlangan saytda parol maydonida “kirish” bandini tanlang.</translation>
 <translation id="1866700949421703765">Oʻqish rejimini yoqish taklifini berkitish</translation>
+<translation id="1869050523388525800">Ekrandan qidirish faqat Google birlamchi qidiruv tizimi sifatida sozlanganida ishlaydi. Birlamchi qidiruv tizimini <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="1872096359983322073">Fonar</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Oila aʼzolarini taklif qilish</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">Hisobingizga bukmarklarni saqlash uchun ishlatilmaydigan bukmarklarni oʻchirib tashlang</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904270275864974753">Karuselni tahrirlash</translation>
+<translation id="3905384981098338147">AI rejimi tarixi</translation>
 <translation id="3909222758573607742">Hisobingizga parollar va boshqa maʼlumotlarni saqlang</translation>
 <translation id="3913463964270756493">Google Lens bilan ekrandan qidiruvni berkitish</translation>
 <translation id="3914640181019354363">Manzillarni aniqlash</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">Klaviaturadan foydalanish</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
 <translation id="4416582610654027550">Yaroqli URL manzil kiriting</translation>
+<translation id="441868831736628555">Maxfiylik eslatmasi</translation>
 <translation id="4420409367264901497">Bukmarkni tahrirlash</translation>
 <translation id="4425365312778464779">Bu hisob nazorat ostida</translation>
 <translation id="4430277756566635951">Hozir tanlangan: <ph name="EMAIL" />. Hisobni tanlang.</translation>
@@ -1071,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} va yana 1 ta varaq}other{{domain} va yana {count} ta varaq}}</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
 <translation id="4828431027673677473">Qiziqishlaringiz asosidagi mahsulotlar</translation>
+<translation id="4829420936835028285">Varaqlar guruhini tahrirlash</translation>
 <translation id="4833786495304741580">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin.</translation>
 <translation id="483689884442613745">Saqlash…</translation>
 <translation id="4840495572919996524">Bukmarklar, tarix, parollar va boshqa sozlamalaringiz va Google hisobingiz sinxronizatsiyasi uziladi</translation>
@@ -1169,6 +1175,7 @@
 <translation id="5145331760738811130">Varaq almashtirish panelini yopish</translation>
 <translation id="5148717509369231739">Safari importi</translation>
 <translation id="5152483358138813104">Barcha qurilmalarda hisobga yanada tez kiring</translation>
+<translation id="515315847398512535">Hisobingiz uchun ekrandan qidirish faolsizlantirilgan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5155502059906700593">Manzil qatori joylashuvini tepa yoki pastga almashtiring.</translation>
 <translation id="5157638238828697074">Nimadir xato ketdi. Ilova ochilmadi.</translation>
 <translation id="5163417375525818870">PDF fayllar</translation>
@@ -1313,7 +1320,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5647702255748985085">Guruh chatini tark etmoqchimisiz?</translation>
 <translation id="5648166631817621825">Oxirgi 7 kun</translation>
 <translation id="5652623411397330904">Kuzatuvdagi mahsulotlar shu yerda chiqadi.</translation>
-<translation id="5653100054596780862">Varaqlar</translation>
 <translation id="5656431592348714536">Yaxshilangan Taqvim</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> va <ph name="GEMINI_APPS_PRIVACY" /> amal qiladi. Gemini xato qilishi mumkin, takroran tekshiring.</translation>
@@ -1511,6 +1517,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6307241780749477694">Bu qurilmadagi barcha parollaringizni olish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6316141353357700666">Roʻyxatdagi ishlatiladigan parolni tanlang.</translation>
 <translation id="6321526113093607004">Bukmarklash</translation>
+<translation id="6327249202318869726">Hisobingiz uchun Gemini faolsizlantirilgan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="6331836477476466332">Siz uchun yanada xavfsiz va foydali brauzer</translation>
 <translation id="6335744088476213315">Bu kartochkada yaqinda ochilgan mahsulotlar chiqadi. Ularni kuzatish va narxi pasayganda xabar olish mumkin</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
@@ -1788,6 +1795,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7261217796641151584">Guruhni ulashish</translation>
 <translation id="7266578100016339897">Bu sizga tartibni saqlashda asqatadi. Buni istalgan payt sozlamalar orqali tahrirlash mumkin.</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
+<translation id="7275307913765547631">Koreya uchun Joylashuv xizmati shartlari</translation>
 <translation id="728025568708172005">Hammasini koʻrish</translation>
 <translation id="7280980607183752256">Bu faylni import qilish imkonsiz</translation>
 <translation id="7281202269687163394">Maxfiyligingiz va Gemini.</translation>
@@ -2003,6 +2011,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7996239959906074962">Sozlash…</translation>
 <translation id="800361585186029508">Kiritiladigan URL manzillarni Google Chrome orqali ochadi.</translation>
 <translation id="8005666035647241369">Bu qurilmadagi Google Parollar menejerida</translation>
+<translation id="8006265839264939135">Shartlar</translation>
 <translation id="8010488806779226127">Internetni unumli kezish uchun foydali funksiyalar bilan tanishing</translation>
 <translation id="8011489434346330032">Veb inspektor</translation>
 <translation id="8014007212279733632">Maxfiy axborotni avtomatik kiritish uchun shaxsingizni tasdiqlang</translation>

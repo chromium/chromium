@@ -123,6 +123,7 @@ Se il criterio viene impostato su 1 - DisabledForBrowser, il processo del browse
 
 Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Attiva la ricezione di sondaggi di Navigazione sicura</translation>
+<translation id="1069651607236021905">Forza la priorità in primo piano per origini specifiche</translation>
 <translation id="107045325503547419">Dipende dal processo di implementazione della funzionalità.</translation>
 <translation id="1073983258515362346">Consente di segnalare informazioni sulla retroilluminazione del dispositivo.
 
@@ -726,14 +727,6 @@ Se non viene configurata, il selettore di emoji verrà attivato per gli utenti n
 <translation id="1523587744262636189">porta 10080 (può essere sbloccata fino al 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
-<translation id="1526766414933532012">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
-
-Se la imposti su Disabled, l'impostazione relativa alla misurazione degli annunci verrà disattivata per i tuoi utenti.
-Se imposti questa policy su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.
-
-Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Attribution Reporting.</translation>
 <translation id="1532928374875633053">Consente di impostare un elenco di pattern URL che specifica i siti a cui l'autorizzazione per il posizionamento delle finestre viene automaticamente concessa. Ciò estenderà la capacità dei siti di vedere le informazioni relative alle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
       Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
@@ -2171,6 +2164,15 @@ salvato nella cartella Download.
 La mancata configurazione della policy o l'impostazione della policy su false disattiva la stampa silenziosa;
 la finestra di anteprima di stampa non si chiude automaticamente e
 l'utente deve effettuare una selezione come di consueto.</translation>
+<translation id="2451322901390143329">Controlla se ai web worker creati a partire da URL di dati viene assegnata un'origine opaca univoca.
+
+I web worker possono essere creati utilizzando un URL di dati contenente lo script del worker. In precedenza, questi worker ereditavano l'origine della pagina che li aveva creati, consentendo loro di accedere allo stesso spazio di archiviazione locale, agli stessi cookie e ad altri dati associati all'origine. Per migliorare la sicurezza e allinearsi alla specifica HTML, Chrome cambierà il comportamento predefinito nella milestone 149 in modo che i worker creati a partire da URL di dati abbiano un'origine univoca e opaca. In questo modo, i dati vengono isolati da quelli della pagina del creator.
+
+Se questa policy viene impostata su Attivata o se non viene configurata, viene utilizzato il nuovo comportamento predefinito (più sicuro) e i web worker creati a partire da URL di dati avranno un'origine opaca univoca.
+
+Se questa policy viene impostata su Disattivata, Chrome ripristina il comportamento precedente e i web worker creati a partire da URL di dati erediteranno l'origine del loro creatore. Ciò consente agli amministratori di risolvere temporaneamente i problemi di compatibilità se le applicazioni interne non funzionano a causa della modifica della sicurezza.
+
+Questa policy è stata pensata per essere temporanea e verrà rimossa nella milestone 157.</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
@@ -5371,6 +5373,17 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
           Questa policy viene applicata per processo del renderer, con il valore più recente dell'impostazione della policy attivo all'inizio di un processo del renderer. È necessario un riavvio completo per garantire che tutte le schede caricate ricevano un'impostazione della policy coerente. I processi possono essere eseguiti in sicurezza con valori diversi di questa policy.
           </translation>
 <translation id="4578265298946081589">Non riavviare all'uscita dell'utente.</translation>
+<translation id="4580711645933054901">Questa policy consente di specificare un elenco di pattern URL. I contenuti web in background corrispondenti a questi pattern verranno eseguiti con priorità in primo piano.
+
+Se la policy <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> viene attivata, questo elenco viene ignorato perché tutte le schede verranno forzate con priorità in primo piano.
+
+Se <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> è disattivato o non è impostato, verranno forzati solo i contenuti corrispondenti ai pattern in questo elenco.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso o parametro di query nel pattern viene ignorato. Sono supportati schema, host e porta.
+
+Se questo elenco è vuoto o non viene impostato, nessun contenuto in background viene forzato con priorità in primo piano.</translation>
 <translation id="4581507927311097234">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene disattivato.</translation>
 <translation id="4582027661281685066">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6196,14 +6209,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
 <translation id="50689955292091946">Attiva la tastiera virtuale di accessibilità nella schermata di accesso</translation>
-<translation id="5069453818168036580">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.
-
-Se imposti questa policy su Disabled, l'impostazione relativa agli annunci suggeriti dai siti verrà disattivata per i tuoi utenti.
-Se la imposti su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.
-
-Questa policy è stato ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Protected Audience.</translation>
 <translation id="5069522005630249098">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
 
       Se la policy viene impostata su <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> o se non viene configurata, la migrazione dei dati a ritroso non viene eseguita.
@@ -6331,6 +6336,7 @@ I domini devono essere indicati sotto forma di nome di dominio completo (FQDN) o
 
 I domini con formato errato verranno ignorati.</translation>
 <translation id="5163002264923337812">Attiva il flusso di accesso basato sul Web precedente</translation>
+<translation id="5163120075537316507">Le origini opache per gli URL di dati nei web worker sono disattivate (comportamento precedente deprecato)</translation>
 <translation id="5163889437570441600">Consenti la trasmissione di contenuti al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Se questa policy viene impostata su false, gli utenti non possono trasmettere contenuti al proprio dispositivo. Se viene impostata su true, gli utenti possono trasmettere contenuti. Se non viene configurata, gli utenti non possono trasmettere contenuti a dispositivi ChromeOS registrati, ma possono trasmetterli a dispositivi non registrati.</translation>
@@ -6984,6 +6990,16 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di SharePoi
 <translation id="5542235730745104308">Se la policy viene impostata su true, <ph name="PRODUCT_NAME" /> consente l'utilizzo di pagine di errore alternative integrate nel browser (come "pagina non trovata"). Se la policy viene impostata su false, <ph name="PRODUCT_NAME" /> non consente mai l'utilizzo di pagine di errore alternative.
 
 Se la policy viene configurata, gli utenti non possono modificarla. Se non viene configurata, la policy è attiva, ma gli utenti possono modificare questa impostazione.</translation>
+<translation id="5543124658694855168">L'impostazione di questa policy consente alle aziende di eseguire l'override del valore restituito da <ph name="CPU_PERFORMANCE_API_NAME" /> (ad es.
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />,
+visita la pagina https://github.com/WICG/cpu-performance per informazioni dettagliate).
+
+Se questa policy viene configurata, il valore di
+<ph name="CPU_PERFORMANCE_GETTER_NAME" />
+verrà sostituito con il valore specificato. Se la policy non viene configurata,
+viene utilizzato il calcolo predefinito del livello di prestazioni.
+
+I valori possibili per questa policy sono da 0 a 4.</translation>
 <translation id="5544059132156503357">La configurazione della policy consente di determinare quali tipi di crittografia sono consentiti quando vengono richiesti ticket Kerberos a un server <ph name="MS_AD_NAME" />.
 
 La configurazione della policy su:
@@ -7290,6 +7306,7 @@ La policy riguarda i flussi di autenticazione di accesso e della schermata di bl
 <translation id="5706929446669049441">Disattiva la condivisione delle credenziali utente</translation>
 <translation id="57072195677044908">Disattiva la separazione dei profili</translation>
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
+<translation id="5714281972278520176">Attiva le origini opache per gli URL di dati nei web worker</translation>
 <translation id="5714563837055244378">Attiva la condivisione da Android alle app web.</translation>
 <translation id="5715739768416614900">Attiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
 <translation id="5717973246079053225">Disattiva reporting su cloud tramite profilo gestito</translation>
@@ -8143,6 +8160,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6287742528823584153">Attiva il servizio <ph name="PRODUCT_NAME" /> e avvia la scrivania remota all'accesso</translation>
+<translation id="6293411231114989812">Le origini opache per gli URL di dati nei web worker sono attivate (nuovo comportamento predefinito)</translation>
 <translation id="6299147100249359151">Consenti il rilevamento dell'ambito delle policy.</translation>
 <translation id="6299554629216555326">Impostazioni di gestione delle finestre</translation>
 <translation id="6302021021024941085">Disattiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
@@ -10369,6 +10387,10 @@ Le policy da unire devono essere impostate anche nella policy <ph name="POLICY_L
       Se viene impostata su False o se non viene configurata, la generazione di rapporti viene disattivata.
       Le regole definite con limitazioni a livello ALLOW nella policy DataLeakPreventionRulesList non genereranno rapporti sugli eventi in nessun caso.</translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
+<translation id="7649831723389657756">La configurazione di questa policy consente di specificare per quali origini consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" /> indipendentemente dalla policy <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Il pattern dell'origine deve avere il seguente formato (<ph name="URL_SCHEME_FORMAT_LINK" />). In <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> possono essere definite fino a 1000 eccezioni.
+      I caratteri jolly sono consentiti per il componente host (ad es. "*:8000" corrisponde a tutti gli host sulla porta 8000). Per trovare una corrispondenza con tutti gli schemi o tutte le porte, ometti completamente il componente (ad es. "example.com" corrisponde a qualsiasi schema e qualsiasi porta). Un nome host (ad es. "example.com") corrisponde anche ai relativi sottodomini. Per una corrispondenza esatta con un host ed escludere i relativi sottodomini, anteponi un punto (ad es. ".example.com"). Per trovare la corrispondenza con tutte le origini, utilizza un singolo asterisco ("*").</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
 <translation id="76580522298425324">Consenti acquisizione schermo senza gesto dell'utente precedente</translation>
 <translation id="7661379728107156839">Complessità bassa</translation>
@@ -10417,6 +10439,7 @@ Se viene impostata su 2, le origini delle app web isolate non potranno connetter
 
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
+<translation id="7681075922820376711">Override per il livello di prestazioni della CPU</translation>
 <translation id="7682409626897786151">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a utilizzare la generazione di chiavi. Se un pattern URL è indicato in "KeygenBlockedForUrls", ha la precedenza su queste eccezioni.
 
           Se questa policy non viene impostata, per tutti i siti viene usato il valore predefinito globale della policy "DefaultKeygenSetting" (se impostata) o della configurazione personale dell'utente (se non impostata).
@@ -11276,16 +11299,6 @@ Queste policy devono essere utilizzate esclusivamente per la configurazione dell
 Non è necessario configurare manualmente queste impostazioni. È possibile scaricare modelli di facile utilizzo per Windows, Mac e Linux da <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Su Windows è consigliabile configurare le policy tramite Policy di gruppo, anche se la specifica di policy tramite il registro di sistema è ancora supportata per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" />.</translation>
-<translation id="8261008508574620157">Una policy per stabilire se i tuoi utenti vedono o meno la richiesta di <ph name="PRIVACY_SANDBOX_NAME" />.
-La richiesta è un flusso di blocco degli utenti, che informa i tuoi utenti delle impostazioni di <ph name="PRIVACY_SANDBOX_NAME" />. Visita la pagina <ph name="PRIVACY_SANDBOX_URL" /> per avere informazioni dettagliate sull'impegno di Chrome per ritirare i cookie di terze parti.
-
-Se imposti questa policy su Disabled, <ph name="PRODUCT_NAME" /> non mostrerà la richiesta di <ph name="PRIVACY_SANDBOX_NAME" />.
-Se la imposti su Enabled o se non la configuri, <ph name="PRODUCT_NAME" /> stabilisce se è possibile o meno mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> e poi la mostra, se possibile.
-
-Se è configurata una delle seguenti policy, è necessario impostare questa policy su Disabled:
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Questa policy consentirà di accedere alla pagina di test delle policy.
 Mentre le policy vengono testate in questa pagina, tutte le altre policy verranno ignorate.
 La funzionalità sarà disponibile soltanto sul canale Canary.
@@ -11948,14 +11961,6 @@ Questa policy è una misura temporanea e verrà rimossa dopo il lancio di alcune
       Se la policy viene impostata su Disattivata, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, perché sarà possibile caricare codice sconosciuto e potenzialmente dannoso all'interno del processo del browser di <ph name="PRODUCT_NAME" />. Disattiva la policy soltanto se si verificano problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno del processo del browser di <ph name="PRODUCT_NAME" />.
 
       Nota: scopri di più sulle policy relative alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
-<translation id="8672039014434141545">Una policy per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.
-
-Se imposti questa policy su Disabled, l'impostazione relativa agli argomenti degli annunci verrà disattivata per i tuoi utenti.
-Se la imposti su Enabled o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.
-
-Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostata su Disabled.
-
-Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Topics.</translation>
 <translation id="8672321184841719703">Scegli versione target dell'aggiornamento automatico</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8675599659717867329">Disattiva segnalazione</translation>

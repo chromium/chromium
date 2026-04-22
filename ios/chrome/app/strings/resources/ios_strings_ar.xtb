@@ -99,6 +99,7 @@
 <translation id="1347468774581902829">إدارة النشاط</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1355337783640312381">للتبديل بين الحسابات، يمكنك النقر على رمز حسابك.</translation>
+<translation id="135806768612505061">جميع علامات التبويب</translation>
 <translation id="1358106883354237005">حساب مُدار</translation>
 <translation id="1358214951266274152">الانتقال إلى الرابط الذي نسخته</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
@@ -165,6 +166,7 @@
 <translation id="1547610699249301703">ميزة مشاركة كلمات المرور</translation>
 <translation id="1554043146674176775">‏إيقاف "وضع AI"</translation>
 <translation id="1554477036522844996">نافذة جديدة</translation>
+<translation id="1554605811306591212">‏تنطبق "<ph name="TERMS" />" و"<ph name="KOREAN_LOCATION_TERMS" />" و"<ph name="PRIVACY_NOTICE" />". ‫Gemini هو نموذج ذكاء اصطناعي وقد يعرض معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص.</translation>
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="1565371473877914088">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="1567960978791353852">عرض "وضع القراءة"</translation>
@@ -257,6 +259,7 @@
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
 <translation id="1864266050569350424">في أحد المواقع الإلكترونية التي حفظت فيها كلمة المرور، انقر على حقل كلمة المرور في صفحة تسجيل الدخول.</translation>
 <translation id="1866700949421703765">إخفاء خيار "تفعيل وضع القراءة"</translation>
+<translation id="1869050523388525800">‏لا تتوفّر ميزة "البحث على الشاشة" إلا إذا تم ضبط Google كمحرك البحث التلقائي. يمكنك تغيير محرك البحث التلقائي في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">الكشاف</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">دعوة أفراد العائلة</translation>
@@ -801,6 +804,7 @@
 <translation id="3893858854379998374">لحفظ إشارات مرجعية في حسابك، يجب حذف الإشارات غير المستخدمة</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3904270275864974753">تعديل لوحة العرض الدوّارة</translation>
+<translation id="3905384981098338147">‏سجلّ "وضع AI"</translation>
 <translation id="3909222758573607742">حفظ كلمات المرور والعناصر الأخرى في الحساب</translation>
 <translation id="3913463964270756493">‏إخفاء الإجراء "البحث في الشاشة باستخدام "عدسة Google"</translation>
 <translation id="3914640181019354363">رصد العناوين</translation>
@@ -951,6 +955,7 @@
 <translation id="441218095371040430">استخدام لوحة المفاتيح</translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4416582610654027550">‏يُرجى كتابة عنوان URL صالح</translation>
+<translation id="441868831736628555">إشعار الخصوصية</translation>
 <translation id="4420409367264901497">تعديل الإشارة المرجعية</translation>
 <translation id="4425365312778464779">هذا الحساب مُدار</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
@@ -1169,6 +1174,7 @@
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
 <translation id="5148717509369231739">‏استيراد بيانات Safari</translation>
 <translation id="5152483358138813104">سجِّل الدخول بسرعة أكبر على جميع أجهزتك</translation>
+<translation id="515315847398512535">تم إيقاف ميزة "البحث على الشاشة" في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5155502059906700593">يمكنك تبديل موضع شريط العناوين إلى أعلى الشاشة أو أسفلها.</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5163417375525818870">‏ملفات PDF</translation>
@@ -1311,7 +1317,6 @@
 <translation id="5647702255748985085">هل المطلوب مغادرة المجموعة؟</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
 <translation id="5652623411397330904">ستظهر هنا المنتجات التي يتم تتبُّع أسعارها.</translation>
-<translation id="5653100054596780862">جميع علامات التبويب</translation>
 <translation id="5656431592348714536">‏"تقويم Google" المحسَّن</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
 <translation id="5665739277590037307">‏تسري <ph name="GOOGLE_TERMS" /> و<ph name="GEMINI_APPS_PRIVACY" />. قد يعرض Gemini معلومات خاطئة، لذا ننصحك بالتحقّق من ردوده.</translation>
@@ -1509,6 +1514,7 @@
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور على هذا الجهاز</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
+<translation id="6327249202318869726">‏تم إيقاف Gemini في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
 <translation id="6335744088476213315">تعرض هذه البطاقة المنتجات التي اطّلعت عليها مؤخرًا والتي قد يهمّك تتبُّعها لتلقّي تنبيهات بشأن انخفاض أسعارها</translation>
 <translation id="6337234675334993532">التشفير</translation>
@@ -1786,6 +1792,7 @@
 <translation id="7261217796641151584">مشاركة المجموعة</translation>
 <translation id="7266578100016339897">يساعدك هذا الإجراء في الحفاظ على تنظيم علامات التبويب. ويمكنك تغيير ذلك في الإعدادات متى شئت.</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
+<translation id="7275307913765547631">بنود خدمة الموقع الجغرافي في كوريا</translation>
 <translation id="728025568708172005">بدء جولة إرشادية</translation>
 <translation id="7280980607183752256">يتعذّر استيراد هذا الملف</translation>
 <translation id="7281202269687163394">‏خصوصيتك وGemini</translation>
@@ -2001,6 +2008,7 @@
 <translation id="7996239959906074962">إعداد…</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
 <translation id="8005666035647241369">‏في "مدير كلمات المرور في Google" على هذا الجهاز</translation>
+<translation id="8006265839264939135">البنود</translation>
 <translation id="8010488806779226127">إليك ميزات تساعدك في إنجاز المزيد من المهام أثناء التصفُّح</translation>
 <translation id="8011489434346330032">‏أداة فحص الويب (Web Inspector) </translation>
 <translation id="8014007212279733632">إثبات هويتك قبل الملء التلقائي للمعلومات الحساسة</translation>

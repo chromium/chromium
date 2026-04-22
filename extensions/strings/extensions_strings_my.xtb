@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">တိုးချဲ့မှုကို ပရိုဖိုင် ထဲကို တိုက်ရိုက် ရွှေ့မပေးနိုင်ပါ။</translation>
 <translation id="1610570795592207282">CSS '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="1616298854599875024">မျှဝေထားသည့် မော်ဂျူးမဟုတ်သောကြောင့် နောက်ဆက်တွဲ "<ph name="IMPORT_NAME" />" ကို မတင်သွင်းနိုင်ပါ</translation>
+<translation id="1757786065507923842">ပင်မ ခွင့်ပြုချက်တောင်းဆိုမှု မအောင်မြင်ပါ။</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="1875387611427697908">၎င်းကို <ph name="CHROME_WEB_STORE" /> မှသာ ထည့်သွင်းနိုင်သည်</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" အား တပ်ဆင်မရခြင်းမှာ "<ph name="IMPORT_NAME" />" က ခွင့်မပြုသောကြောင့် ဖြစ်၏</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
+<translation id="2193567467390483943">သင့်မိဘသည် ဤနောက်ဆက်တွဲကို ခွင့်ပြုမထားပါ</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
 <translation id="2576842806987913196">ဤအမည်ဖြင့် ပြသသည့် CRX ဖိုင်ရှိပြီးဖြစ်သည်။</translation>
 <translation id="2662876636500006917">Chrome ဝဘ် စတိုး</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> မှဖြစ်၏</translation>
 <translation id="3174723475300476613">ဤနောက်ဆက်တွဲကို သင့်အဖွဲ့အစည်းက သုံးခွင့်ပိတ်ထားသည်။</translation>
 <translation id="3242289508736283383">'kiosk_only' မန်နီးဖက်စ်ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
+<translation id="3364986687961713424">သင်၏ စီမံခန့်ခွဲသူထံမှ- <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုးမှာ မှန်ကန်သည့် လမ်းကြောင်း ရှိရမည်။</translation>

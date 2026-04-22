@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Eliminar níveis de zoom?</translation>
 <translation id="3362437373201486687">A procurar dispositivos Bluetooth</translation>
 <translation id="3368138297038111198">A partilhar uma janela</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{A mostrar 1 de {TOTAL_COUNT} itens devido a memória insuficiente}other{A mostrar # de {TOTAL_COUNT} itens devido a memória insuficiente}}</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que os sites conheçam a sua localização (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
@@ -654,7 +655,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7804248752222191302">Um site está a utilizar a sua câmara.</translation>
 <translation id="7805832099057502789">Secção inferior de aspeto da página Novo separador aberta à altura total</translation>
-<translation id="7807060072011926525">Disponibilizados pela Google</translation>
 <translation id="7809029041571842593">Secção inferior dos cartões da página Novo separador aberta a meia altura</translation>
 <translation id="7815680994978050279">Transferência perigosa bloqueada</translation>
 <translation id="7835852323729233924">Multimédia em reprodução</translation>

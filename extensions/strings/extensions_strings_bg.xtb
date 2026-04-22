@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">Не можа да се премести директорията на разширението в потребителския профил.</translation>
 <translation id="1610570795592207282">Зареждането на CSS <ph name="RELATIVE_PATH" /> за скрипта не бе успешно.</translation>
 <translation id="1616298854599875024">Разширението <ph name="IMPORT_NAME" /> не може да бъде импортирано, защото не е споделен модул</translation>
+<translation id="1757786065507923842">Заявката за разрешение от родител не бе успешна.</translation>
 <translation id="1803557475693955505">Не можа да се зареди фоновата страница „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="1875387611427697908">Това може да бъде добавено само от <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="2131077480075264"><ph name="APP_NAME" /> не може да се инсталира, защото няма разрешение за импортиране на ресурси от <ph name="IMPORT_NAME" /></translation>
 <translation id="2159915644201199628">Изображението не можа да се декодира: „<ph name="IMAGE_NAME" />“</translation>
+<translation id="2193567467390483943">Родителят ви не одобри това разширение</translation>
 <translation id="2350172092385603347">Беше използвана локализация, но променливата „default_locale“ не беше посочена в манифеста.</translation>
 <translation id="2576842806987913196">Вече присъства CRX файл с това име.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963">Неизвестен продукт <ph name="PRODUCT_ID" /> от доставчик <ph name="VENDOR_ID" /></translation>
 <translation id="3174723475300476613">Достъпът до това разширение е блокиран от организацията ви.</translation>
 <translation id="3242289508736283383">Приложенията с атрибут kiosk_only в манифеста трябва да бъдат инсталирани в павилионния режим на Chrome OS</translation>
+<translation id="3364986687961713424">От администратора ви: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от доставчик <ph name="VENDOR_ID" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Въведената стойност за личен ключ трябва да бъде валиден път.</translation>

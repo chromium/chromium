@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">ਕੀ ਰੱਖਿਅਤ ਜ਼ੂਮ ਲੈਵਲ ਮਿਟਾਉਣੇ ਹਨ?</translation>
 <translation id="3362437373201486687">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3368138297038111198">ਵਿੰਡੋ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{ਘੱਟ ਮੈਮੋਰੀ ਕਰਕੇ {TOTAL_COUNT} ਵਿੱਚੋਂ 1 ਆਈਟਮ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}one{ਘੱਟ ਮੈਮੋਰੀ ਕਰਕੇ {TOTAL_COUNT} ਵਿੱਚੋਂ # ਆਈਟਮ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}other{ਘੱਟ ਮੈਮੋਰੀ ਕਰਕੇ {TOTAL_COUNT} ਵਿੱਚੋਂ # ਆਈਟਮਾਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ}}</translation>
 <translation id="3386292677130313581">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਜਾਣਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੀ ਇਜਾਜ਼ਤ ਲੈਣ ਨੂੰ ਜ਼ਰੂਰੀ ਬਣਾਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -654,7 +655,6 @@
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7804248752222191302">ਕੋਈ ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7805832099057502789">'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ 'ਤੇ ਦਿਖਣ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
-<translation id="7807060072011926525">Google ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਈ ਗਈ</translation>
 <translation id="7809029041571842593">'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ 'ਤੇ ਮੌਜੂਦ ਕਾਰਡਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="7815680994978050279">ਖਤਰਨਾਕ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7835852323729233924">ਮੀਡੀਆ ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>

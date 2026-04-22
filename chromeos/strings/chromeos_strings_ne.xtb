@@ -122,7 +122,7 @@
 <translation id="145402479967797468">प्लेब्याकसम्बन्धी सेटिङ</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1463084054301832672">कटेज</translation>
-<translation id="1468664791493211953">योजनाहरू</translation>
+<translation id="1468664791493211953">अफरहरू</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले तपाईंको क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="1478594628797167447">स्क्यानर</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
@@ -1138,7 +1138,7 @@
 <translation id="6048107060512778456">प्रिन्ट गर्न सकिएन - कागज अड्कियो</translation>
 <translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6054711098834486579">एक्स्प्रेसियनिस्ट</translation>
-<translation id="6058625436358447366">यो कार्य पूरा गर्न आफ्नो पुरानो र नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
+<translation id="6058625436358447366">यो कार्य पूरा गर्न आफ्नो पुरानो र नयाँ पासवर्ड हाल्नुहोस्</translation>
 <translation id="6061772781719867950">HTTP अनुरोधहरू पठाउन सकिएन</translation>
 <translation id="6073292342939316679">"किबोर्डको चमक घटाउनुहोस्" जनाउने आइकन</translation>
 <translation id="6074608334942655098">अनुवाद गर्न छाड्नुहोस्</translation>
@@ -1149,7 +1149,7 @@
 <translation id="6090672065638047175">ताराले बनेको चम्किलो रूखको फोटो। फोटोको ब्याकग्राउन्डमा सुन्दर रात्रि आकाश र आकाशगङ्गा छ</translation>
 <translation id="6091080061796993741">पहेँलो</translation>
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
-<translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
+<translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड हाल्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
 <translation id="6108952804512516814">AI प्रयोग गरी सिर्जना गर्नुहोस्</translation>
 <translation id="6112878310391905610">तपाईंका एड्मिन यो सेटिङ मिलाउनुहुन्छ</translation>
@@ -1164,7 +1164,7 @@
 <translation id="6137614725462089991">साइबरपङ्क</translation>
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
 <translation id="6140948187512243695">विवरणहरू देखाउनुहोस्</translation>
-<translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
+<translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड हाल्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">इन्टरनेटमा जोड्न सकिएन</translation>
 <translation id="6156030503438652198">मरुन र गुलाबी</translation>
@@ -1184,6 +1184,7 @@
 <translation id="6234024205316847054">आउटलाइनहरू देखाउनुहोस्</translation>
 <translation id="6243280677745499710">हाल सेट गरिएको</translation>
 <translation id="6250316632541035980">बेकन र अन्डा</translation>
+<translation id="6262413940100821797">अज्ञात प्रापक</translation>
 <translation id="6265268291107409527">चयन गरिएको की <ph name="KEYS" /> हो। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">राइट एरो</translation>
 <translation id="6278428485366576908">थिम</translation>

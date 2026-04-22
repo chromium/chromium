@@ -423,6 +423,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="547202872422499512">이제 Windows 시작 시 Chrome이 실행되므로 즉시 탐색을 시작할 수 있습니다. 설정에서 이 기능을 사용 중지할 수 있습니다</translation>
 <translation id="5486346529181556467">유해하다고 생각되는 사이트를 신고하면 모든 사용자를 위해 온라인 안전을 개선할 수 있습니다. <ph name="BEGIN_LINK" />Google의 안전하지 않은 사이트 정책<ph name="END_LINK" />에 대해 자세히 알아보세요.</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Chrome 기본 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리하세요.</translation>
 <translation id="5550137307985173298">새 탭 페이지에서 Chrome 맞춤설정 버튼을 클릭하여 Chrome에 새로운 디자인을 적용하세요</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
@@ -509,6 +510,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6235018212288296708">Chrome이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="624230925347970731">Chrome이 곧 종료됩니다</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
+<translation id="6248988683584659830">설정 검색</translation>
 <translation id="6251759518630934363">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chrome 경고를 건너뛸 수 있습니다.</translation>
 <translation id="6277547788421725101">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다.</translation>
 <translation id="627882678981830918">Chrome을 맞춤설정하고 제어합니다. Chrome을 기본 브라우저로 설정합니다.</translation>
@@ -672,6 +674,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7792336732117553384">Chrome 프로필 관리(&amp;M)</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7804364787702057554">Chrome의 내 계정</translation>
+<translation id="7804947029129221742">Chrome 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7827099906024714326">일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chrome에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="7832314606810669113">모든 기기에서 북마크 등을 사용하려면 Chrome에 로그인하세요. 로그인하면 이 북마크가 Google 계정에 저장됩니다.</translation>
@@ -793,7 +796,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
-<translation id="9010418943148193727">Chrome 외부에서 기본 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 기본 검색엔진을 재설정했습니다.</translation>
 <translation id="9014771989710951291">여러 조직에서 Chrome을 관리합니다.</translation>
 <translation id="9066987883552592250">Chrome Canary의 Gemini 닫기</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>

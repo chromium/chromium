@@ -423,6 +423,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="547202872422499512">Windows ආරම්භ වන විට Chrome දැන් දියත් වන බැවින් ඔබට ක්ෂණිකව බ්‍රවුස් කිරීම ආරම්භ කළ හැක. ඔබට මෙය සැකසීම් තුළ ක්‍රියාවිරහිත කළ හැක.</translation>
 <translation id="5486346529181556467">ඔබ හානිකර යැයි සිතන වෙබ් අඩවියක් ඔබ වාර්තා කරන විට සියලු දෙනා සඳහා සබැඳි ආරක්ෂාව වැඩි දියුණු කරන්න. <ph name="BEGIN_LINK" />Google හි අනාරක්ෂිත අඩවි ප්‍රතිපත්තිය<ph name="END_LINK" /> ගැන තව දැන ගන්න.</translation>
 <translation id="5524890928877629608">සෙවීම් ප්‍රදේශයේ ඉහළම වම් කෙළවර: වම <ph name="LEFT" />%, ඉහළ <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Chrome ප්‍රධාන මෙනුවේ දිගු ක්ලික් කිරීමෙන් ඔබේ දිගු කළමනාකරණය කරන්න.</translation>
 <translation id="5550137307985173298">Chrome හට නව පෙනුමක් ලබා දීමට නව පටිති පිටුවේ Chrome අභිරුචි කරන්න බොත්තම ක්ලික් කරන්න</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">ආරම්භක දෝෂය: ස්ථාපකය පරිපාලක ලෙස නොව සාමාන්‍ය පරිශීලකයෙකු ලෙස ධාවනය කරන්න.</translation>
@@ -509,6 +510,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6235018212288296708">Google Chrome Chromeහි අභ්‍යන්තර නියෝගය වන්නේ mDNS තදබදයයි.</translation>
 <translation id="624230925347970731">Chrome ඉක්මනින් වසා දමනු ඇත</translation>
 <translation id="6247557882553405851">Google මුරපද කළමනාකරු</translation>
+<translation id="6248988683584659830">සෙවීමේ සැකසීම්</translation>
 <translation id="6251759518630934363">සම්මත ආරක්ෂණයට වඩා අඩවිවලින් වැඩිපුර දත්ත විශ්ලේෂණය කිරීමෙන්, Google කලින් නොදැන සිටි ඒවා පවා, භයානක අඩවි පිළිබඳව ඔබට අනතුරු අඟවයි. ඔබට Chrome අනතුරු ඇඟවීම් මඟ හැරීමට තේරිය හැක.</translation>
 <translation id="6277547788421725101">ඔබේ මාපියන් Chrome සඳහා "වෙබ් අඩවි, යෙදුම්, සහ දිගු සඳහා වන අවසර" අක්‍රිය කර ඇත</translation>
 <translation id="627882678981830918">Chrome අභිරුචිකරණය කර පාලනය කරන්න. Chrome ඔබේ පෙරනිමිය ලෙස සකසන්න.</translation>
@@ -672,6 +674,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7792336732117553384">&amp;Chrome පැතිකඩ කළමනාකරණය කරන්න</translation>
 <translation id="7801699035218095297">Google Chrome විසින් මුරපද පිටපත් කිරීමට උත්සහ කරයි. එයට ඉඩදීම සඳහා Windows මුරපදය යොදන්න.</translation>
 <translation id="7804364787702057554">Chrome හි ඔබේ ගිණුම</translation>
+<translation id="7804947029129221742">ඔබේ සෙවීම් යන්ත්‍රය Chrome වෙතින් පිටතින් වෙනස් කර ඇත. ඔබව ආරක්ෂා කිරීමට, Chrome එය එහි මුල් පෙරනිමියට යළි සකසයි. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome වෙතින් ඉවත් කරන්න...</translation>
 <translation id="7827099906024714326">Chrome හට ඔබේ Google ගිණුම තුළ සමහර දත්ත සුරැකී ඔබේ සියලු ම උපාංග මත භාවිත කළ හැකි වීමට පෙර ඒ ඔබ බව සත්‍යාපනය කිරීමට අවශ්‍ය වේ. ඔබ දැන් වරන්නේ නම් මෙම දත්ත මකනු ලැබේ.</translation>
 <translation id="7832314606810669113">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන් සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත පුරන්න. ඔබ පුරනය වූ පසු මෙම පිටුසන ඔබේ Google ගිණුම තුළ සුරකිනු ලැබේ.</translation>
@@ -792,7 +795,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8992769679401294069">ඔබේ දත්ත ඔබේ මුර-වැකිකඩ සමග සංකේතනය කර ඇත. ඔබේ Google ගිණුම තුළ Chrome දත්ත භාවිත කිරීමට සහ සුරැකීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="8999117580775242387">HTTPS නොමැති විට, Chrome ඔබට අනතුරු ඇඟවීමකින් තොරව අනාරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරනු ඇත</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome යාවත්කාලීනයක් තිබේ}=1{Chrome යාවත්කාලීනයක් තිබේ}one{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}other{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}}</translation>
-<translation id="9010418943148193727">ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රය Chrome වෙතින් පිටතින් වෙනස් කර ඇත. ඔබව ආරක්ෂා කිරීමට, Chrome එය යළි සකසයි.</translation>
 <translation id="9014771989710951291">බහුවිධ සංවිධාන Chrome කළමනාකරණය කරයි</translation>
 <translation id="9066987883552592250">Chrome කැනරි හි Gemini වසන්න</translation>
 <translation id="9090566250983691233">Chrome සමහර ගොනු අවහිර කරන හේතුව දැන ගන්න</translation>

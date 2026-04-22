@@ -11,10 +11,12 @@
 <translation id="1556537182262721003">വിപുലീകരണ ഡയറക്ടറി പ്രൊഫൈലിലേക്ക് നീക്കാന്‍ കഴിഞ്ഞില്ല.</translation>
 <translation id="1610570795592207282">സ്ക്രിപ്‌റ്റിനായി css '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="1616298854599875024">വിപുലീകരണം "<ph name="IMPORT_NAME" /> ഒരു പങ്കിട്ട മൊഡ്യൂൾ അല്ലാത്തതിനാൽ ഇമ്പോർട്ട് ചെയ്യാനാവില്ല</translation>
+<translation id="1757786065507923842">രക്ഷിതാവിനുള്ള അനുമതി അഭ്യർത്ഥന നടത്താനായില്ല.</translation>
 <translation id="1803557475693955505">പശ്ചാത്തല പേജ് '<ph name="BACKGROUND_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" />-ല്‍ നിന്ന് മാത്രമേ ഇത് ചേർക്കാനാവൂ</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />", അനുവദിക്കാത്തതിനാൽ "<ph name="APP_NAME" />" ഇൻസ്‌റ്റാൾ ചെയ്യാനാവില്ല</translation>
 <translation id="2159915644201199628">ചിത്രം ഡീകോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2193567467390483943">നിങ്ങളുടെ രക്ഷിതാവ് ഈ വിപുലീകരണം അംഗീകരിച്ചില്ല</translation>
 <translation id="2350172092385603347">പ്രാദേശികവൽക്കരണം ഉപയോഗിച്ചു, പക്ഷെ മാനിഫെസ്‌റ്റിൽ സ്ഥിര-ഭാഷ വ്യക്തമാക്കിയിട്ടില്ല.</translation>
 <translation id="2576842806987913196">ഇതേ പേരിൽ ഇതിനകം ഒരു CRX ഫയൽ നിലവിലുണ്ട്.</translation>
 <translation id="2662876636500006917">Chrome വെബ് സ്റ്റോര്‍</translation>
@@ -27,6 +29,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /></translation>
 <translation id="3174723475300476613">ഈ വിപുലീകരണത്തിലേക്കുള്ള ആക്സസ് നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
+<translation id="3364986687961713424">നിങ്ങളുടെ അഡ്‌മിനിൽ നിന്ന്: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> വെൻഡറിൽ നിന്നുള്ള <ph name="PRODUCT_NAME" /> (സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">സ്വകാര്യ കീയ്‌ക്കായുള്ള ഇന്‍‌പുട്ട് മൂല്യം സാധുവായ പാതയായിരിക്കണം.</translation>

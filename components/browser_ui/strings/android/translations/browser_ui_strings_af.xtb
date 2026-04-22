@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Vee gestoorde zoemvlakke uit?</translation>
 <translation id="3362437373201486687">Soek tans na Bluetooth-toestelle</translation>
 <translation id="3368138297038111198">Deel tans ’n venster</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{Wys tans 1 van {TOTAL_COUNT} items weens min geheue}other{Wys tans # van {TOTAL_COUNT} items weens min geheue}}</translation>
 <translation id="3386292677130313581">Vra voordat werwe toegelaat word om jou ligging te ken (aanbeveel)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Derdepartywebkoekies geblokkeer</translation>
@@ -654,7 +655,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804248752222191302">'n Werf gebruik tans jou kamera</translation>
 <translation id="7805832099057502789">Voorkoms van Nuwe Oortjie-bladsy se onderste blad is teen volle hoogte oopgemaak</translation>
-<translation id="7807060072011926525">Verskaf deur Google</translation>
 <translation id="7809029041571842593">Onderste blad van Nuwe Oortjie-bladsykaarte is teen halwe hoogte oopgemaak</translation>
 <translation id="7815680994978050279">Gevaarlike aflaai is geblokkeer</translation>
 <translation id="7835852323729233924">Speel tans media</translation>

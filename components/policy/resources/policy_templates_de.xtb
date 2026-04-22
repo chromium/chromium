@@ -123,6 +123,7 @@ Wenn die Richtlinie auf „1 – DisabledForBrowser“ gesetzt ist, kann der Br
 
 Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
+<translation id="1069651607236021905">Vordergrundpriorität für bestimmte Ursprünge erzwingen</translation>
 <translation id="107045325503547419">Abhängig vom Funktionseinführungsprozess.</translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
@@ -704,14 +705,6 @@ Ist die Richtlinie nicht konfiguriert, ist die Emoji-Auswahl für normale Nutzer
 <translation id="1523587744262636189">Port 10080 (Blockierung kann bis 01.04.2022 aufgehoben werden)</translation>
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="152657506688053119">Liste alternativer URLs für den Standardsuchanbieter</translation>
-<translation id="1526766414933532012">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Erfolgsmessung bei Anzeigen für Nutzer deaktiviert werden kann.
-
-Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Erfolgsmessung bei Anzeigen für Nutzer deaktiviert.
-Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Erfolgsmessung bei Anzeigen auf ihrem Gerät aktivieren oder deaktivieren.
-
-Damit diese Richtlinie konfiguriert werden kann, muss die Richtlinie „<ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />“ deaktiviert sein.
-
-Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung der Attribution Reporting API eingestellt.</translation>
 <translation id="1532928374875633053">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, durch die angegeben wird, auf welchen Websites die Berechtigung zur Fensterpositionierung automatisch gewährt wird. Dadurch können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
       Ausführliche Informationen zu gültigen Website-URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL‑Musters ignoriert.
@@ -2123,6 +2116,15 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2450392422484526374">Wird diese Richtlinie auf „True“ gesetzt, wird das stumme Drucken aktiviert. Dabei wird das Druckvorschaufenster nach dem Öffnen sofort geschlossen und der Druckvorgang wird mit den Standardeinstellungen auf dem Standarddrucker gestartet. Wenn unter „Standarddrucker“ die Option „Als PDF speichern“ ausgewählt ist, wird die Datei im Ordner „Downloads“ gespeichert.
 
 Wird diese Richtlinie nicht konfiguriert oder auf „False“ festgelegt, wird das stumme Drucken deaktiviert. In diesem Fall wird das Druckvorschaufenster nicht automatisch geschlossen und der Nutzer muss wie gewohnt eine Auswahl treffen.</translation>
+<translation id="2451322901390143329">Diese Richtlinie legt fest, ob Web Workern, die aus Daten-URLs erstellt wurden, ein eindeutiger intransparenter Ursprung zugewiesen wird.
+
+Web Worker können mithilfe einer Daten-URL erstellt werden, die das Script des Web Workers enthält. Bisher haben diese Web Worker den Ursprung der Seite übernommen, von der sie erstellt wurden, sodass sie auf denselben lokalen Speicher, dieselben Cookies und andere ursprungsgebundene Daten zugreifen konnten. Um die Sicherheit zu verbessern und die HTML-Spezifikation einzuhalten, ändert Chrome in Version 149 das Standardverhalten, sodass Web Worker, die aus Daten-URLs erstellt wurden, jetzt einen eindeutigen, intransparenten Ursprung haben. Dadurch werden sie von den Daten der Seite, die sie erstellt hat, getrennt.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird das neue und sicherere Standardverhalten verwendet und Web Worker, die aus Daten-URLs erstellt wurden, haben einen eindeutigen intransparenten Ursprung.
+
+Wenn diese Richtlinie deaktiviert ist, stellt Chrome das alte Verhalten wieder her und Web Worker, die aus Daten-URLs erstellt wurden, übernehmen den Ursprung der jeweiligen Seite. So können Administratoren Kompatibilitätsprobleme vorübergehend beheben, wenn interne Anwendungen aufgrund der Änderung an den Sicherheitsmaßnahmen nicht mehr funktionieren.
+
+Diese Richtlinie gilt vorübergehend und wird in Version 157 entfernt.</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
 <translation id="2455033019778127130">Verwendet das Standard-Browserverhalten, zeigt die Nutzungsbedingungen an und wartet auf die Zustimmung des Nutzers.</translation>
@@ -3231,7 +3233,7 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3142410959002029864">Durch die Richtlinie wird der standardmäßige Duplexmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
 <translation id="3143203373436771188">Beim Aufrufen von Office-Dokumenten, die normalerweise im <ph name="BASIC_EDITOR_NAME" /> geöffnet werden, diese im <ph name="BASIC_EDITOR_NAME" /> öffnen</translation>
 <translation id="3144173889708944482">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
-<translation id="3146711617256415776">Stimmen für die Sprachausgabe bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
+<translation id="3146711617256415776">Stimmen für Text-zu-Sprache bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
 <translation id="315013437951136266">Funktion „<ph name="IP_PROTECTION_NAME" />“ aktivieren.</translation>
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
@@ -5288,6 +5290,17 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
           Bitte beachte, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn du dafür sorgen möchtest, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein kompletter Neustart nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.
           </translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
+<translation id="4580711645933054901">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen. Für im Hintergrund ausgeführte Webinhalte, die mit diesen Mustern übereinstimmen, wird die Vordergrundpriorität erzwungen.
+
+Wenn die Richtlinie „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ aktiviert ist, wird diese Liste ignoriert, da für alle Tabs die Vordergrundpriorität erzwungen wird.
+
+Wenn „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist, wird die Vordergrundpriorität nur für Inhalte erzwungen, die mit den Mustern in dieser Liste übereinstimmen.
+
+Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade oder Suchparameter im Muster ignoriert. Schema, Host und Port werden unterstützt.
+
+Wenn diese Liste leer oder nicht konfiguriert ist, wird für keine im Hintergrund ausgeführten Inhalte die Vordergrundpriorität erzwungen.</translation>
 <translation id="4581507927311097234">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm ausgeschaltet wird, angegeben in Millisekunden.</translation>
 <translation id="4582027661281685066">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen.
 
@@ -6101,14 +6114,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
 <translation id="50689955292091946">Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="5069453818168036580">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert werden kann.
-
-Wenn die Richtlinie deaktiviert ist, wird die Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.
-Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.
-
-Damit diese Richtlinie konfiguriert werden kann, muss die Richtlinie „<ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />“ deaktiviert sein.
-
-Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung der Protected Audience API eingestellt.</translation>
 <translation id="5069522005630249098">Mit dieser Einstellung wird festgelegt, wie viele Nutzerdaten nach der Deaktivierung von <ph name="LACROS_NAME" /> gespeichert werden.
 
       Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_NONE" />“ gesetzt oder nicht konfiguriert ist, wird keine umgekehrte Datenmigration ausgeführt.
@@ -6236,6 +6241,7 @@ Die Domains sollten in Form eines voll qualifizierten Domainnamens (FQDN) oder a
 
 Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="5163002264923337812">Alte webbasierte Anmeldung aktivieren</translation>
+<translation id="5163120075537316507">Intransparente Ursprünge für Daten-URLs in Web Workern sind deaktiviert (altes, nicht mehr unterstütztes Verhalten)</translation>
 <translation id="5163889437570441600">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
           Wenn diese Richtlinie auf „false“ gesetzt ist, ist es Nutzern nicht möglich, Inhalte auf ihr Gerät zu streamen. Ist sie auf „true“ gesetzt, können Nutzer Inhalte streamen. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer keine Inhalte an angemeldete Chrome OS-Geräte streamen, aber an nicht angemeldete Geräte.</translation>
@@ -6886,6 +6892,11 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Shar
 <translation id="5542235730745104308">Wenn die Richtlinie auf „True“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. „Seite nicht gefunden“). Ist sie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
 
 Wenn die Richtlinie konfiguriert ist, kann sie von Nutzern nicht geändert werden. Wird die Richtlinie nicht konfiguriert, ist sie aktiviert, aber Nutzer können die Einstellung ändern.</translation>
+<translation id="5543124658694855168">Wenn du diese Richtlinie festlegst, können Unternehmen den von <ph name="CPU_PERFORMANCE_API_NAME" /> zurückgegebenen Wert überschreiben (d. h. <ph name="CPU_PERFORMANCE_GETTER_NAME" />; weitere Informationen findest du unter https://github.com/WICG/cpu-performance).
+
+Wenn diese Richtlinie konfiguriert ist, wird der Wert von <ph name="CPU_PERFORMANCE_GETTER_NAME" /> durch den angegebenen Wert überschrieben. Wenn die Richtlinie nicht konfiguriert ist, wird die Standardberechnung der Leistungsstufe verwendet.
+
+Die möglichen Werte für diese Richtlinie sind 0 bis 4.</translation>
 <translation id="5544059132156503357">Wenn die Richtlinie konfiguriert ist, wird angegeben, welche Verschlüsselungstypen bei der Anforderung von Kerberos-Tickets von einem <ph name="MS_AD_NAME" />-Server zulässig sind.
 
 Richtlinienkonfiguration:
@@ -7191,6 +7202,7 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
 <translation id="5706929446669049441">Teilen von Nutzeranmeldedaten deaktivieren</translation>
 <translation id="57072195677044908">Dadurch wird die Profiltrennung deaktiviert</translation>
 <translation id="5708969689202733975">Zulässige Modi für das schnelle Entsperren konfigurieren</translation>
+<translation id="5714281972278520176">Intransparente Ursprünge für Daten-URLs in Web Workern aktivieren</translation>
 <translation id="5714563837055244378">Freigabe zwischen Android-Apps und Webanwendungen aktivieren.</translation>
 <translation id="5715739768416614900">Kiosk-Tools zur Fehlerbehebung aktivieren.</translation>
 <translation id="5717973246079053225">Cloud-Berichterstellung über verwaltete Profile deaktivieren</translation>
@@ -7639,7 +7651,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="6020795917180493154">Wenn diese Richtlinie ab Version M119 auf „False“ gesetzt oder nicht konfiguriert ist, ist WebSQL deaktiviert, kann aber über das Chrome-Flag „web-sql-access“ aktiviert werden. Ist die Richtlinie auf „True“ gesetzt, ist der WebSQL-Zugriff aktiviert.
 Diese Richtlinie wird ab M124 eingestellt.</translation>
 <translation id="6022948604095165524">Aktion beim Start</translation>
-<translation id="602318745029752898">Stimmen für die Sprachausgabe bei Enhanced Network in der Funktion „Vorlesen“ zulassen</translation>
+<translation id="602318745029752898">Stimmen für Text-zu-Sprache bei Enhanced Network in der Funktion „Vorlesen“ zulassen</translation>
 <translation id="6026722971789064331">Verwendung der File System API zum Schreiben steuern</translation>
 <translation id="602728333950205286">Google Instant-URL der Standardsuchmaschine</translation>
 <translation id="603410445099326293">Parameter für URL der Vorschlagsuche, die POST verwendet</translation>
@@ -8034,6 +8046,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="6287128640500683781">Anmeldung für alle Nutzer zulassen</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
 <translation id="6287742528823584153">Den Dienst „<ph name="PRODUCT_NAME" />“ aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
+<translation id="6293411231114989812">Intransparente Ursprünge für Daten-URLs in Web Workern sind aktiviert (neues Standardverhalten)</translation>
 <translation id="6299147100249359151">Lässt die Erkennung des Anwendungsbereichs von Richtlinien zu.</translation>
 <translation id="6299554629216555326">Einstellungen für die Fensterverwaltung</translation>
 <translation id="6302021021024941085">Kiosk-Tools zur Fehlerbehebung deaktivieren.</translation>
@@ -9885,7 +9898,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="744349502210151344">Standard: Die Verfügbarkeit von XSLT wird durch die Standardeinstellungen des Browsers und Field Trials bestimmt.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
-<translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Sprachausgabe vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Vorlesen“ aktiviert.</translation>
+<translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Text-zu-Sprache vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Vorlesen“ aktiviert.</translation>
 <translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
 
       Ist die Richtlinie aktiviert, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot an, sofern verfügbar.
@@ -10186,6 +10199,10 @@ Richtlinien, die zusammengeführt werden müssen, müssen außerdem entweder in 
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Berichterstellung deaktiviert.
       Regeln, die in DataLeakPreventionRulesList mit ALLOW-Ebene-Beschränkungen definiert sind, melden in beiden Fällen keine Ereignisse.</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
+<translation id="7649831723389657756">Mit dieser Richtlinie wird festgelegt, für welche Ursprünge alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
+
+      Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
+      Für die Hostkomponente sind Platzhalter zulässig (z. B. „*:8000“ passt für alle Hosts auf Port 8000). Wenn alle Schemas oder alle Ports passen sollen, kannst du die Komponente vollständig weglassen (z. B. passt „beispiel.de“ für jedes Schema und jeden Port). Ein Hostname (z. B. „beispiel.de“) stimmt auch mit seinen Subdomains überein. Wenn ein Host genau passen soll und seine Subdomains ausgeschlossen werden sollen, stell ihm einen Punkt voran (z. B. „.beispiel.de“). Verwende ein einzelnes Sternchen („*“), damit alle Ursprünge passen.</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="76580522298425324">Bildschirmaufnahme ohne vorherige Nutzergeste zulassen</translation>
 <translation id="7661379728107156839">Geringe Komplexität</translation>
@@ -10234,6 +10251,7 @@ Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschr
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert der Verzögerung für die Bildschirmabschaltung (falls angegeben) und der Inaktivitätsverzögerung sein.</translation>
 <translation id="7680437377926096177">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters nicht anzeigen.</translation>
+<translation id="7681075922820376711">Überschreibung für die CPU-Leistungsstufe</translation>
 <translation id="7682409626897786151">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites die Schlüsselgenerierung verwenden dürfen. Wenn ein URL-Muster in „KeygenBlockedForUrls“ angegeben ist, werden diese Ausnahmen dadurch überschrieben.
 
           Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie „DefaultKeygenSetting“, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.
@@ -10878,7 +10896,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
 <translation id="812369175049698774">Nutzern erlauben, Firmwareupdates zu starten</translation>
 <translation id="8124468781472887384">Richtlinie für den Zugriff auf die Konfiguration von an Geräte gebundenen Druckern.</translation>
 <translation id="8128192446158421884">URLs, auf die AutoOpenFileTypes angewendet werden können</translation>
-<translation id="8131046602440880289">Stimmen für die Sprachausgabe bei Enhanced Network zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
+<translation id="8131046602440880289">Stimmen für Text-zu-Sprache bei Enhanced Network zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
 <translation id="8132419228205300235">Einführungsbildschirm für künstliche Intelligenz bei der Anmeldung nicht anzeigen</translation>
 <translation id="8133152694354699657">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern "Zum Suchen antippen" zur Verfügung und sie können die Funktion aktivieren oder deaktivieren.
 
@@ -11077,16 +11095,6 @@ Diese Richtlinien dienen ausschließlich der Konfiguration von internen <ph name
 Diese Einstellungen müssen nicht manuell konfiguriert werden. Nutzerfreundliche Vorlagen für Windows, Mac und Linux sind unter <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" /> zum Download verfügbar.
 
 Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte zu konfigurieren, die Bereitstellung von Richtlinien über die Registrierung wird jedoch auch weiterhin von Windows-Instanzen unterstützt, die Teil einer <ph name="MS_AD_NAME" />-Domain sind.</translation>
-<translation id="8261008508574620157">Durch diese Richtlinie wird festgelegt, ob Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung sehen.
-Die Aufforderung blockiert Nutzer und informiert sie über die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellungen. Unter <ph name="PRIVACY_SANDBOX_URL" /> findest du Informationen dazu, wie Drittanbieter-Cookies durch Chrome eingestellt werden.
-
-Wenn die Richtlinie deaktiviert ist, zeigt <ph name="PRODUCT_NAME" /> die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung nicht an.
-Wenn sie aktiviert oder nicht konfiguriert ist, prüft <ph name="PRODUCT_NAME" />, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann, und zeigt sie wenn möglich an.
-
-Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deaktiviert sein:
-<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
-<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="826163650738550159">Diese Richtlinie ermöglicht den Zugriff auf die Richtlinientestseite. Während auf dieser Seite Richtlinien getestet werden, werden alle anderen Richtlinien ignoriert.
 Die Funktion ist nur in Canary-Versionen verfügbar.
 
@@ -11737,14 +11745,6 @@ Diese Richtlinie ist eine vorübergehende Maßnahme und wird nach einigen Meilen
       Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Browserprozess von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb des Browserprozesses von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.
 
       Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
-<translation id="8672039014434141545">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Werbethemen für Nutzer deaktiviert werden kann.
-
-Wenn die Richtlinie deaktiviert ist, wird die Einstellung für Werbethemen für Nutzer deaktiviert.
-Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Werbethemen auf ihrem Gerät aktivieren oder deaktivieren.
-
-Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie „<ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />“ deaktiviert sein.
-
-Mit der Einstellung der Topics API wird diese Richtlinie ab Version 144 von <ph name="PRODUCT_NAME" /> nicht mehr unterstützt.</translation>
 <translation id="8672321184841719703">Automatische Aktualisierung auf Zielversion</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8675599659717867329">Berichte deaktivieren</translation>
@@ -11800,7 +11800,7 @@ Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiv
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="8720288018555457355">Chrome Finds zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
-<translation id="8721685661759544418">Funktion „Vorlesen“ (Textanalyse und Sprachsynthese) für Webseiten aktivieren</translation>
+<translation id="8721685661759544418">Funktion „Vorlesen“ (Textanalyse und Text-zu-Sprache-Synthese) für Webseiten aktivieren</translation>
 <translation id="8726080977639508431">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Wenn die Richtlinie auf „Default“ (0) gesetzt oder nicht konfiguriert ist, ist der URL-Abgleich weniger streng. Bei Regeln, die „/“ nicht enthalten, wird nach einem Teilstring im Hostnamen der URL gesucht. Bei der Zuordnung der Pfadkomponente einer URL wird die Groß- und Kleinschreibung beachtet.

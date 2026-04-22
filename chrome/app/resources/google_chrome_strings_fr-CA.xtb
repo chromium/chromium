@@ -423,6 +423,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="547202872422499512">Chrome se lance désormais au démarrage de Windows afin que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
 <translation id="5486346529181556467">Améliorez la sécurité en ligne pour tous en signalant un site que vous pensez dangereux. Apprenez-en plus sur la <ph name="BEGIN_LINK" />politique relative aux sites dangereux de Google<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">Coin supérieur gauche de la zone de recherche : gauche <ph name="LEFT" /> %, haut <ph name="TOP" /> %</translation>
+<translation id="5529390769101499214">Pour gérer vos extensions, cliquez sur « Extensions » dans le menu principal de Chrome.</translation>
 <translation id="5550137307985173298">Cliquez sur le bouton Personnaliser Chrome sur la page Nouvel onglet pour donner un nouveau style à Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
@@ -508,6 +509,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6251759518630934363">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chrome.</translation>
 <translation id="6277547788421725101">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chrome</translation>
 <translation id="627882678981830918">Personnalisez et gérez Chrome. Définissez Chrome comme navigateur par défaut.</translation>
@@ -671,6 +673,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7792336732117553384">&amp;Gérer les profils Chrome</translation>
 <translation id="7801699035218095297">Google Chrome essaie de copier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="7804364787702057554">Votre compte dans Chrome</translation>
+<translation id="7804947029129221742">Votre moteur de recherche a été modifié en dehors de Chrome. Pour vous protéger, Chrome l'a réinitialisé à sa valeur par défaut d'origine. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Supprimer de Google Chrome...</translation>
 <translation id="7827099906024714326">Chrome doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7832314606810669113">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce favori sera enregistré dans votre compte Google après votre connexion.</translation>
@@ -792,7 +795,6 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8999117580775242387">Lorsque le protocole HTTPS n'est pas accessible, Chrome utilisera une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>
-<translation id="9010418943148193727">Votre moteur de recherche par défaut a été modifié en dehors de Chrome. Pour vous protéger, Chrome l'a réinitialisé.</translation>
 <translation id="9014771989710951291">Plusieurs organisations gèrent Chrome</translation>
 <translation id="9066987883552592250">Fermer Gemini dans Chrome Canary</translation>
 <translation id="9090566250983691233">Découvrir pourquoi Chrome bloque certains fichiers</translation>

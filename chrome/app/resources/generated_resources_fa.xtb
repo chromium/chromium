@@ -696,10 +696,11 @@
 <translation id="1468571364034902819">نمی‌توان از این نمایه استفاده کرد</translation>
 <translation id="1469702495092129863">میکروفونتان را بررسی کنید</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{افزودن زبانه به گروه جدید}one{افزودن زبانه‌ها به گروه جدید}other{افزودن زبانه‌ها به گروه جدید}}</translation>
-<translation id="1470946456740188591">‏برای روشن یا خاموش کردن مرور با نشانگر نوشتار، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
+<translation id="1470946456740188591">‏برای روشن یا خاموش کردن «مرور با هشتک»، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
 <translation id="1471034383866732283">حالت خواندن نمی‌تواند محتوای اصلی را در این صفحه پیدا کند</translation>
 <translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473223074251193484">تنظیم پیکربندی اشتراک‌گذاری اینترنت</translation>
+<translation id="1473616112002966036">&amp;فریم ویدیو</translation>
 <translation id="1473927070149284123">دوباره امتحان کنید یا به‌صورت دستی به شبکه متصل شوید</translation>
 <translation id="1474785664565228650">‏برای اعمال تغییر ایجادشده در میکروفون، باید Parallels Desktop را راه‌اندازی مجدد کنید. برای ادامه، Parallels Desktop را راه‌اندازی مجدد کنید.</translation>
 <translation id="1476088332184200792">کپی در دستگاه</translation>
@@ -1011,7 +1012,7 @@
 <translation id="1682195225331129001">اکنون امتحان کردن</translation>
 <translation id="1682548588986054654">پنجره جدید ناشناس</translation>
 <translation id="1682696837763999627">مکان‌نمای موشواره بزرگ</translation>
-<translation id="1682867089915960590">«مرور با نشانگر نوشتار» روشن شود؟</translation>
+<translation id="1682867089915960590">«مرور با هشتک» روشن شود؟</translation>
 <translation id="1686550358074589746">فعال کردن تایپ لغزشی</translation>
 <translation id="1686684082159608623">سرپرستتان به‌روزرسانی این برنامه را مسدود کرده است و ممکن است برنامه درست کار نکند</translation>
 <translation id="1686785653877010442">سایت‌ها معمولاً اعلان ارسال می‌کنند تا شما را از اخبار فوری یا پیام‌های گپ مطلع کنند.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
+<translation id="1706015824809136764">‏سنجاق کردن Gemini به میان‌بر نوارابزار</translation>
 <translation id="1706586824377653884">افزوده‌شده توسط سرپرست سیستم</translation>
 <translation id="170658918174941828">‏نسخه Chrome، نسخه سیستم‌عامل، تنظیمات Cast،
     آمار عملکرد بازتاب، و گزارش‌های عیب‌یابی
@@ -1119,7 +1121,6 @@
 <translation id="1756963401828337401">انتخاب کردن صفحه برای ضبط کردن</translation>
 <translation id="1757132445735080748">‏برای تمام کردن راه‌اندازی Linux،‏ ChromeOS Flex را به‌روزرسانی و دوباره امتحان کنید.</translation>
 <translation id="175772926354468439">فعال کردن زمینه</translation>
-<translation id="1757786065507923842">درخواست اجازه ولی ناموفق بود.</translation>
 <translation id="17584710573359123">‏مشاهده در «نت‌بازار Chrome»</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> به <ph name="REMAPPING_OPTION" /> بازنگاری شد.</translation>
 <translation id="1761845175367251960">حساب‌های <ph name="NAME" /></translation>
@@ -1555,6 +1556,7 @@
 <translation id="204914487372604757">ایجاد میان‌بر</translation>
 <translation id="2049573977943974163">‫«<ph name="EXTENSION_NAME" />» روشن شود؟</translation>
 <translation id="2050339315714019657">پرتره</translation>
+<translation id="2050394140692183739">میان‌بر نوارابزار کنونی</translation>
 <translation id="2051555741181591333">غیرفعال کردن خودکار نقطه اتصال</translation>
 <translation id="2051669996101374349">‏درصورت امکان از HTTPS استفاده می‌شود و قبل‌از بار شدن سایت‌هایی که از آن پشتیبانی نمی‌کنند هشدار دریافت می‌کنید. نمی‌توانید این تنظیم را تغییر دهید زیرا «محافظت پیشرفته» را فعال کرده‌اید.</translation>
 <translation id="2052572566310583903">در دیگر دستگاه‌هایتان نصب شده است</translation>
@@ -1762,7 +1764,6 @@
 <translation id="219283042927675668">برگه‌های موجود در گروه</translation>
 <translation id="2192881772486983655">‫<ph name="THIRD_PARTY_NTP_MANAGER" /> صفحه زبانه جدیدتان را مدیریت می‌کند، در زبانه جدیدی باز می‌شود</translation>
 <translation id="2192982266585216032">&amp;پرداخت‌ها</translation>
-<translation id="2193567467390483943">ولی‌تان این افزونه را تأیید نکرد</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
 <translation id="2195331105963583686">همچنان می‌توانید بعد از اتمام زمان مشخص‌شده، از این <ph name="DEVICE_TYPE" /> استفاده کنید، اما دیگر به‌روزرسانی‌های نرم‌افزار و امنیتی خودکار را دریافت نخواهید کرد</translation>
 <translation id="2198625180564913276">درحال افزودن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
@@ -1848,6 +1849,7 @@
 <translation id="2253927598983295051">آنچه را باید با <ph name="APP_NAME" /> هم‌رسانی شود انتخاب کنید</translation>
 <translation id="2255077166240162850">این دستگاه روی دامنه یا حالت دیگری قفل شده است.</translation>
 <translation id="2255317897038918278">‏مهر زمان Microsoft</translation>
+<translation id="2256049182613019001">بستن حالت خواندن (<ph name="SHORTCUT" />)</translation>
 <translation id="2256115617011615191">راه‌اندازی مجدد در این لحظه</translation>
 <translation id="2257053455312861282">با افزودن حساب محل تحصیل، دانش‌آموز به‌راحتی می‌تواند به سیستم وب‌سایت‌ها، افزونه‌ها، و برنامه‌ها وارد شود و همچنان تحت کنترل‌های والدین عمل کند.</translation>
 <translation id="225716114209817872">حداکثر</translation>
@@ -3034,6 +3036,7 @@
 <translation id="3038628620670416486">مکان‌یابی دکمه‌های موشواره</translation>
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="303955801043931176">برگه بسته شد</translation>
+<translation id="3040435070100611531">‏مجوزهای شما در «کیف پول Google»</translation>
 <translation id="304169924727249890">به «گروه زبانه» با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="3042097545107738107">راهبرد شارژ بهینه‌سازی‌شده را تغییر می‌دهد.</translation>
 <translation id="3043016484125065343">برای دیدن نشانک‌ها، به سیستم وارد شوید</translation>
@@ -3452,7 +3455,6 @@
 <translation id="3362651095484543782">‏برای ترک کردن یا برگشتن به Gemini، از میان‌بر صفحه‌کلید استفاده کنید.</translation>
 <translation id="3362915550009543917">نقاشی رنگ روغن آرامش‌بخشی که چمنزاری زردرنگ را به‌نمایش می‌گذارد و حس آرامش و بازتاب معنوی را برمی‌انگیزد.</translation>
 <translation id="3363202073972776113">سازمانتان این نمایه جدید را مدیریت خواهد کرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="3364986687961713424">ازطرف سرپرست: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏یا از Ctrl استفاده کنید یا از Alt</translation>
 <translation id="3365651640097487828">برای هم‌رسانی زبانه‌ها و مشارکت کردن با دیگران، هویت خود را درستی‌سنجی کنید و سابقه و زبانه‌ها را همگام‌سازی کنید.</translation>
 <translation id="3368662179834713970">خانه</translation>
@@ -4731,6 +4733,7 @@
 <translation id="4241224519481557898">دسته</translation>
 <translation id="4242145785130247982">چند مورد از گواهینامه‌های کارخواه پشتیبانی نمی‌شوند</translation>
 <translation id="4242245038391716252">‏بارگیری‌شده توسط افزونه: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
+<translation id="4242344119782070019">اکنون می‌توانید با روی زبانه‌ها نگه داشتن، آن‌ها را ازهم باز کنید. برای روشن کردن این ویژگی، اینجا کلیک راست کنید.</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4242577469625748426">تنظیمات خط‌مشی روی دستگاه نصب نشد: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />مرورگر و نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="DOMAIN" /> هستند</translation>
@@ -5444,6 +5447,7 @@
 <translation id="4739639199548674512">بلیت‌ها</translation>
 <translation id="4740546261986864539">تازه بازشده</translation>
 <translation id="4742334355511750246">اجازه ندارد تصاویر را نشان دهد</translation>
+<translation id="4742599569576370821">&amp;فریم ویدیو</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
 <translation id="4743990041512863976">مجاز است – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />دسترسی میکروفون سیستم<ph name="LINK_END" /> را روشن کنید.</translation>
@@ -5931,7 +5935,7 @@
 <translation id="5083035541015925118">مهار + دگرساز + بالابر</translation>
 <translation id="5084622689760736648">سایت‌ها به‌احتمال زیاد عملکردی مطابق انتظار شما خواهند داشت</translation>
 <translation id="5084686326967545037">مراحل نمایش‌داده‌شده در دستگاهتان را دنبال کنید</translation>
-<translation id="5085162214018721575">در حال بررسی به‌روزرسانی‌ها</translation>
+<translation id="5085162214018721575">درحال بررسی وجود به‌روزرسانی</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087249366037322692">توسط یک شخص ثالث اضافه شده است</translation>
@@ -6335,6 +6339,7 @@
 <translation id="5372990315769030589">‫«<ph name="EXTENSION_NAME" />» حفظ شود؟</translation>
 <translation id="5375318608039113175">‏برای استفاده از «هم‌رسانی با اطراف» با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="5375374982898812658">دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
+<translation id="5375517140689139594">حالت خواندن (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">سایت‌ها می‌توانند به تأیید اینکه شما روبات نیستید کمک کنند</translation>
 <translation id="5376094717770783089">درخواست دسترسی دارد</translation>
 <translation id="5376169624176189338">برای برگشتن به‌عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
@@ -6412,6 +6417,7 @@
 <translation id="5423753908060469325">ایجاد میان‌بر…</translation>
 <translation id="5423829801105537712">غلط‌گیر املایی پایه</translation>
 <translation id="5425042808445046667">ادامه بارگیری</translation>
+<translation id="542570217857307910">اکنون می‌توانید با روی زبانه‌ها نگه داشتن، آن‌ها را ازهم باز کنید. برای خاموش کردن این ویژگی، اینجا کلیک راست کنید.</translation>
 <translation id="5425863515030416387">ورود به سیستم آسان در همه دستگاه‌ها</translation>
 <translation id="5427278936122846523">همیشه ترجمه شود</translation>
 <translation id="5427459444770871191">چرخاندن در جهت &amp;عقربه‌های ساعت</translation>
@@ -6983,7 +6989,6 @@
 <translation id="583673505367439042">سایت‌ها می‌توانند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهند</translation>
 <translation id="5836999627049108525">زبانی که می‌خواهید از آن ترجمه کنید</translation>
 <translation id="583756221537636748">قاب</translation>
-<translation id="5839104899226944765">بستن حالت خواندن</translation>
 <translation id="5840656138956959276">بهبودیافته: سخت‌گیرانه</translation>
 <translation id="5840680448799937675">فایل‌ها همیشه درحالت آفلاین هم‌رسانی می‌شود</translation>
 <translation id="5841270259333717135">پیکربندی اترنت</translation>
@@ -8140,6 +8145,7 @@
 <translation id="6657180931610302174">نام کاربری اضافه شود؟</translation>
 <translation id="6657240842932274095">اجازه می‌دهید خدمات سیستم از مکانتان استفاده کند؟</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
+<translation id="6658957691413122395">‏درحال تغییر اندازه Gemini…</translation>
 <translation id="6659213950629089752">برنامه افزودنی «<ph name="NAME" />» این صفحه را بزرگ‌نمایی کرده است</translation>
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - دوربین درحال ضبط است</translation>
@@ -9303,7 +9309,7 @@
 <translation id="7465778193084373987">‏نشانی وب ابطال گواهی Netscape</translation>
 <translation id="7466431077154602932">نمای فشرده</translation>
 <translation id="7466861475611330213">شیوه سجاوندی</translation>
-<translation id="7467547999067230412">با زبانه، فایل، یا ابزار هوشواره‌ای، جستجویتان را بهبود دهید</translation>
+<translation id="7467547999067230412">با زبانه، فایل، یا ابزار هوشواره‌ای، جستجوهایتان را بهبود دهید</translation>
 <translation id="746861123368584540">افزونه بار شد</translation>
 <translation id="7470131554696493512">‏مسدود کردن لوازم جانبی Thunderbolt یا USB4 از دسترسی داشتن و هم‌رسانی حافظه (حافظه دسترسی تصادفی)</translation>
 <translation id="7470274830728993952">پیوستن به گروه زبانه</translation>
@@ -9404,7 +9410,7 @@
 <translation id="75362970626182391">گروه زبانه جدید</translation>
 <translation id="7536815228183532290">واردشده به سیستم با <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
-<translation id="7540972813190816353">در هنگام بررسی برای وجود به‌روزرسانی خطایی رخ داد: <ph name="ERROR" /></translation>
+<translation id="7540972813190816353">هنگام بررسی وجود به‌روزرسانی، خطایی رخ داد: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> این دستگاه را به نسخه قبلی برگردانده است. لطفاً فایل‌های مهم را ذخیره کنید، سپس دستگاه را بازراه‌اندازی کنید. همه داده‌های ذخیره‌شده در دستگاه حذف خواهد شد.</translation>
 <translation id="754207240458482646">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">اطلاعات اصالت‌سنجی شبکه «پروتکل اصالت‌سنجی توسعه‌پذیر»</translation>
@@ -9545,7 +9551,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> اضافه شد</translation>
 <translation id="7642778300616172920">پنهان کردن محتوای حساس</translation>
 <translation id="7643117827468520640">بازبینی این شرایط</translation>
-<translation id="7644953783774050577">انتخاب هیچ‌کدام</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7645681574855902035">‏درحال لغو پشتیبان‌گیری Linux</translation>
 <translation id="7646425900255826066">‏وقتی به سیستم Chrome وارد شده باشید می‌توانید گذرواژه‌ها را با «مدیر گذرواژه Google» ذخیره کنید</translation>

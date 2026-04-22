@@ -423,6 +423,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="547202872422499512">Chrome tani niset kur niset Windows që të mund të fillosh të shfletosh menjëherë. Mund ta çaktivizosh këtë te cilësimet.</translation>
 <translation id="5486346529181556467">Përmirëso sigurinë online për të gjithë kur raporton një sajt që mendon se është i dëmshëm. Mëso më shumë rreth <ph name="BEGIN_LINK" />politikës së Google për sajtet e pasigurta.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
+<translation id="5529390769101499214">Menaxho shtesat e tua duke klikuar te "Shtesat" në menynë kryesore të Chrome.</translation>
 <translation id="5550137307985173298">Kliko te butoni "Personalizo Chrome" në faqen e skedës së re për t'i dhënë Chrome një pamje të re</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
@@ -509,6 +510,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6235018212288296708">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="624230925347970731">Chrome do të mbyllet së shpejti</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
+<translation id="6248988683584659830">Cilësimet e kërkimit</translation>
 <translation id="6251759518630934363">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chrome.</translation>
 <translation id="6277547788421725101">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome</translation>
 <translation id="627882678981830918">Personalizo dhe kontrollo Chrome. Cakto Chrome si parazgjedhje.</translation>
@@ -672,6 +674,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7792336732117553384">&amp;Menaxho profilet e Chrome</translation>
 <translation id="7801699035218095297">Google Chrome po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="7804364787702057554">Llogaria jote në Chrome</translation>
+<translation id="7804947029129221742">Motori i kërkimit u ndryshua nga jashtë Chrome. Për të të mbrojtur, Chrome e rivendosi atë në parazgjedhjen e tij origjinale. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7827099906024714326">Chrome duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="7832314606810669113">Për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chrome. Ky faqeshënues do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
@@ -791,7 +794,6 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8992769679401294069">Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
 <translation id="8999117580775242387">Kur HTTPS nuk ofrohet, Chrome do të përdorë një lidhje të pasigurt pa të të paralajmëruar</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
-<translation id="9010418943148193727">Motori i parazgjedhur i kërkimit u ndryshua nga jashtë Chrome. Për të të mbrojtur, Chrome e rivendosi atë.</translation>
 <translation id="9014771989710951291">Disa organizata menaxhojnë Chrome</translation>
 <translation id="9066987883552592250">Mbyll Gemini në Chrome Canary</translation>
 <translation id="9090566250983691233">Mëso se pse Chrome i bllokon disa skedarë</translation>

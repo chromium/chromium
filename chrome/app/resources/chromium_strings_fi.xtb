@@ -227,7 +227,6 @@
 <translation id="3296368748942286671">Jätä taustasovellukset käyntiin, kun Chromium suljetaan</translation>
 <translation id="3313189106987092621">Chromium varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="3316771292331273802">Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chromium-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromiumiin. <ph name="SETTINGS_LINK" />, jotta sivustot muistavat sinut.</translation>
-<translation id="3322413454779348750">Oletushakukone on vaihdettu Chromiumin ulkopuolelta. Chromium on nollannut sen suojellakseen sinua.</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Tilisi Chromium-data</translation>
 <translation id="3369405342922656244">Hae tältä sivulta kuvahaulla</translation>
@@ -475,6 +474,7 @@
 <translation id="6241367896540709610">Chromium tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
 <translation id="6245734527075554892">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen listan avulla</translation>
 <translation id="6248213926982192922">Tee Chromiumista oletusselain</translation>
+<translation id="6248988683584659830">Hae asetuksista</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6270547683008298381">Nämä välilehdet käyttävät ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromiumin tehdä niistä ei-aktiivisia.</translation>
 <translation id="6281746429495226318">Muokkaa Chromium-profiiliasi</translation>
@@ -511,6 +511,7 @@
 <translation id="6542839706527980775">Jokainen profiili sisältää omat Chromium-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
 <translation id="6563921047760808519">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chromium pitää datasi yksityisenä<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Asetukseen tehdyt muutokset tulevat voimaan, kun Chromium käynnistetään uudelleen.</translation>
+<translation id="6567032987737689854">Hallinnoi laajennuksia valitsemalla Chromiumin päävalikosta Laajennukset.</translation>
 <translation id="656935081669708576">Voit vaihtaa profiilia nähdäksesi toisen Chromium-profiilin salasanat</translation>
 <translation id="6570579332384693436">Chromium lähettää kenttiin kirjoittamasi tekstin Googlelle oikeinkirjoitusvirheiden korjaamiseksi.</translation>
 <translation id="6598877126913850652">Siirry Chromiumin ilmoitusasetuksiin</translation>
@@ -634,6 +635,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7810005234485217901">Kiinnitä kuvahaku, niin löydät sen helposti</translation>
 <translation id="7828947555739565424">Tämän tilin Chromium-profiili on jo tällä laitteella</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="7847673590271334840">Hakukone on vaihdettu Chromiumin ulkopuolelta. Chromium on nollannut sen alkuperäisiin oletusasetuksiin suojatakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Muokkaa Chromiumia ja anna sille uusi ilme</translation>
 <translation id="7859018312476869945">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chromium lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="7867198900892795913">Chromiumia ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>

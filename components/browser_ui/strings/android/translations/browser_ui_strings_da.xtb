@@ -237,6 +237,7 @@
 <translation id="3360338140203645771">Vil du slette de gemte zoomniveauer?</translation>
 <translation id="3362437373201486687">Søger efter Bluetooth-enheder</translation>
 <translation id="3368138297038111198">Deler et vindue</translation>
+<translation id="3376322973772560482">{LOADED_COUNT,plural, =1{1 af {TOTAL_COUNT} element vises på grund af begrænset hukommelse}one{# af {TOTAL_COUNT} element vises på grund af begrænset hukommelse}other{# af {TOTAL_COUNT} elementer vises på grund af begrænset hukommelse}}</translation>
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din lokation (anbefales)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
@@ -654,7 +655,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
 <translation id="7805832099057502789">Feltet i bunden, der viser udseendet af siden Ny fane, er åbnet i fuld højde</translation>
-<translation id="7807060072011926525">Leveret af Google</translation>
 <translation id="7809029041571842593">Feltet i bunden, der viser kort på siden Ny fane, er åbnet i halv højde</translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7835852323729233924">Afspilning af medier</translation>
