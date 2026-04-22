@@ -73,7 +73,7 @@ TEST_F(ContextualCueingServiceV2Test, TooManyCuesForOriginOverTime) {
 
 TEST_F(ContextualCueingServiceV2Test, TooManyCuesForUserOverTime) {
   std::vector<GURL> urls = {GURL("https://foo.com"), GURL("https://bar.com"),
-                            GURL("https://baz.com")};
+                            GURL("https://baz.com"), GURL("https://qux.com")};
 
   // Show cues to the user until the per-user cap is reached.
   for (int i = 0; i < kCueCapCount.Get(); ++i) {
@@ -89,8 +89,27 @@ TEST_F(ContextualCueingServiceV2Test, TooManyCuesForUserOverTime) {
 
   // The last cue is blocked because of the per-user cap - origin does not
   // matter.
-  EXPECT_EQ(service()->CanShowCue(GURL("https://qux.com")),
+  EXPECT_EQ(service()->CanShowCue(GURL("https://example.com")),
             ContextualCueingDecision::kTooManyCuesShownToTheUser);
+}
+
+TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastDismissal) {
+  GURL url("https://example.com");
+
+  EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
+  service()->OnCueShown(url);
+
+  // Simulate a dismissal.
+  service()->OnCueDismissed(CueTargetType::kGlic);
+
+  for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
+    service()->ReportPageLoad();
+  }
+  task_environment_.FastForwardBy(kMinTimeBetweenNudges.Get() +
+                                  base::Minutes(1));
+
+  EXPECT_EQ(service()->CanShowCue(url),
+            ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
 }
 
 class ContextualCueingServiceDisableBackoffTest

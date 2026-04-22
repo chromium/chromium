@@ -55,7 +55,10 @@ enum class ContextualCueingDecision {
   kTooManyCuesShownToTheUserForOrigin = 19,
   // The cue couldn't be shown because the URL is ineligible.
   kUrlNotEligible = 20,
-  kMaxValue = kUrlNotEligible,
+  // The cue couldn't be shown because not enough time has passed since the
+  // last cue was dismissed.
+  kNotEnoughTimeSinceLastDismissal = 21,
+  kMaxValue = kNotEnoughTimeSinceLastDismissal,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

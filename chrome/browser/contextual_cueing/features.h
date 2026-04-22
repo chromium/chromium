@@ -39,6 +39,12 @@ extern const base::FeatureParam<int> kCueCapCountPerOrigin;
 // used to implement nudge constraints per-origin per 24 hour period.
 extern const base::FeatureParam<int> kVisitedOriginsLimit;
 
+// The amount of time to wait when a nudge is dismissed following the
+// exponential back off rule. The amount of the time to back off each time can
+// be computed as: kBackoffTime * (kBackoffMultiplierBase ^ dismissCount).
+extern const base::FeatureParam<base::TimeDelta> kBackoffTime;
+extern const base::FeatureParam<double> kBackoffMultiplierBase;
+
 // If true, uses private AI to generate cues.
 extern const base::FeatureParam<bool> kUsePrivateAi;
 

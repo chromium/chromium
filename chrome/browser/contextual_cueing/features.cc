@@ -46,7 +46,7 @@ const base::FeatureParam<base::TimeDelta> kCueCapTime(
     base::Hours(8));
 const base::FeatureParam<int> kCueCapCount(&kContextualCueingV2,
                                            "ContextualCueingV2CueCapCount",
-                                           5);
+                                           10);
 
 // Cap number of cues for an origin to be at most `kCueCapCountPerOrigin` in
 // `kCueCapTimePerOrigin` duration.
@@ -63,6 +63,16 @@ const base::FeatureParam<int> kVisitedOriginsLimit(
     &kContextualCueingV2,
     "ContextualCueingV2VisitedOriginsLimit",
     20);
+
+const base::FeatureParam<base::TimeDelta> kBackoffTime(
+    &kContextualCueingV2,
+    "ContextualCueingV2BackoffTime",
+    base::Hours(24));
+
+const base::FeatureParam<double> kBackoffMultiplierBase(
+    &kContextualCueingV2,
+    "ContextualCueingV2BackoffMultiplierBase",
+    2.0);
 
 const base::FeatureParam<bool> kUsePrivateAi(
     &kContextualCueingV2,

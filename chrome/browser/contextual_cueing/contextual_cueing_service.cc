@@ -23,10 +23,18 @@ void ContextualCueingService::ReportPageLoad() {
 
 void ContextualCueingService::OnCueClicked(CueTargetType type) {
   // TODO(crbug.com/498985205): record the click
+
+  dismiss_count_ = 0;
 }
 
 void ContextualCueingService::OnCueDismissed(CueTargetType type) {
   // TODO(crbug.com/498985205): record the dismissal
+
+  base::TimeDelta backoff_duration =
+      kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
+  dismiss_backoff_end_time_ = base::TimeTicks::Now() + backoff_duration;
+
+  ++dismiss_count_;
 }
 
 void ContextualCueingService::OnCueShown(const GURL& url) {
@@ -59,8 +67,12 @@ contextual_cueing::ContextualCueingDecision ContextualCueingService::CanShowCue(
     return ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue;
   }
   if (shown_backoff_end_time_ &&
-      base::TimeTicks::Now() < shown_backoff_end_time_) {
+      (base::TimeTicks::Now() < *shown_backoff_end_time_)) {
     return ContextualCueingDecision::kNotEnoughTimeSinceLastCue;
+  }
+  if (dismiss_backoff_end_time_ &&
+      (base::TimeTicks::Now() < *dismiss_backoff_end_time_)) {
+    return ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal;
   }
 
   if (!recent_nudge_tracker_.CanShowNudge()) {
