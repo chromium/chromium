@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/test/extension_test_message_listener.h"
+
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/extensions/extension_api_unittest.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/browser/api_unittest.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -17,9 +21,7 @@ const char kTestMessage[] = "test message";
 const char kTestMessage2[] = "test message 2";
 const char kFailureMessage[] = "failure";
 
-}  // namespace
-
-class ExtensionTestMessageListenerUnittest : public ExtensionApiUnittest {};
+using ExtensionTestMessageListenerUnittest = ApiUnitTest;
 
 TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   // A basic test of sending a message and ensuring the listener is satisfied.
@@ -77,4 +79,5 @@ TEST_F(ExtensionTestMessageListenerUnittest, BasicTestExtensionMessageTest) {
   }
 }
 
+}  // namespace
 }  // namespace extensions

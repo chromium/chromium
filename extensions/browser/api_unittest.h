@@ -53,20 +53,25 @@ class ApiUnitTest : public ExtensionsTest {
   // in API calls. If `contents_` is already set, this does nothing.
   void CreateExtensionPage();
 
-  // Various ways of running an API function. These methods take ownership of
-  // `function`. `args` should be in JSON format, wrapped in a list.
-
-  // Return the function result as a base::Value.
+  // Return the `function` result as a base::Value. Takes ownership of
+  // `function` which should be refcounted. `args` should be in JSON format,
+  // wrapped in a list.
+  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
   std::optional<base::Value> RunFunctionAndReturnValue(
       ExtensionFunction* function,
       api_test_utils::ArgsType args);
 
-  // Return an error thrown from the function, if one exists.
-  // This will EXPECT-fail if any result is returned from the function.
+  // Return an error thrown from the function, if one exists. This will
+  // EXPECT-fail if any result is returned from the function. Takes ownership of
+  // `function` which should be refcounted. `args` should be in JSON format,
+  // wrapped in a list.
+  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
   std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                         api_test_utils::ArgsType args);
 
-  // Run the function and ignore any result.
+  // Run the function and ignore any result. Takes ownership of `function` which
+  // should be refcounted. `args` should be in JSON format, wrapped in a list.
+  // TODO(crbug.com/469417243): Convert to take a scoped_refptr<>.
   void RunFunction(ExtensionFunction* function, api_test_utils::ArgsType args);
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {

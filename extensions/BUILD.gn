@@ -273,6 +273,7 @@ test("extensions_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "test/extension_test_message_listener_unittest.cc",
     "test/extensions_unittests_main.cc",
     "test/flakiness_test_util_test.cc",
     "test/logging_timer_unittest.cc",
@@ -293,6 +294,7 @@ test("extensions_unittests") {
     "//content/public/common",
     "//content/test:test_support",
     "//extensions/browser:unit_tests",
+    "//extensions/browser/api/test",
     "//extensions/common",
     "//extensions/common:unit_tests",
     "//extensions/renderer:unit_tests",

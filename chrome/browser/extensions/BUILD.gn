@@ -1997,7 +1997,6 @@ source_set("unit_tests") {
       "extension_safety_check_utils_unittest.cc",
       "extension_special_storage_policy_unittest.cc",
       "extension_telemetry_service_verdict_handler_unittest.cc",
-      "extension_test_message_listener_unittest.cc",
       "initial_external_extension_loader_unittest.cc",
       "manifest_v2_experiment_manager_unittest.cc",
       "menu_manager_unittest.cc",
