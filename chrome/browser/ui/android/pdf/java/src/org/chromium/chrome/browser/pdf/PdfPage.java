@@ -108,6 +108,13 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.destroy();
     }
 
+    @Override
+    public void reload() {
+        if (PdfUtils.isInlinePdfV2Enabled()) {
+            mPdfCoordinator.reload();
+        }
+    }
+
     /**
      * Called after pdf download complete.
      *

@@ -377,6 +377,28 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         }
         mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
         PdfUtils.recordIsUriNull(mUri == null);
+        loadPdfInternal();
+    }
+
+    void reload() {
+        if (mUri == null) {
+            return;
+        }
+        // Remove current fragment.
+        mFragmentManager
+                .beginTransaction()
+                .remove(mChromePdfViewerFragment)
+                .commitAllowingStateLoss();
+        mFragmentManager.executePendingTransactions();
+
+        // Create new fragment.
+        mChromePdfViewerFragment = new ChromePdfViewerFragment(this);
+
+        // Add new fragment and load document again.
+        loadPdfInternal();
+    }
+
+    private void loadPdfInternal() {
         if (mUri != null) {
             if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;

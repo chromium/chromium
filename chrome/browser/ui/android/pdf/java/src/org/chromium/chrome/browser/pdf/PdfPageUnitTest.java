@@ -155,6 +155,43 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    public void testReload_RecreatesFragment() throws Exception {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID);
+        Assert.assertNotNull(pdfPage);
+
+        // Simulate tab brought from background to foreground to load PDF
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+        Assert.assertTrue(
+                "Pdf should be loaded when the view is attached to window.",
+                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        PdfCoordinator.ChromePdfViewerFragment oldFragment =
+                pdfPage.mPdfCoordinator.mChromePdfViewerFragment;
+        Assert.assertNotNull("Fragment should not be null initially", oldFragment);
+
+        pdfPage.reload();
+
+        Assert.assertNotSame(
+                "Fragment should be recreated",
+                oldFragment,
+                pdfPage.mPdfCoordinator.mChromePdfViewerFragment);
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
     public void testCreatePdfPage_WithFileUri() {
         String encodedUrl = PdfUtils.encodePdfPageUrl(FILE_URL);
         PdfPage pdfPage =
