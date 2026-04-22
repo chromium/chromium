@@ -1689,7 +1689,9 @@ int SpdySession::CreateStream(const SpdyStreamRequest& request,
   UMA_HISTOGRAM_BOOLEAN("Net.SpdySession.CreateStreamWithSocketConnected",
                         socket_->IsConnected());
   if (!socket_->IsConnected()) {
-    DoDrainSession(
+    // Since there may be a consumer of the session on the stack, can't call
+    // DoDrainSession() synchronously, as it may result in reentrancy.
+    DoDrainSessionAsync(
         ERR_CONNECTION_CLOSED,
         "Tried to create SPDY stream for a closed socket connection.");
     return ERR_CONNECTION_CLOSED;
@@ -2678,6 +2680,23 @@ void SpdySession::DoDrainSession(Error err,
   }
   DcheckDraining();
   MaybePostWriteLoop();
+}
+
+void SpdySession::DoDrainSessionAsync(Error err,
+                                      std::string description,
+                                      bool force_send_go_away) {
+  // Make this unavailable to prevent consumers from pulling it from the session
+  // pool again, which could result in an infinite loop, or otherwise running
+  // into this error again rather than trying a new connection.
+  MakeUnavailable(err);
+
+  // This will close the socket and inform consumers asynchronously. If
+  // something happens before this task runs (like a read error), that should
+  // not cause issues, since DoDrainSession() does nothing if already draining.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpdySession::DoDrainSession, weak_factory_.GetWeakPtr(),
+                     err, std::move(description), force_send_go_away));
 }
 
 void SpdySession::LogAbandonedStream(SpdyStream* stream, Error status) {

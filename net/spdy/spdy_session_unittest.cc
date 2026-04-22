@@ -977,10 +977,14 @@ TEST_F(SpdySessionTest, CreateStreamAfterGoAway) {
   EXPECT_TRUE(session_->IsStreamActive(1));
 
   SpdyStreamRequest stream_request;
+  // Note that `can_send_early` is needed to bypass confirming the handshake. If
+  // this regresses, may need to do what other tests to, and use
+  // CreateStreamSynchronously() to create an initial SpdyStream and set up the
+  // socket.
   int rv = stream_request.StartRequest(
-      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_, false, MEDIUM,
-      SocketTag(), NetLogWithSource(), CompletionOnceCallback(),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_,
+      /*can_send_early=*/true, MEDIUM, SocketTag(), NetLogWithSource(),
+      CompletionOnceCallback(), TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_THAT(rv, IsError(ERR_FAILED));
 
   EXPECT_TRUE(session_);
@@ -2834,6 +2838,62 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
   EXPECT_EQ(0u, num_active_streams());
   EXPECT_EQ(kInitialMaxConcurrentStreams - 1, num_created_streams());
   EXPECT_EQ(0u, pending_create_stream_queue_size(LOWEST));
+}
+
+// Check that SpdyStreamRequest::StartRequest() does not synchronously notify
+// live streams of their destruction when it notices the socket has been closed.
+// This can racily happen when a new request occurs before a read error from the
+// socket is processed. This synchronously informing other streams of their
+// destruction could result in modifying objects that are on the top of the
+// callstack due to shared state, which can lead to bugs.
+TEST_F(SpdySessionTest,
+       SpdyStreamRequestStartRequestAsynchronouslyNotifiesOtherStreams) {
+  StaticSocketDataProvider data;
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Create a stream on the session, and set up a delegate to watch it.
+  base::WeakPtr<SpdyStream> spdy_stream =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing delegate(spdy_stream);
+  spdy_stream->SetDelegate(&delegate);
+
+  // Close the socket, without a read/write event, to simulate the
+  // StartRequest() being the first call to notice the socket is closed.
+  data.set_silently_closed();
+
+  // Start a StreamRequest request. Note that `can_send_early` must be true to
+  // avoid calling MockSSLClientSocket::ConfirmHandshake(), will cause the
+  // request not to check the state of the connection, while it waits for the
+  // SSL handshake to be confirmed (that handshake confirmation check will also
+  // cause the MockSSLClientSocket to CHECK, if it happens, as the socket is
+  // closed).
+  SpdyStreamRequest request;
+  int rv = request.StartRequest(
+      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_,
+      /*can_send_early=*/true, LOWEST, SocketTag(), NetLogWithSource(),
+      base::BindOnce([](int result) {
+        ADD_FAILURE()
+            << "Callback should not be invoked on synchronous completion";
+      }),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+  // The request should synchronously fail.
+  EXPECT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
+
+  // The session should be flagged as going away, and should no longer be
+  // available but should still exist.
+  EXPECT_TRUE(session_->IsGoingAway());
+  EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_));
+  // The first stream should not have been closed synchronously. Instead, a task
+  // should have been posted to close it.
+  EXPECT_FALSE(delegate.StreamIsClosed());
+
+  // Wait for the stream to be closed.
+  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
 }
 
 // Test that SpdySession::DoReadLoop reads data from the socket

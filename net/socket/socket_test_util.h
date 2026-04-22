@@ -446,6 +446,12 @@ class SocketDataProvider {
   MockConnect connect_data() const { return connect_; }
   void set_connect_data(const MockConnect& connect) { connect_ = connect; }
 
+  // Makes IsConnected() start returning false for any socket using `this`,
+  // without any read or write error. Useful for simulating cases where an
+  // IsConnected() call is the first time a socket is revealed to be closed.
+  void set_silently_closed() { silently_closed_ = true; }
+  bool silently_closed() const { return silently_closed_; }
+
  private:
   // Called to inform subclasses of initialization.
   virtual void Reset() = 0;
@@ -457,6 +463,8 @@ class SocketDataProvider {
   int send_buffer_size_ = -1;
   // This reflects the default state of TCPClientSockets.
   bool no_delay_ = true;
+
+  bool silently_closed_ = false;
 
   KeepAliveState keep_alive_state_ = KeepAliveState::kDefault;
   int keep_alive_delay_ = 0;

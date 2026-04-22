@@ -858,6 +858,15 @@ class NET_EXPORT SpdySession
                       const std::string& description,
                       bool force_send_go_away = false);
 
+  // Immediately marks a session as unavailable, to prevent reuse, and posts a
+  // task to call DoDrainSession (if the session is drained for some other
+  // reason in the meantime, that is fine). This should be used instead of
+  // DoDrainSession when there may be a consumer of the SpdySession on the
+  // stack, so as to avoid reentrancy.
+  void DoDrainSessionAsync(Error err,
+                           std::string description,
+                           bool force_send_go_away = false);
+
   // Called right before closing a (possibly-inactive) stream for a
   // reason other than being requested to by the stream.
   void LogAbandonedStream(SpdyStream* stream, Error status);

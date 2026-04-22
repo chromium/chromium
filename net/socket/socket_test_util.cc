@@ -1249,7 +1249,7 @@ void MockTCPClientSocket::Disconnect() {
 bool MockTCPClientSocket::IsConnected() const {
   if (!data_)
     return false;
-  return connected_ && !peer_closed_connection_;
+  return connected_ && !peer_closed_connection_ && !data_->silently_closed();
 }
 
 bool MockTCPClientSocket::IsConnectedAndIdle() const {
