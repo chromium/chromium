@@ -5595,23 +5595,21 @@ void WebFrameWidgetImpl::PostDelayedRejectionForAWCPromise(uint64_t id) {
   GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       blink::BindOnce(&WebFrameWidgetImpl::RejectAWCPromise,
-                      Unretained(&main_data()), id),
+                      WrapWeakPersistent(this), id),
       kWindowingControlsChangeTimeout);
 }
 
-void WebFrameWidgetImpl::RejectAWCPromise(MainFrameData* main_data,
-                                          uint64_t id) {
-  CHECK(main_data);
-  if (main_data->window_show_state_change_callback.has_value() &&
-      main_data->window_show_state_change_callback->id == id) {
-    std::move(main_data->window_show_state_change_callback->callback)
+void WebFrameWidgetImpl::RejectAWCPromise(uint64_t id) {
+  if (main_data().window_show_state_change_callback.has_value() &&
+      main_data().window_show_state_change_callback->id == id) {
+    std::move(main_data().window_show_state_change_callback->callback)
         .Run(/*succeeded=*/false);
-    main_data->window_show_state_change_callback.reset();
-  } else if (main_data->set_resizable_change_callback.has_value() &&
-             main_data->set_resizable_change_callback->id == id) {
-    std::move(main_data->set_resizable_change_callback->callback)
+    main_data().window_show_state_change_callback.reset();
+  } else if (main_data().set_resizable_change_callback.has_value() &&
+             main_data().set_resizable_change_callback->id == id) {
+    std::move(main_data().set_resizable_change_callback->callback)
         .Run(/*succeeded=*/false);
-    main_data->set_resizable_change_callback.reset();
+    main_data().set_resizable_change_callback.reset();
   }
 }
 

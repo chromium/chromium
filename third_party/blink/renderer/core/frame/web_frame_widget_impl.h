@@ -1094,7 +1094,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       WindowingControlsChangeCallback callback);
   void PostDelayedRejectionForAWCPromise(uint64_t id);
   struct MainFrameData;
-  static void RejectAWCPromise(MainFrameData* main_data, uint64_t id);
+  void RejectAWCPromise(uint64_t id);
   void HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType type);
 #endif
 
