@@ -396,8 +396,6 @@ void SessionStorageImpl::ShutDown() {
       area->CancelAllPendingRequests();
     }
   }
-
-  PurgeAllNamespaces();
 }
 
 void SessionStorageImpl::PurgeMemory() {
@@ -824,12 +822,19 @@ void SessionStorageImpl::OnConnectionFinished() {
     std::move(callbacks[i]).Run();
 }
 
-void SessionStorageImpl::PurgeAllNamespaces() {
-  for (const auto& it : data_maps_)
+void SessionStorageImpl::PurgeAllNamespaceDataMaps() {
+  // Drop all pending load tasks to avoid the DCHECK in `~StorageAreaImpl()`.
+  for (const auto& it : data_maps_) {
     it.second->storage_area()->CancelAllPendingRequests();
-  for (const auto& namespace_pair : namespaces_)
-    namespace_pair.second->Reset();
-  DCHECK(data_maps_.empty());
+  }
+
+  // Destroy all `SessionStorageDataMap` instances by re-initializing each
+  // namespace.
+  for (const auto& [namespace_id, namespace_impl] : namespaces_) {
+    namespaces_.insert_or_assign(
+        namespace_id, CreateSessionStorageNamespaceImpl(namespace_id));
+  }
+  CHECK(data_maps_.empty());
 }
 
 void SessionStorageImpl::DeleteAndRecreateDatabase(
@@ -842,7 +847,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(
 
   // We're about to set database_ to null, so delete the StorageAreas
   // that might still be using the old database.
-  PurgeAllNamespaces();
+  PurgeAllNamespaceDataMaps();
 
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
