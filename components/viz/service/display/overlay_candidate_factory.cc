@@ -311,6 +311,16 @@ bool OverlayCandidateFactory::IsOccluded(
       quad.shared_quad_state->quad_to_target_transform.MapRect(
           gfx::RectF(quad.visible_rect)));
 
+  // Quad was clipped by our new occlusion system that now includes overlays.
+  // We must not include these as possible SingleOnTop overlay candidates
+  // SingleOnTop overlays do not support 'visible_rect' clipping because they
+  // display the entire buffer. If the quad has been clipped (e.g., by
+  // occlusion), itshould not be included as a possible SingleOnTop overlay
+  // candidate. See bug: crbug.com/491656138
+  if (quad.visible_rect != quad.rect) {
+    return true;
+  }
+
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {

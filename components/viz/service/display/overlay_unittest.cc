@@ -2126,7 +2126,6 @@ TEST_F(SingleOverlayOnTopTest, OccludedCandidates) {
   CreateFullscreenOpaqueQuad(pass->shared_quad_state_list.back(), pass.get());
 
   CreateFullscreenCandidateQuad(
-
       pass->shared_quad_state_list.back(), pass.get());
 
   AggregatedRenderPassList pass_list;
@@ -2145,6 +2144,30 @@ TEST_F(SingleOverlayOnTopTest, OccludedCandidates) {
   EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
   // There should be nothing new here.
   CompareRenderPassLists(pass_list, original_pass_list);
+}
+
+TEST_F(SingleOverlayOnTopTest, RejectOccludedClipped) {
+  auto pass = CreateRenderPass();
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayBottomRightRect));
+
+  auto* quad = CreateCandidateQuadAt(pass->shared_quad_state_list.back(),
+                                     pass.get(), kOverlayBottomRightRect);
+
+  auto inset_vis_rect = kOverlayBottomRightRect;
+  inset_vis_rect.Inset(10);
+  quad->visible_rect = inset_vis_rect;
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  OverlayCandidateList candidate_list;
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider(), &pass_list, GetIdentityColorMatrix(),
+      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
+      &candidate_list, &damage_rect_, &content_bounds_);
+  EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
 }
 
 // Test with multiple render passes.
