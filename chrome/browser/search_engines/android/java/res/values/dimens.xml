@@ -10,4 +10,5 @@ found in the LICENSE file.
   <dimen name="blocking_dialog_illustration_height">150dp</dimen>
   <dimen name="blocking_dialog_illustration_width">348dp</dimen>
   <dimen name="blocking_dialog_required_height_for_illustration">400dp</dimen>
+  <dimen name="site_search_list_item_min_height">56dp</dimen>
 </resources>
