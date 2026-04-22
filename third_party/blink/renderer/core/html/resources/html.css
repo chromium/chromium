@@ -2280,6 +2280,8 @@ select::-internal-select-autofill-preview-text {
   text-overflow: ellipsis;
   text-align: center;
   white-space: nowrap;
+  font: -webkit-small-control !important;
+  font-feature-settings: normal !important;
 }
 
 @supports not blink-feature(CustomizableSelectMultiplePopup) {
