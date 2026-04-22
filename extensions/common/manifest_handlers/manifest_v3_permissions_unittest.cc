@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_test.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,22 +44,24 @@ TEST_F(ManifestV3PermissionsTest, WebRequestBlockingPermissionsTest) {
   }
 }
 
+// Legacy manifest key "nacl_modules" is not supported, not recognized,
+// and produces the same warning for all manifest versions.
 TEST_F(ManifestV3PermissionsTest, DisallowNaClTest) {
-  const std::string kPermissionRequiresV2OrLower =
-      "'nacl_modules' requires manifest version of 2 or lower.";
+  constexpr char kUnrecognizedKeyNaClModules[] =
+      "Unrecognized manifest key 'nacl_modules'.";
   {
-    // Unpacked Manifest V3 extension should trigger a warning that
-    // manifest V3 is not currently supported and that 'nacl_modules' requires a
-    // lower manifest version.
-    scoped_refptr<Extension> extension(LoadAndExpectWarning(
-        "nacl_module_v3.json", kPermissionRequiresV2OrLower,
-        ManifestLocation::kUnpacked));
+    scoped_refptr<Extension> extension(
+        LoadAndExpectWarning("nacl_module_v3.json", kUnrecognizedKeyNaClModules,
+                             ManifestLocation::kUnpacked));
     ASSERT_TRUE(extension);
   }
   {
-    // Unpacked Manifest V2 extension should not trigger any warnings.
-    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
-        "nacl_module_v2.json", ManifestLocation::kUnpacked));
+    // Manifest V2 extension should produce warning about manifest version.
+    scoped_refptr<Extension> extension(
+        LoadAndExpectWarnings("nacl_module_v2.json",
+                              {manifest_errors::kManifestV2IsDeprecatedWarning,
+                               kUnrecognizedKeyNaClModules},
+                              ManifestLocation::kUnpacked));
     ASSERT_TRUE(extension);
   }
 }

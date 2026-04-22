@@ -363,13 +363,6 @@
     "extension_types": ["extension"],
     "feature_flag": "ApiMimeHandler"
   }],
-  "nacl_modules": {
-    "channel": "stable",
-    "extension_types": [
-      "extension", "legacy_packaged_app", "hosted_app", "platform_app"
-    ],
-    "max_manifest_version": 2
-  },
   "name": {
     "channel": "stable",
     "extension_types": "all"

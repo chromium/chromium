@@ -74,7 +74,7 @@ TEST(ManifestTest, AvailableValues) {
   {
     // In manifest version 2, "host_permissions" key is not available.
     // Additionally "background.service_worker" key is not available to hosted
-    // apps.
+    // apps. On all manifest versions "nacl_modules" key is not recognized.
     {R"(
       {
         "name": "Test Extension",
@@ -100,7 +100,6 @@ TEST(ManifestTest, AvailableValues) {
         "nacl_modules": ""
       }
     )"},
-    // In manifest version 3, "nacl_modules" key is not available.
     {R"(
       {
         "name": "Test Extension",
@@ -113,7 +112,8 @@ TEST(ManifestTest, AvailableValues) {
       {
         "name": "Test Extension",
         "manifest_version": 3,
-        "host_permissions": []
+        "host_permissions": [],
+        "nacl_modules": ""
       }
     )"}
   };

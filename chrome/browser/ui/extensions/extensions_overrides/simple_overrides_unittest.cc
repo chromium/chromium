@@ -126,7 +126,6 @@ constexpr const char* kDisallowedFeatures[] = {
     // and thus not exposed in a .h).
     "chrome_url_overrides.activationmessage",
     "chrome_url_overrides.keyboard",
-    "nacl_modules",
     "oauth2.auto_approve",
     "platforms",
     "sandbox",
