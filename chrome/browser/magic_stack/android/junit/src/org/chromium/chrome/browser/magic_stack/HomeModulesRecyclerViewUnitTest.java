@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -33,6 +36,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+
+import java.util.ArrayList;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -118,6 +123,52 @@ public class HomeModulesRecyclerViewUnitTest {
         mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
         assertEquals(expectedWidth, marginLayoutParams.width);
         verify(mView).setLayoutParams(eq(marginLayoutParams));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddFocusables() {
+        int itemPerScreen = 1;
+        int startMarginPx = 0;
+        mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
+
+        ArrayList<View> views = new ArrayList<>();
+
+        mRecyclerView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        mRecyclerView.setFocusable(true);
+        mRecyclerView.addFocusables(views, View.FOCUS_FORWARD, View.FOCUSABLES_ALL);
+
+        assertEquals(1, views.size());
+        assertEquals(mRecyclerView, views.get(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testFocusSearch() {
+        int itemPerScreen = 1;
+        int startMarginPx = 0;
+        mRecyclerView.initialize(/* isTablet= */ false, startMarginPx, itemPerScreen);
+        mRecyclerViewSpy = spy(mRecyclerView);
+
+        View focused = mock(View.class);
+        View nextFocus = mock(View.class);
+        View moduleView = mock(View.class);
+
+        // Mock findContainingItemView to return currentItemView.
+        doReturn(moduleView).when(mRecyclerViewSpy).findContainingItemView(focused);
+
+        // Verify FOCUS_FORWARD exhausts the current card and triggers the escape sequence.
+        View result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_FORWARD);
+        assertEquals(focused, result);
+
+        // Verify descendant focusability was temporarily blocked during the escape.
+        verify(mRecyclerViewSpy).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+        // Verify unrestricted directions (e.g. FOCUS_RIGHT) fall back to the default
+        // implementation.
+        doReturn(nextFocus).when(mRecyclerViewSpy).focusSearch(focused, View.FOCUS_RIGHT);
+        result = mRecyclerViewSpy.focusSearch(focused, View.FOCUS_RIGHT);
+        assertEquals(nextFocus, result);
     }
 
     @Test

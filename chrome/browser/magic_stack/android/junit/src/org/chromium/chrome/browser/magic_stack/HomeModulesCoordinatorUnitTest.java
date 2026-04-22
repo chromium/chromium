@@ -450,6 +450,7 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator.onViewCreated(ModuleType.SINGLE_TAB, mView);
         verify(mModuleProvider).onViewCreated();
         verify(mMediator).onModuleViewCreated(eq(ModuleType.SINGLE_TAB));
+        verify(mView).setFocusable(eq(true));
     }
 
     @Test

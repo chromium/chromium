@@ -434,6 +434,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
                 });
 
+        group.setFocusable(true);
+
         moduleProvider.onViewCreated();
 
         assumeNonNull(mAdapter);

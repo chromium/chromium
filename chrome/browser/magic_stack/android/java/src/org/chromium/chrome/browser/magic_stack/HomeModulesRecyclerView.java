@@ -12,7 +12,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.FocusFinder;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.ArrayList;
 
 /** A custom RecyclerView implementation for the home modules. */
 @NullMarked
@@ -65,6 +69,108 @@ public class HomeModulesRecyclerView extends RecyclerView {
         Resources resources = getContext().getResources();
         mModuleInternalPaddingPx = resources.getDimensionPixelSize(R.dimen.module_internal_padding);
         mModuleMiniHeightPx = resources.getDimensionPixelSize(R.dimen.home_module_height);
+    }
+
+    @Override
+    public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
+        // RecyclerView's LayoutManager natively ignores FOCUS_BLOCK_DESCENDANTS. We must
+        // explicitly enforce it here to allow focus to cleanly escape the Magic Stack.
+        if (getDescendantFocusability() == FOCUS_BLOCK_DESCENDANTS) {
+            if (isFocusable()) {
+                views.add(this);
+            }
+            return;
+        }
+        super.addFocusables(views, direction, focusableMode);
+    }
+
+    @Override
+    public void requestChildFocus(View child, View focused) {
+        super.requestChildFocus(child, focused);
+
+        // RecyclerView natively scrolls just enough to make a focused child visible. However,
+        // PagerSnapHelper requires the active card to be fully snapped. Explicitly smooth-scrolling
+        // to the focused card ensures it properly snaps into place, preventing PagerSnapHelper from
+        // aggressively snapping back to the previous card and dropping focus.
+        View moduleView = findContainingItemView(focused);
+        if (moduleView != null) {
+            int position = getChildAdapterPosition(moduleView);
+            if (position != NO_POSITION) {
+                smoothScrollToPosition(position);
+            }
+        }
+    }
+
+    @Override
+    public @Nullable View focusSearch(View focused, int direction) {
+        if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
+            View moduleView = findContainingItemView(focused);
+            if (moduleView != null) {
+                ArrayList<View> focusables = new ArrayList<>();
+                moduleView.addFocusables(focusables, direction, View.FOCUSABLES_ALL);
+
+                // ViewGroup.addFocusables() appends children before the ViewGroup itself (e.g.
+                // [Btn1, Btn2, moduleView]). Reorder the list to [moduleView, Btn1, Btn2] to
+                // enforce a logical top-down traversal order and prevent premature escape.
+                if (focusables.remove(moduleView)) {
+                    focusables.add(0, moduleView);
+                }
+
+                int index = focusables.indexOf(focused);
+                if (index != -1) {
+                    if (direction == View.FOCUS_FORWARD && index + 1 < focusables.size()) {
+                        return focusables.get(index + 1);
+                    } else if (direction == View.FOCUS_BACKWARD && index - 1 >= 0) {
+                        return focusables.get(index - 1);
+                    }
+                }
+
+                // Exhausted focusables in the current module. Escape the RecyclerView to the next
+                // element on the page (e.g. the Feed). We search for the next focus candidate
+                // starting from this RecyclerView, but we must temporarily block our descendants
+                // to prevent FocusFinder from routing focus back into another Magic Stack card.
+                // We also temporarily enable focusability on this RecyclerView so it can serve
+                // as a valid starting point for the FocusFinder search.
+                int descendantFocusability = getDescendantFocusability();
+                boolean isFocusable = isFocusable();
+
+                setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+                setFocusable(true);
+
+                View rootView = getRootView();
+                View nextOutside = null;
+                try {
+                    if (rootView instanceof ViewGroup) {
+                        nextOutside =
+                                FocusFinder.getInstance()
+                                        .findNextFocus((ViewGroup) rootView, this, direction);
+
+                        if (nextOutside == null) {
+                            // Reached the absolute end of the screen layout. Perform a global
+                            // wrap-around search before restoring descendant focusability to
+                            // prevent the OS from erroneously wrapping focus back into the Magic
+                            // Stack.
+                            nextOutside =
+                                    FocusFinder.getInstance()
+                                            .findNextFocus((ViewGroup) rootView, null, direction);
+                        }
+                    }
+                } finally {
+                    setDescendantFocusability(descendantFocusability);
+                    setFocusable(isFocusable);
+                }
+
+                if (nextOutside == this || nextOutside == null) {
+                    // If there is no view to move focus to, return the currently focused view.
+                    // Returning null causes ViewRootImpl to automatically wrap focus back to the
+                    // top of the page.
+                    return focused;
+                }
+
+                return nextOutside;
+            }
+        }
+        return super.focusSearch(focused, direction);
     }
 
     @Override
