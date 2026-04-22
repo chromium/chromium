@@ -217,7 +217,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.12.0-SNAPSHOT"
+        "version": "1.12.0-alpha01"
     },
     {
         "name": "runtime-retain",
@@ -422,7 +422,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-android",
@@ -437,17 +437,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-preferences",
@@ -457,27 +457,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha07"
+        "version": "1.3.0-alpha08"
     },
     {
         "name": "documentfile",
@@ -677,7 +677,7 @@
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-alpha03"
+        "version": "2.11.0-beta01"
     },
     {
         "name": "lifecycle-livedata",
@@ -712,7 +712,7 @@
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-alpha03"
+        "version": "2.11.0-beta01"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -747,7 +747,7 @@
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-alpha03"
+        "version": "2.11.0-beta01"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -772,7 +772,7 @@
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-alpha03"
+        "version": "2.11.0-beta01"
     },
     {
         "name": "loader",
@@ -877,52 +877,52 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-rc01"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-rc01"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-compose",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-compose-android",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "paging-common",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "paging-common-android",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "paging-common-ktx",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "paging-compose",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "paging-compose-android",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "paging-runtime",
         "group": "androidx.paging",
-        "version": "3.5.0-SNAPSHOT"
+        "version": "3.6.0-SNAPSHOT"
     },
     {
         "name": "palette",
@@ -1147,7 +1147,7 @@
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha05"
+        "version": "2.0.0-alpha06"
     },
     {
         "name": "tracing-ktx",
