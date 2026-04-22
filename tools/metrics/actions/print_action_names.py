@@ -16,18 +16,37 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 
 
-def get_names(xml_content):
-  """Returns all action names from an xml string.
+def _get_actions(xml_content):
+  """Returns all action from an xml string.
 
   Args:
     xml_content: A string containing actions.xml definitions.
   Returns:
-    The set of action names.
+    The dictionary containing mapping from action name to action object.
   """
   if not xml_content:
-    return set()
+    return {}
   actions_dict, _, _ = action_utils.ParseActionFile(xml_content)
-  return set(actions_dict.keys())
+  return actions_dict
+
+
+def get_modified_action_names(current_actions_dict, prev_actions_dict,
+                              added_names):
+  """Returns all modified action names from two xml strings.
+
+  Args:
+    current_content: A string containing actions.xml definitions.
+    prev_content: A string containing actions.xml definitions.
+  Returns:
+    The set of action names.
+  """
+  modified_names = []
+  for name, action in current_actions_dict.items():
+    if name in added_names:
+      continue
+    if action != prev_actions_dict[name]:
+      modified_names.append(name)
+  return modified_names
 
 
 def _get_actions_xml_path():
@@ -35,7 +54,9 @@ def _get_actions_xml_path():
 
 
 def get_action_diff(prev_content, current_content):
-  """Returns the added / removed action names relative to old version of file.
+  """Returns the added, modified, and removed action names.
+
+  This diff is relative to the old version of the file.
 
   Args:
     prev_content: A string containing actions.xml definitions for the previous
@@ -43,16 +64,20 @@ def get_action_diff(prev_content, current_content):
     current_content: A string containing actions.xml definitions for the
       current revision.
   Returns:
-    A tuple of (added names, removed names), where each entry is sorted in
-    ascending order.
+    A tuple of (added names, removed names, modified names), where each entry is
+    a list of strings sorted in ascending order.
   """
 
-  current_action_names = get_names(current_content)
-  prev_action_names = get_names(prev_content)
+  current_actions_dict = _get_actions(current_content)
+  prev_actions_dict = _get_actions(prev_content)
 
-  added_names = sorted(list(current_action_names - prev_action_names))
-  removed_names = sorted(list(prev_action_names - current_action_names))
-  return (added_names, removed_names)
+  added_names = sorted(current_actions_dict.keys() - prev_actions_dict.keys())
+  removed_names = sorted(prev_actions_dict.keys() - current_actions_dict.keys())
+
+  modified_names = get_modified_action_names(current_actions_dict,
+                                             prev_actions_dict, added_names)
+
+  return (added_names, removed_names, modified_names)
 
 
 def _print_diff_names(revision):
@@ -72,9 +97,14 @@ def _print_diff_names(revision):
   with open(actions_xml_path, 'r', encoding='utf-8') as f:
     current_content = f.read()
 
-  added_names, removed_names = get_action_diff(prev_content, current_content)
+  added_names, removed_names, modified_names = get_action_diff(
+      prev_content, current_content)
   print("%d actions added:" % len(added_names))
   for name in added_names:
+    print(name)
+
+  print("%d actions modified:" % len(modified_names))
+  for name in modified_names:
     print(name)
 
   print("%d actions removed:" % len(removed_names))
@@ -92,8 +122,8 @@ def main(argv):
     _print_diff_names(args.diff)
   else:
     with open(_get_actions_xml_path(), 'r', encoding='utf-8') as f:
-      name_set = get_names(f.read())
-    for name in sorted(list(name_set)):
+      actions_dict = _get_actions(f.read())
+    for name in sorted(actions_dict.keys()):
       print(name)
 
 

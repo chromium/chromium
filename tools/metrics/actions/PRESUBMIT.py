@@ -11,7 +11,8 @@ for more details on the presubmit API built into depot_tools.
 import hashlib
 import os
 import struct
-from typing import Sequence, Any
+from typing import Any, Sequence
+import xml.dom.minidom
 
 import sys
 
@@ -28,6 +29,8 @@ sys.path.remove('.')
 import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.print_action_names as print_action_names
+
+ACTIONS_XML_PATH = os.path.join('tools', 'metrics', 'actions', 'actions.xml')
 
 
 # TODO: Unify with hashing library to avoid copying it directly.
@@ -128,6 +131,51 @@ def _CheckForHashConflicts(actions_xml_path: str, input_api: Any,
   return errors
 
 
+def _CheckActionOwners(input_api: Any, output_api: Any) -> list[Any]:
+  """Validates that all new or modified actions have valid owners.
+
+  Args:
+    input_api: The input API for the presubmit.
+    output_api: The output API for the presubmit.
+
+  Returns:
+    A list of presubmit errors.
+  """
+  results: list[Any] = []
+
+  # Only run check if actions.xml is changed.
+  actions_xml_file = [
+      f for f in input_api.AffectedFiles()
+      if os.path.normpath(f.LocalPath()) == ACTIONS_XML_PATH
+  ]
+
+  if not actions_xml_file:
+    return results
+  assert len(actions_xml_file) == 1
+  f = actions_xml_file[0]
+  added_names, _, modified_names = (print_action_names.get_action_diff(
+      '\n'.join(f.OldContents()), '\n'.join(f.NewContents())))
+
+  if not added_names and not modified_names:
+    return results
+
+  data = '\n'.join(f.NewContents())
+  actions_dict, _, _ = action_utils.ParseActionFile(data)
+
+  for name in added_names + modified_names:
+    action = actions_dict[name]
+    _, has_valid_owner = action_utils.ExtractOwners(action.owners or [])
+
+    if not has_valid_owner:
+      results.append(
+          output_api.PresubmitError(
+              f'Action {name} has no valid owners. If this is an unrelated '
+              'change, you can ignore this error and bypass the presubmit '
+              'check.'))
+
+  return results
+
+
 def CheckChange(input_api, output_api):
   actions_xml_path = _ActionsXmlPath(input_api)
   if not actions_xml_path:
@@ -138,17 +186,16 @@ def CheckChange(input_api, output_api):
   problems.extend(
       _CheckForHashConflicts(actions_xml_path, input_api, output_api))
   problems.extend(CheckRemovedSegmentationUserActions(input_api, output_api))
+  problems.extend(_CheckActionOwners(input_api, output_api))
   return problems
 
 
 def CheckRemovedSegmentationUserActions(input_api, output_api):
   """Checks if any user action is removed from actions.xml."""
-  actions_xml_path = os.path.join('tools', 'metrics', 'actions', 'actions.xml')
-
   # Only run check if actions.xml is changed.
   actions_xml_file = [
       f for f in input_api.AffectedFiles(include_deletes=True)
-      if os.path.normpath(f.LocalPath()) == actions_xml_path
+      if os.path.normpath(f.LocalPath()) == ACTIONS_XML_PATH
   ]
   if not actions_xml_file:
     return []
@@ -157,7 +204,7 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
   try:
     # get_action_diff compares new and old contents of the file and returns
     # the added and removed action names.
-    _, removed_names = print_action_names.get_action_diff(
+    _, removed_names, _ = print_action_names.get_action_diff(
         '\n'.join(f.OldContents()), '\n'.join(f.NewContents()))
     removed_actions = removed_names
   except Exception as e:

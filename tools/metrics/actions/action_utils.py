@@ -12,6 +12,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import re
+
 from typing import cast, Dict, List, Tuple, Optional
 from xml.dom import minidom
 
@@ -67,6 +69,23 @@ class Action(object):
     self.obsolete = obsolete
     self.from_suffix = from_suffix
     self.tokens = tokens or []
+
+  def _as_equality_tuple(self):
+    return (
+        self.name,
+        self.description,
+        self.owners,
+        self.not_user_triggered,
+        self.obsolete,
+        self.from_suffix,
+        # Basic token comparison: number of tokens
+        len(self.tokens or []),
+    )
+
+  def __eq__(self, other):
+    if not isinstance(other, Action):
+      return False
+    return self._as_equality_tuple() == other._as_equality_tuple()
 
 
 class Variants(object):
@@ -300,8 +319,7 @@ def _CreateActionFromVariant(action: Action, variant: Variant,
 
   new_tokens = [new_token for new_token in action.tokens if new_token != token]
 
-  return Action(new_name, new_action_description,
-                list(action.owners) if action.owners else [],
+  return Action(new_name, new_action_description, action.owners,
                 action.not_user_triggered, action.obsolete, new_tokens)
 
 
@@ -373,3 +391,27 @@ def CreateActionsFromVariants(
     expanded_actions |= _CreateActionVariantsFor(action)
 
   return expanded_actions
+
+
+def ExtractOwners(owners_list: list[str]) -> tuple[list[str], bool]:
+  """Validates owners from a list of strings.
+
+  Args:
+    owners_list: A list of strings from <owner> tags.
+
+  Returns:
+    A tuple (owners_list, has_valid_owner), where owners_list is the input list
+    and has_valid_owner is true if there is at least one valid email.
+  """
+
+  # Basic validation to ensure the owner is a properly formatted email address.
+  BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
+  email_pattern = re.compile(BASIC_EMAIL_REGEXP)
+  has_valid_owner = False
+
+  for owner_text in owners_list:
+    if email_pattern.match(owner_text):
+      has_valid_owner = True
+      break  # Found at least one valid owner
+
+  return owners_list, has_valid_owner
