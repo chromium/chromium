@@ -43,6 +43,10 @@ class NewTabButton : public TabStripControlButton,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
+ protected:
+  // TabStripControlButton:
+  void UpdateBackground() override;
+
  private:
   std::unique_ptr<NewTabButtonMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

@@ -136,8 +136,9 @@ class TabStripControlButton : public views::LabelButton,
   // testing.
   virtual bool IsFrameCondensed() const;
 
+  virtual void UpdateBackground();
+
  private:
-  void UpdateBackground();
   void UpdateInkDrop();
 
   bool IsWidgetAlive() const;
