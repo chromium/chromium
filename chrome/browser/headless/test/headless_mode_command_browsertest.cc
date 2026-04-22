@@ -325,9 +325,17 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+// TODO(crbug.com/505163310): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DumpDomWithBeforeUnloadPreventDefault \
+  DISABLED_DumpDomWithBeforeUnloadPreventDefault
+#else
+#define MAYBE_DumpDomWithBeforeUnloadPreventDefault \
+  DumpDomWithBeforeUnloadPreventDefault
+#endif
 HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
     HeadlessModeDumpDomCommandBrowserTestBase,
-    DumpDomWithBeforeUnloadPreventDefault,
+    MAYBE_DumpDomWithBeforeUnloadPreventDefault,
     "/before_unload_prevent_default.html") {
   // Make sure that 'beforeunload' that prevents default action does not stall
   // the command processing. The "Leave site" popup should not appear because
