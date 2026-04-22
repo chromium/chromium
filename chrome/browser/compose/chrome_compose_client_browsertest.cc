@@ -1594,9 +1594,16 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
               1)));
 }
 
-// Failing consistently. crbug.com/496788430
+// Failing consistently on CrOS. crbug.com/503432696
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestComposeQualityLoggedOnSubsequentError \
+  DISABLED_TestComposeQualityLoggedOnSubsequentError
+#else
+#define MAYBE_TestComposeQualityLoggedOnSubsequentError \
+  TestComposeQualityLoggedOnSubsequentError
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       DISABLED_TestComposeQualityLoggedOnSubsequentError) {
+                       MAYBE_TestComposeQualityLoggedOnSubsequentError) {
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest test_timer;
   ShowDialogAndBindMojo();
