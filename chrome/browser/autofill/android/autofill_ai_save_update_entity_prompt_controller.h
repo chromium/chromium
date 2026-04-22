@@ -75,6 +75,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   const EntityInstance entity_instance_;
   const std::optional<EntityInstance> old_entity_instance_;
   const std::string app_locale_;
+  AutofillClient::EntityImportUIContext ui_context_;
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
   // The callback to run when the user takes action on the prompt.

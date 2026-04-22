@@ -29,6 +29,11 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Optional;
+
 class AutofillAiSaveUpdateEntityPromptControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -141,6 +146,67 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   EXPECT_CALL(prompt_closed_callback(),
               Run(AutofillClient::AutofillAiBubbleResult::kNotInteracted, _));
   prompt_controller().OnPromptDismissed(env());
+}
+
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       DisplayPrompt_UserDeclined_EmptyUiContext) {
+  CreateController();
+  EXPECT_CALL(prompt_view(), Show(&prompt_controller()));
+  prompt_controller().DisplayPrompt();
+
+  EXPECT_CALL(prompt_closed_callback(),
+              Run(AutofillClient::AutofillAiBubbleResult::kCancelled,
+                  AllOf(Field(&AutofillClient::EntityImportUIContext::
+                                  accepted_consent_string_id,
+                              Eq(std::nullopt)),
+                        Field(&AutofillClient::EntityImportUIContext::
+                                  accept_button_string_id,
+                              Eq(std::nullopt)))));
+  prompt_controller().OnUserDeclined(env());
+}
+
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PopulatesUiContext_LocalEntity) {
+  CreateController(EntityInstance::RecordType::kLocal);
+
+  EXPECT_CALL(
+      prompt_closed_callback(),
+      Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+          AllOf(
+              Field(
+                  &AutofillClient::EntityImportUIContext::
+                      accepted_consent_string_id,
+                  Optional(
+                      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE)),
+              Field(
+                  &AutofillClient::EntityImportUIContext::
+                      accept_button_string_id,
+                  Optional(
+                      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON)))));
+
+  prompt_controller().OnUserAccepted(env());
+}
+
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PopulatesUiContext_WalletEntity) {
+  CreateController(EntityInstance::RecordType::kServerWallet);
+
+  EXPECT_CALL(
+      prompt_closed_callback(),
+      Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+          AllOf(
+              Field(
+                  &AutofillClient::EntityImportUIContext::
+                      accepted_consent_string_id,
+                  Optional(
+                      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE)),
+              Field(
+                  &AutofillClient::EntityImportUIContext::
+                      accept_button_string_id,
+                  Optional(
+                      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON)))));
+
+  prompt_controller().OnUserAccepted(env());
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,

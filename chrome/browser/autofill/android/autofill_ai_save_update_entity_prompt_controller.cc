@@ -55,6 +55,12 @@ AutofillAiSaveUpdateEntityPromptController::
           base::android::AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))) {
   CHECK(prompt_view_);
+  ui_context_.accepted_consent_string_id =
+      IsWalletableEntity()
+          ? IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE
+          : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE;
+  ui_context_.accept_button_string_id =
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON;
 }
 
 AutofillAiSaveUpdateEntityPromptController::
@@ -154,8 +160,10 @@ void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
 void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (prompt_result_callback_) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
-    std::move(prompt_result_callback_).Run(result, {});
+    std::move(prompt_result_callback_)
+        .Run(result, result == AutofillClient::AutofillAiBubbleResult::kAccepted
+                         ? ui_context_
+                         : AutofillClient::EntityImportUIContext{});
   }
 }
 
