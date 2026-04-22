@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "ui/base/identifier/unique_identifier.h"
 
 namespace content {
 class WebContents;
@@ -40,6 +41,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallDialogFlowViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLearnMoreButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 
   WebAppInstallFlowDialogDelegate(
       content::WebContents* web_contents,

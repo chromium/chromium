@@ -62,6 +62,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kInstallDialogFlowViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kLearnMoreButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kCancelButtonId);
 
 std::ostream& operator<<(std::ostream& os, InstallOsType type) {
   switch (type) {
@@ -99,6 +101,8 @@ WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() = default;
 
 bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
   if (current_step_ == InstallDialogStep::kSuccessful) {
+    // TODO(b/492657179): Implement the logic to open the newly installed
+    // app in a tab/window.
     OnAccept();
     return true;
   }
@@ -125,8 +129,15 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
     ui::DialogModel::Button* ok_button =
         dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
     if (ok_button) {
-      dialog_model()->SetButtonLabel(ok_button,
-                                     l10n_util::GetStringUTF16(IDS_DONE));
+      dialog_model()->SetButtonLabel(
+          ok_button,
+          l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP));
+    }
+    ui::DialogModel::Button* cancel_button =
+        dialog_model()->GetButtonByUniqueId(kCancelButtonId);
+    if (cancel_button) {
+      dialog_model()->SetButtonLabel(cancel_button,
+                                     l10n_util::GetStringUTF16(IDS_CLOSE));
     }
   }
 
@@ -162,9 +173,8 @@ void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
     case InstallDialogStep::kProgress:
       title = u"Installing app...";
       break;
-    // TODO(crbug.com/503767931): Localize string.
     case InstallDialogStep::kSuccessful:
-      title = u"Successfully installed";
+      title = l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_TITLE);
       break;
   }
 
@@ -231,9 +241,15 @@ void WebAppInstallFlowDialogDelegate::Show(
       views::Builder<views::Label>().SetText(u"Progress View").Build();
 
   // kSuccessful
-  // TODO(crbug.com/503767931): Localize this text.
+  auto successful_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .Build();
+  successful_view->AddChildView(WebAppIconNameAndOriginView::Create(
+      icon_image, title, start_url, dialog_image_info.is_maskable));
+
   install_step_to_view[InstallDialogStep::kSuccessful] =
-      views::Builder<views::Label>().SetText(u"Successful View").Build();
+      std::move(successful_view);
 
   auto flow_view =
       std::make_unique<WebAppInstallFlowView>(std::move(install_step_to_view));
@@ -279,7 +295,8 @@ void WebAppInstallFlowDialogDelegate::Show(
           ui::DialogModel::Button::Params().SetLabel(u"Next").SetId(
               WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
       .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
-                                      delegate_weak_ptr))
+                                      delegate_weak_ptr),
+                       ui::DialogModel::Button::Params().SetId(kCancelButtonId))
       .SetCloseActionCallback(base::BindOnce(
           &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
       .SetDialogDestroyingCallback(base::BindOnce(

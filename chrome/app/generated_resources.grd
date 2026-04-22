@@ -3552,6 +3552,12 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_INSTALL_PWA_DIALOG_TITLE" meaning="Shown only on PWA install dialogs" desc="Title for dialog that shows up when a web app needs to be installed to the operating system.">
         Install app
       </message>
+      <message name="IDS_WEB_APP_INSTALL_SUCCESS_TITLE" desc="Title for PWA install dialog that appears when a web app is installed successfully.">
+        Successfully installed
+      </message>
+      <message name="IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP" desc="Text for button that opens the current tab in the newly installed app.">
+        Open tab in app
+      </message>
       <message name="IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE" desc="Title above app description to explain the content below is from this app">
         From the app
       </message>
