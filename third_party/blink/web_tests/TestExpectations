@@ -9737,6 +9737,9 @@ crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-ima
 # where classic scrollbars are used. see crbug.com/501810437.
 crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Skip Timeout ]
 
+crbug.com/407751340 http/tests/devtools/elements/styles-2/metrics-box-sizing.js [ Failure Pass ]
+
+
 # Gardener 2026-04-17
 crbug.com/501845333 [ Linux ] external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Failure Pass ]
 crbug.com/501845333 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Failure Pass ]
