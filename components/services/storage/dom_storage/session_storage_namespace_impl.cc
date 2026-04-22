@@ -101,6 +101,17 @@ void SessionStorageNamespaceImpl::PopulateAsClone(
   }
 }
 
+void SessionStorageNamespaceImpl::Reset() {
+  database_ = nullptr;
+  pending_population_from_parent_namespace_.clear();
+  bind_waiting_on_population_ = false;
+  run_after_population_.clear();
+  state_ = State::kNotPopulated;
+  child_namespaces_waiting_for_clone_call_.clear();
+  storage_key_areas_.clear();
+  receivers_.Clear();
+}
+
 void SessionStorageNamespaceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
   if (!IsPopulated()) {

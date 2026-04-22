@@ -175,7 +175,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnGotDatabaseMetadata(
       StatusOr<DomStorageDatabase::Metadata> all_metadata);
   void OnConnectionFinished();
-  void PurgeAllNamespaceDataMaps();
+  void PurgeAllNamespaces();
   void DeleteAndRecreateDatabase(DomStorageRecoveryReason reason);
   void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 

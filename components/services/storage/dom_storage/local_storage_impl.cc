@@ -318,6 +318,8 @@ void LocalStorageImpl::ShutDown() {
           std::move(origins_to_purge_on_shutdown_));
     }
   }
+
+  PurgeAllStorageAreas();
 }
 
 void LocalStorageImpl::PurgeMemory() {
