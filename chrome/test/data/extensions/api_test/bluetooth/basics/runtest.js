@@ -15,24 +15,24 @@ function bluetoothSanityCheck() {
 
   chrome.bluetooth.getAdapterState(chrome.test.callback());
   chrome.bluetooth.getDevice(
-      'AB:CD:EF:01:23:45', chrome.test.callbackFail('Invalid device'));
+    'AB:CD:EF:01:23:45', chrome.test.callbackFail('Invalid device'));
   chrome.bluetooth.getDevices(chrome.test.callback());
 
   var startDiscoveryCallback = chrome.test.callbackAdded();
-  chrome.bluetooth.startDiscovery(function() {
+  chrome.bluetooth.startDiscovery(function () {
     // Ignore errors.
     chrome.runtime.lastError;
     startDiscoveryCallback();
   });
 
   var stopDiscoveryCallback = chrome.test.callbackAdded();
-  chrome.bluetooth.stopDiscovery(function() {
+  chrome.bluetooth.stopDiscovery(function () {
     // Ignore errors.
     chrome.runtime.lastError;
     stopDiscoveryCallback();
   });
 }
 
-chrome.app.runtime.onLaunched.addListener(function() {
+chrome.app.runtime.onLaunched.addListener(function () {
   chrome.test.runTests([bluetoothSanityCheck]);
 });

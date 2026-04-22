@@ -1329,9 +1329,6 @@ if (enable_extensions) {
 
     if (is_chromeos) {
       sources += [
-        # TODO(crbug.com/650835): bluetooth_appshell_test.cc is a crutch until
-        # we have a better system for testing APIs in both app_shell and chrome.
-        "api/bluetooth/bluetooth_appshell_test.cc",
         "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
         "guest_view/app_view/app_view_apitest.cc",
