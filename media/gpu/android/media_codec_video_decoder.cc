@@ -842,6 +842,8 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  hdr_metadata_reordering_map_.Insert(*buffer);
+
   pending_decodes_.emplace_back(std::move(buffer), std::move(decode_cb));
 
   if (state_ == State::kInitializing) {
@@ -1252,6 +1254,11 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
     return;
   }
 
+  gfx::HDRMetadata hdr_metadata = decoder_config_.hdr_metadata();
+  hdr_metadata_reordering_map_.MergeAndEraseMetadataForTimestamp(
+      frame->timestamp(), hdr_metadata);
+  frame->set_hdr_metadata(hdr_metadata);
+
   if (media_crypto_context_) {
     frame->metadata().protected_video = true;
     if (requires_secure_codec_) {
@@ -1276,6 +1283,7 @@ void MediaCodecVideoDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
   DCHECK(!reset_cb_);
   reset_generation_++;
+  hdr_metadata_reordering_map_.Clear();
   reset_cb_ = std::move(closure);
   CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   StartDrainingCodec(DrainType::kForReset);

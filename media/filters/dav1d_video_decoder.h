@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "media/base/frame_buffer_pool.h"
+#include "media/base/hdr_metadata_reordering_map.h"
 #include "media/base/media_log.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
@@ -94,6 +95,10 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
 
   // More specific error code to surface after an error occurs during decoding.
   DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
+
+  // Since dav1d can reorder frames, we need to store HDR metadata from the
+  // DecoderBuffer and associate it with the frame's timestamp.
+  HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 
   // The allocated decoder; null before Initialize() and anytime after
   // CloseDecoder().

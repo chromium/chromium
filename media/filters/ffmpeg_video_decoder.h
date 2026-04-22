@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "media/base/frame_buffer_pool.h"
+#include "media/base/hdr_metadata_reordering_map.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -93,6 +94,8 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   // More specific error code to surface after an error occurs during decoding.
   DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
+
+  HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
 };

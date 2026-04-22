@@ -338,6 +338,7 @@ void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
+  hdr_metadata_reordering_map_.Clear();
   state_ = DecoderState::kNormal;
   error_status_ = DecoderStatus::Codes::kFailed;
 
@@ -367,6 +368,7 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
     packet->data = nullptr;
     packet->size = 0;
   } else {
+    hdr_metadata_reordering_map_.Insert(buffer);
     auto buffer_span = base::span(buffer);
     packet->data = const_cast<uint8_t*>(buffer_span.data());
     packet->size = buffer_span.size();
@@ -469,6 +471,11 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   // Prefer the frame color space over what's in the config.
   video_frame->set_color_space(color_space.IsValid() ? color_space : config_cs);
 
+  gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
+  hdr_metadata_reordering_map_.MergeAndEraseMetadataForTimestamp(pts,
+                                                                 hdr_metadata);
+  video_frame->set_hdr_metadata(hdr_metadata);
+
   video_frame->metadata().power_efficient = false;
   video_frame->AddDestructionObserver(
       frame_pool_->CreateFrameCallback(opaque->fb_priv));
@@ -479,6 +486,7 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
 void FFmpegVideoDecoder::ReleaseFFmpegResources() {
   decoding_loop_.reset();
   codec_context_.reset();
+  hdr_metadata_reordering_map_.Clear();
 }
 
 bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,

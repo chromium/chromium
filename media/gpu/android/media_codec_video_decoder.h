@@ -20,6 +20,7 @@
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_status.h"
+#include "media/base/hdr_metadata_reordering_map.h"
 #include "media/base/overlay_info.h"
 #include "media/base/scoped_async_trace.h"
 #include "media/base/video_decoder.h"
@@ -358,6 +359,8 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Enables Block Model (LinearBlock).
   const bool use_block_model_;
+
+  HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

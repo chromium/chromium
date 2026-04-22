@@ -367,6 +367,7 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = DecoderState::kNormal;
   dav1d_flush(dav1d_decoder_.get());
+  hdr_metadata_reordering_map_.Clear();
   error_status_ = DecoderStatus::Codes::kFailed;
 
   if (bind_callbacks_)
@@ -395,6 +396,7 @@ void Dav1dVideoDecoder::Dav1dContextDeleter::operator()(Dav1dContext* ptr) {
 void Dav1dVideoDecoder::CloseDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dav1d_decoder_.reset();
+  hdr_metadata_reordering_map_.Clear();
 }
 
 bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
@@ -403,6 +405,8 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
   using ScopedPtrDav1dData = std::unique_ptr<Dav1dData, ScopedDav1dDataFree>;
   ScopedPtrDav1dData input_buffer;
   if (!buffer->end_of_stream()) {
+    hdr_metadata_reordering_map_.Insert(*buffer);
+
     auto buffer_span = base::span(*buffer);
     input_buffer.reset(new Dav1dData{});
     const int res = dav1d_data_wrap(input_buffer.get(), buffer_span.data(),
@@ -463,6 +467,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       continue;
     }
 
+    gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
     if (p->itut_t35) {
       // SAFETY: The best we can do is trust the size provided by Dav1d.
       auto t35s = UNSAFE_BUFFERS(
@@ -474,10 +479,12 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
         if (auto agtm = GetAgtmFromT35WithCountryCode(t35.country_code,
                                                       t35_payload_span)) {
           // Overwrite existing AGTM metadata if any.
-          config_.writable_hdr_metadata().SetSerializedAgtm(agtm.value());
+          hdr_metadata.SetSerializedAgtm(agtm.value());
         }
       }
     }
+    hdr_metadata_reordering_map_.MergeAndEraseMetadataForTimestamp(
+        base::Microseconds(p->m.timestamp), hdr_metadata);
 
     auto frame = BindImageToVideoFrame(p.get());
     if (!frame) {
@@ -501,7 +508,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
     frame->set_color_space(gfx_cs);
     frame->metadata().power_efficient = false;
-    frame->set_hdr_metadata(config_.hdr_metadata());
+    frame->set_hdr_metadata(hdr_metadata);
 
     FrameBufferData* opaque_data =
         static_cast<FrameBufferData*>(p->allocator_data);
