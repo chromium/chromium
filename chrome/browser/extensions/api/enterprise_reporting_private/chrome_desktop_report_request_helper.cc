@@ -295,6 +295,19 @@ base::FilePath GetEndpointVerificationDir() {
   return path;
 }
 
+std::optional<base::FilePath> GetValidatedDeviceDataFilePath(
+    const base::FilePath& data_dir,
+    const std::string& id) {
+  if (data_dir.empty()) {
+    return std::nullopt;
+  }
+  base::FilePath target_file = data_dir.AppendASCII(id);
+  if (target_file.ReferencesParent() || !data_dir.IsParent(target_file)) {
+    return std::nullopt;
+  }
+  return target_file;
+}
+
 }  // namespace
 
 // Sets the path used to store Endpoint Verification data for tests.
@@ -311,9 +324,13 @@ void StoreDeviceData(const std::string& id,
     return;
   }
 
-  // TODO(pastarmovj): Make sure the resulting path is still a direct file or
-  // subdir+file of the EV folder.
-  data_file = data_file.AppendASCII(id);
+  std::optional<base::FilePath> target_file =
+      GetValidatedDeviceDataFilePath(data_file, id);
+  if (!target_file) {
+    std::move(callback).Run(false);
+    return;
+  }
+  data_file = *target_file;
 
   bool success = false;
   if (data) {
@@ -358,7 +375,14 @@ void RetrieveDeviceData(
                             RetrieveDeviceDataStatus::kDataDirectoryUnknown);
     return;
   }
-  data_file = data_file.AppendASCII(id);
+
+  std::optional<base::FilePath> target_file =
+      GetValidatedDeviceDataFilePath(data_file, id);
+  if (!target_file) {
+    std::move(callback).Run("", RetrieveDeviceDataStatus::kDataRecordNotFound);
+    return;
+  }
+  data_file = *target_file;
   // If the file does not exist don't treat this as an error rather return an
   // empty string.
   if (!base::PathExists(data_file)) {

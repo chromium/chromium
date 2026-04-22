@@ -221,6 +221,33 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   EXPECT_FALSE(function->GetError().empty());
 }
 
+TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DevicePathTraversal) {
+  auto set_function =
+      base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
+  base::ListValue set_values;
+  set_values.Append("../traversal");
+  set_values.Append(base::Value::BlobStorage({1, 2, 3}));
+  api_test_utils::RunFunction(set_function.get(), std::move(set_values),
+                              profile(),
+                              extensions::api_test_utils::FunctionMode::kNone);
+  // It should fail and set an error.
+  EXPECT_FALSE(set_function->GetError().empty());
+
+  auto get_function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
+  base::ListValue get_values;
+  get_values.Append("../traversal");
+  api_test_utils::RunFunction(get_function.get(), std::move(get_values),
+                              profile(),
+                              extensions::api_test_utils::FunctionMode::kNone);
+  // It should also fail or return empty blob. Based on our implementation,
+  // it returns kDataRecordNotFound which translates to empty blob in API.
+  ASSERT_TRUE(get_function->GetResultListForTest());
+  const base::Value& single_result = (*get_function->GetResultListForTest())[0];
+  ASSERT_TRUE(single_result.is_blob());
+  EXPECT_EQ(base::Value::BlobStorage(), single_result.GetBlob());
+}
+
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   auto set_function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
