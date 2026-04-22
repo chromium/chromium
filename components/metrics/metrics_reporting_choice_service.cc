@@ -5,6 +5,8 @@
 #include "components/metrics/metrics_reporting_choice_service.h"
 
 #include "base/check.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -21,7 +23,9 @@ MetricsReportingChoiceService::~MetricsReportingChoiceService() = default;
 // static
 void MetricsReportingChoiceService::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  // TODO(crbug.com/496476603): Register prefs used by this class.
+  registry->RegisterIntegerPref(prefs::kMetricsReportingLevel,
+                                static_cast<int>(MetricsReportingLevel::kNone));
+  registry->RegisterBooleanPref(prefs::kMetricsReportingMigrationDone, false);
 }
 
 }  // namespace metrics

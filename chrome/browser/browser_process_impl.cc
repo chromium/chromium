@@ -1301,11 +1301,6 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
-  registry->RegisterIntegerPref(
-      metrics::prefs::kMetricsReportingLevel,
-      static_cast<int>(GoogleUpdateSettings::GetMetricsReportingLevel()));
-  registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingMigrationDone,
-                                false);
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingEnabled, false);
 

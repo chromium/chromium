@@ -134,6 +134,7 @@
 #include "components/media_device_salt/media_device_id_salt.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager_impl.h"
@@ -1408,6 +1409,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
   metrics::RegisterDemographicsLocalStatePrefs(registry);
+  metrics::MetricsReportingChoiceService::RegisterPrefs(registry);
   metrics::TabStatsTracker::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   omnibox::RegisterLocalStatePrefs(registry);
