@@ -18,9 +18,6 @@ class ActorOverlayProperties {
     /** Whether the overlay is currently visible. */
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
-    /** Whether the overlay is allowed to show (e.g., not hidden by a tab switch). */
-    public static final WritableBooleanPropertyKey CAN_SHOW = new WritableBooleanPropertyKey();
-
     /** The top margin of the overlay. */
     public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
 
@@ -33,6 +30,6 @@ class ActorOverlayProperties {
 
     /** All keys for the property model. */
     public static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, CAN_SHOW, TOP_MARGIN, BOTTOM_MARGIN, ON_CLICK_LISTENER
+        VISIBLE, TOP_MARGIN, BOTTOM_MARGIN, ON_CLICK_LISTENER
     };
 }

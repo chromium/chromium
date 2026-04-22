@@ -22,10 +22,8 @@ class ActorOverlayViewBinder {
      * @param key The property key that changed.
      */
     public static void bind(PropertyModel model, ActorOverlayView view, PropertyKey key) {
-        if (key == ActorOverlayProperties.VISIBLE || key == ActorOverlayProperties.CAN_SHOW) {
-            boolean visible =
-                    model.get(ActorOverlayProperties.VISIBLE)
-                            && model.get(ActorOverlayProperties.CAN_SHOW);
+        if (key == ActorOverlayProperties.VISIBLE) {
+            boolean visible = model.get(ActorOverlayProperties.VISIBLE);
             int visibility = visible ? View.VISIBLE : View.GONE;
             if (view.getVisibility() != visibility) {
                 view.setVisibility(visibility);

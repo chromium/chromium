@@ -1045,19 +1045,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider.asObservable(), omniboxChipManager, mActivity);
         }
 
-        if (ChromeFeatureList.sGlic.isEnabled()) {
-            ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
-            mActorOverlayCoordinator =
-                    new ActorOverlayCoordinator(
-                            stub,
-                            mTabModelSelectorSupplier.asNonNull().get(),
-                            mBrowserControlsManager,
-                            mTabObscuringHandlerSupplier.get(),
-                            mSnackbarManagerSupplier.asNonNull().get(),
-                            mBackPressManager,
-                            mLayoutManagerSupplier);
-        }
-
         if (AndroidSidePanelEnabledFn.isEnabled()) {
             mCompositorViewHolderSupplier
                     .asNonNull()
@@ -1224,8 +1211,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sGlic.isEnabled() && mTabBottomSheetManager != null) {
             mActorControlCoordinator =
                     new ActorControlCoordinator(
-                            mActivity,
-                            mTabBottomSheetManager,
+                            mActivity, mTabBottomSheetManager, mProfileSupplier);
+
+            ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
+            mActorOverlayCoordinator =
+                    new ActorOverlayCoordinator(
+                            stub,
+                            mTabModelSelectorSupplier.asNonNull().get(),
+                            mBrowserControlsManager,
+                            mTabObscuringHandlerSupplier.get(),
+                            assumeNonNull(mSnackbarManagerSupplier.get()),
+                            mBackPressManager,
+                            mLayoutManagerSupplier,
                             mProfileSupplier);
         }
 

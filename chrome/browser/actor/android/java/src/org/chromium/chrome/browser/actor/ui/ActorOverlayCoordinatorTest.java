@@ -37,6 +37,9 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
@@ -45,6 +48,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -66,7 +70,10 @@ public class ActorOverlayCoordinatorTest {
     @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
     @Mock private ActorUiTabController.Natives mTabControllerNatives;
     @Mock private LayoutManager mLayoutManager;
+    @Mock private Profile mProfile;
+    @Mock private ActorKeyedService mActorKeyedService;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
     private ActorOverlayView mView;
     private static final int TAB_ID = 123;
@@ -77,6 +84,7 @@ public class ActorOverlayCoordinatorTest {
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private UserDataHost mUserDataHost;
     private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -105,6 +113,10 @@ public class ActorOverlayCoordinatorTest {
         mLayoutManagerSupplier = ObservableSuppliers.createMonotonic();
         Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
 
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
+        mProfileSupplier.set(mProfile);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+
         mCoordinator =
                 new ActorOverlayCoordinator(
                         mViewStub,
@@ -113,7 +125,8 @@ public class ActorOverlayCoordinatorTest {
                         mTabObscuringHandler,
                         mSnackbarManager,
                         mBackPressHandlerRegistry,
-                        mLayoutManagerSupplier);
+                        mLayoutManagerSupplier,
+                        mProfileSupplier);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
 
@@ -135,6 +148,19 @@ public class ActorOverlayCoordinatorTest {
 
         Mockito.clearInvocations(mView);
 
+        ActorUiTabController tabController = ActorUiTabController.from(mTab);
+        tabController.onUiTabStateChange(
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false));
+
         mediator.setOverlayVisible(true);
         verify(mView).setVisibility(View.VISIBLE);
 
@@ -149,6 +175,37 @@ public class ActorOverlayCoordinatorTest {
         Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mediator.onStartedShowing(LayoutType.TAB_SWITCHER);
 
+        verify(mView).setVisibility(View.VISIBLE);
+    }
+
+    @Test
+    public void testTaskStateChangedTriggersVisibility() {
+        // Verify that ActorKeyedService observer is registered.
+        verify(mActorKeyedService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer observer = mActorObserverCaptor.getValue();
+
+        // Set up tab state to be active.
+        UiTabState tabState =
+                new UiTabState(
+                        TAB_ID,
+                        new ActorOverlayState(true, false, false),
+                        new HandoffButtonState(false, 0),
+                        0,
+                        false);
+        mTabController.onUiTabStateChange(tabState);
+        mCoordinator.getModelForTesting().set(ActorOverlayProperties.VISIBLE, false);
+
+        // CAN_SHOW is true by default from Coordinator init if layout is BROWSING.
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+        clearInvocations(mView);
+        // Force getVisibility to return GONE to ensure binder calls setVisibility.
+        Mockito.when(mView.getVisibility()).thenReturn(View.GONE);
+
+        // Trigger task state change.
+        observer.onTaskStateChanged(1, ActorTaskState.ACTING);
+
+        // Verify that view visibility is updated to VISIBLE.
         verify(mView).setVisibility(View.VISIBLE);
     }
 
@@ -223,12 +280,49 @@ public class ActorOverlayCoordinatorTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
         ActorOverlayMediator mediator = mCoordinator.getMediator();
+
+        ActorUiTabController tabController = ActorUiTabController.from(mTab);
+        tabController.onUiTabStateChange(
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false));
+
         mediator.setOverlayVisible(true);
 
-        // Hide it first
+        // Mock the tab to be hidden to properly test onHidden
+        Mockito.when(mTab.isHidden()).thenReturn(true);
         mTabObserverCaptor.getValue().onHidden(mTab, 0);
+        verify(mView, Mockito.atLeastOnce()).setVisibility(View.GONE);
+
+        // Change layout to TAB_SWITCHER to prevent line 317 from showing it eagerly
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.TAB_SWITCHER);
+
+        // Set state back to active to ensure onShown shows it
+        tabController.onUiTabStateChange(
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false));
+
+        // Restore layout to BROWSING before onShown
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
 
         clearInvocations(mView);
+        // Mock the tab to be shown again
+        Mockito.when(mTab.isHidden()).thenReturn(false);
         mTabObserverCaptor.getValue().onShown(mTab, 0);
         verify(mView).setVisibility(View.VISIBLE);
     }
@@ -309,7 +403,7 @@ public class ActorOverlayCoordinatorTest {
         clearInvocations(mView);
         mCurrentTabSupplier.set(null);
         verify(mView).setVisibility(View.GONE);
-        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
     }
 
     @Test
@@ -333,7 +427,7 @@ public class ActorOverlayCoordinatorTest {
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);
-        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
     }
 
     @Test
@@ -357,7 +451,7 @@ public class ActorOverlayCoordinatorTest {
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);
-        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
     }
 
     @Test
@@ -381,7 +475,7 @@ public class ActorOverlayCoordinatorTest {
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);
-        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
     }
 
     @Test

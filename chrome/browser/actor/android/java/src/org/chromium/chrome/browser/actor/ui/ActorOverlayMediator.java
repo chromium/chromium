@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -79,12 +81,12 @@ class ActorOverlayMediator
                 new EmptyTabObserver() {
                     @Override
                     public void onShown(Tab tab, int type) {
-                        updateCanShowOverlay(tab);
+                        updateVisibility();
                     }
 
                     @Override
                     public void onHidden(Tab tab, int reason) {
-                        setCanShow(false);
+                        updateVisibility();
                     }
                 };
 
@@ -120,17 +122,34 @@ class ActorOverlayMediator
     private void onLayoutManagerAvailable(LayoutManager layoutManager) {
         mLayoutManager = layoutManager;
         mLayoutManager.addObserver(this);
-        updateCanShowOverlay(mCurrentTabSupplier.get());
+        updateVisibility();
     }
 
     @Override
     public void onStartedShowing(int layoutType) {
-        updateCanShowOverlay(mCurrentTabSupplier.get());
+        updateVisibility();
     }
 
     @Override
     public void onUiTabStateChanged(ActorUiTabController.UiTabState state) {
-        setOverlayVisible(state.actorOverlay.isActive);
+        updateVisibility();
+    }
+
+    /** Called when a task state changes, to re-evaluate visibility. */
+    void onTaskStateChanged() {
+        updateVisibility();
+    }
+
+    private void updateVisibility() {
+        if (mCurrentTab == null || mTabController == null) {
+            setOverlayVisible(false);
+            return;
+        }
+        boolean canShow = calculateCanShowOverlay(mCurrentTab);
+        ActorUiTabController.UiTabState state = mTabController.getUiTabState();
+        boolean isActive = state != null && state.actorOverlay.isActive;
+
+        setOverlayVisible(canShow && isActive);
     }
 
     private void onCurrentTabChanged(@Nullable Tab tab) {
@@ -143,55 +162,28 @@ class ActorOverlayMediator
         }
 
         mCurrentTab = tab;
-        mTabController = null;
 
         if (mCurrentTab != null) {
             mCurrentTab.addObserver(mTabObserver);
-        }
-
-        if (mCurrentTab == null) {
-            setCanShow(false);
-            setOverlayVisible(false);
-            return;
-        }
-
-        mTabController = ActorUiTabController.from(mCurrentTab);
-        if (mTabController == null) {
-            setCanShow(false);
-            setOverlayVisible(false);
-            return;
-        }
-        mTabController.addObserver(this);
-
-        updateCanShowOverlay(mCurrentTab);
-        ActorUiTabController.UiTabState state = mTabController.getUiTabState();
-        if (state != null) {
-            onUiTabStateChanged(state);
+            mTabController = assertNonNull(ActorUiTabController.from(mCurrentTab));
+            mTabController.addObserver(this);
         } else {
-            // Reset visibility if no state is available.
-            setOverlayVisible(false);
+            mTabController = null;
         }
+
+        updateVisibility();
     }
 
-    private void updateCanShowOverlay(@Nullable Tab tab) {
-        // TODO(wenyufu): This is a placeholder. Update this based on whether the overlay can be
-        // shown for the tab.
+    private boolean calculateCanShowOverlay(@Nullable Tab tab) {
         boolean isBrowsing =
                 mLayoutManager != null
                         && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING;
-        boolean canShow =
-                isBrowsing
-                        && tab != null
-                        && !tab.isDestroyed()
-                        && !tab.isClosing()
-                        && !tab.isNativePage()
-                        && !tab.isHidden();
-        setCanShow(canShow);
-    }
-
-    private void setCanShow(boolean canShow) {
-        mModel.set(ActorOverlayProperties.CAN_SHOW, canShow);
-        updateObscuringState();
+        return isBrowsing
+                && tab != null
+                && !tab.isDestroyed()
+                && !tab.isClosing()
+                && !tab.isNativePage()
+                && !tab.isHidden();
     }
 
     /**
@@ -199,20 +191,17 @@ class ActorOverlayMediator
      *
      * @param visible True to make the overlay visible, false to hide it.
      */
-    public void setOverlayVisible(boolean visible) {
+    void setOverlayVisible(boolean visible) {
         mModel.set(ActorOverlayProperties.VISIBLE, visible);
-        updateObscuringState();
-    }
-
-    private void updateObscuringState() {
-        boolean isVisible =
-                mModel.get(ActorOverlayProperties.VISIBLE)
-                        && mModel.get(ActorOverlayProperties.CAN_SHOW);
+        boolean isVisible = mModel.get(ActorOverlayProperties.VISIBLE);
 
         mBackPressChangedSupplier.set(isVisible);
 
-        if (isVisible && mTabObscuringToken == null) {
-            mTabObscuringToken = mTabObscuringHandler.obscure(TabObscuringHandler.Target.TAB_CONTENT);
+        if (isVisible) {
+            if (mTabObscuringToken == null) {
+                mTabObscuringToken =
+                        mTabObscuringHandler.obscure(TabObscuringHandler.Target.TAB_CONTENT);
+            }
         } else if (mTabObscuringToken != null) {
             mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
