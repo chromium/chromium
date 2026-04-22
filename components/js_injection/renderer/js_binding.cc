@@ -275,6 +275,13 @@ void JsBinding::Bind(
   return receiver_.Bind(std::move(receiver));
 }
 
+void JsBinding::Dispose() {
+  // Explicitly reset the receiver to prevent IPC messages from being dispatched
+  // to this object while it is awaiting lazy sweeping. This prevents a UAF if
+  // synchronous JS execution triggers a nested GC. See crbug.com/503889643.
+  receiver_.reset();
+}
+
 gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<JsBinding>::GetObjectTemplateBuilder(isolate)
