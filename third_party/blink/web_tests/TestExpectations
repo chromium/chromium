@@ -2271,6 +2271,7 @@ crbug.com/40268415 [ Debug Mac15-arm64 ] webaudio/internals/audioworkletprocesso
 crbug.com/40268415 [ Debug Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Timeout ]
 crbug.com/40268415 [ Mac13-arm64 Release ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
 crbug.com/40268415 [ Mac15-arm64 Release ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
+crbug.com/40268415 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
 crbug.com/40268415 [ Release Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
 crbug.com/40268415 [ Debug Mac13-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
 crbug.com/40268415 [ Debug Mac14-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
