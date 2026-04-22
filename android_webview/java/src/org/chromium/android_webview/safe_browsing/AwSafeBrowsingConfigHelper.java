@@ -114,8 +114,6 @@ public class AwSafeBrowsingConfigHelper {
             RecordHistogram.recordBooleanHistogram(
                     "SafeBrowsing.WebView.UserOptInKnown.FirstLoad", sUserOptInCallbackReturned);
         }
-        RecordHistogram.recordBooleanHistogram(
-                "SafeBrowsing.WebView.UserOptInKnown.EveryLoad", sUserOptInCallbackReturned);
         return sSafeBrowsingUserOptIn;
     }
 
