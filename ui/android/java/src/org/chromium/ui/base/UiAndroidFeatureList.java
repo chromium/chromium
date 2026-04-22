@@ -58,6 +58,13 @@ public class UiAndroidFeatureList {
                     "occlusion_optimizations",
                     false);
 
+    public static final IntCachedFeatureParam sAndroidWindowOcclusionCalculateOcclusionRateLimitMs =
+            new IntCachedFeatureParam(
+                    UiAndroidFeatureMap.getInstance(),
+                    UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
+                    "calculate_occlusion_rate_limit_ms",
+                    0);
+
     public static final IntCachedFeatureParam
             sAndroidWindowOcclusionMinimumVisibilitySizeThreshold =
                     new IntCachedFeatureParam(
@@ -111,6 +118,7 @@ public class UiAndroidFeatureList {
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
                     // keep-sorted start
+                    sAndroidWindowOcclusionCalculateOcclusionRateLimitMs,
                     sAndroidWindowOcclusionMinimumVisibilitySizeThreshold,
                     sAndroidWindowOcclusionOptimizations,
                     sAndroidWindowOcclusionTrackingMode

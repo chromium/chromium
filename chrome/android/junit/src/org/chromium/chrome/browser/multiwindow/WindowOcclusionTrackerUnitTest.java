@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.GraphicsMode;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.ContextUtils;
@@ -33,6 +36,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +58,7 @@ public class WindowOcclusionTrackerUnitTest {
     @Before
     public void setUp() {
         UiAndroidFeatureList.sAndroidWindowOcclusionMinimumVisibilitySizeThreshold.setForTesting(0);
+        UiAndroidFeatureList.sAndroidWindowOcclusionCalculateOcclusionRateLimitMs.setForTesting(0);
         mOcclusionTracker = new WindowOcclusionTracker(mZOrderTracker);
     }
 
@@ -87,7 +92,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(window, description("Window should not be occluded"))
                 .setOccluded(eq(false), any(), any());
@@ -102,7 +107,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(window, description("Window should default to unoccluded"))
                 .setOccluded(eq(false), any(), any());
@@ -120,7 +125,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(window1, window2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(window2, description("Top window should not be occluded"))
                 .setOccluded(eq(false), any(), any());
@@ -139,7 +144,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(topWindow, description("Top window should not be occluded"))
                 .setOccluded(eq(false), any(), any());
@@ -180,7 +185,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow1, topWindow2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(topWindow1, description("Top window 1 should not be occluded"))
                 .setOccluded(eq(false), any(), any());
@@ -198,7 +203,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(999, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         verify(window, description("Window on unknown display should default to unoccluded"))
                 .setOccluded(eq(false), any(), any());
@@ -223,7 +228,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(displayId2, Collections.singletonList(window2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         // Display 1 assertions
         verify(topWindow1, description("Top window on Display 1 should not be occluded"))
@@ -258,7 +263,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow1));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
         verify(bottomWindow, description("Window with visible height 9 should be occluded"))
                 .setOccluded(eq(true), any(), any());
 
@@ -274,7 +279,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
         verify(bottomWindow, description("Window with visible height 10 should NOT be occluded"))
                 .setOccluded(eq(false), any(), any());
     }
@@ -330,8 +335,42 @@ public class WindowOcclusionTrackerUnitTest {
                                 WindowOcclusionMetrics.CalculateResult.VIEW_NOT_FOUND)
                         .build();
 
-        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusionRateLimited();
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCalculateOcclusionRateLimit() {
+        UiAndroidFeatureList.sAndroidWindowOcclusionCalculateOcclusionRateLimitMs.setForTesting(
+                100);
+
+        // Recreate the test instance to grab the overridden rate limit.
+        mOcclusionTracker = new WindowOcclusionTracker(mZOrderTracker);
+
+        View view = createView(0, 0, 100, 100);
+        ActivityWindowAndroid window = createWindowAndroid(view);
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        zOrder.put(DISPLAY_ID, Collections.singletonList(window));
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+
+        // First call should execute immediately.
+        mOcclusionTracker.calculateOcclusionRateLimited();
+        verify(window, description("First call should execute immediately."))
+                .setOccluded(eq(false), any(), any());
+
+        // Second call within rate limit should be delayed.
+        org.mockito.Mockito.clearInvocations(window);
+        mOcclusionTracker.calculateOcclusionRateLimited();
+        verify(window, org.mockito.Mockito.never().description("Second call should be delayed."))
+                .setOccluded(anyBoolean(), any(), any());
+
+        // Fast forward time by 100ms.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(100));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Now the delayed task should have executed.
+        verify(window, description("Delayed task should have executed."))
+                .setOccluded(eq(false), any(), any());
     }
 }

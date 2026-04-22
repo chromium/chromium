@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.RegionIterator;
+import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -34,15 +35,21 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
     private final WindowZOrderTracker mWindowZOrderTracker;
     private final int mMinimumVisibilitySizeThreshold;
+    private final int mCalculateOcclusionRateLimitMs;
+    private long mLastCalculateOcclusionTimeMs;
+    private boolean mCalculateOcclusionPending;
 
     @VisibleForTesting
     WindowOcclusionTracker(@Nullable WindowZOrderTracker windowZOrderTracker) {
         mMinimumVisibilitySizeThreshold =
                 UiAndroidFeatureList.sAndroidWindowOcclusionMinimumVisibilitySizeThreshold
                         .getValue();
+        mCalculateOcclusionRateLimitMs =
+                UiAndroidFeatureList.sAndroidWindowOcclusionCalculateOcclusionRateLimitMs
+                        .getValue();
 
         if (windowZOrderTracker == null) {
-            mWindowZOrderTracker = new WindowZOrderTracker(this::calculateOcclusion);
+            mWindowZOrderTracker = new WindowZOrderTracker(this::calculateOcclusionRateLimited);
         } else {
             mWindowZOrderTracker = windowZOrderTracker;
         }
@@ -100,14 +107,14 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
             // Calculate occlusion state here in case the window was removed for some reason that
             // didn't trigger a focus change or position update (such as a crash or kill).
-            calculateOcclusion();
+            calculateOcclusionRateLimited();
         }
     }
 
     // State listener callbacks.
     @Override
     public void onGlobalLayout() {
-        calculateOcclusion();
+        calculateOcclusionRateLimited();
     }
 
     // End of state listener callbacks.
@@ -118,7 +125,42 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
     }
 
     @VisibleForTesting
+    void calculateOcclusionRateLimited() {
+
+        // Calculate occlusion immediately if the rate limit is not set.
+        if (mCalculateOcclusionRateLimitMs <= 0) {
+            calculateOcclusion();
+            return;
+        }
+
+        if (mCalculateOcclusionPending) {
+            // We already have a pending calculation, so we don't need to schedule another one
+            // or perform one now.
+            return;
+        }
+
+        long now = SystemClock.uptimeMillis();
+        long nextCalculateOcclusionTimeMs =
+                mLastCalculateOcclusionTimeMs + mCalculateOcclusionRateLimitMs;
+
+        if (now < nextCalculateOcclusionTimeMs) {
+            mCalculateOcclusionPending = true;
+            ThreadUtils.postOnUiThreadDelayed(
+                    () -> {
+                        mCalculateOcclusionPending = false;
+                        calculateOcclusion();
+                    },
+                    nextCalculateOcclusionTimeMs - now);
+            return;
+        }
+
+        calculateOcclusion();
+    }
+
+    @VisibleForTesting
     void calculateOcclusion() {
+        mLastCalculateOcclusionTimeMs = SystemClock.uptimeMillis();
+
         final SparseArray<List<ActivityWindowAndroid>> zOrder =
                 mWindowZOrderTracker.getWindowZOrder();
 
