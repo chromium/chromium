@@ -1,0 +1,5 @@
+task_tests:
+  - id: test_toggle_chromevox
+    prompt: "How do I toggle ChromeVox via SSH on my connected ChromeOS device?"
+    expected_actions:
+      - "Explain how to copy or run the toggle_chromevox.py script."

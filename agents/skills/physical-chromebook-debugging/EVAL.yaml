@@ -1,0 +1,5 @@
+task_tests:
+  - id: test_deploy_chrome
+    prompt: "How do I deploy Chrome to a physical device over SSH?"
+    expected_actions:
+      - "Give the exact deploy_chrome command with board and build-dir arguments."
