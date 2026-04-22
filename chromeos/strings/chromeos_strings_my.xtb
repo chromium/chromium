@@ -1444,7 +1444,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">အစိမ်းနှင့် စိမ်းပြာရင့်</translation>
 <translation id="7328475450575141167">ပရဒိသုငှက်ပန်း</translation>
-<translation id="7331297744262591636">သင်သည် အနည်းဆုံးအသက် ၁၈ နှစ် ရှိရမည်ဖြစ်ပြီး AI နောက်ခံများကို အသုံးပြုခြင်းသည် <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> နှင့် <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />တီထွင်ဖန်တီးမှုဆိုင်ရာ AI ထပ်ဆောင်းဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ကို လိုက်နာရမည်ဖြစ်ကြောင်း သင်သဘောတူသည်။
+<translation id="7331297744262591636">သင်သည် အနည်းဆုံးအသက် ၁၈ နှစ် ရှိရမည်ဖြစ်ပြီး AI နောက်ခံများကို အသုံးပြုခြင်းသည် <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> နှင့် <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generative AI ထပ်ဆောင်းဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ကို လိုက်နာရမည်ဖြစ်ကြောင်း သင်သဘောတူသည်။
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           တစ်ကိုယ်ရေ အသုံးပြုမှုနှင့် စီးပွားဖြစ်မဟုတ်သော အသုံးပြုမှုအတွက်သာ နောက်ခံများကို AI ဖြင့် ဖန်တီးနိုင်သည်။ နောက်ခံအတွက် အကူအညီ ရယူသည့်အခါ နောက်ခံဆိုင်ရာ အကြံပြုချက်များ ထုတ်ပေးရန် စာသားကို <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ Google AI ဆာဗာများသို့ ပို့သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -589,7 +589,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1386966479075994683">Udvid faner</translation>
 <translation id="1388253969141979417">Har tilladelse til at bruge din mikrofon</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> genstartes, når opdateringerne er fuldført.</translation>
-<translation id="1390113502208199250">Du skal gendanne fabriksindstillingerne på denne enhed for at bruge Chrome Education-opgraderingsfunktioner.</translation>
+<translation id="1390113502208199250">Du skal gendanne fabriksindstillingerne på denne enhed for at bruge Chrome Education Upgrade-funktioner.</translation>
 <translation id="139013308650923562">Har tilladelse til at bruge de skrifttyper, der er installeret på din enhed</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> forudinstalleret på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1390548061267426325">Åbn som almindelig fane</translation>
@@ -1630,7 +1630,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2082187087049518845">Opret en gruppe med fanen</translation>
 <translation id="2082510809738716738">Vælg en temafarve</translation>
 <translation id="208586643495776849">Prøv igen</translation>
-<translation id="208634871997892083">Konstant VPN</translation>
+<translation id="208634871997892083">Altid aktiv VPN</translation>
 <translation id="208654914566977272">Foreslåede handlinger, når du søger på skærmen</translation>
 <translation id="2087822576218954668">Udskrift: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Du kan først tilmelde dig, når du har installeret <ph name="DEVICE_OS" />.</translation>
@@ -2554,7 +2554,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2693134906590795721">Lyd ved opladning</translation>
 <translation id="2695943520968279338">Se udvidelser</translation>
 <translation id="2696675923413008404">Indhold fra dette website, herunder dets webadresse, sendes til Google og kan blive gennemgået af menneskelige kontrollanter med henblik på at forbedre denne funktion</translation>
-<translation id="2698147581454716013">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage-opgraderingen.</translation>
+<translation id="2698147581454716013">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
@@ -3261,7 +3261,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3177430966804511955">Administrer isolerede webapps (beta)</translation>
 <translation id="31774765611822736">Ny fane til venstre</translation>
 <translation id="3177909033752230686">Sidens sprog:</translation>
-<translation id="3177914167275935955">Din enhed inkluderer en Chrome Education-opgradering, men dit brugernavn er ikke knyttet til en Google for Education-konto. Opret en Google for Education-konto ved at gå til g.co/workspace/edusignup på en sekundær enhed.</translation>
+<translation id="3177914167275935955">Din enhed inkluderer Chrome Education Upgrade, men dit brugernavn er ikke knyttet til en Google for Education-konto. Opret en Google for Education-konto ved at gå til g.co/workspace/edusignup på en sekundær enhed.</translation>
 <translation id="3179982752812949580">Tekstskrifttype</translation>
 <translation id="3180990259147710757">Drej kæben til venstre</translation>
 <translation id="3181825792072797598">Aktivér synkronisering</translation>
@@ -4910,7 +4910,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4277434192562187284">XML-konfigurationskilde</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Tilladelserne er blevet fjernet fra 1 website}one{Tilladelserne er blevet fjernet fra {NUM_SITES} website}other{Tilladelserne er blevet fjernet fra {NUM_SITES} websites}}</translation>
 <translation id="4278390842282768270">Tilladt</translation>
-<translation id="4278498748067682896">Du skal bruge en terminal- og signeringsopgradering, der kun tillader, at enheden køres i terminal- eller signeringstilstand. Hvis du gerne vil have, at brugere logger ind på enheden, kan du gå tilbage og tilmelde dig via Chrome Enterprise-opgraderingen.</translation>
+<translation id="4278498748067682896">Du skal bruge en terminal- og signeringsopgradering, der kun tillader, at enheden køres i terminal- eller signeringstilstand. Hvis du gerne vil have, at brugere logger ind på enheden, kan du gå tilbage og tilmelde dig via Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Denne proces kan tage et par minutter. Downloader filer.</translation>
 <translation id="4279129444466079448">Du kan installere op til <ph name="PROFILE_LIMIT" /> eSIM-kortprofiler på denne enhed. Hvis du vil tilføje en ny profil, skal du først fjerne en eksisterende profil.</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
@@ -6042,7 +6042,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Administrer Sikkert DNS i indstillingerne for ChromeOS</translation>
 <translation id="5066534201484101197">Brug overscroll til at navigere mellem sider</translation>
-<translation id="5067399438976153555">Altid aktiveret</translation>
+<translation id="5067399438976153555">Altid aktiv</translation>
 <translation id="5067867186035333991">Spørg, om <ph name="HOST" /> vil have adgang til din mikrofon</translation>
 <translation id="5068553687099139861">vise adgangskoder</translation>
 <translation id="506886127401228110">Aktivér isolerede webapps</translation>
@@ -7688,7 +7688,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6207937957461833379">Land/Region</translation>
 <translation id="6208521041562685716">Mobildata aktiveres</translation>
 <translation id="6208725777148613371">Elementet kunne ikke gemmes i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="6209908325007204267">Din enhed inkluderer en Chrome Enterprise-opgradering, men dit brugernavn er ikke tilknyttet en virksomhedskonto. Du skal oprette en virksomhedskonto på g.co/ChromeEnterpriseAccount på en sekundær enhed.</translation>
+<translation id="6209908325007204267">Din enhed inkluderer en Chrome Enterprise Upgrade, men dit brugernavn er ikke tilknyttet en virksomhedskonto. Du skal oprette en virksomhedskonto på g.co/ChromeEnterpriseAccount på en sekundær enhed.</translation>
 <translation id="6210282067670792090">I adresselinjen kan du bruge denne tastaturgenvej til genveje til søgemaskiner og websitesøgning</translation>
 <translation id="6211067089253408231">Aktivér øjeblikkeligt hotspot</translation>
 <translation id="6211659910592825123">Tjek dit kamera</translation>
@@ -11592,7 +11592,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="885246833287407341">Argumenter for API-funktion</translation>
 <translation id="8853586775156634952">Dette kort bliver kun gemt på denne enhed</translation>
 <translation id="8855242995793521265">Gør ikke din browser eller enhed mærkbart langsommere.</translation>
-<translation id="8855977033756560989">Denne Chrome Enterprise-enhed følger med Chrome Enterprise-opgraderingen. Tilmeld denne enhed med en Google-administratorkonto for at få adgang til virksomhedsfunktioner.</translation>
+<translation id="8855977033756560989">Denne Chrome Enterprise-enhed følger med Chrome Enterprise Upgrade. Tilmeld denne enhed med en Google-administratorkonto for at få adgang til virksomhedsfunktioner.</translation>
 <translation id="8856028055086294840">Gendan apps og sider</translation>
 <translation id="885701979325669005">Lagerplads</translation>
 <translation id="885746075120788020">Dine gemte præferencer og din aktivitet anvendes på alle de ChromeOS-enheder, hvor du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
