@@ -743,9 +743,30 @@ void ClipboardHostImpl::OnReadUnsanitizedCustomFormat(
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
-  base::span<const uint8_t> span = base::as_byte_span(result);
-  mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
-  std::move(callback).Run(std::move(buffer));
+  // Custom format data is opaque binary; pass empty `ClipboardPasteData`.
+  // TODO(crbug.com/505366839): Update ClipboardPasteData to include custom
+  // format payload to allow for deep content scanning.
+  ClipboardPasteData clipboard_paste_data;
+  PasteIfPolicyAllowed(
+      ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::WebCustomFormatMap(),
+      std::move(clipboard_paste_data),
+      base::BindOnce(
+          [](std::string result, ReadUnsanitizedCustomFormatCallback callback,
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
+            if (!clipboard_paste_data) {
+              // If policy engine blocks the paste or attempts to substitute a
+              // string warning, block custom format read entirely. Custom
+              // formats are opaque binary objects and cannot be cleanly
+              // replaced with text.
+              std::move(callback).Run(mojo_base::BigBuffer());
+              return;
+            }
+
+            std::move(callback).Run(
+                mojo_base::BigBuffer(base::as_byte_span(result)));
+          },
+          std::move(result), std::move(callback)));
 }
 
 void ClipboardHostImpl::WriteUnsanitizedCustomFormat(
@@ -757,10 +778,46 @@ void ClipboardHostImpl::WriteUnsanitizedCustomFormat(
   if (data.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
     return;
 
-  // The `format` is mapped to user agent defined web custom format before
-  // writing to the clipboard. This happens in
-  // `ScopedClipboardWriter::WriteData`.
-  clipboard_writer_->WriteData(format, std::move(data));
+  // Defer writing to the clipboard until the policy check completes.
+  // Custom format data is opaque binary; pass empty `ClipboardPasteData`.
+  // TODO(crbug.com/505366839): Update ClipboardPasteData to include custom
+  // format payload to allow for deep content scanning.
+
+  size_t data_size = data.size();
+  ++pending_writes_;
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(render_frame_host()),
+      {
+          .size = data_size,
+          .format_type = ui::ClipboardFormatType::WebCustomFormatMap(),
+      },
+      ClipboardPasteData(),
+      base::BindOnce(&ClipboardHostImpl::OnCopyCustomFormatAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr(), format, std::move(data)));
+}
+
+void ClipboardHostImpl::OnCopyCustomFormatAllowedResult(
+    const std::u16string& format,
+    mojo_base::BigBuffer data,
+    const ui::ClipboardFormatType&,
+    const ClipboardPasteData&,
+    std::optional<std::u16string> replacement_data) {
+  DCHECK_GT(pending_writes_, 0);
+  --pending_writes_;
+
+  AddSourceDataToClipboardWriter(*clipboard_writer_, render_frame_host());
+
+  if (replacement_data) {
+    clipboard_writer_->WriteText(std::move(*replacement_data));
+  } else {
+    // The `format` is mapped to user agent defined web custom format before
+    // writing to the clipboard. This happens in
+    // `ScopedClipboardWriter::WriteData`.
+    clipboard_writer_->WriteData(format, std::move(data));
+  }
+  if (pending_commit_write_) {
+    CommitWrite();
+  }
 }
 
 void ClipboardHostImpl::PasteIfPolicyAllowed(
