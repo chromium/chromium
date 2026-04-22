@@ -5,15 +5,13 @@
 import './icons.html.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
 import './favicon_group.js';
 import './reopen_tabs.js';
 import './sources_menu.js';
+import './overflow_menu.js';
 
-import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -22,14 +20,16 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import type {OverflowMenuElement} from './overflow_menu.js';
 import type {SourcesMenuElement} from './sources_menu.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
+import {recordAction} from './utils.js';
 
 export interface TopToolbarElement {
   $: {
     closeButton: HTMLImageElement,
-    menu: CrLazyRenderLitElement<CrActionMenuElement>,
+    overflowMenu: CrLazyRenderLitElement<OverflowMenuElement>,
     newThreadButton: HTMLImageElement,
     sourcesMenu: CrLazyRenderLitElement<SourcesMenuElement>,
     threadHistoryButton: HTMLImageElement,
@@ -67,7 +67,7 @@ export class TopToolbarElement extends CrLitElement {
         reflect: true,
       },
       title: {type: String},
-      hideMenuButton_: {type: Boolean},
+      hideOverflowMenuButton_: {type: Boolean},
       showReopenTabs_: {type: Boolean},
       isExpandButtonEnabled: {type: Boolean},
       isPinButtonEnabled: {type: Boolean},
@@ -87,10 +87,10 @@ export class TopToolbarElement extends CrLitElement {
       loadTimeData.getBoolean('expandButtonEnabled');
   protected accessor isPinButtonEnabled: boolean =
       loadTimeData.getBoolean('enablePinButton');
-  private hideMenuOnAiPageEnabled_: boolean =
+  private hideOverflowMenuOnAiPageEnabled_: boolean =
       loadTimeData.getBoolean('hideMenuOnAiPageEnabled');
-  accessor hideMenuButton_: boolean =
-      this.hideMenuOnAiPageEnabled_ && this.isAiPage;
+  accessor hideOverflowMenuButton_: boolean =
+      this.hideOverflowMenuOnAiPageEnabled_ && this.isAiPage;
   protected accessor isPinned: boolean =
       loadTimeData.getBoolean('isSidePanelPinned');
 
@@ -122,7 +122,8 @@ export class TopToolbarElement extends CrLitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('isAiPage')) {
-      this.hideMenuButton_ = this.isAiPage && this.hideMenuOnAiPageEnabled_;
+      this.hideOverflowMenuButton_ =
+          this.isAiPage && this.hideOverflowMenuOnAiPageEnabled_;
     }
   }
 
@@ -149,10 +150,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onCloseButtonClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.CloseSidePanel');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.CloseSidePanel', true);
+    recordAction('ContextualTasks.WebUI.UserAction.CloseSidePanel');
     this.browserProxy_.handler.closeSidePanel();
   }
 
@@ -161,53 +159,22 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onThreadHistoryClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenThreadHistory');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenThreadHistory', true);
+    recordAction('ContextualTasks.WebUI.UserAction.OpenThreadHistory');
     this.browserProxy_.handler.showThreadHistory();
   }
 
-  protected onMoreClick_(e: Event) {
-    this.$.menu.get().showAt(e.target as HTMLElement, {
-      noOffset: true,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
-    });
+  protected onOverflowMenuButtonClick_(e: Event) {
+    this.$.overflowMenu.get().showAt(e.target as HTMLElement);
   }
 
   protected onSourcesClick_(e: Event) {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenSourcesMenu');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenSourcesMenu', true);
+    recordAction('ContextualTasks.WebUI.UserAction.OpenSourcesMenu');
     this.$.sourcesMenu.get().showAt(e.target as HTMLElement);
   }
 
   protected onOpenInNewTabClick_() {
-    this.$.menu.get().close();
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenInNewTab');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenInNewTab', true);
+    recordAction('ContextualTasks.WebUI.UserAction.OpenInNewTab');
     this.browserProxy_.handler.moveTaskUiToNewTab();
-  }
-
-  protected onMyActivityClick_() {
-    this.$.menu.get().close();
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenMyActivity');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenMyActivity', true);
-    this.browserProxy_.handler.openMyActivityUi();
-  }
-
-  protected onFeedbackClick_() {
-    this.$.menu.get().close();
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenHelp');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenHelp', true);
-    this.browserProxy_.handler.openFeedbackUi();
   }
 
   protected onReopenTabsReopenClick_() {

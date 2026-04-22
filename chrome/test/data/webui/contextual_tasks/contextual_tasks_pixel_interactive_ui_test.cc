@@ -422,8 +422,9 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
-  DeepQuery moreButton = toolbar + "#more";
-  DeepQuery menu = toolbar + "cr-action-menu" + "dialog";
+  DeepQuery moreButton = toolbar + "#overflowMenuButton";
+  DeepQuery menu =
+      toolbar + "contextual-tasks-overflow-menu" + "cr-action-menu" + "dialog";
 
   RunTestSequence(
       SetupWebUIEnvironment(kActiveTab,

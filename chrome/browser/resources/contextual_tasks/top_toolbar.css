@@ -84,31 +84,6 @@
   padding-right: 6px;
 }
 
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  color: var(--toolbar-text-color);
-}
-
-.dropdown-item[disabled] {
-  color: var(--cr-fallback-color-disabled-foreground);
-}
-
-cr-action-menu {
-  --cr-menu-border-radius: 16px;
-  --cr-menu-background-color: var(--toolbar-menu-background-color);
-}
-
-cr-action-menu > button {
-  padding: 4px 16px;
-  min-width: 230px;
-}
-
-button > cr-icon {
-  width: 20px;
-  height: 20px;
-}
-
 cr-icon-button {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-fill-color: var(--toolbar-button-icon-color);
@@ -125,25 +100,3 @@ cr-icon-button {
 cr-icon-button[hidden] {
   display: none;
 }
-
-.dropdown-item cr-icon {
-  margin-inline-end: 10px;
-}
-
-.dropdown-divider {
-  background-color: var(--toolbar-divider-color);
-  height: 1px;
-  width: 100%;
-}
-
-<if expr="_google_chrome">
-.google-g-icon {
-  --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
-  --cr-icon-color: var(--toolbar-text-color);
-
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  margin-inline-end: 10px;
-}
-</if>

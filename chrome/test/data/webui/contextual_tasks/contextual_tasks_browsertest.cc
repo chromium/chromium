@@ -90,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TopToolbarTest) {
   RunTest("contextual_tasks/top_toolbar_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OverflowMenu) {
+  RunTest("contextual_tasks/overflow_menu_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WebView) {
   RunTest("contextual_tasks/contextual_tasks_webview_browsertest.js",
           "mocha.run();");

@@ -26,6 +26,7 @@ build_webui_tests("build") {
     "test_searchbox_page_handler.ts",
     "test_utils.ts",
     "top_toolbar_test.ts",
+    "overflow_menu_test.ts",
     "utils/clip_path_test.ts",
   ]
 

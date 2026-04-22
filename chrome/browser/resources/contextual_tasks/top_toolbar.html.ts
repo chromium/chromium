@@ -56,7 +56,7 @@ export function getHtml(this: TopToolbarElement) {
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>
     ${this.isExpandButtonEnabled ? html`
-      <cr-icon-button id="more"
+      <cr-icon-button id="openInNewTabButton"
         iron-icon="contextual_tasks:open_in_full_tab"
         class="no-overlap" title="$i18n{openInNewTab}"
         aria-label="$i18n{openInNewTab}"
@@ -64,11 +64,11 @@ export function getHtml(this: TopToolbarElement) {
         ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
     ` : html`
-      <cr-icon-button id="more" iron-icon="cr:more-vert"
+      <cr-icon-button id="overflowMenuButton" iron-icon="cr:more-vert"
         class="no-overlap" title="$i18n{moreOptionsTooltip}"
         aria-label="$i18n{moreOptionsTooltip}"
-        @click="${this.onMoreClick_}"
-        ?hidden="${this.hideMenuButton_}">
+        @click="${this.onOverflowMenuButtonClick_}"
+        ?hidden="${this.hideOverflowMenuButton_}">
       </cr-icon-button>
     `}
     <cr-icon-button id="closeButton"
@@ -84,29 +84,10 @@ export function getHtml(this: TopToolbarElement) {
     <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">
     </contextual-tasks-sources-menu>`}">
   </cr-lazy-render-lit>
-  <cr-lazy-render-lit id="menu" .template="${() => html`
-    <cr-action-menu>
-      <button class="dropdown-item"
-          @click="${this.onOpenInNewTabClick_}"
-          ?disabled="${!this.enableOpenInNewTabButton}">
-        <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
-        $i18n{openInNewTab}
-      </button>
-      <div class="dropdown-divider"></div>
-      <button class="dropdown-item" @click="${this.onMyActivityClick_}">
-<if expr="_google_chrome">
-        <div class="cr-icon google-g-icon"></div>
-</if>
-<if expr="not _google_chrome">
-        <cr-icon icon="cr:history"></cr-icon>
-</if>
-        $i18n{myActivity}
-      </button>
-      <button class="dropdown-item" @click="${this.onFeedbackClick_}">
-        <cr-icon icon="contextual_tasks:feedback"></cr-icon>
-        $i18n{feedback}
-      </button>
-    </cr-action-menu>`}">
+  <cr-lazy-render-lit id="overflowMenu" .template="${() => html`
+    <contextual-tasks-overflow-menu
+      .enableOpenInNewTabButton="${this.enableOpenInNewTabButton}">
+    </contextual-tasks-overflow-menu>`}">
   </cr-lazy-render-lit>
   ${this.showReopenTabs_ ? html`
     <reopen-tabs

@@ -1,0 +1,59 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/mwb_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  color: var(--toolbar-text-color);
+}
+
+.dropdown-item[disabled] {
+  color: var(--cr-fallback-color-disabled-foreground);
+}
+
+cr-action-menu {
+  --cr-menu-border-radius: 16px;
+  --cr-menu-background-color: var(--toolbar-menu-background-color);
+}
+
+cr-action-menu > button {
+  padding: 4px 16px;
+  min-width: 230px;
+}
+
+button > cr-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.dropdown-item cr-icon {
+  margin-inline-end: 10px;
+}
+
+.dropdown-divider {
+  background-color: var(--toolbar-divider-color);
+  height: 1px;
+  width: 100%;
+}
+
+<if expr="_google_chrome">
+.google-g-icon {
+  --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
+  --cr-icon-color: var(--toolbar-text-color);
+
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  margin-inline-end: 10px;
+}
+</if>

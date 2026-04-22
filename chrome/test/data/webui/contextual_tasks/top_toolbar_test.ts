@@ -11,6 +11,7 @@ import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -239,14 +240,9 @@ suite('TopToolbarTest', () => {
       topToolbar.enableOpenInNewTabButton = true;
       await microtasksFinished();
 
-      const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-      assertTrue(!!moreButton);
-      moreButton.click();
-      await microtasksFinished();
-
-      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-      const openInNewTabButton = buttons[0];
+      const openInNewTabButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#openInNewTabButton');
       assertTrue(!!openInNewTabButton);
       assertFalse(openInNewTabButton.disabled);
       openInNewTabButton.click();
@@ -258,34 +254,6 @@ suite('TopToolbarTest', () => {
       proxy.handler.reset();
       openInNewTabButton.click();
       assertEquals(0, proxy.handler.getCallCount('moveTaskUiToNewTab'));
-    });
-
-    test('handles my activity click', async () => {
-      const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-      assertTrue(!!moreButton);
-      moreButton.click();
-      await microtasksFinished();
-
-      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-      const myActivityButton = buttons[1];
-      assertTrue(!!myActivityButton);
-      myActivityButton.click();
-      await proxy.handler.whenCalled('openMyActivityUi');
-    });
-
-    test('handles help click', async () => {
-      const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-      assertTrue(!!moreButton);
-      moreButton.click();
-      await microtasksFinished();
-
-      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-      const helpButton = buttons[2];
-      assertTrue(!!helpButton);
-      helpButton.click();
-      await proxy.handler.whenCalled('openFeedbackUi');
     });
 
     test('shows 3 tab icons without number for 3 tabs', async () => {
@@ -431,20 +399,23 @@ suite('TopToolbarTest', () => {
 
     test('handles more menu interactions', async () => {
       const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
       assertTrue(!!moreButton);
       moreButton.click();
       await microtasksFinished();
 
-      assertTrue(topToolbar.$.menu.get().open);
+      const menu = topToolbar.$.overflowMenu.get();
+      assertTrue(menu.shadowRoot.querySelector('cr-action-menu')!.open);
 
-      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
+      const buttons = menu.shadowRoot.querySelectorAll('button');
       assertEquals(3, buttons.length);
     });
 
     test('menu button visibility independent of ai page state', async () => {
       const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
       assertTrue(!!moreButton);
 
       // Initially visible because hideMenuOnAiPageEnabled is false, even
@@ -455,6 +426,64 @@ suite('TopToolbarTest', () => {
       topToolbar.isAiPage = false;
       await microtasksFinished();
       assertFalse(moreButton.hidden);
+    });
+
+    test('handles open in new tab click in menu', async () => {
+      topToolbar.enableOpenInNewTabButton = true;
+      await microtasksFinished();
+
+      const overflowMenuButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!overflowMenuButton);
+      overflowMenuButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      assertTrue(menu.shadowRoot.querySelector('cr-action-menu')!.open);
+
+      const buttons = menu.shadowRoot.querySelectorAll('button');
+      const openInNewTabButton = buttons[0];
+      assertTrue(!!openInNewTabButton);
+      assertFalse(openInNewTabButton.disabled);
+      openInNewTabButton.click();
+      await proxy.handler.whenCalled('moveTaskUiToNewTab');
+
+      topToolbar.enableOpenInNewTabButton = false;
+      await microtasksFinished();
+      assertTrue(openInNewTabButton.disabled);
+    });
+
+    test('handles my activity click', async () => {
+      const overflowMenuButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!overflowMenuButton);
+      overflowMenuButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const buttons = menu.shadowRoot.querySelectorAll('button');
+      const myActivityButton = buttons[1];
+      assertTrue(!!myActivityButton);
+      myActivityButton.click();
+      await proxy.handler.whenCalled('openMyActivityUi');
+    });
+
+    test('handles help click', async () => {
+      const overflowMenuButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!overflowMenuButton);
+      overflowMenuButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const buttons = menu.shadowRoot.querySelectorAll('button');
+      const helpButton = buttons[2];
+      assertTrue(!!helpButton);
+      helpButton.click();
+      await proxy.handler.whenCalled('openFeedbackUi');
     });
   });
 
@@ -472,23 +501,24 @@ suite('TopToolbarTest', () => {
       document.body.appendChild(topToolbar);
     });
 
-    test('hides menu button on ai page, shown for lens', async () => {
-      const moreButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-      assertTrue(!!moreButton);
+    test('hides overflow menu button on ai page, shown for lens', async () => {
+      const overflowMenuButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!overflowMenuButton);
 
       // Hidden initially because `isAiPage` is initialized to true via
       // loadTimeData.
       assertTrue(topToolbar.isAiPage);
-      assertTrue(moreButton.hidden);
+      assertTrue(overflowMenuButton.hidden);
 
       topToolbar.isAiPage = false;
       await microtasksFinished();
-      assertFalse(moreButton.hidden);
+      assertFalse(overflowMenuButton.hidden);
 
       topToolbar.isAiPage = true;
       await microtasksFinished();
-      assertTrue(moreButton.hidden);
+      assertTrue(overflowMenuButton.hidden);
     });
   });
 
