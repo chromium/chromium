@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/clang/clang.gni")
+import("//build/config/sysroot.gni")
+import("//buildtools/third_party/libc++/libcxx_headers.gni")
+import("//buildtools/third_party/libc++/modules.gni")
 
 group("modules") {
   deps = [ "//build/modules/modularize:no_modules" ]
@@ -18,5 +22,67 @@ config("strict_deps") {
       "-Wprivate-header",
       "-fmodules-strict-decluse",
     ]
+  }
+}
+
+if (use_unified_system_module) {
+  system_headers = libcxx_headers + [
+                     "//buildtools/third_party/libc++/__config_site",
+                     "//buildtools/third_party/libc++/__assertion_handler",
+                   ] + expand_directory(sysroot + "/usr/include", true)
+
+  modulemap = "${target_gen_dir}/module.modulemap"
+
+  action("system_modulemap") {
+    clang_dir = "${clang_base_path}/lib/clang/${clang_version}/include"
+
+    inputs = [
+               "//build/include_sysroot_allowlist.txt",
+               "//third_party/libc++/src/include/module.modulemap.in",
+               "${clang_dir}/module.modulemap",
+             ] + system_headers
+    outputs = [ modulemap ]
+    script = "//build/modules/unified/generate_system_modulemap.py"
+
+    args = [
+      "--clang",
+      rebase_path("${clang_base_path}/bin/clang++", root_build_dir),
+      "--sysroot",
+      rebase_path(sysroot, root_build_dir),
+      "--output",
+      rebase_path(modulemap, root_build_dir),
+      "--modulemap",
+      rebase_path("//third_party/libc++/src/include/module.modulemap.in",
+                  root_build_dir),
+      "--modulemap",
+      rebase_path("${clang_dir}/module.modulemap", root_build_dir),
+      "--module-name",
+      "//build/modules:system",
+      "--os",
+      target_os,
+      "--cpu",
+      target_cpu,
+    ]
+  }
+
+  source_set("system") {
+    module_name = "//build/modules:system"
+    sources = [ modulemap ]
+    public = system_headers
+    use_libcxx_modules = false
+
+    # We enable strict deps for this target regardless of whether strict deps is
+    # enabled, because if this target fails the layering check, then that
+    # reveals a bug in generate_system_modulemap.
+    cflags_cc = [
+      "-Wprivate-header",
+      "-fmodules-strict-decluse",
+    ]
+
+    public_configs = [ "//build/config/compiler:libcxx_module" ]
+
+    configs -= [ "//build/config/coverage:default_coverage" ]
+
+    deps = [ ":system_modulemap" ]
   }
 }

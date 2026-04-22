@@ -60,6 +60,6 @@ build_dotfile_settings = {
     "//buildtools/third_party/libc++/libcxx_headers.gni",
 
     # Requires the sysroot as input.
-    "//build/modules/unified/unified.gni",
+    "//build/modules/BUILD.gn",
   ]
 }
