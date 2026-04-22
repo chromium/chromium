@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -398,8 +399,16 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
   }
 
   RecordInvocationSource(source);
-
-  delegate_->CloseExtensionsMenuIfOpen();
+  if (base::FeatureList::IsEnabled(
+          features::kEnableExtensionsMenuTeardownFix)) {
+    // Asynchronously close the menu in case the action didn't trigger a
+    // focus-stealing popup.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ExtensionActionViewModel::CloseMenuTask,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    delegate_->CloseExtensionsMenuIfOpen();
+  }
 
   // This method is only called to execute an action by the user, so we can
   // always grant tab permissions.
@@ -630,6 +639,12 @@ void ExtensionActionViewModel::TriggerPopup(PopupShowAction show_action,
 
   delegate_->TriggerPopup(std::move(host), show_action, by_user,
                           std::move(callback));
+}
+
+void ExtensionActionViewModel::CloseMenuTask() {
+  if (delegate_) {
+    delegate_->CloseExtensionsMenuIfOpen();
+  }
 }
 
 std::unique_ptr<IconWithBadgeImageSource>
