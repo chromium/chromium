@@ -316,7 +316,8 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
 
-  // The agents are added when the profile state is set.
+  EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
+
   scene_controller.profileState =
       CreateMockProfileState(ProfileInitStage::kFinal);
 
@@ -333,7 +334,8 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
 
-  // The agents are added when the profile state is set.
+  EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
+
   scene_controller.profileState =
       CreateMockProfileState(ProfileInitStage::kFinal);
 

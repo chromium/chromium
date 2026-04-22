@@ -15,13 +15,19 @@ source_set("model") {
   deps = [
     "//base",
     "//components/content_settings/core/browser",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_protection",
     "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/prefs/ios",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors:util",
+    "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/safe_browsing/model",
@@ -31,6 +37,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/public/provider/chrome/browser/screenshot_protection:screenshot_protection_api",
     "//ios/web/public",
     "//url",
   ]
@@ -38,7 +45,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "data_protection_tab_helper_unittest.mm" ]
+  sources = [
+    "data_protection_scene_agent_unittest.mm",
+    "data_protection_tab_helper_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
@@ -55,15 +65,24 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 }
