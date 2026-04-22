@@ -222,9 +222,9 @@ class SessionStoreImplTest : public net::TestWithTaskEnvironment {
     store_->RestoreSessionBindingKey(
         SessionKey{site, session->id()},
         base::BindLambdaForTesting(
-            [&run_loop,
-             &session](unexportable_keys::ServiceErrorOr<
-                       unexportable_keys::UnexportableKeyId> key_id_or_error) {
+            [&run_loop, &session](unexportable_keys::ServiceErrorOr<
+                                  unexportable_keys::UnexportableSigningKeyId>
+                                      key_id_or_error) {
               session->set_unexportable_key_id(key_id_or_error);
               run_loop.Quit();
             }));
@@ -291,7 +291,8 @@ TEST_F(SessionStoreImplTest, RequireValidBindingKeyForSave) {
   CreateStoreAndLoadSessions();
   std::unique_ptr<Session> session = CreateSessionHelper(
       unexportable_key_service(), "https://foo.test", "session1");
-  session->set_unexportable_key_id(unexportable_keys::UnexportableKeyId());
+  session->set_unexportable_key_id(
+      unexportable_keys::UnexportableSigningKeyId());
   store().SaveSession(net::SchemefulSite(GURL("https://foo.test")), *session);
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
 }

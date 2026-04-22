@@ -122,8 +122,10 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
     const std::vector<uint8_t>& data,
     BackgroundTaskPriority priority,
     SignCallback callback) {
-  unexportable_key_service_->SignSlowlyAsync(key_id, data, priority,
-                                             std::move(callback));
+  unexportable_key_service_->SignSlowlyAsync(
+      // TODO(crbug.com/501307307): Remove explicit cast once we pass signing
+      // key IDs to `UnexportableKeyServiceProxyImpl::Sign`.
+      UnexportableSigningKeyId(key_id), data, priority, std::move(callback));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::

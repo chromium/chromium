@@ -78,7 +78,7 @@ class NET_EXPORT RegistrationFetcher {
   // will be called with a std::nullopt.
   virtual void StartFetchWithExistingKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::UnexportableKeyId key_id,
+      unexportable_keys::UnexportableSigningKeyId key_id,
       RegistrationCompleteCallback callback) = 0;
 
   // Starts the network request to the DBSC registration endpoint for a
@@ -86,7 +86,7 @@ class NET_EXPORT RegistrationFetcher {
   // completion.
   virtual void StartFetchWithFederatedKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::UnexportableKeyId key_id,
+      unexportable_keys::UnexportableSigningKeyId key_id,
       const GURL& provider_url,
       RegistrationCompleteCallback callback) = 0;
 

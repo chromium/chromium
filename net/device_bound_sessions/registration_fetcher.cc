@@ -72,7 +72,7 @@ void OnDataSigned(
 void SignChallengeWithKey(
     bool is_for_refresh,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    unexportable_keys::UnexportableKeyId key_id,
+    unexportable_keys::UnexportableSigningKeyId key_id,
     const GURL& registration_url,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
@@ -284,7 +284,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void StartFetchWithFederatedKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::UnexportableKeyId key_id,
+      unexportable_keys::UnexportableSigningKeyId key_id,
       const GURL& provider_url,
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
@@ -329,7 +329,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void StartFetchWithExistingKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::UnexportableKeyId key_id,
+      unexportable_keys::UnexportableSigningKeyId key_id,
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
@@ -516,7 +516,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void OnRegistrationTokenCreated(
       std::optional<std::string> challenge,
-      unexportable_keys::UnexportableKeyId key_id,
+      unexportable_keys::UnexportableSigningKeyId key_id,
       std::optional<RegistrationFetcher::RegistrationToken>
           registration_token) {
     if (!registration_token) {
@@ -837,7 +837,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   std::optional<std::string> session_identifier_;
   const raw_ref<SessionService> session_service_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
-  std::optional<unexportable_keys::UnexportableKeyId> key_id_;
+  std::optional<unexportable_keys::UnexportableSigningKeyId> key_id_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
   std::optional<net::NetLogSource> net_log_source_;

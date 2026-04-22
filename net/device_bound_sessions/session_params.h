@@ -69,6 +69,8 @@ struct NET_EXPORT SessionParams final {
   std::string refresh_url;
   Scope scope;
   std::vector<Credential> credentials;
+  // TODO(crbug.com/501307307): Use UnexportableSigningKeyId instead of
+  // UnexportableKeyId.
   unexportable_keys::UnexportableKeyId key_id;
   std::vector<std::string> allowed_refresh_initiators;
 };

@@ -266,7 +266,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
       base::OnceCallback<
-          void(std::optional<unexportable_keys::UnexportableKeyId>)> callback);
+          void(std::optional<unexportable_keys::UnexportableSigningKeyId>)>
+          callback);
 
   // Callback after unwrapping a session key. `on_access_callback` is
   // used to notify the browser that this request led to usage of a
@@ -276,8 +277,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnSessionKeyRestored(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
-      base::OnceCallback<
-          void(std::optional<unexportable_keys::UnexportableKeyId>)> callback,
+      base::OnceCallback<void(
+          std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback,
       Session::KeyIdOrError key_id_or_error);
 
   // Helper function for starting a refresh
@@ -285,7 +286,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RefreshTrigger trigger,
       base::WeakPtr<URLRequest> maybe_request,
       const SessionKey& session_key,
-      std::optional<unexportable_keys::UnexportableKeyId> key_id);
+      std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
 
   // Whether the site has exceeded its refresh quota.
   bool RefreshQuotaExceeded(const SchemefulSite& site);
@@ -315,7 +316,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       SessionKey provider_session_key,
       std::string provider_key_thumbprint,
       base::OnceCallback<void(base::expected<Session*, SessionError>)> callback,
-      std::optional<unexportable_keys::UnexportableKeyId> provider_key);
+      std::optional<unexportable_keys::UnexportableSigningKeyId> provider_key);
 
   void OnAddSessionKeyRestored(
       const SchemefulSite& site,

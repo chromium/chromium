@@ -597,7 +597,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::vector<uint8_t> wrapped_key = key_service()->GetWrappedKey(key).value();
 
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
@@ -1806,7 +1806,7 @@ TEST_F(SessionServiceImplTest, LatestSignedRefreshChallenges) {
   SessionService::SignedRefreshChallenge signed_refresh_challenge = {
       .signed_challenge = "signed_challenge",
       .challenge = "challenge",
-      .key_id = unexportable_keys::UnexportableKeyId()};
+      .key_id = unexportable_keys::UnexportableSigningKeyId()};
   service().SetLatestSignedRefreshChallenge(session_key1,
                                             signed_refresh_challenge);
   const SessionService::SignedRefreshChallenge* retrieved_challenge =
@@ -1986,7 +1986,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));
@@ -2027,7 +2027,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   provider_session->set_unexportable_key_id(key);
 
   // Attempt a registration with a session provider
@@ -2065,7 +2065,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));
@@ -2106,7 +2106,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));
@@ -2202,7 +2202,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));
@@ -2252,7 +2252,7 @@ TEST_F(SessionServiceImplTestWithoutFederatedSessions,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));
@@ -2728,7 +2728,8 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
       store(),
       RestoreSessionBindingKey(
           SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(RunOnceCallback<1>(unexportable_keys::UnexportableKeyId()));
+      .WillOnce(
+          RunOnceCallback<1>(unexportable_keys::UnexportableSigningKeyId()));
 
   base::test::TestFuture<RefreshResult> future;
   service().DeferRequestForRefresh(dbsc_request, *maybe_deferral,
@@ -2777,7 +2778,7 @@ TEST_F(SessionServiceImplWithStoreTest,
       {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       key_future.GetCallback());
-  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   std::string key_thumbprint = CreateJwkThumbprint(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       *key_service()->GetSubjectPublicKeyInfo(key));

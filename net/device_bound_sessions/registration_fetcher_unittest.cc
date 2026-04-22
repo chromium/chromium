@@ -212,10 +212,9 @@ class RegistrationTest : public TestWithTaskEnvironment {
     return *future.Take();
   }
 
-  RegistrationResult FetchWithFederatedKey(
-      RegistrationRequestParam param,
-      unexportable_keys::UnexportableKeyId key,
-      const GURL& provider_url) {
+  RegistrationResult FetchWithFederatedKey(RegistrationRequestParam param,
+                                           UnexportableSigningKeyId key,
+                                           const GURL& provider_url) {
     base::test::TestFuture<RegistrationFetcher*, RegistrationResult> future;
     std::unique_ptr<RegistrationFetcher> fetcher =
         RegistrationFetcher::CreateFetcher(
@@ -2007,15 +2006,13 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge,
       /*authorization=*/std::nullopt);
-  unexportable_keys::UnexportableKeyId key =
-      unexportable_keys::UnexportableKeyId();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), std::ref(mock_key_service),
           context_.get(), std::ref(isolation_info),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt);
-  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+  fetcher->StartFetchWithExistingKey(request_param, UnexportableSigningKeyId(),
                                      callback.callback());
   callback.WaitForCall();
 
@@ -2040,7 +2037,6 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   // Create a matching cached challenge.
   SessionService::SignedRefreshChallenge cached_challenge;
   cached_challenge.challenge = kChallenge;
-  cached_challenge.key_id = unexportable_keys::UnexportableKeyId();
   cached_challenge.signed_challenge = "mock_signed_challenge";
 
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
@@ -2056,14 +2052,13 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge,
       /*authorization=*/std::nullopt);
-  unexportable_keys::UnexportableKeyId key = cached_challenge.key_id;
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), std::ref(mock_key_service),
           context_.get(), std::ref(isolation_info),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt);
-  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+  fetcher->StartFetchWithExistingKey(request_param, cached_challenge.key_id,
                                      callback.callback());
   callback.WaitForCall();
 
@@ -2095,7 +2090,6 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   // different).
   SessionService::SignedRefreshChallenge cached_challenge;
   cached_challenge.challenge = "different_challenge";
-  cached_challenge.key_id = unexportable_keys::UnexportableKeyId();
   cached_challenge.signed_challenge = "mock_signed_challenge";
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(&cached_challenge));
@@ -2112,15 +2106,13 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge,
       /*authorization=*/std::nullopt);
-  unexportable_keys::UnexportableKeyId key =
-      unexportable_keys::UnexportableKeyId();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), std::ref(mock_key_service),
           context_.get(), std::ref(isolation_info),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt);
-  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+  fetcher->StartFetchWithExistingKey(request_param, UnexportableSigningKeyId(),
                                      callback.callback());
   callback.WaitForCall();
 

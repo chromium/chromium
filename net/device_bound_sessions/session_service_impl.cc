@@ -351,7 +351,7 @@ void SessionServiceImpl::CheckFederatedProviderKey(
     SessionKey provider_session_key,
     std::string provider_key_thumbprint,
     base::OnceCallback<void(base::expected<Session*, SessionError>)> callback,
-    std::optional<unexportable_keys::UnexportableKeyId> provider_key) {
+    std::optional<unexportable_keys::UnexportableSigningKeyId> provider_key) {
   if (!provider_key) {
     // Failed to restore provider key.
     std::move(callback).Run(base::unexpected(SessionError(
@@ -1212,8 +1212,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 void SessionServiceImpl::RestoreSessionKey(
     const SessionKey& session_key,
     OnAccessCallback on_access_callback,
-    base::OnceCallback<
-        void(std::optional<unexportable_keys::UnexportableKeyId>)> callback) {
+    base::OnceCallback<void(
+        std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback) {
   if (session_store_) {
     session_store_->RestoreSessionBindingKey(
         session_key, base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
@@ -1229,8 +1229,8 @@ void SessionServiceImpl::RestoreSessionKey(
 void SessionServiceImpl::OnSessionKeyRestored(
     const SessionKey& session_key,
     OnAccessCallback on_access_callback,
-    base::OnceCallback<
-        void(std::optional<unexportable_keys::UnexportableKeyId>)> callback,
+    base::OnceCallback<void(
+        std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback,
     Session::KeyIdOrError key_id_or_error) {
   if (!key_id_or_error.has_value()) {
     UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
@@ -1254,7 +1254,7 @@ void SessionServiceImpl::RefreshSessionInternal(
     RefreshTrigger trigger,
     base::WeakPtr<URLRequest> maybe_request,
     const SessionKey& session_key,
-    std::optional<unexportable_keys::UnexportableKeyId> key_id) {
+    std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
   if (!maybe_request || !key_id) {
     return;
   }

@@ -72,7 +72,7 @@ class NET_EXPORT SessionService {
     // The challenge used to generate `signed_challenge`.
     std::string challenge;
     // The key_id used to generate `signed_challenge`.
-    unexportable_keys::UnexportableKeyId key_id;
+    unexportable_keys::UnexportableSigningKeyId key_id;
   };
 
   // Returns nullptr if unexportable key provider is not supported by the

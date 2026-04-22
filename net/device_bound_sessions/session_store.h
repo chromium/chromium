@@ -51,8 +51,9 @@ class NET_EXPORT SessionStore {
 
   // Asynchronously retrieves the unwrapped session binding key
   // from its persistent form saved in the store.
-  using RestoreSessionBindingKeyCallback = base::OnceCallback<void(
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>)>;
+  using RestoreSessionBindingKeyCallback =
+      base::OnceCallback<void(unexportable_keys::ServiceErrorOr<
+                              unexportable_keys::UnexportableSigningKeyId>)>;
   virtual void RestoreSessionBindingKey(
       const SessionKey& session_key,
       RestoreSessionBindingKeyCallback callback) = 0;

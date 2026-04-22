@@ -36,8 +36,8 @@ class Session;
 class NET_EXPORT Session {
  public:
   using Id = SessionKey::Id;
-  using KeyIdOrError =
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>;
+  using KeyIdOrError = unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>;
 
   Session(const Session& other) = delete;
   Session& operator=(const Session& other) = delete;
