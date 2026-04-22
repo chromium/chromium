@@ -2114,6 +2114,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "data-controls-drag-enforcement",
+    "owners": [ "rslan@google.com", "cep-se@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "data-sharing",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 160

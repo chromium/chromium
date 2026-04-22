@@ -10188,6 +10188,11 @@ const FeatureEntry kFeatureEntries[] = {
          sensitive_content::features::kSensitiveContentWhileSwitchingTabs)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"data-controls-drag-enforcement",
+     flag_descriptions::kDataControlsDragEnforcementName,
+     flag_descriptions::kDataControlsDragEnforcementDescription, kOsAll,
+     FEATURE_VALUE_TYPE(data_controls::kDataControlsDragEnforcement)},
+
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(data_sharing::features::kDataSharingFeature,

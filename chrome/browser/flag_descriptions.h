@@ -431,6 +431,11 @@ inline constexpr char kCustomizeTabGroupColorPaletteDescription[] =
     "manifest.json file, which allows customization of the tab group color "
     "palette. Disabling this flag will cause the key to be ignored.";
 
+inline constexpr char kDataControlsDragEnforcementName[] =
+    "Data Controls drag-and-drop enforcement";
+inline constexpr char kDataControlsDragEnforcementDescription[] =
+    "Enables Data Controls drag-and-drop enforcement.";
+
 inline constexpr char kDataSharingName[] = "Data Sharing";
 inline constexpr char kDataSharingDescription[] =
     "Enabled all Data Sharing related UI and features.";
