@@ -157,8 +157,8 @@ void PermissionContextBase::RequestPermission(
   content::PermissionResult result = GetPermissionStatus(*request_data, rfh);
 
   bool status_ignorable = PermissionUtil::CanPermissionRequestIgnoreStatus(
-      request_data, result.source);
-
+      request_data, result.source, result.status,
+      content::WebContents::FromRenderFrameHost(rfh));
   if (!status_ignorable && (result.status == PermissionStatus::GRANTED ||
                             result.status == PermissionStatus::DENIED)) {
     static constexpr char kResetInstructions[] =

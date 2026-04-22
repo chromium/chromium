@@ -388,7 +388,19 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
   return request->request_type() == RequestType::kNotifications ||
          request->request_type() == RequestType::kGeolocation;
 }
-
+bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
+    PermissionPrompt::Delegate* delegate,
+    content::WebContents* web_contents) {
+  if (permissions::PermissionsClient::
+          AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
+      permissions::PermissionsClient::Get()
+          ->IsPrivilegedInternalWebUIOrNewTabPage(
+              web_contents, delegate->GetRequestingOrigin(),
+              /*already_overrode_requester=*/true)) {
+    return true;
+  }
+  return ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate);
+}
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
     PermissionPrompt::Delegate* delegate) {
   if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement) &&
@@ -693,7 +705,22 @@ bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
 
 bool PermissionUtil::CanPermissionRequestIgnoreStatus(
     const std::unique_ptr<PermissionRequestData>& request,
-    content::PermissionStatusSource source) {
+    content::PermissionStatusSource source,
+    blink::mojom::PermissionStatus status,
+    content::WebContents* web_contents) {
+  // Support requests from side panels/omnibox popup/NTP to be shown still, even
+  // if the permission status is denied. These requests will use the embedded
+  // permission prompt.
+  if (permissions::PermissionsClient::
+          AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
+      permissions::PermissionsClient::Get()
+          ->IsPrivilegedInternalWebUIOrNewTabPage(
+              web_contents, request->requesting_origin,
+              /*already_overrode_requester=*/true) &&
+      status != blink::mojom::PermissionStatus::GRANTED) {
+    return true;
+  }
+
   if (!request->IsEmbeddedPermissionElementInitiated()) {
     return false;
   }

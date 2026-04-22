@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "components/permissions/permissions_client.h"
 #include "components/webrtc/media_stream_devices_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -20,11 +21,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/android/window_android.h"
 #endif
+
+class HostContentSettingsMap;
+namespace content_settings {
+class CookieSettings;
+}
 
 using testing::_;
 
@@ -99,6 +106,55 @@ class FakeEnumerator : public webrtc::MediaStreamDeviceEnumeratorImpl {
   const blink::MediaStreamDevices video_capture_devices_;
 };
 
+class TestPermissionsClient : public permissions::PermissionsClient {
+ public:
+  TestPermissionsClient() = default;
+  ~TestPermissionsClient() override = default;
+
+  HostContentSettingsMap* GetSettingsMap(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+
+  bool IsSubresourceFilterActivated(content::BrowserContext* browser_context,
+                                    const GURL& url) override {
+    return false;
+  }
+
+  scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+
+  permissions::OriginKeyedPermissionActionService*
+  GetOriginKeyedPermissionActionService(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+
+  permissions::PermissionActionsHistory* GetPermissionActionsHistory(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+
+  permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+
+  permissions::ObjectPermissionContextBase* GetChooserContext(
+      content::BrowserContext* browser_context,
+      ContentSettingsType type) override {
+    return nullptr;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  const std::u16string GetClientApplicationName() const override {
+    return u"TestApp";
+  }
+#endif
+};
+
 class MockPermissionController : public content::MockPermissionController {
  public:
   MOCK_METHOD(
@@ -123,7 +179,13 @@ std::vector<std::string> GetIds(const blink::MediaStreamDevices& devices,
 }  // namespace
 
 class MediaStreamDevicesControllerTest : public testing::Test {
-  void SetUp() override { InitializeWebContents(); }
+ public:
+  void SetUp() override {
+    InitializeWebContents();
+    permissions_client_ = std::make_unique<TestPermissionsClient>();
+  }
+
+  void TearDown() override { permissions_client_.reset(); }
 
   void InitializeWebContents() {
     browser_context_.SetPermissionControllerForTesting(
@@ -145,6 +207,7 @@ class MediaStreamDevicesControllerTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<TestPermissionsClient> permissions_client_;
   std::tuple<blink::mojom::MediaStreamRequestResult,
              blink::mojom::StreamDevicesPtr>
   MakeRequest(blink::MediaStreamRequestType request_type,

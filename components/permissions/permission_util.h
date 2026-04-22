@@ -105,6 +105,15 @@ class PermissionUtil {
   static bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
       PermissionPrompt::Delegate* delegate);
 
+  // Performs the same checks as
+  // `ShouldCurrentRequestUsePermissionElementSecondaryUI(
+  // PermissionPrompt::Delegate* delegate)`, but also returns true early if it
+  // is a trusted internal surface like omnibox popup, new tab page, contextual
+  // tasks, AND the searchbox embedded permission prompt flag is be enabled.
+  static bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
+      PermissionPrompt::Delegate* delegate,
+      content::WebContents* web_contents);
+
   // Checks whether the given ContentSettingsType is a guard content setting,
   // meaning it does not support allow setting and toggles between "ask" and
   // "block" instead. This is primarily used for chooser-based permissions.
@@ -194,7 +203,9 @@ class PermissionUtil {
 
   static bool CanPermissionRequestIgnoreStatus(
       const std::unique_ptr<PermissionRequestData>& request,
-      content::PermissionStatusSource source);
+      content::PermissionStatusSource source,
+      blink::mojom::PermissionStatus status,
+      content::WebContents* web_contents);
 
   // Returns `true` if the current platform support permission chips.
   static bool DoesPlatformSupportChip();

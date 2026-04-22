@@ -66,6 +66,11 @@ class PermissionsClient {
   // Return the permissions client.
   static PermissionsClient* Get();
 
+  // It returns whether the embedded permission prompt is enabled
+  // allowlisted surfaces, such as new tab page, contextual tasks, and omnibox
+  // popup.
+  static bool AllowEmbeddedPermissionPromptForAllowlistedSurfaces();
+
   // Retrieves the HostContentSettingsMap for this context. The returned pointer
   // has the same lifetime as |browser_context|.
   virtual HostContentSettingsMap* GetSettingsMap(
@@ -211,23 +216,56 @@ class PermissionsClient {
   // Allows the embedder to bypass checking the embedding origin when performing
   // permission availability checks. This is used for example when a permission
   // should only be available on secure origins. Return true to bypass embedding
-  // origin checks for the passed in origins.
+  // origin checks for the passed in origins. Less strict ID checks than
+  // `GetCanonicalOriginOverride`.
   virtual bool CanBypassEmbeddingOriginCheck(const GURL& requesting_origin,
                                              const GURL& embedding_origin);
 
   // Allows embedder to override the canonical origin for a permission request.
   // This is the origin that will be used for requesting/storing/displaying
-  // permissions.
+  // permissions. Stricter ID checks than `GetEmbeddingOriginOverride` and
+  // `CanBypassEmbeddingOriginCheck` since `embedding_origin` outside of
+  // `WebContents` is expected to follow the new tab -> new tab page hierarchy.
   virtual std::optional<GURL> GetCanonicalOriginOverride(
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
   // Returns the WebContents' GetLastCommittedURL() to use as the embedding
   // origin when special handling is needed, or std::nullopt to use the default
-  // main frame origin.
+  // main frame origin. Less strict ID checks than `GetCanonicalOriginOverride`
+  // since `WebContents` does not follow the new tab -> new tab page hierarchy.
   virtual std::optional<GURL> GetEmbeddingOriginOverride(
       const GURL& requesting_origin,
       content::WebContents* web_contents);
+
+  // Only verifies that WebUI is internal (chrome://) and trusted enough to skip
+  // tab interface usage and use embedded permission prompt. Its identity is
+  // determined by `embedded_origin` instead of also `requester_origin`.
+  virtual bool IsPrivilegedInternalWebUIForUIRouting(
+      content::WebContents* web_contents);
+
+  // Returns if the permission request is from a WebUI or New Tab Page based on
+  // the `embedded_origin` and `requester_origin`. This check is less strict
+  // than the canonical origin check (which has different inputs) since
+  // `WebContents` does not follow the new tab -> new tab page hierarchy.
+  // Therefore, any comnbniation of trusted new tab requester and embedders
+  // counts as being "from" a new tab page according to this function.
+  virtual bool IsFromNewTabPage(content::WebContents* web_contents,
+                                const GURL& requester,
+                                bool already_overrode_requester);
+
+  // Returns if the permission request is from a WebUI (allowlisted for embedded
+  // permission prompts) based on the `embedded_origin` and `requester_origin`.
+  virtual bool IsPrivilegedInternalWebUI(content::WebContents* web_contents,
+                                         const GURL& requester,
+                                         bool already_overrode_requester);
+
+  // Returns if the permission request is from a WebUI (allowlisted for embedded
+  // permission prompts) or the new tab page based on the `embedded_origin`
+  // and `requester_origin`. Calls `IsAllowListedWebUI` and `IsNewTabPage`.
+  bool IsPrivilegedInternalWebUIOrNewTabPage(content::WebContents* web_contents,
+                                             const GURL& requester,
+                                             bool already_overrode_requester);
 
   // Determines the reason why a prompt was ignored.
   virtual permissions::PermissionIgnoredReason DetermineIgnoreReason(

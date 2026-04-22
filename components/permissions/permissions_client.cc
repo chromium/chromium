@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
@@ -34,6 +35,12 @@ PermissionsClient::~PermissionsClient() {
 PermissionsClient* PermissionsClient::Get() {
   DCHECK(g_client);
   return g_client;
+}
+
+// static
+bool PermissionsClient::AllowEmbeddedPermissionPromptForAllowlistedSurfaces() {
+  return base::FeatureList::IsEnabled(
+      omnibox_feature_configs::kEmbeddedPermissionEnabled);
 }
 
 double PermissionsClient::GetSiteEngagementScore(
@@ -148,6 +155,33 @@ std::optional<GURL> PermissionsClient::GetEmbeddingOriginOverride(
     const GURL& requesting_origin,
     content::WebContents* web_contents) {
   return std::nullopt;
+}
+
+bool PermissionsClient::IsPrivilegedInternalWebUIForUIRouting(
+    content::WebContents* web_contents) {
+  return false;
+}
+
+bool PermissionsClient::IsFromNewTabPage(content::WebContents* web_contents,
+                                         const GURL& requester,
+                                         bool already_overrode_requester) {
+  return false;
+}
+
+bool PermissionsClient::IsPrivilegedInternalWebUI(
+    content::WebContents* web_contents,
+    const GURL& requester,
+    bool already_overrode_requester) {
+  return false;
+}
+
+bool PermissionsClient::IsPrivilegedInternalWebUIOrNewTabPage(
+    content::WebContents* web_contents,
+    const GURL& requester,
+    bool already_overrode_requester) {
+  return IsPrivilegedInternalWebUI(web_contents, requester,
+                                   already_overrode_requester) ||
+         IsFromNewTabPage(web_contents, requester, already_overrode_requester);
 }
 
 permissions::PermissionIgnoredReason PermissionsClient::DetermineIgnoreReason(

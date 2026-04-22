@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_id.h"
 
@@ -115,9 +116,22 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           web_contents()->IgnoreInputEvents(std::nullopt);
       // Creating the widget will display it. That's why we create it only if
       // the tab can show modal UI.
-      tabs::TabInterface* tab =
-          tabs::TabInterface::GetFromContents(web_contents());
-      scoped_tab_modal_ui_ = tab->ShowModalUI();
+
+      // Permission prompts from side panels/omnibox popup do not have a
+      // `TabInterface`, but there is never a concern with showing a modal on
+      // them because if they can request permission, they are open and
+      // available to have a modal to show on top of them unlike tabs, which can
+      // be switched between. This function is only called after embedded
+      // permission prompt has been chosen as the prompt type. Embedded
+      // permission prompt path is not run for WebUIs like omnibox popup/side
+      // panels if the omnibox embedded permission flag is not enabled, so, in
+      // those cases, accessing a null `TabInterface` is avoided.
+      if (!permissions::PermissionsClient::Get()
+               ->IsPrivilegedInternalWebUIForUIRouting(web_contents())) {
+        tabs::TabInterface* tab =
+            tabs::TabInterface::GetFromContents(web_contents());
+        scoped_tab_modal_ui_ = tab->ShowModalUI();
+      }
 
       content_scrim_widget_ =
           EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(

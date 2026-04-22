@@ -114,6 +114,7 @@ source_set("unit_tests") {
 
     deps += [
       ":webrtc",
+      "//components/permissions",
       "//content/test:test_support",
     ]
 

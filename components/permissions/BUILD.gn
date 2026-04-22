@@ -142,6 +142,7 @@ source_set("permissions") {
     "//components/favicon/core",
     "//components/guest_view/buildflags",
     "//components/keyed_service/content",
+    "//components/omnibox/common",
     "//components/passage_embeddings/core",
     "//components/pref_registry",
     "//components/prefs",
