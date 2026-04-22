@@ -132,6 +132,10 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
   for (const auto& point : points_to_be_drawn_) {
     UMA_HISTOGRAM_TIMES("Renderer.DelegatedInkTrail.OS.TimeToDrawPointsMillis",
                         now - point.timestamp());
+    TRACE_EVENT("delegated_ink_trails",
+                "DelegatedInkPointRendererGpu::ReportPointsDrawn",
+                perfetto::Flow::Global(point.trace_id()), "delegated point",
+                point.ToString());
     most_recent_timestamp = std::max(point.timestamp(), most_recent_timestamp);
 
     // Update the point's `paint_timestamp` if this is the first time it is

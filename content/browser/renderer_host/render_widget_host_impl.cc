@@ -168,6 +168,11 @@
 #include "ui/base/cocoa/cursor_accessibility_scale_factor.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#endif
+
 using blink::DragOperationsMask;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -2627,10 +2632,31 @@ void RenderWidgetHostImpl::ForwardDelegatedInkPoint(
     return;
   }
 
-  TRACE_EVENT("delegated_ink_trails",
-              "Forwarding delegated ink point from browser.",
-              perfetto::Flow::Global(delegated_ink_point.trace_id()),
-              "delegated point", delegated_ink_point.ToString());
+  TRACE_EVENT(
+      "delegated_ink_trails",
+      "RenderWidgetHostImpl::ForwardDelegatedInkPoint - forwarding "
+      "delegated ink point from browser.",
+      perfetto::Flow::Global(delegated_ink_point.trace_id()),
+      [&](perfetto::EventContext ctx) {
+        ctx.AddDebugAnnotation("delegated point",
+                               delegated_ink_point.ToString());
+#if BUILDFLAG(IS_WIN)
+        aura::Window* root_window = view_->GetNativeView()->GetRootWindow();
+        if (root_window) {
+          const HWND hwnd = root_window->GetHost()->GetAcceleratedWidget();
+          POINT client_pt = {
+              static_cast<LONG>(delegated_ink_point.point().x()),
+              static_cast<LONG>(delegated_ink_point.point().y())};
+          ::ClientToScreen(hwnd, &client_pt);
+          const gfx::PointF screen_point =
+              gfx::PointF(client_pt.x, client_pt.y);
+          ctx.AddDebugAnnotation("screen point", screen_point.ToString());
+        } else {
+          ctx.AddDebugAnnotation(
+              "screen point", "Can't convert to screen point - no root window");
+        }
+#endif
+      });
 
   // Calling this will result in IPC calls to get |delegated_ink_point| to
   // viz. The decision to do this here was made with the understanding that
