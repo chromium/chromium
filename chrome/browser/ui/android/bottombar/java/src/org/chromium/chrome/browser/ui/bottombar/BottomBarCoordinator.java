@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -26,14 +28,21 @@ public class BottomBarCoordinator implements BottomBar {
     /**
      * @param parent The parent view to inflate the bottom bar into.
      * @param themeColorProvider The provider to observe theme changes from.
+     * @param tabSupplier Supplier of the current tab.
+     * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
      */
-    public BottomBarCoordinator(ViewGroup parent, ThemeColorProvider themeColorProvider) {
+    public BottomBarCoordinator(
+            ViewGroup parent,
+            ThemeColorProvider themeColorProvider,
+            NullableObservableSupplier<Tab> tabSupplier,
+            BottomBarMediator.VisibilityDelegate visibilityDelegate) {
         mView =
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bottom_bar_layout, parent, false);
 
         mModel = new PropertyModel.Builder(BottomBarProperties.ALL_KEYS).build();
-        mMediator = new BottomBarMediator(mModel, themeColorProvider);
+        mMediator =
+                new BottomBarMediator(mModel, themeColorProvider, tabSupplier, visibilityDelegate);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
     }

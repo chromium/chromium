@@ -14,7 +14,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class BottomBarViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
+        if (BottomBarProperties.IS_VISIBLE == propertyKey) {
+            // TODO(crbug.com/469429568): Remove if not used after implementation is done.
+            view.setVisibility(
+                    model.get(BottomBarProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
             // TODO(crbug.com/504612877): Apply color scheme to buttons.
         }
     }

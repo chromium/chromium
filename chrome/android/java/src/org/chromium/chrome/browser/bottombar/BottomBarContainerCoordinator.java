@@ -14,17 +14,14 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /**
  * Container for the bottom bar.
@@ -32,17 +29,15 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
  * <p>Note that the {@link BackPressHandler} implementation is left as default on purpose.
  */
 @NullMarked
-public class BottomBarContainerCoordinator implements BottomControlsContentDelegate {
+public class BottomBarContainerCoordinator
+        implements BottomControlsContentDelegate, BottomBarMediator.VisibilityDelegate {
     private final FrameLayout mBottomBarContainer;
     private final Callback<Boolean> mRequestLayerUpdateCallback;
-    private final NullableObservableSupplier<Tab> mTabSupplier;
-    private final Callback<@Nullable Tab> mTabSupplierObserver;
-    private final TabObserver mTabObserver;
     private final BottomBarCoordinator mBottomBarCoordinator;
 
-    private @Nullable Tab mCurrentTab;
     private @Nullable BottomControlsVisibilityController mVisibilityController;
     private @Nullable Callback<Object> mOnModelTokenChange;
+    private boolean mIsVisible = true;
 
     /**
      * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
@@ -57,32 +52,9 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
             ThemeColorProvider themeColorProvider) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
-        mTabSupplier = tabSupplier;
 
-        mTabObserver =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onUrlUpdated(Tab tab) {
-                        updateBottomBarVisibility();
-                    }
-                };
-
-        mTabSupplierObserver =
-                (tab) -> {
-                    if (mCurrentTab != null) {
-                        mCurrentTab.removeObserver(mTabObserver);
-                    }
-                    mCurrentTab = tab;
-                    if (mCurrentTab != null) {
-                        mCurrentTab.addObserver(mTabObserver);
-                    }
-                    updateBottomBarVisibility();
-                };
-        mTabSupplier.addSyncObserverAndCallIfNonNull(mTabSupplierObserver);
-
-        mBottomBarCoordinator = new BottomBarCoordinator(bottomBarContainer, themeColorProvider);
-
-        updateBottomBarVisibility();
+        mBottomBarCoordinator =
+                new BottomBarCoordinator(bottomBarContainer, themeColorProvider, tabSupplier, this);
     }
 
     @Override
@@ -91,8 +63,7 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
             Callback<Object> onModelTokenChange) {
         mVisibilityController = visibilityController;
         mOnModelTokenChange = onModelTokenChange;
-
-        mVisibilityController.setBottomControlsVisible(true);
+        updateVisibility();
         // TODO(crbug.com/493594829): The token change should be based on the property model of the
         // bottom bar.
         mOnModelTokenChange.onResult(new Object());
@@ -100,25 +71,13 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
 
     @Override
     public void destroy() {
-        if (mCurrentTab != null) {
-            mCurrentTab.removeObserver(mTabObserver);
-            mCurrentTab = null;
-        }
-        if (mTabSupplier != null) {
-            mTabSupplier.removeObserver(mTabSupplierObserver);
-        }
         mBottomBarCoordinator.destroy();
     }
 
-    private void updateBottomBarVisibility() {
-        if (mVisibilityController == null) return;
-        boolean currentTabIsRegularNtp =
-                mCurrentTab != null
-                        && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
-                        && !mCurrentTab.isIncognito();
-        boolean visible = !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp);
-        mVisibilityController.setBottomControlsVisible(visible);
-        mBottomBarContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+    @Override
+    public void onVisibilityChanged(boolean isVisible) {
+        mIsVisible = isVisible;
+        updateVisibility();
     }
 
     @Override
@@ -147,5 +106,12 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
         }
 
         mRequestLayerUpdateCallback.onResult(true);
+    }
+
+    public void updateVisibility() {
+        mBottomBarContainer.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
+        if (mVisibilityController != null) {
+            mVisibilityController.setBottomControlsVisible(mIsVisible);
+        }
     }
 }
