@@ -4,8 +4,7 @@
 
 #include "chrome/browser/glic/glic_selection_observer.h"
 
-#include <set>
-
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -88,16 +87,18 @@ GlicSelectionObserver::~GlicSelectionObserver() {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
 
-  std::set<content::RenderWidgetHost*> unique_rwhs;
-  for (const auto& [frame_id, rwh] : rwh_by_frame_) {
-    if (rwh) {
-      unique_rwhs.insert(rwh);
+  base::flat_set<content::RenderWidgetHost*> unique_rwhs;
+  for (const auto& frame_token : observed_frames_) {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromFrameToken(frame_token);
+    if (rfh && rfh->GetRenderWidgetHost()) {
+      unique_rwhs.insert(rfh->GetRenderWidgetHost());
     }
   }
   for (auto* rwh : unique_rwhs) {
     rwh->RemoveInputEventObserver(this);
   }
-  rwh_by_frame_.clear();
+  observed_frames_.clear();
 }
 
 void GlicSelectionObserver::RenderFrameCreated(
@@ -107,13 +108,16 @@ void GlicSelectionObserver::RenderFrameCreated(
   }
   if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
     bool already_observing = false;
-    for (const auto& pair : rwh_by_frame_) {
-      if (pair.second == rwh) {
+    for (const auto& frame_token : observed_frames_) {
+      content::RenderFrameHost* rfh =
+          content::RenderFrameHost::FromFrameToken(frame_token);
+      if (rfh && rfh->GetRenderWidgetHost() == rwh) {
         already_observing = true;
         break;
       }
     }
-    if (rwh_by_frame_.insert({render_frame_host->GetGlobalId(), rwh}).second) {
+    if (observed_frames_.insert(render_frame_host->GetGlobalFrameToken())
+            .second) {
       if (!already_observing) {
         rwh->AddInputEventObserver(this);
       }
@@ -123,24 +127,26 @@ void GlicSelectionObserver::RenderFrameCreated(
 
 void GlicSelectionObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  auto it = rwh_by_frame_.find(render_frame_host->GetGlobalId());
-  if (it != rwh_by_frame_.end()) {
-    content::RenderWidgetHost* rwh = it->second;
-    rwh_by_frame_.erase(it);
+  if (!observed_frames_.contains(render_frame_host->GetGlobalFrameToken())) {
+    return;
+  }
 
-    bool still_observing = false;
-    for (const auto& pair : rwh_by_frame_) {
-      if (pair.second == rwh) {
-        still_observing = true;
-        break;
-      }
-    }
-    if (!still_observing && rwh) {
-      rwh->RemoveInputEventObserver(this);
+  content::RenderWidgetHost* rwh = render_frame_host->GetRenderWidgetHost();
+  observed_frames_.erase(render_frame_host->GetGlobalFrameToken());
+
+  bool still_observing = false;
+  for (const auto& frame_token : observed_frames_) {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromFrameToken(frame_token);
+    if (rfh && rfh->GetRenderWidgetHost() == rwh) {
+      still_observing = true;
+      break;
     }
   }
+  if (!still_observing && rwh) {
+    rwh->RemoveInputEventObserver(this);
+  }
 }
-
 void GlicSelectionObserver::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN && selection_widget_) {
@@ -269,7 +275,7 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     pending_selection_text_ = std::u16string(selected_text);
   }
   if (render_frame_host) {
-    last_selection_frame_id_ = render_frame_host->GetGlobalId();
+    last_selection_frame_token_ = render_frame_host->GetGlobalFrameToken();
   }
 
   // Always debounce selection changes. If the user is actively dragging,
@@ -502,7 +508,10 @@ void GlicSelectionObserver::ShowSelectionAffordance(
       // Show selection widget
       // Find the RenderFrameHost that has the selection.
       content::RenderFrameHost* selected_frame =
-          content::RenderFrameHost::FromID(last_selection_frame_id_);
+          last_selection_frame_token_.has_value()
+              ? content::RenderFrameHost::FromFrameToken(
+                    *last_selection_frame_token_)
+              : nullptr;
       std::optional<gfx::Rect> bounds =
           web_contents()->GetTextSelectionBounds(selected_frame);
       if (bounds.has_value() && !bounds->IsEmpty()) {

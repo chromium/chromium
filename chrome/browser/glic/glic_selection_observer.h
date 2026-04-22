@@ -10,10 +10,12 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -88,11 +90,10 @@ class GlicSelectionObserver
   // The text of the last selection that was ignored due to rate limiting.
   std::optional<std::u16string> pending_selection_text_;
 
-  content::GlobalRenderFrameHostId last_selection_frame_id_;
+  std::optional<content::GlobalRenderFrameHostToken>
+      last_selection_frame_token_;
 
-  base::flat_map<content::GlobalRenderFrameHostId,
-                 raw_ptr<content::RenderWidgetHost>>
-      rwh_by_frame_;
+  base::flat_set<content::GlobalRenderFrameHostToken> observed_frames_;
 
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
