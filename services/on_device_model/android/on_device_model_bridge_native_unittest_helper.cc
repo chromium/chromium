@@ -121,6 +121,14 @@ void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnAvailable(
 }
 
 void OnDeviceModelBridgeNativeUnitTestHelper::
+    TriggerDownloaderOnDownloadProgress(int64_t downloaded_bytes,
+                                        int64_t total_bytes) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerDownloaderOnDownloadProgress(
+      env, java_helper_, downloaded_bytes, total_bytes);
+}
+
+void OnDeviceModelBridgeNativeUnitTestHelper::
     TriggerDownloaderOnStatusCheckResult(
         ModelDownloaderAndroid::ModelStatus model_status) {
   JNIEnv* env = base::android::AttachCurrentThread();

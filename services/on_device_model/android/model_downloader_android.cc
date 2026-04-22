@@ -74,11 +74,13 @@ void ModelDownloaderAndroid::CheckStatus(
 }
 
 void ModelDownloaderAndroid::StartDownload(
-    OnDownloadCompleteCallback on_download_complete_callback) {
+    OnDownloadCompleteCallback on_download_complete_callback,
+    OnDownloadProgressCallback on_download_progress_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!on_download_complete_callback_)
       << "StartDownload() can only be called once.";
   on_download_complete_callback_ = std::move(on_download_complete_callback);
+  on_download_progress_callback_ = std::move(on_download_progress_callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AiCoreModelDownloaderWrapper_startDownload(
       env, java_downloader_, reinterpret_cast<intptr_t>(this));
@@ -132,6 +134,23 @@ void ModelDownloaderAndroid::OnStatusCheckResultOnSequence(
   std::move(on_status_check_callback_).Run(model_status);
 }
 
+void ModelDownloaderAndroid::OnDownloadProgress(int64_t downloaded_bytes,
+                                                int64_t total_bytes) {
+  sequence_checker_helper_.PostTask(
+      FROM_HERE,
+      base::BindOnce(&ModelDownloaderAndroid::OnDownloadProgressOnSequence,
+                     weak_ptr_, downloaded_bytes, total_bytes));
+}
+
+void ModelDownloaderAndroid::OnDownloadProgressOnSequence(
+    int64_t downloaded_bytes,
+    int64_t total_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (on_download_progress_callback_) {
+    on_download_progress_callback_.Run(downloaded_bytes, total_bytes);
+  }
+}
+
 static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
     JNIEnv* env,
     int64_t model_downloader_android,
@@ -158,6 +177,15 @@ static void JNI_AiCoreModelDownloaderWrapper_OnStatusCheckResult(
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnStatusCheckResult(
           static_cast<ModelDownloaderAndroid::ModelStatus>(j_status_result));
+}
+
+static void JNI_AiCoreModelDownloaderWrapper_OnDownloadProgress(
+    JNIEnv* env,
+    int64_t model_downloader_android,
+    int64_t downloaded_bytes,
+    int64_t total_bytes) {
+  reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
+      ->OnDownloadProgress(downloaded_bytes, total_bytes);
 }
 
 }  // namespace on_device_model

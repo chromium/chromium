@@ -213,6 +213,21 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                 }
             }
         }
+
+        public void onDownloadProgress(long downloadedBytes, long totalBytes) {
+            if (!mNativeDestroyed) {
+                assert mIsModelDownloader;
+                if (mCallbackOnDifferentThread) {
+                    new Thread(
+                                    () -> {
+                                        mResponder.onDownloadProgress(downloadedBytes, totalBytes);
+                                    })
+                            .start();
+                } else {
+                    mResponder.onDownloadProgress(downloadedBytes, totalBytes);
+                }
+            }
+        }
     }
 
     /** A mock implementation of AiCoreFactory. */
@@ -389,6 +404,13 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void triggerDownloaderOnUnavailable(int reason) {
         mMockAiCoreFactory.getModelDownloaderBackend().onUnavailable(reason);
+    }
+
+    @CalledByNative
+    public void triggerDownloaderOnDownloadProgress(long downloadedBytes, long totalBytes) {
+        mMockAiCoreFactory
+                .getModelDownloaderBackend()
+                .onDownloadProgress(downloadedBytes, totalBytes);
     }
 
     @CalledByNative

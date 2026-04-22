@@ -62,6 +62,18 @@ class AiCoreModelDownloaderWrapper {
                                     .onStatusCheckResult(nativeModelDownloaderAndroid, modelStatus);
                         });
             }
+
+            @Override
+            public void onDownloadProgress(long downloadedBytes, long totalBytes) {
+                mJniSafeCallback.run(
+                        () -> {
+                            AiCoreModelDownloaderWrapperJni.get()
+                                    .onDownloadProgress(
+                                            nativeModelDownloaderAndroid,
+                                            downloadedBytes,
+                                            totalBytes);
+                        });
+            }
         };
     }
 
@@ -96,5 +108,7 @@ class AiCoreModelDownloaderWrapper {
                 long modelDownloaderAndroid, @DownloadFailureReason int downloadFailureReason);
 
         void onStatusCheckResult(long modelDownloaderAndroid, @ModelStatus int modelStatus);
+
+        void onDownloadProgress(long modelDownloaderAndroid, long downloadedBytes, long totalBytes);
     }
 }

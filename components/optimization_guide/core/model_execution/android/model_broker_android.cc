@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
@@ -378,12 +379,17 @@ void ModelBrokerAndroid::SolutionFactory::MaybeStartDownload(
   }
   auto params = on_device_model::mojom::DownloaderParams::New();
   params->require_persistent_mode = RequirePersistentModeForFeature(feature);
-  model_downloaders_[*aicore_feature] =
+  auto [it, inserted] = model_downloaders_.emplace(
+      *aicore_feature,
       std::make_unique<on_device_model::ModelDownloaderAndroid>(
-          *aicore_feature, std::move(params));
-  model_downloaders_[*aicore_feature]->StartDownload(
+          *aicore_feature, std::move(params)));
+  CHECK(inserted);
+  auto& downloader = it->second;
+  downloader->StartDownload(
       base::BindOnce(&SolutionFactory::OnAICoreModelUpdated,
-                     weak_ptr_factory_.GetWeakPtr(), *aicore_feature));
+                     weak_ptr_factory_.GetWeakPtr(), *aicore_feature),
+      base::BindRepeating(&ModelBrokerAndroid::OnDownloadProgressUpdated,
+                          parent_->weak_ptr_factory_.GetWeakPtr()));
   UpdateSolutionProvider(feature);
 }
 
@@ -670,8 +676,26 @@ void ModelBrokerAndroid::OnModelDisconnected(
 
 void ModelBrokerAndroid::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
-  // TODO: crbug.com/474999857 Get download progress from AICore, and notify the
-  // observers.
+  auto id = download_observers_.Add(std::move(observer));
+  // Blink's CreateMonitor CHECKs that the first progress update has
+  // downloaded_bytes == 0 (see create_monitor.cc). When an observer joins
+  // mid-download (e.g. from a second web page while a fresh download is in
+  // progress), we send an initial (0, max) event to satisfy this requirement.
+  if (has_active_download_progress_) {
+    download_observers_.Get(id)->OnDownloadProgressUpdate(
+        0, kNormalizedDownloadProgressMax);
+  }
+}
+
+void ModelBrokerAndroid::OnDownloadProgressUpdated(int64_t downloaded_bytes,
+                                                   int64_t total_bytes) {
+  has_active_download_progress_ = true;
+  int64_t normalized_progress =
+      NormalizeModelDownloadProgress(downloaded_bytes, total_bytes);
+  for (auto& observer : download_observers_) {
+    observer->OnDownloadProgressUpdate(normalized_progress,
+                                       kNormalizedDownloadProgressMax);
+  }
 }
 
 }  // namespace optimization_guide

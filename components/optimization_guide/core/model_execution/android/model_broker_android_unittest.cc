@@ -12,9 +12,11 @@
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -346,6 +348,36 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   auto session =
       DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
   ASSERT_TRUE(session);
+}
+
+// Verify that download progress updates are forwarded to observers, and that a
+// late-joining observer receives an initial zero-progress event.
+TEST_F(ModelBrokerAndroidTest, DownloadProgressObserver) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
+
+  // Add the first observer and request a session to trigger the download.
+  MockDownloadProgressObserver observer1;
+  client.AddModelDownloadProgressObserver(observer1.BindNewPipeAndPassRemote());
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
+                       future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+
+  // Trigger download progress — observer1 should receive the normalized update.
+  java_helper_.TriggerDownloaderOnDownloadProgress(500, 1000);
+  observer1.ExpectReceivedNormalizedUpdate(500, 1000);
+
+  // Add a second observer after download progress has started — it should
+  // receive the initial (0, max) event.
+  MockDownloadProgressObserver observer2;
+  client.AddModelDownloadProgressObserver(observer2.BindNewPipeAndPassRemote());
+  observer2.ExpectReceivedUpdate(0, kNormalizedDownloadProgressMax);
 }
 
 // Test fixture for verifying model status check behavior with specific

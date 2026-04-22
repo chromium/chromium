@@ -136,8 +136,6 @@ interface ModelBroker {
   GetConfig(OnDeviceFeature feature) => (mojo_base.mojom.ProtoWrapper? config);
 
   // Start listening for download progress updates for models.
-  // TODO: crbug.com/474999857 Implement this method on Android.
-  [EnableIfNot=is_android]
   AddModelDownloadProgressObserver(
       pending_remote<on_device_model.mojom.DownloadObserver> observer);
 

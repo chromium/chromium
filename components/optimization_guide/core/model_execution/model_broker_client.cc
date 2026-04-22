@@ -321,9 +321,6 @@ void ModelBrokerClient::GetConfig(mojom::OnDeviceFeature feature,
 
 void ModelBrokerClient::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
-  // TODO: crbug.com/474999857 Enable this interface on Android.
-#if !BUILDFLAG(IS_ANDROID)
   remote_->AddModelDownloadProgressObserver(std::move(observer));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 }  // namespace optimization_guide

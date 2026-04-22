@@ -65,6 +65,10 @@ class ModelDownloaderAndroid {
   using OnDownloadCompleteCallback = base::OnceCallback<void(
       base::expected<BaseModelSpec, DownloadFailureReason>)>;
 
+  using OnDownloadProgressCallback =
+      base::RepeatingCallback<void(int64_t downloaded_bytes,
+                                   int64_t total_bytes)>;
+
   // Result for model status check operations.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.on_device_model
   enum class ModelStatus {
@@ -102,22 +106,29 @@ class ModelDownloaderAndroid {
   // Starts downloading the model for this feature.
   // `on_download_complete_callback` will be called either when the model is
   // available or when the download fails.
-  void StartDownload(OnDownloadCompleteCallback on_download_complete_callback);
+  // `on_download_progress_callback` will be called with progress updates during
+  // the download. Pass base::DoNothing() if progress is not needed.
+  void StartDownload(OnDownloadCompleteCallback on_download_complete_callback,
+                     OnDownloadProgressCallback on_download_progress_callback);
 
   // Methods called from Java (can be called on any thread).
   void OnAvailable(const std::string& base_model_name,
                    const std::string& base_model_version);
   void OnUnavailable(DownloadFailureReason failure_reason);
   void OnStatusCheckResult(ModelStatus model_status);
+  void OnDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
  private:
   void OnAvailableOnSequence(const std::string& base_model_name,
                              const std::string& base_model_version);
   void OnUnavailableOnSequence(DownloadFailureReason failure_reason);
   void OnStatusCheckResultOnSequence(ModelStatus model_status);
+  void OnDownloadProgressOnSequence(int64_t downloaded_bytes,
+                                    int64_t total_bytes);
 
   base::android::ScopedJavaGlobalRef<jobject> java_downloader_;
   OnDownloadCompleteCallback on_download_complete_callback_;
+  OnDownloadProgressCallback on_download_progress_callback_;
   OnStatusCheckCompleteCallback on_status_check_callback_;
 
   // The feature for which this downloader was created.

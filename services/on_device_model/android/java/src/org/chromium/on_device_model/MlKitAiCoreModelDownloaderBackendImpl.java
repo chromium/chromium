@@ -7,7 +7,9 @@ package org.chromium.on_device_model;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.genai.common.DownloadCallback;
 import com.google.mlkit.genai.common.FeatureStatus;
+import com.google.mlkit.genai.common.GenAiException;
 import com.google.mlkit.genai.prompt.GenerativeModel;
 import com.google.mlkit.genai.prompt.java.GenerativeModelFutures;
 
@@ -162,38 +164,24 @@ class MlKitAiCoreModelDownloaderBackendImpl implements AiCoreModelDownloaderBack
     private void handleDownloadResult(@FeatureStatus int status, DownloaderResponder responder) {
         switch (status) {
             case FeatureStatus.AVAILABLE:
-                // Base model is already available.
-                Futures.addCallback(
-                        mGenerativeModelFutures.getBaseModelName(),
-                        new FutureCallback<String>() {
-                            @Override
-                            public void onSuccess(String modelName) {
-                                if (!mIsDestroyed) {
-                                    // Model version is not available via MLKit APIs, use "1.0" as
-                                    // placeholder.
-                                    responder.onAvailable(modelName, "1.0");
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Throwable t) {
-                                if (!mIsDestroyed) {
-                                    responder.onUnavailable(
-                                            DownloadFailureReason.GET_FEATURE_STATUS_ERROR);
-                                }
-                            }
-                        },
-                        mExecutor);
+                // Base model is already available, fetch the model name directly.
+                fetchBaseModelName(responder);
                 break;
 
             case FeatureStatus.DOWNLOADABLE:
+                // Initiate a fresh download via MLKit's download API. The DownloadCallback
+                // forwards progress events to the responder.
+                fireDownload(responder);
+                break;
+
             case FeatureStatus.DOWNLOADING:
-                // For both DOWNLOADABLE and DOWNLOADING status, we initiate the download. These
-                // functions will be implemented in another CL and for now, just notify that the
-                // download api is not implemented yet.
-                // TODO(crbug.com/477033510): Initiate download and handle download start,
-                // in progress, completion callbacks.
-                responder.onUnavailable(DownloadFailureReason.API_NOT_AVAILABLE);
+                // The model is already being downloaded (e.g. by a previous app session via
+                // AICore). MLKit does not provide a standalone API to register download callbacks
+                // to an ongoing download. However, calling download() again resolves the download
+                // future successfully, allowing us to fetch the base model name. Note:
+                // DownloadCallback progress events are not fired in this case given known MLKit
+                // limitation, so no download progress will be reported.
+                fireDownload(responder);
                 break;
 
             default:
@@ -202,6 +190,116 @@ class MlKitAiCoreModelDownloaderBackendImpl implements AiCoreModelDownloaderBack
                 // feature not available, etc).
                 responder.onUnavailable(DownloadFailureReason.FEATURE_NOT_AVAILABLE);
                 break;
+        }
+    }
+
+    /**
+     * Fires a model download via MLKit's download API and handles the result.
+     *
+     * <p>On successful download completion, fetches the base model name and reports it via {@link
+     * DownloaderResponder#onAvailable}. On failure, maps the error to the appropriate {@link
+     * DownloadFailureReason}.
+     *
+     * @param responder The responder to notify of download results
+     */
+    private void fireDownload(DownloaderResponder responder) {
+        ListenableFuture<Void> downloadFuture =
+                mGenerativeModelFutures.download(
+                        new DownloadCallback() {
+                            private long mTotalBytes;
+
+                            @Override
+                            public void onDownloadStarted(long bytesToDownload) {
+                                mTotalBytes = bytesToDownload;
+                                responder.onDownloadProgress(0, bytesToDownload);
+                            }
+
+                            @Override
+                            public void onDownloadProgress(long totalBytesDownloaded) {
+                                responder.onDownloadProgress(totalBytesDownloaded, mTotalBytes);
+                            }
+
+                            // Completion and failure are handled by the download future callback.
+                            @Override
+                            public void onDownloadCompleted() {}
+
+                            @Override
+                            public void onDownloadFailed(GenAiException e) {}
+                        });
+
+        Futures.addCallback(
+                downloadFuture,
+                new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        if (mIsDestroyed) return;
+
+                        fetchBaseModelName(responder);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        if (mIsDestroyed) return;
+
+                        responder.onUnavailable(mapGenAiExceptionToDownloadFailureReason(t));
+                    }
+                },
+                mExecutor);
+    }
+
+    /**
+     * Fetches the base model name and reports availability via the responder.
+     *
+     * @param responder The responder to notify
+     */
+    private void fetchBaseModelName(DownloaderResponder responder) {
+        Futures.addCallback(
+                mGenerativeModelFutures.getBaseModelName(),
+                new FutureCallback<String>() {
+                    @Override
+                    public void onSuccess(String modelName) {
+                        if (!mIsDestroyed) {
+                            // Model version is not available via MLKit APIs, use "1.0" as
+                            // placeholder.
+                            responder.onAvailable(modelName, "1.0");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        if (!mIsDestroyed) {
+                            responder.onUnavailable(DownloadFailureReason.GET_FEATURE_STATUS_ERROR);
+                        }
+                    }
+                },
+                mExecutor);
+    }
+
+    /**
+     * Maps a download failure throwable to the appropriate DownloadFailureReason.
+     *
+     * <p>GenAiException error code reference:
+     * https://developers.google.com/android/reference/com/google/mlkit/genai/common/GenAiException.ErrorCode
+     *
+     * @param t The throwable from the download failure
+     * @return The corresponding DownloadFailureReason
+     */
+    @DownloadFailureReason
+    private int mapGenAiExceptionToDownloadFailureReason(Throwable t) {
+        if (!(t instanceof GenAiException)) {
+            return DownloadFailureReason.DOWNLOAD_GENERAL_ERROR;
+        }
+
+        int errorCode = ((GenAiException) t).getErrorCode();
+        switch (errorCode) {
+            case -101: // AICORE_INCOMPATIBLE: AICore is not installed or its version is too low.
+                return DownloadFailureReason.GET_FEATURE_ERROR;
+            case 8: // NOT_AVAILABLE: Feature is not available.
+                return DownloadFailureReason.FEATURE_IS_NULL;
+            case 501: // NOT_ENOUGH_DISK_SPACE: Not enough storage.
+                return DownloadFailureReason.DOWNLOAD_NOT_ENOUGH_DISK_SPACE_ERROR;
+            default:
+                return DownloadFailureReason.DOWNLOAD_GENERAL_ERROR;
         }
     }
 

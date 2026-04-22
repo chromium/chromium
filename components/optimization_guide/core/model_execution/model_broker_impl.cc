@@ -146,7 +146,6 @@ std::vector<mojom::BrokerUseCaseInfoPtr> ModelBrokerImpl::GetBrokerUseCaseInfo()
   return use_cases;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ModelBrokerImpl::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
   TRACE_EVENT("optimization_guide",
@@ -154,7 +153,6 @@ void ModelBrokerImpl::AddModelDownloadProgressObserver(
               perfetto::Flow::FromPointer(this));
   add_download_progress_observer_callback_.Run(std::move(observer));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ModelBrokerImpl::Solution::Solution() = default;
 ModelBrokerImpl::Solution::~Solution() = default;

@@ -115,11 +115,9 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
                  GetConfigCallback callback) override;
   void RequestAssetsFor(const std::string& use_case) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void AddModelDownloadProgressObserver(
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer)
       override;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Finishes Subscribe after initialization is finished.
   void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr options,

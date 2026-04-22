@@ -1032,9 +1032,6 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
               ElementsAreArray({"UfooEU<image>EU<audio>EM"}));
 }
 
-// TODO: crbug.com/474999857 Enable on Android when download progress is
-// supported.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AILanguageModelTest, ModelDownload) {
   MockDownloadProgressObserver observer;
   GetAIManagerInterface()->AddModelDownloadProgressObserver(
@@ -1058,7 +1055,6 @@ TEST_F(AILanguageModelTest, ModelDownload) {
   fake_broker_->component_state().UpdateDownloadProgress(total_bytes);
   observer.ExpectReceivedNormalizedUpdate(total_bytes, total_bytes);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AILanguageModelTest, MeasureInputUsage) {
   auto session = CreateSession();

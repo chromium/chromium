@@ -87,6 +87,8 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
   void AddModelDownloadProgressObserver(
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
+  void OnDownloadProgressUpdated(int64_t downloaded_bytes, int64_t total_bytes);
+
   const raw_ref<PrefService> local_state_;
 
   raw_ref<OptimizationGuideModelProvider> model_provider_;
@@ -113,6 +115,15 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
 
   // Whether the status checks have completed.
   bool status_check_complete_ = false;
+
+  // Observers for download progress updates.
+  mojo::RemoteSet<on_device_model::mojom::DownloadObserver> download_observers_;
+
+  // Whether a fresh download is actively reporting progress. Set to true when
+  // the first OnDownloadProgressUpdated call is received, indicating that a
+  // real download is in progress with progress callbacks. Used to decide
+  // whether to send an initial zero-progress event to late-joining observers.
+  bool has_active_download_progress_ = false;
 
   base::WeakPtrFactory<ModelBrokerAndroid> weak_ptr_factory_{this};
 };
