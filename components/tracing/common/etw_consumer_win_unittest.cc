@@ -24,6 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/include/perfetto/protozero/message_handle.h"
@@ -42,6 +43,10 @@ static constexpr uint8_t kFileIoDirEnumOpcode = 72u;
 static constexpr uint8_t kFileIoInfoOpcode = 70u;
 static constexpr uint8_t kFileIoReadWriteOpcode = 67u;
 static constexpr uint8_t kFileIoSimpleOpOpcode = 73u;
+static constexpr uint8_t kFileIoFltReadOpcode = 83u;
+static constexpr uint8_t kFileIoFltWriteOpcode = 84u;
+static constexpr uint8_t kFileIoFltSetInfoOpcode = 85u;
+static constexpr uint8_t kFileIoFltQueryInfoOpcode = 86u;
 
 // A trace writer that creates TracePacket messages on the heap and sends their
 // serialized form to an owner-provided callback.
@@ -358,6 +363,24 @@ base::HeapArray<uint8_t> EncodeFileIoSimpleOp(uint32_t ttid) {
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
+// Returns the MOF encoding of a `FileIo_FltOp` event.
+base::HeapArray<uint8_t> EncodeFileIoFltOp(uint32_t ttid,
+                                           uint32_t operation_status,
+                                           uint32_t filter_instance) {
+  std::vector<uint8_t> buffer;
+  auto iter = std::back_inserter(buffer);
+  uintptr_t a_pointer = 0;
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // IrpPtr
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileObject
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileKey
+  std::ranges::copy(base::byte_span_from_ref(ttid), iter);
+  std::ranges::copy(base::byte_span_from_ref(operation_status), iter);
+  std::ranges::copy(base::byte_span_from_ref(filter_instance), iter);
+  uint32_t reserved = 0;
+  std::ranges::copy(base::byte_span_from_ref(reserved), iter);
+  return base::HeapArray<uint8_t>::CopiedFrom({buffer});
+}
+
 // Returns the MOF encoding of a `FileIo_OpEnd` event.
 base::HeapArray<uint8_t> EncodeFileIoOpEnd(uint32_t ttid, uint32_t nt_status) {
   std::vector<uint8_t> buffer;
@@ -566,6 +589,14 @@ class EtwConsumerTest : public testing::Test {
                     packet_data);
   }
 
+  // Generates an ETW FileIo_FltOp event with `packet_data` as its payload
+  // and sends it to the EtwConsumer for processing.
+  void ProcessFileIoFltOpEvent(uint8_t opcode,
+                               uint32_t thread_id,
+                               base::span<const uint8_t> packet_data) {
+    SendFileIoEvent(/*version=*/0u, opcode, thread_id, packet_data);
+  }
+
   // Generates an ETW FileIo_OpEnd event with `packet_data` as its payload and
   // sends it to the EtwConsumer for processing. If the EtwConsumer generates a
   // TracePacket containing a `FileIoOpEndEtwEvent`, a new decoder is
@@ -743,16 +774,18 @@ class EtwConsumerTest : public testing::Test {
   // Returns the MOF encoding of a Process event (v4 by default).
   base::HeapArray<uint8_t> EncodeProcess(const ProcessData& process,
                                          int version = 4) {
-    // We are using EVENT_HEADER_FLAG_64_BIT_HEADER flag, so the pointer size
-    // should be 8 bytes.
     const size_t pointer_size = EtwConsumer::GetPointerSize(kEventHeaderFlags);
-    CHECK_EQ(pointer_size, sizeof(uint64_t));
+    CHECK_EQ(pointer_size, sizeof(uintptr_t));
     return ::tracing::EncodeProcess(process, version, pointer_size);
   }
 
  private:
   static constexpr uint16_t kTestProcessorIndex = 47;
+#if defined(ARCH_CPU_64_BITS)
   static constexpr uint16_t kEventHeaderFlags = EVENT_HEADER_FLAG_64_BIT_HEADER;
+#else
+  static constexpr uint16_t kEventHeaderFlags = EVENT_HEADER_FLAG_32_BIT_HEADER;
+#endif
 
   // Generates an ETW EVENT_RECORD for a given trace provider of a particular
   // version and opcode with `packet_data` as its payload and sends it to the
@@ -1240,6 +1273,28 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoOpEndEvent) {
   EXPECT_EQ(file_io_op_end->nt_status(), kNtStatus);
 }
 
+// Tests that a FileIoInfoEtwEvent is emitted for a FileIo_FltOp ETW event.
+TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoFltOpEvent) {
+  constexpr uint32_t kOperationStatus = 0x12345678;
+  constexpr uint32_t kFilterInstance = 0x9abcdef0;
+  ProcessFileIoFltOpEvent(
+      kFileIoFltReadOpcode, kClientTid,
+      EncodeFileIoFltOp(kClientTid, kOperationStatus, kFilterInstance));
+  ASSERT_EQ(decoders().size(), 1u);
+
+  std::optional<perfetto::protos::pbzero::EtwTraceEvent::Decoder> event;
+  std::optional<perfetto::protos::pbzero::FileIoInfoEtwEvent::Decoder>
+      file_io_info;
+  ASSERT_NO_FATAL_FAILURE(
+      ValidateAndDecodeFileIoInfo(*decoders().back(), event, file_io_info));
+
+  EXPECT_EQ(event->thread_id(), kClientTid);
+  EXPECT_TRUE(file_io_info->has_irp_ptr());
+  EXPECT_TRUE(file_io_info->has_file_object());
+  EXPECT_EQ(file_io_info->ttid(), kClientTid);
+  EXPECT_EQ(file_io_info->opcode(), kFileIoFltReadOpcode);
+}
+
 // Tests that FileIo_Create events are only recorded for Chrome processes.
 TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoCreateFiltering) {
   // An event is recorded if it belongs to Chrome.
@@ -1331,6 +1386,31 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoOpEndFiltering) {
   EXPECT_EQ(decoders().size(), 1u);
   ProcessFileIoOpEndEvent(kOtherTid, EncodeFileIoOpEnd(kOtherTid, 0x789));
   EXPECT_EQ(decoders().size(), 1u);
+}
+
+// Tests that FileIo_FltOp events are only recorded for Chrome processes.
+TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoFltOpFiltering) {
+  // An event is recorded if it belongs to Chrome.
+  ProcessFileIoFltOpEvent(kFileIoFltReadOpcode, kClientTid,
+                          EncodeFileIoFltOp(kClientTid, 0x11, 0x22));
+  EXPECT_EQ(decoders().size(), 1u);
+  ProcessFileIoFltOpEvent(kFileIoFltWriteOpcode, kClientTid,
+                          EncodeFileIoFltOp(kClientTid, 0x11, 0x22));
+  EXPECT_EQ(decoders().size(), 2u);
+  ProcessFileIoFltOpEvent(kFileIoFltSetInfoOpcode, kClientTid,
+                          EncodeFileIoFltOp(kClientTid, 0x11, 0x22));
+  EXPECT_EQ(decoders().size(), 3u);
+  ProcessFileIoFltOpEvent(kFileIoFltQueryInfoOpcode, kClientTid,
+                          EncodeFileIoFltOp(kClientTid, 0x11, 0x22));
+  EXPECT_EQ(decoders().size(), 4u);
+
+  // An event is not recorded if it doesn't belong to Chrome.
+  ProcessFileIoFltOpEvent(kFileIoFltReadOpcode, kSystemTid,
+                          EncodeFileIoFltOp(kSystemTid, 0x33, 0x44));
+  EXPECT_EQ(decoders().size(), 4u);
+  ProcessFileIoFltOpEvent(kFileIoFltReadOpcode, kOtherTid,
+                          EncodeFileIoFltOp(kOtherTid, 0x55, 0x66));
+  EXPECT_EQ(decoders().size(), 4u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

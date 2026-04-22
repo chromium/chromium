@@ -315,6 +315,23 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
         DLOG(ERROR) << "Error decoding FileIo_OpEnd event";
       }
       break;
+    case 79:  // FileIo_V2_QueryFullSizeInfo
+    case 80:  // QuerySetVolumeInfo
+      // TODO(crbug.com/400769108): Handle these op codes.
+      break;
+    // Filter Driver events
+    case 83:  // FltRead
+    case 84:  // FltWrite
+    case 85:  // FltSetInfo
+    case 86:  // FltQueryInfo
+      if (!DecodeFileIoFltOpEvent(header, buffer_context, pointer_size,
+                                  packet_data)) {
+        DLOG(ERROR) << "Error decoding FileIoFltOpEvent";
+      }
+      break;
+
+    default:
+      DLOG(ERROR) << "unhandled file op code " << header.EventDescriptor.Opcode;
   }
 }
 
@@ -761,6 +778,36 @@ bool EtwConsumer::DecodeFileIoInfoEvent(
   file_io_info->set_ttid(*iterator.CopyObject<uint32_t>());
   file_io_info->set_info_class(*iterator.CopyObject<uint32_t>());
   file_io_info->set_opcode(header.EventDescriptor.Opcode);
+  return true;
+}
+
+bool EtwConsumer::DecodeFileIoFltOpEvent(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    size_t pointer_size,
+    base::span<const uint8_t> packet_data) {
+  using perfetto::protos::pbzero::FileIoInfoEtwEvent;
+
+  // Size of `FileIo_Info` event: 3 pointers + 4 `uint32`s.
+  const size_t kMinimumSize = 3 * pointer_size + 4 * sizeof(uint32_t);
+  if (packet_data.size() < kMinimumSize) {
+    return false;
+  }
+
+  // Read the contents of `packet_data` and generate a `FileIoInfo` event.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  auto* event = MakeNextEvent(header, buffer_context);
+  event->set_thread_id(header.ThreadId);
+  auto* file_io_info = event->set_file_io_info();
+  file_io_info->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_info->set_file_object(CopyPointerHash(iterator, pointer_size));
+  file_io_info->set_file_key(CopyPointerHash(iterator, pointer_size));
+  file_io_info->set_ttid(*iterator.CopyObject<uint32_t>());
+  file_io_info->set_extra_info(*iterator.CopyObject<uint32_t>());
+  (void)iterator.CopyObject<uint32_t>();  // FilterInstance
+  (void)iterator.CopyObject<uint32_t>();  // Reserved
+  file_io_info->set_opcode(header.EventDescriptor.Opcode);
+
   return true;
 }
 
