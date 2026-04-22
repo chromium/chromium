@@ -864,6 +864,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager = null;
         }
 
+        if (getBottomSheetController() != null) {
+            getBottomSheetController().removeObserver(TabBottomSheetManager.BOTTOM_SHEET_OBSERVER);
+        }
+
         if (mContextualTasksFuseboxManager != null) {
             mContextualTasksFuseboxManager.destroy();
             mContextualTasksFuseboxManager = null;
@@ -1912,6 +1916,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             });
             mTabBottomSheetReadAloudControllerCallback = callback;
             mReadAloudControllerSupplier.addSyncObserverAndCallIfNonNull(callback);
+        }
+        if (getBottomSheetController() != null) {
+            getBottomSheetController().addObserver(TabBottomSheetManager.BOTTOM_SHEET_OBSERVER);
         }
     }
 

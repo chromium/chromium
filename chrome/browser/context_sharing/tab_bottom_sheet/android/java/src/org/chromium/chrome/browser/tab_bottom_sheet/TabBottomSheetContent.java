@@ -87,7 +87,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getPriority() {
-        return BottomSheetContent.ContentPriority.HIGH;
+        return BottomSheetContent.ContentPriority.COBROWSE;
     }
 
     @Override
