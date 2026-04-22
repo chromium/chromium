@@ -4255,7 +4255,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.AdaBoostModel.NegativeScore" units="count"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4268,7 +4268,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.AdaBoostModel.PositiveScore" units="count"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4281,7 +4281,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.AnyPageSignalWithinTimeout"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4292,7 +4292,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.DistillablePageSignalWithinTimeout"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4303,7 +4303,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.EntryPoint.{TabType}"
-    enum="DomDistillerEntryPoint" expires_after="2026-10-04">
+    enum="DomDistillerEntryPoint" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4320,7 +4320,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.FontFamilySelected"
-    enum="ReaderModePrefsFontFamily" expires_after="2026-10-04">
+    enum="ReaderModePrefsFontFamily" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4330,7 +4330,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.FontScalingSelected" units="%"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4341,7 +4341,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.LinksEnabled" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4353,7 +4353,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4364,7 +4364,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="DomDistiller.Android.OnDistillableResult.PageDistillationResult"
-    enum="DistillationResult" expires_after="2026-10-04">
+    enum="DistillationResult" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4375,7 +4375,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.ReaderModeContextualPageActionEvent"
-    enum="ReaderModeContextualPageActionEvent" expires_after="2026-10-04">
+    enum="ReaderModeContextualPageActionEvent" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4386,7 +4386,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings"
-    enum="Boolean" expires_after="2026-08-02">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4398,7 +4398,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="DomDistiller.Android.ReaderModeEnableLinksInAccessibilitySettings"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4408,7 +4408,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Android.ThemeSelected"
-    enum="ReaderModePrefsTheme" expires_after="2026-10-04">
+    enum="ReaderModePrefsTheme" expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4418,7 +4418,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Distillation.Result"
-    enum="DistillationParseResult" expires_after="2026-08-02">
+    enum="DistillationParseResult" expires_after="2027-06-01">
   <owner>gusmartin@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4428,7 +4428,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.IsDistillable" enum="Boolean"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4438,7 +4438,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.LongModel.NegativeScore" units="count"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4451,7 +4451,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.LongModel.PositiveScore" units="count"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4464,7 +4464,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2026-08-02">
+    expires_after="2027-06-01">
   <owner>mdjones@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4474,7 +4474,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Time.RunDistillationJavaScript" units="ms"
-    expires_after="2026-08-02">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4485,7 +4485,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Time.TimeToProvideResultToAccumulator" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
@@ -4496,7 +4496,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>mdjones@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -4507,7 +4507,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.WordCount" units="count"
-    expires_after="2026-10-04">
+    expires_after="2027-06-01">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
