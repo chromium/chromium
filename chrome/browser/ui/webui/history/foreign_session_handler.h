@@ -101,13 +101,14 @@ class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
       Profile* profile);
 
+  // Returns a string used to show the user when a session or tab was last
+  // modified (e.g. "2 hours ago").
+  static std::u16string FormatSessionTime(const base::Time& time);
+
  private:
   void OnForeignSessionUpdated();
 
   std::vector<history::mojom::ForeignSessionPtr> GetForeignSessionsInternal();
-
-  // Returns a string used to show the user when a session was last modified.
-  std::u16string FormatSessionTime(const base::Time& time);
 
   raw_ptr<Profile> profile_;
 

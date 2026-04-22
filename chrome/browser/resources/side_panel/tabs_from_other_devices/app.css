@@ -1,0 +1,130 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://tabs-from-other-devices.top-chrome/shared/sp_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
+#container {
+  padding: 16px;
+}
+
+#picker-container {
+  margin-bottom: 16px;
+}
+
+#picker-button {
+  border-radius: 16px;
+  border: 1px solid var(--cr-separator-color);
+  background-color: var(--cr-card-background-color);
+  color: var(--cr-primary-text-color);
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+#picker-button:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.dropdown-item {
+  background: none;
+  border: none;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: block;
+  padding: 8px 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.tab {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  padding: 8px 0 8px 8px;
+}
+
+.tab:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.tab-favicon-container {
+  background-color: var(--cr-hover-background-color);
+  border-radius: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.tab-favicon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.tab-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-title {
+  font-size: 13px;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-details {
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: 11px;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tab-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-timestamp-separator {
+  margin: 0 4px;
+}
+
+.tab-timestamp {
+  flex-shrink: 0;
+}
+
+.loading,
+.empty-message {
+  color: var(--cr-secondary-text-color);
+  text-align: center;
+  margin-top: 50px;
+}

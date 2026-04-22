@@ -12,6 +12,7 @@ struct ForeignSessionTab {
   string remote_icon_url_for_uma;
   int32 session_id;
   double timestamp;
+  string timestamp_display_str;
   string title;
   url.mojom.Url url;
   int32 window_id;
