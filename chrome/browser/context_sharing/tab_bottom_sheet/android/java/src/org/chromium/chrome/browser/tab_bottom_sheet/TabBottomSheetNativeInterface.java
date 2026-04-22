@@ -33,7 +33,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     @CalledByNative
     private void destroy() {
         mNativeTabBottomSheetBridge = 0;
-        TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
+        var tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.detachNativeInterfaceDelegate(this);
         }
@@ -42,7 +42,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     // Native calls for glic.
     @CalledByNative
     public boolean show(CoBrowseViews coBrowseViews, boolean animate, boolean startsExpanded) {
-        TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
+        var tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null && coBrowseViews != null) {
             return tabBottomSheetManager.tryToShowBottomSheet(
                     this, coBrowseViews, animate, startsExpanded);
@@ -52,7 +52,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
 
     @CalledByNative
     public void close(boolean animate) {
-        TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
+        var tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.tryToCloseBottomSheet(animate);
         }
@@ -66,8 +66,9 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         webContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
     }
 
-    private @Nullable TabBottomSheetManager getTabBottomSheetManager(Tab tab) {
-        return TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+    private @Nullable TabBottomSheetManagerImpl getTabBottomSheetManager(Tab tab) {
+        return (TabBottomSheetManagerImpl)
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
     }
 
     // Delegate methods.

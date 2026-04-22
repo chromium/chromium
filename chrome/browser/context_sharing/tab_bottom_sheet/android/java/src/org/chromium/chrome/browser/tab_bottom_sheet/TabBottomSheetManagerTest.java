@@ -86,7 +86,7 @@ public class TabBottomSheetManagerTest {
     private ChromeTabbedActivity mActivity;
     private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
-    private TabBottomSheetManager mManager;
+    private TabBottomSheetManagerImpl mManager;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -112,7 +112,9 @@ public class TabBottomSheetManagerTest {
                                     null,
                                     null,
                                     Color.WHITE);
-                    mManager = tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
+                    mManager =
+                            (TabBottomSheetManagerImpl)
+                                    tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
                 });
     }
 
@@ -152,8 +154,8 @@ public class TabBottomSheetManagerTest {
                 () -> {
                     TabBottomSheetManager oldManager =
                             TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid);
-                    TabBottomSheetManager manager =
-                            new TabBottomSheetManager(
+                    TabBottomSheetManagerImpl manager =
+                            new TabBottomSheetManagerImpl(
                                     mActivity,
                                     mWindowAndroid,
                                     mockBottomSheetController,

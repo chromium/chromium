@@ -48,6 +48,17 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("manager_public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [
     ":client_type_java_enum",
@@ -59,7 +70,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewsZoomControl.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinator.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerImpl.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetNativeInterface.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetProperties.java",
@@ -72,6 +83,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.context_sharing"
   deps = [
     ":java_resources",
+    ":manager_public_java",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
@@ -148,6 +160,7 @@ android_library("javatests") {
   sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerTest.java" ]
   deps = [
     ":java",
+    ":manager_public_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",

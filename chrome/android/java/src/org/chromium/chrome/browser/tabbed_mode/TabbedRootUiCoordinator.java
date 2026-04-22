@@ -176,6 +176,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewsZoomControl;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManagerImpl;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonControllerFactory;
@@ -866,7 +867,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (getBottomSheetController() != null) {
-            getBottomSheetController().removeObserver(TabBottomSheetManager.BOTTOM_SHEET_OBSERVER);
+            getBottomSheetController()
+                    .removeObserver(TabBottomSheetManagerImpl.BOTTOM_SHEET_OBSERVER);
         }
 
         if (mContextualTasksFuseboxManager != null) {
@@ -1900,7 +1902,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 }
                             });
             mTabBottomSheetManager =
-                    new TabBottomSheetManager(
+                    new TabBottomSheetManagerImpl(
                             mActivity,
                             mWindowAndroid,
                             assertNonNull(getBottomSheetController()),
@@ -1922,7 +1924,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mReadAloudControllerSupplier.addSyncObserverAndCallIfNonNull(callback);
         }
         if (getBottomSheetController() != null) {
-            getBottomSheetController().addObserver(TabBottomSheetManager.BOTTOM_SHEET_OBSERVER);
+            getBottomSheetController().addObserver(TabBottomSheetManagerImpl.BOTTOM_SHEET_OBSERVER);
         }
     }
 
