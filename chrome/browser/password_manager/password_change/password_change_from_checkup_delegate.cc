@@ -264,14 +264,6 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   glic::GlicInvokeOptions options(glic::Target(new_tab_interface),
                                   glic::mojom::InvocationSource::kSharedTab);
   options.prompts.push_back(std::move(reach_form_prompt));
-  options.additional_context = glic::mojom::AdditionalContext::New();
-
-  sessions::SessionTabHelper* session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(new_contents);
-  if (session_tab_helper) {
-    options.additional_context->tab_id = session_tab_helper->session_id().id();
-  }
-
   // Invoking it in a new tab ensures that the settings page is not shared.
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
@@ -560,14 +552,6 @@ void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
       glic::Target(tab_interface, glic::NewConversation()),
       glic::mojom::InvocationSource::kSharedTab);
   options.prompts.push_back(std::move(post_submission_prompt));
-  options.additional_context = glic::mojom::AdditionalContext::New();
-  sessions::SessionTabHelper* session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(
-          actuation_web_contents_.get());
-  if (session_tab_helper) {
-    options.additional_context->tab_id = session_tab_helper->session_id().id();
-  }
-
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
