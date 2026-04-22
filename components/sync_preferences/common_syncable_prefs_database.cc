@@ -162,6 +162,7 @@ enum {
   kAutofillAiReauthBeforeViewingSensitiveData = 112,
   kDriveDisclaimerAccepted = 113,
   kAutofillAiShoppingEntitiesEnabled = 114,
+  kPrefTranslateRecentTargets = 115,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -366,6 +367,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           MergeBehavior::kNone}},
         {translate::prefs::kPrefTranslateRecentTarget,
          {syncable_prefs_ids::kPrefTranslateRecentTarget, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {translate::prefs::kPrefTranslateRecentTargets,
+         {syncable_prefs_ids::kPrefTranslateRecentTargets, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 // For Ash, the OS_PRIORITY_PREFERENCES equivalent is defined in
 // chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc instead.

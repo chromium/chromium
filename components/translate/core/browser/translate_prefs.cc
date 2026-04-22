@@ -856,14 +856,44 @@ void TranslatePrefs::SetRecentTargetLanguage(std::string_view target_language) {
   language::ToTranslateLanguageSynonym(&translate_target_language);
   prefs_->SetString(prefs::kPrefTranslateRecentTarget,
                     translate_target_language);
+  // Update the recent target languages list.
+  ScopedListPrefUpdate update(prefs_, prefs::kPrefTranslateRecentTargets);
+  base::ListValue& recent_targets = update.Get();
+  recent_targets.EraseValue(base::Value(translate_target_language));
+  recent_targets.Insert(recent_targets.begin(),
+                        base::Value(translate_target_language));
+  // Limit the list to the last 3 target languages.
+  if (recent_targets.size() > 3) {
+    recent_targets.erase(recent_targets.begin() + 3, recent_targets.end());
+  }
 }
 
 void TranslatePrefs::ResetRecentTargetLanguage() {
   SetRecentTargetLanguage("");
+  prefs_->ClearPref(prefs::kPrefTranslateRecentTargets);
 }
 
 std::string TranslatePrefs::GetRecentTargetLanguage() const {
   return prefs_->GetString(prefs::kPrefTranslateRecentTarget);
+}
+
+std::vector<std::string> TranslatePrefs::GetRecentTargetLanguages() const {
+  std::vector<std::string> result;
+  for (const auto& value :
+       prefs_->GetList(prefs::kPrefTranslateRecentTargets)) {
+    if (value.is_string()) {
+      result.push_back(value.GetString());
+    }
+  }
+  // For backward compatibility, if the list is empty but the legacy string pref
+  // is present, we can add it.
+  if (result.empty()) {
+    std::string legacy_recent = GetRecentTargetLanguage();
+    if (!legacy_recent.empty()) {
+      result.push_back(legacy_recent);
+    }
+  }
+  return result;
 }
 
 int TranslatePrefs::GetForceTriggerOnEnglishPagesCount() const {
@@ -901,6 +931,8 @@ void TranslatePrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterStringPref(prefs::kPrefTranslateRecentTarget, "",
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterListPref(prefs::kPrefTranslateRecentTargets,
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       kPrefForceTriggerTranslateCount, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

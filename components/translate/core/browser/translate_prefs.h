@@ -323,6 +323,7 @@ class TranslatePrefs {
   void SetRecentTargetLanguage(std::string_view target_language);
   void ResetRecentTargetLanguage();
   std::string GetRecentTargetLanguage() const;
+  std::vector<std::string> GetRecentTargetLanguages() const;
 
   // Gets the value for the pref that represents how often the
   // force English in India feature made translate trigger on an

@@ -1154,6 +1154,31 @@ TEST_F(TranslatePrefsTest, SetRecentTargetLanguage) {
   EXPECT_EQ("zh-TW", translate_prefs_->GetRecentTargetLanguage());
 }
 
+TEST_F(TranslatePrefsTest, GetRecentTargetLanguages) {
+  // Should start empty.
+  EXPECT_TRUE(translate_prefs_->GetRecentTargetLanguages().empty());
+
+  // Adding one language.
+  translate_prefs_->SetRecentTargetLanguage("en-US");
+  EXPECT_EQ(1u, translate_prefs_->GetRecentTargetLanguages().size());
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguages()[0]);
+
+  // Adding more up to 3.
+  translate_prefs_->SetRecentTargetLanguage("es-AR");
+  translate_prefs_->SetRecentTargetLanguage("fr");
+  EXPECT_EQ(3u, translate_prefs_->GetRecentTargetLanguages().size());
+  EXPECT_EQ("fr", translate_prefs_->GetRecentTargetLanguages()[0]);
+  EXPECT_EQ("es", translate_prefs_->GetRecentTargetLanguages()[1]);
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguages()[2]);
+
+  // Adding a fourth language shifts out the oldest one.
+  translate_prefs_->SetRecentTargetLanguage("de");
+  EXPECT_EQ(3u, translate_prefs_->GetRecentTargetLanguages().size());
+  EXPECT_EQ("de", translate_prefs_->GetRecentTargetLanguages()[0]);
+  EXPECT_EQ("fr", translate_prefs_->GetRecentTargetLanguages()[1]);
+  EXPECT_EQ("es", translate_prefs_->GetRecentTargetLanguages()[2]);
+}
+
 // Series of tests for the AlwaysTranslateLanguagesList manipulation functions.
 TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
