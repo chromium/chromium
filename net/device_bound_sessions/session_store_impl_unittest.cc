@@ -88,7 +88,7 @@ bool SessionMapsAreEqual(const SessionStore::SessionsMap& lhs,
 }
 
 std::unique_ptr<Session> CreateSessionHelper(
-    unexportable_keys::UnexportableKeyId key_id,
+    unexportable_keys::UnexportableSigningKeyId key_id,
     std::string_view url_string,
     std::string_view session_id,
     std::string_view origin = "https://foo.test") {
@@ -678,8 +678,8 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
       std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
       get_all_keys_future.Take());
 
-  unexportable_keys::UnexportableKeyId key_id_1 = all_keys_ids[0];
-  unexportable_keys::UnexportableKeyId key_id_2 = all_keys_ids[1];
+  unexportable_keys::UnexportableSigningKeyId key_id_1(all_keys_ids[0]);
+  unexportable_keys::UnexportableSigningKeyId key_id_2(all_keys_ids[1]);
 
   // Save two new sessions.
   static constexpr std::string_view kFooSite = "https://foo.test";

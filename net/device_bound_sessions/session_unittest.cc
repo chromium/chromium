@@ -67,7 +67,7 @@ SessionParams CreateValidParams() {
                        kRefreshUrlString,
                        std::move(scope),
                        std::move(cookie_credentials),
-                       unexportable_keys::UnexportableKeyId(),
+                       unexportable_keys::UnexportableSigningKeyId(),
                        /*allowed_refresh_initiators=*/{"*"}};
 }
 

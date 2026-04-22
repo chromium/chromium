@@ -243,7 +243,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions) {
   SessionParams params(
       session_id, url, "https://example.com/refresh", std::move(scope),
       {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-      unexportable_keys::UnexportableKeyId(), {"example.com"});
+      unexportable_keys::UnexportableSigningKeyId(), {"example.com"});
 
   net::CookieInclusionStatus status;
   auto cookie = net::CanonicalCookie::Create(
@@ -325,7 +325,7 @@ TEST_F(DeviceBoundSessionManagerTest,
   SessionParams params(
       session_id, url, "https://example.com/refresh", std::move(scope),
       {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-      unexportable_keys::UnexportableKeyId(), {"example.com"});
+      unexportable_keys::UnexportableSigningKeyId(), {"example.com"});
 
   net::CookieInclusionStatus status;
   auto cookie = net::CanonicalCookie::Create(
@@ -385,7 +385,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_InvalidCookie) {
   SessionParams params(
       session_id, url, "https://example.com/refresh", std::move(scope),
       {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-      unexportable_keys::UnexportableKeyId(), {"example.com"});
+      unexportable_keys::UnexportableSigningKeyId(), {"example.com"});
 
   // This cookie is HttpOnly and our CookieOptions will forbid setting that.
   net::CookieInclusionStatus status;
@@ -452,7 +452,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_MultipleSessions) {
     params_list.push_back(SessionParams(
         session_id_1, url, "https://example.com/refresh", std::move(scope),
         {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-        unexportable_keys::UnexportableKeyId(), {"example.com"}));
+        unexportable_keys::UnexportableSigningKeyId(), {"example.com"}));
   }
 
   {
@@ -462,7 +462,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_MultipleSessions) {
     params_list.push_back(SessionParams(
         session_id_2, url, "https://example.com/refresh", std::move(scope),
         {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-        unexportable_keys::UnexportableKeyId(), {"example.com"}));
+        unexportable_keys::UnexportableSigningKeyId(), {"example.com"}));
   }
 
   net::CookieOptions cookie_options;
@@ -533,7 +533,7 @@ TEST_F(DeviceBoundSessionManagerTest,
     params_list.push_back(SessionParams(
         session_id_1, url, "https://example.com/refresh", std::move(scope),
         {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-        unexportable_keys::UnexportableKeyId(), {"example.com"}));
+        unexportable_keys::UnexportableSigningKeyId(), {"example.com"}));
   }
 
   {
@@ -543,7 +543,7 @@ TEST_F(DeviceBoundSessionManagerTest,
     params_list.push_back(SessionParams(
         session_id_2, url, "https://example.com/refresh", std::move(scope),
         {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
-        unexportable_keys::UnexportableKeyId(), {""}));
+        unexportable_keys::UnexportableSigningKeyId(), {""}));
   }
 
   net::CookieOptions cookie_options;
@@ -594,7 +594,7 @@ TEST_F(DeviceBoundSessionManagerTest, OnSessionCreatedEvent) {
   std::vector<SessionParams> params_list;
   params_list.push_back(SessionParams(
       session_id, url, "https://example.com/refresh", SessionParams::Scope(),
-      {}, unexportable_keys::UnexportableKeyId(), {}));
+      {}, unexportable_keys::UnexportableSigningKeyId(), {}));
 
   base::test::TestFuture<
       const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
@@ -625,10 +625,10 @@ TEST_F(DeviceBoundSessionManagerTest, AddEventObserverAndInitialDisplays) {
   std::vector<SessionParams> params_list;
   params_list.push_back(SessionParams(
       session_id_1, url, "https://example.com/refresh1", SessionParams::Scope(),
-      {}, unexportable_keys::UnexportableKeyId(), {}));
+      {}, unexportable_keys::UnexportableSigningKeyId(), {}));
   params_list.push_back(SessionParams(
       session_id_2, url, "https://example.com/refresh2", SessionParams::Scope(),
-      {}, unexportable_keys::UnexportableKeyId(), {}));
+      {}, unexportable_keys::UnexportableSigningKeyId(), {}));
 
   base::test::TestFuture<
       const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,

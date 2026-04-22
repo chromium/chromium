@@ -128,7 +128,7 @@ bool StructTraits<network::mojom::DeviceBoundSessionParamsDataView,
   *out = net::device_bound_sessions::SessionParams(
       std::move(session_id), std::move(fetcher_url), std::move(refresh_url),
       std::move(scope), std::move(credentials),
-      unexportable_keys::UnexportableKeyId(),
+      unexportable_keys::UnexportableSigningKeyId(),
       std::move(allowed_refresh_initiators));
 
   return true;

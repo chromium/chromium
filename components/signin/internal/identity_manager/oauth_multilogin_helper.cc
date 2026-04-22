@@ -152,7 +152,7 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
       // Passing an arbitrary key in params as it will be
       // retrieved later from the wrapped key passed to
       // the `DeviceBoundSessionManager`.
-      unexportable_keys::UnexportableKeyId(),
+      unexportable_keys::UnexportableSigningKeyId(),
       registration_payload.allowed_refresh_initiators);
 }
 

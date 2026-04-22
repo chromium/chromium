@@ -617,10 +617,10 @@ TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
 
   SessionParams::Scope scope;
   scope.origin = kOrigin;
-  SessionParams params(kSessionId, kTestUrl, kRefreshUrlString,
-                       std::move(scope),
-                       /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
-                       /*allowed_refresh_initiators=*/{});
+  SessionParams params(
+      kSessionId, kTestUrl, kRefreshUrlString, std::move(scope),
+      /*creds=*/{}, unexportable_keys::UnexportableSigningKeyId(),
+      /*allowed_refresh_initiators=*/{});
 
   base::test::TestFuture<SessionError::ErrorType> add_session_future;
   service().AddSession(SchemefulSite(kTestUrl), std::move(params), wrapped_key,
@@ -1555,7 +1555,7 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
             nullptr, RegistrationResult(Session::CreateIfValid(SessionParams(
                          kSessionId, GURL(), "", SessionParams::Scope(),
                          std::vector<SessionParams::Credential>(),
-                         unexportable_keys::UnexportableKeyId(),
+                         unexportable_keys::UnexportableSigningKeyId(),
                          /*allowed_refresh_initiators=*/{}))));
       }));
   service().DeferRequestForRefresh(
@@ -2590,7 +2590,7 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
   scope.origin = "https://example.com";
   auto session_or_error = Session::CreateIfValid(SessionParams(
       "session_id", kTestUrl, "https://example.com/refresh", std::move(scope),
-      /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
+      /*creds=*/{}, unexportable_keys::UnexportableSigningKeyId(),
       /*allowed_refresh_initiators=*/{}));
   ASSERT_TRUE(session_or_error.has_value());
   std::unique_ptr<Session> session = std::move(*session_or_error);
@@ -3301,7 +3301,7 @@ TEST_F(SessionServiceImplTest, SessionDeletionDuringRefresh_ConfigChange) {
       std::unique_ptr<Session> session,
       Session::CreateIfValid(SessionParams(
           kSessionId, kTestUrl, "https://example.com/refresh", std::move(scope),
-          /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
+          /*creds=*/{}, unexportable_keys::UnexportableSigningKeyId(),
           /*allowed_refresh_initiators=*/{})));
   ASSERT_TRUE(session);
 

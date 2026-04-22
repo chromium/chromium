@@ -24,7 +24,7 @@ TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeSessionParams) {
   SessionParams input(
       "session_id", GURL("https://example.com/registration"), "/refresh",
       std::move(scope), {{"cookie_name", "Secure; SameSite=Lax"}},
-      unexportable_keys::UnexportableKeyId(),
+      unexportable_keys::UnexportableSigningKeyId(),
       {"*.allowed-refresh-initiator.com", "not-subdomains.com"});
   SessionParams output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<

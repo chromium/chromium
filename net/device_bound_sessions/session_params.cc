@@ -14,7 +14,7 @@ SessionParams::SessionParams(
     std::string refresh_url,
     Scope scope,
     std::vector<Credential> creds,
-    unexportable_keys::UnexportableKeyId key_id,
+    unexportable_keys::UnexportableSigningKeyId key_id,
     std::vector<std::string> allowed_refresh_initiators)
     : session_id(std::move(id)),
       fetcher_url(std::move(fetcher_url)),

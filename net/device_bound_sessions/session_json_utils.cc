@@ -117,7 +117,7 @@ ParseCredentials(const base::ListValue& credentials_list) {
 
 base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     GURL fetcher_url,
-    unexportable_keys::UnexportableKeyId key_id,
+    unexportable_keys::UnexportableSigningKeyId key_id,
     std::optional<std::string> expected_session_id,
     std::string_view response_json) {
   std::optional<base::DictValue> maybe_root = base::JSONReader::ReadDict(

@@ -231,11 +231,11 @@ class RegistrationTest : public TestWithTaskEnvironment {
   std::unique_ptr<Session> CreateTestSession(std::string session_identifier) {
     SessionParams::Scope scope;
     scope.origin = url::Origin::Create(GetBaseURL()).Serialize();
-    auto session_or_error = Session::CreateIfValid(
-        SessionParams(std::move(session_identifier), GetBaseURL(),
-                      GetBaseURL().spec(), std::move(scope),
-                      /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
-                      /*allowed_refresh_initiators=*/{}));
+    auto session_or_error = Session::CreateIfValid(SessionParams(
+        std::move(session_identifier), GetBaseURL(), GetBaseURL().spec(),
+        std::move(scope),
+        /*creds=*/{}, unexportable_keys::UnexportableSigningKeyId(),
+        /*allowed_refresh_initiators=*/{}));
     return std::move(*session_or_error);
   }
 

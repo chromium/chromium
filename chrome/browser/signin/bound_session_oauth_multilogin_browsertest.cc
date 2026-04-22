@@ -96,7 +96,7 @@ net::device_bound_sessions::SessionParams CreateTestSessionParams() {
           .name = "__Secure-1PSIDTS",
           .attributes = "Secure; HttpOnly; Domain=.google.com; "
                         "Path=/; SameSite=None"}},
-      unexportable_keys::UnexportableKeyId(),
+      unexportable_keys::UnexportableSigningKeyId(),
       /*allowed_refresh_initiators=*/{"*"});
   return params;
 }

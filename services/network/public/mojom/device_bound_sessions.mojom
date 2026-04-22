@@ -114,6 +114,8 @@ struct DeviceBoundSessionParams {
   array<string> allowed_refresh_initiators;
 };
 
+// Note: SessionParams in C++ uses UnexportableSigningKeyId, but it is not
+// passed over Mojo, so it's not present here.
 // LINT.ThenChange(//net/device_bound_sessions/session_params.h:SessionParams)
 
 // LINT.IfChange(DeviceBoundSessionError)

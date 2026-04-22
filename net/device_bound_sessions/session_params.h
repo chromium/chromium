@@ -55,7 +55,7 @@ struct NET_EXPORT SessionParams final {
                 std::string refresh_url,
                 Scope scope,
                 std::vector<Credential> creds,
-                unexportable_keys::UnexportableKeyId key_id,
+                unexportable_keys::UnexportableSigningKeyId key_id,
                 std::vector<std::string> allowed_refresh_initiators);
   SessionParams(SessionParams&& other) noexcept;
   SessionParams& operator=(SessionParams&& other) noexcept;
@@ -69,9 +69,7 @@ struct NET_EXPORT SessionParams final {
   std::string refresh_url;
   Scope scope;
   std::vector<Credential> credentials;
-  // TODO(crbug.com/501307307): Use UnexportableSigningKeyId instead of
-  // UnexportableKeyId.
-  unexportable_keys::UnexportableKeyId key_id;
+  unexportable_keys::UnexportableSigningKeyId key_id;
   std::vector<std::string> allowed_refresh_initiators;
 };
 // LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionParams)

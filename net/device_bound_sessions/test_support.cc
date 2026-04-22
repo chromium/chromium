@@ -414,7 +414,7 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
             RegistrationResult(Session::CreateIfValid(SessionParams(
                 session_id, GURL(refresh_url_string), refresh_url_string,
                 std::move(scope), std::move(cookie_credentials),
-                unexportable_keys::UnexportableKeyId(),
+                unexportable_keys::UnexportableSigningKeyId(),
                 /*allowed_refresh_initiators=*/{}))));
       },
       std::string(session_id), std::string(refresh_url_string),
