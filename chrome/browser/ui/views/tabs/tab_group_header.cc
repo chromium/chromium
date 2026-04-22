@@ -210,7 +210,6 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
         group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
     views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
         kTabGroupHeaderElementId, this);
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
     return true;
   }
 
