@@ -373,22 +373,27 @@ public class SetupListManager
         boolean isSignedIn =
                 identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
 
-        boolean isPwManagementEnabled =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.ANDROID_SETUP_LIST, PW_MANAGEMENT_PARAM, true);
-
-        if (moduleType == ModuleType.SAVE_PASSWORDS_PROMO) {
-            return isPwManagementEnabled && isSignedIn;
-        }
-
         if (moduleType == ModuleType.HISTORY_SYNC_PROMO) {
             return isSignedIn;
         }
 
-        if (moduleType == ModuleType.PASSWORD_CHECKUP_PROMO) {
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        // User should be signed in to display passwords related promos
+        boolean isPwManagementEnabled =
+                isSignedIn
+                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.ANDROID_SETUP_LIST, PW_MANAGEMENT_PARAM, true);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+
+        // Only a single password related promo should be visible at a time. Display the save
+        // password promo if the user doesn't have any saved passwords. If they have saved
+        // passwords, display the password checkup promo instead.
+        if (moduleType == ModuleType.SAVE_PASSWORDS_PROMO) {
             return isPwManagementEnabled
-                    && isSignedIn
+                    && !PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
+        }
+
+        if (moduleType == ModuleType.PASSWORD_CHECKUP_PROMO) {
+            return isPwManagementEnabled
                     && PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
         }
 

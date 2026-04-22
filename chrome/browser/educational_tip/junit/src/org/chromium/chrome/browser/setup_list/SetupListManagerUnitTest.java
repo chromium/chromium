@@ -145,10 +145,10 @@ public class SetupListManagerUnitTest {
         assertTrue(manager.getRankedModuleTypes().contains(ModuleType.HISTORY_SYNC_PROMO));
         assertFalse(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
 
-        // Enable Password Sync: Password Checkup should now appear.
+        // Enable Password Sync: Password Checkup should now appear and Save passwords should be
+        // hidden
         when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
         manager.maybePrimeCompletionStatus(mProfile);
-        assertTrue(manager.getRankedModuleTypes().contains(ModuleType.SAVE_PASSWORDS_PROMO));
         assertTrue(manager.getRankedModuleTypes().contains(ModuleType.HISTORY_SYNC_PROMO));
         assertTrue(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
 
@@ -552,7 +552,6 @@ public class SetupListManagerUnitTest {
 
         List<Integer> rankedModules = manager.getRankedModuleTypes();
         assertFalse(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
-        assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
         assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
     }
 
@@ -577,7 +576,6 @@ public class SetupListManagerUnitTest {
 
         List<Integer> rankedModules = manager.getRankedModuleTypes();
         assertTrue(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
-        assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
         assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
     }
 
