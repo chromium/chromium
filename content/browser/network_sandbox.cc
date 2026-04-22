@@ -370,6 +370,12 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // be granted access. Continue attempting to grant access to the other files
   // if this part fails.
   if (params->file_paths->http_cache_directory && params->http_cache_enabled) {
+    // Cache directory structure looks like this:
+    //
+    // Cache/
+    // |-- Cache_Data/ <- `http_cache_directory`
+    // \-- No_Vary_Search/ <- `no_vary_search_directory`
+    //
     // The path must exist for the cache ACL to be set. Create if needed.
     if (base::CreateDirectory(
             params->file_paths->http_cache_directory->path())) {
@@ -380,6 +386,8 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // get the inherited ACE rather than having to set them manually later.
       SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantCacheAccess");
       TRACE_EVENT("startup", "NetworkSandbox.MaybeGrantAccessToDataPath");
+      // Note: This function will ACL the parent directory to `Cache_Data` i.e.
+      // `Cache`.
       if (!MaybeGrantAccessToDataPath(
               sandbox_params, &*params->file_paths->http_cache_directory)) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "
@@ -389,11 +397,14 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
     // This is only used if disk caching is enabled.
     if (params->file_paths->no_vary_search_directory) {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "NetworkService.TimeToGrantNoVarySearchAccess");
-      CreateAndGrantAccessLoggingError(
-          sandbox_params, params->file_paths->no_vary_search_directory.value(),
-          "NoVarySearch");
+      CHECK_EQ(params->file_paths->no_vary_search_directory->path().DirName(),
+               params->file_paths->http_cache_directory->path().DirName())
+          << "No Vary Search and Cache must be siblings.";
+      // No vary search directory is always a sibling of `http_cache_directory`
+      // and `MaybeGrantAccessToDataPath` ACLs the parent dir, so the right ACLs
+      // have already been emplaced above.
+      base::CreateDirectory(
+          params->file_paths->no_vary_search_directory.value().path());
     }
   }
   if (params->file_paths->shared_dictionary_directory &&

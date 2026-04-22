@@ -5430,21 +5430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.TimeToGrantNoVarySearchAccess" units="ms"
-    expires_after="2026-09-06">
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time taken to permit the sandbox access to the no vary search
-    persistence directory during network context initialization. This is
-    recorded each time a network context is created with a no vary search
-    directory specified. This histogram is platform dependent so values from
-    different platforms cannot be directly compared. On Windows, this records
-    the amount of time taken to set the filesystem ACLs to allow the sandbox
-    access to the cache directory.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.TimeToGrantSharedDictionaryAccess" units="ms"
     expires_after="2026-08-30">
   <owner>pmeenan@chromium.org</owner>
