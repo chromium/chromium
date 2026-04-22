@@ -222,12 +222,6 @@ inline constexpr char kIosCredentialProviderPromoPolicyEnabled[] =
 inline constexpr char kIosCredentialProviderPromoStopPromo[] =
     "ios.credential_provider_promo.stop_promo";
 
-// Boolean to represent if the Credential Provider Promo has registered with
-// Promo Manager.
-inline constexpr char
-    kIosCredentialProviderPromoHasRegisteredWithPromoManager[] =
-        "ios.credential_provider_promo.has_registered_with_promo_manager";
-
 // The timestamp of the first time default browser blue dot promo was shown.
 inline constexpr char kIosDefaultBrowserBlueDotPromoFirstDisplay[] =
     "ios.default_browser_blue_dot_promo.first_display";
@@ -562,11 +556,6 @@ inline constexpr char kLensLastOpened[] = "ios.lens.last_opened";
 inline constexpr char kLensOverlayLastPresented[] =
     "ios.lens_overlay.last_presented";
 
-// Number of times the NTP Lens button "new" IPH badge has been shown.
-// This is set to INT_MAX when the user taps the button.
-inline constexpr char kNTPLensEntryPointNewBadgeShownCount[] =
-    "ios.ntp_lens_new_badge_shown_count";
-
 // Dict preference indicating what web annotation type is enabled by policy.
 inline constexpr char kWebAnnotationsPolicy[] = "ios.web_annotations_policy";
 
@@ -741,11 +730,6 @@ inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =
 // snackbar. Used to limit the frequency of this snackbar.
 inline constexpr char kIdentityConfirmationSnackbarDisplayCount[] =
     "ios.identity_confirmation_snackbar_display_count";
-
-// The number of times that the new badge has been shown on the Home
-// Customization menu's entrypoint.
-inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
-    "ios.home_customization.new_badge_impressions";
 
 // The number of times that the prominence alert about the user's push
 // notification silent authorization state has been shown.

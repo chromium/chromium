@@ -10,12 +10,6 @@ class PrefService;
 
 namespace safety_check_prefs {
 
-// Pref name that disables Safety Check.
-extern const char kSafetyCheckInMagicStackDisabledPref[];
-
-// Registers the prefs associated with Safety Check.
-void RegisterPrefs(PrefRegistrySimple* registry);
-
 // Returns `true` if Safety Check has been disabled by the user.
 bool IsSafetyCheckInMagicStackDisabled(PrefService* prefs);
 

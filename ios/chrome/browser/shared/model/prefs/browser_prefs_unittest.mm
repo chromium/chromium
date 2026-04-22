@@ -235,22 +235,12 @@ TEST_F(BrowserPrefsTest, CleanupObsoleteLocalStatePrefs) {
   local_state()->SetInteger(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
       4);
-  local_state()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount, 3);
-  local_state()->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
-                            99);
 
   ASSERT_FALSE(
       local_state()
           ->FindPreference(
               prefs::
                   kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  ASSERT_FALSE(local_state()
-                   ->FindPreference(prefs::kNTPLensEntryPointNewBadgeShownCount)
-                   ->IsDefaultValue());
-  ASSERT_FALSE(
-      local_state()
-          ->FindPreference(prefs::kNTPHomeCustomizationNewBadgeImpressionCount)
           ->IsDefaultValue());
 
   MigrateObsoleteLocalStatePrefs(local_state());
@@ -260,12 +250,5 @@ TEST_F(BrowserPrefsTest, CleanupObsoleteLocalStatePrefs) {
           ->FindPreference(
               prefs::
                   kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  EXPECT_TRUE(local_state()
-                  ->FindPreference(prefs::kNTPLensEntryPointNewBadgeShownCount)
-                  ->IsDefaultValue());
-  EXPECT_TRUE(
-      local_state()
-          ->FindPreference(prefs::kNTPHomeCustomizationNewBadgeImpressionCount)
           ->IsDefaultValue());
 }

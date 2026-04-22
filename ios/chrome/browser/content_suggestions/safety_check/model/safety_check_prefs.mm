@@ -12,13 +12,6 @@
 
 namespace safety_check_prefs {
 
-const char kSafetyCheckInMagicStackDisabledPref[] =
-    "safety_check_magic_stack.disabled";
-
-void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kSafetyCheckInMagicStackDisabledPref, false);
-}
-
 bool IsSafetyCheckInMagicStackDisabled(PrefService* prefs) {
   return !prefs->GetBoolean(safety_check::prefs::kSafetyCheckHomeModuleEnabled);
 }
