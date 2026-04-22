@@ -357,7 +357,7 @@ export class TrackedElementManager {
     // Observe the element itself for style/class changes that affect position.
     this.attributeMutationObserver_.observe(element, {
       attributes: true,
-      attributeFilter: ['style', 'class'],
+      attributeFilter: ['style', 'class', 'hidden'],
     });
 
     if (trackedElement.onHighlightChanged) {

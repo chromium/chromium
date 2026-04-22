@@ -167,12 +167,6 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, AccessibilityNode) {
 
 IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest,
                        ToggleHomeButtonVisibilityWithPref) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(https://crbug.com/500966638): Disabled on linux due to flakiness.
-  if (GetParam()) {
-    GTEST_SKIP() << "Skipping /1 version on Linux due to flakiness.";
-  }
-#endif
   RunTestSequence(
       // Start visible
       Do([this]() {

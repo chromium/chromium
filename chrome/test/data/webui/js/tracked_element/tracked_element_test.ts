@@ -228,6 +228,35 @@ suite('TrackedElementTest', function() {
     assertTrue(args[1]);  // visible
   });
 
+  test('Adding hidden attribute sends visibility false', async () => {
+    manager.startTracking(element, NATIVE_ID);
+    await waitForVisibilityEvents();
+    handler.reset();
+
+    element.hidden = true;
+    await waitForVisibilityEvents();
+
+    assertGT(handler.getCallCount('trackedElementVisibilityChanged'), 0);
+    const args = handler.getArgs('trackedElementVisibilityChanged')[0];
+    assertEquals(NATIVE_ID, args[0]);
+    assertFalse(args[1]);  // not visible
+  });
+
+  test('Removing hidden attribute sends visibility false', async () => {
+    element.hidden = true;
+    manager.startTracking(element, NATIVE_ID);
+    await waitForVisibilityEvents();
+    handler.reset();
+
+    element.hidden = false;
+    await waitForVisibilityEvents();
+
+    assertGT(handler.getCallCount('trackedElementVisibilityChanged'), 0);
+    const args = handler.getArgs('trackedElementVisibilityChanged')[0];
+    assertEquals(NATIVE_ID, args[0]);
+    assertTrue(args[1]);  // visible
+  });
+
   test('fixed element tracking', async () => {
     manager.startTracking(element, NATIVE_ID, {fixed: true});
     await microtasksFinished();
