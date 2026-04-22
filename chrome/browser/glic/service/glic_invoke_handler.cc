@@ -32,7 +32,6 @@ namespace glic {
 
 namespace {
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
-
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -165,7 +164,6 @@ void GlicInvokeHandler::Invoke() {
       std::make_unique<ShowInstanceTask>(&*instance_, show_options));
   tasks.push_back(
       std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
-
   if (options_.wait_for_panel_open) {
     tasks.push_back(std::make_unique<StabilizationTask>(tab_->GetContents()));
   }
@@ -173,29 +171,9 @@ void GlicInvokeHandler::Invoke() {
   tasks.push_back(std::make_unique<WaitForFreCompletionTask>(
       instance_->profile(), options_.fre_override));
 
-  tasks.push_back(std::make_unique<SendToClientTask>(
-      &*instance_, CreateMojoOptions(), auto_submit_passkey_));
-
-  if (options_.feature_mode == mojom::FeatureMode::kActuation) {
-    auto on_actuation_started = base::BindOnce(
-        [](base::WeakPtr<GlicInvokeHandler> handler) {
-          if (handler) {
-            handler->timeout_timer_.Stop();
-          }
-        },
-        weak_ptr_factory_.GetWeakPtr());
-
-    tasks.push_back(std::make_unique<WaitForActuationTask>(
-        &*instance_, options_.timeout.value_or(kDefaultTimeout),
-        options_.actuation_timeout.value_or(base::Minutes(10)),
-        base::BindOnce(&GlicInvokeHandler::OnError,
-                       weak_ptr_factory_.GetWeakPtr()),
-        std::move(on_actuation_started)));
-  }
-
   main_task_ = std::make_unique<SequentialTaskGroup>(std::move(tasks));
 
-  main_task_->Start(base::BindOnce(&GlicInvokeHandler::OnSuccess,
+  main_task_->Start(base::BindOnce(&GlicInvokeHandler::SendToClient,
                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -207,7 +185,23 @@ bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
   return false;
 }
 
+void GlicInvokeHandler::SendToClient() {
+  if (!instance_->host().IsWebClientConnected()) {
+    OnError(GlicInvokeError::kTimeout);
+    return;
+  }
 
+  if (auto_submit_passkey_) {
+    instance_->host().InvokeWithAutoSubmit(
+        *auto_submit_passkey_, CreateMojoOptions(),
+        base::BindOnce(&GlicInvokeHandler::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    instance_->host().Invoke(CreateMojoOptions(),
+                             base::BindOnce(&GlicInvokeHandler::OnSuccess,
+                                            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
   tab_ = nullptr;

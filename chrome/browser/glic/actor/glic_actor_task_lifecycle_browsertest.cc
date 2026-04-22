@@ -418,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
                        ActuatingChangedCallback) {
   GlicInstanceImpl* instance = GetGlicInstanceImpl();
   ASSERT_TRUE(instance);
-  GlicActorTaskManager* task_manager = instance->GetActorTaskManager();
+  GlicActorTaskManager* task_manager =
+      instance->GetActorTaskManagerForTesting();
   ASSERT_TRUE(task_manager);
 
   TestFuture<bool> actuating_true_future;

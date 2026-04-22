@@ -266,7 +266,7 @@ class GlicInstanceImpl : public GlicInstance,
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
-  GlicActorTaskManager* GetActorTaskManager() {
+  GlicActorTaskManager* GetActorTaskManagerForTesting() {
     return actor_task_manager_.get();
   }
 
