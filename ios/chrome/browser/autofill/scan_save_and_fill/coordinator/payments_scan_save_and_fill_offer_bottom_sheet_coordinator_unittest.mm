@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -24,7 +25,6 @@
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetCoordinator (Testing) <
     PaymentsScanSaveAndFillOfferBottomSheetDelegate>
-- (void)viewDismissedAfterTapScanCardButton;
 @end
 
 class PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest
@@ -89,15 +89,42 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
 
-// Tests that `viewDismissedAfterTapScanCardButton` triggers the
+// Tests that `didTapScanCardButton` triggers the
 // `dismissPaymentSuggestions` command.
 TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
-       ViewDismissedAfterTapScanCardButton) {
+       DidTapScanCardButton) {
   [coordinator_ start];
 
-  [[mock_commands_handler_ expect] dismissPaymentSuggestions];
+  __block BOOL method_invoked = NO;
+  [[[mock_commands_handler_ expect] andDo:^(NSInvocation* invocation) {
+    method_invoked = YES;
+  }] dismissPaymentSuggestions];
 
-  [coordinator_ viewDismissedAfterTapScanCardButton];
+  [coordinator_ didTapScanCardButton];
 
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return method_invoked;
+      }));
+  EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+}
+
+// Tests that `didTapOnCancelButton` triggers the
+// `dismissPaymentSuggestions` command.
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetCoordinatorTest,
+       DidTapOnCancelButton) {
+  [coordinator_ start];
+
+  __block BOOL method_invoked = NO;
+  [[[mock_commands_handler_ expect] andDo:^(NSInvocation* invocation) {
+    method_invoked = YES;
+  }] dismissPaymentSuggestions];
+
+  [coordinator_ didTapOnCancelButton];
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return method_invoked;
+      }));
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }

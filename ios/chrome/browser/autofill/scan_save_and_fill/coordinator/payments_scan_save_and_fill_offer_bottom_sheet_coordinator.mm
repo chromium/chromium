@@ -81,6 +81,7 @@
 
   _viewController.parentViewControllerHeight =
       self.baseViewController.view.frame.size.height;
+  _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -134,22 +135,30 @@
   // Disable user interactions on the root view of the view controller so any
   // further user action isn't allowed. Only one action is allowed on the sheet.
   _viewController.view.userInteractionEnabled = NO;
-  __weak __typeof(self) weakSelf = self;
-  [_viewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf viewDismissedAfterTapScanCardButton];
-                         }];
-
-  [_mediator disconnect];
-}
-
-- (void)viewDismissedAfterTapScanCardButton {
   [_mediator didAcceptScanCardSuggestion];
-  [self paymentsBottomSheetDidDisappear];
+
+  _viewController.delegate = nil;
+  [_mediator disconnect];
+
+  __weak id<BrowserCoordinatorCommands> weakHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [_viewController dismissViewControllerAnimated:YES
+                                      completion:^{
+                                        [weakHandler dismissPaymentSuggestions];
+                                      }];
 }
 
 - (void)didTapOnCancelButton {
+  _viewController.delegate = nil;
+  [_mediator disconnect];
+
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  __weak id<BrowserCoordinatorCommands> weakHandler = handler;
+  [_viewController dismissViewControllerAnimated:YES
+                                      completion:^{
+                                        [weakHandler dismissPaymentSuggestions];
+                                      }];
 }
 
 @end
