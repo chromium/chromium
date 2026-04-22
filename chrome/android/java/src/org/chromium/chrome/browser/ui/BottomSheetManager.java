@@ -343,6 +343,11 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             maybeUpdateLayerHeight();
         }
 
+        @Override
+        public void onContainerSizeChanged(int newWidth, int newHeight) {
+            maybeUpdateLayerHeight();
+        }
+
         // BottomControlsLayer
 
         @Override
@@ -405,6 +410,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             }
             if (mSheetController.getSheetState() == BottomSheetController.SheetState.HIDDEN
                     || mSheetController.isSheetHiding()) {
+                return 0;
+            }
+            if (!mSheetController.isFullWidth()) {
                 return 0;
             }
             BottomSheetContent content = mSheetController.getCurrentSheetContent();
