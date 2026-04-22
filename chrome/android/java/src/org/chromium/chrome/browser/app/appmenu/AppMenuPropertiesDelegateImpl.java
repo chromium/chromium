@@ -747,7 +747,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     protected boolean shouldShowPageInfoItem() {
-        return (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() && !mIsTablet)
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
                 || ChromeFeatureList.sThreeDotMenuBackButton.isEnabled();
     }
 
