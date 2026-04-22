@@ -8,6 +8,7 @@
 // sufficient and simpler than a full `RunTestSequence`.
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -1706,6 +1708,78 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Wait for the task to complete. It should complete when the timer fires,
   // and it should not crash.
   EXPECT_TRUE(done_future.Wait());
+}
+
+class GlicInstanceCoordinatorActuationBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorActuationBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
+                       InvokeDelayedSuccessOnActuation) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(instance);
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+
+  GlicInvokeOptions options(Target(active_tab),
+                            glic::mojom::InvocationSource::kOsButton);
+  options.feature_mode = mojom::FeatureMode::kActuation;
+
+  base::test::TestFuture<void> success_future;
+  options.on_success = success_future.GetCallback();
+
+  // Create a completion callback for the handler itself.
+  base::test::TestFuture<void> handler_completion_future;
+  auto handler = std::make_unique<GlicInvokeHandler>(
+      *instance, GlicInvokeHandler::ResolvedTarget{active_tab, false},
+      std::move(options), std::nullopt,
+      base::BindLambdaForTesting([&](GlicInstance*, GlicInvokeHandler*) {
+        handler_completion_future.SetValue();
+      }));
+
+  // Create a task first to ensure IsActuating is true when WaitForActuationTask
+  // starts.
+  base::test::TestFuture<
+      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
+      create_task_future;
+  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
+                       create_task_future.GetCallback());
+  ASSERT_TRUE(create_task_future.Get().has_value());
+  actor::TaskId task_id(create_task_future.Get().value());
+
+  handler->Invoke();
+
+  // Verify that on_success is NOT called yet.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // Simulate an actuation taking place.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(5));
+    run_loop.Run();
+  }
+
+  // Verify we still have not completed the invocation.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // Stop the task and verify callback IS called.
+  instance->StopActorTask(task_id,
+                          glic::mojom::ActorTaskStopReason::kTaskComplete);
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // Wait for the handler to complete.
+  EXPECT_TRUE(handler_completion_future.Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

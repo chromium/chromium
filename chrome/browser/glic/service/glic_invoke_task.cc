@@ -176,4 +176,118 @@ bool WaitForFreCompletionTask::ShouldWaitForFreCompletion() const {
          fre_override_ == mojom::FreOverride::kUnspecified;
 }
 
+SendToClientTask::SendToClientTask(
+    GlicInstanceImpl* instance,
+    mojom::InvokeOptionsPtr mojo_options,
+    std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey)
+    : instance_(instance),
+      mojo_options_(std::move(mojo_options)),
+      auto_submit_passkey_(std::move(auto_submit_passkey)) {}
+
+SendToClientTask::~SendToClientTask() = default;
+
+void SendToClientTask::Start(base::OnceClosure done_callback) {
+  done_callback_ = std::move(done_callback);
+  if (auto_submit_passkey_) {
+    instance_->host().InvokeWithAutoSubmit(
+        *auto_submit_passkey_, std::move(mojo_options_),
+        base::BindOnce(&SendToClientTask::OnAck,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    instance_->host().Invoke(std::move(mojo_options_),
+                             base::BindOnce(&SendToClientTask::OnAck,
+                                            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void SendToClientTask::OnAck() {
+  std::move(done_callback_).Run();
+}
+
+// TODO(b/505088942): Add more robust error handling.
+WaitForActuationTask::WaitForActuationTask(
+    GlicInstanceImpl* instance,
+    base::TimeDelta start_timeout,
+    base::TimeDelta complete_timeout,
+    base::OnceCallback<void(GlicInvokeError)> error_callback,
+    base::OnceClosure on_actuation_started)
+    : instance_(instance),
+      start_timeout_(start_timeout),
+      complete_timeout_(complete_timeout),
+      error_callback_(std::move(error_callback)),
+      on_actuation_started_(std::move(on_actuation_started)) {}
+
+WaitForActuationTask::~WaitForActuationTask() = default;
+
+void WaitForActuationTask::Start(base::OnceClosure done_callback) {
+  done_callback_ = std::move(done_callback);
+
+  GlicActorTaskManager* task_manager = instance_->GetActorTaskManager();
+  if (!task_manager) {
+    std::move(error_callback_).Run(GlicInvokeError::kInvalidConfiguration);
+    return;
+  }
+
+  sub_task_ = std::make_unique<WaitForActuationStateTask>(instance_, true);
+  sub_task_->Start(base::BindOnce(&WaitForActuationTask::OnActuationStarted,
+                                  base::Unretained(this)));
+
+  timer_.Start(FROM_HERE, start_timeout_,
+               base::BindOnce(&WaitForActuationTask::OnStartTimeout,
+                              base::Unretained(this)));
+}
+
+void WaitForActuationTask::OnActuationStarted() {
+  timer_.Stop();
+
+  sub_task_ = std::make_unique<WaitForActuationStateTask>(instance_, false);
+  sub_task_->Start(std::move(done_callback_));
+
+  timer_.Start(FROM_HERE, complete_timeout_,
+               base::BindOnce(&WaitForActuationTask::OnCompleteTimeout,
+                              base::Unretained(this)));
+  if (on_actuation_started_) {
+    std::move(on_actuation_started_).Run();
+  }
+}
+
+void WaitForActuationTask::OnStartTimeout() {
+  sub_task_.reset();
+  std::move(error_callback_).Run(GlicInvokeError::kTimeout);
+}
+
+void WaitForActuationTask::OnCompleteTimeout() {
+  sub_task_.reset();
+  std::move(error_callback_).Run(GlicInvokeError::kTimeout);
+}
+
+WaitForActuationStateTask::WaitForActuationStateTask(GlicInstanceImpl* instance,
+                                                     bool wait_for_actuating)
+    : instance_(instance), wait_for_actuating_(wait_for_actuating) {}
+
+WaitForActuationStateTask::~WaitForActuationStateTask() = default;
+
+void WaitForActuationStateTask::Start(base::OnceClosure done_callback) {
+  done_callback_ = std::move(done_callback);
+  GlicActorTaskManager* task_manager = instance_->GetActorTaskManager();
+  CHECK(task_manager);
+
+  if (task_manager->IsActuating() == wait_for_actuating_) {
+    std::move(done_callback_).Run();
+    return;
+  }
+
+  subscription_ = task_manager->AddActuatingChangedCallback(base::BindRepeating(
+      &WaitForActuationStateTask::OnActuatingChanged, base::Unretained(this)));
+}
+
+void WaitForActuationStateTask::OnActuatingChanged(bool actuating) {
+  if (actuating == wait_for_actuating_) {
+    subscription_ = {};
+    if (done_callback_) {
+      std::move(done_callback_).Run();
+    }
+  }
+}
+
 }  // namespace glic
