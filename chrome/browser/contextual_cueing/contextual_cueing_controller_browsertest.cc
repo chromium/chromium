@@ -121,7 +121,7 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
   }
 
   void SimulateFilterPassed(
-      const GURL& url = GURL("https://www.activetab.com")) {
+      const GURL& url = GURL("https://www.activetab.com/abc")) {
     content::WebContents* active_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(active_web_contents);
@@ -179,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Have browser navigate to a valid URL.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.example.com/abc")));
 
   // Navigate to different page.
   ASSERT_TRUE(
@@ -188,8 +188,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // URL won't match whatever navigated since it does not match the active tab.
   contextual_cueing_controller()->OnPageContentAnnotated(
-      page_content_annotations::HistoryVisit(base::Time::Now(),
-                                             GURL("https://www.example.com")),
+      page_content_annotations::HistoryVisit(
+          base::Time::Now(), GURL("https://www.example.com/abc")),
       page_content_annotations::PageContentAnnotationsResult::
           CreateCategoryResults({
               page_content_annotations::Category(
@@ -206,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        FailedCategoryClassification) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.example.com/abc")));
 
   base::HistogramTester histogram_tester;
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           active_web_contents->GetController()
               .GetLastCommittedEntry()
               ->GetTimestamp(),
-          GURL("https://www.example.com")),
+          GURL("https://www.example.com/abc")),
       page_content_annotations::PageContentAnnotationsResult::
           CreateCategoryResults({
               page_content_annotations::Category(
@@ -235,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        PassesFilterButModelExecutionFailed) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.example.com/abc")));
 
   base::HistogramTester histogram_tester;
 
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           active_web_contents->GetController()
               .GetLastCommittedEntry()
               ->GetTimestamp(),
-          GURL("https://www.example.com")),
+          GURL("https://www.example.com/abc")),
       page_content_annotations::PageContentAnnotationsResult::
           CreateCategoryResults({
               page_content_annotations::Category(
@@ -273,8 +273,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        PassesFilterAndModelExecutionSucceeded) {
   // Navigate current Chrome tab to a valid URL (and will be in the background
   // in final state).
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.someurl.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.someurl.com/abc")));
 
   // Create a new tab that is specifically a URL that would normally be skipped
   // (will be in the background in final state).
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Navigate to a new eligible tab to be in the foreground (current active
   // tab).
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.example.com"),
+      browser(), GURL("https://www.example.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           active_web_contents->GetController()
               .GetLastCommittedEntry()
               ->GetTimestamp(),
-          GURL("https://www.example.com")),
+          GURL("https://www.example.com/abc")),
       page_content_annotations::PageContentAnnotationsResult::
           CreateCategoryResults({
               page_content_annotations::Category(
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, Ineligible) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   ASSERT_FALSE(cue_target_->HasClickData());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoLongerActiveTabAfterResponse) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // Open new tab in foreground right away.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.example.com"),
+      browser(), GURL("https://www.example.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        FeaturePromoActive) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, HistorySyncOff) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com"),
+      browser(), GURL("https://www.activetab.com/abc"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
     // Navigate to a valid URL.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL("https://www.activetab.com")));
+        browser(), GURL("https://www.activetab.com/abc")));
 
     SeedExecutionResult(MakeCompleteResponse());
     SimulateFilterPassed();
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
     // Simulate a new page load.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL("https://www.activetab.com")));
+        browser(), GURL("https://www.activetab.com/abc")));
     SimulateFilterPassed();
 
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -593,6 +593,24 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   GURL search_url("https://duckduckgo.com/?q=test");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
   SimulateFilterPassed(search_url);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Should not be shown.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUrlNotEligible,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       HomePageNotEligible) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate a new page load.
+  GURL homepage_url("https://activetab.com/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), homepage_url));
+  SimulateFilterPassed(homepage_url);
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);

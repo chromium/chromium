@@ -42,6 +42,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -53,6 +54,10 @@
 namespace contextual_cueing {
 
 namespace {
+
+const char kHomepagePathRegex[] =
+    "(?i)(/(en\\/)?((index|default|home|homepage|main|welcome)(\\.[^/"
+    "?;]+)?)?)?";
 
 // Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where
 // optimization_keyed_service_ is defined.
@@ -366,6 +371,9 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
   }
   if (template_url_service_ &&
       template_url_service_->ExtractSearchMetadata(url)) {
+    return false;
+  }
+  if (RE2::FullMatch(url.path(), kHomepagePathRegex)) {
     return false;
   }
   return true;
