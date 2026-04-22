@@ -74,6 +74,14 @@ if (is_android) {
   }
 }
 
+source_set("features") {
+  sources = [
+    "composebox_features.cc",
+    "composebox_features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "string_cleaning_unittest.cc" ]
