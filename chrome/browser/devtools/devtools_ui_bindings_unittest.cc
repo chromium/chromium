@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
@@ -17,12 +18,15 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -35,6 +39,183 @@
 using testing::_;
 
 class DevToolsUIBindingsTest : public testing::Test {};
+
+class DevToolsUIBindingsLoadNetworkResourceTest : public testing::Test {
+ public:
+  void SetUp() override {
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    bindings_ = std::make_unique<DevToolsUIBindings>(web_contents_);
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+  DevToolsUIBindings* bindings() { return bindings_.get(); }
+
+  void CallLoadNetworkResource(const std::string& url,
+                               const std::string& headers,
+                               int stream_id,
+                               DevToolsUIBindings::DispatchCallback callback) {
+    bindings_->LoadNetworkResource(std::move(callback), url, headers,
+                                   stream_id);
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<DevToolsUIBindings> bindings_;
+};
+
+class MockDevToolsUIBindingsDelegate : public DevToolsUIBindings::Delegate {
+ public:
+  explicit MockDevToolsUIBindingsDelegate(
+      content::WebContents* inspected_web_contents)
+      : inspected_web_contents_(inspected_web_contents) {}
+
+  content::WebContents* GetInspectedWebContents() override {
+    return inspected_web_contents_;
+  }
+  void ActivateWindow() override {}
+  void CloseWindow() override {}
+  void Inspect(scoped_refptr<content::DevToolsAgentHost> host) override {}
+  void SetInspectedPageBounds(const gfx::Rect& rect) override {}
+  void InspectElementCompleted() override {}
+  void SetIsDocked(bool is_docked) override {}
+  void OpenInNewTab(const std::string& url) override {}
+  void OpenSearchResultsInNewTab(const std::string& query) override {}
+  void SetWhitelistedShortcuts(const std::string& message) override {}
+  void SetEyeDropperActive(bool active) override {}
+  void OpenNodeFrontend() override {}
+  void InspectedContentsClosing() override {}
+  void OnLoadCompleted() override {}
+  void ReadyForTest() override {}
+  void ConnectionReady() override {}
+  void SetOpenNewWindowForPopups(bool value) override {}
+  infobars::ContentInfoBarManager* GetInfoBarManager() override {
+    return nullptr;
+  }
+  void RenderProcessGone(bool crashed) override {}
+  void ShowCertificateViewer(const std::string& cert_chain) override {}
+  int GetDockStateForLogging() override { return 0; }
+  int GetOpenedByForLogging() override { return 0; }
+  int GetClosedByForLogging() override { return 0; }
+
+ private:
+  raw_ptr<content::WebContents> inspected_web_contents_;
+};
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       BlocksFileSchemeFromRemoteFrontend) {
+  // Simulate a remote frontend URL.
+  GURL remote_url(
+      "https://chrome-devtools-frontend.appspot.com/serve_rev/@12345/"
+      "inspector.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             remote_url);
+
+  base::RunLoop run_loop;
+  base::DictValue result;
+
+  CallLoadNetworkResource(
+      "file:///etc/passwd", "", 0,
+      base::BindLambdaForTesting([&](const base::Value* value) {
+        result = value->GetDict().Clone();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(result.FindInt("statusCode"), 403);
+  ASSERT_NE(result.FindString("messageOverride"), nullptr);
+  EXPECT_EQ(*result.FindString("messageOverride"),
+            "Local file loading is restricted for remote DevTools. Use "
+            "--allow-unsafe-devtools-remote-file-loading to enable it.");
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       AllowsFileSchemeFromRemoteFrontendWithFlag) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kAllowUnsafeDevToolsRemoteFileLoading);
+
+  GURL remote_url(
+      "https://chrome-devtools-frontend.appspot.com/serve_rev/@12345/"
+      "inspector.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             remote_url);
+
+  base::RunLoop run_loop;
+  base::DictValue result;
+
+  CallLoadNetworkResource(
+      "file:///etc/passwd", "", 0,
+      base::BindLambdaForTesting([&](const base::Value* value) {
+        result = value->GetDict().Clone();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  auto* msg = result.FindString("messageOverride");
+  EXPECT_EQ(msg, nullptr);
+  EXPECT_NE(result.FindInt("statusCode"), 403);
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       AllowsFileSchemeFromLocalFrontend) {
+  GURL local_url("devtools://devtools/bundled/devtools_app.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             local_url);
+
+  base::RunLoop run_loop;
+  base::DictValue result;
+
+  CallLoadNetworkResource(
+      "file:///etc/passwd", "", 0,
+      base::BindLambdaForTesting([&](const base::Value* value) {
+        result = value->GetDict().Clone();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  auto* msg = result.FindString("messageOverride");
+  EXPECT_EQ(msg, nullptr);
+  EXPECT_NE(result.FindInt("statusCode"), 403);
+}
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       BlocksFileSchemeFromRemoteFrontendWithLocalTarget) {
+  GURL remote_url(
+      "https://chrome-devtools-frontend.appspot.com/serve_rev/@12345/"
+      "inspector.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             remote_url);
+
+  content::WebContents* inspected_web_contents =
+      web_contents_factory_.CreateWebContents(profile_.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      inspected_web_contents, GURL("file:///tmp/index.html"));
+
+  auto delegate =
+      std::make_unique<MockDevToolsUIBindingsDelegate>(inspected_web_contents);
+  bindings()->SetDelegate(delegate.release());
+
+  base::RunLoop run_loop;
+  base::DictValue result;
+
+  CallLoadNetworkResource(
+      "file:///etc/passwd", "", 0,
+      base::BindLambdaForTesting([&](const base::Value* value) {
+        result = value->GetDict().Clone();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(result.FindInt("statusCode"), 403);
+  ASSERT_NE(result.FindString("messageOverride"), nullptr);
+  EXPECT_EQ(*result.FindString("messageOverride"),
+            "Local file loading is restricted for remote DevTools. Use "
+            "--allow-unsafe-devtools-remote-file-loading to enable it.");
+}
 
 TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
   std::vector<std::pair<std::string, std::string>> tests = {
