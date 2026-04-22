@@ -207,8 +207,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnUserInputSubmitted(mojom::WebClientMode mode) override;
   void OnResponseStarted() override;
   void OnResponseStopped(mojom::ResponseStopCause cause) override;
-  void OnTurnCompleted(mojom::WebClientModel model,
-                       base::TimeDelta duration) override;
   void DidRequestContextFromTab(tabs::TabInterface& tab) override;
 
   // See glic.mojom for details. These are events from the web client. The

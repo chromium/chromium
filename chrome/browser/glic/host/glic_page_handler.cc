@@ -1710,12 +1710,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnSessionTerminated();
   }
 
-  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
-  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnTurnCompleted(glic::mojom::WebClientModel model,
                        base::TimeDelta duration) override {
-    host().instance_metrics_backwards_compatibility().OnTurnCompleted(model,
-                                                                      duration);
+    host().instance_metrics()->OnTurnCompleted(model, duration);
   }
 
   void OnResponseRated(bool positive) override {

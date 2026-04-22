@@ -26,8 +26,6 @@ class GlicInstanceMetricsBackwardsCompatibility {
   virtual void DidRequestContextFromTab(tabs::TabInterface& tab) = 0;
   virtual void OnResponseStarted() = 0;
   virtual void OnResponseStopped(mojom::ResponseStopCause cause) = 0;
-  virtual void OnTurnCompleted(mojom::WebClientModel model,
-                               base::TimeDelta duration) = 0;
 };
 
 }  // namespace glic

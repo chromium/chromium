@@ -2166,20 +2166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Response.TurnDuration.{Mode}" units="ms"
-    expires_after="2026-07-26">
-  <owner>dtapuska@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded at the end of a turn response from the server indicating the time
-    the entire request/response sequence took.
-  </summary>
-  <token key="Mode">
-    <variant name="Actor" summary="Recorded when the actor model is used."/>
-    <variant name="Default" summary="Recorded when the default model is used."/>
-  </token>
-</histogram>
-
 <histogram name="Glic.ScrollTo.ErrorReason" enum="GlicScrollToErrorReason"
     expires_after="2027-01-15">
   <owner>liuwilliam@google.com</owner>
