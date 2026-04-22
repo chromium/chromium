@@ -7,7 +7,6 @@ import {SpeechController} from '../read_aloud/speech_controller.js';
 import {getRectIndexAtY, getRectsForSegments} from '../shared/dom_queries.js';
 import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
-import {calculateTextBounds} from '../shared/rect_calculations.js';
 
 import {LineFocusModel} from './line_focus_model.js';
 import {LineFocusCursorMoveMode, LineFocusNoneMoveMode, LineFocusStaticMoveMode} from './line_focus_move_mode.js';
@@ -20,11 +19,6 @@ export interface LineFocusListener {
   onNeedScrollToTop(): void;
   onLineFocusToggled(): void;
 }
-
-// Used to prevent microadjustments of the line focus window when adjusting to
-// new line heights as it can be distracting for no functional difference.
-// Determined by experimentation and should be tweaked as needed.
-const SCROLL_THRESHOLD = 10;
 
 // Handles the business logic for managing the line focus feature.
 export class LineFocusController implements MoveModeDelegate {
@@ -144,7 +138,8 @@ export class LineFocusController implements MoveModeDelegate {
         !this.isStatic()) {
       this.model_.setCurrentLineIndex(null);
       const previousY = this.model_.getFocalPoint();
-      this.setY_(Math.max(this.model_.getMinY(), y));
+      this.model_.getCurrentMoveMode().setFocalPoint(
+          Math.max(this.model_.getMinY(), y));
       chrome.readingMode.addLineFocusMouseDistance(
           Math.round(Math.abs(this.model_.getFocalPoint() - previousY)));
     }
@@ -157,7 +152,8 @@ export class LineFocusController implements MoveModeDelegate {
       // in the toolbar, which means they are likely trying to change some
       // settings. onAllMenusClose will notify them of the final position when
       // all the settings menus are closed.
-      this.setY_(Math.max(this.model_.getMinY(), y), /* quietly= */ true);
+      this.model_.getCurrentMoveMode().setFocalPoint(
+          Math.max(this.model_.getMinY(), y), /* quietly= */ true);
     }
   }
 
@@ -180,15 +176,16 @@ export class LineFocusController implements MoveModeDelegate {
             sortedRects[0]!)) {
       chrome.readingMode.incrementLineFocusSpeechLines();
     }
-    this.setyOrScroll_(sortedRects[0]!);
+    this.model_.getCurrentMoveMode().moveToRect(sortedRects[0]!);
 
     // If line focus would go off screen, scroll the text to the center.
     const height = this.getHeight() || 0;
     const bottom = this.getTop() + height;
     if (bottom > this.model_.getMaxY()) {
-      this.scroll_(bottom - (this.model_.getMaxY() / 2));
+      this.model_.getCurrentMoveMode().scroll(
+          bottom - (this.model_.getMaxY() / 2));
     } else if (this.getTop() < this.model_.getMinY()) {
-      this.scroll_(
+      this.model_.getCurrentMoveMode().scroll(
           this.model_.getMinY() + this.model_.getFocalPoint() -
           (this.model_.getMaxY() / 2));
     }
@@ -220,7 +217,8 @@ export class LineFocusController implements MoveModeDelegate {
         // Re-center the line that's in focus when text locations change in
         // cursor mode. Scroll instantly to reduce dizzying movement.
         if (!this.isStatic()) {
-          this.scrollToCenter_(lines, clampedIndex, /*instant=*/ true);
+          this.model_.getCurrentMoveMode().scrollToCenter(
+              lines, clampedIndex, /*instant=*/ true);
         }
       }
 
@@ -232,7 +230,8 @@ export class LineFocusController implements MoveModeDelegate {
         return;
       }
 
-      this.setY_(this.model_.getFocalPoint());
+      this.model_.getCurrentMoveMode().setFocalPoint(
+          this.model_.getFocalPoint());
     }
   }
 
@@ -265,7 +264,7 @@ export class LineFocusController implements MoveModeDelegate {
     const wasEnabled = this.isEnabled();
     this.updateStrategies_(style, movement);
     this.propagateLineFocus_(style, movement);
-    this.model_.getCurrentMoveMode().onActivated();
+    this.model_.getCurrentMoveMode().onActivated(container, height);
     if (style !== LineFocusStyle.OFF) {
       this.updateLineFocus_(wasEnabled, container, height);
     }
@@ -298,10 +297,11 @@ export class LineFocusController implements MoveModeDelegate {
     if (this.isStatic()) {
       this.setCenterY_();
     } else if (!wasEnabled && this.model_.getTextBounds().length > 0) {
-      this.initializeSnapIndex_(
+      this.model_.getCurrentMoveMode().initializeSnapIndex(
           this.model_.getTextBounds(), /*isForward=*/ true);
     } else {
-      this.setY_(Math.max(this.model_.getMinY(), this.model_.getFocalPoint()));
+      this.model_.getCurrentMoveMode().setFocalPoint(
+          Math.max(this.model_.getMinY(), this.model_.getFocalPoint()));
     }
   }
 
@@ -343,7 +343,7 @@ export class LineFocusController implements MoveModeDelegate {
     // closest line to the current Y.
     const currentIndex = this.model_.getCurrentLineIndex();
     if (currentIndex === null) {
-      this.initializeSnapIndex_(lines, isForward);
+      this.model_.getCurrentMoveMode().initializeSnapIndex(lines, isForward);
       const linesToLog = this.getCurrentLineFocusLines_();
       for (let i = 0; i < linesToLog; i++) {
         chrome.readingMode.incrementLineFocusKeyboardLines();
@@ -352,17 +352,6 @@ export class LineFocusController implements MoveModeDelegate {
     }
 
     this.updateSnapIndex_(lines, currentIndex, isForward);
-  }
-
-  private initializeSnapIndex_(lines: DOMRect[], isForward: boolean) {
-    const rawIndex = getRectIndexAtY(
-        this.model_.getFocalPoint(), this.model_.getTextBounds(),
-        /*isForward=*/ isForward);
-    const safeIndex =
-        this.model_.getCurrentStyleMode().clampLineIndex(rawIndex);
-
-    this.model_.setCurrentLineIndex(safeIndex);
-    this.setyOrScroll_(lines[safeIndex]!);
   }
 
   private updateSnapIndex_(
@@ -398,10 +387,10 @@ export class LineFocusController implements MoveModeDelegate {
       // const scrollDiff = lines[nextIndex]! - lines[clampedIndex]!;
 
       // Center it vertically.
-      this.scrollToCenter_(lines, clampedIndex);
+      this.model_.getCurrentMoveMode().scrollToCenter(lines, clampedIndex);
     } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
       chrome.readingMode.incrementLineFocusKeyboardLines();
-      this.setyOrScroll_(lines[nextIndex]!);
+      this.model_.getCurrentMoveMode().moveToRect(lines[nextIndex]!);
     }
 
     // If the user has navigated back to the top of the panel, but there's
@@ -411,70 +400,38 @@ export class LineFocusController implements MoveModeDelegate {
     }
   }
 
-  private scrollToCenter_(
-      lines: DOMRect[], targetIndex: number, instant: boolean = false) {
-    const desiredCenter =
-        this.model_.getCurrentStyleMode().getDesiredCenter(lines, targetIndex);
-    const scrollDiff = desiredCenter - (this.model_.getMaxY() / 2);
-    this.scroll_(scrollDiff, instant);
-  }
-
   private getCurrentLineFocusLines_(): number {
     return this.getCurrentLineFocusStyle().lines;
   }
 
-  // When the current line focus mode is static, scroll the content instead of
-  // moving the line focus element.
-  private setyOrScroll_(newBounds: DOMRect) {
-    const newY =
-        this.model_.getCurrentStyleMode().getFocalPointForRect(newBounds);
-    if (this.isStatic()) {
-      const scrollDiff = newY - this.model_.getFocalPoint();
-      this.scroll_(scrollDiff);
-    } else {
-      this.setY_(newY);
-    }
-  }
-
-  private scroll_(scrollDiff: number, instant: boolean = false) {
-    if (Math.abs(scrollDiff) < SCROLL_THRESHOLD) {
-      return;
-    }
-    this.model_.setInitiatedScroll(true);
-    this.listeners_.forEach(
-        l => l.onNeedScrollForLineFocus(scrollDiff, instant));
-  }
-
-  private setY_(y: number, quietly: boolean = false) {
-    this.model_.setFocalPoint(y);
-    this.model_.getCurrentStyleMode().calculateHeight();
-    if (!quietly) {
-      this.listeners_.forEach(l => l.onLineFocusMove());
-    }
-  }
-
   private calculateNewPositions_(container: HTMLElement, height: number) {
-    const {minY, maxY, bounds} = calculateTextBounds(container, height);
-    this.model_.setMinY(minY);
-    this.model_.setMaxY(maxY);
-    this.model_.setTextBounds(bounds);
-
+    this.model_.getCurrentMoveMode().updatePositions(container, height);
     // Adjust line focus to remain at the same text line even if it's moved,
     // due to font or other spacing changes.
+    const bounds = this.model_.getTextBounds();
     const newLines = bounds.map(rect => rect.bottom);
     const currentLineIndex = this.model_.getCurrentLineIndex();
     if (!this.isStatic() && currentLineIndex !== null &&
         currentLineIndex >= 0 && currentLineIndex < newLines.length) {
-      this.setY_(newLines[currentLineIndex]!);
+      this.model_.getCurrentMoveMode().setFocalPoint(
+          newLines[currentLineIndex]!);
     }
   }
 
-
   private setCenterY_() {
-    this.setY_(this.model_.getMaxY() / 2);
+    this.model_.getCurrentMoveMode().setFocalPoint(this.model_.getMaxY() / 2);
   }
 
   // MoveModeDelegate methods.
+  notifyMove(): void {
+    this.listeners_.forEach(l => l.onLineFocusMove());
+  }
+
+  notifyScroll(scrollDiff: number, instant?: boolean): void {
+    this.listeners_.forEach(
+        l => l.onNeedScrollForLineFocus(scrollDiff, instant));
+  }
+
   onSessionEnd(): void {
     this.logger_.logLineFocusSession();
   }
