@@ -91,6 +91,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIBackForwardButtonEnabled());
   source->AddBoolean("enablePinnedToolbarActions",
                      features::IsWebUIPinnedToolbarActionsEnabled());
+  source->AddBoolean("enableAvatarButton",
+                     features::IsWebUIAvatarButtonEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());
@@ -246,7 +248,8 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kToolbarForwardButtonElementId, kSharedTabGroupFeedbackElementId,
        kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
-       kPinnedToolbarActionShowSidePanelBookmarksElementId});
+       kPinnedToolbarActionShowSidePanelBookmarksElementId,
+       kToolbarAvatarButtonElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
   pinned_ids.reserve(pinned_ids.size() + ids->size());
   pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());

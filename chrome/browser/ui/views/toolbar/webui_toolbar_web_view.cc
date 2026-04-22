@@ -25,6 +25,7 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -34,9 +35,11 @@
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -47,6 +50,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -183,6 +187,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       home_control_(this),
+      avatar_control_(this, browser->GetBrowserForMigrationOnly()),
       location_bar_(std::move(location_bar)),
       back_control_(this, BackForwardButton::Direction::kBack),
       forward_control_(this, BackForwardButton::Direction::kForward),
@@ -294,6 +299,11 @@ void WebUIToolbarWebView::AddedToWidget() {
   // The reload_control_ will be initialized once the WebUI is ready.
 }
 
+void WebUIToolbarWebView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  avatar_control_.UpdateIcon();
+}
+
 gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int button_count = 0;
@@ -305,6 +315,7 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
                   forward_control_.GetVisible();
   button_count +=
       features::IsWebUIHomeButtonEnabled() && home_control_.IsVisible();
+  button_count += features::IsWebUIAvatarButtonEnabled();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   int width = button_count * size;
@@ -389,6 +400,10 @@ void WebUIToolbarWebView::OnPageInitialized() {
       !reload_control_.is_initialized()) {
     reload_control_.Init();
   }
+  if (features::IsWebUIAvatarButtonEnabled() &&
+      !avatar_control_.is_initialized()) {
+    avatar_control_.Initialize();
+  }
 
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
 }
@@ -400,6 +415,11 @@ void WebUIToolbarWebView::InvokePinnedToolbarAction(
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
+}
+
+AvatarToolbarButtonInterface*
+WebUIToolbarWebView::GetAvatarToolbarButtonInterface() {
+  return &avatar_control_;
 }
 
 browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*

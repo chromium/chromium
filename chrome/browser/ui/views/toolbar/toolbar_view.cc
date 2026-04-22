@@ -586,23 +586,26 @@ void ToolbarView::Init() {
     }
   }
 
-  avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
-  bool show_avatar_toolbar_button = true;
+  if (!features::IsWebUIAvatarButtonEnabled()) {
+    avatar_ =
+        AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
+    bool show_avatar_toolbar_button = true;
 #if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
-  // the browser window.
-  show_avatar_toolbar_button =
-      browser_->profile()->IsIncognitoProfile() ||
-      browser_->profile()->IsGuestSession() ||
-      (browser_->profile()->IsOffTheRecord() &&
-       browser_->profile()->GetOTRProfileID().IsCaptivePortal());
+    // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
+    // the browser window.
+    show_avatar_toolbar_button =
+        browser_->profile()->IsIncognitoProfile() ||
+        browser_->profile()->IsGuestSession() ||
+        (browser_->profile()->IsOffTheRecord() &&
+         browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #else
-  // DevTools profiles are OffTheRecord, so hide it there.
-  show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
-                               browser_->profile()->IsGuestSession() ||
-                               browser_->profile()->IsRegularProfile();
+    // DevTools profiles are OffTheRecord, so hide it there.
+    show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
+                                 browser_->profile()->IsGuestSession() ||
+                                 browser_->profile()->IsRegularProfile();
 #endif
-  avatar_->SetVisible(show_avatar_toolbar_button);
+    avatar_->SetVisible(show_avatar_toolbar_button);
+  }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   auto new_tab_button = std::make_unique<ToolbarButton>(base::BindRepeating(
@@ -1593,14 +1596,16 @@ void ToolbarView::LayoutCommon() {
 
     // The margins of the `avatar_` uses the same constants as the
     // `app_menu_button_`.
-    if (avatar_->IsLabelPresentAndVisible()) {
-      avatar_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
-    } else {
-      avatar_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+    if (avatar_) {
+      if (avatar_->IsLabelPresentAndVisible()) {
+        avatar_->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
+      } else {
+        avatar_->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+      }
     }
   }
 
@@ -1772,6 +1777,11 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 }
 
 AvatarToolbarButtonInterface* ToolbarView::GetAvatarToolbarButtonInterface() {
+  if (features::IsWebUIAvatarButtonEnabled()) {
+    return toolbar_webview_
+               ? toolbar_webview_->GetAvatarToolbarButtonInterface()
+               : nullptr;
+  }
   return avatar_;
 }
 

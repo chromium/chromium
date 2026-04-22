@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
@@ -68,6 +69,7 @@ class WebUIToolbarWebView
   PinnedToolbarActions* GetPinnedToolbarActions() {
     return &pinned_toolbar_actions_;
   }
+  AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface();
 
   void SetBackButtonLeadingMargin(int margin);
   void SetBackForwardEnabled(int command_id, bool enabled);
@@ -112,6 +114,7 @@ class WebUIToolbarWebView
 
   // views::View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
@@ -234,6 +237,7 @@ class WebUIToolbarWebView
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
   WebUIHomeControl home_control_;
+  WebUIAvatarToolbarButton avatar_control_;
   std::unique_ptr<WebUILocationBar> location_bar_;
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;
