@@ -15,6 +15,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -292,8 +294,19 @@ void WaylandWindowDragController::CancelDragSession() {
 }
 
 bool WaylandWindowDragController::IsDragSource() const {
-  CHECK(!IsDragInProgress() || !!data_source_) << " state=" << state_;
-  return IsDragInProgress();
+  // TODO(https://crbug.com/498008192): Diagnose the failure reason and remove.
+  if (IsDragInProgress() && !data_source_) {
+    constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+        {{State::kAttached, "attached"},
+         {State::kDetached, "detached"},
+         {State::kDropped, "dropped"},
+         {State::kCancelled, "canceled"},
+         {State::kAttaching, "attaching"}});
+    SCOPED_CRASH_KEY_STRING32("WaylandWindowDrag", "state",
+                              GetMapValueOrDefault(kStateToString, state_));
+    base::debug::DumpWithoutCrashing();
+  }
+  return !!data_source_;
 }
 
 // Icon drawing and update for window/tab dragging is handled by buffer manager.
