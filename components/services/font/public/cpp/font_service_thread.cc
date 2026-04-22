@@ -164,7 +164,7 @@ scoped_refptr<MappedFontFile> FontServiceThread::OpenStream(
 
   // Converts the file to out internal type.
   scoped_refptr<MappedFontFile> mapped_font_file =
-      new MappedFontFile(identity.fID);
+      base::MakeRefCounted<MappedFontFile>(identity.fID);
   if (!mapped_font_file->Initialize(std::move(stream_file)))
     return nullptr;
 

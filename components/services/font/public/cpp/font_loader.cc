@@ -56,30 +56,14 @@ bool FontLoader::matchFamilyName(const char family_name[],
 SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
   TRACE_EVENT2("fonts", "FontLoader::openStream", "identity", identity.fID,
                "name", TRACE_STR_COPY(identity.fString.c_str()));
-  {
-    base::AutoLock lock(mapped_font_files_lock_);
-    auto mapped_font_files_it = mapped_font_files_.find(identity.fID);
-    if (mapped_font_files_it != mapped_font_files_.end())
-      return mapped_font_files_it->second->CreateMemoryStream();
+
+  auto mapped_font_file = mapped_font_files_.FindOrCreate(
+      identity.fID,
+      [this, &identity] { return thread_->OpenStream(identity); });
+  if (mapped_font_file) {
+    return mapped_font_file->CreateMemoryStream();
   }
-
-  scoped_refptr<internal::MappedFontFile> mapped_font_file =
-      thread_->OpenStream(identity);
-  if (!mapped_font_file)
-    return nullptr;
-
-  // Get notified with |mapped_font_file| is destroyed.
-  mapped_font_file->set_observer(this);
-
-  {
-    base::AutoLock lock(mapped_font_files_lock_);
-    auto mapped_font_files_it =
-        mapped_font_files_
-            .insert(std::make_pair(mapped_font_file->font_id(),
-                                   mapped_font_file.get()))
-            .first;
-    return mapped_font_files_it->second->CreateMemoryStream();
-  }
+  return nullptr;
 }
 
 sk_sp<SkTypeface> FontLoader::makeTypeface(const FontIdentity& identity,
@@ -148,12 +132,5 @@ void FontLoader::MatchFontWithFallback(std::string family,
                                  fallback_family_type, out_font_file_handle);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-void FontLoader::OnMappedFontFileDestroyed(internal::MappedFontFile* f) {
-  TRACE_EVENT1("fonts", "FontLoader::OnMappedFontFileDestroyed", "identity",
-               f->font_id());
-  base::AutoLock lock(mapped_font_files_lock_);
-  mapped_font_files_.erase(f->font_id());
-}
 
 }  // namespace font_service

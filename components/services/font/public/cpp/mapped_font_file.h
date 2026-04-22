@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/weak_value_table.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -19,28 +20,20 @@ namespace internal {
 // Owns the memory of the mmaped file that we get back from the font_service.
 //
 // This class is an implementation detail and shouldn't be used by consumers.
-class MappedFontFile : public base::RefCountedThreadSafe<MappedFontFile> {
+class MappedFontFile
+    : public base::subtle::RefCountedWeakValue<uint32_t, MappedFontFile> {
  public:
-  class Observer {
-   public:
-    ~Observer() = default;
-
-    // Called when a MappedFontFile is destroyed.
-    virtual void OnMappedFontFileDestroyed(MappedFontFile* f) = 0;
-  };
-
   explicit MappedFontFile(uint32_t font_id);
 
+  uint32_t GetKey() const { return font_id_; }
   uint32_t font_id() const { return font_id_; }
-
-  void set_observer(Observer* observer) { observer_ = observer; }
 
   bool Initialize(base::File file);
 
   SkMemoryStream* CreateMemoryStream();
 
  private:
-  friend class base::RefCountedThreadSafe<MappedFontFile>;
+  friend class base::subtle::RefCountedWeakValue<uint32_t, MappedFontFile>;
 
   ~MappedFontFile();
 
@@ -48,7 +41,6 @@ class MappedFontFile : public base::RefCountedThreadSafe<MappedFontFile> {
 
   uint32_t font_id_;
   base::MemoryMappedFile mapped_font_file_;
-  raw_ptr<Observer> observer_;
 };
 
 }  // namespace internal
