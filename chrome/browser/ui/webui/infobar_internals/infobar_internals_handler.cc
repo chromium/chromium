@@ -56,6 +56,7 @@ void InfoBarInternalsHandler::TriggerInfoBar(InfoBarType type,
 }
 
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
+  // Please keep the entries in alphabetized order base on the type.
   std::vector<InfoBarEntryPtr> infobar_list;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -72,14 +73,11 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "triggered on Mac, Windows and Linux."));
 #endif
 
-#if BUILDFLAG(IS_WIN)
   infobar_list.emplace_back(InfoBarEntry::New(
-      /*type=*/InfoBarType::kStartupLaunch, /*name=*/"Startup Launch",
+      /*type=*/InfoBarType::kDevTools, /*name=*/"DevTools",
       /*description=*/
-      "Triggers the startup launch infobar. This infobar can only be "
-      "triggered on Windows, and only when LaunchOnStartup feature flag is "
-      "enabled."));
-#endif
+      "The DevTools infobar is used to confirm that the user wants to "
+      "allow DevTools to be used. This trigger shows the infobar."));
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -91,22 +89,21 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevent it to shown and then trigger a show request."));
 #endif
 
+#if BUILDFLAG(IS_WIN)
   infobar_list.emplace_back(InfoBarEntry::New(
-      /*type=*/InfoBarType::kDevTools, /*name=*/"DevTools",
+      /*type=*/InfoBarType::kStartupLaunch, /*name=*/"Startup Launch",
       /*description=*/
-      "The DevTools infobar is used to confirm that the user wants to "
-      "allow DevTools to be used. This trigger shows the infobar."));
+      "Triggers the startup launch infobar. This infobar can only be "
+      "triggered on Windows, and only when LaunchOnStartup feature flag is "
+      "enabled."));
+#endif
 
   std::move(callback).Run(std::move(infobar_list));
 }
 
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
+  // Please keep the entries in alphabetized order base on the type.
   switch (type) {
-    case InfoBarType::kDevTools: {
-      DevToolsInfoBarDelegate::Create(u"DevTools Infobar test",
-                                      base::DoNothing());
-      return true;
-    }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser: {
       BrowserWindowInterface* const bwi =
@@ -136,24 +133,11 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return true;
     }
 #endif
-#if BUILDFLAG(IS_WIN)
-    case InfoBarType::kStartupLaunch: {
-      PrefService* local_state = g_browser_process->local_state();
-      local_state->ClearPref(prefs::kForegroundLaunchOnLogin);
-      local_state->ClearPref(prefs::kStartupLaunchInfobarAccepted);
-      local_state->ClearPref(prefs::kStartupLaunchInfobarDeclinedCount);
-      local_state->ClearPref(prefs::kStartupLaunchInfobarLastDeclinedTime);
-
-      if (auto* startup_launch_manager =
-              StartupLaunchManager::From(g_browser_process)) {
-        startup_launch_manager->SetInfoBarManager(
-            std::make_unique<StartupLaunchInfoBarManagerImpl>());
-        startup_launch_manager->MaybeShowInfoBars();
-        return true;
-      }
-      return false;
+    case InfoBarType::kDevTools: {
+      DevToolsInfoBarDelegate::Create(u"DevTools Infobar test",
+                                      base::DoNothing());
+      return true;
     }
-#endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case InfoBarType::kInstallerDownloader: {
       if (auto* controller = g_browser_process->GetFeatures()
@@ -179,6 +163,24 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
         controller->MaybeShowInfoBar();
 
+        return true;
+      }
+      return false;
+    }
+#endif
+#if BUILDFLAG(IS_WIN)
+    case InfoBarType::kStartupLaunch: {
+      PrefService* local_state = g_browser_process->local_state();
+      local_state->ClearPref(prefs::kForegroundLaunchOnLogin);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarAccepted);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarDeclinedCount);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarLastDeclinedTime);
+
+      if (auto* startup_launch_manager =
+              StartupLaunchManager::From(g_browser_process)) {
+        startup_launch_manager->SetInfoBarManager(
+            std::make_unique<StartupLaunchInfoBarManagerImpl>());
+        startup_launch_manager->MaybeShowInfoBars();
         return true;
       }
       return false;
