@@ -191,6 +191,7 @@ rust_static_library("crabbyavif") {
     "src/src/utils/error.rs",
     "src/src/utils/mod.rs",
     "src/src/utils/pixels.rs",
+    "src/src/utils/reader/avif.rs",
     "src/src/utils/reader/mod.rs",
     "src/src/utils/reader/y4m.rs",
     "src/src/utils/writer/mod.rs",
