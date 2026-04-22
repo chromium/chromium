@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"

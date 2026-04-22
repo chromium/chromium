@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"

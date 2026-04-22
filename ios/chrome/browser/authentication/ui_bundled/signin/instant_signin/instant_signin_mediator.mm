@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"

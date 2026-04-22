@@ -17,6 +17,7 @@
 #import "components/feature_engagement/test/scoped_iph_feature_list.h"
 #import "components/feature_engagement/test/test_tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"

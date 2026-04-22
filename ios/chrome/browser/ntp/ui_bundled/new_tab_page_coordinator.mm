@@ -27,6 +27,7 @@
 #import "components/safety_check/safety_check_pref_names.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"

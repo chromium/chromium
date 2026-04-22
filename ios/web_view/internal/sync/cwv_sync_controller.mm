@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/studies/autofill_experiments.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

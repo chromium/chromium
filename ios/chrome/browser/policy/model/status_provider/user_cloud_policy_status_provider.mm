@@ -12,6 +12,7 @@
 #import "base/values.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/proto/device_management_backend.pb.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"

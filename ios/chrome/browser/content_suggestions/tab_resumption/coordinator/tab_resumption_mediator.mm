@@ -33,6 +33,7 @@
 #import "components/page_image_service/mojom/page_image_service.mojom.h"
 #import "components/payments/core/currency_formatter.h"
 #import "components/sessions/core/session_id.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"

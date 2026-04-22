@@ -12,6 +12,7 @@
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/search_engines/search_engines_test_environment.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/tab_groups/tab_group_id.h"

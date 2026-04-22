@@ -8,6 +8,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"

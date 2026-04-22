@@ -25,6 +25,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "google_apis/gaia/gaia_urls.h"

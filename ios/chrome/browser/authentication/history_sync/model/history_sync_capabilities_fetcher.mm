@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

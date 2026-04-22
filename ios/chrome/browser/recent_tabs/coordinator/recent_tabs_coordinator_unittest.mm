@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"

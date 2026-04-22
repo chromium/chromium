@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"

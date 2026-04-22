@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 #import "base/check.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
 id<SystemIdentity> GetPrimarySystemIdentity(

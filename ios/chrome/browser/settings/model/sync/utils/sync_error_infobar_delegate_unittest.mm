@@ -10,6 +10,7 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"

@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"

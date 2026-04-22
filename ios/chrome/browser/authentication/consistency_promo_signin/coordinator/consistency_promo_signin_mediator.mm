@@ -12,6 +12,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_reconcilor.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/browser/web_signin_tracker.h"

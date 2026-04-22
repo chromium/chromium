@@ -12,6 +12,7 @@
 #import "base/task/thread_pool.h"
 #import "components/metrics/metrics_reporting_default_state.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/tests_hook.h"

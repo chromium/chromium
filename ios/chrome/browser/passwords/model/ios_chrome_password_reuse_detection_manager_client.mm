@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"

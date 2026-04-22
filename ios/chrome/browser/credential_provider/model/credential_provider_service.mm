@@ -25,6 +25,7 @@
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"

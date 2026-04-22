@@ -2,6 +2,9 @@ specific_include_rules = {
   "first_run_profile_agent.mm": [
     "+components/signin/public/base/signin_switches.h",
   ],
+  "post_restore_profile_agent.mm": [
+    "+components/signin/public/base/consent_level.h",
+  ],
   "profile_controller.mm": [
     "+components/desktop_to_mobile_promos/features.h",
   ],

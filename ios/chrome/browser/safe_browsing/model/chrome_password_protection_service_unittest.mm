@@ -21,6 +21,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/signin_constants.h"

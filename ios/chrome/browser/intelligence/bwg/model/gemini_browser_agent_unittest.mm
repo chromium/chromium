@@ -14,6 +14,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"

@@ -10,6 +10,7 @@
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #import "components/enterprise/connectors/core/content_area_user_provider.h"
+#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state.h"

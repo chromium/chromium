@@ -5,6 +5,7 @@
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"

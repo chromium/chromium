@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"

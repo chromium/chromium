@@ -11,6 +11,7 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_notification/model/constants.h"
 #import "ios/chrome/browser/metrics/model/constants.h"

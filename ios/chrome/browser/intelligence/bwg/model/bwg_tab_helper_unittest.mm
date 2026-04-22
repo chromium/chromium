@@ -20,6 +20,7 @@
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/unified_consent/pref_names.h"

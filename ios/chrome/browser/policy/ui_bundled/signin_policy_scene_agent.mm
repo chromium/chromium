@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/ui_bundled/signin_policy_scene_agent.h"
 
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"

@@ -16,6 +16,7 @@
 #import "base/test/test_timeouts.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"

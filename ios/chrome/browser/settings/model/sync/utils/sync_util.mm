@@ -9,6 +9,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

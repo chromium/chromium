@@ -13,6 +13,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"

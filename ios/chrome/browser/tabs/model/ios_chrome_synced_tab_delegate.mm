@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/features.h"

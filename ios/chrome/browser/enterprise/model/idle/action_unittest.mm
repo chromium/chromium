@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"

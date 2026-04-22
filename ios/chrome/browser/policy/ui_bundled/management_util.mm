@@ -11,6 +11,7 @@
 #import "components/policy/core/browser/policy_data_utils.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/account_managed_status_finder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/test/ios/test_utils.h"

@@ -12,6 +12,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/webauthn/ios/features.h"

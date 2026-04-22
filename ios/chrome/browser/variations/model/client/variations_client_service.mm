@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/variations/model/client/variations_client_service.h"
 
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

@@ -8,6 +8,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"

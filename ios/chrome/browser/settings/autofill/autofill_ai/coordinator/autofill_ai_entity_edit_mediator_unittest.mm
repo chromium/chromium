@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/wallet/core/common/wallet_features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"

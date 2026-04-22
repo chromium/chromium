@@ -12,6 +12,7 @@
 #import "base/test/mock_callback.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h"

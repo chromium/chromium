@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/infobars/core/infobar.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/credential_provider/model/ios_credential_provider_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"

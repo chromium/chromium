@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"

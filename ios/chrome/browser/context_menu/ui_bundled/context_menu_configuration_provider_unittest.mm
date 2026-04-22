@@ -14,6 +14,7 @@
 #import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/strings/grit/components_strings.h"

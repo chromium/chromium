@@ -10,6 +10,7 @@
 #import "base/files/file_path.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "google_apis/gaia/google_service_auth_error.h"

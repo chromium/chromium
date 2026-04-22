@@ -107,6 +107,7 @@ source_set("configuration_factory") {
   deps = [
     ":entrypoint",
     "//base",
+    "//components/signin/public/base",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

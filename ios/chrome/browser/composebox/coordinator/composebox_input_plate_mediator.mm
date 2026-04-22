@@ -51,6 +51,7 @@
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
+#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"

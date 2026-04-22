@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

@@ -8,6 +8,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

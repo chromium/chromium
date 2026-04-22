@@ -20,6 +20,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"

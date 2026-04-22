@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_mediator.h"
 
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

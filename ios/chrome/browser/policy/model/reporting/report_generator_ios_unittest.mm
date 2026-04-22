@@ -18,6 +18,7 @@
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"

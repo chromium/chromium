@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"

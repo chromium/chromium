@@ -28,6 +28,7 @@
 #import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/safe_browsing/core/common/utils.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_managed_status_finder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/signin_constants.h"

@@ -11,6 +11,7 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"

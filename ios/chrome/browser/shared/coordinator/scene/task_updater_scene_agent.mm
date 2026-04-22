@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/task_updater_scene_agent.h"
 
+#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"

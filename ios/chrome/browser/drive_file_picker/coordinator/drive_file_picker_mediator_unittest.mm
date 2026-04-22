@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"

@@ -6,6 +6,7 @@
 
 #import "components/enterprise/idle/action_type.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 
 namespace enterprise_idle {

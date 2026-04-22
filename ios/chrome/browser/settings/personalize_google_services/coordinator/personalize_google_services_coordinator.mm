@@ -9,6 +9,7 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"

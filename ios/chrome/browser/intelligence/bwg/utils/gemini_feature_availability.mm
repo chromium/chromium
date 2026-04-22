@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/features/features.h"

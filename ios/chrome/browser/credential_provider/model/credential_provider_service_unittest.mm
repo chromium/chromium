@@ -25,6 +25,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/user_selectable_type.h"
