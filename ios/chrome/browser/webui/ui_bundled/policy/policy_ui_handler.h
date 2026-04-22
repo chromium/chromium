@@ -85,6 +85,8 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
       const std::string& profile_separation_policy_response,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
+  void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
+                       GetPoliciesJsonCallback callback) override;
 
  private:
   // UserCloudPolicyStatusProvider::Delegate.
@@ -101,8 +103,8 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Called to handle the "listenPoliciesUpdates" WebUI message.
   void HandleListenPoliciesUpdates(const base::ListValue& args);
 
-  // Called to handle the "copyPoliciesJSON" WebUI message.
-  void HandleCopyPoliciesJson(const base::ListValue& args);
+  // Called to handle the "getPoliciesJson" WebUI message.
+  void HandleGetPoliciesJson(const base::ListValue& args);
 
   // Called to handle the "reloadPolicies" WebUI message.
   void HandleReloadPolicies(const base::ListValue& args);
@@ -173,8 +175,8 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // The callback invoked by PolicyService::RefreshPolicies().
   void OnRefreshPoliciesDone();
 
-  // Build a JSON string of all the policies.
-  std::string GetPoliciesAsJson();
+  // Build a JSON string containing data for all policies.
+  std::string GetPoliciesJsonImpl();
 
   // Returns the PolicyService associated with this WebUI's BrowserState.
   policy::PolicyService* GetPolicyService() const;

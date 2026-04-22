@@ -36,14 +36,6 @@ namespace enterprise_management {
 class GetUserEligiblePromotionsResponse;
 }  // namespace enterprise_management
 
-// Interface for observing promotion eligibility fetching events.
-class PolicyPromotionObserver : public base::CheckedObserver {
- public:
-  virtual void OnPromotionEligibilityFetched(
-      const std::string& callback_id,
-      enterprise_management::GetUserEligiblePromotionsResponse response) = 0;
-};
-
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::mojom::PolicyPageHandler,
@@ -78,11 +70,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
-  void AddPolicyPromotionObserver(PolicyPromotionObserver* observer);
-  void RemovePolicyPromotionObserver(PolicyPromotionObserver* observer);
-
-  bool HasPromotionBeenChecked() const { return promotion_checked_; }
-
   // policy::mojom::PolicyPageHandler implementation.
   void GetDebugString(GetDebugStringCallback callback) override;
   void RestartBrowser(const std::string& policies) override;
@@ -96,19 +83,30 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  void CheckPromotionEligibility(
+      CheckPromotionEligibilityCallback callback) override;
+  void SetBannerDismissed() override;
+  void RecordBannerRedirected() override;
+#endif
+
+  void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
+                       GetPoliciesJsonCallback callback) override;
+
  private:
-  void HandleExportPoliciesJson(const base::ListValue& args);
   void HandleListenPoliciesUpdates(const base::ListValue& args);
   void HandleReloadPolicies(const base::ListValue& args);
-  void HandleCopyPoliciesJson(const base::ListValue& args);
   void HandleSetLocalTestPolicies(const base::ListValue& args);
   void HandleRevertLocalTestPolicies(const base::ListValue& args);
   void HandleRestartBrowser(const base::ListValue& args);
   void HandleSetUserAffiliated(const base::ListValue& args);
   void HandleGetAppliedTestPolicies(const base::ListValue& args);
+#if !BUILDFLAG(IS_ANDROID)
   void HandleShouldShowPromotion(const base::ListValue& args);
   void HandleSetBannerDismissed(const base::ListValue& args);
   void HandleRecordBannerRedirected(const base::ListValue& args);
+#endif
+  void HandleGetPoliciesJson(const base::ListValue& args);
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::ListValue& args);
 #endif
@@ -157,16 +155,19 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  void OnPromotionEligibilityFetchedWebUiWrapper(base::Value callback_id,
+                                                 bool response);
+
   void OnPromotionEligibilityFetched(
-      const std::string& callback_id,
+      CheckPromotionEligibilityCallback callback,
       enterprise_management::GetUserEligiblePromotionsResponse response);
 
   std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
       promotion_eligibility_checker_;
 #endif
 
-  // Build a JSON string of all the policies.
-  std::string GetPoliciesAsJson();
+  // Builds a raw JSON string representation of all the policies.
+  std::string GetPoliciesJsonImpl(policy::mojom::GetPoliciesReason reason);
 
   std::unique_ptr<policy::PolicyValueAndStatusAggregator>
       policy_value_and_status_aggregator_;
@@ -184,10 +185,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   uint32_t export_to_json_count_ = 0;
   uint32_t copy_to_json_count_ = 0;
   uint32_t upload_report_count_ = 0;
-
-  base::ObserverList<PolicyPromotionObserver> promotion_eligibility_observers_;
-
-  bool promotion_checked_ = false;
 
   const mojo::Receiver<policy::mojom::PolicyPageHandler> receiver_{this};
   const mojo::Remote<policy::mojom::PolicyPageClient> client_{

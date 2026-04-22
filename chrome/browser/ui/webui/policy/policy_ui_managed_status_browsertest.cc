@@ -20,6 +20,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -110,17 +111,6 @@ constexpr char kPromotionBannerDismissJavaScript[] = R"(
     dismissButton.click();
   }
 )";
-
-class PromotionObserver : public PolicyPromotionObserver,
-                          public base::test::TestFuture<const std::string&> {
- public:
-  void OnPromotionEligibilityFetched(
-      const std::string& callback_id,
-      enterprise_management::GetUserEligiblePromotionsResponse response)
-      override {
-    SetValue(callback_id);
-  }
-};
 
 }  // namespace
 
@@ -300,27 +290,20 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
 
   // Helper method to setup and wait for the promotion listener.
   void SetupAndListenForPromotion() {
-    auto* handlers = browser()
-                         ->tab_strip_model()
-                         ->GetActiveWebContents()
-                         ->GetWebUI()
-                         ->GetHandlersForTesting();
-
-    ASSERT_EQ(handlers->size(), 1u);
-    auto* handler = static_cast<PolicyUIHandler*>(handlers[0][0].get());
-
     // Only wait if the locale is en-US AND not dismissed.
     const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
     if (g_browser_process->GetApplicationLocale() == kValidLocale &&
-        !is_dismissed && !handler->HasPromotionBeenChecked()) {
-      // Check if the promotion has already been checked before waiting for the
-      // observer to avoid racing condition.
-      PromotionObserver promotion_observer;
-      handler->AddPolicyPromotionObserver(&promotion_observer);
-      EXPECT_TRUE(promotion_observer.Wait());
-      handler->RemovePolicyPromotionObserver(&promotion_observer);
+        !is_dismissed) {
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        auto result =
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   kPromotionBannerVisibilityJavaScript)
+                .ExtractString();
+
+        return result == kBannerVisible;
+      }));
     }
   }
 

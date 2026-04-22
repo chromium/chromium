@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"

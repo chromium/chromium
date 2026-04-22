@@ -56,10 +56,19 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "mojo/public/cpp/bindings/pending_receiver.h"
+#import "mojo/public/cpp/bindings/pending_remote.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/webui/web_ui_util.h"
 
-PolicyUIHandler::PolicyUIHandler(ProfileIOS* profile) : profile_(*profile) {}
+PolicyUIHandler::PolicyUIHandler(ProfileIOS* profile)
+    : PolicyUIHandler(mojo::NullReceiver(), mojo::NullRemote(), profile) {
+  // TODO: crbug.com/40897784 - the mojo version does not yet support
+  // SendStatus, SendSchema and SendPolicies so the observers are added only for
+  // the legacy WebUI.
+  GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  profile_->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
+}
 
 PolicyUIHandler::PolicyUIHandler(
     mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
@@ -67,16 +76,53 @@ PolicyUIHandler::PolicyUIHandler(
     ProfileIOS* profile)
     : receiver_(this, std::move(receiver)),
       client_(std::move(client)),
-      profile_(*profile) {}
+      profile_(*profile) {
+  policy::MachineLevelUserCloudPolicyManager* manager =
+      GetApplicationContext()
+          ->GetBrowserPolicyConnector()
+          ->machine_level_user_cloud_policy_manager();
+  policy::BrowserDMTokenStorage* dm_token_storage =
+      policy::BrowserDMTokenStorage::Get();
+
+  if (manager) {
+    machine_status_provider_ =
+        std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
+            manager->core(), manager->extension_install_core(),
+            GetApplicationContext()->GetLocalState(),
+            new policy::MachineLevelUserCloudPolicyContext(
+                {dm_token_storage->RetrieveEnrollmentToken(),
+                 dm_token_storage->RetrieveClientId(),
+                 enterprise_reporting::kLastUploadSucceededTimestamp}));
+    machine_status_provider_observation_.Observe(
+        machine_status_provider_.get());
+  }
+
+  if (!machine_status_provider_) {
+    machine_status_provider_ = std::make_unique<policy::PolicyStatusProvider>();
+  }
+
+  policy::UserCloudPolicyManager* user_cloud_policy_manager =
+      profile_->GetUserCloudPolicyManager();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile_.get());
+  if (user_cloud_policy_manager && user_cloud_policy_manager->core() &&
+      identity_manager) {
+    user_policy_status_provider_ =
+        std::make_unique<UserCloudPolicyStatusProvider>(
+            this, user_cloud_policy_manager->core(), identity_manager);
+  } else {
+    user_policy_status_provider_ =
+        std::make_unique<policy::PolicyStatusProvider>();
+  }
+}
 
 PolicyUIHandler::~PolicyUIHandler() {
   // TODO: crbug.com/40897784 - Make this unconditional once mojo version also
   // adds observers.
   if (!receiver_.is_bound()) {
     GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-    policy::SchemaRegistry* registry = ProfileIOS::FromWebUIIOS(web_ui())
-                                           ->GetPolicyConnector()
-                                           ->GetSchemaRegistry();
+    policy::SchemaRegistry* registry =
+        profile_->GetPolicyConnector()->GetSchemaRegistry();
     registry->RemoveObserver(this);
   }
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
@@ -130,49 +176,6 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
 }
 
 void PolicyUIHandler::RegisterMessages() {
-  policy::MachineLevelUserCloudPolicyManager* manager =
-      GetApplicationContext()
-          ->GetBrowserPolicyConnector()
-          ->machine_level_user_cloud_policy_manager();
-  policy::BrowserDMTokenStorage* dm_token_storage =
-      policy::BrowserDMTokenStorage::Get();
-
-  if (manager) {
-    machine_status_provider_ =
-        std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
-            manager->core(), manager->extension_install_core(),
-            GetApplicationContext()->GetLocalState(),
-            new policy::MachineLevelUserCloudPolicyContext(
-                {dm_token_storage->RetrieveEnrollmentToken(),
-                 dm_token_storage->RetrieveClientId(),
-                 enterprise_reporting::kLastUploadSucceededTimestamp}));
-    machine_status_provider_observation_.Observe(
-        machine_status_provider_.get());
-  }
-
-  if (!machine_status_provider_) {
-    machine_status_provider_ = std::make_unique<policy::PolicyStatusProvider>();
-  }
-
-  GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
-
-  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
-  profile->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
-
-  policy::UserCloudPolicyManager* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManager();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (user_cloud_policy_manager && user_cloud_policy_manager->core() &&
-      identity_manager) {
-    user_policy_status_provider_ =
-        std::make_unique<UserCloudPolicyStatusProvider>(
-            this, user_cloud_policy_manager->core(), identity_manager);
-  } else {
-    user_policy_status_provider_ =
-        std::make_unique<policy::PolicyStatusProvider>();
-  }
-
   web_ui()->RegisterMessageCallback(
       "listenPoliciesUpdates",
       base::BindRepeating(&PolicyUIHandler::HandleListenPoliciesUpdates,
@@ -183,8 +186,8 @@ void PolicyUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "copyPoliciesJSON",
-      base::BindRepeating(&PolicyUIHandler::HandleCopyPoliciesJson,
+      "getPoliciesJson",
+      base::BindRepeating(&PolicyUIHandler::HandleGetPoliciesJson,
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -218,12 +221,6 @@ void PolicyUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PolicyUIHandler::HandleCopyPoliciesJson(const base::ListValue& args) {
-  copy_to_json_count_ += 1;
-  NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
-  StoreTextInPasteboard(jsonString);
-}
-
 void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
@@ -232,9 +229,8 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
                                ->GetBrowserPolicyConnector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
-  auto* profile_reporting_service =
-      enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
-          GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()));
+  auto* profile_reporting_service = enterprise_reporting::
+      CloudProfileReportingServiceFactoryIOS::GetForProfile(&profile_.get());
   auto* profile_report_scheduler =
       profile_reporting_service ? profile_reporting_service->report_scheduler()
                                 : nullptr;
@@ -280,7 +276,7 @@ void PolicyUIHandler::SetLocalTestPolicies(
 }
 
 void PolicyUIHandler::SetLocalTestPoliciesImpl(const std::string& policies) {
-  if (!PolicyUI::ShouldLoadTestPage(&*profile_)) {
+  if (!PolicyUI::ShouldLoadTestPage(&profile_.get())) {
     return;
   }
 
@@ -303,7 +299,7 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
 }
 
 void PolicyUIHandler::RevertLocalTestPolicies() {
-  if (!PolicyUI::ShouldLoadTestPage(&*profile_)) {
+  if (!PolicyUI::ShouldLoadTestPage(&profile_.get())) {
     return;
   }
 
@@ -376,21 +372,6 @@ void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
   std::move(callback).Run(policy::PolicyLogger::GetInstance()->GetAsMojoList());
 }
 
-std::string PolicyUIHandler::GetPoliciesAsJson() {
-  return policy::GenerateJson(
-      /*policy_values=*/policy::PolicyConversions(
-          std::make_unique<PolicyConversionsClientIOS>(
-              ProfileIOS::FromWebUIIOS(web_ui())))
-          .ToValueDict(),
-      GetStatusValue(),
-      policy::JsonGenerationParams()
-          .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
-          .with_channel_name(std::string(GetChannelString(GetChannel())))
-          .with_processor_variation(l10n_util::GetStringUTF8(
-              sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT))
-          .with_os_name(std::string(version_info::GetOSType())));
-}
-
 void PolicyUIHandler::OnSchemaRegistryUpdated(bool has_new_schemas) {
   // Update UI when new schema is added.
   if (has_new_schemas) {
@@ -416,9 +397,8 @@ base::flat_set<std::string> PolicyUIHandler::GetDeviceAffiliationIds() {
 }
 
 std::optional<std::string> PolicyUIHandler::GetProfileId() {
-  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   auto* profile_id_service =
-      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile);
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(&profile_.get());
   return profile_id_service ? profile_id_service->GetProfileId() : std::nullopt;
 }
 
@@ -429,9 +409,8 @@ void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
 }
 
 base::DictValue PolicyUIHandler::GetPolicyNames() const {
-  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   policy::SchemaRegistry* registry =
-      profile->GetPolicyConnector()->GetSchemaRegistry();
+      profile_->GetPolicyConnector()->GetSchemaRegistry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
@@ -470,8 +449,8 @@ base::DictValue PolicyUIHandler::GetPolicyValues() const {
   policy_ids.Append(policy::kPrecedencePoliciesId);
 
   base::DictValue policy_values =
-      policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
-                                    ProfileIOS::FromWebUIIOS(web_ui())))
+      policy::PolicyConversions(
+          std::make_unique<PolicyConversionsClientIOS>(&profile_.get()))
           .UseChromePolicyConversions()
           .ToValueDict();
 
@@ -500,12 +479,12 @@ void PolicyUIHandler::SendPolicies() {
 }
 
 void PolicyUIHandler::SendSchema() {
-  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
-  if (!PolicyUI::ShouldLoadTestPage(profile)) {
+  if (!PolicyUI::ShouldLoadTestPage(&profile_.get())) {
     return;
   }
 
-  web_ui()->FireWebUIListener("schema-updated", PolicyUI::GetSchema(profile));
+  web_ui()->FireWebUIListener("schema-updated",
+                              PolicyUI::GetSchema(&profile_.get()));
 }
 
 base::DictValue PolicyUIHandler::GetStatusValue() const {
@@ -533,10 +512,36 @@ void PolicyUIHandler::OnRefreshPoliciesDone() {
 }
 
 policy::PolicyService* PolicyUIHandler::GetPolicyService() const {
-  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
-  return profile->GetPolicyConnector()->GetPolicyService();
+  return profile_->GetPolicyConnector()->GetPolicyService();
 }
 
 void PolicyUIHandler::GetDebugString(GetDebugStringCallback callback) {
   std::move(callback).Run("Migrating chrome://policy to mojo (on iOS)!");
+}
+
+std::string PolicyUIHandler::GetPoliciesJsonImpl() {
+  copy_to_json_count_ += 1;
+  return policy::GenerateJson(
+      /*policy_values=*/policy::PolicyConversions(
+          std::make_unique<PolicyConversionsClientIOS>(&profile_.get()))
+          .ToValueDict(),
+      GetStatusValue(),
+      policy::JsonGenerationParams()
+          .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
+          .with_channel_name(std::string(GetChannelString(GetChannel())))
+          .with_processor_variation(l10n_util::GetStringUTF8(
+              sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT))
+          .with_os_name(std::string(version_info::GetOSType())));
+}
+
+void PolicyUIHandler::GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
+                                      GetPoliciesJsonCallback callback) {
+  // On iOS policy export is not supported so this must have been used for
+  // copying.
+  CHECK_EQ(reason, policy::mojom::GetPoliciesReason::kCopy);
+  std::move(callback).Run(GetPoliciesJsonImpl());
+}
+
+void PolicyUIHandler::HandleGetPoliciesJson(const base::ListValue& args) {
+  web_ui()->ResolveJavascriptCallback(args[0], GetPoliciesJsonImpl());
 }

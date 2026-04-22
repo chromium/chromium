@@ -15,6 +15,12 @@ struct Log {
   string timestamp;
 };
 
+// Specifies the action that triggered a call to `GetPolicies`.
+enum GetPoliciesReason {
+  kCopy = 0,
+  kExport,
+};
+
 // Messages sent from the renderer WebUI TS to the browser process C++.
 interface PolicyPageHandler {
   // Test function to verify the mojo interface works.
@@ -48,6 +54,24 @@ interface PolicyPageHandler {
 
   // Returns the policy logs displayed on the chrome://policy/logs.
   GetPolicyLogs() => (array<Log> policy_logs);
+
+  // Checks whether the promotion banner should be displayed.
+  // Promotion banner is only supported on desktop platforms.
+  [EnableIfNot=is_ios|is_android]
+  CheckPromotionEligibility() => (bool should_show_promotion);
+
+  // Notifies the browser that the user has dismissed the promotion banner.
+  [EnableIfNot=is_ios|is_android]
+  SetBannerDismissed();
+
+  // Records UMA metrics for when the user redirects via the banner.
+  [EnableIfNot=is_ios|is_android]
+  RecordBannerRedirected();
+
+  // Retrieves all current policies in raw JSON format. These are then either
+  // copied to uers's clipboard or downloaded. The action is denoted by `reason`
+  // for metrics.
+  GetPoliciesJson(GetPoliciesReason reason) => (string policies_json);
 };
 
 // Messages sent from the browser process C++ to the renderer WebUI TS.
