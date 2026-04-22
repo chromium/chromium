@@ -33,7 +33,7 @@
 namespace blink::unicode {
 
 typedef enum {
-  kConversionOK,     // conversion successful
+  kSuccess,          // Conversion successful.
   kSourceExhausted,  // partial character in source, but hit end
   kTargetExhausted,  // insuff. room in target for conversion
   kSourceIllegal     // source sequence is illegal/malformed
@@ -44,6 +44,8 @@ struct ConversionResult {
   base::span<const CharType> converted;
   size_t consumed;
   ConversionStatus status;
+
+  bool IsSuccess() const { return status == kSuccess; }
 };
 
 // These conversion functions take a "strict" argument. When this flag is set to

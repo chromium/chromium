@@ -195,8 +195,7 @@ static int WriteToStringBuilder(void* context, const char* buffer, int len) {
   StringBuffer<UChar> string_buffer(len);
   unicode::ConversionResult result = unicode::ConvertUtf8ToUtf16(
       base::as_bytes(source_buffer), string_buffer.Span());
-  CHECK(result.status == unicode::kConversionOK ||
-        result.status == unicode::kSourceExhausted);
+  CHECK(result.IsSuccess() || result.status == unicode::kSourceExhausted);
 
   StringBuilder& result_output = *static_cast<StringBuilder*>(context);
   result_output.Append(result.converted);

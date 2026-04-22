@@ -117,7 +117,7 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
         // Conversion fails when there is an unpaired surrogate.  Put
         // replacement character (U+FFFD) instead of the unpaired
         // surrogate.
-        if (result.status != ConversionStatus::kConversionOK) {
+        if (!result.IsSuccess()) {
           DCHECK_LE(0xD800, characters[result.consumed]);
           DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been

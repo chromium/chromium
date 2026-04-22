@@ -1569,7 +1569,7 @@ static base::span<const char> ConvertUTF16EntityToUTF8(
       base::as_writable_bytes(base::span(g_shared_xhtml_entity_result));
   unicode::ConversionResult conversion_result =
       unicode::ConvertUtf16ToUtf8(utf16_entity, entity_buffer);
-  if (conversion_result.status != unicode::kConversionOK) {
+  if (!conversion_result.IsSuccess()) {
     return {};
   }
 

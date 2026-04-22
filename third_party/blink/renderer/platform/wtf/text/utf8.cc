@@ -67,7 +67,7 @@ static constexpr std::array<uint8_t, 7> kFirstByteMark = {
 
 ConversionStatus ConvertLatin1ToUtf8Internal(base::span<const LChar>& source,
                                              base::span<uint8_t>& target) {
-  ConversionStatus status = kConversionOK;
+  ConversionStatus status = kSuccess;
   size_t source_cursor = 0;
   size_t target_cursor = 0;
   size_t target_end = target.size();
@@ -114,7 +114,7 @@ ConversionStatus ConvertLatin1ToUtf8Internal(base::span<const LChar>& source,
 ConversionStatus ConvertUtf16ToUtf8Internal(base::span<const UChar>& source,
                                             base::span<uint8_t>& target,
                                             bool strict) {
-  ConversionStatus status = kConversionOK;
+  ConversionStatus status = kSuccess;
   size_t source_cursor = 0;
   size_t target_cursor = 0;
   size_t source_end = source.size();
@@ -320,7 +320,7 @@ inline UChar32 ReadUtf8Sequence(base::span<const uint8_t> source,
 ConversionStatus ConvertUtf8ToUtf16Internal(base::span<const uint8_t>& source,
                                             base::span<UChar>& target,
                                             bool strict) {
-  ConversionStatus status = kConversionOK;
+  ConversionStatus status = kSuccess;
 
   using MachineWord = uintptr_t;
   constexpr size_t kWordWidth = sizeof(MachineWord);

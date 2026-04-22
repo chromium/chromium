@@ -15,7 +15,7 @@ TEST(Utf8Test, ConvertUtf8ToUtf16) {
   std::vector<uint8_t> legal_str = {'a', 'b', 'c'};
   UChar result_buffer[3];
   auto result = ConvertUtf8ToUtf16(legal_str, result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(3u, result.converted.size());
   EXPECT_EQ(std::vector<UChar>({'a', 'b', 'c'}), result.converted);
 
@@ -54,19 +54,19 @@ TEST(Utf8Test, ConvertUtf8ToUtf16) {
   // Valid 2-byte sequence.
   legal_str = {0xC2, 0xA2};  // ¢
   result = ConvertUtf8ToUtf16(legal_str, result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<UChar>({0x00A2}), result.converted);
 
   // Valid 3-byte sequence.
   legal_str = {0xE2, 0x82, 0xAC};  // €
   result = ConvertUtf8ToUtf16(legal_str, result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<UChar>({0x20AC}), result.converted);
 
   // Valid 4-byte sequence.
   legal_str = {0xF0, 0x9F, 0x98, 0x81};  // 😁
   result = ConvertUtf8ToUtf16(legal_str, result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<UChar>({0xD83D, 0xDE01}), result.converted);
 
   // Invalid 2-byte sequence (second byte missing).
@@ -199,7 +199,7 @@ TEST(Utf8Test, ConvertLatin1ToUtf8) {
   std::vector<LChar> legal_str = {'a', 'b', 'c', 0xA2, 0xAC};
   std::vector<uint8_t> result_buffer(10);
   auto result = ConvertLatin1ToUtf8(legal_str, result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(7u, result.converted.size());
   const std::vector<uint8_t> expected1 = {'a',  'b',  'c', 0xC2,
                                           0xA2, 0xC2, 0xAC};
@@ -215,14 +215,14 @@ TEST(Utf8Test, ConvertLatin1ToUtf8) {
   std::vector<LChar> high_bit_str = {0xFF, 0xFE, 0xFD};
   std::vector<uint8_t> high_bit_buffer(6);
   result = ConvertLatin1ToUtf8(high_bit_str, high_bit_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(6u, result.converted.size());
   const std::vector<uint8_t> expected3 = {0xC3, 0xBF, 0xC3, 0xBE, 0xC3, 0xBD};
   EXPECT_EQ(expected3, result.converted);
 
   // Empty string.
   result = ConvertLatin1ToUtf8(std::vector<LChar>(), result_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>(), result.converted);
 }
 
@@ -287,21 +287,21 @@ TEST(Utf8Test, ConvertUtf16ToUtf8) {
   std::vector<UChar> empty_str = {};
   std::vector<uint8_t> empty_buffer(1);
   auto result = ConvertUtf16ToUtf8(empty_str, empty_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(0u, result.converted.size());
 
   // All ASCII
   std::vector<UChar> ascii_str = {'a', 'b', 'c'};
   std::vector<uint8_t> ascii_buffer(3);
   result = ConvertUtf16ToUtf8(ascii_str, ascii_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>({'a', 'b', 'c'}), result.converted);
 
   // BMP characters
   std::vector<UChar> bmp_str = {0x00A2, 0x20AC};  // ¢€
   std::vector<uint8_t> bmp_buffer(5);
   result = ConvertUtf16ToUtf8(bmp_str, bmp_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>({0xC2, 0xA2, 0xE2, 0x82, 0xAC}),
             result.converted);
 
@@ -309,14 +309,14 @@ TEST(Utf8Test, ConvertUtf16ToUtf8) {
   std::vector<UChar> supplementary_str = {0xD83D, 0xDE01};  // 😁
   std::vector<uint8_t> supplementary_buffer(4);
   result = ConvertUtf16ToUtf8(supplementary_str, supplementary_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>({0xF0, 0x9F, 0x98, 0x81}), result.converted);
 
   // Mixed
   std::vector<UChar> mixed_str = {'a', 0x00A2, 0xD83D, 0xDE01};
   std::vector<uint8_t> mixed_buffer(7);
   result = ConvertUtf16ToUtf8(mixed_str, mixed_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>({'a', 0xC2, 0xA2, 0xF0, 0x9F, 0x98, 0x81}),
             result.converted);
 
@@ -334,7 +334,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8) {
 
   // Invalid surrogate pair (non-strict)
   result = ConvertUtf16ToUtf8(invalid_str, invalid_buffer, false);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(4u, result.converted.size());
   EXPECT_EQ(std::vector<uint8_t>({0xED, 0xA0, 0xBD, 'a'}), result.converted);
 
@@ -349,14 +349,14 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   std::vector<UChar> long_ascii_str(32, 'a');
   std::vector<uint8_t> long_ascii_buffer(long_ascii_str.size() * 3);
   auto result = ConvertUtf16ToUtf8(long_ascii_str, long_ascii_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(std::vector<uint8_t>(32, 'a'), result.converted);
 
   // BMP characters
   std::vector<UChar> bmp_str(16, 0x20AC);  // 16 '€' characters
   std::vector<uint8_t> bmp_buffer(bmp_str.size() * 3);
   result = ConvertUtf16ToUtf8(bmp_str, bmp_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(16u * 3u, result.converted.size());
   std::vector<uint8_t> expected_bmp;
   for (int i = 0; i < 16; ++i) {
@@ -372,7 +372,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   }
   std::vector<uint8_t> supplementary_buffer(supplementary_str.size() * 3);
   result = ConvertUtf16ToUtf8(supplementary_str, supplementary_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(16u * 4u, result.converted.size());
   std::vector<uint8_t> expected_supplementary;
   for (int i = 0; i < 16; ++i) {
@@ -388,7 +388,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   mixed_str.push_back(0xDE01);
   std::vector<uint8_t> mixed_buffer(mixed_str.size() * 3);
   result = ConvertUtf16ToUtf8(mixed_str, mixed_buffer);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(16u + 2u + 4u, result.converted.size());
   std::vector<uint8_t> expected_mixed(16, 'a');
   expected_mixed.insert(expected_mixed.end(),
@@ -412,7 +412,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
 
   // Invalid surrogate pair (non-strict)
   result = ConvertUtf16ToUtf8(invalid_str, invalid_buffer, false);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(16u + 4u, result.converted.size());
   std::vector<uint8_t> expected_converted(16, 'a');
   expected_converted.insert(expected_converted.end(), {0xED, 0xA0, 0xBD, ' '});
@@ -437,7 +437,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   }
   std::vector<uint8_t> error_at_start_buffer(error_at_start_str.size() * 3);
   result = ConvertUtf16ToUtf8(error_at_start_str, error_at_start_buffer, false);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(3u + 1u + 16u, result.converted.size());
   std::vector<uint8_t> expected_error_at_start = {0xED, 0xA0, 0xBD, ' '};
   for (int i = 0; i < 16; ++i) {
@@ -455,7 +455,7 @@ TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
   std::vector<uint8_t> error_in_middle_buffer(error_in_middle_str.size() * 3);
   result =
       ConvertUtf16ToUtf8(error_in_middle_str, error_in_middle_buffer, false);
-  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(kSuccess, result.status);
   EXPECT_EQ(16u + 3u + 1u + 16u, result.converted.size());
   std::vector<uint8_t> expected_error_in_middle(16, 'a');
   expected_error_in_middle.insert(expected_error_in_middle.end(),
