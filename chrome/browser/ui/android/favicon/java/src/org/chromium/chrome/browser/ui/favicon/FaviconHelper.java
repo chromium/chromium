@@ -181,33 +181,6 @@ public class FaviconHelper {
         mNativeFaviconHelper = 0;
     }
 
-    // TODO:(crbug.com/468979189) Remove this method once updated the internal caller.
-    /**
-     * Get Favicon bitmap for the requested arguments. Retrieves favicons only for pages the user
-     * has visited on the current device.
-     * @param profile Profile used for the FaviconService construction.
-     * @param pageUrl The target Page URL to get the favicon.
-     * @param desiredSizeInPixel The size of the favicon in pixel we want to get.
-     * @param faviconImageCallback A method to be called back when the result is available. Note
-     *         that this callback is not called if this method returns false.
-     * @return True if GetLocalFaviconImageForURL is successfully called.
-     */
-    public boolean getLocalFaviconImageForURL(
-            Profile profile,
-            GURL pageUrl,
-            int desiredSizeInPixel,
-            FaviconImageCallback faviconImageCallback) {
-        assert mNativeFaviconHelper != 0;
-        return FaviconHelperJni.get()
-                .getLocalFaviconImageForURL(
-                        mNativeFaviconHelper,
-                        profile,
-                        pageUrl,
-                        desiredSizeInPixel,
-                        /* fallbackToHost= */ true,
-                        faviconImageCallback);
-    }
-
     /**
      * Get Favicon bitmap for the requested arguments. Retrieves favicons only for pages the user
      * has visited on the current device.
