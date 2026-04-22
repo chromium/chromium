@@ -168,6 +168,12 @@ File* DataObjectItem::GetAsFile() const {
   }
 
   DCHECK_EQ(source_, DataSource::kClipboardSource);
+  // Verify that the clipboard has not changed since the item was created.
+  // See crbug.com/501920294.
+  if (system_clipboard_->SequenceNumber() != sequence_number_) {
+    return nullptr;
+  }
+
   if (GetType() == ui::kMimeTypePng) {
     mojo_base::BigBuffer png_data =
         system_clipboard_->ReadPng(mojom::blink::ClipboardBuffer::kStandard);

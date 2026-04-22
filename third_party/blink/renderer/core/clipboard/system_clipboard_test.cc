@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -669,5 +671,62 @@ TEST_F(SystemClipboardTest, GetPlatformPermissionStateCallback) {
             mojom::blink::PlatformClipboardPermissionState::kAllow);
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Regression test for crbug.com/501920294
+TEST_F(SystemClipboardTest, DataObjectItemGetAsFileSequenceNumberValidation) {
+  // 1. Initial clipboard state: "image 1"
+  SkBitmap bitmap1;
+  ASSERT_TRUE(bitmap1.tryAllocPixelsFlags(
+      SkImageInfo::Make(4, 3, kN32_SkColorType, kOpaque_SkAlphaType), 0));
+  clipboard_host()->WriteImage(bitmap1);
+  clipboard_host()->CommitWrite();
+
+  auto sequence_number1 = system_clipboard().SequenceNumber();
+
+  // 2. Create DataObjectItem from this clipboard state.
+  DataObjectItem* item = DataObjectItem::CreateFromClipboard(
+      &system_clipboard(), ui::kMimeTypePng, sequence_number1);
+
+  // 3. Update clipboard state: "image 2".
+  // This increments the sequence number on the clipboard host.
+  SkBitmap bitmap2;
+  ASSERT_TRUE(bitmap2.tryAllocPixelsFlags(
+      SkImageInfo::Make(40, 30, kN32_SkColorType, kOpaque_SkAlphaType), 0));
+  clipboard_host()->WriteImage(bitmap2);
+  clipboard_host()->CommitWrite();
+
+  auto sequence_number2 = system_clipboard().SequenceNumber();
+  ASSERT_NE(sequence_number1, sequence_number2);
+
+  // 4. Try to read from the OLD DataObjectItem.
+  // This must return nullptr because the sequence number has changed,
+  // preventing a TOCTOU vulnerability.
+  File* file = item->GetAsFile();
+  EXPECT_EQ(file, nullptr);
+}
+
+TEST_F(SystemClipboardTest, DataObjectItemGetAsStringSequenceNumberValidation) {
+  // 1. Initial clipboard state: "text 1"
+  clipboard_host()->WriteText("text 1");
+  clipboard_host()->CommitWrite();
+
+  auto sequence_number1 = system_clipboard().SequenceNumber();
+
+  // 2. Create DataObjectItem from this clipboard state.
+  DataObjectItem* item = DataObjectItem::CreateFromClipboard(
+      &system_clipboard(), ui::kMimeTypePlainText, sequence_number1);
+
+  // 3. Update clipboard state: "text 2".
+  clipboard_host()->WriteText("text 2");
+  clipboard_host()->CommitWrite();
+
+  auto sequence_number2 = system_clipboard().SequenceNumber();
+  ASSERT_NE(sequence_number1, sequence_number2);
+
+  // 4. Try to read from the OLD DataObjectItem.
+  // It should return an empty string because the sequence number has changed.
+  String data = item->GetAsString();
+  EXPECT_TRUE(data.empty());
+}
 
 }  // namespace blink
