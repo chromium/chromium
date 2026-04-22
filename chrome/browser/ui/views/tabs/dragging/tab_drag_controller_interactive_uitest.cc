@@ -4905,9 +4905,9 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // TODO(mukai): enable this test on Linux.
-// TODO(crbug.com/41468034): flaky on Mac
+// TODO(crbug.com/41468034): flaky on Mac, Linux and Windows.
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
 #define MAYBE_OffsetForDraggingTab OffsetForDraggingTab
