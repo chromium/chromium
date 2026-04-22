@@ -4081,7 +4081,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="2026-06-01">
+    enum="AccessibilityHighContrastColorScheme" expires_after="2027-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>almaher@microsoft.com</owner>
   <summary>
