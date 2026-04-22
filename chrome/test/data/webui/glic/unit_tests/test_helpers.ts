@@ -25,6 +25,7 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
 
 export class FakePageHandler implements Partial<PageHandlerInterface> {
   webviewCommitted(_url: string) {}
+  onZoomLevelChange(_zoomFactor: number) {}
   prepareForClient() {
     return Promise.resolve({result: 0});
   }

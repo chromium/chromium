@@ -809,8 +809,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
-
-
     system_permission_settings_observation_ =
         system_permission_settings::Observe(base::BindRepeating(
             &GlicWebClientHandler::OnOsPermissionSettingChanged,
@@ -1050,13 +1048,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ClosePanelAndShutdown() override { ClosePanel(); }
 
-  void AttachPanel() override {
-    host().AttachPanel(page_handler_);
-  }
+  void AttachPanel() override { host().AttachPanel(page_handler_); }
 
-  void DetachPanel() override {
-    host().DetachPanel(page_handler_);
-  }
+  void DetachPanel() override { host().DetachPanel(page_handler_); }
 
   void ShowProfilePicker() override {
     glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
@@ -2527,6 +2521,20 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
       url.DomainIs("accounts.google.com")) {
     host().LoginPageCommitted(this);
   }
+}
+
+void GlicPageHandler::OnZoomLevelChange(double zoom_factor) {
+  // Ignore values outside of the supported range (defined in glic/webview.ts).
+  if (zoom_factor < 1.0 || zoom_factor > 2.0) {
+    LOG(ERROR) << "Glic [PageHandler] Invalid zoom level: " << zoom_factor;
+    return;
+  }
+  int zoom_percent = std::round(zoom_factor * 100);
+  // Note that zoom level is already persisted in the glic webview partition -
+  // this pref is only used for metrics.
+  Profile::FromBrowserContext(browser_context_)
+      ->GetPrefs()
+      ->SetInteger(prefs::kGlicZoomLevel, zoom_percent);
 }
 
 void GlicPageHandler::NotifyWindowIntentToShow() {

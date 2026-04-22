@@ -246,9 +246,9 @@ GlicInstanceImpl::GlicInstanceImpl(
       id_(instance_id),
       host_(profile_, this, this, this),
       sharing_manager_coordinator_(profile, this, metrics),
-      instance_metrics_(
-          ProfileMetricsServiceFactory::GetForProfile(profile),
-          &sharing_manager_coordinator_.GetActiveSharingManager()),
+      instance_metrics_(ProfileMetricsServiceFactory::GetForProfile(profile),
+                        &sharing_manager_coordinator_.GetActiveSharingManager(),
+                        profile->GetPrefs()),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               &sharing_manager(),

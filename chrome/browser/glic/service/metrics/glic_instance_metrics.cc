@@ -75,7 +75,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(
     const metrics::ProfileMetricsService* profile_metrics_service)
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
-      profile_metrics_service_(CHECK_DEREF(profile_metrics_service)) {
+      profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
+      pref_service_(nullptr) {
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -87,7 +88,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(
 
 GlicInstanceMetrics::GlicInstanceMetrics(
     const metrics::ProfileMetricsService* profile_metrics_service,
-    GlicSharingManager* sharing_manager)
+    GlicSharingManager* sharing_manager,
+    PrefService* pref_service)
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
       pinned_tabs_changed_subscription_(
@@ -99,7 +101,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(
               &GlicInstanceMetrics::RecordTabPinningStatusEvent,
               base::Unretained(this)))),
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
-      sharing_manager_(sharing_manager) {
+      sharing_manager_(sharing_manager),
+      pref_service_(pref_service) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
       false, "Glic.Instance.UninterruptedActiveDuration");
@@ -555,6 +558,11 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.OpenSource", source);
   } else {
     base::UmaHistogramEnumeration("Glic.Instance.SidePanel.OpenSource", source);
+  }
+
+  if (pref_service_) {
+    base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen",
+                             pref_service_->GetInteger(prefs::kGlicZoomLevel));
   }
 }
 

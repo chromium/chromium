@@ -32,7 +32,6 @@ inline constexpr char kGlicSelectionHotkey[] = "glic.selection_hotkey";
 // hotkey for toggling focus between Glic and the browser window.
 inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";
 
-
 // String prefs that keep track of user-configured Glic guest URL presets for
 // different environments.
 inline constexpr char kGlicGuestUrlPresetAutopush[] =
@@ -110,6 +109,12 @@ inline constexpr char kGlicRolloutEligibility[] =
 
 // Dict pref that records user status.
 inline constexpr char kGlicUserStatus[] = "glic.user_status";
+
+// Integer pref that records the zoom level for the Glic webview as a
+// percentage (e.g. 100 indicates 100%). Note that zoom level is already
+// persisted in the glic webview partition - this pref is only used for
+// recording usage metrics.
+inline constexpr char kGlicZoomLevel[] = "glic.zoom_level";
 
 // Time pref that records the last time a user dismissed the Glic window.
 inline constexpr char kGlicWindowLastDismissedTime[] =
