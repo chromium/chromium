@@ -20,8 +20,9 @@
 #endif  // BUILDFLAG(USE_BLINK)
 
 namespace {
-// Copied from GTMUIImage+Resize in //third_party/google_toolbox_for_mac to
-// avoid depending on other GTM* classes unnecessarily.
+// Copied from https://github.com/google/google-toolbox-for-mac
+// `GTMUIImage+Resize.m` to avoid depending on other GTM* classes
+// unnecessarily.
 UIImage* ResizeUIImage(UIImage* image,
                        CGSize target_size,
                        BOOL preserve_aspect_ratio,

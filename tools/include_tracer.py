@@ -29,7 +29,6 @@ INCLUDE_PATHS = [
   'skia/ext',
   'testing/gmock/include',
   'testing/gtest/include',
-  'third_party/google_toolbox_for_mac/src',
   'third_party/icu/public/common',
   'third_party/icu/public/i18n',
   'third_party/protobuf',

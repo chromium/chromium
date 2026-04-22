@@ -341,10 +341,6 @@ vars = {
   # and whatever else without interference from each other.
   'fuchsia_version': 'version:31.20260416.4.1',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling google-toolbox-for-mac
-  # and whatever else without interference from each other.
-  'google_toolbox_for_mac_revision': '42b12f10cd8342f5cb41a1e3e3a2f13fd9943b0d',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
   'googletest_revision': '4fe3307fb2d9f86d19777c7eb0e4809e9694dde7',
@@ -2178,11 +2174,6 @@ deps = {
 
   'src/third_party/libgav1/src':
     Var('chromium_git') + '/codecs/libgav1.git' + '@' + '40f58ed32ff39071c3f2a51056dbc49a070af0dc',
-
-  'src/third_party/google_toolbox_for_mac/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/google-toolbox-for-mac.git' + '@' + Var('google_toolbox_for_mac_revision'),
-      'condition': 'checkout_ios or checkout_mac',
-  },
 
   'src/third_party/google-truth/src': {
       'url': Var('chromium_git') + '/external/github.com/google/truth.git' + '@' + 'fc54b9e4436ed8ca8bcae7dd71e07a6857e13836',

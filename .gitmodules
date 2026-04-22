@@ -239,10 +239,6 @@
 [submodule "third_party/libgav1/src"]
 	path = third_party/libgav1/src
 	url = https://chromium.googlesource.com/codecs/libgav1
-[submodule "third_party/google_toolbox_for_mac/src"]
-	path = third_party/google_toolbox_for_mac/src
-	url = https://chromium.googlesource.com/external/github.com/google/google-toolbox-for-mac
-	gclient-condition = checkout_ios or checkout_mac
 [submodule "third_party/google-truth/src"]
 	path = third_party/google-truth/src
 	url = https://chromium.googlesource.com/external/github.com/google/truth

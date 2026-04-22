@@ -188,7 +188,6 @@ per-file third_party/glslang/src=*
 per-file third_party/google-truth/src=*
 per-file third_party/gnu_binutils=*
 per-file third_party/google_benchmark/src=*
-per-file third_party/google_toolbox_for_mac/src=*
 per-file third_party/googlemac=*
 per-file third_party/googletest/src=*
 per-file third_party/gperf=*
