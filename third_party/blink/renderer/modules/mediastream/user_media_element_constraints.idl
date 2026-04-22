@@ -4,5 +4,5 @@
 
 [RuntimeEnabled=UserMediaElement, ImplementedAs=UserMediaElementConstraints]
 partial interface HTMLUserMediaElement {
-    void setConstraints(MediaStreamConstraints constraints);
+    void setConstraints(optional MediaStreamConstraints constraints = {});
 };
