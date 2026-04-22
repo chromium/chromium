@@ -46,7 +46,7 @@ public class PdfToolbarCoordinatorUnitTest {
         mCloseableMocks = MockitoAnnotations.openMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mPdfPageView = LayoutInflater.from(mActivity).inflate(R.layout.pdf_page, null);
-        mPdfToolbarCoordinator = new PdfToolbarCoordinator(mActivity, mPdfPageView, mDelegate);
+        mPdfToolbarCoordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
     }
 
     @After

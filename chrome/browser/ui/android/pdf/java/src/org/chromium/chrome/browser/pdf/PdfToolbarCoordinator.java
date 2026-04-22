@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.pdf;
 
-import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -20,14 +20,15 @@ import java.util.Locale;
 public class PdfToolbarCoordinator implements View.OnClickListener {
     private final PropertyModel mModel;
     private final PdfToolbarActionsDelegate mDelegate;
+    private final PropertyModelChangeProcessor<PropertyModel, PdfToolbar, PropertyKey>
+            mPropertyModelChangeProcessor;
     private final ArrayList<Float> mZoomLevels =
             new ArrayList<>(
                     List.of(
                             0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f,
                             1.75f, 2.0f, 2.5f, 3.0f, 4.0f, 5.0f));
 
-    public PdfToolbarCoordinator(
-            Context context, View parentView, PdfToolbarActionsDelegate delegate) {
+    public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
         PdfToolbar toolbar = parentView.findViewById(R.id.pdf_toolbar);
         // TODO(crbug.com/496180649): Only show the toolbar when the PDF is loaded via ViewStub.
@@ -44,7 +45,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         .build();
 
         // Set up the MCP to sync the Model and View
-        PropertyModelChangeProcessor.create(mModel, toolbar, PdfToolbarViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mModel, toolbar, PdfToolbarViewBinder::bind);
     }
 
     @Override
@@ -114,5 +116,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel.set(
                 PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED,
                 zoomLevel < mZoomLevels.get(mZoomLevels.size() - 1));
+    }
+
+    /** Destroys the coordinator and releases references held by the change processor. */
+    public void destroy() {
+        mPropertyModelChangeProcessor.destroy();
     }
 }

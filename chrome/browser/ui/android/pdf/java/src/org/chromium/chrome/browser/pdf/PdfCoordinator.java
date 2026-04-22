@@ -160,9 +160,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             mProgressBar.setVisibility(View.VISIBLE);
         }
         mToolbarCoordinator =
-                PdfUtils.isInlinePdfV2Enabled()
-                        ? new PdfToolbarCoordinator(activity, mView, this)
-                        : null;
+                PdfUtils.isInlinePdfV2Enabled() ? new PdfToolbarCoordinator(mView, this) : null;
         // TODO(crbug.com/496635305): Remove this log after mToolbarCoordinator is used elsewhere.
         Log.d(TAG, "Toolbar coordinator is null: " + (mToolbarCoordinator == null));
         loadPdfFile(filepath);
@@ -326,6 +324,9 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     void destroy() {
         mPdfSandboxHandle.close();
         mPdfSandboxHandle = null;
+        if (mToolbarCoordinator != null) {
+            mToolbarCoordinator.destroy();
+        }
         if (mChromePdfViewerFragment == null) {
             Log.w(TAG, "Fragment is null when pdf page is destroyed.");
             return;
