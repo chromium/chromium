@@ -13,6 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/preconnect_manager.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
@@ -25,7 +27,8 @@ namespace android_webview {
 // Holds a content::PreconnectManager, owning it for the lifetime of the Profile
 // and exposing via the Java AwPreconnector (which this class also owns).
 // Lifetime: Profile
-class AwPreconnector : public content::PreconnectManager::Delegate {
+class AwPreconnector : public content::PreconnectManager::Delegate,
+                       public network::mojom::ConnectionChangeObserverClient {
  public:
   explicit AwPreconnector(content::BrowserContext* browser_context);
   ~AwPreconnector() override;
@@ -46,11 +49,25 @@ class AwPreconnector : public content::PreconnectManager::Delegate {
 
   bool IsPreconnectEnabled() override;
 
+  // network::mojom::ConnectionChangeObserverClient:
+  void OnSessionClosed() override;
+  void OnNetworkEvent(net::NetworkChangeEvent event) override;
+  void OnConnectionFailed() override;
+
  private:
+  struct PreconnectContext {
+    base::TimeTicks start_time;
+    GURL url;
+  };
+
   content::PreconnectManager& GetPreconnectManager();
 
   const raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<content::PreconnectManager> preconnect_manager_;
+
+  mojo::ReceiverSet<network::mojom::ConnectionChangeObserverClient,
+                    PreconnectContext>
+      receivers_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   base::WeakPtrFactory<AwPreconnector> weak_factory_{this};

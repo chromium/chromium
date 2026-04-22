@@ -8251,6 +8251,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Preconnect.ConnectionDuration" units="ms"
+    expires_after="2026-09-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the duration of a preconnected session in WebView. This is the time
+    elapsed between connection opening and closing. Logged when the preconnected
+    session is closed.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
     enum="PrimaryCpuAbiBitness" expires_after="2026-11-30">
   <owner>tasak@google.com</owner>
