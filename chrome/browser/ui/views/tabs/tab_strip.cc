@@ -2434,6 +2434,10 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
+  if (!tab_container_) {
+    return;
+  }
+
   if (active && selected_tabs_.active().has_value()) {
     // When the browser window is activated, set the accessible selection and
     // fire a selection event on the currently active tab, to help enable
