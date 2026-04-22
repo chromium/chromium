@@ -1341,6 +1341,16 @@ config("webview_orderfile_config") {
       "-Wl,--no-warn-symbol-ordering",
     ]
     inputs = [ webview_orderfile_path ]
+
+    # These are txt files used by gclient to decide which version to download.
+    # They have zero effect on the build. We add them here merely so that
+    # GN-analyze recognizes them as dependencies when the version gets rolled.
+    if (current_cpu == "arm64" || current_cpu == "x64") {
+      inputs +=
+          [ "//android_webview/tools/android-webview-arm64.orderfile.txt" ]
+    } else if (current_cpu == "arm" || current_cpu == "x86") {
+      inputs += [ "//android_webview/tools/android-webview-arm.orderfile.txt" ]
+    }
   }
 }
 
