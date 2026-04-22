@@ -145,8 +145,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
       std::unique_ptr<CanvasResourceProvider>) override;
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-
-  bool is_valid_size_ = false;
 };
 
 }  // namespace blink

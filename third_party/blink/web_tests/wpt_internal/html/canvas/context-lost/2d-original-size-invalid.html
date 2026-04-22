@@ -1,0 +1,77 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./2d-context-lost-utils.js"></script>
+<script>
+runCanvasTestsInWorker({dependencies: ['./2d-context-lost-utils.js']});
+
+/**
+ * Create a canvas with an invalid size from the start.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = get2dContext(canvas);
+
+  // Using the canvas should lose the context because the size is invalid.
+  assert_array_equals(
+      drawAndReadBack(ctx, 'lime'), [0, 0, 0, 0],
+      `The canvas should be unusable at creation.`);
+  await waitForContextLost(ctx);
+
+  canvas.width = 300;
+  canvas.height = 150;
+  await waitForContextRestored(ctx);
+  assert_array_equals(
+      drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
+      `The canvas should be usable after giving it a valid size.`);
+}, 'Test a canvas created with an invalid original size.',
+   {
+     testTypes: ALL_CANVAS_TEST_TYPES,
+     width: 10000000,
+     height: 10000000,
+   });
+
+/**
+ * Create a canvas with a zero size.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = get2dContext(canvas);
+
+  // A canvas with zero size is valid, but unusable.
+  assert_array_equals(
+      drawAndReadBack(ctx, 'lime'), [0, 0, 0, 0],
+      `The canvas should be unusable at creation.`);
+  // It's valid for a context to have a zero size. The context should not be
+  // lost.
+  await waitFramesAndRejectOnContextEvents(ctx, 10);
+
+  canvas.width = 300;
+  canvas.height = 150;
+  assert_array_equals(
+      drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
+      `The canvas should be usable after giving it a valid size.`);
+}, 'Test losing and restoring a 2D context by setting an invalid canvas size.',
+   {
+     testTypes: ALL_CANVAS_TEST_TYPES,
+     width: 0,
+     height: 0,
+   });
+
+/**
+ * Create an HTMLCanvasElement with negative size. The size is defined as
+ * unsigned, so the size is rejected and the default is used.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = get2dContext(canvas);
+  assert_array_equals(
+      drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
+      `The canvas should be valid and use the default size.`);
+  await waitFramesAndRejectOnContextEvents(ctx, 10);
+}, 'Test creating an HTMLCanvasElement with a negative size.',
+   {
+     testTypes: HTML_CANVAS_ELEMENT_TEST_TYPES,
+     width: -1,
+     height: -1,
+   });
+
+</script>

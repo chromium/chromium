@@ -256,19 +256,9 @@ canvasPromiseTest(async (canvas, {canvasType} = {}) => {
   canvas.width = 100000000;
   ctx.fillRect(0, 0, 100, 100);
 
-  // TODO: crbug.com/348445884 - `HTMLCanvasElement` and `OffscreenCanvas`
-  // behave differently. This test is merely testing existing behavior, but this
-  // should be fixed such that the two classes behave the same way.
-  if (HTML_CANVAS_ELEMENT_TEST_TYPES.includes(canvasType)) {
-    // `HTMLCanvasElement` lost the context in `fillRect`.
-    assert_true(ctx.isContextLost(),
-                'Context should be lost immediately after a failed draw.');
-  } else {
-    // For `OffscreenCanvas`, the `fillRect` above aborted, but the context
-    // wasn't lost. The context will only become lost when the task terminates.
-    assert_false(ctx.isContextLost(),
-                'Context should be lost only when flushing the canvas.');
-  }
+  // The context was lost in `fillRect` because a buffer could not be created.
+  assert_true(ctx.isContextLost(),
+              'Context should be lost immediately after a failed draw.');
 
   await waitForContextLost(ctx);
 }, 'Bad size -> fillRect -> context lost.',

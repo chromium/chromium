@@ -51,6 +51,9 @@ WORKER_CANVAS_TEST_TYPES = [
     CanvasTestType.WORKER,
 ];
 
+const DEFAULT_CANVAS_WIDTH = 300;
+const DEFAULT_CANVAS_HEIGHT = 150;
+
 var enabledTestTypeVariant = null;
 setup(() => {
   const urlParams = new URLSearchParams(self.location.search);
@@ -66,6 +69,21 @@ function isTestTypeEnabled(testType) {
   return enabledTestTypeVariant === null || enabledTestTypeVariant === testType;
 }
 
+function createHTMLCanvasElement(width, height) {
+  if (width === DEFAULT_CANVAS_WIDTH && height === DEFAULT_CANVAS_HEIGHT) {
+    // Create a canvas with the default size.
+    const canvas = document.createElement('canvas');
+    assert_equals(canvas.width, width, 'Unexpected default canvas width.');
+    assert_equals(canvas.height, height, 'Unexpected default canvas height.');
+    return canvas;
+  } else {
+    // Create a canvas with the specified size from the start.
+    const element = document.createElement('div');
+    element.innerHTML = `<canvas width="${width}" height="${height}"></canvas>`;
+    return element.firstElementChild;
+  }
+}
+
 /**
  * Run `testBody` in a `promise_test` against multiple types of canvases. By
  * default, the test is executed against an HTMLCanvasElement, a main thread
@@ -79,8 +97,11 @@ function isTestTypeEnabled(testType) {
  * at the script level.
  */
 function canvasPromiseTest(
-    testBody, description,
-    {testTypes = DEFAULT_CANVAS_TEST_TYPES} = {}) {
+    testBody, description, {
+      testTypes = DEFAULT_CANVAS_TEST_TYPES,
+      width = DEFAULT_CANVAS_WIDTH,
+      height = DEFAULT_CANVAS_HEIGHT,
+    } = {}) {
   if (testTypes.includes(CanvasTestType.WORKER) &&
       isTestTypeEnabled(CanvasTestType.WORKER)) {
     setup(() => {
@@ -101,7 +122,7 @@ function canvasPromiseTest(
       if (!document.body) {
         document.documentElement.appendChild(document.createElement("body"));
       }
-      const canvas = document.createElement('canvas');
+      const canvas = createHTMLCanvasElement(width, height);
       document.body.appendChild(canvas);
       await testBody(canvas, {test, canvasType: CanvasTestType.HTML});
       document.body.removeChild(canvas);
@@ -111,7 +132,7 @@ function canvasPromiseTest(
   if (testTypes.includes(CanvasTestType.DETACHED_HTML) &&
       isTestTypeEnabled(CanvasTestType.DETACHED_HTML)) {
     promise_test((test) => {
-      return testBody(document.createElement('canvas'),
+      return testBody(createHTMLCanvasElement(width, height),
                       {test, canvasType: CanvasTestType.DETACHED_HTML});
     }, 'Detached HTMLCanvasElement: ' + description);
   }
@@ -119,7 +140,7 @@ function canvasPromiseTest(
   if (testTypes.includes(CanvasTestType.OFFSCREEN) &&
       isTestTypeEnabled(CanvasTestType.OFFSCREEN)) {
     promise_test((test) => {
-      return testBody(new OffscreenCanvas(300, 150),
+      return testBody(new OffscreenCanvas(width, height),
                       {test, canvasType: CanvasTestType.OFFSCREEN});
     }, 'OffscreenCanvas: ' + description);
   }
@@ -130,7 +151,7 @@ function canvasPromiseTest(
       if (!document.body) {
         document.documentElement.appendChild(document.createElement("body"));
       }
-      const placeholder = document.createElement('canvas');
+      const placeholder = createHTMLCanvasElement(width, height);
       document.body.appendChild(placeholder);
       await testBody(placeholder.transferControlToOffscreen(),
                       {test, canvasType: CanvasTestType.PLACEHOLDER});
