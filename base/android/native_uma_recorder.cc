@@ -62,6 +62,9 @@ void CheckHistogramArgs(JNIEnv* env,
                         int32_t expected_max,
                         size_t expected_bucket_count,
                         HistogramBase* histogram) {
+  if (histogram->GetHistogramType() == DUMMY_HISTOGRAM) {
+    return;
+  }
   const auto validity = Histogram::InspectConstructionArguments(
       histogram_name, histogram->name_hash(), &expected_min, &expected_max,
       &expected_bucket_count);
