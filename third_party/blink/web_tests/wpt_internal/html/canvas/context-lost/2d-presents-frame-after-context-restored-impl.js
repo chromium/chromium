@@ -2,9 +2,7 @@
 // restores its 2D context from a GPU process termination.
 async function Test2dPresentsFrameAfterContextRestored(
     canvas, {desynchronized = false} = {}) {
-  const ctx = canvas.getContext('2d', {
-    desynchronized: desynchronized,
-  });
+  const ctx = get2dContext(canvas);
 
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';

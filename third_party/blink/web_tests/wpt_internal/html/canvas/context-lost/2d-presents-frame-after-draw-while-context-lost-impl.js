@@ -1,11 +1,7 @@
 // Tests drawing while a 2D canvas is lost.
 async function TestDrawWhile2dContextLost(canvas,
                                          {desynchronized = false} = {}) {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-    desynchronized: desynchronized,
-  });
+  const ctx = get2dContext(canvas, {desynchronized});
 
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';

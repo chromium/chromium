@@ -9,8 +9,8 @@ function get2dContext(canvas, {desynchronized = false} = {}) {
   });
 };
 
-function drawAndReadBack(ctx) {
-  ctx.fillStyle = 'red';
+function drawAndReadBack(ctx, fillStyle='red') {
+  ctx.fillStyle = fillStyle;
   ctx.fillRect(0, 0, 100, 100);
   return ctx.getImageData(1, 1, 1, 1).data;
 }

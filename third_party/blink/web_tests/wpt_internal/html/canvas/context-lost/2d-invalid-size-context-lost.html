@@ -81,12 +81,9 @@ canvasPromiseTest(async (canvas) => {
               'oncontextrestored should be invoked in the next task.');
   assert_false(ctx.isContextLost(), 'Contest should not longer be lost.');
 
-  ctx.fillStyle = 'lime';
-  ctx.fillRect(0, 0, 100, 100);
   assert_array_equals(
-      ctx.getImageData(1, 1, 1, 1).data, [0, 255, 0, 255],
+      drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
       `The canvas should be usable after it's restored.`);
-
 }, 'Test losing and restoring a 2D context by setting an invalid canvas size.',
    {testTypes: ALL_CANVAS_TEST_TYPES});
 

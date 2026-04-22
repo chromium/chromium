@@ -8,20 +8,11 @@
 assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
   'This test requires chrome.gpuBenchmarking.');
 
-function drawAndReadBack(ctx, fillStyle) {
-  ctx.fillStyle = fillStyle;
-  ctx.fillRect(0, 0, 100, 100);
-  return ctx.getImageData(1, 1, 1, 1).data;
-}
-
 /**
  * Validates losing the GPU context while the canvas has an invalid size.
  */
  canvasPromiseTest(async (canvas, {test}) => {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-  });
+  const ctx = get2dContext(canvas);
 
   // Make sure the canvas is fully initialized.
   drawAndReadBack(ctx, 'red');

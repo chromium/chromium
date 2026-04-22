@@ -1,11 +1,7 @@
 // Tests resizing a 2d canvas from within the oncontextlost event.
 async function TestResizeInOnContextLost(canvas,
                                          {desynchronized = false} = {}) {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-    desynchronized: desynchronized,
-  });
+  const ctx = get2dContext(canvas, {desynchronized});
 
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);

@@ -11,7 +11,7 @@ assert_true(!!window.internals,
             'This test requires window.internals.');
 
 canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
-  const ctx = canvas.getContext('2d');
+  const ctx = get2dContext(canvas);
 
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);

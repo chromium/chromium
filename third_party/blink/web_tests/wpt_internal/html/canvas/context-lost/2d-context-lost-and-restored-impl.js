@@ -5,11 +5,7 @@ assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
 // terminated.
 async function Test2dContextLostAndRestored(test, canvas,
                                             {desynchronized = false} = {}) {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-    desynchronized: desynchronized,
-  });
+  const ctx = get2dContext(canvas, {desynchronized});
 
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';
@@ -22,10 +18,8 @@ async function Test2dContextLostAndRestored(test, canvas,
   assert_true(ctx.isContextLost());
 
   // The canvas should remain blank until it's restored.
-  ctx.fillStyle = 'lime';
-  ctx.fillRect(0, 0, 100, 100);
   assert_array_equals(
-      ctx.getImageData(2, 2, 1, 1).data, [0, 0, 0, 0],
+      drawAndReadBack(ctx, 'lime'), [0, 0, 0, 0],
       'The canvas should remain blank while the context is lost.');
 
   assert_true(ctx.isContextLost());
@@ -37,21 +31,15 @@ async function Test2dContextLostAndRestored(test, canvas,
       ctx.getImageData(2, 2, 1, 1).data, [0, 0, 0, 0],
       `The canvas should be blank right after it's restored.`);
 
-  ctx.fillStyle = 'lime';
-  ctx.fillRect(0, 0, 100, 100);
   assert_array_equals(
-      ctx.getImageData(2, 2, 1, 1).data, [0, 255, 0, 255],
+      drawAndReadBack(ctx, 'lime'), [0, 255, 0, 255],
       `The canvas should be usable after it's restored.`);
 }
 
 // Tests that the canvas is not lost after the GPU process is terminated.
 async function Test2dContextNeverLost(test, canvas,
                                       {desynchronized = false} = {}) {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-    desynchronized: desynchronized,
-  });
+  const ctx = get2dContext(canvas, {desynchronized});
 
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';
