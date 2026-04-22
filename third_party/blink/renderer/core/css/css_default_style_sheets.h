@@ -109,6 +109,8 @@ class CSSDefaultStyleSheets final
     return default_view_transition_style_sheet_.Get();
   }
 
+  CORE_EXPORT void ResetTextTrackStyleSheet();
+
   CORE_EXPORT void PrepareForLeakDetection();
 
   // Media Controls UA stylesheet loading is handled by the media_controls

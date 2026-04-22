@@ -130,6 +130,37 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   Reset();
 }
 
+void CSSDefaultStyleSheets::ResetTextTrackStyleSheet() {
+  if (!text_track_style_sheet_) {
+    return;
+  }
+
+  text_track_style_sheet_.Clear();
+
+  // Recreate the default_media_controls_style_, and
+  // default_forced_colors_media_controls_style_ RuleSets to remove the old
+  // text track cue rule.
+  default_media_controls_style_ = MakeGarbageCollected<RuleSet>();
+  if (media_controls_style_sheet_) {
+    default_media_controls_style_->AddRulesFromSheet(
+        media_controls_style_sheet_, ScreenEval(), /*mixins=*/{});
+  }
+  default_media_controls_style_->CompactRulesIfNeeded();
+
+  if (default_forced_colors_media_controls_style_) {
+    default_forced_colors_media_controls_style_ =
+        MakeGarbageCollected<RuleSet>();
+    if (media_controls_style_sheet_) {
+      default_forced_colors_media_controls_style_->AddRulesFromSheet(
+          media_controls_style_sheet_, ForcedColorsEval(), /*mixins=*/{});
+    }
+    default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
+  }
+
+  VerifyUniversalRuleCount();
+  rule_set_group_cache_.clear();
+}
+
 void CSSDefaultStyleSheets::Reset() {
   // Clear the optional style sheets.
   svg_style_sheet_.Clear();

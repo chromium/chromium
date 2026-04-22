@@ -186,6 +186,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
 
   void InitialStyleChanged();
+  void UAStyleChanged();
   void UpdateAcceleratedCompositingSettings();
 
   ViewportDescription GetViewportDescription() const;

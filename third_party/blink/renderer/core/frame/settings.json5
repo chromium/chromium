@@ -870,38 +870,47 @@
     {
       name: "textTrackBackgroundColor",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackFontFamily",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackFontStyle",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackFontVariant",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackTextColor",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackTextShadow",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackTextSize",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackWindowColor",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
     {
       name: "textTrackWindowRadius",
       type: "String",
+      invalidate: ["TextTrackStyle"],
     },
 
     // Margin for title-safe placement of cues with overscan, gives top and bottom margin size as

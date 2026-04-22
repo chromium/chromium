@@ -32,6 +32,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -688,6 +689,15 @@ void Page::InitialStyleChanged() {
   }
 }
 
+void Page::UAStyleChanged() {
+  for (Frame* frame = MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      local_frame->GetDocument()->GetStyleEngine().UAStyleChanged();
+    }
+  }
+}
+
 PluginData* Page::GetPluginData() {
   if (!plugin_data_)
     plugin_data_ = MakeGarbageCollected<PluginData>();
@@ -1214,6 +1224,10 @@ void Page::SettingsChanged(ChangeType change_type) {
     }
     case ChangeType::kAcceptLanguages:
       AcceptLanguagesChanged();
+      break;
+    case ChangeType::kTextTrackStyle:
+      CSSDefaultStyleSheets::Instance().ResetTextTrackStyleSheet();
+      UAStyleChanged();
       break;
   }
 }

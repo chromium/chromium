@@ -6,9 +6,11 @@
 
 #include <windows.h>
 
+#include <Windows.Media.ClosedCaptioning.h>
 #include <stddef.h>
 #include <uxtheme.h>
 #include <vsstyle.h>
+#include <wrl/event.h>
 
 #include <array>
 #include <cmath>
@@ -26,6 +28,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
+#include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -1026,7 +1030,26 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
       rect.y());
 }
 
+// Test override for the IClosedCaptionPropertiesStatics2 interface.
+// Wrapped in base::NoDestructor to avoid exit-time destructor.
+Microsoft::WRL::ComPtr<
+    ABI::Windows::Media::ClosedCaptioning::IClosedCaptionPropertiesStatics2>&
+GetClosedCaptionPropertiesStaticsOverride() {
+  static base::NoDestructor<Microsoft::WRL::ComPtr<
+      ABI::Windows::Media::ClosedCaptioning::IClosedCaptionPropertiesStatics2>>
+      instance;
+  return *instance;
+}
+
 }  // namespace
+
+// static
+void NativeThemeWin::SetClosedCaptionPropertiesStaticsForTesting(
+    Microsoft::WRL::ComPtr<
+        ABI::Windows::Media::ClosedCaptioning::IClosedCaptionPropertiesStatics2>
+        statics) {
+  GetClosedCaptionPropertiesStaticsOverride() = std::move(statics);
+}
 
 // static
 void NativeThemeWin::CloseHandles() {
@@ -1070,10 +1093,52 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
                                                : gfx::Size();
 }
 
-NativeThemeWin::NativeThemeWin() = default;
+NativeThemeWin::NativeThemeWin() {
+  RegisterClosedCaptionPropertiesChangedListener();
+}
 
 NativeThemeWin::~NativeThemeWin() {
+  if (caption_statics2_) {
+    if (caption_properties_changed_token_.value) {
+      caption_statics2_->remove_PropertiesChanged(
+          caption_properties_changed_token_);
+      caption_properties_changed_token_ = {};
+    }
+    caption_statics2_.Reset();
+  }
   CloseHandles();
+}
+
+void NativeThemeWin::RegisterClosedCaptionPropertiesChangedListener() {
+  CHECK(!caption_properties_changed_token_.value);
+
+  HRESULT hr = S_OK;
+  if (GetClosedCaptionPropertiesStaticsOverride()) {
+    caption_statics2_ = GetClosedCaptionPropertiesStaticsOverride();
+  } else {
+    base::win::HStringReference class_name(
+        RuntimeClass_Windows_Media_ClosedCaptioning_ClosedCaptionProperties);
+    hr = base::win::RoGetActivationFactory(class_name.Get(),
+                                           IID_PPV_ARGS(&caption_statics2_));
+    if (FAILED(hr)) {
+      return;
+    }
+  }
+
+  EventRegistrationToken token;
+  hr = caption_statics2_->add_PropertiesChanged(
+      Microsoft::WRL::Callback<ABI::Windows::Foundation::IEventHandler<
+          IInspectable*>>([](IInspectable*, IInspectable*) -> HRESULT {
+        NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
+        return S_OK;
+      }).Get(),
+      &token);
+  if (FAILED(hr)) {
+    caption_statics2_.Reset();
+    return;
+  }
+
+  caption_properties_changed_token_ = token;
 }
 
 void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,

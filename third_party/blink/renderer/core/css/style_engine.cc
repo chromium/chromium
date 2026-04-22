@@ -2763,6 +2763,11 @@ void StyleEngine::InitialStyleChanged() {
       StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
 }
 
+void StyleEngine::UAStyleChanged() {
+  MarkAllElementsForStyleRecalc(
+      StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
+}
+
 void StyleEngine::ViewportStyleSettingChanged() {
   if (viewport_resolver_) {
     viewport_resolver_->SetNeedsUpdate();

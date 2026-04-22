@@ -158,6 +158,9 @@ test("native_theme_unittests") {
   }
 
   if (is_win) {
-    sources += [ "caption_style_win_unittest.cc" ]
+    sources += [
+      "caption_style_win_unittest.cc",
+      "native_theme_win_unittest.cc",
+    ]
   }
 }

@@ -278,6 +278,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void WatchedSelectorsChanged();
   void DocumentRulesSelectorsChanged();
   void InitialStyleChanged();
+  void UAStyleChanged();
   void ColorSchemeChanged();
   void SetOwnerColorScheme(
       mojom::blink::ColorScheme color_scheme,

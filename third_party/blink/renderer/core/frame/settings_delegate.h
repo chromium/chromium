@@ -74,6 +74,7 @@ class CORE_EXPORT SettingsDelegate {
     kForcedColors,
     kFontScaleFactor,
     kAcceptLanguages,
+    kTextTrackStyle,
   };
 
   virtual void SettingsChanged(ChangeType) = 0;
