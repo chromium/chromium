@@ -127,6 +127,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
 
  private:
   raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map_;
   CreditCardSuggestionSummary summary_;
   raw_ptr<payments::AmountExtractionManager> amount_extraction_manager_;
   raw_ptr<payments::BnplManager> bnpl_manager_;

@@ -237,10 +237,6 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     callback({FillingProduct::kAutocomplete, {}});
     return;
   }
-  if (!trigger_autofill_field) {
-    callback({FillingProduct::kIdentityCredential, {}});
-    return;
-  }
 
   std::vector<IdentityCredential> credentials = base::ToVector(
       std::move(identity_credential_suggestion_data),
