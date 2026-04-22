@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 176 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 175 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" queryCommandValue("underline") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" queryCommandState("underline") after
@@ -332,8 +332,6 @@ Found 176 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","false"],["underline",""]] "foo[<u>b]ar</u>baz" queryCommandValue("underline") after
   assert_equals: Wrong result returned expected "" but got "false"
-[FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>ba[r</u>]baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"text-decoration:underline\\">ba</span>rbaz" but got "foo<u>ba</u>rbaz"
 [FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>ba[r</u>]baz" queryCommandValue("underline") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>ba[r</u>]baz" queryCommandValue("underline") after
