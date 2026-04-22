@@ -1010,7 +1010,7 @@ public class FeedSurfaceCoordinator
             view.addItemDecoration(mItemDecoration);
         }
 
-        // Work around https://crbug.com/943873 where default focus highlight shows up after
+        // Work around https://crbug.com/41447943 where default focus highlight shows up after
         // toggling dark mode.
         view.setDefaultFocusHighlightEnabled(false);
         if (mOverScrollDisabled) {

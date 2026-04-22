@@ -117,7 +117,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
             mBillingAddressSpinner.setAdapter(adapter);
             mBillingAddressSpinner.setSelection(mInitialBillingAddressPos);
             // TODO(rouslan): Use an [+ ADD ADDRESS] button instead of disabling the dropdown.
-            // http://crbug.com/623629
+            // http://crbug.com/40474515
             if (adapter.getCount() == 1) mBillingAddressSpinner.setEnabled(false);
         }
 

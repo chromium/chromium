@@ -82,7 +82,7 @@ public class ChromePaymentRequestService
 
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
     // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
-    // crbug.com/1122148.
+    // crbug.com/40715891.
     private @Nullable PaymentRequestService mPaymentRequestService;
 
     private final RenderFrameHost mRenderFrameHost;

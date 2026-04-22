@@ -182,7 +182,7 @@ public class SplitCompatApplication extends Application {
                             throw new RuntimeException(
                                     "Starting in 64-bit mode requires the 64-bit native library. If"
                                             + " the device is 64-bit only, see alternatives here: "
-                                            + "https://crbug.com/1303857#c7.",
+                                            + "https://crbug.com/40217494#c7.",
                                     unsatisfiedLinkError);
                         } else if (cannotLoadIn32Bit()) {
                             throw new RuntimeException(
@@ -392,7 +392,7 @@ public class SplitCompatApplication extends Application {
     private static void checkAppBeingReplaced() {
         // During app update the old apk can still be triggered by broadcasts and spin up an
         // out-of-date application. Kill old applications in this bad state. See
-        // http://crbug.com/658130 for more context and http://b.android.com/56296 for the bug.
+        // http://crbug.com/41282225 for more context and http://b.android.com/56296 for the bug.
         if (ContextUtils.getApplicationContext().getAssets() == null) {
             throw new RuntimeException("App out of date, getResources() null, closing app.");
         }

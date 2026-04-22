@@ -150,7 +150,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1111770
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/40142722
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();
         ThreadUtils.runOnUiThreadBlocking(
@@ -196,7 +196,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1503085")
+    @DisabledTest(message = "https://crbug.com/40943503")
     public void testEnablesUndenylistingToggle() throws TimeoutException, InterruptedException {
         preparePasswordBridge();
         String url = mTestServer.getURL("/chrome/test/data/password/password_form.html");

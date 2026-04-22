@@ -111,7 +111,7 @@ public class FullscreenVideoPictureInPictureController {
     // Somewhat arbitrarily-chosen minimum interval between when we're notified that we have entered
     // Picture in Picture, and when we'll try to exit it.  Otherwise, Android can get into a bad
     // state when chrome is broght to the foreground again -- it still is clipped to a pip-sized
-    // area, complete with rounded corners.  See https://crbug.com/1421703 for more details.
+    // area, complete with rounded corners.  See https://crbug.com/40259376 for more details.
     /* package */ static final long MIN_EXIT_DELAY_MILLIS = 50;
 
     // Short delay after we're notified that video is being unstashed until we unpause it, if it was

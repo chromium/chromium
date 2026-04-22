@@ -639,7 +639,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     }
 
     private void onToolbarContainerVisibilityChange(int visibility) {
-        // See https://crbug.com/1430948 for more context. The issue is that sometimes when
+        // See https://crbug.com/40902026 for more context. The issue is that sometimes when
         // exiting fullscreen, if we don't get a new layout, SurfaceFlinger doesn't recalculate
         // transparent regions and this View (and children) are never shown. Theoretically this
         // should also only ever need to be done the first time becoming visible after exiting

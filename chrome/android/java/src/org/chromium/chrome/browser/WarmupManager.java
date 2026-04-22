@@ -438,13 +438,13 @@ public class WarmupManager {
         } catch (InflateException e) {
             // Warmup manager is only a performance improvement. If inflation failed, it will be
             // redone when the CCT is actually launched using an activity context. So, swallow
-            // exceptions here to improve resilience. See https://crbug.com/606715.
+            // exceptions here to improve resilience. See https://crbug.com/41250941.
             Log.e(TAG, "Inflation exception.", e);
             // An exception caught here may indicate a real bug in production code. We report the
             // exceptions to monitor any spikes or stacks that point to Chrome code.
             Throwable throwable =
                     new Throwable(
-                            "This is not a crash. See https://crbug.com/1259276 for details.", e);
+                            "This is not a crash. See https://crbug.com/40797555 for details.", e);
             ChromePureJavaExceptionReporter.reportJavaException(throwable);
             return null;
         }

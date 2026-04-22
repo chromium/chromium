@@ -297,7 +297,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
+    @DisabledTest(message = "Flaky - https://crbug.com/40717044, crbug.com/40122331")
     public void testSwipeToDismiss_Gts() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create 3 tabs and merge the first two tabs into one group.

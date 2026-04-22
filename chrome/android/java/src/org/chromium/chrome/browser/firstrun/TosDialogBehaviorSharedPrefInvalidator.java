@@ -70,7 +70,7 @@ public class TosDialogBehaviorSharedPrefInvalidator {
         // Run cleanup in a separate task, otherwise the CallbackController inside
         // SkipTosDialogPolicyListener will deadlock. It currently holds a read lock because it is
         // what invoked us. Calling destroy requires a write lock, so the post allows the read lock
-        // to be released first. See https://crbug.com/1201279 for more details.
+        // to be released first. See https://crbug.com/40178618 for more details.
         new Handler(Looper.getMainLooper()).post(this::destroy);
     }
 

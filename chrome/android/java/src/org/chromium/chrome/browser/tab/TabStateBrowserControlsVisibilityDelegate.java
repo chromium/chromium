@@ -198,7 +198,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         // TODO(crbug.com/40926082): Associate events with navigation ids or
                         // urls, so that we can fully unlock controls here possible here.
                         // May have already received the start of a different navigation. Do not
-                        // cancel the outstanding delay. See https://crbug.com/1447237.
+                        // cancel the outstanding delay. See https://crbug.com/40064686.
                         if (!ChromeFeatureList.sControlsVisibilityFromNavigations.isEnabled()) {
                             scheduleEnableFullscreenLoadDelayIfNecessary();
                         }

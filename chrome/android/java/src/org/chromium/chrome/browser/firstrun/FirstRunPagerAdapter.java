@@ -48,7 +48,7 @@ class FirstRunPagerAdapter extends FragmentStateAdapter {
         }
 
         // Caching fragment is OK because FirstRunActivity retains all of the fragments via
-        // ViewPager2#setOffscreenPageLimit(). See crbug.com/740897 for details.
+        // ViewPager2#setOffscreenPageLimit(). See crbug.com/41329641 for details.
         mFragments.set(position, (FirstRunFragment) fragment);
 
         return fragment;

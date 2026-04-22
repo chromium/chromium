@@ -112,7 +112,7 @@ public class WebappDataStorage {
     public static final long UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS;
 
     // Number of milliseconds between checks of updates for a WebAPK that is expected to check
-    // updates less frequently. crbug.com/680128.
+    // updates less frequently. crbug.com/40501007.
     public static final long RELAXED_UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS * 30;
 
     // The default shell Apk version of WebAPKs.

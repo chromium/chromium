@@ -219,7 +219,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Test
     public void testDestroy_WithOutstandingOnAvailable() {
-        // Inspired by a crash in https://crbug.com/1200979.
+        // Inspired by a crash in https://crbug.com/40762122.
         CallbackHelper onAvailabileCallbackHelper = new CallbackHelper();
         mSkipTosDialogPolicyListener.onAvailable((b) -> onAvailabileCallbackHelper.notifyCalled());
 

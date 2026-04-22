@@ -830,7 +830,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             String.format(
                                     """
                                     VIEW intent sent to .Main activity alias was not dispatched. \
-                                    PLEASE report the following info to crbug.com/789732: \
+                                    PLEASE report the following info to crbug.com/40552210: \
                                     "%s". Use --%s flag to disable this check.\
                                     """,
                                     intentInfo, ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS);
@@ -1584,7 +1584,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         // On warm startup, call setInitialOverviewState in onResume() instead of onStart(). This is
         // because onResume() is guaranteed to called after onNewIntent() and thus have the updated
-        // Intent which is used by shouldShowOverviewPageOnStart(). See https://crbug.com/1321607.
+        // Intent which is used by shouldShowOverviewPageOnStart(). See https://crbug.com/40223961.
         if (mFromResumption) {
             setInitialOverviewState();
         } else {
@@ -2309,7 +2309,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 // a previous state. This may change the current Model, watch out for initialization
                 // based on the model.
                 // Never attempt to restore incognito tabs when this activity was previously swiped
-                // away in Recents. http://crbug.com/626629
+                // away in Recents. http://crbug.com/40475851
                 boolean ignoreIncognitoFiles = !hadCipherData;
 
                 // If the home surface should be shown on startup, check if the active tab restored
@@ -4452,7 +4452,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         // the newly active tab before we exit Chrome.
         //
         // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
-        // won't be closed (crbug.com/587565).
+        // won't be closed (crbug.com/40457356).
         if (MinimizeAppAndCloseTabBackPressHandler.supportCloseTabUponMinimization()) {
             // TODO(crbug.com/450560278): closing the tab synchronously may introduce visual jank.
             // Might require improvements.
@@ -4472,7 +4472,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         final TabModel currentModel = mTabModelSelector.getCurrentModel();
         final TabModel tabToCloseModel = mTabModelSelector.getModel(tabToClose.isIncognito());
         if (currentModel != tabToCloseModel) {
-            // This seems improbable; however, crbug/1463397 suggests otherwise. If
+            // This seems improbable; however, crbug.com/40067139 suggests otherwise. If
             // this happens, remain on the current tab and close the tab in the
             // other model.
             tabToCloseModel
@@ -4503,7 +4503,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         try {
             return super.moveTaskToBack(nonRoot);
         } catch (NullPointerException e) {
-            // Work around framework bug described in https://crbug.com/817567.
+            // Work around framework bug described in https://crbug.com/41373943.
             finish();
             return true;
         }

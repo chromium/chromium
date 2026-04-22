@@ -449,7 +449,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky test - see: https://crbug.com/1177149")
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/40748303")
     public void testTabGridDialogAnimation() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1314,7 +1314,7 @@ public class TabGridDialogTest {
         }
     }
 
-    // Regression test for https://crbug.com/1419842
+    // Regression test for https://crbug.com/40895368
     @Test
     @MediumTest
     @DisabledTest(message = "TODO(crbug.com/359632348): Fix flakiness.")
@@ -1375,7 +1375,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Finishes the activity which can have cascading effects.")
-    @DisabledTest(message = "https://crbug.com/1124336")
+    @DisabledTest(message = "https://crbug.com/40147345")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule.getActivityTestRule(), 2, 0, "about:blank");
@@ -1842,7 +1842,7 @@ public class TabGridDialogTest {
         Espresso.pressBack();
 
         // Tab switcher is created, and a fake signal to hide dialog is sent. This line would
-        // crash if the fake signal is not properly handled. See crbug.com/1096358.
+        // crash if the fake signal is not properly handled. See crbug.com/40700683.
         enterTabSwitcher(cta);
         onView(
                         allOf(

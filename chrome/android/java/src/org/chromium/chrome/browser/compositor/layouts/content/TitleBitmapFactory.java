@@ -42,7 +42,7 @@ public class TitleBitmapFactory {
 
     private static final float TITLE_WIDTH_PERCENTAGE = 1.f;
     // Canvas#drawText() seems to fail when trying to draw 4100 or more characters.
-    // See https://crbug.com/524390/ for more details.
+    // See https://crbug.com/40432863/ for more details.
     private static final int MAX_NUM_TITLE_CHAR = 1000;
 
     // We were drawing up to 1000 characters, but only displaying ~30 in the tab strip. Experiment

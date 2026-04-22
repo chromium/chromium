@@ -286,12 +286,12 @@ public class ProcessInitializationHandler {
                         // When the app locale is overridden a change in system locale will not
                         // effect Chrome's UI language. There is race condition where the initial
                         // locale may not equal the overridden default locale
-                        // (https://crbug.com/1224756).
+                        // (https://crbug.com/40188103).
                         if (GlobalAppLocaleController.getInstance().isOverridden()) return;
                         // Android destroys Activities at some point after a locale change, but
                         // doesn't kill the process.  This can lead to a bug where Chrome is halfway
                         // RTL, where stale natively-loaded resources are not reloaded
-                        // (http://crbug.com/552618).
+                        // (http://crbug.com/41215786).
                         if (!mInitialLocale.equals(Locale.getDefault())) {
                             Log.e(TAG, "Killing process because of locale change.");
                             Process.killProcess(Process.myPid());

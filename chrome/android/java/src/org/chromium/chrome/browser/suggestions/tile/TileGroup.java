@@ -595,7 +595,7 @@ public class TileGroup implements MostVisitedSites.Observer {
                 newTileData.append(suggestion.sectionType, sectionTiles);
             }
 
-            // Duplicate should not exist but they may. See https://crbug.com/703628
+            // Duplicate should not exist but they may. See https://crbug.com/40511776
             if (findTileByUrl(suggestion.url, sectionTiles) != null) continue;
 
             sectionTiles.add(new Tile(suggestion, i));

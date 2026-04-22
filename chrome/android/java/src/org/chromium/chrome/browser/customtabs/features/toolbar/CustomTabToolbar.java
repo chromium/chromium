@@ -1515,7 +1515,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @VisibleForTesting
     static String parsePublisherNameFromUrl(GURL url) {
-        // TODO(ianwen): Make it generic to parse url from URI path. http://crbug.com/599298
+        // TODO(ianwen): Make it generic to parse url from URI path. http://crbug.com/40463066
         // The url should look like: https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html
         // or https://www.google.com/amp/www.nyt.com/ampthml/blogs.html.
         String[] segments = url.getPath().split("/");

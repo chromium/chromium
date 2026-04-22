@@ -963,7 +963,7 @@ public class ChromeBackupAgentTest {
 
     /**
      * Test that browser startup fails when in a child process. This is important because of
-     * https://crbug.com/718166
+     * https://crbug.com/40518724
      */
     @Test
     public void testInitializeBrowser_childProcess() {

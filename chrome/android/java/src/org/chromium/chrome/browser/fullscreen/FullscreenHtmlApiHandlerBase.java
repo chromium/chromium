@@ -208,7 +208,7 @@ public abstract class FullscreenHtmlApiHandlerBase
                 case MSG_ID_UNSET_FULLSCREEN_LAYOUT:
                     {
                         // Change this assert to simply ignoring the message to work around
-                        // https://crbug/365638
+                        // https://crbug.com/41102815
                         // TODO(aberent): Fix bug assert getPersistentFullscreenMode() : "Calling
                         // after we exited fullscreen";
                         if (!fullscreenHtmlApiHandlerBase.getPersistentFullscreenMode()) return;
@@ -811,7 +811,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         } else {
             // To avoid a double layout that is caused by the system when just hiding
             // the status bar set the status bar as translucent immediately. This causes
-            // it not to take up space so the layout is stable. (See https://crbug.com/935015).
+            // it not to take up space so the layout is stable. (See https://crbug.com/40615255).
             // Do not do this in multi-window mode or if the system bars can't be dismissed (i.e.
             // on some automotive devices), since the status bar will be forced to always stay
             // visible.
@@ -856,7 +856,7 @@ public abstract class FullscreenHtmlApiHandlerBase
                             int oldTop,
                             int oldRight,
                             int oldBottom) {
-                        // On certain sites playing embedded video (http://crbug.com/293782),
+                        // On certain sites playing embedded video (http://crbug.com/41054315),
                         // setting the layout as fullscreen does not always trigger a view-level
                         // layout with an updated height. To work around this, do not check for an
                         // increased height and always just trigger the next step of the

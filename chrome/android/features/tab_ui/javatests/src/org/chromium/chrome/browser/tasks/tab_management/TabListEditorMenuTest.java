@@ -600,7 +600,7 @@ public class TabListEditorMenuTest {
         closeMenu(listener);
     }
 
-    // Regression test for https://crbug.com/1377205.
+    // Regression test for https://crbug.com/40874164.
     @Test
     @MediumTest
     @Feature({"RenderTest"})

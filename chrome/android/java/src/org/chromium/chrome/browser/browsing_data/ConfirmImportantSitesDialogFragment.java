@@ -279,7 +279,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // We check the domains and urls as well due to crbug.com/622879.
+        // We check the domains and urls as well due to crbug.com/40474194.
         if (savedInstanceState != null) {
             // The important domains and favicon URLs aren't currently saved, so if this dialog
             // is recreated from a saved instance they will be null. This method must return a

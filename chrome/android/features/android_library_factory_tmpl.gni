@@ -69,7 +69,7 @@ import("//build/config/android/rules.gni")
 template("android_library_factory") {
   forward_variables_from(invoker, [ "testonly" ])
 
-  # No underscores for factory target name to avoid crbug.com/908819.
+  # No underscores for factory target name to avoid crbug.com/40603958.
   _process_factory_target_name = "${target_name}factory"
   _base_gen_dir = "${target_gen_dir}/${target_name}"
 

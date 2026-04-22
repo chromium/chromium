@@ -111,7 +111,7 @@ public class ToolbarSwipeLayout extends Layout {
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    // This is a work around for crbug.com/1348624. We need to call switch to tab after
+    // This is a work around for crbug.com/40233431. We need to call switch to tab after
     // ToolbarSwipeLayout is shown when it's switching to a tab.
     private boolean mIsSwitchToStaticTab;
     private int mToTabId;

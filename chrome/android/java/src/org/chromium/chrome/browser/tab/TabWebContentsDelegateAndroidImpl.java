@@ -198,7 +198,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public boolean addMessageToConsole(int level, String message, int lineNumber, String sourceId) {
-        // Only output console.log messages on debug variants of Android OS. crbug/869804
+        // Only output console.log messages on debug variants of Android OS. crbug.com/41405346
         return !AndroidInfo.isDebugAndroid();
     }
 

@@ -59,7 +59,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     /** A LayerTitleCache instance that stores all title/favicon bitmaps as CC resources. */
     // This cache should not be cleared in LayoutManagerImpl#emptyCachesExcept(), since that method
     // is currently called when returning to the static layout, which is when these titles will be
-    // visible. See https://crbug.com/1329293.
+    // visible. See https://crbug.com/40842526.
     protected @Nullable LayerTitleCache mLayerTitleCache;
 
     protected SettableMonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =

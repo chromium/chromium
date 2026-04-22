@@ -476,7 +476,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                         Log.d(TAG, "Geometry not ready using fallback animation.");
                         useFallbackAnimation = true;
                     }
-                    // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+                    // Ignore left offset and just ensure the width is correct. See
+                    // crbug.com/40942799.
                     initialRect.offset(-initialLeftOffset, -initialTopOffset);
                     finalRect.offset(-finalLeftOffset, -finalTopOffset);
                     animationDataSupplier.set(

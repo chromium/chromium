@@ -100,7 +100,8 @@ public class CloseButtonNavigator {
             boolean isMinimized = minimizationManager != null && minimizationManager.isMinimized();
             if (mTabController.onlyOneTabRemaining() && !isMinimized) {
                 // If we call mTabController.closeTab() and wait for the Activity to close as a
-                // result, we have a blank screen flashing before closing. https://crbug.com/1518767
+                // result, we have a blank screen flashing before closing.
+                // https://crbug.com/41491741
                 finishCallback.onResult(USER_NAVIGATION);
                 break;
             }

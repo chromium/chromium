@@ -193,7 +193,7 @@ public class FeedV2NewTabPageTest {
     })
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.Q,
-            message = "crbug.com/1276402 crbug.com/345352689")
+            message = "crbug.com/40808869 crbug.com/345352689")
     public void testNavigateBackToNTPWithFeeds() throws TimeoutException, InterruptedException {
         openNewTabPage();
 
@@ -304,7 +304,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "crbug.com/1467377")
+    @DisabledTest(message = "crbug.com/40924363")
     public void testFakeOmniboxOnNtp() throws IOException {
         openNewTabPage();
 

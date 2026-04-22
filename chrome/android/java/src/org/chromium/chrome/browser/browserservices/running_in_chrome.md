@@ -61,4 +61,4 @@ The `DisclosureUiPicker` is responsible for choosing which View to instantiate.
 
 ## Links
 
-* [Bug for the Running in Chrome v2 implementation.](https://crbug.com/1068106)
+* [Bug for the Running in Chrome v2 implementation.](https://crbug.com/40125323)

@@ -721,7 +721,7 @@ public class TrustedWebActivityClient {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/1426591.
+            // of exceptions. See crbug.com/40899414.
             Log.e(TAG, "There was an error with the client implementation", e);
             return null;
         }

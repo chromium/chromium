@@ -327,7 +327,7 @@ public class MinidumpUploadServiceImpl extends SplitCompatIntentService.Impl {
     static void tryUploadCrashDumpNow(File minidumpFile) {
         if (!(ApplicationStatus.isInitialized() && ApplicationStatus.hasVisibleActivities())) {
             // Android does not allow us to start services from the background. If we are in the
-            // background, then go through the JobScheduler path instead. See crbug.com/1433529
+            // background, then go through the JobScheduler path instead. See crbug.com/40903537
             // and crbug.com/407575680 for crashes caused by not doing this.
             scheduleUploadJob();
             return;

@@ -219,7 +219,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                         ? ButtonType.VIRTUAL_CARD_UNENROLL
                                         : ButtonType.VIRTUAL_CARD_ENROLL);
                         // TODO(@vishwasuppoor): Show a blocking progress dialog
-                        // (crbug.com/1327467).
+                        // (crbug.com/40226208).
                         // Disable the button until we receive a response from the server.
                         mVirtualCardEnrollmentButton.setEnabled(false);
                         if (!mVirtualCardEnrollmentButtonShowsUnenroll) {

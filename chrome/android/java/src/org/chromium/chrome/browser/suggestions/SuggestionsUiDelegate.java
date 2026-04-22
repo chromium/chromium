@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 public interface SuggestionsUiDelegate {
     // Dependency injection
     // TODO(dgn): remove these methods once the users have a different way to get a reference
-    // to these objects (https://crbug.com/677672)
+    // to these objects (https://crbug.com/40499773)
 
     /** Convenience method to access the {@link SuggestionsNavigationDelegate}. */
     SuggestionsNavigationDelegate getNavigationDelegate();

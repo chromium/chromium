@@ -197,7 +197,7 @@ public class LaunchIntentDispatcher {
                 context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception e) {
                 // SecurityException or UndeclaredThrowableException.
-                // https://crbug.com/1373209
+                // https://crbug.com/40871591
                 Log.w(TAG, "Unable to grant Uri permission", e);
             }
         }
@@ -277,7 +277,7 @@ public class LaunchIntentDispatcher {
         }
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
-        // Samsung devices, see https://crbug.com/796548.
+        // Samsung devices, see https://crbug.com/41361749.
         if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
             return true;
         }
@@ -334,7 +334,8 @@ public class LaunchIntentDispatcher {
 
     /** Handles launching a {@link ChromeTabbedActivity}. */
     @SuppressLint("InlinedApi")
-    @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/847921#c17.
+    @SuppressWarnings(
+            "checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/40578549#c17.
     private @Action int dispatchToTabbedActivity() {
         maybePrefetchDnsInBackground();
 
@@ -398,7 +399,7 @@ public class LaunchIntentDispatcher {
             return Action.CONTINUE;
         }
 
-        // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
+        // This system call is often modified by OEMs and not actionable. http://crbug.com/41258613.
         try {
             mActivity.startActivity(newIntent);
         } catch (SecurityException ex) {

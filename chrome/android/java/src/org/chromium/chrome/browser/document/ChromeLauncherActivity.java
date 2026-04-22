@@ -57,7 +57,7 @@ public class ChromeLauncherActivity extends Activity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
+        // Third-party code adds disk access to Activity.onCreate. http://crbug.com/41258729
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
         boolean unparcelFds = ChromeFeatureList.sUnparcelIntentFileDescriptors.isEnabled();
         setIntent(IntentUtils.sanitizeIntent(getIntent(), unparcelFds));
@@ -102,7 +102,7 @@ public class ChromeLauncherActivity extends Activity {
         // check for a dead WebappActivity because we don't have that information without a global
         // TabManager.  If that ever lands, code to bring back any Tab could be consolidated
         // here instead of being spread between ChromeTabbedActivity and ChromeLauncherActivity.
-        // https://crbug.com/443772, https://crbug.com/522918
+        // https://crbug.com/40399032, https://crbug.com/40432274
         if (WebappLauncherActivity.bringWebappToFront(tabId)) return;
 
         if (bringTabActivityToFront(tabId, intent)) return;

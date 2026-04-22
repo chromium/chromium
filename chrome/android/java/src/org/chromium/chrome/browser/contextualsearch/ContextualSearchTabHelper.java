@@ -259,7 +259,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             if (webContentsChanged) {
                 // Ensure the hooks are cleared on the old web contents before proceeding. All of
                 // the objects associated with the web content need to be recreated in order for
-                // selection to continue working. See https://crbug.com/1076326 for more details.
+                // selection to continue working. See https://crbug.com/40688159 for more details.
                 removeContextualSearchHooks(mWebContents);
                 mSelectionClientManager =
                         currentWebContents != null
@@ -376,12 +376,12 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                         // Svelte and Accessibility devices are incompatible with the first-run flow
                         // and Talkback has poor interaction with Contextual Search (see
-                        // http://crbug.com/399708 and http://crbug.com/396934).
+                        // http://crbug.com/40377520 and http://crbug.com/40376140).
                         && !manager.isRunningInCompatibilityMode()
                         && !mTab.isShowingErrorPage()
                         && isDeviceOnline(manager);
         if (mTab.isCustomTab() && !isActive) {
-            // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
+            // TODO(donnd): remove after https://crbug.com/40757075 is resolved.
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
             Log.w(
                     TAG,

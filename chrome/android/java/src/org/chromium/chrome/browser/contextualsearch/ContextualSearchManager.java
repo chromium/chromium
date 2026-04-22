@@ -529,7 +529,7 @@ public class ContextualSearchManager
     public void onPanelCollapsing() {
         if (mIsRelatedSearchesSerp && mResolvedSearchTerm != null) {
             // For now a literal search is not possible when we have Related Searches showing, but
-            // may be a possibility once https://crbug.com/1223171 is done.
+            // may be a possibility once https://crbug.com/40187513 is done.
             final boolean isLiteralSearchPossible = false;
             displayResolvedSearchTerm(
                     mResolvedSearchTerm, mResolvedSearchTerm.searchTerm(), isLiteralSearchPossible);
@@ -654,7 +654,7 @@ public class ContextualSearchManager
                 new TabModelSelectorTabObserver(selector) {
                     @Override
                     public void onPageLoadStarted(Tab tab, GURL url) {
-                        // Detects navigation of the base page for crbug.com/428368
+                        // Detects navigation of the base page for crbug.com/40391531
                         // (navigation-detection).
                         hideContextualSearch(StateChangeReason.UNKNOWN);
                     }
@@ -718,7 +718,7 @@ public class ContextualSearchManager
         if (mInternalStateController.isStillWorkingOn(InternalState.GATHERING_SURROUNDINGS)) {
             assert mContext != null;
             // Sometimes Blink returns empty surroundings and 0 offsets so reset in that case.
-            // See crbug.com/393100.
+            // See crbug.com/40374299.
             if (surroundingText.length() == 0) {
                 mInternalStateController.reset(StateChangeReason.UNKNOWN);
             } else {
@@ -934,7 +934,7 @@ public class ContextualSearchManager
 
         if (!TextUtils.isEmpty(searchTerm)) {
             // TODO(donnd): Instead of preloading, we should prefetch (ie the URL should not
-            // appear in the user's history until the user views it).  See crbug.com/406446.
+            // appear in the user's history until the user views it).  See crbug.com/41127538.
             boolean shouldPreload = !doPreventPreload && mPolicy.shouldPrefetchSearchResult();
             mSearchRequest =
                     new ContextualSearchRequest(
@@ -1014,7 +1014,7 @@ public class ContextualSearchManager
         // Bar, the Search Content View will not be displayed. It seems that calling
         // WebContents.updateWebContentsVisibility() while it's being created has no effect. For
         // now, we force the ContentView to be displayed by calling updateWebContentsVisibility()
-        // again when a URL is being loaded. See: crbug.com/398206
+        // again when a URL is being loaded. See: crbug.com/40376759
         if (mSearchPanel.isContentShowing() && getSearchPanelWebContents() != null) {
             getSearchPanelWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
         }
@@ -1260,7 +1260,7 @@ public class ContextualSearchManager
                 // NOTE: we must reuse the existing content view because we're called from within
                 // a WebContentsObserver.  If we don't reuse the content view then the WebContents
                 // being observed will be deleted.  We notify of the failure to trigger the reuse.
-                // See crbug.com/682953 for details.
+                // See crbug.com/40502510 for details.
                 mSearchPanel.onLoadUrlFailed();
                 loadSearchUrl();
             } else {
@@ -1343,7 +1343,7 @@ public class ContextualSearchManager
         // to search for.
         if (mSearchRequest != null && getSearchPanelWebContents() != null) {
             GURL gurl = getContentViewUrl(getSearchPanelWebContents());
-            // TODO(yfriedman): crbug/783819 - Finish ContextualSearch migration to gurl.
+            // TODO(yfriedman): crbug.com/40549331 - Finish ContextualSearch migration to gurl.
             String url = gurl.getSpec();
 
             // If it's a search URL, format it so the SearchBox becomes visible.
@@ -1394,7 +1394,7 @@ public class ContextualSearchManager
         int defaultSearchAdjustment = RelatedSearchesControl.INDEX_OF_THE_FIRST_RELATED_SEARCHES;
         assert mRelatedSearches != null
                 : "There is no valid list of Related Searches for this click! "
-                        + "Please update crbug.com/1307267 with this repro.";
+                        + "Please update crbug.com/40828323 with this repro.";
         assert (suggestionIndex - defaultSearchAdjustment) < mRelatedSearches.getQueries().size();
 
         // TODO(crbug.com/40828323) remove this check once we figure out how this can happen.
@@ -1492,7 +1492,7 @@ public class ContextualSearchManager
                 // There's a race condition when we select the word between this Ack response and
                 // the onSelectionChanged call.  Update the selection in case this method won the
                 // race so we ensure that there's a valid selected word.
-                // See https://crbug.com/889657 for details.
+                // See https://crbug.com/40595591 for details.
                 String adjustedSelection = mContext.getSelection();
                 if (!TextUtils.isEmpty(adjustedSelection)) {
                     mSelectionController.setSelectedText(adjustedSelection);
@@ -1633,7 +1633,7 @@ public class ContextualSearchManager
                 // which means the Panel is at least partially expanded, then it means
                 // the selection was cleared by an external source (like JavaScript),
                 // so we should not dismiss the UI in here.
-                // See crbug.com/516665
+                // See crbug.com/40429811
                 && mSearchPanel.isPeeking()) {
             hideContextualSearch(StateChangeReason.CLEARED_SELECTION);
         }

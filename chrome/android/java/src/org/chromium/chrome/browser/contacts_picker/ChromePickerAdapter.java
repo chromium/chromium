@@ -77,7 +77,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // ProfileDataCache.Observer:
 
     @Override
-    // TODO(finnur): crbug.com/1021477 - Maintain an member instance of this.
+    // TODO(finnur): crbug.com/40106180 - Maintain an member instance of this.
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
         String ownerEmail = getOwnerEmail();
         if (!mWaitingOnOwnerInfo || !TextUtils.equals(profileData.getAccountEmail(), ownerEmail)) {

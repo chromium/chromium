@@ -199,7 +199,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
         Notification notification = update.mNotification;
 
         // We must call startForeground or Android will crash. If the last update
-        // is DownloadStatus.CANCELLED, then create an empty notification. See crbug.com/1121096.
+        // is DownloadStatus.CANCELLED, then create an empty notification. See crbug.com/40715274.
         // Notices the empty notification will be cancelled immediately in
         // DownloadNotificationService afterward.
         if (notification == null && !mStartForegroundCalled) {

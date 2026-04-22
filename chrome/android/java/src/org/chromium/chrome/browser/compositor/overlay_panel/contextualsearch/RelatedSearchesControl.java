@@ -350,7 +350,7 @@ public class RelatedSearchesControl {
         } else {
             // If the View is still showing, capture a new snapshot in case anything changed.
             // TODO(donnd): grab snapshots when the view changes instead.
-            // See https://crbug.com/1184308 for details.
+            // See https://crbug.com/40171574 for details.
             if (mIsShowingView) {
                 invalidate(false);
             }
@@ -453,7 +453,7 @@ public class RelatedSearchesControl {
 
     /**
      * Notifies that the user has clicked on a suggestion in this section of the panel. See
-     * https://crbug.com/1216593.
+     * https://crbug.com/40184870.
      *
      * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
      *     and presented in the UI. E.g. if the user clicked the second chip this value would be 1.

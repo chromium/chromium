@@ -27,9 +27,9 @@ import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
  * <p>This class fires an Intent to start the {@link BrowserRestartActivity}, which will ultimately
  * kill the main browser process from its own process.
  *
- * <p>https://crbug.com/515919 details why another Activity is used instead of using the
- * AlarmManager. https://crbug.com/545453 details why the BrowserRestartActivity handles the process
- * killing.
+ * <p>https://crbug.com/41191765 details why another Activity is used instead of using the
+ * AlarmManager. https://crbug.com/40441017 details why the BrowserRestartActivity handles the
+ * process killing.
  */
 @NullMarked
 class ChromeLifetimeController

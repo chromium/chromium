@@ -10,7 +10,7 @@ include_rules = [
   # Allow dependencies on chrome/browser modules
   "+chrome/browser",
 
-  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  # Restrict dependencies to xsurface by default (crbug.com/40144215)
   "-chrome/browser/xsurface",
 
   "+cc/input/android/java",
@@ -83,7 +83,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Allow dependencies to xsurface from AppHooks only (crbug.com/1115137)
+  # Allow dependencies to xsurface from AppHooks only (crbug.com/40144215)
   "chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java": [
     "+chrome/browser/xsurface/android",
   ],

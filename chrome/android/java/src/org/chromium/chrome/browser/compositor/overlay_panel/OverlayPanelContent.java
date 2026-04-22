@@ -94,7 +94,7 @@ public class OverlayPanelContent {
 
     /**
      * Whether we should reuse any existing WebContents instead of deleting and recreating. See
-     * crbug.com/682953 for details.
+     * crbug.com/40502510 for details.
      */
     private boolean mShouldReuseWebContents;
 
@@ -106,7 +106,7 @@ public class OverlayPanelContent {
      * touched is enough to determine whether a navigation should be promoted (assuming it was
      * caused by the touch), as done in {@link
      * ContextualSearchManager#shouldPromoteSearchNavigation()}. For more details, see
-     * crbug.com/441048 TODO(pedrosimonetti): remove this from M48 or move it to Contextual Search
+     * crbug.com/40397775 TODO(pedrosimonetti): remove this from M48 or move it to Contextual Search
      * Panel.
      */
     private boolean mIsProcessingPendingNavigation;
@@ -123,7 +123,7 @@ public class OverlayPanelContent {
     /** If a URL is set to delayed load (load on user interaction), it will be stored here. */
     private @Nullable String mPendingUrl;
 
-    // http://crbug.com/522266 : An instance of InterceptNavigationDelegateImpl should be kept in
+    // http://crbug.com/40431973 : An instance of InterceptNavigationDelegateImpl should be kept in
     // java layer. Otherwise, the instance could be garbage-collected unexpectedly.
     private @Nullable InterceptNavigationDelegate mInterceptNavigationDelegate;
 
@@ -359,7 +359,7 @@ public class OverlayPanelContent {
 
     /**
      * Call this when a loadUrl request has failed to notify the panel that the WebContents can be
-     * reused. See crbug.com/682953 for details.
+     * reused. See crbug.com/40502510 for details.
      */
     void onLoadUrlFailed() {
         setReuseWebContents(true);

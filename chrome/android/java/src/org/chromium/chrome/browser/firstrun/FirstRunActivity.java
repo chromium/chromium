@@ -197,7 +197,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private static boolean sIsAnimationDisabled;
 
-    /** Prevents Tapjacking on T-. See crbug.com/1430867 */
+    /** Prevents Tapjacking on T-. See crbug.com/40063907 */
     private static final boolean sPreventTouches =
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
@@ -821,7 +821,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         int oldPosition = mPager.getCurrentItem();
 
-        // Set A11y focus if possible. See https://crbug.com/1094064 for more context.
+        // Set A11y focus if possible. See https://crbug.com/40699257 for more context.
         // The screen reader can lose focus when switching between pages with ViewPager2.
         FirstRunFragment currentFragment = mPagerAdapter.getFirstRunFragment(position);
         if (currentFragment != null) {

@@ -61,7 +61,7 @@ public class StripStackerUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1385702")
+    @DisabledTest(message = "https://crbug.com/40879363")
     public void testComputeNewTabButtonIdealX() {
         float result =
                 mTarget.computeNewTabButtonIdealX(

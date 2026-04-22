@@ -288,7 +288,7 @@ public class CustomTabActivityNavigationController
     private void finishActivity(@FinishReason int reason, boolean separateTask) {
         // If we're closing the last tab and it doesn't have beforeunload, just finish the Activity
         // manually. If we had called mTabController.closeTab() and waited for the Activity to close
-        // as a result we would have a visual glitch: https://crbug.com/1087108.
+        // as a result we would have a visual glitch: https://crbug.com/40694665.
         MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
         MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
                 MinimizeAppAndCloseTabType.MINIMIZE_APP, separateTask);
@@ -356,7 +356,7 @@ public class CustomTabActivityNavigationController
         ResolveInfo resolveInfo = DefaultBrowserInfo.getDefaultWebBrowserInfo();
         if (resolveInfo != null) {
             intent.setPackage(resolveInfo.activityInfo.packageName);
-            // crbug.com/1265223
+            // crbug.com/40801270
             if (intent.resolveActivity(mActivity.getPackageManager()) == null) {
                 intent.setPackage(null);
             }

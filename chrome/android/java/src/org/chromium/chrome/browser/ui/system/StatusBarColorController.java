@@ -274,7 +274,7 @@ public class StatusBarColorController
                     // When opening a new Incognito Tab from a normal Tab (or vice versa), the
                     // status bar color is updated. However, this update is triggered after the
                     // animation, so we update here for the duration of the new Tab animation.
-                    // See https://crbug.com/917689.
+                    // See https://crbug.com/41433194.
                     updateStatusBarColor();
                 };
 

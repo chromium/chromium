@@ -120,7 +120,7 @@ public class InfoBarContainerView extends SwipableOverlayView
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
 
         // TODO(newt): move this workaround into the infobar views if/when they're scrollable.
-        // Workaround for http://crbug.com/407149. See explanation in onMeasure() below.
+        // Workaround for http://crbug.com/41128003. See explanation in onMeasure() below.
         setVerticalScrollBarEnabled(false);
 
         updateLayoutParams(context, isTablet);

@@ -245,7 +245,7 @@ public class PendingTabClosureManager {
         }
     }
 
-    /** Thread checks to root cause crbug.com/1465745. */
+    /** Thread checks to root cause crbug.com/40276103. */
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
     private boolean mIsCommittingAllTabClosures;

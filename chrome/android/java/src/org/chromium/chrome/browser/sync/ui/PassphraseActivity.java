@@ -89,7 +89,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
     protected void onPause() {
         super.onPause();
         // Make sure we don't receive callbacks while in the background.
-        // See http://crbug.com/469890.
+        // See http://crbug.com/41164232.
         removeSyncStateChangedListener();
     }
 

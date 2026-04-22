@@ -767,7 +767,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             finalRect.offset(0, -searchBoxHeight);
             finalRect.bottom += searchBoxHeight;
         }
-        // Ignore edge offset and just ensure the width is correct. See crbug.com/1502437.
+        // Ignore edge offset and just ensure the width is correct. See crbug.com/40942799.
         finalRect.offset(-finalRect.left, -containerViewRect.top);
     }
 

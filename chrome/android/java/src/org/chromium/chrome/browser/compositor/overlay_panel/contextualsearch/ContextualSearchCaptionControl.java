@@ -143,7 +143,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * @return The current percentage ranging from 0.0 to 1.0.
      */
     public float getAnimationPercentage() {
-        // If we don't yet have a snapshot captured, stay at zero.  See crbug.com/608914.
+        // If we don't yet have a snapshot captured, stay at zero.  See crbug.com/40467811.
         if (!mDidCapture) return ANIMATION_PERCENTAGE_ZERO;
 
         return mAnimationPercentage;

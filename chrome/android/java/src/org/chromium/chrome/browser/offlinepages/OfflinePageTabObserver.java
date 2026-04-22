@@ -306,7 +306,7 @@ public class OfflinePageTabObserver extends EmptyTabObserver
         // Since we are loosing the connection, next time we connect, we still want to show a
         // snackbar. This works in event that onConnectionTypeChanged happens, while Chrome is not
         // visible. Making it visible after that would not trigger the snackbar, even though
-        // connection state changed. See http://crbug.com/651410
+        // connection state changed. See http://crbug.com/41278137
         if (!OfflinePageUtils.isConnected()) {
             for (TabState tabState : mObservedTabs.values()) {
                 tabState.wasSnackbarSeen = false;

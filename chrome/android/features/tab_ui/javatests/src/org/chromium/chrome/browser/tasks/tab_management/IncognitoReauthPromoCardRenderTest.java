@@ -76,7 +76,7 @@ public class IncognitoReauthPromoCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1376143")
+    @DisabledTest(message = "https://crbug.com/40873492")
     public void testRenderReauthPromoMessageCard_Portrait() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -91,7 +91,7 @@ public class IncognitoReauthPromoCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1376143")
+    @DisabledTest(message = "https://crbug.com/40873492")
     public void testRenderReauthPromoMessageCard_Landscape() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -108,7 +108,7 @@ public class IncognitoReauthPromoCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1376143")
+    @DisabledTest(message = "https://crbug.com/40873492")
     public void testRenderReauthPromoMessageCard_Snackbar() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 

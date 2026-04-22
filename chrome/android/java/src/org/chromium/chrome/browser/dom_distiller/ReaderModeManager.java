@@ -805,8 +805,9 @@ public class ReaderModeManager extends EmptyTabObserver
         }
 
         // RenderWidgetHostViewAndroid hides the controls after transitioning to reader mode.
-        // See the long history of the issue in https://crbug.com/825765, https://crbug.com/853686,
-        // https://crbug.com/861618, https://crbug.com/922388.
+        // See the long history of the issue in https://crbug.com/41378906,
+        // https://crbug.com/41395138,
+        // https://crbug.com/40584047, https://crbug.com/41435871.
         // TODO(pshmakov): find a proper solution instead of this workaround.
         BrowserControlsVisibilityManager browserControlsVisibilityManager =
                 getBrowserControlsVisibilityManager();

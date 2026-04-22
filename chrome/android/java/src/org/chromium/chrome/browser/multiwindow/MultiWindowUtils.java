@@ -484,7 +484,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         // If already running CTA was started via .Main activity alias, starting it again with
         // LAUNCH_ADJACENT will create another CTA instance with just a single tab. There doesn't
         // seem to be a reliable way to check if an activity was started via an alias, so we're
-        // removing the flag if any CTA instance is running. See crbug.com/771516 for details.
+        // removing the flag if any CTA instance is running. See crbug.com/40543122 for details.
         if (!isMultiInstanceApi31Enabled()
                 && targetActivity.equals(ChromeTabbedActivity.class)
                 && isPrimaryTabbedActivityRunning()) {

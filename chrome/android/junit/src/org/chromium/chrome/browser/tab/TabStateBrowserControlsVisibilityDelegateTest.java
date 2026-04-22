@@ -63,7 +63,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     @Test
     @DisableFeatures("ControlsVisibilityFromNavigations")
     public void testOnPageLoadFailedDuringNavigation() {
-        // Inspired by https://crbug.com/1447237.
+        // Inspired by https://crbug.com/40064686.
         GURL blueGurl = JUnitTestGURLs.BLUE_1;
         GURL redGurl = JUnitTestGURLs.RED_1;
         when(mTabImpl.getUrl()).thenReturn(blueGurl);

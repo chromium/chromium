@@ -57,7 +57,7 @@ import org.chromium.ui.base.UiAndroidFeatures;
     ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
 })
 @Restriction(DeviceFormFactor.PHONE)
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/40215137
 @DisableFeatures(UiAndroidFeatures.USE_NEW_ETC1_ENCODER) // https://crbug.com/400962657
 // TODO(crbug.com/344669867): Failing when batched, batch this again.
 public class TabSwitcherMultiWindowTest {

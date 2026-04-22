@@ -86,7 +86,7 @@ public class WideDisplayPadding {
         // Configure divider style if the fragment has a recycler view.
         // Remove the default divider that PreferenceFragmentCompat initialized. This is a
         // workaround as outer class has no access to the private DividerDecoration in
-        // PreferenceFragmentCompat. See https://crbug.com/1293429.
+        // PreferenceFragmentCompat. See https://crbug.com/40819977.
         ((PreferenceFragmentCompat) fragment).setDivider(null);
 
         CustomDividerFragment customDividerFragment =

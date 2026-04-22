@@ -326,7 +326,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     "Attempting to create a tab list UI with invalid mode");
         }
 
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // TODO (https://crbug.com/40117310): Use the current profile (i.e., regular profile or
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
         mTabListFaviconProvider =

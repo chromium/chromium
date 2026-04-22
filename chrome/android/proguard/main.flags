@@ -14,7 +14,7 @@
   public <init>();
 }
 
-# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
+# To fix crbug.com/40654856. This is because AppBarLayout$ScrollingViewBehavior
 # is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
 # Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
 -keep class com.google.android.material.appbar.AppBarLayout$Behavior {

@@ -242,8 +242,8 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     // private again.
     @VisibleForTesting
     boolean initializeBrowser() {
-        // Workaround for https://crbug.com/718166. The backup agent is sometimes being started in a
-        // child process, before the child process loads its native library. If backup then loads
+        // Workaround for https://crbug.com/40518724. The backup agent is sometimes being started in
+        // a child process, before the child process loads its native library. If backup then loads
         // the native library the child process is left in a very confused state and crashes.
         if (ContentProcessInfo.inChildProcess()) {
             Log.e(TAG, "Backup agent started from child process");

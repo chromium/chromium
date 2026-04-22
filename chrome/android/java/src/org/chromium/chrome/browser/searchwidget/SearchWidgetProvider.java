@@ -50,7 +50,7 @@ import java.util.function.Consumer;
  * <p>Methods on instances of this class called directly by Android (when a broadcast is received
  * e.g.) catch all Exceptions up to some number of times before letting them go through to allow us
  * to get a crash stack. This is done to prevent Android from labeling the whole process as "bad"
- * and blocking taps on the widget. See http://crbug.com/712061.
+ * and blocking taps on the widget. See http://crbug.com/40515821.
  */
 @NullMarked
 public class SearchWidgetProvider extends AppWidgetProvider {

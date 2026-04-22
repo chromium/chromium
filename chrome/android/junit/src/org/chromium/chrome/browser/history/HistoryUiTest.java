@@ -797,7 +797,7 @@ public class HistoryUiTest {
         setHasOtherFormsOfBrowsingData(true);
         Assert.assertTrue("Info icon should be visible.", infoMenuItem.isVisible());
 
-        // Hide disclaimers to simulate setup for https://crbug.com/1071468.
+        // Hide disclaimers to simulate setup for https://crbug.com/40685124.
         mHistoryManager.onMenuItemClick(infoMenuItem);
         assertFalse(
                 "Privacy disclaimers should be hidden.",
@@ -998,7 +998,7 @@ public class HistoryUiTest {
 
     @Test
     @SmallTest
-    @Ignore // See https://crbug.com/1358628
+    @Ignore // See https://crbug.com/40861892
     public void testCopyLink() {
         final ClipboardManager clipboardManager =
                 (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);

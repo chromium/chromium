@@ -135,7 +135,7 @@ import java.util.Collection;
             mDialog.show();
             return true;
         } catch (WindowManager.BadTokenException badToken) {
-            // The exception could be thrown according to https://crbug.com/1139441.
+            // The exception could be thrown according to https://crbug.com/40726011.
             return false;
         }
     }

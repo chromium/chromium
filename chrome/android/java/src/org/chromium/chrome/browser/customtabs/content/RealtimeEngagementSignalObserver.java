@@ -353,7 +353,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
         }
     }
 
@@ -381,7 +381,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
         }
     }
 
@@ -417,7 +417,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
         }
     }
 

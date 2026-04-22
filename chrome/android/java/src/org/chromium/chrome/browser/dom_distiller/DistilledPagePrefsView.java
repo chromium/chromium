@@ -116,7 +116,7 @@ public class DistilledPagePrefsView extends LinearLayout
     private void initFontFamilySpinner() {
         // These must be kept in sync (and in-order) with
         // components/dom_distiller/core/font_family_list.h
-        // TODO(wychen): fix getStringArray issue (https://crbug/803117#c2)
+        // TODO(wychen): fix getStringArray issue (https://crbug.com/40558544#c2)
         String[] fonts = {
             getResources().getString(R.string.sans_serif),
             getResources().getString(R.string.serif),

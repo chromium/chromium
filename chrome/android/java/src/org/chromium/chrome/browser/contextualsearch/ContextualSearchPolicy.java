@@ -274,10 +274,11 @@ class ContextualSearchPolicy {
     }
 
     /**
-     * Returns whether a transition that is both from and to the given state should be done.
-     * This allows prevention of the short-circuiting that ignores a state transition to the current
+     * Returns whether a transition that is both from and to the given state should be done. This
+     * allows prevention of the short-circuiting that ignores a state transition to the current
      * state in cases where rerunning the current state might safeguard against problematic
      * behavior.
+     *
      * @param state The current state, which is also the state being transitioned into.
      * @return {@code true} to go ahead with the logic for that state transition even though we're
      *     already in that state. {@code false} indicates that ignoring this redundant state
@@ -285,7 +286,7 @@ class ContextualSearchPolicy {
      */
     boolean shouldRetryCurrentState(@InternalState int state) {
         // Make sure we don't get stuck in the IDLE state if the panel is still showing.
-        // See https://crbug.com/1251774
+        // See https://crbug.com/40792729
         return state == InternalState.IDLE
                 && mSearchPanel != null
                 && (mSearchPanel.isShowing() || mSearchPanel.isActive());

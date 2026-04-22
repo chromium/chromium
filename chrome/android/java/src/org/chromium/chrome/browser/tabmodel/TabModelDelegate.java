@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 /**
  * This class serves as a callback from TabModel to TabModelSelector. Avoid adding unnecessary
- * methods that expose too much access to TabModel. http://crbug.com/263579
+ * methods that expose too much access to TabModel. http://crbug.com/40326216
  */
 @NullMarked
 public interface TabModelDelegate {

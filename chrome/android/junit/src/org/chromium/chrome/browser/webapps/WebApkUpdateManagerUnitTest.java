@@ -1806,7 +1806,7 @@ public class WebApkUpdateManagerUnitTest {
         verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
     }
 
-    /** Test for crashing when IntentDataProvider is null, as per https://crbug.com/1342066. */
+    /** Test for crashing when IntentDataProvider is null, as per https://crbug.com/40851507. */
     @Test
     public void testDoesntCrashWithNullProvider() {
         ManifestData androidManifestData = defaultManifestData();

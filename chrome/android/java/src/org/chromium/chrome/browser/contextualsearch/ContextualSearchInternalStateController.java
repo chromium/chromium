@@ -210,9 +210,10 @@ class ContextualSearchInternalStateController {
     }
 
     /**
-     * Enters the given starting state immediately.
-     * Note: This will synchronously complete the given state and process all subsequent
-     * non-asynchronous states before returning.  See https://crbug.com/1099383.
+     * Enters the given starting state immediately. Note: This will synchronously complete the given
+     * state and process all subsequent non-asynchronous states before returning. See
+     * https://crbug.com/40137460.
+     *
      * @param state The new starting {@link InternalState} we're now in.
      */
     void enter(@InternalState int state) {
@@ -259,9 +260,10 @@ class ContextualSearchInternalStateController {
 
     /**
      * Confirms that work has been finished on the given state, and will process all subsequent
-     * non-asynchronous states before returning.  See https://crbug.com/1099383.
-     * This should be called by every operation that waits for some kind of completion when it
-     * completes.  The operation's start must be flagged using {@link #notifyStartingWorkOn}.
+     * non-asynchronous states before returning. See https://crbug.com/40137460. This should be
+     * called by every operation that waits for some kind of completion when it completes. The
+     * operation's start must be flagged using {@link #notifyStartingWorkOn}.
+     *
      * @param state The {@link InternalState} that we've finished working on.
      */
     void notifyFinishedWorkOn(@InternalState int state) {

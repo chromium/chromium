@@ -146,7 +146,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
         // If the launch was from an External app, Chrome came from the
         // background and acted as an intermediate link redirector between two
-        // apps (crbug.com/487938).
+        // apps (crbug.com/41174521).
         if (wasTabLaunchedFromExternalApp()) {
             Activity activity = assumeNonNull(getActivity());
             if (ChromeFeatureList.sCctDestroyTabWhenModelIsEmpty.isEnabled()

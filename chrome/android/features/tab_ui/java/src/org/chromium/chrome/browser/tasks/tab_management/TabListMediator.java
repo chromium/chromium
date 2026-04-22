@@ -537,7 +537,7 @@ class TabListMediator implements TabListNotificationHandler {
                     // The URL of the tab and the navigation handle can match without it being a
                     // same document navigation if the tab had no renderer and needed to start a
                     // new one.
-                    // See https://crbug.com/1359002.
+                    // See https://crbug.com/40862141.
                     if (navigationHandle.isSameDocument()
                             || UrlUtilities.isNtpUrl(tab.getUrl())
                             || tab.getUrl().equals(navigationHandle.getUrl())) {
@@ -1385,7 +1385,7 @@ class TabListMediator implements TabListNotificationHandler {
                         // The DefaultItemAnimator is prone to crashing in combination with the
                         // swipe animation when closing the last tab. Avoid this issue by disabling
                         // the default item animation for the duration of the removal of the last
-                        // tab. This is a framework issue. For more details see crbug.com/1319859.
+                        // tab. This is a framework issue. For more details see crbug.com/40223318.
                         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
                         boolean shouldDisableItemAnimations =

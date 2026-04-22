@@ -111,7 +111,7 @@ public class PriceCardViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1297341")
+    @DisabledTest(message = "crbug.com/40822246")
     public void testRenderPriceCardView() throws IOException {
         mPriceCardView.setPriceStrings("$50", "$100");
         mPriceCardView.setVisibility(View.VISIBLE);

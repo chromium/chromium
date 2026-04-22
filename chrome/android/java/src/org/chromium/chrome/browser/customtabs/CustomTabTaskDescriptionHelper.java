@@ -88,7 +88,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             mForceIcon = webappExtras.icon.bitmap();
             mForceTitle = webappExtras.shortName;
 
-            // This is a workaround for crbug/1098580. ActivityManager.TaskDescription
+            // This is a workaround for crbug.com/40137103. ActivityManager.TaskDescription
             // does not handle adaptive icon when passing a bitmap. So set the task icon to be null
             // to preserve the client app's icon.
             if (mIntentDataProvider.isWebApkActivity()) {

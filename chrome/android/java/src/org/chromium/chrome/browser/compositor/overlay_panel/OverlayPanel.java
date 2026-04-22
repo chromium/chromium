@@ -544,7 +544,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     /**
      * Call this when a loadUrl request has failed to notify the panel that the WebContents can be
-     * reused. See crbug.com/682953 for details.
+     * reused. See crbug.com/40502510 for details.
      */
     public void onLoadUrlFailed() {
         if (mContent != null) mContent.onLoadUrlFailed();
@@ -652,7 +652,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         // renderer will consider the ContentView height to be the fullscreen height
         // minus the Toolbar height.
         //
-        // This is necessary to fix the bugs: crbug.com/510205 and crbug.com/510206
+        // This is necessary to fix the bugs: crbug.com/40426733 and crbug.com/40426734
         mContent.updateBrowserControlsState(isFullWidthSizePanel());
     }
 

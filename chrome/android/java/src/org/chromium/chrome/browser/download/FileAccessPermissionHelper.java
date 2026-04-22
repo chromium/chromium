@@ -90,7 +90,7 @@ public class FileAccessPermissionHelper {
                                         windowAndroid.getModalDialogManager();
                                 // If the model is not null, it means that it has not been dismissed
                                 // yet and we will be dismissing it after the permissions
-                                // callback. For more context, crbug/1319659
+                                // callback. For more context, crbug.com/40836247
                                 if (modalDialogManager != null && model != null) {
                                     modalDialogManager.dismissDialog(
                                             model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);

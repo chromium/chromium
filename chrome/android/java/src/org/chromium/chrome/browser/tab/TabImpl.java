@@ -730,7 +730,7 @@ class TabImpl implements Tab {
         // tab is a background tab during initWebContents() before invoking
         // ReparentingTask#detach(). In this scenario, the tab owns its own WindowAndroid and has no
         // activity attachment. We must check this as an additional condition to detachment for this
-        // case to continue to work. See https://crbug.com/1501849.
+        // case to continue to work. See https://crbug.com/40942165.
         mIsDetachedFromActivity = window == null || !windowHasActivity(window);
         updateWebContentsVisibility();
     }
@@ -1418,7 +1418,7 @@ class TabImpl implements Tab {
         // TabBrowserControlsConstraintsHelper, and {@link
         // TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
         // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
-        // See https://crbug.com/1179419.
+        // See https://crbug.com/40749710.
         mDelegateFactory = delegateFactory;
 
         TabHelpers.initTabHelpers(this, parent);
@@ -2382,7 +2382,8 @@ class TabImpl implements Tab {
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             assert !isFrozen() || mWebContentsState != null
-                    : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
+                    : "crbug.com/40248349: A frozen tab must have WebContentsState to restore"
+                            + " from.";
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
             if ((isFrozen()

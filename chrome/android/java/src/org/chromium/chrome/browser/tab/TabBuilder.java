@@ -332,7 +332,7 @@ public class TabBuilder {
 
         WindowAndroid window = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
 
-        // Creates a tab with renderer initialized for spareTab. See https://crbug.com/1412572.
+        // Creates a tab with renderer initialized for spareTab. See https://crbug.com/40255340.
         Tab tab =
                 TabBuilder.createLiveTab(profile, true)
                         .setWindow(window)

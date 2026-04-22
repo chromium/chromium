@@ -204,7 +204,7 @@ public class SyncSettingsUtils {
                 (pendingIntent) -> {
                     try {
                         // startIntentSenderForResult() will fail if the fragment is
-                        // already gone, see crbug.com/1362141.
+                        // already gone, see crbug.com/40864058.
                         if (!fragment.isAdded()) {
                             return;
                         }

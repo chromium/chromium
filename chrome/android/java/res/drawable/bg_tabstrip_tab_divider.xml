@@ -14,7 +14,7 @@ found in the LICENSE file.
         android:width="2dp"
         android:height="20dp" />
     <!-- This resource is passed to the CC layer, which has not yet been updated
-         to work with themes (See https://crbug.com/1381196). Instead, we
+         to work with themes (See https://crbug.com/40876656). Instead, we
          dynamically re-color this asset in code. Leaving this solid color here
          to both indicate what color this should be and to allow for solid
          re-coloring. -->

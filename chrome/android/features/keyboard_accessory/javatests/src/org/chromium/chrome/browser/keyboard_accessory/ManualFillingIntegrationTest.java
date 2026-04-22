@@ -209,7 +209,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1466461")
+    @DisabledTest(message = "https://crbug.com/40276407")
     public void testAccessoryHiddenAfterTappingAutoGenerationButton() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -232,7 +232,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1406328,https://crbug.com/1466461")
+    @DisabledTest(message = "https://crbug.com/40887193,https://crbug.com/40276407")
     public void testHidingSheetBringsBackKeyboard() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 

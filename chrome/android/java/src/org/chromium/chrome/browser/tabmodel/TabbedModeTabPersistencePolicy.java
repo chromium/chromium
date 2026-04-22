@@ -267,7 +267,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         Log.w(TAG, "Starting to perform multi-instance migration.");
         // 0. Do not rename the old metadata file if the new metadata file already exists. This
         //    should not happen, but if it does and the metadata file is overwritten then users
-        //    may lose tabs. See crbug.com/649384.
+        //    may lose tabs. See crbug.com/40486025.
         File stateDir = getOrCreateStateDirectory();
         File newMetadataFile = new File(stateDir, getMetadataFileName());
         File oldMetadataFile = new File(stateDir, LEGACY_SAVED_STATE_FILE);

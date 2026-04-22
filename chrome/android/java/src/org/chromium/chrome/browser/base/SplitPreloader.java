@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 
 /**
  * Handles preloading split Contexts on a background thread. Loading a new isolated split Context
- * can be expensive since the ClassLoader may need to be created. See crbug.com/1150600 for more
+ * can be expensive since the ClassLoader may need to be created. See crbug.com/40157955 for more
  * info.
  */
 @NullMarked

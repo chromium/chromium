@@ -146,7 +146,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         // If tabs from this instance were merged into a different ChromeTabbedActivity instance
         // and the other instance is still running, then this instance should not be created. This
         // may happen if the process is restarted e.g. on upgrade or from about://flags.
-        // See crbug.com/657418
+        // See crbug.com/40489647
         boolean tabsMergedIntoAnotherInstance =
                 sMergedInstanceTaskId != 0 && sMergedInstanceTaskId != mActivityTaskId;
 
@@ -298,7 +298,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 } else {
                     // Remove the other CTA state observer if one already exists to protect
                     // against multiple #onMultiWindowModeChanged calls.
-                    // See https://crbug.com/1385987.
+                    // See https://crbug.com/40879501.
                     removeOtherCTAStateObserver();
                     // Wait for the other ChromeTabbedActivity to pause before trying to merge
                     // tabs.

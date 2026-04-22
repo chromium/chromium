@@ -74,7 +74,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
                 public void onObservingDifferentTab(Tab tab) {
                     // When a link with target="_blank" is followed and the user navigates back, we
                     // don't get the onDidFinishNavigation event (because the original page wasn't
-                    // navigated away from, it was only ever hidden). https://crbug.com/942088
+                    // navigated away from, it was only ever hidden). https://crbug.com/41446974
                     verify(tab.getUrl().getSpec());
                 }
             };

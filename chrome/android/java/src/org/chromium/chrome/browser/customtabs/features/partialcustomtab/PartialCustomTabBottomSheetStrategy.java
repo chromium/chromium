@@ -853,12 +853,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     private void showNavbarButtons(boolean show) {
         // Resizing while the navbar buttons are visible, at times, flashes the host app.
-        // http://crbug/1360425 fixed this for when the navbar buttons are hidden, so taking
+        // http://crbug.com/40863055 fixed this for when the navbar buttons are hidden, so taking
         // advantage of that fix by hiding for a bit the navigation buttons, during the time the
         // flashing usually occurs. The navbar buttons need to be visible while resizing so that
         // the immersive mode confirmation dialog is not displayed, as fixed with
-        // http://crbug/1360453
-        // TODO: http://crbug/1373984 for follow-up on long term solution for fixing host app
+        // http://crbug.com/40863074
+        // TODO: http://crbug.com/40872053 for follow-up on long term solution for fixing host app
         // flashing issues.
         if (!show) {
             changeVisibilityNavbarButtons(false);

@@ -191,9 +191,10 @@ public class BackgroundSyncBackgroundTaskScheduler {
     interface Natives {
         /**
          * Chrome currently disables BackgroundSyncManager if Google Play Services aren't up-to-date
-         * at startup. Disable this check for tests, since we mock out interaction with GCM.
-         * This method can be removed once our test devices start updating Google Play Services
-         * before tests are run. https://crbug.com/514449
+         * at startup. Disable this check for tests, since we mock out interaction with GCM. This
+         * method can be removed once our test devices start updating Google Play Services before
+         * tests are run. https://crbug.com/40428648
+         *
          * @param disabled disable or enable the version check for Google Play Services.
          */
         void setPlayServicesVersionCheckDisabledForTests(boolean disabled);

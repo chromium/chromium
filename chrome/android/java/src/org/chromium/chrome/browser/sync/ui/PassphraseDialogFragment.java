@@ -113,7 +113,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
 
         // Create a new background Drawable for the passphrase EditText to use when the user has
         // entered an invalid potential password.
-        // https://crbug.com/602943 was caused by modifying the Drawable from getBackground()
+        // https://crbug.com/41248831 was caused by modifying the Drawable from getBackground()
         // without taking a copy.
         mOriginalBackground = mPassphraseEditText.getBackground();
         mErrorBackground = assumeNonNull(mOriginalBackground.getConstantState()).newDrawable();

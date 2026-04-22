@@ -356,7 +356,7 @@ public class StaticLayout extends Layout {
 
         // Call super last because it might re-show this layout. If we do any work after
         // super.doneHiding() the layout might become unexpectedly inactive or have an
-        // incorrect tab id. See crbug/1468214.
+        // incorrect tab id. See crbug.com/40068199.
         super.doneHiding();
     }
 

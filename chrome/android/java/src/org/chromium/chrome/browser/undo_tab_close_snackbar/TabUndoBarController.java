@@ -76,7 +76,7 @@ public class TabUndoBarController extends UndoBarController {
                     private boolean disableUndo(boolean showingUndoBar) {
                         // When closure(s) happen and we are trying to show the undo bar, check
                         // whether the TabGridDialog is showing. If so, don't show the undo bar
-                        // because TabGridDialog has its own undo bar. See crbug.com/1119899. Note
+                        // because TabGridDialog has its own undo bar. See crbug.com/40714421. Note
                         // that we don't disable attempts to dismiss snack bar to make sure that
                         // snack bar state is in sync with tab model.
                         return showingUndoBar

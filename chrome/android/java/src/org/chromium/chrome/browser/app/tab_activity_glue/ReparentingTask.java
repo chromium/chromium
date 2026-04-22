@@ -146,7 +146,7 @@ public class ReparentingTask implements UserData {
         IntentUtils.addTrustedIntentExtras(intent);
 
         // Add the tab to AsyncTabParamsManager before removing it from the current model to
-        // ensure the global count of tabs is correct. See https://crbug.com/611806.
+        // ensure the global count of tabs is correct. See https://crbug.com/40469243.
         IntentHandler.setTabId(intent, mTab.getId());
         IntentHandler.setPinnedState(intent, mTab.getIsPinned());
         AsyncTabParamsManagerSingleton.getInstance()
@@ -165,7 +165,7 @@ public class ReparentingTask implements UserData {
     public void detach() {
         // TODO(yusufo): We can't call tab.updateWindowAndroid that sets |mWindowAndroid| to null
         // because many code paths (including navigation) expect the tab to always be associated
-        // with an activity, and will crash. crbug.com/657007
+        // with an activity, and will crash. crbug.com/40489451
         WebContents webContents = mTab.getWebContents();
 
         // TODO(crbug.com/40067160): We shouldn't be detaching tabs with null WebContents as it can

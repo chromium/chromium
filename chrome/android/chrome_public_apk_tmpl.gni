@@ -291,7 +291,7 @@ template("chrome_common_apk_or_module_tmpl") {
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
 
-    # Exceptions (rationale in https://crbug.com/691733):
+    # Exceptions (rationale in https://crbug.com/41301595):
     resource_exclusion_exceptions += [
       "*ic_file_download_white*",  # Bottom edge seems misaligned.
       "*ic_lock.*",  # Bottom edge seems misaligned.
@@ -399,7 +399,7 @@ template("chrome_common_apk_or_module_tmpl") {
     }
     if (_is_bundle) {
       # Required to support macro resources.
-      # See https://crbug.com/1278419
+      # See https://crbug.com/40208153
       deps += [ ":${target_name}__all_dfm_resources" ]
     } else {
       deps += [ "//chrome/android:chrome_all_java" ]

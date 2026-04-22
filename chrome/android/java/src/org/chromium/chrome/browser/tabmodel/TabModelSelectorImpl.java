@@ -445,7 +445,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
         // Don't execute the tab display part if Chrome has just been sent to background. This
         // avoids unnecessary work (tab restore) and prevents pollution of tab display metrics - see
-        // http://crbug.com/316166.
+        // http://crbug.com/41071624.
         if (type != TabSelectionType.FROM_EXIT) {
             tab.show(type);
         }

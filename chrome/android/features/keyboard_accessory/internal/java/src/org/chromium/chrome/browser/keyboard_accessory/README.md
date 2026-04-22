@@ -147,4 +147,4 @@ keeping them in mind until they are fixed simplifies working with it:
 * Despite the name, the manual filling component is not fully modularized since
   it still requires a dependency to `chrome_java`. Ideally, the entire component
   would follow the folder structure of a typical component as well. All of this
-  is a WiP, see https://crbug.com/945314.
+  is a WiP, see https://crbug.com/41448708.

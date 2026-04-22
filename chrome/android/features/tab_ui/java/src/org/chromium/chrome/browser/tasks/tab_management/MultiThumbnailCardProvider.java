@@ -403,7 +403,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
             // Draw the base paint first and set the base for thumbnail to draw. Setting the xfer
             // mode as SRC_OVER so the thumbnail can be drawn on top of this paint. See
-            // https://crbug.com/1227619.
+            // https://crbug.com/40777171.
             mThumbnailBasePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
             mCanvas.drawRoundRect(rect, mRadius, mRadius, mThumbnailBasePaint);
 

@@ -62,7 +62,7 @@ public class NavigationRecorder extends EmptyTabObserver {
         if (webContents != null) {
             // if no WebContents is available now, the navigation has been started in a new tab.
             // Svelte devices do not start loading until we switch to the new tab, see
-            // https://crbug.com/748916. In that case, closing or moving away will be the end
+            // https://crbug.com/41335796. In that case, closing or moving away will be the end
             // trigger anyway, no need to care about the navigation stack.
             final NavigationController navController = webContents.getNavigationController();
             int startStackIndex = navController.getLastCommittedEntryIndex();

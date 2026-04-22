@@ -2496,7 +2496,7 @@ if (_is_default_toolchain) {
     # the bundle under test.)
     "--enable-breakpad-dump",
 
-    # FRE is too flakey on some old devices https://crbug.com/1289733
+    # FRE is too flakey on some old devices https://crbug.com/40817673
     "--disable-fre",
   ]
 
@@ -3237,7 +3237,7 @@ if (_is_default_toolchain) {
     # (otherwise, the library will warn at build time that it contains multiple
     # symbol tables). However, do not create the partitions, as they are not
     # required or packaged into the APK. This can be removed if LLD starts
-    # supporting a "no partitions" argument (https://crbug.com/1021108).
+    # supporting a "no partitions" argument (https://crbug.com/40656873).
     module_descs = []
 
     java_targets = [

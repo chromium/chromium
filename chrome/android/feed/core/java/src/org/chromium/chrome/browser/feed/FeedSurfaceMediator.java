@@ -387,7 +387,7 @@ public class FeedSurfaceMediator
      * When the feed is disabled, the feed content is completely gone.
      */
     void updateContent() {
-        // See https://crbug.com/1498004.
+        // See https://crbug.com/40075985.
         if (ApplicationStatus.isEveryActivityDestroyed()) return;
 
         mFeedEnabled = FeedFeatures.isFeedEnabled(mProfile);
@@ -756,7 +756,7 @@ public class FeedSurfaceMediator
     void showOrHideFeed() {
         // It is possible that showOrHideFeed() is called when the surface which contains the
         // Feeds isn't visible or headers of streams haven't been added, returns here.
-        // See https://crbug.com/1485070 and https://crbug.com/1488210.
+        // See https://crbug.com/40072900 and https://crbug.com/40073830.
         if (!mIsPropertiesInitializedForStream) {
             return;
         }

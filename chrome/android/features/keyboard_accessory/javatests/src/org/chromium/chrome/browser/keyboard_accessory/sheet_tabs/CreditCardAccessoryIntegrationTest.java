@@ -97,7 +97,7 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1182626
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/40751565
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
     @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
@@ -123,7 +123,7 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1392789, https://crbug.com/1182626")
+    @DisabledTest(message = "https://crbug.com/40247909, https://crbug.com/40751565")
     public void testFillsSuggestionOnClick() throws TimeoutException {
         startAtTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("CREDIT_CARD_NAME_FULL", 1);

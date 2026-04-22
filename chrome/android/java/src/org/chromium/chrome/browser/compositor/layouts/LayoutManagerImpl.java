@@ -682,7 +682,7 @@ public class LayoutManagerImpl
         mOverlayPanelManager.setContainerView(mContentContainer);
 
         // The {@link setTabModelSelector} should be called after all of the initialization above
-        // complete. See https://crbug.com/1132948.
+        // complete. See https://crbug.com/40150830.
         if (mTabModelSelector == null) {
             setTabModelSelector(selector);
         }

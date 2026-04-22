@@ -370,7 +370,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /**
      * The RootUiCoordinator associated with the activity. This variable is held to facilitate
-     * testing. TODO(pnoland, https://crbug.com/865801): make this private again.
+     * testing. TODO(pnoland, https://crbug.com/40585866): make this private again.
      */
     protected RootUiCoordinator mRootUiCoordinator;
 
@@ -396,7 +396,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private boolean mNativeInitialized;
     private boolean mRemoveWindowBackgroundDone;
 
-    // The FullscreenVideoPictureInPictureController is initialized lazily https://crbug.com/729738.
+    // The FullscreenVideoPictureInPictureController is initialized lazily
+    // https://crbug.com/41323316.
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
 
     private ActorPictureInPictureController mActorPipController;
@@ -828,7 +829,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // Allow disk access for the content view and toolbar container setup.
             // On certain android devices this setup sequence results in disk writes outside
             // of our control, so we have to disable StrictMode to work. See
-            // https://crbug.com/639352.
+            // https://crbug.com/40481348.
             TraceEvent.begin("setContentView(R.layout.main)");
             if (mBaseChromeLayout != null) {
                 setContentViewToBaseLayout();
@@ -972,9 +973,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /**
      * @return {@link ToolbarManager} that belongs to this activity or null if the current activity
-     *         does not support a toolbar.
-     * TODO(pnoland, https://crbug.com/865801): remove this in favor of having RootUICoordinator
-     *         inject ToolbarManager directly to sub-components.
+     *     does not support a toolbar. TODO(pnoland, https://crbug.com/40585866): remove this in
+     *     favor of having RootUICoordinator inject ToolbarManager directly to sub-components.
      */
     public @Nullable ToolbarManager getToolbarManager() {
         return mRootUiCoordinator.getToolbarManager();
@@ -1681,7 +1681,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onStart() {
-        // Sometimes mCompositorViewHolder is null, see crbug.com/1057613.
+        // Sometimes mCompositorViewHolder is null, see crbug.com/40677515.
         if (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()) {
             // TODO(crbug.com/40793204): Remove logging once root cause of bug is identified
             //  & fixed.
@@ -2099,11 +2099,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // Remove the window background only after native init and window getting focus. It's done
         // after native init because before native init, a fake background gets shown. The window
-        // focus dependency is because doing it earlier can cause drawing bugs, e.g. crbug/673831.
+        // focus dependency is because doing it earlier can cause drawing bugs, e.g.
+        // crbug.com/40497910.
         if (!mNativeInitialized || !hasWindowFocus()) return;
 
         // The window background color is used as the resizing background color in Android N+
-        // multi-window mode. See crbug.com/602366.
+        // multi-window mode. See crbug.com/40464535.
         changeBackgroundColorForResizing();
         mRemoveWindowBackgroundDone = true;
     }
@@ -2377,7 +2378,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * null if the Tab does not exist or the system is not initialized.
      *
      * @deprecated Instead, use/hold a reference to {@link #mActivityTabProvider}. See
-     *     https://crbug.com/871279 for more details. Note that there are important functional
+     *     https://crbug.com/40588169 for more details. Note that there are important functional
      *     differences between {@link ActivityTabProvider} and this function when transitioning
      *     to/from the tab switcher. For a drop-in replacement, use {@link
      *     TabModelSelector#getCurrentTab} instead.
@@ -2590,7 +2591,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // If native is not initialized, the multi-window user action will be recorded in
         // #onDeferredStartupForMultiWindowMode() and CachedFeatureFlags#setIsInMultiWindowMode()
         // will be called in #onResumeWithNative(). Both of these methods require native to be
-        // initialized, so do not call here to avoid crashing. See https://crbug.com/797921.
+        // initialized, so do not call here to avoid crashing. See https://crbug.com/40556221.
         if (mNativeInitialized) {
             recordMultiWindowModeChanged(isInMultiWindowMode, /* isDeferredStartup= */ false);
 
@@ -2933,7 +2934,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             DesktopSiteUtils.setRequestDesktopSiteContentSettingsForUrl(
                     profile, currentTab.getUrl(), usingDesktopUserAgent);
             // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
-            // with LoadOriginalRequestURL. See http://crbug/1418587 for details.
+            // with LoadOriginalRequestURL. See http://crbug.com/40894824 for details.
             TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent);
             TrackerFactory.getTrackerForProfile(profile)
                     .notifyEvent(EventConstants.APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED);
@@ -3128,16 +3129,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 controlContainer.getToolbarResourceAdapter().dropCachedBitmap();
             }
         } catch (ClassCastException e) {
-            // This is a workaround for crbug.com/1236981. Doing nothing here is better than
+            // This is a workaround for crbug.com/40783191. Doing nothing here is better than
             // crashing. We assert, which will be stripped in builds that get shipped to users.
-            Log.e(TAG, "crbug.com/1236981", e);
+            Log.e(TAG, "crbug.com/40783191", e);
             assert false
                     : "View "
                             + v.toString()
                             + " inflated from layout ID #"
                             + v.getSourceLayoutResId()
                             + " was not a ControlContainer. "
-                            + " If you can reproduce, post in crbug.com/1236981";
+                            + " If you can reproduce, post in crbug.com/40783191";
         }
     }
 

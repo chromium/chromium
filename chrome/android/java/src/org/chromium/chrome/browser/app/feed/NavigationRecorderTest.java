@@ -75,7 +75,7 @@ public class NavigationRecorderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mInitialTab = mActivityTestRule.getActivity().getActivityTab();
-                    // Add logging to debug flaky test: crbug.com/1297086.
+                    // Add logging to debug flaky test: crbug.com/40822096.
                     mInitialTab.addObserver(
                             new EmptyTabObserver() {
                                 @Override

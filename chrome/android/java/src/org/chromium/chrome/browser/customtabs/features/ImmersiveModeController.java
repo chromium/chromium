@@ -122,7 +122,7 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
             // For some reason, on Android R (11) setting the recommended immersive mode flags
             // (including BEHAVIOR_SHOW_BARS_BY_SWIPE) gives the behaviour of
             // BEHAVIOR_SHOW_BARS_BY_TOUCH. I can't reproduce this with a sample app, and I cannot
-            // reproduce it with Chrome on an emulator. https://crbug.com/1232956
+            // reproduce it with Chrome on an emulator. https://crbug.com/40780591
             updateImmersiveFlagsOnAndroid11();
         } else {
             updateImmersiveFlagsOnAndroidNot11();

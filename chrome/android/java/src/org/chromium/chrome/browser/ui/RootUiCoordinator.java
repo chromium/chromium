@@ -273,7 +273,7 @@ import java.util.function.Supplier;
  * lifecycle of the main UI components.
  *
  * <p>The specific things this component will manage and how it will hook into Chrome*Activity are
- * still being discussed See https://crbug.com/931496.
+ * still being discussed See https://crbug.com/40613711.
  */
 @NullMarked
 public class RootUiCoordinator
@@ -800,7 +800,7 @@ public class RootUiCoordinator
         }
     }
 
-    // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
+    // TODO(pnoland, crbug.com/40585866): remove this in favor of wiring it directly.
     public ToolbarManager getToolbarManager() {
         assert mToolbarManager != null;
         return mToolbarManager;
@@ -1785,7 +1785,7 @@ public class RootUiCoordinator
 
     @Override
     public boolean canShowAppMenu() {
-        // TODO(https:crbug.com/931496): Eventually the ContextualSearchManager,
+        // TODO(https:crbug.com/40613711): Eventually the ContextualSearchManager,
         // EphemeralTabCoordinator, and FindToolbarManager will all be owned by this class.
 
         // Do not show the menu if Contextual Search panel is opened.
@@ -2119,7 +2119,7 @@ public class RootUiCoordinator
                             // Ideally we wouldn't allow the app menu to show while animating the
                             // overview mode. This is hard to track, however, because in some
                             // instances #onOverviewModeStartedShowing is called after
-                            // #onOverviewModeFinishedShowing (see https://crbug.com/969047).
+                            // #onOverviewModeFinishedShowing (see https://crbug.com/41462043).
                             // Once that bug is fixed, we can remove this call to hide in favor of
                             // disallowing app menu shows during animation. Alternatively, we
                             // could expose a way to query whether an animation is in progress.

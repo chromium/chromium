@@ -210,7 +210,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             final PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
             try {
                 // TODO(dtrainor): Make asynchronous and have a callback to update the menu.
-                // https://crbug.com/729737
+                // https://crbug.com/41323315
                 directShareIcon = pm.getActivityIcon(component);
                 directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
             } catch (NameNotFoundException exception) {

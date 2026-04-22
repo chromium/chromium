@@ -70,7 +70,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     private static final float BASE_PAGE_BRIGHTNESS_STATE_MAXIMIZED = .4f;
 
     // -------------------------------------------------------------------------
-    // TODO(donnd): crbug.com/1143472 - The close button from the legacy UI is
+    // TODO(donnd): crbug.com/40155104 - The close button from the legacy UI is
     // no longer used. Remove code related to the button here and in the native
     // interface.
     //

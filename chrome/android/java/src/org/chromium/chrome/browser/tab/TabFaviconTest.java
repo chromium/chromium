@@ -124,7 +124,7 @@ public class TabFaviconTest {
 
     @Test
     public void testOnFaviconAvailable_SameSize() {
-        // Inspired from https://crbug.com/1352674. Some pages purposefully switch favicons to try
+        // Inspired from https://crbug.com/40234963. Some pages purposefully switch favicons to try
         // to update the current favicon. This will typically result in the same sized favicon being
         // sent. So it's important that we update in this case.
         onFaviconAvailable(makeBitmap(1, Color.RED));

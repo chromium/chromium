@@ -1119,7 +1119,7 @@ public class TabListMediatorUnitTest {
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
     }
 
-    // Regression test for https://crbug.com/1372487
+    // Regression test for https://crbug.com/40871078
     @Test
     public void handlesGroupMergeCorrectly_InOrder() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

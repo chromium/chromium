@@ -163,7 +163,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         int calloutResourceId = calloutControl.getViewId();
         float calloutOpacity = calloutControl.getOpacity();
 
-        // TODO(donnd): crbug.com/1143472 - Remove parameters for the now
+        // TODO(donnd): crbug.com/40155104 - Remove parameters for the now
         // defunct close button from the interface and the associated code on
         // the native side.
         ContextualSearchSceneLayerJni.get()

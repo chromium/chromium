@@ -142,7 +142,7 @@ public class StartupMetricsTracker {
                 // recording both commit and FCP.
                 //
                 // In rare cases a same-document navigation can commit before all other
-                // http(s)+non-error navigations (crbug.com/1492721). Filter out such scenarios
+                // http(s)+non-error navigations (crbug.com/40074911). Filter out such scenarios
                 // since they are counter-intuitive.
                 destroy();
             } else {
@@ -202,7 +202,7 @@ public class StartupMetricsTracker {
     private @ActivityType int mHistogramSuffix;
     // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
     // The SB request is on the critical path to navigation commit, and the response may be severely
-    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
+    // delayed by GmsCore (see http://crbug.com/40214624). The value is recorded only when the
     // navigation commits successfully and the URL of first navigation is checked by SafeBrowsing
     // API. Utilizing a volatile long here to ensure the write is immediately visible to other
     // threads.

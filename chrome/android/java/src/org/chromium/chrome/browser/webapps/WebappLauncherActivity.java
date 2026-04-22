@@ -48,7 +48,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * Launches web apps. This was separated from the ChromeLauncherActivity because the
- * ChromeLauncherActivity is not allowed to be excluded from Android's Recents: crbug.com/517426.
+ * ChromeLauncherActivity is not allowed to be excluded from Android's Recents: crbug.com/41192570.
  */
 @NullMarked
 public class WebappLauncherActivity extends Activity {
@@ -148,7 +148,7 @@ public class WebappLauncherActivity extends Activity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/1412281
+        // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/40255207
         Intent intent = getIntent();
         BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
 
@@ -177,7 +177,7 @@ public class WebappLauncherActivity extends Activity {
             // Do not remove the current task. The full FRE reuses the task due to
             // android:launchMode arguments, while the LWFRE does not. So removing the task would
             // break the full FRE. The LWFRE will still clean up the task since this is the only
-            // activity in the current task. See https://crbug.com/1201353 for more details.
+            // activity in the current task. See https://crbug.com/40178652 for more details.
             finish();
             return;
         }

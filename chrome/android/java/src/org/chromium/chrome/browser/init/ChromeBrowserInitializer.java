@@ -143,7 +143,7 @@ public class ChromeBrowserInitializer {
     private void preInflationStartupDone() {
         // Domain reliability uses significant enough memory that we should disable it on low memory
         // devices for now.
-        // TODO(zbowling): remove this after domain reliability is refactored. (crbug.com/495342)
+        // TODO(zbowling): remove this after domain reliability is refactored. (crbug.com/41179614)
         if (SysUtils.isLowEndDevice()) {
             CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_DOMAIN_RELIABILITY);
         }

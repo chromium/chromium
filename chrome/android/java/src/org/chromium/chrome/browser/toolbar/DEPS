@@ -4,7 +4,7 @@ include_rules = [
   # Allow dependencies on chrome/browser modules
   "+chrome/browser",
 
-  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  # Restrict dependencies to xsurface by default (crbug.com/40144215)
   "-chrome/browser/xsurface",
 
   "-chrome/android/java/src/org/chromium/chrome/browser",

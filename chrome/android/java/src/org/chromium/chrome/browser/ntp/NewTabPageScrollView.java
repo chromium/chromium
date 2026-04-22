@@ -72,7 +72,7 @@ public class NewTabPageScrollView extends FadingEdgeScrollView {
     public boolean executeKeyEvent(KeyEvent event) {
         // Ignore all key events except arrow keys and spacebar. Otherwise, the ScrollView consumes
         // unwanted events (including the hardware menu button and app-level keyboard shortcuts).
-        // http://crbug.com/308322
+        // http://crbug.com/40337205
         switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_DOWN:
@@ -85,7 +85,7 @@ public class NewTabPageScrollView extends FadingEdgeScrollView {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        // Fixes lanscape transitions when unfocusing the URL bar: crbug.com/288546
+        // Fixes lanscape transitions when unfocusing the URL bar: crbug.com/41049674
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN;
         return super.onCreateInputConnection(outAttrs);
     }

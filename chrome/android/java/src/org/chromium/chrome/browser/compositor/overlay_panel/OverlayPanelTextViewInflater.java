@@ -21,7 +21,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
  * Provides an {@link OverlayPanelInflater} that adjusts a text view to override the RTL/LTR
- * ordering when the initial text fragment is short. Details in this issue: crbug.com/651389.
+ * ordering when the initial text fragment is short. Details in this issue: crbug.com/40486990.
  */
 @NullMarked
 public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepaddingTextView

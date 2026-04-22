@@ -907,7 +907,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         // TODO(donnd): Create a full-screen sized view and apply the black_alpha_65 color to get
         // an exact match between the scrim and the status bar colors instead of adjusting the
         // status bar alpha to approximate the native overlay brightness filter.
-        // Details in https://crbug.com/848922.
+        // Details in https://crbug.com/41392392.
         float statusBarAlpha =
                 (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
         if (!getCanHideAndroidBrowserControls()) scrimAndroidToolbar(statusBarAlpha);
@@ -1175,7 +1175,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     private @Nullable ViewGroup getParentView() {
         ViewGroup result = mContainerView;
         assumeNonNull(mContainerView);
-        // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
+        // Use the coordinator inside of the container if we can get it. See crbug.com/40201227.
         ViewGroup coordinator = mContainerView.findViewById(R.id.coordinator);
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
         if (coordinator != null) result = coordinator;

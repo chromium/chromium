@@ -260,7 +260,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mPersistencePolicy.isMergeInProgress()) return;
 
         // TODO(smaier): We likely can move everything onto the SequencedTaskRunner when the
-        // SERIAL_EXECUTOR path is gone. crbug.com/957735
+        // SERIAL_EXECUTOR path is gone. crbug.com/40625164
         TaskRunner taskRunner =
                 needsInitialization ? mSequencedTaskRunner : PostTask.getTaskRunner(taskTraits);
 
@@ -610,7 +610,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
-            // tab model won't have a valid index and the UI will break. http://crbug.com/261378
+            // tab model won't have a valid index and the UI will break. http://crbug.com/41026812
             while (!mTabsToRestore.isEmpty()
                     && assumeNonNull(mNormalTabsRestored).size() == 0
                     && assumeNonNull(mIncognitoTabsRestored).size() == 0) {
@@ -666,7 +666,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         // As we add more field to TabState, we are crossing the 10 operation counts threshold to
         // enforce the detection of unbuffered input/output operations, which results in
-        // https://crbug.com/1276907. After evaluating the performance impact, here we disabled the
+        // https://crbug.com/40809202. After evaluating the performance impact, here we disabled the
         // detection of unbuffered input/output operations.
         // This will no longer be necessary when the TabState schema is replaced with
         // a FlatBuffer approach - go/tabstate-flatbuffer-decision.
@@ -1871,7 +1871,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         // worry about Tab duplication because the tab details are processed only on the UI Thread.
         if (tabsBeingRestored != null) {
             for (TabRestoreDetails details : tabsBeingRestored) {
-                // isIncognito was added in M61 (see https://crbug.com/485217), so it is extremely
+                // isIncognito was added in M61 (see https://crbug.com/40417122), so it is extremely
                 // unlikely that isIncognito will be null. But if it is, assume that the tab is
                 // incognito so that #restoreTab() will require a tab state file on disk to
                 // restore. If a tab state file exists and the tab is not actually incognito, it

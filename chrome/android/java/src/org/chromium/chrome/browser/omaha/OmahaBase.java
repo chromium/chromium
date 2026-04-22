@@ -448,24 +448,25 @@ public class OmahaBase {
                 NetworkTrafficAnnotationTag.createComplete(
                         "omaha_client_android_uc",
                         """
-                semantics {
-                  sender: 'Updates'
-                  description:
-                    'This traffic checks whether the browser is up-to-date and '
-                    'provides basic browser telemetry using the Omaha protocol.'
-                  trigger: 'Manual or automatic checks for updates.'
-                  data:
-                    'Various OS and browser parameters such as version, '
-                    'architecture, channel, and the calendar date of the previous '
-                    'communication. '
-                    'A unique identifier for the device may be transmitted.'
-                  destination: GOOGLE_OWNED_SERVICE
-                }
-                policy {
-                  cookies_allowed: NO
-                  policy_exception_justification: 'Not implemented.'
-                  setting: 'This feature cannot be disabled.'
-                }""");
+                        semantics {
+                          sender: 'Updates'
+                          description:
+                            'This traffic checks whether the browser is up-to-date and '
+                            'provides basic browser telemetry using the Omaha protocol.'
+                          trigger: 'Manual or automatic checks for updates.'
+                          data:
+                            'Various OS and browser parameters such as version, '
+                            'architecture, channel, and the calendar date of the previous '
+                            'communication. '
+                            'A unique identifier for the device may be transmitted.'
+                          destination: GOOGLE_OWNED_SERVICE
+                        }
+                        policy {
+                          cookies_allowed: NO
+                          policy_exception_justification: 'Not implemented.'
+                          setting: 'This feature cannot be disabled.'
+                        }\
+                        """);
         try {
             URL url = new URL(assumeNonNull(getRequestGenerator()).getServerUrl());
             HttpURLConnection connection =
@@ -603,7 +604,7 @@ public class OmahaBase {
                 | IndexOutOfBoundsException
                 | IllegalArgumentException e) {
             // IndexOutOfBoundsException is thought to be triggered by a bug in okio.
-            // IllegalArgumentException is triggered by a bug in okio. crbug.com/1149863.
+            // IllegalArgumentException is triggered by a bug in okio. crbug.com/40732106.
             throw new RequestFailureException(
                     "Failed to write request to server: ",
                     e,

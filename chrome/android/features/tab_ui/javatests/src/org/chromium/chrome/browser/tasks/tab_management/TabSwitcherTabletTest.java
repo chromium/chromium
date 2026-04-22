@@ -267,7 +267,7 @@ public class TabSwitcherTabletTest {
         checkTabSwitcherViewHolderVisibility(true);
     }
 
-    // Regression test for crbug.com/1487114.
+    // Regression test for crbug.com/40073508.
     @Test
     @MediumTest
     @RequiresRestart

@@ -344,7 +344,7 @@ public final class ReturnToChromeUtil {
         }
 
         // It is possible to get null after casting ntpTab.getNativePage() to NewTabPage, early
-        // exit here. See https://crbug.com/1449900.
+        // exit here. See https://crbug.com/40915054.
         if (!(nativePage instanceof NewTabPage)) {
             recordFailToShowHomeSurfaceReasonUma(FailToShowHomeSurfaceReason.NOT_A_NTP_NATIVE_PAGE);
             if (nativePage.isFrozen()) {

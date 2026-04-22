@@ -118,7 +118,7 @@ found in the LICENSE file.
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
         <!-- Status bar color -->
-        <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193.
+        <!-- Action bar color. This is intentionally a dark color. See crbug.com/41406168.
              The custom styling can be removed once Android N is deprecated. -->
         <item name="android:statusBarColor">@color/dark_action_bar_color</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -243,7 +243,7 @@ found in the LICENSE file.
     <!-- Manage Space Activity styles -->
     <style name="ManageSpaceActionBarModern" parent="Widget.MaterialComponents.ActionBar.Primary">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Baseline.Light</item>
-        <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193.
+        <!-- Action bar color. This is intentionally a dark color. See crbug.com/41406168.
              The custom styling can be removed once Android N is deprecated. -->
         <item name="background">@color/dark_action_bar_color</item>
     </style>

@@ -75,7 +75,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
                         : CustomTabsCallback.NAVIGATION_FAILED;
 
         // For privacy reason, we do not pass all the error codes but choose a few safe ones.
-        // See crbug/1501085 for more details.
+        // See crbug.com/40941334 for more details.
         Integer code =
                 switch (errorCode) {
                     case NetError.ERR_INTERNET_DISCONNECTED:

@@ -42,7 +42,7 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO(pshmakov): address this problem in a more general way, http://crbug.com/952221
+        // TODO(pshmakov): address this problem in a more general way, http://crbug.com/41452609
         outState.putString(KEY_CLIENT_PACKAGE, mClientPackageName);
     }
 

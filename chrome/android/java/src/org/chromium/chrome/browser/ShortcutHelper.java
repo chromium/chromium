@@ -112,7 +112,7 @@ public class ShortcutHelper {
                 // Encode the icon as a base64 string (Launcher drops Bitmaps in the Intent).
                 String encodedIcon = BitmapHelper.encodeBitmapAsString(icon);
 
-                // TODO(http://crbug.com/1000046): Use action which does not require mac on O+
+                // TODO(http://crbug.com/40097069): Use action which does not require mac on O+
                 Intent shortcutIntent =
                         createWebappShortcutIntent(
                                 id,

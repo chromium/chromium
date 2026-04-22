@@ -347,7 +347,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         assert tab != null;
         assert mTabProvider.getInitialTabCreationMode() != TabCreationMode.NONE;
 
-        // Put Sync in the correct state by calling tab state initialized. crbug.com/581811.
+        // Put Sync in the correct state by calling tab state initialized. crbug.com/40454188.
         tabModelSelector.markTabStateInitialized();
 
         // Notify ServiceTabLauncher if this is an asynchronous tab launch.

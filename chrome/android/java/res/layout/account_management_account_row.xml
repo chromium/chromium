@@ -17,7 +17,7 @@ found in the LICENSE file.
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <!-- https://crbug.com/1369955: android::scaleType="fitStart" does not work correctly in RTL
+    <!-- https://crbug.com/40869452: android::scaleType="fitStart" does not work correctly in RTL
          layout as it always aligns the top left. Using wrapping FrameLayout as workaround. -->
     <FrameLayout
         android:layout_width="56dp"
@@ -33,7 +33,7 @@ found in the LICENSE file.
     </FrameLayout>
 
     <!-- Padding asymmetry (16dp top vs 18dp bottom) is necessary to move text 1dp up according to
-         the Material spec. See https://crbug.com/701221#c37. -->
+         the Material spec. See https://crbug.com/40510606#c37. -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -402,7 +402,7 @@ public class WebappRegistry {
 
     /** Returns the list of web app IDs which are written to SharedPreferences. */
     public static Set<String> getRegisteredWebappIdsForTesting() {
-        // Wrap with unmodifiableSet to ensure it's never modified. See crbug.com/568369.
+        // Wrap with unmodifiableSet to ensure it's never modified. See crbug.com/40448581.
         return Collections.unmodifiableSet(
                 openSharedPreferences().getStringSet(KEY_WEBAPP_SET, Collections.emptySet()));
     }
@@ -558,7 +558,7 @@ public class WebappRegistry {
         List<Pair<String, WebappDataStorage>> initedStorages = new ArrayList<>();
         if (initAll) {
             for (String id : webapps) {
-                // See crbug.com/1055566 for details on bug which caused this scenario to occur.
+                // See crbug.com/40676347 for details on bug which caused this scenario to occur.
                 if (id == null) {
                     id = "";
                 }

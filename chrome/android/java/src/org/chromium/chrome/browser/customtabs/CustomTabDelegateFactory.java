@@ -135,7 +135,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             boolean isUrlInVerifiedScope =
                     mVerifier != null && mVerifier.isUrlInVerifiedScope(params.getUrl().getSpec());
 
-            // http://crbug.com/647569 : Do not forward URL requests to external intents for URLs
+            // http://crbug.com/40485189 : Do not forward URL requests to external intents for URLs
             // within the Webapp/TWA's scope.
             return isUrlInVerifiedScope;
         }
@@ -611,7 +611,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public @Nullable NativePage createNativePage(
             String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
-        // See crbug.com/1270695
+        // See crbug.com/40205452
         if (getOriginalNativeNtpUrl().equals(url) && tab.isShowingErrorPage()) {
             mActivity.finish();
         }

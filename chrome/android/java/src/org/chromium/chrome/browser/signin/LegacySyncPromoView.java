@@ -66,7 +66,7 @@ public class LegacySyncPromoView extends FrameLayout
      */
     public static LegacySyncPromoView create(
             ViewGroup parent, Profile profile, @SigninAccessPoint int accessPoint) {
-        // TODO(injae): crbug.com/829548
+        // TODO(injae): crbug.com/40570370
         LegacySyncPromoView result =
                 (LegacySyncPromoView)
                         LayoutInflater.from(parent.getContext())
@@ -85,7 +85,7 @@ public class LegacySyncPromoView extends FrameLayout
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        // @Todo(crbug.com/1465523) Refactor Recent Tabs Empty States implementation. We don't want
+        // @Todo(crbug.com/40923516) Refactor Recent Tabs Empty States implementation. We don't want
         // this implementation to live in this class and we can add another subclass of PromoGroup
         // similar to the one used for LegacySyncPromoView.
         ViewStub emptyViewStub = findViewById(R.id.recent_tab_empty_state_view_stub);

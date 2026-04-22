@@ -196,7 +196,7 @@ public class WebApkServiceClient {
                     @ContentSetting
                     int settingValue = toContentSettingValue(api.checkNotificationPermission());
 
-                    // See http://crbug.com/1340854. Temporary fallback in case the shell has not
+                    // See http://crbug.com/40850667. Temporary fallback in case the shell has not
                     // yet been updated to support checkNotificationPermission(). Delete this
                     // after shell v154 has been fully launched.
                     if (settingValue != ContentSetting.ALLOW

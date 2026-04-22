@@ -12,7 +12,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="/obj/clank/"/>
   </issue>
   <issue id="AcceptsUserCertificates">
-    <!-- See https://crbug.com/827265 and comment in the file for context. -->
+    <!-- See https://crbug.com/41379786 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
   </issue>
   <issue id="ExifInterface">
@@ -28,13 +28,13 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     See: b/404752927, b/425396018 -->
   <issue id="FlaggedApi" severity="ignore"/>
   <issue id="IconDensities">
-    <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
+    <!-- Originals are gone, so ignore these specific ones: crbug.com/40405436 -->
     <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
     <!-- This is intentional to save on WebAPKs' size. -->
     <ignore regexp="chrome/android/webapk/shell_apk/res/drawable-*"/>
   </issue>
   <issue id="IconDipSize">
-    <!-- These only need to be 1px for all densities. See: crbug.com/804449 -->
+    <!-- These only need to be 1px for all densities. See: crbug.com/40559222 -->
     <ignore regexp="chrome/android/java/res/.*tab_strip_fade"/>
   </issue>
   <issue id="IconLocation">
@@ -44,7 +44,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="tools/android/memconsumer/java/res/drawable/"/>
   </issue>
   <issue id="IconMissingDensityFolder">
-    <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
+    <!-- Originals are gone, so ignore these specific ones: crbug.com/40405436 -->
     <ignore regexp="components/embedder_support/android/java/res"/>
   </issue>
   <issue id="ImpliedQuantity">
@@ -56,7 +56,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="components/strings/privacy_sandbox_strings_grd"/>
   </issue>
   <issue id="InsecureBaseConfiguration">
-    <!-- See https://crbug.com/827265 and comment in the file for context. -->
+    <!-- See https://crbug.com/41379786 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
   </issue>
   <!-- InvalidSetHasFixedSize should not be disabled. If the check fails, check that
@@ -132,7 +132,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="data_reduction_promo_infobar_title"/>
   </issue>
   <!-- Many .xtb files have a % that is not part of a formatted string.
-       https://crbug.com/941164 -->
+       https://crbug.com/40617920 -->
   <issue id="StringFormatInvalid" severity="ignore"/>
   <issue id="StringFormatMatches" severity="ignore"/>
   <issue id="TypographyDashes" severity="ignore" />
@@ -161,25 +161,25 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.mipmap.maskable_splash_icon_xxxhdpi` appears to be unused"/>
     <!-- 1: Module titles may only be used by the Play Store. -->
     <ignore regexp="The resource `R.string.*_module_title` appears to be unused"/>
-    <!-- crbug.com/1004570 remove this line and the following six lines after the bug resolved -->
+    <!-- crbug.com/40099080 remove this line and the following six lines after the bug resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_review_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_close_stale_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_dismiss_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_close_stale_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_close_tab_action_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_review_button` appears to be unused"/>
-    <!-- crbug.com/1117145 remove this line and the following 23 lines after the bug is resolved -->
+    <!-- crbug.com/40144993 remove this line and the following 23 lines after the bug is resolved -->
     <ignore regexp="The resource `R.layout.language_picker` appears to be unused"/>
-    <!-- crbug.com/1076538 remove this line and the following two lines after the bug is resolved -->
+    <!-- crbug.com/40128703 remove this line and the following two lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_suggestion_group_tabs_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_group_tabs_message` appears to be unused"/>
-    <!-- crbug.com/1111942 remove this line and following 7 lines after the bug is resolved -->
+    <!-- crbug.com/40142803 remove this line and following 7 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_switcher` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
 
-    <!-- crbug.com/1127531 remove this line and following 9 lines after the bug is resolved -->
+    <!-- crbug.com/40148611 remove this line and following 9 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.languages_content_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_suggested` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_select_other` appears to be unused"/>
@@ -227,22 +227,22 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>
     <!-- 1: TODO(crbug.com/40725089) resource is used in downstream image editor. -->
     <ignore regexp="The resource `R.string.clear` appears to be unused"/>
-    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1195477 -->
+    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/40176062 -->
     <ignore regexp="The resource `R.string.merchant_viewer_message_description_rating` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_word` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.accessibility_merchant_viewer_message_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
-    <!-- 2: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1295484 -->
+    <!-- 2: Temporarily suppressed until impelmentation is ready, see https://crbug.com/40214348 -->
     <ignore regexp="The resource `R.string.merchant_viewer_message_title_see_reviews` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.merchant_viewer_message_description_reviews_from_google` appears to be unused"/>
-    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1251446 -->
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/40198376 -->
     <ignore regexp="The resource `R.string.price_drop_notification_content_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_notification_content_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_notification_action_visit_site` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_notification_action_turn_off_alert` appears to be unused"/>
 
-    <!-- crbug.com/1208536 remove this line and following 4 lines after the bug is resolved -->
+    <!-- crbug.com/40181767 remove this line and following 4 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph` appears to be unused"/>
@@ -387,7 +387,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <!-- These constructors are useful for layout editors which we currently do not support. -->
   <issue id="ViewConstructor" severity="ignore"/>
   <issue id="WrongConstant">
-    <!-- Discussed in crbug.com/1069204, ignoring this class of errors since these are Q+ constants. -->
+    <!-- Discussed in crbug.com/40125815, ignoring this class of errors since these are Q+ constants. -->
     <ignore regexp="Must be one of: LineBreaker.BREAK_STRATEGY_SIMPLE, LineBreaker.BREAK_STRATEGY_HIGH_QUALITY, LineBreaker.BREAK_STRATEGY_BALANCED"/>
   </issue>
 </lint>

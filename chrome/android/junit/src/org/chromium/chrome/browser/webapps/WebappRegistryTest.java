@@ -192,8 +192,8 @@ public class WebappRegistryTest {
     }
 
     /**
-     * Test behaviour when there is a webapp with a null id registered. See crbug.com/1055566
-     * for details of the bug which caused this to occur.
+     * Test behaviour when there is a webapp with a null id registered. See crbug.com/40676347 for
+     * details of the bug which caused this to occur.
      */
     @Test
     @Feature({"Webapp"})

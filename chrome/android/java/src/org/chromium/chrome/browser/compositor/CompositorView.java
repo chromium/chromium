@@ -124,7 +124,7 @@ public class CompositorView extends FrameLayout
 
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
-    // be working, see crbug.com/931195.
+    // be working, see crbug.com/40613559.
     class ScreenStateReceiverWorkaround implements ScreenOffListener {
         // True indicates we should destroy and recreate the surface manager.
         private boolean mNeedsReset;
@@ -343,8 +343,8 @@ public class CompositorView extends FrameLayout
     @Initializer
     public void initNativeCompositor(
             WindowAndroid windowAndroid, TabContentManager tabContentManager) {
-        // https://crbug.com/802160. We can't call setWindowAndroid here because updating the window
-        // visibility here breaks exiting Reader Mode somehow.
+        // https://crbug.com/41364848. We can't call setWindowAndroid here because updating the
+        // window visibility here breaks exiting Reader Mode somehow.
         mWindowAndroid = windowAndroid;
         mWindowAndroid.addSelectionHandlesObserver(this);
 
@@ -414,7 +414,7 @@ public class CompositorView extends FrameLayout
      */
     public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
         // Disable SurfaceControl for the duration of the session. This works around a black
-        // screen after activating the screen keyboard (IME), see https://crbug.com/1166248.
+        // screen after activating the screen keyboard (IME), see https://crbug.com/40741986.
         mIsInXr = enabled;
 
         updateXrStateForCurrentSurfaceInputTransferHandler();
@@ -425,8 +425,8 @@ public class CompositorView extends FrameLayout
 
         CompositorViewJni.get().setOverlayImmersiveArMode(mNativeCompositorView, enabled);
         // Entering or exiting AR mode can leave SurfaceControl in a confused state, especially if
-        // the screen keyboard (IME) was activated, see https://crbug.com/1166248 and
-        // https://crbug.com/1169822. Reset the surface manager at session start and exit to work
+        // the screen keyboard (IME) was activated, see https://crbug.com/40741986 and
+        // https://crbug.com/40744115. Reset the surface manager at session start and exit to work
         // around this.
         mCompositorSurfaceManager.shutDown();
         createCompositorSurfaceManager();
@@ -506,7 +506,7 @@ public class CompositorView extends FrameLayout
     @Override
     public void surfaceRedrawNeededAsync(Runnable drawingFinished) {
         // Do not hold onto more than one draw callback, to prevent deadlock.
-        // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
+        // See https://crbug.com/40746676 and https://crbug.com/40187558 for more details.
         //
         // `drawingFinished` can, and often will, be run before this returns, since we cannot hold
         // onto more than one (android) callback without risking a deadlock in the framework.
@@ -787,7 +787,7 @@ public class CompositorView extends FrameLayout
         //  - If we are holding a draw callback when our surface is destroyed, then call it back.
         //  - Otherwise, defer the callback until we swap the right size buffer.
         //
-        // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
+        // See https://crbug.com/40746676 and https://crbug.com/40187558 for more details.
         if (swappedCurrentSize) {
             runDrawFinishedCallbackMaybeNotOnUiThread();
         }

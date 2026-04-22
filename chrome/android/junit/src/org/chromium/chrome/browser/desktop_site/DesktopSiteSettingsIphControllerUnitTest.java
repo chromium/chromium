@@ -137,7 +137,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
     }
 
-    // This tests the fix for the crash reported in crbug.com/1416519.
+    // This tests the fix for the crash reported in crbug.com/40893557.
     @Test
     @Config(qualifiers = "sw600dp")
     public void testCreateTabObserver_NullTab() {

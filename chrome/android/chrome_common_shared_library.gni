@@ -148,13 +148,13 @@ template("chrome_common_shared_library") {
       # By default, the static linker will create ELF executables with both
       # SysV and GNU hash tables. Now that the chromium linker supports the GNU
       # format, which is considerably smaller, ensure that the SysV one is
-      # never compiled in the final library (http://crbug.com/742525#c28). GNU
+      # never compiled in the final library (http://crbug.com/41330891#c28). GNU
       # hash support was added in Android M. Also not supported on MIPS
-      # architecture (http://crbug.com/811306).
+      # architecture (http://crbug.com/41370066).
       ldflags += [ "-Wl,--hash-style=gnu" ]
     }
 
-    # See crbug.com/705088.
+    # See crbug.com/40512492.
     if (target_cpu == "arm" && is_asan) {
       ldflags += [ "-Wl,--long-plt" ]
     }

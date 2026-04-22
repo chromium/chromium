@@ -183,7 +183,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         } else {
             // If the bookmark manager is shown in a tab on a phone (rather than in a separate
             // activity) the component name may be null. Send the intent through
-            // ChromeLauncherActivity instead to avoid crashing. See crbug.com/615012.
+            // ChromeLauncherActivity instead to avoid crashing. See crbug.com/40470797.
             intent.setClass(mContext.getApplicationContext(), ChromeLauncherActivity.class);
         }
 

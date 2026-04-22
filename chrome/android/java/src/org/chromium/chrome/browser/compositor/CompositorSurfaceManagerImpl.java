@@ -31,7 +31,7 @@ import org.chromium.build.annotations.Nullable;
  * PixelFormat.
  *
  * <p>Internally, we maintain two SurfaceViews, since calling setFormat() to change the PixelFormat
- * results in a visual glitch as the surface is torn down. crbug.com/679902
+ * results in a visual glitch as the surface is torn down. crbug.com/41294400
  *
  * <p>The client has the responsibility to call doneWithUnownedSurface() at some point between when
  * we call back its surfaceCreated, when it is safe for us to hide the SurfaceView with the wrong

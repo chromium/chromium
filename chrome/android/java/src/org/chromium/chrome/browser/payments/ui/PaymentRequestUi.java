@@ -1021,7 +1021,7 @@ public class PaymentRequestUi
             mSpinnyLayout.setVisibility(View.VISIBLE);
 
             // Turn the bottom sheet back into a collapsed bottom sheet showing only the spinner.
-            // TODO(dfalcantara): Animate this: https://crbug.com/621955
+            // TODO(dfalcantara): Animate this: https://crbug.com/41260058
             ((FrameLayout.LayoutParams) mRequestView.getLayoutParams()).height =
                     LayoutParams.WRAP_CONTENT;
             ViewUtils.requestLayout(mRequestView, "PaymentRequestUi.changeSpinnerVisibility show");
@@ -1537,8 +1537,8 @@ public class PaymentRequestUi
     @Override
     public void onResumeWithNative() {
         // When users come back from an external activity (e.g., app-picker/webauthn), the PR UI
-        // somehow shows up even though it's set to GONE (crbug.com/1030416 and
-        // crbug.com/1051786). Here we use a workaround to fix it - refresh the dialog window
+        // somehow shows up even though it's set to GONE (crbug.com/40109981 and
+        // crbug.com/40118601). Here we use a workaround to fix it - refresh the dialog window
         // from time to time to force the visual state to respect its visibility attribute.
         mDialog.refresh();
     }

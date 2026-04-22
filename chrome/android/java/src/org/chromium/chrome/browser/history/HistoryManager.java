@@ -579,7 +579,7 @@ public class HistoryManager
         // Before the RecyclerView binds its items, LinearLayoutManager#firstVisibleItemPosition()
         // returns {@link RecyclerView#NO_POSITION}. If #findVisibleItemPosition() returns
         // NO_POSITION, the current adapter position should not prevent the info button from being
-        // displayed if all of the other criteria is met. See crbug.com/756249#c3.
+        // displayed if all of the other criteria is met. See crbug.com/41339744#c3.
         boolean firstAdapterItemScrolledOff =
                 assumeNonNull(layoutManager).findFirstVisibleItemPosition() > 0;
 

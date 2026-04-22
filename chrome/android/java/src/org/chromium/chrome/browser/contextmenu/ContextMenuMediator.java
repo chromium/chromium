@@ -67,7 +67,7 @@ public class ContextMenuMediator {
      */
     private void clickItem(@IdRes int id, boolean enabled) {
         // Do not start any action when the activity is on the way to destruction.
-        // See https://crbug.com/990987
+        // See https://crbug.com/41474580
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
 
         mOnItemClicked.onResult(id);

@@ -196,7 +196,7 @@ public class ChromeActionModeHandler {
                     continue;
                 }
                 String packageName = item.getIntent().getComponent().getPackageName();
-                // Exclude actions from browsers and system launchers. https://crbug.com/850195
+                // Exclude actions from browsers and system launchers. https://crbug.com/41393094
                 if (browsers.contains(packageName) || launchers.contains(packageName)) {
                     item.setVisible(false);
                 }

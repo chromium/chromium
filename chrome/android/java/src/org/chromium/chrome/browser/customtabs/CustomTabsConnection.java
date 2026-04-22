@@ -508,10 +508,10 @@ public class CustomTabsConnection {
                         // TODO(https://crbug.com/423415329): I'm pretty sure this is fixed, just
                         // rolling this out with the flagged change in case it isn't fixed.
                         if (!fixWarmupEnabled) {
-                            // Temporary fix for https://crbug.com/797832.
+                            // Temporary fix for https://crbug.com/41362466.
                             // TODO(lizeb): Properly fix instead of papering over the bug, this code
                             // should not be scheduled unless startup is done. See
-                            // https://crbug.com/797832.
+                            // https://crbug.com/41362466.
                             if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
                                 return;
                             }
@@ -596,7 +596,7 @@ public class CustomTabsConnection {
             // `IntentHandler.hasAnyIncognitoExtra` check:
             // Hidden tabs are created always with regular profile, so we need to block hidden tab
             // creation in incognito mode not to have inconsistent modes between tab model and
-            // hidden tab. (crbug.com/1190971)
+            // hidden tab. (crbug.com/40174356)
             // The incognito check is already performed in the entrypoint
             // `mayLaunchUrlInternal`,
             // but also performed here to be safe against future callers.
@@ -677,7 +677,7 @@ public class CustomTabsConnection {
             final @Nullable List<Bundle> otherLikelyBundles) {
         // mayLaunchUrl should not be executed for Incognito CCT since all setup is created with
         // regular profile. If we need to enable mayLaunchUrl for off-the-record profiles, we need
-        // to update the profile used. Please see crbug.com/1106757.
+        // to update the profile used. Please see crbug.com/40706528.
         if (IntentHandler.hasAnyIncognitoExtra(extras)) return false;
 
         final boolean lowConfidence =
@@ -1587,7 +1587,7 @@ public class CustomTabsConnection {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
             return;
         }
         logCallback("onActivityResized()", "(" + height + "x" + width + ")");
@@ -1604,7 +1604,7 @@ public class CustomTabsConnection {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
             return;
         }
         logCallback("onUnminimized()", args);
@@ -1621,7 +1621,7 @@ public class CustomTabsConnection {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
             return;
         }
         logCallback("onMinimized()", args);
@@ -1661,7 +1661,7 @@ public class CustomTabsConnection {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
             return;
         }
     }
@@ -1695,7 +1695,7 @@ public class CustomTabsConnection {
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
-            // of exceptions. See crbug.com/517023.
+            // of exceptions. See crbug.com/40429993.
             return false;
         }
         logCallback("onNavigationEvent()", navigationEvent);
@@ -1735,7 +1735,7 @@ public class CustomTabsConnection {
             } catch (Exception e) {
                 // Catching all exceptions is really bad, but we need it here,
                 // because Android exposes us to client bugs by throwing a variety
-                // of exceptions. See crbug.com/517023.
+                // of exceptions. See crbug.com/40429993.
             }
         }
 
@@ -1830,7 +1830,7 @@ public class CustomTabsConnection {
 
     /**
      * Wraps calling extraCallback in a try/catch so exceptions thrown by the host app don't crash
-     * Chrome. See https://crbug.com/517023.
+     * Chrome. See https://crbug.com/40429993.
      */
     // The string passed is safe since it is a method name.
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")

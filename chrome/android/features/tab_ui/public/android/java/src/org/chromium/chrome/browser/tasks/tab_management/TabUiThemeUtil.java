@@ -217,7 +217,7 @@ public class TabUiThemeUtil {
             // component of the {@code @ColorInt}, since it is ignored when loading resources
             // with a specified tint in the CC layer (instead retaining the alpha of the original
             // image). Instead, this is reflected by setting the opacity of the divider itself.
-            // See https://crbug.com/1373634.
+            // See https://crbug.com/40871850.
             return ColorUtils.setAlphaComponentWithFloat(
                     SemanticColorUtils.getDefaultIconColorAccent1(context),
                     DIVIDER_FOLIO_LIGHT_OPACITY);

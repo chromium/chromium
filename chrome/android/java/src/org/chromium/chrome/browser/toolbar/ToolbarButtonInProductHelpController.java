@@ -85,7 +85,7 @@ public class ToolbarButtonInProductHelpController {
                         new EmptyTabObserver() {
                             @Override
                             public void onPageLoadFinished(Tab tab, GURL url) {
-                                // Part of scroll jank investigation http://crbug.com/1311003. Will
+                                // Part of scroll jank investigation http://crbug.com/40830793. Will
                                 // remove TraceEvent after the investigation is complete.
                                 try (TraceEvent te =
                                         TraceEvent.scoped(

@@ -108,7 +108,7 @@ public final class BrowsingDataBridge {
     /**
      * Same as above, but now we can specify a list of domains to exclude from clearing browsing
      * data. Do not use this method unless caller knows what they're doing. Not all backends are
-     * supported yet, and more data than expected could be deleted. See crbug.com/113621.
+     * supported yet, and more data than expected could be deleted. See crbug.com/40152186.
      *
      * @param listener A listener to call back when the clearing is finished.
      * @param dataTypes An array of browsing data types to delete, represented as values from the

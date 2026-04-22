@@ -220,7 +220,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             // Resources holds a reference to a ClassLoader. Make our Application's
                             // getResources() return a reference to the Chrome split's resources
                             // since there are a spots where ContextUtils.getApplicationContext()
-                            // is used to retrieve resources (https://crbug.com/1287000).
+                            // is used to retrieve resources (https://crbug.com/40815958).
                             mResources = chromeContext.getResources();
                         }
                     }

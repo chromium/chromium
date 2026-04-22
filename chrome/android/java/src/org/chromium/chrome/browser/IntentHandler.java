@@ -1127,19 +1127,17 @@ public class IntentHandler {
     }
 
     /**
-     * Attempts to verify that an Intent was sent from either Chrome or a first-
-     * party app by evaluating a PendingIntent token within the passed Intent.
+     * Attempts to verify that an Intent was sent from either Chrome or a first- party app by
+     * evaluating a PendingIntent token within the passed Intent.
      *
-     * This method of verifying first-party apps is not secure, as it is not
-     * possible to determine the sender of an Intent. This method only verifies
-     * the creator of the PendingIntent token. But a malicious app may be able
-     * to obtain a PendingIntent from another application and use it to
-     * masquerade as it for the purposes of this check. Do not use this method.
+     * <p>This method of verifying first-party apps is not secure, as it is not possible to
+     * determine the sender of an Intent. This method only verifies the creator of the PendingIntent
+     * token. But a malicious app may be able to obtain a PendingIntent from another application and
+     * use it to masquerade as it for the purposes of this check. Do not use this method.
      *
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from Chrome or a first-party app.
-     *
-     * @deprecated This method is not reliable, see https://crbug.com/832124
+     * @deprecated This method is not reliable, see https://crbug.com/40091085
      */
     @Deprecated
     public static boolean notSecureIsIntentChromeOrFirstParty(Intent intent) {

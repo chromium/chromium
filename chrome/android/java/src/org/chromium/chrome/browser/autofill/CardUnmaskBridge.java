@@ -86,7 +86,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         }
     }
 
-    // TODO (crbug.com/1356735): Sync down the credit card directly from native instead of adding
+    // TODO (crbug.com/40236415): Sync down the credit card directly from native instead of adding
     // more and more arguments.
     @CalledByNative
     private static CardUnmaskBridge create(

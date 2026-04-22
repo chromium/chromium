@@ -4495,7 +4495,7 @@ public class StripLayoutHelper
 
     private void pushPropertiesToTab(StripLayoutTab tab) {
         // The close button is visible by default except for pinned tabs. If it should be hidden on
-        // tab creation, do not animate the fade-out. See (https://crbug.com/1342654).
+        // tab creation, do not animate the fade-out. See (https://crbug.com/40231105).
         boolean shouldShowCloseButton =
                 !tab.getIsPinned()
                         && getCachedTabWidth(/* isPinned= */ false)

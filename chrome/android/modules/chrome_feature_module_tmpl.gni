@@ -127,7 +127,7 @@ template("chrome_feature_module") {
       deps += invoker.deps
     }
 
-    # Don't embed more translations than required (http://crbug.com/932017).
+    # Don't embed more translations than required (http://crbug.com/40613919).
     aapt_locale_allowlist = platform_pak_locales
     proguard_enabled = !is_java_debug
     module_name = _module_desc.name

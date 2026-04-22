@@ -297,7 +297,7 @@ public class TabSwitcherPaneMediator
         }
 
         if (mIsAnimatingSupplier.get()) {
-            // crbug.com/1420410: intentionally do nothing to wait for tab-to-GTS transition to be
+            // crbug.com/40063303: intentionally do nothing to wait for tab-to-GTS transition to be
             // finished. Note this has to be before following if-branch since during transition, the
             // container is still invisible. On tablet, the translation transition replaces the
             // tab-to-GTS (expand/shrink) animation, which does not suffer from the same issue.

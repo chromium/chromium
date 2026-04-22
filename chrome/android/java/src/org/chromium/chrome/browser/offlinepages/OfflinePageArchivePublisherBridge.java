@@ -203,7 +203,7 @@ public class OfflinePageArchivePublisherBridge {
         // Android Q's MediaStore.Downloads has an issue that the custom mime type which is not
         // supported by MimeTypeMap is overridden to "application/octet-stream" when publishing.
         // To deal with this issue we set the mime type again after publishing.
-        // See crbug.com/1010829 for more details.
+        // See crbug.com/40101648 for more details.
         final ContentValues mimeTypeValues = new ContentValues();
         mimeTypeValues.put(MediaColumns.MIME_TYPE, "multipart/related");
         if (!updateContentResolver(
@@ -222,7 +222,7 @@ public class OfflinePageArchivePublisherBridge {
          * IllegalStateException (and other RuntimeException's) may be thrown in some situations.
          * This is the case, for instance, when there is a long enough sequence of similarly named
          * files and Android code refuses to generate a new unique filename. See
-         * https://crbug.com/1010916 for more details.
+         * https://crbug.com/40651389 for more details.
          */
         try {
             if (contentResolver.update(uri, contentValues, null, null) == 1) return true;

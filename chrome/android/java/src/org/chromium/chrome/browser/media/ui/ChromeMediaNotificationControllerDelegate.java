@@ -190,7 +190,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                             // without a local repro.
                             //  So,
                             // for now, just log that this happened and move on.
-                            // https://crbug.com/1245017
+                            // https://crbug.com/40788370
                             succeeded = false;
                         }
                         RecordHistogram.recordBooleanHistogram(

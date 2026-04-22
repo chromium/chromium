@@ -172,7 +172,7 @@ public abstract class RequestGenerator {
                             SettingsSecureBasedIdentificationGenerator.GENERATOR_ID)
                     .getUniqueId(SALT);
         } catch (SecurityException unused) {
-            // In some cases the browser lacks permission to get the ID. Consult crbug.com/1158707.
+            // In some cases the browser lacks permission to get the ID. Consult crbug.com/40161415.
             return "";
         }
     }

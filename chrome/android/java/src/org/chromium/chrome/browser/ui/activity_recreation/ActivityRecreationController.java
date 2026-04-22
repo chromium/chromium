@@ -221,7 +221,7 @@ public class ActivityRecreationController {
             LayoutManager layoutManager,
             Handler layoutStateHandler,
             Runnable onLayoutFinishedShowing) {
-        /* TODO (crbug/1395495): Restore the UI state directly if the invocation of {@code
+        /* TODO (crbug.com/40249125): Restore the UI state directly if the invocation of {@code
          * StaticLayout#requestFocus(Tab)} in {@code StaticLayout#doneShowing()} is removed. We
          * should restore the desired UI state after the {@link StaticLayout} is done showing to
          * persist the state. If the layout is visible and done showing, it is safe to execute the

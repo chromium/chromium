@@ -74,7 +74,7 @@ public class SiteSettingsHelper {
     }
 
     private static void launchIntent(Context context, Intent intent) {
-        // Disabling StrictMode to avoid violations (https://crbug.com/819410).
+        // Disabling StrictMode to avoid violations (https://crbug.com/41375078).
         context.startActivity(intent);
     }
 }

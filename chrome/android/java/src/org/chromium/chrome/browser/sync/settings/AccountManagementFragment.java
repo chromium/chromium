@@ -136,7 +136,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Disable animations of preference changes (crbug.com/986401).
+        // Disable animations of preference changes (crbug.com/41472022).
         getListView().setItemAnimator(null);
     }
 
@@ -288,7 +288,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         if (accountsCategory == null) {
             // This pref is dynamically added/removed many times, so it might not be present by now.
-            // More details can be found in crbug/1221491.
+            // More details can be found in crbug.com/40773503.
             return;
         }
         accountsCategory.removeAll();
@@ -556,7 +556,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private void closeDialogIfOpen(String tag) {
         FragmentManager manager = getFragmentManager();
         if (manager == null) {
-            // Do nothing if the manager doesn't exist yet; see http://crbug.com/480544.
+            // Do nothing if the manager doesn't exist yet; see http://crbug.com/41170060.
             return;
         }
         DialogFragment df = (DialogFragment) manager.findFragmentByTag(tag);

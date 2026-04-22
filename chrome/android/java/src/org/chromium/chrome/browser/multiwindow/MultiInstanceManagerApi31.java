@@ -1027,7 +1027,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void onDestroy() {
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         // This handles a case where an instance is deleted within Chrome but not through
-        // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
+        // Window manager UI, and the task is removed by system. See https://crbug.com/40194788.
         removeInvalidInstanceData();
 
         // Activity#isFinishing() is true in case of explicit user intent, for eg. task swipe up

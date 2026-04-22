@@ -96,7 +96,7 @@ public class DexFixer {
             return true;
         }
         // Skip the workaround on local builds to avoid affecting perf bots.
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=1160070
+        // https://crbug.com/40737834
         if (VersionInfo.isLocalBuild() && VersionInfo.isOfficialBuild()) {
             return true;
         }

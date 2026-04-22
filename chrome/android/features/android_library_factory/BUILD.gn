@@ -16,7 +16,7 @@ template("generate_dummy_java") {
 }
 
 template("generate_dummy_android_library") {
-  # No underscores to avoid crbug.com/908819.
+  # No underscores to avoid crbug.com/40603958.
   _generate_java_source_target_name = "${target_name}generatejavasource"
   generate_dummy_java(_generate_java_source_target_name) {
     class_name = invoker.class_name

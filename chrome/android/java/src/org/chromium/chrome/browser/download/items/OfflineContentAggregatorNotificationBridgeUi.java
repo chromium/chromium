@@ -153,7 +153,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
     }
 
     private void pushItemToUi(OfflineItem item, @Nullable OfflineItemVisuals visuals) {
-        // TODO(http://crbug.com/855141): Find a cleaner way to hide unimportant UI updates.
+        // TODO(http://crbug.com/41395976): Find a cleaner way to hide unimportant UI updates.
         // If it's a suggested page, or the user choose to download later. Do not add it to the
         // notification UI.
         if (item.isSuggested) return;

@@ -124,7 +124,7 @@ public class NotificationJobServiceImpl extends SplitCompatJobService.Impl {
 
         // As it stands, all our job processing is done synchronously in onStartJob so there is
         // nothing to do here. Even once we include further async processing in our jobs
-        // (crbug.com/685197) it may by infeasible to cancel this halfway through.
+        // (crbug.com/40503455) it may by infeasible to cancel this halfway through.
         // TODO(crbug.com/40503455): Check what we can safely do here and update comment.
         return false;
     }

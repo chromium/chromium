@@ -91,7 +91,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             final RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
             icon = iconGenerator.generateIconForUrl(mPlainUrl);
             // generateIconForUrl might return null if the URL is empty or the domain cannot be
-            // resolved. See https://crbug.com/987101
+            // resolved. See https://crbug.com/41472491
             // TODO(sinansahin): Handle the case where generating an icon fails.
             if (icon == null) {
                 return;

@@ -52,7 +52,7 @@ public class NotificationTriggerScheduler {
      *     already so no need to continue.
      */
     public boolean checkAndResetTrigger(long timestamp) {
-        // TODO(crbug.com/1379251): This class can probably be deleted.
+        // TODO(crbug.com/40875464): This class can probably be deleted.
         if (getNextTrigger() != timestamp) return false;
         removeNextTrigger();
         return true;

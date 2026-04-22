@@ -508,7 +508,7 @@ public class CompositorViewHolder extends FrameLayout
 
             // On certain devices, getWindowVisibleDisplayFrame is larger than the screen size, so
             // this ensures we never draw beyond the underlying dimensions of the view.
-            // https://crbug.com/854109
+            // https://crbug.com/41395396
             mCachePoint.set(
                     Math.min(mCacheRect.width(), getWidth()),
                     Math.min(mCacheRect.height(), getHeight()));
@@ -1598,7 +1598,7 @@ public class CompositorViewHolder extends FrameLayout
     public void hideKeyboard(Runnable postHideTask) {
         // When this is called we actually want to hide the keyboard whatever owns it.
         // This includes hiding the keyboard, and dropping focus from the URL bar.
-        // See http://crbug/236424
+        // See http://crbug.com/40315624
         // TODO(aberent) Find a better place to put this, possibly as part of a wider
         // redesign of focus control.
         if (mUrlBar != null && mUrlBar.isFocused()) mUrlBar.clearFocus();
@@ -2143,7 +2143,7 @@ public class CompositorViewHolder extends FrameLayout
         protected void onPopulateEventForVirtualView(int virtualViewId, AccessibilityEvent event) {
             if (mVirtualViews == null || mVirtualViews.size() <= virtualViewId) {
                 // TODO(clholgat): Remove this work around when the Android bug is fixed.
-                // crbug.com/420177
+                // crbug.com/40387595
                 event.setContentDescription(PLACE_HOLDER_STRING);
                 return;
             }
@@ -2158,7 +2158,7 @@ public class CompositorViewHolder extends FrameLayout
                 int virtualViewId, AccessibilityNodeInfoCompat node) {
             if (mVirtualViews == null || mVirtualViews.size() <= virtualViewId) {
                 // TODO(clholgat): Remove this work around when the Android bug is fixed.
-                // crbug.com/420177
+                // crbug.com/40387595
                 node.setBoundsInParent(mPlaceHolderRect);
                 node.setContentDescription(PLACE_HOLDER_STRING);
                 return;

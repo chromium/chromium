@@ -2306,7 +2306,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // because the FRE is shown on the first opportunity, and we don't want to show such
             // content back to back.
             //
-            // TODO(https://crbug.com/865801, pnoland): Unify promo dialog logic and move into a
+            // TODO(https://crbug.com/40585866, pnoland): Unify promo dialog logic and move into a
             // single PromoDialogCoordinator.
             boolean isShowingPromo =
                     LocaleManager.getInstance().hasShownSearchEnginePromoThisSession();

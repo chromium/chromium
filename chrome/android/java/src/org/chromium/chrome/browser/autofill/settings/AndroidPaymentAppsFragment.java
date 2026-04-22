@@ -57,7 +57,7 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Disable animations of preference changes (crbug.com/986241).
+        // Disable animations of preference changes (crbug.com/41471927).
         getListView().setItemAnimator(null);
     }
 

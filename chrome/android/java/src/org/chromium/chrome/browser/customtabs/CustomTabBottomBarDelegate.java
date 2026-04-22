@@ -470,7 +470,7 @@ public class CustomTabBottomBarDelegate
         }
 
         // Set all views' ids to be View.NO_ID to prevent them clashing with
-        // chrome's resource ids. See http://crbug.com/1061872
+        // chrome's resource ids. See http://crbug.com/40679846
         transformViewIds(inflatedView);
 
         getBottomBarView().addView(inflatedView, 1);
@@ -567,7 +567,7 @@ public class CustomTabBottomBarDelegate
             int bottomControlsHeight, int bottomControlsMinHeight) {
         if (!isViewReady()) return;
         // Bottom offset might not have been received by BrowserControlsManager at this point, so
-        // using getBrowserControlHiddenRatio(), http://crbug.com/928903.
+        // using getBrowserControlHiddenRatio(), http://crbug.com/40612650.
         getBottomBarView()
                 .setTranslationY(
                         mBrowserControlsSizer.getBrowserControlHiddenRatio() * bottomControlsHeight

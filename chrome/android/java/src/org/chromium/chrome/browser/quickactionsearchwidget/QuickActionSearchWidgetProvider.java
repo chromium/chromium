@@ -322,7 +322,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                     // Make the Widget available to all Chrome users who participated in an
                     // experiment in the past. This can trigger disk access. Unfortunately,
                     // we need to keep it for a little bit longer -- see:
-                    // https://crbug.com/1309116
+                    // https://crbug.com/40219337
                     setWidgetEnabled(true, true);
                 });
 

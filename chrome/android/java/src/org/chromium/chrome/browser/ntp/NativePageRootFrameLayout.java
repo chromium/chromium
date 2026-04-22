@@ -23,7 +23,7 @@ public class NativePageRootFrameLayout extends FrameLayout {
 
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        // Fixes lanscape transitions when unfocusing the URL bar: crbug.com/288546
+        // Fixes lanscape transitions when unfocusing the URL bar: crbug.com/41049674
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN;
         return super.onCreateInputConnection(outAttrs);
     }
