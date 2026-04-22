@@ -99,7 +99,10 @@ public class FuseboxSessionState implements UserData {
 
     /** Constructs a new, empty FuseboxSessionState. */
     public FuseboxSessionState() {
-        this(null);
+        mContextualTasksWebContents = null;
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
+        }
     }
 
     /**
@@ -108,7 +111,7 @@ public class FuseboxSessionState implements UserData {
      *
      * @param contextualTasksWebContents The WebContents of the contextual tasks WebUI.
      */
-    public FuseboxSessionState(@Nullable WebContents contextualTasksWebContents) {
+    public FuseboxSessionState(WebContents contextualTasksWebContents) {
         mContextualTasksWebContents = contextualTasksWebContents;
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
@@ -189,7 +192,7 @@ public class FuseboxSessionState implements UserData {
         if (!mIsActive) return;
 
         mAutocompleteInput.reset();
-        tearDownSessionControllers();
+        tearDownSessionControllers(/* destroyTaskScopedObjects= */ false);
         mIsActive = false;
     }
 
@@ -216,10 +219,12 @@ public class FuseboxSessionState implements UserData {
         // explicit destruction.
         mAutocomplete = AutocompleteController.getForProfile(mProfile);
 
-        mComposeBoxQueryControllerBridge =
-                ComposeboxQueryControllerBridge.create(mProfile, mContextualTasksWebContents);
+        if (mComposeBoxQueryControllerBridge == null) {
+            mComposeBoxQueryControllerBridge =
+                    ComposeboxQueryControllerBridge.create(mProfile, mContextualTasksWebContents);
+        }
 
-        if (mComposeBoxQueryControllerBridge != null) {
+        if (mComposeBoxQueryControllerBridge != null && mFuseboxAttachmentModelList == null) {
             // Composebox Controller may not be instantiated if locale or policies prohibit AIM.
             mMetrics = new FuseboxMetrics();
             // Create attachments list only if allowed.
@@ -236,28 +241,38 @@ public class FuseboxSessionState implements UserData {
 
     @Override
     public void destroy() {
-        tearDownSessionControllers();
+        if (mIsActive) {
+            deactivate();
+        }
+        tearDownSessionControllers(/* destroyTaskScopedObjects= */ true);
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().removeObserver(mOnRequestTypeChanged);
         }
     }
 
-    /** Tear down session controllers. */
-    private void tearDownSessionControllers() {
-        if (mFuseboxAttachmentModelList != null) {
-            mFuseboxAttachmentModelList.removeAttachmentChangeListener(
-                    mFuseboxAttachmentChangeListener);
-            mFuseboxAttachmentModelList.destroy();
-            mFuseboxAttachmentModelList = null;
-        }
-
+    /**
+     * Tear down session controllers.
+     *
+     * @param destroyTaskScopedObjects Whether task-scoped objects should be destroyed.
+     */
+    private void tearDownSessionControllers(boolean destroyTaskScopedObjects) {
         unlinkSessionControllers();
 
-        if (mComposeBoxQueryControllerBridge != null) {
-            mComposeBoxQueryControllerBridge.destroy();
+        destroyTaskScopedObjects = destroyTaskScopedObjects || !isTaskScoped();
+        if (destroyTaskScopedObjects) {
+            if (mFuseboxAttachmentModelList != null) {
+                mFuseboxAttachmentModelList.removeAttachmentChangeListener(
+                        mFuseboxAttachmentChangeListener);
+                mFuseboxAttachmentModelList.destroy();
+                mFuseboxAttachmentModelList = null;
+            }
+
+            if (mComposeBoxQueryControllerBridge != null) {
+                mComposeBoxQueryControllerBridge.destroy();
+                mComposeBoxQueryControllerBridge = null;
+            }
         }
 
-        mComposeBoxQueryControllerBridge = null;
         mMetrics = null;
         mAutocomplete = null;
         mProfile = null;
@@ -291,6 +306,10 @@ public class FuseboxSessionState implements UserData {
                             requestType, /* hasAttachments= */ false);
             mComposeBoxQueryControllerBridge.setActiveTool(toolMode);
         }
+    }
+
+    private boolean isTaskScoped() {
+        return mContextualTasksWebContents != null;
     }
 
     /** Returns whether the Fusebox session is active. */

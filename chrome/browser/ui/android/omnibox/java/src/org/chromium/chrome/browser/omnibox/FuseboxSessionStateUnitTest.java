@@ -194,6 +194,38 @@ public class FuseboxSessionStateUnitTest {
         assertNull(session.getComposeboxQueryControllerBridge());
         assertNull(session.getFuseboxAttachmentModelList());
         verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
+        verify(mComposeboxQueryControllerBridge).destroy();
+    }
+
+    @Test
+    public void testDeactivate_taskScoped() {
+        org.chromium.content_public.browser.WebContents webContents =
+                mock(org.chromium.content_public.browser.WebContents.class);
+        FuseboxSessionState session = new FuseboxSessionState(webContents);
+        session.activate(mProfileSupplier, null);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(session.isSessionActive());
+        ComposeboxQueryControllerBridge bridge = session.getComposeboxQueryControllerBridge();
+        assertNotNull(bridge);
+        var attachmentModelList = session.getFuseboxAttachmentModelList();
+        assertNotNull(attachmentModelList);
+
+        session.deactivate();
+        assertFalse(session.isSessionActive());
+        assertNull(session.getProfile());
+        assertNull(session.getAutocompleteController());
+
+        // These should persist for task-scoped sessions.
+        assertEquals(bridge, session.getComposeboxQueryControllerBridge());
+        assertEquals(attachmentModelList, session.getFuseboxAttachmentModelList());
+        verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
+        verify(mComposeboxQueryControllerBridge, never()).destroy();
+
+        // Now destroy should clear them.
+        session.destroy();
+        assertNull(session.getComposeboxQueryControllerBridge());
+        assertNull(session.getFuseboxAttachmentModelList());
+        verify(mComposeboxQueryControllerBridge).destroy();
     }
 
     @Test
