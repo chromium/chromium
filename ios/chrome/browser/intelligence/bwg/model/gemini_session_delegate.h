@@ -99,7 +99,14 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState
                    sessionID:(NSString*)sessionID
               conversationID:(NSString*)conversationID;
+@optional
+// Called when the processing status changes.
+- (void)didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processStatus
+                        sessionID:(NSString*)sessionID
+                   conversationID:(NSString*)conversationID;
 
+// TODO(crbug.com/504596190): Remove this method when internal code doesn't use
+// anymore.
 // Called when the Live processing status changes.
 - (void)didChangeLiveProcessStatus:
             (ios::provider::GeminiClientMode)processStatus
