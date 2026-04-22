@@ -718,7 +718,7 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
     const GURL& url,
     const blink::StorageKey& storage_key,
     net::CookieSettingOverrides overrides) {
-  return true;
+  return !storage_key.ForbidsUnpartitionedStorageAccess();
 }
 
 bool ContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
