@@ -5591,8 +5591,8 @@
   },
   {
     "name": "image-descriptions-alternative-routing",
-    "owners": [ "francisjp@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 132
+    "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 159
   },
   {
     "name": "import-export-flags",
