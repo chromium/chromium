@@ -201,17 +201,15 @@ void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxComposeboxFileThumbnailOverlayIcon] = {ui::kColorSysWhite};
 }
 
-// Applies specific baseline colors for the composebox submit button, per Aurora
-// project design specs. These override CR2023 colors when the user doesn't
-// have a custom theme or user color set.
+// Applies specific baseline colors for the composebox submit button, per
+// EnergyEffect design specs. These override CR2023 colors when the user
+// doesn't have a custom theme or user color set.
 void ApplyComposeboxBaselineColors(ui::ColorMixer& mixer,
                                    const ui::ColorProviderKey& key) {
   if (key.custom_theme || key.user_color.has_value()) {
     return;
   }
 
-  // Specific baseline colors for the composebox submit button, per Aurora
-  // project design specs.
   constexpr SkColor kComposeboxSubmitButtonBackgroundDark =
       SkColorSetRGB(0xA8, 0xC7, 0xFA);
   constexpr SkColor kComposeboxSubmitButtonBackgroundLight =
