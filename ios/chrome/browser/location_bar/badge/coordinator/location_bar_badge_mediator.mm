@@ -92,6 +92,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   // Forwarder to always be observing the active ContextualPanelTabHelper.
   std::unique_ptr<ActiveContextualPanelTabHelperObservationForwarder>
       _activeContextualPanelObservationForwarder;
+  // Boolean to track whether the FET promo is being displayed.
+  BOOL _isFETPromoShowing;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -204,6 +206,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _promoStartTimer = nil;
     _promoEndTimer = nil;
     [self.consumer hideBadge];
+    [self ensureFETFeatureIsDismissed];
+    [self preventContextualPanelEntryPoint:NO];
   }
 }
 
@@ -357,17 +361,40 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
 - (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
-    case LocationBarBadgeType::kGeminiContextualCueChip:
-      if (!IsAskGeminiChipIgnoreCriteria()) {
-        _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
-      }
+    case LocationBarBadgeType::kGeminiContextualCueChip: {
+      [self ensureFETFeatureIsDismissed];
+      [self preventContextualPanelEntryPoint:NO];
       break;
+    }
     default:
       break;
   }
 }
 
 #pragma mark - Private
+
+// Sets the suppression flag for the contextual panel entrypoint.
+- (void)preventContextualPanelEntryPoint:(BOOL)prevent {
+  if (!_activeWebState) {
+    return;
+  }
+  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_activeWebState);
+  if (tabHelper) {
+    tabHelper->SetPreventContextualPanelEntryPoint(prevent);
+  }
+}
+
+// Dismisses the Feature Engagement Tracker feature. Safe to call
+// multiple times as a cleanup function since Dismissed() only clears active
+// in-memory tracking states without side effects.
+- (void)ensureFETFeatureIsDismissed {
+  if (_isFETPromoShowing) {
+    if (!IsAskGeminiChipIgnoreCriteria()) {
+      _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
+    }
+    _isFETPromoShowing = NO;
+  }
+}
 
 // Starts the promo timer.
 - (void)startPromoTimer:(LocationBarBadgeConfiguration*)badgeConfig {
@@ -549,6 +576,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
       if ([self shouldShowGeminiContextualBadge]) {
+        [self preventContextualPanelEntryPoint:YES];
         return YES;
       }
       return NO;
@@ -579,8 +607,6 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
           contextualPanelTabHelper->GetFirstCachedConfig().get();
       return [self canShowLargeEntrypointWithConfig:config];
     }
-    case LocationBarBadgeType::kGeminiContextualCueChip:
-      return [self shouldShowGeminiContextualChip];
     case LocationBarBadgeType::kNone:
       return NO;
     default:
@@ -688,19 +714,16 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     return YES;
   }
 
-  return isPageEligible && isConsentEligible && eligibleTimeWindow &&
-         _tracker->WouldTriggerHelpUI(
-             feature_engagement::kIPHiOSGeminiContextualCueChip);
-}
-
-// Whether to show Gemini contextual chip.
-- (BOOL)shouldShowGeminiContextualChip {
-  if (IsAskGeminiChipIgnoreCriteria()) {
-    return YES;
+  if (!(isPageEligible && isConsentEligible && eligibleTimeWindow)) {
+    return NO;
   }
 
-  return _tracker->ShouldTriggerHelpUI(
+  BOOL shouldTrigger = _tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSGeminiContextualCueChip);
+  if (shouldTrigger) {
+    _isFETPromoShowing = YES;
+  }
+  return shouldTrigger;
 }
 
 // Returns whether the promo timers exist which implies a promo is in the
