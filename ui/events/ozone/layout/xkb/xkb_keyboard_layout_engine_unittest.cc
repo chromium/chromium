@@ -928,6 +928,14 @@ TEST_F(XkbLayoutEngineVkTest, XkbRuleNamesForLayoutName) {
           /* 50 */ {"ge", "ge", ""},
           /* 51 */ {"mn", "mn", ""},
           /* 52 */ {"ie", "ie", ""},
+          // Path traversal cases.
+          /* 53 */ {"../../evil", "", ""},
+          /* 54 */ {"us(../../evil)", "us", ""},
+          /* 55 */ {"us-../../evil", "us", ""},
+          // Invalid character cases.
+          /* 56 */ {"us$", "", ""},
+          /* 57 */ {"us(dvo*ak)", "us", ""},
+          /* 58 */ {"us-colem@k", "us", ""},
       });
   for (size_t i = 0; i < std::size(kVkeyTestCase); ++i) {
     SCOPED_TRACE(i);
