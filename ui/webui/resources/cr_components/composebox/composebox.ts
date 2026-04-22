@@ -783,10 +783,20 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     if (tab) {
       // Ignore the `TabInfo` update if there is a matching
-      // `automaticActiveTab_`.
+      // `automaticActiveTab_`, unless the title has changed.
       if (this.automaticActiveTab_ &&
           tab.url === this.automaticActiveTab_.url &&
           tab.tabId === this.automaticActiveTab_.tabId) {
+        if (this.automaticActiveTab_.name !== tab.title) {
+          const updatedFile = new ComposeboxFile(
+              this.automaticActiveTab_.uuid, tab.title,
+              this.automaticActiveTab_.type, this.automaticActiveTab_.inputType,
+              this.automaticActiveTab_);
+          this.automaticActiveTab_ = updatedFile;
+          const fileMap = new Map(this.files);
+          fileMap.set(updatedFile.uuid, updatedFile);
+          this.files = fileMap;
+        }
         return;
       }
 

@@ -132,6 +132,8 @@ suite('ContextualTasksComposeboxTest', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
     mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
       state: {
         allowedModels: [],
@@ -1119,5 +1121,69 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(
         0, leftSpace,
         'Composebox should align to the left side of the side panel container');
+  });
+
+  test('AutoSuggestedTabTitleUpdates', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+
+    // Initial tab suggestion
+    const tabInfo = {
+      tabId: 1,
+      title: 'Initial Title',
+      url: 'https://example.com',
+      lastActive: {internalValue: BigInt(100)},
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Wait for files to populate
+    await innerComposebox.updateComplete;
+    let files = Array.from(innerComposebox.files.values()) as any[];
+    assertEquals(1, files.length);
+    const initialFile = files[0];
+    assertEquals('Initial Title', initialFile.name);
+    assertEquals(1, initialFile.tabId);
+    assertEquals('https://example.com', initialFile.url);
+
+    // Suggest identical tab but updated title
+    const updatedTabInfo = {
+      ...tabInfo,
+      title: 'Updated Title',
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(updatedTabInfo);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    files = Array.from(innerComposebox.files.values()) as any[];
+    assertEquals(1, files.length);
+    const updatedFile = files[0];
+    assertEquals('Updated Title', updatedFile.name);
+    assertEquals(initialFile.uuid, updatedFile.uuid);
+    assertEquals(initialFile.tabId, updatedFile.tabId);
+    assertEquals(initialFile.url, updatedFile.url);
+    assertEquals(initialFile.status, updatedFile.status);
+    assertEquals(initialFile.type, updatedFile.type);
+    assertEquals(initialFile.inputType, updatedFile.inputType);
+
+    // Suggest identical tab (same url/tabId), identical title, but different
+    // lastActive
+    const noUpdateTabInfo = {
+      ...updatedTabInfo,
+      lastActive: {internalValue: BigInt(500)},
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        noUpdateTabInfo);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    files = Array.from(innerComposebox.files.values()) as any[];
+    assertEquals(1, files.length);
+    // Reference should be exactly the same (no re-allocation or modification)
+    assertEquals(updatedFile, files[0]);
   });
 });
