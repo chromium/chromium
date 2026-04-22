@@ -21,7 +21,7 @@ public interface BrowserControlsStateProvider {
     /**
      * The possible positions of the control container, which contains the browsing mode toolbar.
      */
-    @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM, ControlsPosition.NONE})
+    @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
     @interface ControlsPosition {
@@ -31,8 +31,7 @@ public interface BrowserControlsStateProvider {
         /** Controls are bottom-anchored. */
         int BOTTOM = 1;
 
-        /** Controls are not present, eg NoTouchActivity. */
-        int NONE = 2;
+        int NUM_ENTRIES = 2;
     }
 
     /** An observer to be notified of browser controls changes */

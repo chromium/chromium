@@ -87,7 +87,7 @@ public class HeadlessBrowserControlsStateProvider implements BrowserControlsStat
 
     @Override
     public @ControlsPosition int getControlsPosition() {
-        return ControlsPosition.NONE;
+        return ControlsPosition.TOP;
     }
 
     @Override

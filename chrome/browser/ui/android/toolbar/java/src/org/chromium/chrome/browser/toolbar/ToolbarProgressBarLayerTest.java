@@ -57,7 +57,7 @@ public class ToolbarProgressBarLayerTest {
     private View mToolbarHairline;
 
     private ToolbarProgressBarLayer mLayer;
-    private @ControlsPosition int mTestControlPosition = ControlsPosition.NONE;
+    private @ControlsPosition int mTestControlPosition = ControlsPosition.BOTTOM;
     private SettableMonotonicObservableSupplier<Integer> mBookmarkBarIdSupplier;
 
     @Before

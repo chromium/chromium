@@ -837,7 +837,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         /* isFindInPageShowing= */ false,
                         /* isFormFieldFocusedWithKeyboardVisible= */ false,
                         isToolbarConfiguredToShowOnTop(),
-                        /* currentPosition= */ ControlsPosition.NONE)
+                        /* currentPosition= */ ControlsPosition.BOTTOM)
                 == StateTransition.SNAP_TO_TOP;
     }
 
@@ -848,13 +848,15 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private static void recordStartupPosition(boolean userPrefersTop) {
         int sample = userPrefersTop ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.ToolbarPosition.PositionAtStartup", sample, ControlsPosition.NONE);
+                "Android.ToolbarPosition.PositionAtStartup", sample, ControlsPosition.NUM_ENTRIES);
     }
 
     private static void recordPrefChange(boolean userPrefersTop) {
         int sample = userPrefersTop ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.ToolbarPosition.PositionPrefChanged", sample, ControlsPosition.NONE);
+                "Android.ToolbarPosition.PositionPrefChanged",
+                sample,
+                ControlsPosition.NUM_ENTRIES);
     }
 
     /**

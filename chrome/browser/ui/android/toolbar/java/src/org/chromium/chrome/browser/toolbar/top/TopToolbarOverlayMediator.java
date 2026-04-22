@@ -380,7 +380,7 @@ public class TopToolbarOverlayMediator {
     void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mBrowserControlsOffsetTagsInfo = offsetTagsInfo;
 
-        if (offsetTagsInfo == null || getControlsPosition() == ControlsPosition.NONE) {
+        if (offsetTagsInfo == null) {
             mModel.set(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG, null);
         } else if (getControlsPosition() == ControlsPosition.TOP) {
             mModel.set(

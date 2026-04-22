@@ -326,15 +326,6 @@ public class BaseSuggestionProcessorUnitTest {
         Assert.assertEquals(
                 R.drawable.btn_suggestion_refine_down,
                 shadowOf(action.icon.drawable).getCreatedFromResId());
-
-        mControlsPositionSupplier.set(ControlsPosition.NONE);
-        OmniboxResourceProvider.invalidateDrawableCache();
-        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
-        actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        action = actions.get(0);
-        Assert.assertEquals(
-                R.drawable.btn_suggestion_refine_up,
-                shadowOf(action.icon.drawable).getCreatedFromResId());
     }
 
     @Test

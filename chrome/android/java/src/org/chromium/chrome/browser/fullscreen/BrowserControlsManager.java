@@ -337,7 +337,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         }
                     }
                 };
-        assert controlContainer != null || mControlsPosition == ControlsPosition.NONE;
+        assert controlContainer != null;
         mControlContainer = controlContainer;
         int controlContainerHeight =
                 mActivity.getResources().getDimensionPixelSize(resControlContainerHeight);
@@ -350,10 +350,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             case ControlsPosition.BOTTOM:
                 assert resControlContainerHeight != ActivityUtils.NO_RESOURCE_ID;
                 mBottomControlsHeight = controlContainerHeight;
-                break;
-            case ControlsPosition.NONE:
-                // Treat the case of no controls as controls always being totally offscreen.
-                mControlOffsetRatio = 1.0f;
                 break;
         }
 
@@ -662,7 +658,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     private void updateControlOffset() {
-        if (mControlsPosition == ControlsPosition.NONE) return;
 
         if (mControlsPosition == ControlsPosition.TOP) {
             mControlOffsetRatio =

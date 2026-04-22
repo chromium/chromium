@@ -306,7 +306,7 @@ public class ToolbarPositionControllerTest {
     private final SettableNonNullObservableSupplier<Boolean> mIsFindInPageShowing =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Integer> mToolbarPosition =
-            ObservableSuppliers.createNonNull(ControlsPosition.NONE);
+            ObservableSuppliers.createNonNull(ControlsPosition.TOP);
     private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
     private ToolbarPositionController mController;
