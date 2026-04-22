@@ -113,6 +113,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies"
+    enum="Boolean" expires_after="2027-04-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Records whether a WebSocket connection was initiated from a SharedWorker in
+    a context that requires cross-site cookie restrictions (e.g. created via the
+    Storage Access API (SAA) or in a third-party context). This helps measure
+    the prevalence of workers that should have SameSite cookie restrictions.
+    Recorded in SharedWorkerHost::CreateWebSocketConnector.
+  </summary>
+</histogram>
+
 <histogram name="Content.SslError.CallbackDuration" units="ms"
     expires_after="2027-03-30">
   <owner>peconn@google.com</owner>

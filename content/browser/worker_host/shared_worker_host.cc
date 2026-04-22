@@ -34,6 +34,7 @@
 #include "content/browser/worker_host/shared_worker_content_settings_proxy_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,7 +44,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
@@ -690,13 +690,39 @@ void SharedWorkerHost::CreateWebSocketConnector(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcessHost()->GetID(),
                                   IPC::mojom::kRoutingIdNone),
-          storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
+          storage_key.origin(), ComputeIsolationInfoForWebSocket(),
           worker_client_security_state_->Clone(),
           // TODO(crbug.com/492462310): Pass network_restrictions_id so
           // Connection-Allowlist is enforced for shared worker WebSocket
           // connections.
           /*network_restrictions_id=*/std::nullopt),
       std::move(receiver));
+}
+
+net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForWebSocket() const {
+  const blink::StorageKey& storage_key = GetWorkerStorageKey();
+  net::IsolationInfo isolation_info = storage_key.ToPartialNetIsolationInfo();
+
+  base::UmaHistogramBoolean(
+      "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+      instance_.DoesRequireCrossSiteRequestForCookies());
+
+  if (instance_.DoesRequireCrossSiteRequestForCookies()) {
+    if (base::FeatureList::IsEnabled(
+            features::kRestrictSharedWorkerWebSocketCrossSiteCookies)) {
+      // If the worker requires cross-site cookie semantics (e.g. a worker in a
+      // third-party context or created via the Storage Access API), we must
+      // ensure that the SiteForCookies is null. This prevents the network
+      // service from incorrectly attaching SameSite=Strict/Lax cookies to the
+      // WebSocket handshake.
+      CHECK(!isolation_info.IsEmpty());
+      isolation_info = net::IsolationInfo::Create(
+          isolation_info.request_type(), *isolation_info.top_frame_origin(),
+          *isolation_info.frame_origin(), net::SiteForCookies(),
+          isolation_info.nonce());
+    }
+  }
+  return isolation_info;
 }
 
 void SharedWorkerHost::BindCacheStorage(

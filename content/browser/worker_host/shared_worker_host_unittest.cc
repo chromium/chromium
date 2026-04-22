@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -25,8 +26,8 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/browser/worker_host/worker_util.h"
+#include "content/common/features.h"
 #include "content/public/browser/shared_worker_instance.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -565,6 +566,105 @@ TEST_F(SharedWorkerHostTest, ReportException) {
   EXPECT_EQ(details->error_message, received_details->error_message);
   EXPECT_EQ(*details->source_location, *received_details->source_location);
   EXPECT_EQ(details->error_type, received_details->error_type);
+}
+
+TEST_F(SharedWorkerHostTest, CreateWebSocketConnector_SameOrigin) {
+  const GURL kWorkerUrl{"http://www.example.com/w.js"};
+  url::Origin worker_origin = url::Origin::Create(kWorkerUrl);
+
+  // Create a SharedWorkerInstance for a worker created in a same-origin
+  // context. This worker should not have any special cookie restrictions.
+  blink::StorageKey creator_storage_key =
+      blink::StorageKey::CreateFirstParty(worker_origin);
+  blink::StorageKey worker_storage_key =
+      blink::StorageKey::CreateFirstParty(worker_origin);
+
+  SharedWorkerInstance instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name", creator_storage_key,
+      worker_storage_key, worker_origin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false);
+
+  auto host = std::make_unique<SharedWorkerHost>(
+      &service_, instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>());
+  host->set_client_security_state_for_testing(
+      network::mojom::ClientSecurityState::New());
+
+  base::HistogramTester histogram_tester;
+  net::IsolationInfo isolation_info = host->ComputeIsolationInfoForWebSocket();
+  // SiteForCookies should NOT be null for same-origin workers.
+  EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+
+  histogram_tester.ExpectUniqueSample(
+      "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+      false, 1);
+}
+
+TEST_F(SharedWorkerHostTest,
+       CreateWebSocketConnector_CrossSiteCookieRestrictions) {
+  const GURL kWorkerUrl{"http://www.example.com/w.js"};
+  url::Origin worker_origin = url::Origin::Create(kWorkerUrl);
+
+  blink::StorageKey creator_storage_key =
+      blink::StorageKey::CreateFirstParty(worker_origin);
+  blink::StorageKey worker_storage_key =
+      blink::StorageKey::CreateFirstParty(worker_origin);
+
+  // Create a SharedWorkerInstance that requires cross-site cookie restrictions.
+  // This simulates a worker in a third-party context (e.g. created via the
+  // Storage Access API), which explicitly requests no SameSite cookies.
+  SharedWorkerInstance instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name", creator_storage_key,
+      worker_storage_key, worker_origin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone,
+      /*extended_lifetime=*/false);
+
+  auto host = std::make_unique<SharedWorkerHost>(
+      &service_, instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>());
+  host->set_client_security_state_for_testing(
+      network::mojom::ClientSecurityState::New());
+
+  {
+    // Case 1: The feature flag is disabled. The UMA should still be recorded,
+    // but the SiteForCookies should NOT be cleared.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kRestrictSharedWorkerWebSocketCrossSiteCookies);
+    base::HistogramTester histogram_tester;
+
+    net::IsolationInfo isolation_info =
+        host->ComputeIsolationInfoForWebSocket();
+    EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+
+    histogram_tester.ExpectUniqueSample(
+        "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+        true, 1);
+  }
+
+  {
+    // Case 2: The feature flag is enabled. The SiteForCookies SHOULD be
+    // cleared.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kRestrictSharedWorkerWebSocketCrossSiteCookies);
+    base::HistogramTester histogram_tester;
+
+    net::IsolationInfo isolation_info =
+        host->ComputeIsolationInfoForWebSocket();
+    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+
+    histogram_tester.ExpectUniqueSample(
+        "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+        true, 1);
+  }
 }
 
 }  // namespace content
