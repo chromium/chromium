@@ -46,9 +46,6 @@ final class SigninButtonProperties {
     public static final WritableObjectPropertyKey<String> AVATAR_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    // Indicates whether the signin button is enabled.
-    public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
-
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 SHOULD_SHOW_ON_PAGE,
@@ -57,7 +54,6 @@ final class SigninButtonProperties {
                 BUTTON_AVATAR,
                 AVATAR_TINT,
                 ON_CLICK,
-                AVATAR_CONTENT_DESCRIPTION,
-                IS_ENABLED
+                AVATAR_CONTENT_DESCRIPTION
             };
 }
