@@ -297,4 +297,31 @@ suite('DiscoverSkillsPage', function() {
     assertTrue(!!img);
     assertEquals(imageUrl, img.getAttribute('auto-src'));
   });
+  test('RecordsMetricOnSearchPerformed', async function() {
+    await setFirstPartySkills({
+      'Produce': [{id: '1', name: 'Apple'}],
+    });
+
+    page.onSearchChanged('Apple');
+    await microtasksFinished();
+
+    const args =
+        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+    assertEquals(SkillsManagementAction.kNonEmptySearch, args[1]);
+  });
+
+  test('RecordsMetricOnZeroResultsSearch', async function() {
+    await setFirstPartySkills({
+      'Produce': [{id: '1', name: 'Apple'}],
+    });
+
+    page.onSearchChanged('Banana');
+    await microtasksFinished();
+
+    const args =
+        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+    assertEquals(SkillsManagementAction.kEmptySearch, args[1]);
+  });
 });

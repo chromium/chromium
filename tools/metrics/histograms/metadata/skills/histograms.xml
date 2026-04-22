@@ -146,8 +146,8 @@ chromium-metrics-reviews@google.com.
   <owner>aashnas@google.com</owner>
   <owner>skills-eng@google.com</owner>
   <summary>
-    Records user actions on the Skills {Page}, such as adding, editing, or
-    deleting skills.
+    Records user actions on the Skills {Page}, such as adding, editing,
+    deleting, or searching skills.
   </summary>
   <token key="Page" variants="Page"/>
 </histogram>

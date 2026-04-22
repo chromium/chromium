@@ -118,8 +118,10 @@ export class SkillsAppElement extends CrLitElement {
   // Called whenever the text in the search input field changes.
   protected onSearchChanged_(e: CustomEvent<string>) {
     const searchTerm = e.detail;
-    this.$.userSkillsPage.onSearchChanged(searchTerm);
-    this.$.discoverSkillsPage.onSearchChanged(searchTerm);
+    if (!this.shouldShowErrorPage_) {
+      this.$.userSkillsPage.onSearchChanged(searchTerm);
+      this.$.discoverSkillsPage.onSearchChanged(searchTerm);
+    }
   }
 
   // Called whenever the browser window drops below the defined

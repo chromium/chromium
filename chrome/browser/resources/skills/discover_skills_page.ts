@@ -147,8 +147,20 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return this.selectedCategory_ === category;
   }
 
+  // Called whenever the text in the search input field changes.
+  // This event is debounced by the <cr-toolbar> component.
   onSearchChanged(searchTerm: string) {
     this.searchTerm_ = searchTerm.toLowerCase();
+
+    if (this.shouldShowNoSearchResults_()) {
+      this.proxy_.handler.recordSkillsManagementAction(
+          SkillsManagementPage.kBrowseSkills,
+          SkillsManagementAction.kEmptySearch);
+    } else if (this.searchTerm_.length > 0) {
+      this.proxy_.handler.recordSkillsManagementAction(
+          SkillsManagementPage.kBrowseSkills,
+          SkillsManagementAction.kNonEmptySearch);
+    }
   }
 
   protected filter_(skills: Skill[]) {

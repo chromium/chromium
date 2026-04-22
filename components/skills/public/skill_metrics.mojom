@@ -20,6 +20,8 @@ enum SkillsManagementAction {
   kClickedDeleteSkill = 3,
   kClickedCopyInstructions = 4,
   kClickedBrowseSkills = 5,
+  kNonEmptySearch = 6,
+  kEmptySearch = 7,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsManagementAction)
 

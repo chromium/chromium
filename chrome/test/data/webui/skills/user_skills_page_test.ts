@@ -349,4 +349,35 @@ suite('UserSkillsPage', function() {
           assertEquals(SkillsManagementAction.kClickedBrowseSkills, args[1]);
         });
   });
+  test('RecordsMetricOnSearchPerformed', async function() {
+    await setUserSkills([{
+      id: '1',
+      name: 'Apple',
+      source: SkillSource.kUserCreated,
+    }]);
+
+    page.onSearchChanged('Apple');
+    await page.updateComplete;
+
+    const args =
+        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+    assertEquals(SkillsManagementAction.kNonEmptySearch, args[1]);
+  });
+
+  test('RecordsMetricOnZeroResultsSearch', async function() {
+    await setUserSkills([{
+      id: '1',
+      name: 'Apple',
+      source: SkillSource.kUserCreated,
+    }]);
+
+    page.onSearchChanged('Banana');
+    await page.updateComplete;
+
+    const args =
+        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+    assertEquals(SkillsManagementAction.kEmptySearch, args[1]);
+  });
 });

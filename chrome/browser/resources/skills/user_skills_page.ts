@@ -84,8 +84,20 @@ export class UserSkillsPageElement extends CrLitElement {
     this.requestUpdate();
   }
 
+  // Called whenever the text in the search input field changes.
+  // This event is debounced by the <cr-toolbar> component.
   onSearchChanged(searchTerm: string) {
     this.searchTerm_ = searchTerm;
+
+    if (this.shouldShowNoSearchResults_()) {
+      this.proxy_.handler.recordSkillsManagementAction(
+          SkillsManagementPage.kYourSkills,
+          SkillsManagementAction.kEmptySearch);
+    } else if (this.searchTerm_.length > 0) {
+      this.proxy_.handler.recordSkillsManagementAction(
+          SkillsManagementPage.kYourSkills,
+          SkillsManagementAction.kNonEmptySearch);
+    }
   }
 
   protected filteredSkills_(): Skill[] {

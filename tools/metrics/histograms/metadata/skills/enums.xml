@@ -89,6 +89,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Clicked Delete Skill"/>
   <int value="4" label="Clicked Copy Instructions"/>
   <int value="5" label="Clicked Browse Skills"/>
+  <int value="6" label="Non-Empty Search"/>
+  <int value="7" label="Empty Search"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/skills/public/skill_metrics.mojom:SkillsManagementAction) -->
