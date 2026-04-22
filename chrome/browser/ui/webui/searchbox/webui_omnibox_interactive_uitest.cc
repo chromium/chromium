@@ -294,66 +294,12 @@ class OmniboxAimWebUiInteractiveTestBase
   OmniboxAimWebUiInteractiveTestBase() = default;
   ~OmniboxAimWebUiInteractiveTestBase() override = default;
 
-  // TODO(crbug.com/495823984): Move this to a shared test utils file for both
-  // Omnibox and NTP.
-  std::unique_ptr<KeyedService> CreateMockService(
-      content::BrowserContext* context) {
-    auto mock_service =
-        std::make_unique<contextual_search::MockContextualSearchService>(
-            /*identity_manager=*/nullptr,
-            /*url_loader_factory=*/nullptr,
-            /*template_url_service=*/nullptr,
-            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
-            "en-US");
-
-    ON_CALL(*mock_service, CreateSession)
-        .WillByDefault(
-            [service_ptr = mock_service.get()](
-                std::unique_ptr<
-                    contextual_search::ContextualSearchContextController::
-                        ConfigParams> params,
-                contextual_search::ContextualSearchSource source,
-                std::optional<lens::LensOverlayInvocationSource>
-                    invocation_source) {
-              auto query_controller = std::make_unique<MockQueryController>(
-                  /*identity_manager=*/nullptr, /*url_loader_factory=*/nullptr,
-                  version_info::Channel::UNKNOWN, "en-US",
-                  /*template_url_service=*/nullptr,
-                  /*variations_client=*/nullptr, std::move(params));
-
-              ON_CALL(*query_controller, GetFileInfo)
-                  .WillByDefault(
-                      testing::Invoke(query_controller.get(),
-                                      &MockQueryController::FakeGetFileInfo));
-              ON_CALL(*query_controller, StartFileUploadFlow)
-                  .WillByDefault(testing::Invoke(
-                      query_controller.get(),
-                      &MockQueryController::FakeStartFileUploadFlow));
-              ON_CALL(*query_controller, CreateSearchUrl)
-                  .WillByDefault(testing::Invoke(
-                      query_controller.get(),
-                      &MockQueryController::FakeCreateSearchUrl));
-
-              auto metrics_recorder =
-                  std::make_unique<MockContextualSearchMetricsRecorder>();
-
-              return service_ptr->CreateSessionForTesting(
-                  std::move(query_controller), std::move(metrics_recorder));
-            });
-
-    return std::move(mock_service);
-  }
-
-  // TODO(crbug.com/495823984): Move this to a shared test utils file for both
-  // Omnibox and NTP.
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     PageActionInteractiveTestMixin<OmniboxWebUiInteractiveTestBase>::
         SetUpBrowserContextKeyedServices(context);
     ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindOnce(&OmniboxAimWebUiInteractiveTestBase::CreateMockService,
-                       base::Unretained(this)));
+        context, base::BindOnce(BuildMockContextualSearchServiceInstance));
   }
 
  protected:

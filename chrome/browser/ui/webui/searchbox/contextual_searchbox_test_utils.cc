@@ -4,16 +4,69 @@
 
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/mock_contextual_search_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
+
+std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
+    content::BrowserContext* /*context*/) {
+  auto mock_service =
+      std::make_unique<contextual_search::MockContextualSearchService>(
+          /*identity_manager=*/nullptr,
+          /*url_loader_factory=*/nullptr,
+          /*template_url_service=*/nullptr,
+          /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
+          "en-US");
+
+  ON_CALL(*mock_service, CreateSession)
+      .WillByDefault(
+          [service_ptr = mock_service.get()](
+              std::unique_ptr<
+                  contextual_search::ContextualSearchContextController::
+                      ConfigParams> params,
+              contextual_search::ContextualSearchSource source,
+              std::optional<lens::LensOverlayInvocationSource>
+                  invocation_source) {
+            auto query_controller = std::make_unique<MockQueryController>(
+                /*identity_manager=*/nullptr, /*url_loader_factory=*/nullptr,
+                version_info::Channel::UNKNOWN, "en-US",
+                /*template_url_service=*/nullptr,
+                /*variations_client=*/nullptr, std::move(params));
+
+            auto* query_controller_ptr = query_controller.get();
+
+            ON_CALL(*query_controller_ptr, GetFileInfo)
+                .WillByDefault(
+                    testing::Invoke(query_controller_ptr,
+                                    &MockQueryController::FakeGetFileInfo));
+            ON_CALL(*query_controller_ptr, StartFileUploadFlow)
+                .WillByDefault(testing::Invoke(
+                    query_controller_ptr,
+                    &MockQueryController::FakeStartFileUploadFlow));
+            ON_CALL(*query_controller_ptr, CreateSearchUrl)
+                .WillByDefault(
+                    testing::Invoke(query_controller_ptr,
+                                    &MockQueryController::FakeCreateSearchUrl));
+
+            auto metrics_recorder =
+                std::make_unique<MockContextualSearchMetricsRecorder>();
+
+            return service_ptr->CreateSessionForTesting(
+                std::move(query_controller), std::move(metrics_recorder));
+          });
+
+  return std::move(mock_service);
+}
 
 MockQueryController::MockQueryController(
     signin::IdentityManager* identity_manager,
@@ -137,7 +190,7 @@ ContextualSearchboxHandlerTestHarness::GetTestingFactories() const {
           base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
       TestingProfile::TestingFactory{
           ContextualSearchServiceFactory::GetInstance(),
-          base::BindRepeating([](content::BrowserContext* context)
+          base::BindRepeating([](content::BrowserContext* /*context*/)
                                   -> std::unique_ptr<KeyedService> {
             return std::make_unique<contextual_search::ContextualSearchService>(
                 /*identity_manager=*/nullptr,
