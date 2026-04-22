@@ -6,17 +6,23 @@
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/record_replay/content/browser/content_record_replay_driver.h"
 #include "components/record_replay/content/browser/content_record_replay_driver_factory.h"
+#include "components/record_replay/core/browser/activity_discovery_service.h"
+#include "components/record_replay/core/browser/activity_discovery_service_impl.h"
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/record_replay/core/common/record_replay_features.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -36,7 +42,15 @@ GURL StripAuthAndParams(const GURL& gurl) {
 DEFINE_USER_DATA(ChromeRecordReplayClient);
 
 ChromeRecordReplayClient::ChromeRecordReplayClient(tabs::TabInterface& tab)
-    : tabs::ContentsObservingTabFeature(tab) {
+    : ChromeRecordReplayClient(
+          tab,
+          std::make_unique<record_replay::ActivityDiscoveryServiceImpl>()) {}
+
+ChromeRecordReplayClient::ChromeRecordReplayClient(
+    tabs::TabInterface& tab,
+    std::unique_ptr<record_replay::ActivityDiscoveryService> service)
+    : tabs::ContentsObservingTabFeature(tab),
+      activity_offering_service_(std::move(service)) {
   CHECK(
       base::FeatureList::IsEnabled(record_replay::features::kRecordReplayBase));
   driver_factory_.Observe(tab.GetContents());
@@ -105,5 +119,40 @@ void ChromeRecordReplayClient::ReportToUser(std::string_view message) {
     ToastParams params(ToastId::kRecordReplay);
     params.body_string_override = base::UTF8ToUTF16(message);
     toast_controller->MaybeShowToast(std::move(params));
+  }
+}
+
+void ChromeRecordReplayClient::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  activity_offering_service_->ShouldOfferActivity(
+      navigation_handle->GetURL(),
+      base::BindOnce(&ChromeRecordReplayClient::OnShouldOfferActivity,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeRecordReplayClient::OnShouldOfferActivity(bool offered) {
+  if (!offered) {
+    return;
+  }
+
+  if (glic::GlicNudgeController* nudge_controller =
+          tab()
+              .GetBrowserWindowInterface()
+              ->GetFeatures()
+              .glic_nudge_controller()) {
+    std::optional<record_replay::ActivityDiscoveryService::AutomationMetadata>
+        metadata = activity_offering_service_->GetMetadata();
+    if (metadata.has_value()) {
+      nudge_controller->UpdateNudgeLabel(
+          tab().GetContents(), metadata->title,
+          std::make_optional(metadata->instructions),
+          metadata->anchored_message, /*activity=*/std::nullopt,
+          base::DoNothing());
+    }
   }
 }

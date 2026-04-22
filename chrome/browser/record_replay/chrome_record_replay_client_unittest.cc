@@ -7,17 +7,33 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/record_replay/core/browser/activity_discovery_service.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace record_replay {
 namespace {
 
-using ::testing::Return;
+using testing::_;
+using testing::Return;
+using testing::ReturnRef;
+
+class MockActivityDiscoveryService : public ActivityDiscoveryService {
+ public:
+  MOCK_METHOD(void,
+              ShouldOfferActivity,
+              (const GURL& url, base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(std::optional<AutomationMetadata>, GetMetadata, (), (override));
+};
 
 class ChromeRecordReplayClientTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -34,7 +50,12 @@ class ChromeRecordReplayClientTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  record_replay::RecordReplayClient& client() { return *client_; }
+  tabs::MockTabInterface& tab() { return *tab_; }
+  ChromeRecordReplayClient& client() { return *client_; }
+
+  void ReinitializeClient(std::unique_ptr<ActivityDiscoveryService> service) {
+    client_.emplace(*tab_, std::move(service));
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -54,4 +75,27 @@ TEST_F(ChromeRecordReplayClientTest, GetPrimaryMainFrameUrl) {
   EXPECT_EQ(client().GetPrimaryMainFrameUrl(), url2);
 }
 
+TEST_F(ChromeRecordReplayClientTest, DidFinishNavigation_OffersActivity) {
+  auto mock_service = std::make_unique<MockActivityDiscoveryService>();
+  EXPECT_CALL(*mock_service, ShouldOfferActivity(_, _))
+      .WillOnce([](const GURL& url, base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  ReinitializeClient(std::move(mock_service));
+
+  MockBrowserWindowInterface bwi;
+  EXPECT_CALL(tab(), GetBrowserWindowInterface()).WillRepeatedly(Return(&bwi));
+
+  BrowserWindowFeatures features;
+  EXPECT_CALL(bwi, GetFeatures()).WillRepeatedly(ReturnRef(features));
+
+  content::MockNavigationHandle handle(web_contents());
+  handle.set_is_in_primary_main_frame(true);
+  handle.set_has_committed(true);
+  handle.set_url(GURL("https://deephand.github.io/deephand-bahn"));
+
+  client().DidFinishNavigation(&handle);
+}
+
 }  // namespace
+}  // namespace record_replay

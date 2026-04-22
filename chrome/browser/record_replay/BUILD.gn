@@ -21,6 +21,7 @@ static_library("impl") {
   deps = [
     ":record_replay",
     "//base",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",

@@ -7594,6 +7594,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page:unit_tests",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
+      "//chrome/browser/record_replay:unit_tests",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
       "//chrome/browser/webapps/installable:unit_tests",

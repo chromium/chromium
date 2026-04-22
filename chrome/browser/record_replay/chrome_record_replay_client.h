@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/record_replay/content/browser/content_record_replay_driver_factory.h"
+#include "components/record_replay/core/browser/activity_discovery_service.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
@@ -35,6 +36,9 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
                                  public tabs::ContentsObservingTabFeature {
  public:
   explicit ChromeRecordReplayClient(tabs::TabInterface& tab);
+  ChromeRecordReplayClient(
+      tabs::TabInterface& tab,
+      std::unique_ptr<record_replay::ActivityDiscoveryService> service);
   ChromeRecordReplayClient(const ChromeRecordReplayClient&) = delete;
   ChromeRecordReplayClient& operator=(const ChromeRecordReplayClient&) = delete;
   ~ChromeRecordReplayClient() override;
@@ -53,14 +57,21 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   GURL GetPrimaryMainFrameUrl() override;
   autofill::AutofillClient* GetAutofillClient() override;
   void ReportToUser(std::string_view message) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
+  void OnShouldOfferActivity(bool offered);
+
   void OnDiscardContents(tabs::TabInterface* tab,
                          content::WebContents* old_contents,
                          content::WebContents* new_contents) override;
 
   record_replay::ContentRecordReplayDriverFactory driver_factory_{*this};
   record_replay::RecordReplayManager manager_{this};
+  std::unique_ptr<record_replay::ActivityDiscoveryService>
+      activity_offering_service_;
+  base::WeakPtrFactory<ChromeRecordReplayClient> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_RECORD_REPLAY_CHROME_RECORD_REPLAY_CLIENT_H_
