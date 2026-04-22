@@ -3103,6 +3103,9 @@ ci.thin_tester(
             "win10_intel_uhd_630_stable",
         ],
         per_test_modifications = {
+            "webgl_conformance_d3d9_passthrough_tests": targets.remove(
+                reason = "Flaky crashes crbug.com/486945324",
+            ),
             "xr_browser_tests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
