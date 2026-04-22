@@ -10358,6 +10358,7 @@ from previous Chrome versions.
   <int value="-1237168561" label="AutofillAndPasswordsInSameSurface:disabled"/>
   <int value="-1236644821"
       label="FullscreenInsetsApiMigrationOnAutomotive:disabled"/>
+  <int value="-1236544770" label="LensSidePanelUnification:disabled"/>
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
   <int value="-1235772843" label="WebAppSystemMediaControls:enabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
@@ -10441,6 +10442,7 @@ from previous Chrome versions.
   <int value="-1210522367" label="AndroidAppIntegrationModule:disabled"/>
   <int value="-1209720026" label="AppMenuMobileSiteOption:disabled"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
+  <int value="-1208313750" label="LensSidePanelUnification:enabled"/>
   <int value="-1208044478" label="InheritNativeThemeFromParentWidget:enabled"/>
   <int value="-1207393499" label="ExtensionWebFileHandlers:disabled"/>
   <int value="-1206875404" label="EnableIncognitoWindowCounter:enabled"/>
