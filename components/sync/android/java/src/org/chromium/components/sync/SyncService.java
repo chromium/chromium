@@ -39,20 +39,6 @@ public interface SyncService {
      */
     boolean isEngineInitialized();
 
-    /**
-     * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
-     * there is a Sync-consented account, no disable reasons, and first-time Sync setup has been
-     * completed by the user.
-     *
-     * <p>Note: This does not imply that Sync is actually running. Check IsSyncFeatureActive or
-     * GetTransportState to get the current state.
-     *
-     * @return true if the sync feature is enabled.
-     */
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-    // codebase. See ConsentLevel::kSync documentation for details.
-    boolean isSyncFeatureEnabled();
-
     GoogleServiceAuthError getAuthError();
 
     /**

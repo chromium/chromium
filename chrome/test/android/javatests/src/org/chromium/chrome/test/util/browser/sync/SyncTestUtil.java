@@ -49,28 +49,6 @@ public final class SyncTestUtil {
                 });
     }
 
-    /** Returns whether sync-the-feature is enabled. */
-    public static boolean isSyncFeatureEnabled() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> getSyncServiceForLastUsedProfile().isSyncFeatureEnabled());
-    }
-
-    /**
-     * Waits for sync-the-feature to become enabled.
-     *
-     * <p>WARNING: This is does not wait for the feature to be active, see the distinction in
-     * components/sync/service/sync_service.h. If the FakeServer isn't running - e.g. because of
-     * SyncTestRule - this is all you can hope for. For tests that don't rely on sync data this
-     * might just be enough.
-     */
-    public static void waitForSyncFeatureEnabled() {
-        CriteriaHelper.pollUiThread(
-                () -> getSyncServiceForLastUsedProfile().isSyncFeatureEnabled(),
-                "Timed out waiting for sync to become enabled.",
-                TIMEOUT_MS,
-                INTERVAL_MS);
-    }
-
     /** Waits for sync machinery to become active. */
     public static void waitForSyncTransportActive() {
         CriteriaHelper.pollUiThread(

@@ -65,7 +65,7 @@ public class PriceTrackingFeaturesTest {
 
         setMbbStatus(true);
         setSignedInStatus(true);
-        setTabSyncStatus(true, true);
+        setTabSyncStatus(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
     }
 
@@ -125,7 +125,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleTestHook() {
         setMbbStatus(false);
         setSignedInStatus(false);
-        setTabSyncStatus(false, false);
+        setTabSyncStatus(false);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         Assert.assertTrue(
@@ -144,8 +144,7 @@ public class PriceTrackingFeaturesTest {
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
     }
 
-    private void setTabSyncStatus(boolean isSyncFeatureEnabled, boolean hasSessions) {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
+    private void setTabSyncStatus(boolean hasSessions) {
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(hasSessions ? Set.of(DataType.SESSIONS) : Set.of(DataType.AUTOFILL));
     }

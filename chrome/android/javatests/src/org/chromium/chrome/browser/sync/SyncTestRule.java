@@ -215,7 +215,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /** Adds an account of given account name to AccountManagerFacade and waits for the seeding. */
     public CoreAccountInfo addAccount(AccountInfo account) {
         mSigninTestRule.addAccount(account);
-        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
         return account;
     }
 
@@ -262,7 +261,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public void signOut() {
         mSigninTestRule.signOut();
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     public void clearServerData() {
@@ -273,12 +271,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         // necessary to invoke triggerSync() explicitly, just like many Java
         // tests do.
         SyncTestUtil.triggerSync();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !SyncTestUtil.getSyncServiceForLastUsedProfile().isSyncFeatureEnabled();
-                },
-                SyncTestUtil.TIMEOUT_MS,
-                SyncTestUtil.INTERVAL_MS);
     }
 
     /*

@@ -58,7 +58,6 @@ public class SyncErrorNotifierTest {
     @SmallTest
     public void testNoNotification() {
         when(mSyncService.getAccountInfo()).thenReturn(null);
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(false);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(false);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
@@ -79,7 +78,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", new GaiaId("gaiaId")));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(true);
@@ -100,7 +98,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", new GaiaId("gaiaId")));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
@@ -125,7 +122,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", new GaiaId("gaiaId")));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(true);
@@ -167,7 +163,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", new GaiaId("gaiaId")));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(false);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
@@ -228,7 +223,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", new GaiaId("gaiaId")));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
