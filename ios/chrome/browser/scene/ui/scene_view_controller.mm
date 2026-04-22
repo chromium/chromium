@@ -566,7 +566,7 @@
 
   CGRect contentFrame = UIEdgeInsetsInsetRect(frame, insets);
   _appContentContainerView.frame = contentFrame;
-  _appContentView.frame = _appContentContainerView.bounds;
+  _appContentView.frame = _appContentContainerView.frame;
 }
 
 // Applies manual frames to views. This is the fallback layout path when
