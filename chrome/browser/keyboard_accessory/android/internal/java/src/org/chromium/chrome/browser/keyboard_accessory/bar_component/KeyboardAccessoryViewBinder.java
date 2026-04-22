@@ -75,7 +75,7 @@ class KeyboardAccessoryViewBinder {
     private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
 
     static BarItemViewHolder create(
-            KeyboardAccessoryView keyboarAccessory,
+            KeyboardAccessoryView keyboardAccessory,
             UiConfiguration uiConfiguration,
             ViewGroup parent,
             @BarItem.Type int viewType) {
@@ -86,18 +86,18 @@ class KeyboardAccessoryViewBinder {
             case BarItem.Type.PAYMENTS_SUGGESTION:
                 return new BarItemChipViewHolder(
                         parent,
-                        keyboarAccessory,
+                        keyboardAccessory,
                         uiConfiguration.suggestionDrawableFunction,
                         viewType);
             case BarItem.Type.TAB_LAYOUT:
-                return new SheetOpenerViewHolder(parent, keyboarAccessory);
+                return new SheetOpenerViewHolder(parent, keyboardAccessory);
             case BarItem.Type.ACTION_BUTTON:
             case BarItem.Type.DISMISS_CHIP:
                 return new BarItemTextViewHolder(parent, viewType);
             case BarItem.Type.ACTION_CHIP:
                 return new BarItemActionChipViewHolder(parent);
             case BarItem.Type.GROUP:
-                return new BarItemGroupViewHolder(keyboarAccessory, uiConfiguration, parent);
+                return new BarItemGroupViewHolder(keyboardAccessory, uiConfiguration, parent);
             default:
                 throw new IllegalStateException("Action type " + viewType + " was not handled!");
         }
@@ -159,11 +159,11 @@ class KeyboardAccessoryViewBinder {
         private final ViewGroup mParent;
 
         BarItemGroupViewHolder(
-                KeyboardAccessoryView keyboarAccessory,
+                KeyboardAccessoryView keyboardAccessory,
                 UiConfiguration uiConfiguration,
                 ViewGroup parent) {
             super(new KeyboardAccessoryChipGroup(parent.getContext()));
-            mKeyboardAccessory = keyboarAccessory;
+            mKeyboardAccessory = keyboardAccessory;
             mUiConfiguration = uiConfiguration;
             mParent = parent;
         }
