@@ -14966,6 +14966,24 @@
             ]
         }
     ],
+    "LiveCaptionWithOnDeviceTranslation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LiveCaptionOnDeviceTranslation"
+                    ]
+                }
+            ]
+        }
+    ],
     "LoadAllTabsAtStartup": [
         {
             "platforms": [
