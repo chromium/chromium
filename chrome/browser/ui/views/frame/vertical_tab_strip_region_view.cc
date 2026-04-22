@@ -1075,6 +1075,10 @@ void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
   on_active_tab_changed_subscription_.reset();
   expand_on_hover_enabled_changed_subscription_.reset();
   omnibox_tab_helper_observation_.Reset();
+
+  ResetExpandOnHoverTimers();
+  is_expanded_on_hover_ = false;
+
   CHECK(tab_strip_view_);
   CHECK(tab_strip_view_ == view);
   RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
@@ -1159,7 +1163,8 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     std::optional<bool> hovered) {
   // If not collapsed, then we shouldn't be in or entering the expand on hover
   // state.
-  if (!state_controller_->IsCollapsed()) {
+  if (!state_controller_->ShouldDisplayVerticalTabs() ||
+      !state_controller_->IsCollapsed()) {
     ResetExpandOnHoverTimers();
     is_expanded_on_hover_ = false;
     return;
