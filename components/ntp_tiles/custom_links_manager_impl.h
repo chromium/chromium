@@ -92,6 +92,7 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   void OnPreferenceChanged();
 
   const raw_ptr<PrefService> prefs_;
+  const size_t max_links_;
   CustomLinksStore store_;
   std::vector<Link> current_links_;
   // The state of the current list of links before the last action was

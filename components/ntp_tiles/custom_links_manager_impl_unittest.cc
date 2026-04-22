@@ -10,11 +10,15 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/search/ntp_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -205,6 +209,59 @@ TEST_F(CustomLinksManagerImplTest, AddLinkWhenAtMaxLinks) {
   // Try to add link. This should fail and not modify the list.
   EXPECT_FALSE(custom_links_->AddLink(GURL(kTestUrl), kTestTitle16));
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
+}
+
+TEST_F(CustomLinksManagerImplTest, AddLinkUpTo20WhenRedesignFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ntp_features::kNtpShortcutsRedesign);
+
+  // Recreate custom_links_ to pick up the enabled feature flag in its
+  // constructor.
+  custom_links_ =
+      std::make_unique<CustomLinksManagerImpl>(&prefs_, history_service_.get());
+
+  ASSERT_TRUE(custom_links_->Initialize(FillTestTiles(kTestCaseMax)));
+
+  // With the redesign flag enabled, we should be able to add up to 20 custom
+  // links since GetMaxShortcutsInExpandedState defaults to 20.
+  size_t current_size = custom_links_->GetLinks().size();
+  for (size_t i = current_size; i < 20; ++i) {
+    std::string url = "http://test.com/" + base::NumberToString(i);
+    EXPECT_TRUE(custom_links_->AddLink(GURL(url), u"Test"));
+  }
+
+  // Reached 20 links limit. Adding the 21st link should fail.
+  EXPECT_FALSE(custom_links_->AddLink(GURL(kTestUrl), kTestTitle16));
+  EXPECT_EQ(20u, custom_links_->GetLinks().size());
+}
+
+TEST_F(CustomLinksManagerImplTest,
+       ShouldNotTruncateOverflowLinksWhenExperimentDisabled) {
+  // Fallback limit is 10 links.
+  // Directly fill the preference store with 15 links as if the user came from
+  // the experiment.
+  base::ListValue links_list;
+  for (int i = 0; i < 15; ++i) {
+    std::string url = "http://foo" + base::NumberToString(i) + ".com/";
+    std::string title = "Foo" + base::NumberToString(i);
+
+    base::DictValue link;
+    link.Set("url", url);
+    link.Set("title", title);
+    link.Set("isMostVisited", false);
+    links_list.Append(std::move(link));
+  }
+
+  prefs_.SetUserPref(prefs::kCustomLinksInitialized, base::Value(true));
+  prefs_.SetUserPref(prefs::kCustomLinksList,
+                     base::Value(std::move(links_list)));
+
+  // Recreate CustomLinksManagerImpl without experiment enabled.
+  custom_links_ =
+      std::make_unique<CustomLinksManagerImpl>(&prefs_, history_service_.get());
+
+  // It should NOT truncate the links to 10, and instead preserve all 15!
+  EXPECT_EQ(15u, custom_links_->GetLinks().size());
 }
 
 TEST_F(CustomLinksManagerImplTest, AddDuplicateLink) {
