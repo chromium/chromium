@@ -16,6 +16,7 @@
   _viewController = [[ComposeboxMenuViewController alloc] init];
   _mediator = [[ComposeboxMenuMediator alloc] init];
 
+  _viewController.sheetPresentationController.prefersGrabberVisible = YES;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
