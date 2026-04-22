@@ -12,11 +12,13 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +30,14 @@ constexpr char kRelatedWebsiteSetsDisabled[] = "Disabled";
 
 }  // namespace
 
-class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
+class RelatedWebsiteSetsSourceTest : public testing::Test {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("TestProfile");
+
     // Set the active profile.
     PrefService* local_state = g_browser_process->local_state();
     local_state->SetString(::prefs::kProfileLastUsed,
@@ -60,7 +66,10 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
     // tests if the factory has already created a service for the testing
     // profile being used.
     service_->ResetForTesting();
-    BrowserWithTestWindowTest::TearDown();
+    service_ = nullptr;
+    profile_ = nullptr;
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
   }
 
   std::unique_ptr<SystemLogsResponse> GetRelatedWebsiteSetsSource(
@@ -92,10 +101,14 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
 
   first_party_sets::FirstPartySetsPolicyService* service() { return service_; }
 
+  Profile* profile() { return profile_; }
+
  private:
+  content::BrowserTaskEnvironment task_environment_;
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
-  raw_ptr<first_party_sets::FirstPartySetsPolicyService, DanglingUntriaged>
-      service_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<first_party_sets::FirstPartySetsPolicyService> service_ = nullptr;
 };
 
 TEST_F(RelatedWebsiteSetsSourceTest, RWS_Disabled) {
