@@ -165,11 +165,13 @@ void TrashInfoValidator::OnTrashInfoParsed(
   }
 
   // The restore path that was parsed could be empty, not have a leading "/" or
-  // only consist of "/".
+  // only consist of "/". It must also not contain any path traversal components
+  // (e.g. "..") to prevent escaping the trash directory.
   if (restore_path.empty() ||
       restore_path.value()[0] != base::FilePath::kSeparators[0] ||
       (restore_path.value().size() == 1 &&
-       restore_path.value()[0] == base::FilePath::kSeparators[0])) {
+       restore_path.value()[0] == base::FilePath::kSeparators[0]) ||
+      restore_path.ReferencesParent()) {
     RunCallbackWithError(ValidationError::kInfoFileInvalid,
                          std::move(callback));
     return;
