@@ -949,13 +949,13 @@ bool IsAssistantContainerEnabled() {
   return base::FeatureList::IsEnabled(kAssistantContainer);
 }
 
-bool ShouldShowAssistantContainerDebugElements() {
+bool IsAssistantContainerDebugEnabled() {
   if (!base::FeatureList::IsEnabled(kAssistantContainer)) {
     return false;
   }
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kAssistantContainer, kAssistantContainerParam);
-  return feature_param == kAssistantContainerParamDebug;
+  return !feature_param.empty();
 }
 
 NSInteger GetAssistantMediumDetentPercentage() {

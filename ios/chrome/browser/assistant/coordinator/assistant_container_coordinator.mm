@@ -178,7 +178,7 @@
 
 - (void)setAssistantContainerDetents:
     (std::vector<AssistantContainerDetent>)detents {
-  if (ShouldShowAssistantContainerDebugElements()) {
+  if (IsAssistantContainerDebugEnabled()) {
     return;
   }
   _detents = detents;

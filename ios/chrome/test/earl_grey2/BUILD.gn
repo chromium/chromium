@@ -190,6 +190,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
 
   deps = [
     "//ios/chrome/app/application_delegate:eg2_tests",
+    "//ios/chrome/browser/assistant/eg_tests:eg2_tests",
     "//ios/chrome/browser/autofill/authentication/test:eg2_tests",
     "//ios/chrome/browser/autofill/autofill_ai/test:eg2_tests",
     "//ios/chrome/browser/autofill/form_input_accessory/test:eg2_tests",

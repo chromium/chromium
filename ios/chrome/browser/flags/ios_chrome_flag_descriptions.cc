@@ -78,7 +78,8 @@ const char kAssistantAimMinimizedStateDescription[] =
 
 const char kAssistantContainerName[] = "Assistant Container";
 const char kAssistantContainerDescription[] =
-    "Enables the Assistant Container feature.";
+    "Enables the Assistant Container feature. The debug parameter enables "
+    "debug elements and forces AIM eligibility.";
 
 const char kAssistantSidePanelName[] = "AssistantSidePanel";
 const char kAssistantSidePanelDescription[] =

@@ -798,9 +798,8 @@ extern const char kAssistantContainerMediumDetentPercentParam[];
 // Returns true if the Assistant Container is enabled.
 bool IsAssistantContainerEnabled();
 
-// Returns true if debug elements (like detents) should be added to the
-// Assistant Container.
-bool ShouldShowAssistantContainerDebugElements();
+// Returns true if the Assistant Container debug mode is enabled.
+bool IsAssistantContainerDebugEnabled();
 
 // Returns the experimental percentage for the Assistant medium detent height.
 // Returns 0 if no experimental percentage is selected.

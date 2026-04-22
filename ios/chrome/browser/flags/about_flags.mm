@@ -1364,7 +1364,7 @@ const FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
     {"Sparkles 1", kPageActionMenuIconSparkles1, nullptr},
     {"Sparkles 2", kPageActionMenuIconSparkles2, nullptr}};
 
-const FeatureEntry::FeatureParam kAssistantContainerParamDebugDetents[] = {
+const FeatureEntry::FeatureParam kAssistantContainerParamDebugMode[] = {
     {kAssistantContainerParam, kAssistantContainerParamDebug}};
 
 const FeatureEntry::FeatureParam kAssistantContainer30[] = {
@@ -1374,7 +1374,7 @@ const FeatureEntry::FeatureParam kAssistantContainer60[] = {
     {kAssistantContainerMediumDetentPercentParam, "60"}};
 
 const FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
-    {"with debug elements", kAssistantContainerParamDebugDetents, nullptr},
+    {"with debug enabled", kAssistantContainerParamDebugMode, nullptr},
     {"30% medium detent", kAssistantContainer30, nullptr},
     {"60% medium detent", kAssistantContainer60, nullptr}};
 

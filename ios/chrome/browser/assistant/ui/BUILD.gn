@@ -17,6 +17,7 @@ source_set("ui") {
     "assistant_container_view_controller.mm",
   ]
   deps = [
+    ":constants",
     ":detent",
     "//base",
     "//ios/chrome/browser/fullscreen/ui_bundled",
@@ -30,6 +31,14 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "assistant_container_constants.h",
+    "assistant_container_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("detent") {

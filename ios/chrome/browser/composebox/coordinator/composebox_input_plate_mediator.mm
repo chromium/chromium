@@ -1983,6 +1983,9 @@ class QueryContextualizerDelegateBridge
 // Checks if the user is eligible for AIM, taking into account experimental
 // settings overrides.
 - (BOOL)isEligibleToAIM {
+  if (IsAssistantContainerDebugEnabled()) {
+    return YES;
+  }
   if (experimental_flags::ShouldForceDisableComposeboxAIM()) {
     return NO;
   }
