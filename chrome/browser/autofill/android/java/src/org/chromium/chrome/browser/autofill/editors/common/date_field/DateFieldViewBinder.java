@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -33,7 +34,7 @@ public class DateFieldViewBinder {
                 // TODO: crbug.com/490311866 - Refactor focused property.
                 view.scrollToAndFocus();
             }
-        } else if (key == DATE_VALID) {
+        } else if (key == DATE_VALID || key == VALUE_CHANGED_CALLBACK) {
             // Doesn't require binding at the moment.
         } else {
             assert false : "Unhandled update to property:" + key;

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill.editors.common.dropdown_field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
@@ -14,6 +16,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import android.app.Activity;
 import android.text.TextUtils;
@@ -21,13 +24,19 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.utils.TestUtils;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -41,6 +50,10 @@ import java.util.List;
 public final class DropdownFieldViewUnitTest {
     private Activity mActivity;
     private ViewGroup mContentView;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<String> mValueChangedCallback;
 
     @Before
     public void setUp() {
@@ -57,6 +70,7 @@ public final class DropdownFieldViewUnitTest {
                 .with(IS_REQUIRED, false)
                 .with(DROPDOWN_KEY_VALUE_LIST, keyValues)
                 .with(LABEL, "label")
+                .with(VALUE_CHANGED_CALLBACK, mValueChangedCallback)
                 .build();
     }
 
@@ -73,6 +87,16 @@ public final class DropdownFieldViewUnitTest {
         PropertyModelChangeProcessor.create(
                 model, field, DropdownFieldViewBinder::bindDropdownFieldView);
         return field;
+    }
+
+    /** Test that the `VALUE_CHANGED_CALLBACK` is fired when the spinner value changes. */
+    @Test
+    public void testSetDropdownValue() {
+        PropertyModel model = buildDefaultPropertyModel();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        TestUtils.setDropdownValue(field, "value2");
+        verify(mValueChangedCallback, times(1)).onResult("key2");
     }
 
     /** Test that no error message is displayed if there aren't any validation errors. */

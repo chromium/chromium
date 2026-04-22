@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_SUGGESTIONS;
@@ -44,6 +45,8 @@ public class TextFieldViewBinder {
             view.setTextSuggestions(model.get(TEXT_SUGGESTIONS));
         } else if (key == TEXT_FORMATTER) {
             view.setTextFormatter(model.get(TEXT_FORMATTER));
+        } else if (key == VALUE_CHANGED_CALLBACK) {
+            // Does not require binding at the moment.
         } else {
             assert false : "Unhandled update to property:" + key;
         }

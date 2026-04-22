@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.autofill.editors.common.dropdown_field;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import com.google.common.collect.ObjectArrays;
 
@@ -24,13 +26,11 @@ import java.util.List;
 public class DropdownFieldProperties {
     public static final ReadableObjectPropertyKey<List<DropdownKeyValue>> DROPDOWN_KEY_VALUE_LIST =
             new ReadableObjectPropertyKey<>("key_value_list");
-    public static final ReadableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
-            new ReadableObjectPropertyKey<>("callback");
     public static final ReadableObjectPropertyKey<String> DROPDOWN_HINT =
             new ReadableObjectPropertyKey<>("hint");
 
     public static final PropertyKey[] DROPDOWN_SPECIFIC_KEYS = {
-        DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT
+        DROPDOWN_KEY_VALUE_LIST, DROPDOWN_HINT
     };
 
     public static final PropertyKey[] DROPDOWN_ALL_KEYS =
@@ -64,8 +64,8 @@ public class DropdownFieldProperties {
         if (key == null && dropdownField.get(DROPDOWN_HINT) == null) {
             return;
         }
-        dropdownField.set(FieldProperties.VALUE, key);
-        Callback<String> fieldCallback = dropdownField.get(DROPDOWN_CALLBACK);
+        dropdownField.set(VALUE, key);
+        Callback<String> fieldCallback = dropdownField.get(VALUE_CHANGED_CALLBACK);
         if (fieldCallback != null) {
             fieldCallback.onResult(assumeNonNull(key));
         }

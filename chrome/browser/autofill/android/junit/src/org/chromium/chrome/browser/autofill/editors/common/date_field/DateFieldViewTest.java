@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_VALID;
@@ -17,6 +19,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownDate;
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
 
@@ -26,10 +29,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -44,6 +52,10 @@ public class DateFieldViewTest {
     private Activity mActivity;
     private DateFieldView mDateFieldView;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<String> mValueChangedCallback;
+
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -54,6 +66,7 @@ public class DateFieldViewTest {
                 .with(IS_REQUIRED, false)
                 .with(LABEL, "Date field label")
                 .with(VALUE, date == null ? "" : date.toString())
+                .with(VALUE_CHANGED_CALLBACK, mValueChangedCallback)
                 .build();
     }
 
@@ -272,15 +285,20 @@ public class DateFieldViewTest {
                 DateFieldView.getMonthName(mActivity, currentDate.getMonthValue()));
         // Only the month value is selected, the overall date is not complete yet.
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
+        // The callback must still be called.
+        verify(mValueChangedCallback, times(1)).onResult("");
 
         setDropdownValue(
                 mDateFieldView.getDayPickerForTest(), String.valueOf(currentDate.getDayOfMonth()));
         // Only the moth and day values are selected, the overall date is not complete yet.
         assertThat(mDateFieldView.getFieldModel().get(VALUE), isEmptyString());
+        // The callback must still be called a second time.
+        verify(mValueChangedCallback, times(2)).onResult("");
 
         setDropdownValue(
                 mDateFieldView.getYearPickerForTest(), String.valueOf(currentDate.getYear()));
         assertEquals(currentDate.toString(), mDateFieldView.getFieldModel().get(VALUE));
+        verify(mValueChangedCallback, times(1)).onResult(currentDate.toString());
     }
 
     @Test

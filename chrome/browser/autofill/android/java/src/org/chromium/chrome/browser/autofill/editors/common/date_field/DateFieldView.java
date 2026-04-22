@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.autofill.editors.common.date_field;
 
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_VALID;
-import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -90,7 +90,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getMonthDropdownValues())
                         .with(DROPDOWN_HINT, getMonthDropdownHint(context))
-                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
+                        .with(VALUE_CHANGED_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, monthValue)
@@ -100,7 +100,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getDayDropdownValues())
                         .with(DROPDOWN_HINT, getDayDropdownHint(context))
-                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
+                        .with(VALUE_CHANGED_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, dayValue)
@@ -122,7 +122,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getYearDropdownValues())
                         .with(DROPDOWN_HINT, yearHint)
-                        .with(DROPDOWN_CALLBACK, this::onDropdownItemSelected)
+                        .with(VALUE_CHANGED_CALLBACK, this::onDropdownItemSelected)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, yearValue)
@@ -256,6 +256,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
             // First case: the user has completely reset the date field. Propagate an empty value to
             // the model.
             mPropertyModel.set(VALUE, "");
+            maybeRunValueChangedCallback("");
             return;
         }
 
@@ -265,10 +266,18 @@ public class DateFieldView extends LinearLayout implements FieldView {
             // Second case: the user has selected a valid date. Propagate it to the model. Partially
             // valid dates are never propagated to the model.
             mPropertyModel.set(VALUE, date.toString());
+            maybeRunValueChangedCallback(date.toString());
             return;
         }
+        maybeRunValueChangedCallback(mPropertyModel.get(VALUE));
         assert !mPropertyModel.get(DATE_VALID)
                 : "The date is invalid if it can't be contructed from the selected items";
+    }
+
+    private void maybeRunValueChangedCallback(String value) {
+        if (mPropertyModel.get(VALUE_CHANGED_CALLBACK) != null) {
+            mPropertyModel.get(VALUE_CHANGED_CALLBACK).onResult(value);
+        }
     }
 
     /**

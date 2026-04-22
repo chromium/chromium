@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.editors.common.field;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -27,9 +29,11 @@ public class FieldProperties {
     // TODO(crbug.com/40265078): make this field read-only.
     public static final WritableObjectPropertyKey<String> VALUE =
             new WritableObjectPropertyKey<>("value");
+    public static final ReadableObjectPropertyKey<Callback<String>> VALUE_CHANGED_CALLBACK =
+            new ReadableObjectPropertyKey<>("value_changed_callback");
 
     public static final PropertyKey[] FIELD_ALL_KEYS = {
-        LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE
+        LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE, VALUE_CHANGED_CALLBACK
     };
 
     private FieldProperties() {}

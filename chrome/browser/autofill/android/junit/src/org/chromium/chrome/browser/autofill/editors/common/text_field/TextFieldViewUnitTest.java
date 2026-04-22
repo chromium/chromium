@@ -10,11 +10,14 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
 
 import android.app.Activity;
@@ -30,10 +33,15 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
@@ -51,6 +59,10 @@ public final class TextFieldViewUnitTest {
 
     private static final String FIELD_LABEL = "label";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<String> mValueChangedCallback;
+
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -63,6 +75,7 @@ public final class TextFieldViewUnitTest {
         return new PropertyModel.Builder(TEXT_ALL_KEYS)
                 .with(LABEL, FIELD_LABEL)
                 .with(VALUE, "value")
+                .with(VALUE_CHANGED_CALLBACK, mValueChangedCallback)
                 .build();
     }
 
@@ -118,6 +131,7 @@ public final class TextFieldViewUnitTest {
         // Editing field should clear error message.
         fieldEditText.setText("edited");
         assertNull(inputLayout.getError());
+        verify(mValueChangedCallback, times(1)).onResult("edited");
     }
 
     /**

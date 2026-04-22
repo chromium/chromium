@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.editors.common.dropdown_field;
 
-import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
@@ -13,6 +12,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.DropdownKeyValue;
@@ -47,7 +47,7 @@ public class DropdownFieldViewBinder {
             view.setDropdownValues(values, model.get(DROPDOWN_HINT));
             view.setValue(model.get(VALUE));
             view.setErrorMessage(model.get(ERROR_MESSAGE));
-        } else if (key == DROPDOWN_CALLBACK) {
+        } else if (key == VALUE_CHANGED_CALLBACK) {
             // Does not require binding at the moment.
         } else {
             assert false : "Unhandled update to property:" + key;
