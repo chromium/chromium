@@ -6773,6 +6773,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-simplification-bookmark-bar",
+    "owners": ["jennserrano@google.com"],
+    "expiry_milestone": 151
+  },
+  {
     "name": "ntp-tab-groups-module",
     "owners": [ "tiborg@chromium.org", "dpenning@chromium.org" ],
     "expiry_milestone": 150

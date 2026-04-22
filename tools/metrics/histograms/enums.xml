@@ -14290,6 +14290,7 @@ from previous Chrome versions.
   <int value="82145100" label="(Obsolete) LacrosResourcesFileSharing:disabled"/>
   <int value="82303171" label="AccountIdMigration:disabled"/>
   <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
+  <int value="82915902" label="NtpSimplificationBookmarkBar:disabled"/>
   <int value="82922831" label="NtpHistoryClustersModuleDiscounts:enabled"/>
   <int value="82964287" label="AutofillAlwaysParsePlaceholders:enabled"/>
   <int value="83422372"
@@ -15914,6 +15915,7 @@ from previous Chrome versions.
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:enabled"/>
   <int value="634350211"
       label="MediaPlaybackWhileNotVisiblePermissionPolicy:enabled"/>
+  <int value="634454929" label="NtpSimplificationBookmarkBar:enabled"/>
   <int value="634557307" label="HidGetFeatureReportFix:enabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
