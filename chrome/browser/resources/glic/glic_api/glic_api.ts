@@ -1262,6 +1262,14 @@ export declare interface Rect {
 }
 
 /**
+ * A point with x and y coordinates. All coordinate values are in pixels.
+ */
+export declare interface Point {
+  x: number;
+  y: number;
+}
+
+/**
  * A region captured by the user from a document in a tab.
  *
  * This is a union of different possible region shapes. Currently only
@@ -1286,6 +1294,17 @@ export declare interface CapturedRegion {
    * document's bounds.
    */
   rect?: Rect;
+  /**
+   * A polyline captured from a document in a tab.
+   *
+   * The coordinate system is relative to the top-left corner of the document.
+   * The units are in pixels and match screenshot pixel dimensions.
+   *
+   * The polyline is represented by an ordered array of points. The line formed
+   * by these points is not required to be closed, and it represents a shape
+   * (path), not necessarily a region.
+   */
+  polyline?: Point[];
 }
 
 /** The captured region with an ID. */

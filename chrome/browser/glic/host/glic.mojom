@@ -2089,10 +2089,13 @@ struct Journal {
   array<uint8> data;
 };
 
-// The captured region from the user.
+// The captured shape from the user.
 union CapturedRegion {
   // A rectangular region.
   gfx.mojom.Rect rect;
+  // A polyline represented by an array of points.
+  // Note the line does not have to be closed.
+  array<gfx.mojom.Point> polyline;
 };
 
 // The captured region with an ID.

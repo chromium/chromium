@@ -657,7 +657,9 @@ export function captureRegionResultToClient(
   if (!result) {
     return undefined;
   }
-  const region = result.region.rect ? {rect: result.region.rect} : undefined;
+  const region = result.region.rect ? {rect: result.region.rect} :
+      result.region.polyline        ? {polyline: result.region.polyline} :
+                                      undefined;
   return {
     tabId: idToClient(result.tabId),
     region,
@@ -747,6 +749,7 @@ export function additionalContextPartToClient(
       return {
         region: {
           rect: regionMojo.rect,
+          polyline: regionMojo.polyline,
         },
       };
     }
@@ -758,6 +761,7 @@ export function additionalContextPartToClient(
           id: part.pendingRegion.id,
           region: {
             rect: regionMojo.rect,
+            polyline: regionMojo.polyline,
           },
         },
       };
