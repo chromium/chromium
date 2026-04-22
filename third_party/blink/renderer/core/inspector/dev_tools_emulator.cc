@@ -334,11 +334,12 @@ void DevToolsEmulator::DisableDeviceEmulation() {
   DisableMobileEmulation();
   SetForceAndroidOverlayScrollbar(false);
   web_view_->SetCompositorDeviceScaleFactorOverride(0.f);
-  web_view_->SetPageScaleFactor(1.f);
 
-  // TODO(wjmaclean): Tell all local frames in the WebView's frame tree, not
-  // just a local main frame.
   if (web_view_->MainFrameImpl()) {
+    web_view_->SetPageScaleFactor(1.f);
+
+    // TODO(wjmaclean): Tell all local frames in the WebView's frame tree,
+    // not just a local main frame.
     if (Document* document =
             web_view_->MainFrameImpl()->GetFrame()->GetDocument())
       document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
