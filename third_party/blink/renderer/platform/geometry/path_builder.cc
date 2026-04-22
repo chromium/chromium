@@ -128,7 +128,7 @@ gfx::RectF PathBuilder::BoundingRect() const {
   return current_bounds_.value();
 }
 
-const Path& PathBuilder::CurrentPath() const {
+Path PathBuilder::CurrentPath() const {
   if (!current_path_) {
     current_path_.emplace(builder_.snapshot());
   }

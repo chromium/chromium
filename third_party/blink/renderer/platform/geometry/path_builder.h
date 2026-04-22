@@ -72,7 +72,7 @@ class PLATFORM_EXPORT PathBuilder {
   // Avoid if possible (use Finalize instead).
   // TODO(crbug.com/378688986): evaluate whether the cached path value is needed
   // once the conversion is complete.
-  const Path& CurrentPath() const;
+  Path CurrentPath() const;
   // Gets the current point of the current path, which is conceptually the final
   // point reached by the path so far. Note the Path can be empty
   // (isEmpty() == true) and still have a current point.
