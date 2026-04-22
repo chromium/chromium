@@ -214,6 +214,11 @@ bool ShouldSendDangerousDownloadReport(
     ClientSafeBrowsingReportRequest::ReportType report_type);
 #endif
 
+// Returns whether deep scanning is enabled.
+// On Android, only Enterprise scan may be enabled. Consumer deep scan is not
+// (yet) supported.
+bool IsDeepScanningEnabled();
+
 // If the item should be uploaded for deep scanning, this returns the content
 // analysis settings to use. If the item should not be uploaded, this returns
 // nullopt.

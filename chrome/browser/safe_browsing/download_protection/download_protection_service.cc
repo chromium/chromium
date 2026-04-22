@@ -22,6 +22,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -39,7 +40,9 @@
 #include "chrome/common/url_constants.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
@@ -68,12 +71,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
-#endif
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "components/enterprise/connectors/core/reporting_event_router.h"
 #endif
 
 using content::BrowserThread;
@@ -225,7 +222,6 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     CheckDownloadRepeatingCallback callback) {
   auto settings = ShouldUploadBinaryForDeepScanning(item);
 
-#if !BUILDFLAG(IS_ANDROID)
   bool report_only_scan =
       settings.has_value() &&
       settings.value().block_until_verdict ==
@@ -246,16 +242,12 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
         /*password=*/std::nullopt);
     return true;
   }
-#else
-  CHECK(!settings.has_value());
-#endif
 
   if (delegate_->MayCheckClientDownload(item)) {
     CheckClientDownload(item, std::move(callback), /*password=*/std::nullopt);
     return true;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (settings.has_value()) {
     DCHECK(report_only_scan);
     // Since this branch implies that CheckClientDownload was not called, the
@@ -267,7 +259,6 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
         /*password=*/std::nullopt);
     return true;
   }
-#endif
 
   return false;
 }
@@ -511,7 +502,9 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (!IsDeepScanningEnabled()) {
+    return;
+  }
   auto* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -530,7 +523,6 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
       info.GetContentAreaAccountEmail(),
       /*user_justification=*/std::nullopt, result, metadata.size,
       referrer_chain, frame_urls, enterprise_connectors::EventResult::BYPASSED);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
@@ -540,7 +532,9 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (!IsDeepScanningEnabled()) {
+    return;
+  }
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -554,7 +548,6 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       metadata.scan_response.request_token(), metadata.size, referrer_chain,
       frame_urls, enterprise_connectors::EventResult::BYPASSED);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
@@ -563,7 +556,9 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (!IsDeepScanningEnabled()) {
+    return;
+  }
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -579,7 +574,6 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*scan_id*/ "", item->GetTotalBytes(), referrer_chain, frame_urls,
       enterprise_connectors::EventResult::BYPASSED);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedSafeBrowsingEvent(
@@ -693,7 +687,6 @@ bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::UploadForDeepScanning(
     std::unique_ptr<DeepScanningMetadata> metadata,
     CheckDownloadRepeatingCallback callback,
@@ -815,7 +808,6 @@ void DownloadProtectionService::UploadSavePackageForDeepScanning(
   DCHECK(insertion_result.second);
   insertion_result.first->get()->Start();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 scoped_refptr<network::SharedURLLoaderFactory>
 DownloadProtectionService::GetURLLoaderFactory(

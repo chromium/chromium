@@ -9,6 +9,7 @@
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -19,6 +20,9 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -27,13 +31,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/enterprise/connectors/core/reporting_event_router.h"
-#include "components/enterprise/connectors/core/reporting_utils.h"
-#endif
 
 namespace safe_browsing {
 
@@ -94,7 +91,9 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
 void ReportDangerousDownloadWarningBypassed(
     download::DownloadItem* download,
     download::DownloadDangerType original_danger_type) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (!IsDeepScanningEnabled()) {
+    return;
+  }
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
 
@@ -136,11 +135,13 @@ void ReportDangerousDownloadWarningBypassed(
         /*scan_id*/ "", download->GetTotalBytes(), referrer_chain,
         frame_url_chain, enterprise_connectors::EventResult::BYPASSED);
   }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!IsDeepScanningEnabled()) {
+    return;
+  }
+
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -174,7 +175,6 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace

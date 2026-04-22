@@ -771,6 +771,8 @@ source_set("test_support") {
 
   if (safe_browsing_mode != 0) {
     sources += [
+      "cloud_content_scanning/test_binary_upload_service.cc",
+      "cloud_content_scanning/test_binary_upload_service.h",
       "test_safe_browsing_service.cc",
       "test_safe_browsing_service.h",
     ]
@@ -788,6 +790,7 @@ source_set("test_support") {
       "//chrome/browser/ui:test_support",
       "//chrome/common",
       "//components/enterprise/common/proto:connectors_proto",
+      "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
@@ -800,14 +803,6 @@ source_set("test_support") {
       "//services/network:test_support",
       "//testing/gtest",
     ]
-  }
-
-  if (safe_browsing_mode == 1) {
-    sources += [
-      "cloud_content_scanning/test_binary_upload_service.cc",
-      "cloud_content_scanning/test_binary_upload_service.h",
-    ]
-    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
   }
 
   if (is_android) {

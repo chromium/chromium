@@ -227,7 +227,6 @@ class DownloadProtectionService {
   void ReportDelayedBypassEvent(download::DownloadItem* download,
                                 download::DownloadDangerType danger_type);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Uploads `metadata` to Safe Browsing for deep scanning, using the upload
   // service attached to the profile `item` was downloaded in. This is
   // non-blocking, and the result we be provided through `callback`. `trigger`
@@ -262,7 +261,6 @@ class DownloadProtectionService {
       base::flat_map<base::FilePath, base::FilePath> save_package_files,
       CheckDownloadRepeatingCallback callback,
       enterprise_connectors::AnalysisSettings analysis_settings);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
