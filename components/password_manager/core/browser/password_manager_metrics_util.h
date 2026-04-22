@@ -412,17 +412,6 @@ enum class SignInState {
   kSyncing = 2,
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Should be kept in sync with SaveFlowStep in enums.xml.
-enum class SaveFlowStep {
-  // The form was submitted. Does not strictly require a successful submission.
-  kFormSubmitted = 0,
-  kSavePromptShown = 1,
-  kMaxValue = kSavePromptShown,
-};
-#endif
 
 // Represents different user interactions related to adding credential from the
 // setting. These values are persisted to logs. Entries should not be renumbered
@@ -865,7 +854,7 @@ base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
 #if BUILDFLAG(IS_ANDROID)
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
-void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step);
+
 void LogSharedPrefCredentialsAccessOutcome(
     SharedPrefCredentialsAccessOutcome outcome);
 #endif

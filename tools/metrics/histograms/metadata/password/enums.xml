@@ -1808,11 +1808,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Unknown password"/>
 </enum>
 
-<enum name="SaveFlowStep">
-  <int value="0" label="Form submitted"/>
-  <int value="1" label="Save prompt shown"/>
-</enum>
-
 <enum name="SharedPrefCredentialsAccessOutcome">
   <int value="0" label="No credentials"/>
   <int value="1" label="Parse error"/>

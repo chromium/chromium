@@ -1121,18 +1121,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-TEST_F(SaveUpdatePasswordMessageDelegateTest, RecordsPromptShownWhenEnqueuing) {
-  base::HistogramTester histogram_tester;
-  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FormSubmissionsVsSavePrompts",
-      password_manager::metrics_util::SaveFlowStep::kSavePromptShown, 1);
-  DismissMessage(messages::DismissReason::UNKNOWN);
-}
 
 // Tests `IsUsingAccountStorage` returns false if the credential being
 // updated comes from the local storage, despite the user being signed in,

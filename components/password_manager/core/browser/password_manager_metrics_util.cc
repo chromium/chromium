@@ -506,10 +506,6 @@ void LogTouchToFillPasswordGenerationTriggerOutcome(
       "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome", outcome);
 }
 
-void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step) {
-  base::UmaHistogramEnumeration("PasswordManager.FormSubmissionsVsSavePrompts",
-                                save_flow_step);
-}
 #endif
 
 void AddPasswordRemovalReason(

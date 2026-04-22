@@ -535,12 +535,6 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
 
   ukm_entry_builder_.Record(ukm::UkmRecorder::Get());
 
-#if BUILDFLAG(IS_ANDROID)
-  if (form_submission_reached_) {
-    LogFormSubmissionsVsSavePromptsHistogram(
-        metrics_util::SaveFlowStep::kFormSubmitted);
-  }
-#endif
 }
 
 void PasswordFormMetricsRecorder::SetGeneratedPasswordStatus(

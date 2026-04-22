@@ -1812,21 +1812,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.FormSubmissionsVsSavePrompts"
-    enum="SaveFlowStep" expires_after="2026-05-03">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the steps in the save password flow that were reached. Each bucket
-    represents one step. Used to determine at which step the flow ended.
-
-    Only recorded for users who can save passwords: the setting has to be
-    enabled and saving has to not be disabled by UPM.
-
-    Android only.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.FormVisited.PerProfileType"
     enum="BrowserProfileType" expires_after="2026-08-23">
   <owner>rhalavati@chromium.org</owner>

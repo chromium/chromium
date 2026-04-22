@@ -523,11 +523,6 @@ class PasswordFormMetricsRecorder
       metrics_util::SubmittedFormFrame submitted_form_frame) {
     submitted_form_frame_ = submitted_form_frame;
   }
-#if BUILDFLAG(IS_ANDROID)
-  void set_form_submission_reached(bool value) {
-    form_submission_reached_ = value;
-  }
-#endif
 
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
@@ -679,12 +674,6 @@ class PasswordFormMetricsRecorder
   // form that are filled by Chrome. This value includes all fields in the
   // form (not only username and passwords).
   std::optional<float> automation_rate_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Set to true when the form submission step is reached. Used to record
-  // form submission and avoid duplicate samples.
-  bool form_submission_reached_ = false;
-#endif
 
   // Record if the form parsing result can be confirmed or disproven by user
   // actions.

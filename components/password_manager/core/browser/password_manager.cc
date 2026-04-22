@@ -458,7 +458,6 @@ void SignalFormSubmissionIfEligibleForSaving(PasswordFormManager* manager,
     return;
   }
 
-  manager->GetMetricsRecorder()->set_form_submission_reached(true);
 
   client->PotentialSaveFormSubmitted();
 }
