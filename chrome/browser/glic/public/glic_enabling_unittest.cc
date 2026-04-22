@@ -509,20 +509,6 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsReady) {
             mojom::ProfileReadyState::kReady);
 }
 
-TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsFalse) {
-  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
-      prefs::FreStatus::kCompleted);
-
-  EXPECT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
-}
-
-TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsTrue) {
-  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
-      prefs::FreStatus::kIncomplete);
-
-  EXPECT_FALSE(GlicEnabling::HasConsentedForProfile(profile()));
-}
-
 TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsReady) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kCompleted);

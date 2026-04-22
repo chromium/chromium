@@ -697,13 +697,8 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
 }
 
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  bool enabled = IsEnabledForProfile(profile);
-  if (!enabled) {
-    base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
-    return enabled;
-  }
-
-  enabled = base::FeatureList::IsEnabled(features::kGlicContextMenu);
+  bool enabled = IsEnabledForProfile(profile) &&
+                 base::FeatureList::IsEnabled(features::kGlicContextMenu);
   base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
   return enabled;
 }
