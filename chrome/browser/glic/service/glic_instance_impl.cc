@@ -210,13 +210,13 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     auto show_options = ShowOptions{side_panel_options};
-    instance_metrics().OnDaisyChain(DaisyChainSource::kTabContents,
-                                    /*success=*/true, target_tab, source_tab);
+    instance_metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                     /*success=*/true, target_tab, source_tab);
     Show(show_options);
   } else {
     // Record the failure.
-    instance_metrics().OnDaisyChain(DaisyChainSource::kTabContents,
-                                    /*success=*/false, target_tab, source_tab);
+    instance_metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                     /*success=*/false, target_tab, source_tab);
   }
 }
 
@@ -303,8 +303,8 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   }
 }
 
-glic::GlicInstanceMetrics& GlicInstanceImpl::instance_metrics() {
-  return instance_metrics_;
+glic::GlicInstanceMetrics* GlicInstanceImpl::instance_metrics() {
+  return &instance_metrics_;
 }
 
 glic::GlicInstanceMetricsBackwardsCompatibility&
@@ -387,7 +387,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
                   options.prompt_suggestion, options.auto_send,
                   options.fre_override);
   if (new_embedder_will_show) {
-    instance_metrics().OnOpen(options.invocation_source, options);
+    instance_metrics()->OnOpen(options.invocation_source, options);
     service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                                     options.invocation_source);
   }
