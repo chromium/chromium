@@ -176,6 +176,8 @@ public class ExtensionActionListMediatorTest {
                                     action.getTitle());
                         });
 
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID, ACTION3_ID});
         when(mExtensionsToolbarBridge.getPinnedActionIds())
                 .thenReturn(new String[] {ACTION1_ID, ACTION2_ID});
 

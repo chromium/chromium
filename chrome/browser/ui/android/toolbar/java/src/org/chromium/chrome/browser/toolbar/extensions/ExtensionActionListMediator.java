@@ -188,6 +188,9 @@ class ExtensionActionListMediator implements Destroyable {
      */
     @VisibleForTesting
     void reconcileActionItems() {
+        // The pinned action IDs are a subset of all action IDs.
+        Set<String> allActionIdsSet =
+                new HashSet<>(Arrays.asList(mExtensionsToolbarBridge.getAllActionIds()));
         String[] pinnedActionIds = mExtensionsToolbarBridge.getPinnedActionIds();
 
         Tab currentTab = mCurrentTabSupplier.get();
@@ -240,18 +243,25 @@ class ExtensionActionListMediator implements Destroyable {
 
             currentModelIndex =
                     reconcileItem(
-                            actionId, currentModelIndex, webContents, /* isPoppedOut= */ false);
+                            actionId,
+                            currentModelIndex,
+                            webContents,
+                            /* isPoppedOut= */ false,
+                            allActionIdsSet);
         }
 
         // Deal with the popped out action last, as it should appear on the [right|left] end of the
         // list for [LTR|RTL].
-        if (mPoppedOutActionId != null && mCanShowPoppedOutAction) {
+        if (mPoppedOutActionId != null
+                && allActionIdsSet.contains(mPoppedOutActionId)
+                && mCanShowPoppedOutAction) {
             currentModelIndex =
                     reconcileItem(
                             mPoppedOutActionId,
                             currentModelIndex,
                             webContents,
-                            /* isPoppedOut= */ true);
+                            /* isPoppedOut= */ true,
+                            allActionIdsSet);
         }
 
         // Remove rest of the items.
@@ -267,13 +277,20 @@ class ExtensionActionListMediator implements Destroyable {
      * Helper to calculate whether we should show an action item, and if so to reorder {@link
      * mModels} so that {@code actionId} comes at {@code currentIndex}.
      *
+     * @param actionId The ID of the action in question.
+     * @param currentIndex The current index of the action in {@link mModels}.
+     * @param webContents The WebContents to use.
+     * @param isPoppedOut Whether the action is shown because it's popped out.
+     * @param allActionIds The list of all active actions, pinned or unpinned.
      * @return The next index of {@link mModels} that needs to be evaluated.
      */
     private int reconcileItem(
             String actionId,
             int currentIndex,
             @Nullable WebContents webContents,
-            boolean isPoppedOut) {
+            boolean isPoppedOut,
+            Set<String> allActionIds) {
+        assert allActionIds.contains(actionId);
         ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
         if (action == null) {
             return currentIndex;
