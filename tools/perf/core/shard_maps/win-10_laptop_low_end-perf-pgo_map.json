@@ -375,46 +375,20 @@
             "v8.browsing_desktop-future": {
                 "begin": 8,
                 "abridged": false
-            },
-            "v8.runtime_stats.top_25": {
-                "end": 12,
-                "abridged": false
             }
         }
     },
     "36": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 12,
-                "end": 46,
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "37": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 46,
-                "end": 79,
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "38": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 79,
-                "end": 113,
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "39": {
         "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 113,
-                "abridged": false
-            },
             "wasmpspdfkit": {
                 "abridged": false
             },

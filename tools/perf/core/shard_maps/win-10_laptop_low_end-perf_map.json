@@ -254,31 +254,14 @@
             "v8.browsing_desktop-future": {
                 "abridged": false,
                 "pageset_repeat": 1
-            },
-            "v8.runtime_stats.top_25": {
-                "end": 2,
-                "abridged": false,
-                "pageset_repeat": 1
             }
         }
     },
     "13": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 2,
-                "end": 78,
-                "abridged": false,
-                "pageset_repeat": 1
-            }
-        }
+        "benchmarks": {}
     },
     "14": {
         "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 78,
-                "abridged": false,
-                "pageset_repeat": 1
-            },
             "wasmpspdfkit": {
                 "abridged": false,
                 "pageset_repeat": 1

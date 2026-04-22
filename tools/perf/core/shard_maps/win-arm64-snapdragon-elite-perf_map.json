@@ -565,51 +565,20 @@
                 "begin": 2,
                 "abridged": false,
                 "pageset_repeat": 1
-            },
-            "v8.runtime_stats.top_25": {
-                "end": 9,
-                "abridged": false,
-                "pageset_repeat": 1
             }
         }
     },
     "24": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 9,
-                "end": 42,
-                "abridged": false,
-                "pageset_repeat": 1
-            }
-        }
+        "benchmarks": {}
     },
     "25": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 42,
-                "end": 72,
-                "abridged": false,
-                "pageset_repeat": 1
-            }
-        }
+        "benchmarks": {}
     },
     "26": {
-        "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 72,
-                "end": 93,
-                "abridged": false,
-                "pageset_repeat": 1
-            }
-        }
+        "benchmarks": {}
     },
     "27": {
         "benchmarks": {
-            "v8.runtime_stats.top_25": {
-                "begin": 93,
-                "abridged": false,
-                "pageset_repeat": 1
-            },
             "wasmpspdfkit": {
                 "abridged": false,
                 "pageset_repeat": 1
