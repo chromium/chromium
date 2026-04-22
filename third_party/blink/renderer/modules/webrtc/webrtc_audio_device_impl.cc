@@ -212,11 +212,19 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
   StopRecording();
   StopPlayout();
 
+  // Temporarily hold the audio renderer so that we can disconnect the source
+  // from it after we have released the lock, avoiding a deadlock.
+  scoped_refptr<blink::WebRtcAudioRenderer> renderer_to_disconnect;
   {
     base::AutoLock auto_lock(lock_);
     DCHECK(!renderer_ || !renderer_->IsStarted())
         << "The shared audio renderer shouldn't be running";
+    renderer_to_disconnect = renderer_;
     capturers_.clear();
+  }
+
+  if (renderer_to_disconnect) {
+    renderer_to_disconnect->DisconnectSource();
   }
 
   initialized_ = false;

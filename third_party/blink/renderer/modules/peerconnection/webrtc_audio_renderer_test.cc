@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -548,6 +550,51 @@ TEST_F(WebRtcAudioRendererTest, SwitchOutputDeviceStoppedSource) {
       base::BindOnce(&WebRtcAudioRendererTest::SwitchDeviceCallback,
                      base::Unretained(this), &loop));
   loop.Run();
+}
+
+TEST_F(WebRtcAudioRendererTest, SourceDisconnectedOnDeviceTerminate) {
+  scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device(
+      new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>());
+
+  // Alias the ADM interface to avoid inline static_casts.
+  webrtc::AudioDeviceModule* adm = audio_device.get();
+  adm->Init();
+
+  // Instantiate the renderer directly to bypass test helper mocks.
+  auto renderer = base::MakeRefCounted<WebRtcAudioRenderer>(
+      scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
+      *web_local_frame_, base::UnguessableToken::Create(),
+      kDefaultOutputDeviceId, base::RepeatingCallback<void()>());
+
+  media::AudioSinkParameters params;
+  EXPECT_CALL(*audio_device_factory_platform_,
+              MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
+                                       web_local_frame_.get(), _))
+      .WillOnce(SaveArg<2>(&params));
+
+  // Connect the device and renderer.
+  EXPECT_TRUE(audio_device->SetAudioRenderer(renderer.get()));
+
+  auto renderer_proxy =
+      renderer->CreateSharedAudioRendererProxy(stream_descriptor_);
+
+  // Terminate the device to trigger DisconnectSource().
+  adm->Terminate();
+
+  // Nullify local pointers to drop the reference and avoid triggering the
+  // dangling pointer detector.
+  adm = nullptr;
+  audio_device = nullptr;
+
+  // Force the renderer to access `source_`. It should gracefully fail with an
+  // internal error instead of triggering a UAF.
+  base::test::TestFuture<media::OutputDeviceStatus> future;
+  renderer_proxy->SwitchOutputDevice(kOtherOutputDeviceId,
+                                     future.GetCallback());
+  EXPECT_EQ(future.Get(), media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  // Clean up.
+  renderer_proxy->Start();
+  renderer_proxy->Stop();
 }
 
 class WebRtcAudioRendererTrackSourceTest : public WebRtcAudioRendererTest {

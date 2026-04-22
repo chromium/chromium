@@ -118,6 +118,10 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Stop() has to be called before |source| is deleted.
   bool Initialize(WebRtcAudioRendererSource* source);
 
+  // Called when the source is going away to clear the reference to the source
+  // and remove circular references.
+  void DisconnectSource();
+
   // When sharing a single instance of WebRtcAudioRenderer between multiple
   // users (e.g. WebMediaPlayerMS), call this method to create a proxy object
   // that maintains the Play and Stop states per caller.
@@ -324,7 +328,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Audio data source from the browser process.
   //
   // TODO(crbug.com/704136): Make it a Member.
-  raw_ptr<WebRtcAudioRendererSource> source_;
+  raw_ptr<WebRtcAudioRendererSource> source_ GUARDED_BY(lock_);
 
   // Protects access to |state_|, |source_|, |audio_fifo_|,
   // |audio_delay_milliseconds_|, |fifo_delay_milliseconds_|, |current_time_|,

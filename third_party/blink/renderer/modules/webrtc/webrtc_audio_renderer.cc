@@ -345,12 +345,17 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
 
     // User must call Play() before any audio can be heard.
     state_ = kPaused;
+    source_->SetOutputDeviceForAec(output_device_id_);
   }
-  source_->SetOutputDeviceForAec(output_device_id_);
   sink_->Start();
   sink_->Play();  // Not all the sinks play on start.
 
   return true;
+}
+
+void WebRtcAudioRenderer::DisconnectSource() {
+  base::AutoLock auto_lock(lock_);
+  source_ = nullptr;
 }
 
 scoped_refptr<MediaStreamAudioRenderer>
@@ -466,8 +471,10 @@ void WebRtcAudioRenderer::Stop() {
       return;
 
     audio_stream_tracker_.reset();
-    source_->RemoveAudioRenderer(this);
-    source_ = nullptr;
+    if (source_) {
+      source_->RemoveAudioRenderer(this);
+      source_ = nullptr;
+    }
     state_ = kUninitialized;
   }
 
@@ -514,16 +521,21 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   SendLogMessage(
       UNSAFE_TODO(String::Format("%s({device_id=%s} [state=%s])", __func__,
                                  device_id.c_str(), StateToString(state_))));
-  if (!source_) {
+
+  bool has_source = false;
+  {
+    base::AutoLock auto_lock(lock_);
+    has_source = (source_ != nullptr);
+    if (has_source) {
+      DCHECK_NE(state_, kUninitialized);
+    }
+  }
+
+  if (!has_source) {
     SendLogMessage(String::Format(
         "%s => (ERROR: OUTPUT_DEVICE_STATUS_ERROR_INTERNAL)", __func__));
     std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     return;
-  }
-
-  {
-    base::AutoLock auto_lock(lock_);
-    DCHECK_NE(state_, kUninitialized);
   }
 
   auto* web_frame =
@@ -568,9 +580,11 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   output_device_id_ = String::FromUtf8(device_id);
   {
     base::AutoLock auto_lock(lock_);
-    source_->AudioRendererThreadStopped();
+    if (source_) {
+      source_->AudioRendererThreadStopped();
+      source_->SetOutputDeviceForAec(output_device_id_);
+    }
   }
-  source_->SetOutputDeviceForAec(output_device_id_);
   PrepareSink();
   sink_->Start();
   sink_->Play();  // Not all the sinks play on start.
@@ -633,6 +647,11 @@ void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
   TRACE_EVENT("audio", "WebRtcAudioRenderer::SourceCallback", "delay (frames)",
               fifo_frame_delay);
   DCHECK(sink_->CurrentThreadIsRenderingThread());
+  // The call to SourceCallback is initiated by WebrtcAudioRenderer::Render(),
+  // either directly or via AudioPullFifo. Both of those call with the lock
+  // held, so we can assert that we hold the lock here.
+  lock_.AssertAcquired();
+
   base::TimeTicks start_time = base::TimeTicks::Now();
   DVLOG(2) << "WRAR::SourceCallback(" << fifo_frame_delay << ", "
            << audio_bus->channels() << ", " << audio_bus->frames() << ")";
@@ -644,6 +663,7 @@ void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
 
   // We need to keep render data for the |source_| regardless of |state_|,
   // otherwise the data will be buffered up inside |source_|.
+  DCHECK(source_);
   source_->RenderData(audio_bus, sink_params_.sample_rate(), output_delay,
                       &current_time_, glitch_info_accumulator_.GetAndReset());
 
