@@ -45,10 +45,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
-#endif
-
 namespace glic {
 
 namespace {

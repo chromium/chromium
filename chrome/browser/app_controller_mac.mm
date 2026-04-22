@@ -70,7 +70,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -789,7 +788,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       [AppController.sharedController updateMenuItemKeyEquivalents];
     }];
 
-    // Notify BrowserList to keep the application running so it doesn't go away
+    // Create a keep-alive to keep the application running so it doesn't go away
     // when all the browser windows get closed. This is done as early as
     // possible to make sure we even keep the application alive if some other
     // subsystem creates and destroys a ScopedKeepAlive before the application
@@ -977,8 +976,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 }
 
 - (void)allowApplicationToTerminate {
-  // Tell BrowserList to stop the RunLoop and terminate the application when the
-  // last Browser is closed.
+  // Reset the keep-alive to stop the RunLoop and terminate the application when
+  // the last Browser is closed.
   _keepAlive.reset();
 }
 
@@ -1009,7 +1008,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::BROWSER));
 
-  // Tell BrowserList not to keep the browser process alive. Once all the
+  // Reset the keep-alive to keep the browser process alive. Once all the
   // browsers get dealloc'd, it will stop the RunLoop and fall back into main().
   _keepAlive.reset();
 

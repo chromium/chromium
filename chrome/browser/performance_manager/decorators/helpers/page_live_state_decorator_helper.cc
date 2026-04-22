@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -131,10 +129,9 @@ class ActiveTabObserver : public TabModelListObserver {
 
 #else
 
-// Encapsulates all of the "Active tab" tracking logic, which uses `BrowserList`
-// and is therefore not available on Android. This class keeps track of existing
-// Browsers and their tab strips, and updates PageLiveState data with whether
-// each tab is currently active or not.
+// Encapsulates all of the "Active tab" tracking logic. This class keeps track
+// of existing Browsers and their tab strips, and updates PageLiveState data
+// with whether each tab is currently active or not.
 class ActiveTabObserver : public TabStripModelObserver,
                           public BrowserCollectionObserver {
  public:

@@ -124,7 +124,6 @@ source_set("glic") {
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs:tabs_public",
       "//ui/views",
@@ -446,7 +445,6 @@ source_set("impl") {
 
     # Deps that will not be available on Android soon.
     deps += [
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",

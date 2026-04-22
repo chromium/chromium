@@ -33,7 +33,6 @@ source_set("impl") {
     ":util",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",

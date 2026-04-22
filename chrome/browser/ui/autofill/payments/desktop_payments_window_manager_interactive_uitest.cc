@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -128,9 +127,6 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
     }
 
     auto* source_web_contents = GetOriginalPageWebContents();
-
-    // The pop-up must be created from `source_web_contents`, so it will always
-    // be the second browser in the BrowserList.
     auto* popup_web_contents = GetPopupWebContents();
 
     // This ensures that there is no scripting relationship between the pop-up

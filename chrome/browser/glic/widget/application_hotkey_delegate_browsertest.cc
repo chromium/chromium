@@ -10,7 +10,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -124,8 +123,6 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
 
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(test_accel));
   EXPECT_FALSE(focus_manager2->IsAcceleratorRegistered(test_accel));
-
-  // BrowserList will take care of cleaning up browser2.
 }
 
 IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,

@@ -25,9 +25,7 @@ source_set("tracing") {
     ]
   }
 
-  if (!is_android) {
-    public_deps += [ "//chrome/browser/ui:browser_list" ]
-  } else {
+  if (is_android) {
     public_deps += [ "//chrome/browser/ui/android/tab_model" ]
   }
 }

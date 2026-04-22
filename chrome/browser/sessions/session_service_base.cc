@@ -26,7 +26,6 @@
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -770,9 +769,8 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, tab_to_available_range,
        windows_to_track](BrowserWindowInterface* browser) {
-        // Make sure the browser has tabs and a window. Browser's destructor
-        // removes itself from the BrowserList. When a browser is closed the
-        // destructor is not necessarily run immediately. This means it's
+        // Make sure the browser has tabs and a window. When a browser is closed
+        // the destructor is not necessarily run immediately. This means it's
         // possible for us to get a handle to a browser that is about to be
         // removed. If the tab count is 0 or the window is NULL, the browser is
         // about to be deleted, so we ignore it.

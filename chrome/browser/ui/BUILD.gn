@@ -1906,8 +1906,6 @@ static_library("ui") {
       "//chrome/browser/accessibility_annotator/first_run",
       "//chrome/browser/importer",
       "//chrome/browser/importer:impl",
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs:tab_enums",
@@ -1997,7 +1995,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/glic:impl",
 
-      "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/ui/webui/settings:impl",
@@ -5607,9 +5604,7 @@ static_library("ui") {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
 
     # TODO(crbug.com/427204855): Remove this circular include once
-    # "chrome/browser/ui/browser.h" and
-    # "chrome/browser/ui/browser_list.h"
-    # are fully componentized.
+    # "chrome/browser/ui/browser.h" is fully componentized.
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
@@ -5780,26 +5775,6 @@ source_set("browser_navigator_params_headers") {
 }
 
 if (!is_android) {
-  source_set("browser_list") {
-    sources = [ "browser_list.h" ]
-    public_deps = [ "//base" ]
-  }
-
-  source_set("browser_list_impl") {
-    sources = [ "browser_list.cc" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [
-      "//base",
-      "//chrome/browser:browser_process",
-      "//chrome/browser:buildflags",
-      "//chrome/browser/lifetime:termination_notification",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui/browser_window",
-      "//components/keep_alive_registry",
-    ]
-  }
-
   source_set("browser_tab_strip") {
     sources = [
       "browser_tab_strip_model_delegate.h",
@@ -5807,7 +5782,6 @@ if (!is_android) {
       "browser_tab_strip_tracker_delegate.h",
     ]
     public_deps = [
-      ":browser_list",
       "//base",
       "//chrome/browser/ui/tabs:tab_strip",
     ]

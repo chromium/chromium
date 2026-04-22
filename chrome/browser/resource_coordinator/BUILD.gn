@@ -132,7 +132,6 @@ source_set("impl") {
       "//chrome/browser/permissions",
       "//chrome/browser/sessions",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",

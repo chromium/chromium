@@ -14,10 +14,7 @@ static_library("multi_user") {
     "multi_user_window_manager_browser_adaptor.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:browser_list",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
