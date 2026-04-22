@@ -14,18 +14,6 @@ load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
-def __clang_plugin_configs(ctx):
-    configs = [
-        "build/config/unsafe_buffers_paths.txt",
-        "build/config/warning_suppression.txt",
-        # crbug.com/418842344: Angle, PDFium use a different plugin config.
-        "unsafe_buffers_paths.txt",
-    ]
-
-    if "args.gn" in ctx.metadata and gn.args(ctx).get("sanitizer_coverage_skip_stdlib_and_absl"):
-        configs += ["build/config/sanitizers/ignorelist_stdlib_and_absl.txt"]
-    return configs
-
 def __check_crash_diagnostics(ctx, args):
     # If multiple -fcrash-diagnostics-dir flags are provided, clang uses the last one.
     crash_dir = None
@@ -98,7 +86,6 @@ def __filegroups(ctx):
 
 def __input_deps(ctx):
     build_dir = ctx.fs.canonpath(".")
-    clang_plugin_configs = __clang_plugin_configs(ctx)
 
     return {
         # need this because we use
@@ -115,10 +102,6 @@ def __input_deps(ctx):
             path.join(build_dir, "phony/buildtools/third_party/libc++/copy_custom_headers") + ":inputs",
             path.join(build_dir, "phony/buildtools/third_party/libc++/copy_libcxx_headers") + ":inputs",
         ],
-        "third_party/llvm-build/Release+Asserts/bin/clang": clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang++": clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang-cl": clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": clang_plugin_configs,
         "third_party/llvm-build/Release+Asserts/bin/lld-link": [
             "build/config/c++/libc++.natvis",
             "build/win/as_invoker.manifest",
