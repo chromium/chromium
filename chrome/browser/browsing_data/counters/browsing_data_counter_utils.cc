@@ -31,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -47,7 +48,7 @@
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
@@ -199,7 +200,7 @@ std::u16string GetChromeCounterTextFromResult(
 #endif
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
   if (pref_name == browsing_data::prefs::kDeleteHostedAppsData) {
     // Hosted apps counter.
     const HostedAppsCounter::HostedAppsResult* hosted_apps_result =

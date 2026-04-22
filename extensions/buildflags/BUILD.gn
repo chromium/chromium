@@ -19,5 +19,6 @@ buildflag_header("buildflags") {
     "ENABLE_DESKTOP_ANDROID_EXTENSIONS=$enable_desktop_android_extensions",
     "ENABLE_EXTENSIONS_CORE=$enable_extensions_core",
     "ENABLE_PLATFORM_APPS=$enable_platform_apps",
+    "ENABLE_HOSTED_APPS=$enable_hosted_apps",
   ]
 }

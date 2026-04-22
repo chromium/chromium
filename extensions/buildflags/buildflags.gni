@@ -40,6 +40,11 @@ declare_args() {
   # toggled / if-def'd.
   enable_platform_apps = enable_extensions
 
+  # TODO(https://crbug.com/41407868): This also doesn't belong here, but hosted
+  # apps code used to be wrapped with ENABLE_EXTENSIONS and this makes it easier
+  # to delete the hosted apps code when deprecation is complete.
+  enable_hosted_apps = enable_extensions
+
   # Whether the core extensions system is enabled. This prevents many callsites
   # from needing blocks for
   # `if (enable_extensions || enable_desktop_android_extensions)`, since the

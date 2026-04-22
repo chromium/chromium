@@ -11,7 +11,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 #include "extensions/browser/extension_registry.h"
 #endif
 
@@ -33,7 +33,7 @@ scoped_refptr<SiteInstance> GetSiteInstanceForNewTab(Profile* profile,
   if (ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(profile, url))
     return SiteInstance::CreateForURL(profile, url);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
   if (extensions::ExtensionRegistry::Get(profile)
           ->enabled_extensions()
           .GetHostedAppByURL(url))

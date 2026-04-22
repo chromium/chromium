@@ -121,10 +121,10 @@
 #include "chrome/browser/apps/platform_apps/platform_app_navigation_redirector.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -219,9 +219,10 @@ void HandleSSLErrorWrapper(
       is_ssl_error_override_allowed_for_origin);
 }
 
-// Returns whether `web_contents` is within a hosted app.
-bool IsInHostedApp(content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Returns whether `web_contents` is within a web app.
+// TODO(crbug.com/505461569): Support Android.
+bool IsInWebApp(content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   return tab && web_app::AppBrowserController::IsWebApp(
@@ -428,7 +429,7 @@ void CreateAndAddChromeThrottlesForNavigation(
       base::BindRepeating(&MaybeTriggerSecurityInterstitialShownEvent));
   registry.AddThrottle(std::make_unique<SSLErrorNavigationThrottle>(
       registry, base::BindOnce(&HandleSSLErrorWrapper),
-      base::BindOnce(&IsInHostedApp),
+      base::BindOnce(&IsInWebApp),
       base::BindOnce(
           &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));
 

@@ -42,13 +42,13 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::Referrer;
 
@@ -82,15 +82,16 @@ void SSLErrorControllerClient::Proceed() {
   content::WebContents* const web_contents = this->web_contents();
   MaybeTriggerSecurityInterstitialProceededEvent(web_contents, request_url_,
                                                  "SSL_ERROR", cert_error_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Hosted Apps should not be allowed to run if there is a problem with their
+#if !BUILDFLAG(IS_ANDROID)
+  // Web Apps should not be allowed to run if there is a problem with their
   // certificate. So, when users click proceed on an interstitial, move the tab
   // to a regular Chrome window and proceed as usual there.
+  // TODO(crbug.com/505461569): Support Android.
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (web_app::AppBrowserController::IsWebApp(browser))
     chrome::OpenInChrome(browser->GetBrowserForMigrationOnly());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

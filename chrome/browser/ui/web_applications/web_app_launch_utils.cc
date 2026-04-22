@@ -99,7 +99,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 #include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -198,14 +198,14 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
 std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
     Browser* browser,
     const webapps::AppId& app_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser->profile())
           ->GetExtensionById(app_id, extensions::ExtensionRegistry::EVERYTHING);
   if (extension && extension->is_hosted_app()) {
     return std::make_unique<extensions::HostedAppBrowserController>(browser);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_HOSTED_APPS)
   return nullptr;
 }
 

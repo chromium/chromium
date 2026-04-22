@@ -9,6 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_HOSTED_APPS));
 
 class Profile;
 

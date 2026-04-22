@@ -39,7 +39,7 @@
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 #include "base/strings/string_split.h"
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
 #endif
@@ -163,7 +163,7 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResultAndroid) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 // Tests the complex output of the hosted apps counter.
 TEST_F(BrowsingDataCounterUtilsTest, HostedAppsCounterResult) {
   HostedAppsCounter counter(GetProfile());

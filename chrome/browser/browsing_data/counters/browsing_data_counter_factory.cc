@@ -34,7 +34,7 @@
 #include "components/sync/service/sync_service.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
 #endif
 
@@ -128,7 +128,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         profile->GetPrefs());
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_HOSTED_APPS)
   if (pref_name == browsing_data::prefs::kDeleteHostedAppsData) {
     return std::make_unique<HostedAppsCounter>(profile);
   }

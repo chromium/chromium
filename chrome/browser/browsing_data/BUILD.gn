@@ -39,7 +39,7 @@ source_set("browsing_data") {
   if (is_android) {
     public += [ "counters/tabs_counter.h" ]
   }
-  if (enable_extensions) {
+  if (enable_hosted_apps) {
     public += [ "counters/hosted_apps_counter.h" ]
   }
 
@@ -90,7 +90,7 @@ source_set("impl") {
   if (is_android) {
     sources += [ "counters/tabs_counter.cc" ]
   }
-  if (enable_extensions) {
+  if (enable_hosted_apps) {
     sources += [ "counters/hosted_apps_counter.cc" ]
   }
 
