@@ -197,6 +197,15 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService>
+        receiver) {
+  auto* tab_strip_service_feature =
+      browser_->browser_window_features()->tab_strip_service_feature();
+  CHECK(tab_strip_service_feature) << "Browser missing TabStripService";
+  tab_strip_service_feature->AcceptExperimental(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
         receiver) {
   const ui::ElementContext context =

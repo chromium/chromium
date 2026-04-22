@@ -34,6 +34,7 @@ source_set("webui_browser") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/metrics_reporter",
+    "//components/browser_apis/tab_strip:mojom_experiment",
     "//components/guest_contents/common:mojom",
     "//content/public/browser",
     "//ui/color",

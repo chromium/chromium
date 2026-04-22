@@ -37,11 +37,13 @@ build_webui("build") {
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_events.mojom-webui.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-converters.ts",
     "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_api_types.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/tab_strip/tab_strip_experiment_api.mojom-webui.ts",
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
     "$root_gen_dir/components/tabs/public/mojom/tabs.mojom-webui.ts",
   ]
 
   mojo_files_deps = [
+    "//components/browser_apis/tab_strip:mojom_experiment_ts__generator",
     "//components/browser_apis/tab_strip:mojom_ts__copy_converters",
     "//components/browser_apis/tab_strip:mojom_ts__generator",
     "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",

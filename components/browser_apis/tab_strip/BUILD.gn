@@ -23,6 +23,7 @@ mojom("mojom_experiment") {
     "//chrome/browser/ui/tabs/tab_strip_api:impl_header",
     "//chrome/browser/ui/tabs/tab_strip_api:unit_tests",
     "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl:browser_tests",
+    "//chrome/browser/ui/webui_browser",
   ]
 }
 
