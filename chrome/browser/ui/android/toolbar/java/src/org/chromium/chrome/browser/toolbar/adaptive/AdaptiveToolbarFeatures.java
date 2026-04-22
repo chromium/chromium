@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -177,8 +178,8 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.sGlic.isEnabled() && !AndroidSidePanelEnabledFn.isEnabled();
     }
 
-    public static boolean shouldForciblyShowGlicButton(Profile profile) {
-        if (!isGlicActionEnabled()) {
+    public static boolean shouldForciblyShowGlicButton(Context context, Profile profile) {
+        if (!isGlicActionEnabled() || BottomBarConfigUtils.isBottomBarEnabled(context)) {
             return false;
         }
         ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -85,12 +86,16 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
         GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
 
+        // Links to Adaptive Toolbar settings for Phone.
         Preference buttonPref = assertNonNull(findPreference(PREFERENCE_BUTTON));
+
+        // Toggle for LFF.
         ChromeSwitchPreference buttonTogglePref =
                 assertNonNull(findPreference(PREFERENCE_BUTTON_TOGGLE));
 
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            buttonPref.setVisible(false);
+        var context = getContext();
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            buttonPref.setVisible(false); // Hide the phone UI.
             int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
             buttonTogglePref.setChecked(currentSetting == AdaptiveToolbarButtonVariant.GLIC);
             buttonTogglePref.setOnPreferenceChangeListener(
@@ -103,8 +108,21 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         return true;
                     });
         } else {
-            buttonTogglePref.setVisible(false);
-            updateButtonPreference(buttonPref);
+            buttonTogglePref.setVisible(false); // Hide the LFF toggle.
+
+            // If the bottom bar is enabled there is a permanent entry point elsewhere remove all
+            // the settings here.
+            if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
+                buttonPref.setVisible(false);
+                Preference preferenceCategory = findPreference("glic_preference_section");
+                if (preferenceCategory != null) {
+                    preferenceCategory.setVisible(false);
+                }
+                // TODO(crbug.com/505362079): Enable the toggle pref here to hide the permanent
+                // button, but wire it differently.
+            } else {
+                updateButtonPreference(buttonPref);
+            }
         }
 
         ChromeSwitchPreference locationPref =

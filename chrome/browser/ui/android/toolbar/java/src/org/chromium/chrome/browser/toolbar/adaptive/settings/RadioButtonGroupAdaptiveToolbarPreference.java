@@ -46,6 +46,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @AdaptiveToolbarButtonVariant int mAutoButtonCaption;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
+    private boolean mCanUseNewTab = true;
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseReadAloud;
     private boolean mCanUseTranslate = true;
@@ -176,6 +177,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         mNewTabButton.setDescriptionText(basedOnWindowDesc);
         mAddToBookmarksButton.setDescriptionText(basedOnWindowDesc);
 
+        updateNewTabButtonVisibility();
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
         updateTranslateButtonVisibility();
@@ -216,7 +218,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     }
 
     /**
-     * Returns the {@link AdaptiveToolbarButtonVariant} assosicated with the currently selected
+     * Returns the {@link AdaptiveToolbarButtonVariant} associated with the currently selected
      * option.
      */
     @VisibleForTesting
@@ -281,6 +283,11 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         return stringRes == -1 ? "" : getContext().getString(stringRes);
     }
 
+    void setCanUseNewTab(boolean canUseNewTab) {
+        mCanUseNewTab = canUseNewTab;
+        updateNewTabButtonVisibility();
+    }
+
     /*package*/ void setCanUseVoiceSearch(boolean canUseVoiceSearch) {
         mCanUseVoiceSearch = canUseVoiceSearch;
         updateVoiceButtonVisibility();
@@ -299,6 +306,10 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     void setCanUseGlic(boolean canUseGlic) {
         mCanUseGlic = canUseGlic;
         updateGlicButtonVisibility();
+    }
+
+    private void updateNewTabButtonVisibility() {
+        updateButtonVisibility(mNewTabButton, mCanUseNewTab);
     }
 
     private void updateVoiceButtonVisibility() {

@@ -208,6 +208,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.app_rating.AppRatingPromoController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
@@ -1619,7 +1620,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeShowGlicPromo() {
-        if (!ChromeFeatureList.sGlic.isEnabled()) {
+        // When the Android Bottom Bar is enabled the promo is not required as the button is
+        // available by default.
+        if (!ChromeFeatureList.sGlic.isEnabled()
+                || BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             return;
         }
         if (ChromeSharedPreferences.getInstance()

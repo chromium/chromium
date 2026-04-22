@@ -264,6 +264,29 @@ public class AdaptiveToolbarSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, ChromeFeatureList.GLIC})
+    public void testOptionsHiddenWithBottomBar() {
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // New tab button and Glic button should be gone.
+                    Assert.assertEquals(
+                            View.GONE,
+                            getButton(AdaptiveToolbarButtonVariant.NEW_TAB).getVisibility());
+                    Assert.assertEquals(
+                            View.GONE,
+                            getButton(AdaptiveToolbarButtonVariant.GLIC).getVisibility());
+                });
+    }
+
+    @Test
+    @SmallTest
     public void testTranslateOption_Disabled() {
         // Disable translate.
         doReturn(false).when(mPrefService).getBoolean(Pref.OFFER_TRANSLATE_ENABLED);

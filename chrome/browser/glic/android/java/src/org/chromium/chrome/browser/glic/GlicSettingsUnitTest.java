@@ -39,6 +39,9 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +57,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link GlicSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
 public class GlicSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -347,5 +351,17 @@ public class GlicSettingsUnitTest {
         // Simulate toggle On
         locationPref.getOnPreferenceChangeListener().onPreferenceChange(locationPref, true);
         verify(mPrefServiceMock).setBoolean("glic.geolocation_enabled", true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testGlicButtonPreference_AndroidBottomBarEnabled() {
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_button");
+        assertFalse("Preference glic_button should not be visible", preference.isVisible());
+        Preference preferenceCategory = fragment.findPreference("glic_preference_section");
+        assertFalse(
+                "Preference glic_preference_section should not be visible",
+                preferenceCategory.isVisible());
     }
 }

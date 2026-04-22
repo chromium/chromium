@@ -67,6 +67,7 @@ android_library("optional_button_java") {
     "//chrome/browser/settings:search_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:util_java",
     "//chrome/browser/ui/android/tabstrip:enums_java",

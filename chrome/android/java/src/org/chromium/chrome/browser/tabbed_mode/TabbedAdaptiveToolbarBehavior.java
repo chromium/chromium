@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -105,16 +106,18 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     public void registerPerSurfaceButtons(
             AdaptiveToolbarButtonController controller,
             Supplier<@Nullable Tracker> trackerSupplier) {
-        var newTabButton =
-                new OptionalNewTabButtonController(
-                        mContext,
-                        AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon),
-                        mActivityLifecycleDispatcher,
-                        mTabCreatorManagerSupplier,
-                        mActivityTabProvider,
-                        trackerSupplier,
-                        mTabStripVisibilitySupplier);
-        controller.addButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB, newTabButton);
+        if (!BottomBarConfigUtils.isBottomBarEnabled(mContext)) {
+            var newTabButton =
+                    new OptionalNewTabButtonController(
+                            mContext,
+                            AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon),
+                            mActivityLifecycleDispatcher,
+                            mTabCreatorManagerSupplier,
+                            mActivityTabProvider,
+                            trackerSupplier,
+                            mTabStripVisibilitySupplier);
+            controller.addButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB, newTabButton);
+        }
         var addToBookmarks =
                 new AddToBookmarksToolbarButtonController(
                         mActivityTabProvider.asObservable(),
@@ -135,7 +138,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             controller.addButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING, tabGrouping);
         }
 
-        if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+        if (!BottomBarConfigUtils.isBottomBarEnabled(mContext)
+                && AdaptiveToolbarFeatures.isGlicActionEnabled()) {
             controller.addButtonVariant(
                     AdaptiveToolbarButtonVariant.GLIC,
                     new GlicToolbarButtonController(
@@ -156,7 +160,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector != null) {
             Profile profile = selector.getCurrentModel().getProfile();
-            if (profile != null && AdaptiveToolbarFeatures.shouldForciblyShowGlicButton(profile)) {
+            if (profile != null
+                    && AdaptiveToolbarFeatures.shouldForciblyShowGlicButton(mContext, profile)) {
                 return AdaptiveToolbarButtonVariant.GLIC;
             }
         }
@@ -166,6 +171,13 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
 
     @Override
     public boolean canShowManualOverride(int manualOverride) {
+        // Ignore manual overrides for GLIC and New Tab when the Android Bottom Bar is enabled as
+        // these buttons have a dedicated spot in the bottom bar.
+        if (BottomBarConfigUtils.isBottomBarEnabled(mContext)
+                && (manualOverride == AdaptiveToolbarButtonVariant.GLIC
+                        || manualOverride == AdaptiveToolbarButtonVariant.NEW_TAB)) {
+            return false;
+        }
         return true;
     }
 
