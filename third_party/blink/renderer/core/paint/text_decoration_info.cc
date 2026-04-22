@@ -170,8 +170,6 @@ TextDecorationInfo::TextDecorationInfo(
       break;
     }
   }
-
-  UpdateForDecorationIndex();
 }
 
 wtf_size_t TextDecorationInfo::AppliedDecorationCount() const {
@@ -190,15 +188,9 @@ const AppliedTextDecoration& TextDecorationInfo::AppliedDecoration(
 const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
     wtf_size_t decoration_index) {
   DCHECK_LT(decoration_index, AppliedDecorationCount());
-  decoration_index_ = decoration_index;
-  return UpdateForDecorationIndex();
-}
 
-// Update cached properties of |this| for the |decoration_index_|.
-const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
-  DCHECK_LT(decoration_index_, AppliedDecorationCount());
   ResolvedDecoration decoration;
-  decoration.applied_text_decoration = &AppliedDecoration(decoration_index_);
+  decoration.applied_text_decoration = &AppliedDecoration(decoration_index);
   decoration.lines = decoration.applied_text_decoration->Lines();
   decoration.has_underline =
       EnumHasFlags(decoration.lines, TextDecorationLine::kUnderline);
@@ -213,11 +205,11 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
     DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
               AppliedDecorationCount());
     bool disable_decorating_box;
-    if (static_cast<wtf_size_t>(decoration_index_) >=
-        inline_context_->DecoratingBoxes().size()) [[unlikely]] {
+    if (decoration_index >= inline_context_->DecoratingBoxes().size())
+        [[unlikely]] {
       disable_decorating_box = true;
     } else {
-      decorating_box = &inline_context_->DecoratingBoxes()[decoration_index_];
+      decorating_box = &inline_context_->DecoratingBoxes()[decoration_index];
       decorating_box_style = &decorating_box->Style();
 
       // Disable the decorating box when the baseline is central, because the

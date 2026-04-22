@@ -158,8 +158,6 @@ class CORE_EXPORT TextDecorationInfo {
   LayoutUnit OffsetFromDecoratingBox(const DecoratingBox& decorating_box) const;
   float ComputeThickness(const ResolvedDecoration& decoration) const;
 
-  const ResolvedDecoration UpdateForDecorationIndex();
-
   LayoutUnit Width() const { return width_; }
 
   // The |ComputedStyle| of the target text/box to paint decorations for.
@@ -188,9 +186,8 @@ class CORE_EXPORT TextDecorationInfo {
   const float target_ascent_ = 0.f;
   const float svg_resource_scaling_factor_;
 
-  wtf_size_t decoration_index_ = 0;
-
-  // |union_all_lines_| represents the lines found in any |decoration_index_|.
+  // |union_all_lines_| represents the lines found in all
+  // AppliedTextDecorations.
   //
   // Ideally we would build a vector of the TextDecorationLine instances needing
   // ‘line-through’, but this is a rare case so better to avoid vector overhead.
