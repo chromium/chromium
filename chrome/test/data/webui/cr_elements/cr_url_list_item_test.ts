@@ -71,9 +71,9 @@ suite('CrUrlListItemTest', () => {
     const descriptionText =
         element.shadowRoot.querySelector('.description-text')!;
     assertTrue(!!descriptionText);
-    const bdi = descriptionText.querySelector('bdi');
-    assertTrue(!!bdi);
-    assertEquals('1.google.com', bdi.textContent);
+    const bdi = descriptionText.querySelector('bdi')!;
+    assertEquals(
+        'ltr', (bdi.computedStyleMap().get('direction') as CSSUnitValue).value);
   });
 
   test('SetsActiveClass', () => {
