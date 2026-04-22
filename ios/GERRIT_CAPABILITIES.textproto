@@ -1,0 +1,39 @@
+# proto-file: devtools/metadata/metadata.proto
+# proto-message: MetaData
+
+custom_review_agent_config {
+  definition {
+    id: "ios_reviewer"
+    display_text: "iOS reviewer"
+    initial_user_prompt:
+      "You are an AI code analysis assistant integrated into Chromium's code "
+      "review tool. Your role is to find if the CL follows all the rules in "
+      "the various documents listed below, and to provide feedback to the CL "
+      "author with recommendations and reference to the relevant guides. "
+      ""
+      "Make sure to respond in third person, avoiding first-person language. "
+
+    # Google Objective-C Public style guide
+    context_item_links: "https://google.github.io/styleguide/objcguide.html"
+    # Google C++ Public style guide
+    context_item_links: "https://google.github.io/styleguide/cppguide.html"
+    # Chromium C++ style guide
+    context_item_links: "https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md"
+    # Chromium Objective-C and Objective-C++ style guide
+    context_item_links: "https://chromium.googlesource.com/chromium/src/+/main/styleguide/objective-c/objective-c.md"
+    # Bling best Practices
+    context_item_links: "https://g3doc.corp.google.com/company/teams/chrome/ios/docs/engineering/developer_guide/best_practices/best_practices.md?cl=head"
+    # Delegate pattern.
+    context_item_links: "https://docs.google.com/document/d/1BJR7MM15X0lXakSrbA6HpC3sd-bbwQPXpNCUYsGqrm0/edit?usp=sharing"
+    # CL descriptions
+    context_item_links: "https://engdoc.corp.google.com/eng/doc/devguide/coding/review/developer/cl-descriptions.md?cl=head"
+ run_config: {
+      mode: MODE_MANUAL_AUTOREVIEW
+      model_type: MODEL_TYPE_GEMINI_FOR_GOOGLE
+    }
+  }
+  path_expression: "....m"
+  path_expression: "....mm"
+  path_expression: "....cc"
+  path_expression: "....h"
+}
