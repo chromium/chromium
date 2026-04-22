@@ -945,8 +945,8 @@ public class StatusMediator
                 == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
     }
 
-    private static boolean isPageInfoMovedToAppMenu() {
-        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled();
+    private boolean isPageInfoMovedToAppMenu() {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() && !mIsTablet;
     }
 
     @Nullable CookieControlsBridge getCookieControlsBridgeForTesting() {

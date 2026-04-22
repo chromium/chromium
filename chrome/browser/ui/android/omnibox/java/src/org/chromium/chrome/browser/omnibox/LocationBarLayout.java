@@ -517,8 +517,15 @@ public class LocationBarLayout extends ConstraintLayout {
     void onSuggestionsChanged(boolean hasSuggestions) {}
 
     private void setLocationBarStartPadding(int padding) {
-        if (!ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) return;
+        if (!isPageInfoMovedToAppMenu()) {
+            return;
+        }
         setPaddingRelative(padding, getPaddingTop(), getPaddingEnd(), getPaddingBottom());
+    }
+
+    private boolean isPageInfoMovedToAppMenu() {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
     }
 
     /**
