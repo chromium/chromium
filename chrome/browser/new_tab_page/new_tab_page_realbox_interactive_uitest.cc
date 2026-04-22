@@ -1201,3 +1201,44 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
           // host.
           std::string(kLensSearchURL)));
 }
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       KeyboardNavigationAndIndexCycling) {
+  const DeepQuery kRealboxMatch = {"ntp-app", "ntp-searchbox",
+                                   "cr-searchbox-dropdown",
+                                   "cr-searchbox-match", "#suggestion"};
+
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Seed history results to ensure the dropdown is populated.
+      SeedSearchboxResult("h"),
+      // Click realbox input to focus it and trigger the dropdown/scrim.
+      ClickElement(kNtpElementId, kRealboxInput),
+      WaitForElementVisibilityChange(kSearchboxDropdown,
+                                     /*expected_visible=*/true),
+      SendKeyPress(kNtpElementId, ui::VKEY_H),
+      // Wait for the verbatim match to render.
+      WaitForVerbatimMatch(kNtpElementId, kRealboxMatch, "h"),
+      // Press DOWN to select the first suggestion.
+      SendKeyPress(kNtpElementId, ui::VKEY_DOWN),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'suggestion-1'"),
+      // Press DOWN to select the next suggestion.
+      SendKeyPress(kNtpElementId, ui::VKEY_DOWN),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'suggestion-2'"),
+      // Press DOWN to wrap around to the first item (which is the verbatim "").
+      SendKeyPress(kNtpElementId, ui::VKEY_DOWN),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'h'"),
+      // Press UP to wrap around to the bottom item.
+      SendKeyPress(kNtpElementId, ui::VKEY_UP),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'suggestion-2'"),
+      // Press ENTER to navigate.
+      SendKeyPress(kNtpElementId, ui::VKEY_RETURN),
+      // Ensure google search occurs.
+      WaitForGoogleSearch(kNtpElementId,
+                          {{"q", "suggestion-2"}, {"source", "chrome.rb"}}));
+}
