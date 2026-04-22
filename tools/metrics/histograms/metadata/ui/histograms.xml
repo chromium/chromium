@@ -882,6 +882,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation"
+    enum="Boolean" expires_after="2026-09-06">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded during `RenderProcessHostImpl::Init()` for TopChromeWebUI
+    processes. Records true if there is already an existing RenderProcessHost
+    for TopChromeWebUI for the same profile that is initialized and not dead.
+  </summary>
+</histogram>
+
 <histogram name="InitialWebUI.Toolbar.RenderProcessGone"
     enum="TerminationStatus" expires_after="2026-07-05">
   <owner>leimy@chromium.org</owner>

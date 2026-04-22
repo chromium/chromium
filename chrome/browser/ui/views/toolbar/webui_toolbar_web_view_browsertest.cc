@@ -3346,3 +3346,27 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarProcessOverheadExperimentBrowserTest,
   // Verify that the detached WebUIToolbarWebView IS created.
   EXPECT_NE(toolbar_view->detached_toolbar_webview_for_testing(), nullptr);
 }
+
+class WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest
+    : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest() = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebUIToolbarWebViewBrowserTest::SetUpInProcessBrowserTestFixture();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
+                       FirstProcessRecordsFalse) {
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester_->ExpectUniqueSample(
+      "InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation",
+      false, 1);
+}

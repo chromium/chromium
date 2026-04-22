@@ -1846,6 +1846,24 @@ bool RenderProcessHostImpl::Init() {
   if (IsInitializedAndNotDead())
     return true;
 
+  if (IsForTopChromeWebUI()) {
+    bool existing_found = false;
+    auto* browser_context = GetBrowserContext();
+    for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
+         it.Advance()) {
+      RenderProcessHost* host = it.GetCurrentValue();
+      if (host != this && host->IsForTopChromeWebUI() &&
+          host->GetBrowserContext() == browser_context &&
+          host->IsInitializedAndNotDead()) {
+        existing_found = true;
+        break;
+      }
+    }
+    base::UmaHistogramBoolean(
+        "InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation",
+        existing_found);
+  }
+
   base::CommandLine::StringType renderer_prefix;
   // A command prefix is something prepended to the command line of the spawned
   // process.
