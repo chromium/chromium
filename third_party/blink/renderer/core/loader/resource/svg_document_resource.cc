@@ -91,14 +91,28 @@ void SVGDocumentResource::NotifyStartLoad() {
 
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
+  const bool enforce_integrity =
+      RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled();
+  if (enforce_integrity) {
+    CheckResourceIntegrity();
+  }
+
   bool notify_observers = true;
   if (RuntimeEnabledFeatures::
           SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
       HasSuccessfulRevalidation()) {
     content_->UpdateStatus(GetStatus());
     notify_observers = content_->IsLoaded();
-  } else {
+  } else if (!enforce_integrity || PassedIntegrityChecks()) {
     notify_observers = UpdateContent();
+  } else {
+    // TODO(crbug.com/435625756): Surface the integrity failure to the
+    // devtools console.
+    if (!ErrorOccurred()) {
+      SetStatus(ResourceStatus::kLoadError);
+    }
+    ClearData();
+    content_->UpdateStatus(GetStatus());
   }
   TextResource::Finish(load_finish_time, task_runner);
   if (notify_observers) {

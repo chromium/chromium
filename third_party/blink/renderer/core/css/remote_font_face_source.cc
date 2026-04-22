@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -197,11 +198,14 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   // SRI checks should be done here in ResourceClient instead of
   // ResourceFetcher. SRI failure should behave as network error
   // (ErrorOccurred()). PreloadCache even caches network errors.
-  // Font fetch itself doesn't support SRI but font preload does.
-  // So, if the resource was preloaded we need to check
-  // SRI failure and simulate network error if it happens.
-  bool force_integrity_checks = resource->ForceIntegrityChecks();
-  if (force_integrity_checks) {
+  // SRI applies to fonts loaded via preload (ForceIntegrityChecks) and via
+  // CSS URL modifiers (e.g. integrity() in @font-face src). In either case
+  // we check here and simulate a network error on failure.
+  const bool check_integrity =
+      resource->ForceIntegrityChecks() ||
+      (RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled() &&
+       !resource->GetIntegrityMetadata().empty());
+  if (check_integrity) {
     resource->IntegrityReport().SendReports(execution_context);
   }
 
@@ -209,7 +213,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   // (ErrorOccurred() is true). To simulate network error we don't update
   // custom_font_data_ to keep the nullptr value in case of SRI failures.
   DCHECK(!custom_font_data_);
-  if (resource->PassedIntegrityChecks() || !force_integrity_checks) {
+  if (resource->PassedIntegrityChecks() || !check_integrity) {
     custom_font_data_ = font->GetCustomFontData();
   }
   url_ = resource->Url().GetString();

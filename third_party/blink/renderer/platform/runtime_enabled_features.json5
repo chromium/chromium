@@ -1827,6 +1827,12 @@
       status: "stable",
     },
     {
+      // Kill switch for integrity() enforcement on CSS image and SVG
+      // document resources. See also: CSSURLRequestModifiers
+      name: "CSSResourceIntegrityEnforcement",
+      status: "stable",
+    },
+    {
       name: "CSSRevertRule",
       status: "stable",
     },

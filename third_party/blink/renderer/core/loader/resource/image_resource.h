@@ -152,6 +152,7 @@ class CORE_EXPORT ImageResource final
   void DestroyDecodedDataIfPossible() override;
   void DestroyDecodedDataForFailedRevalidation() override;
 
+  void IntegrityFailure();
   void FlushImageIfNeeded();
 
   Member<ImageResourceContent> content_;

@@ -542,6 +542,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   uint32_t MemoryCacheHitCount() const { return memory_cache_hit_count_; }
   double DecayedHitScore() const { return decayed_hit_score_; }
 
+  // Runs the SRI / Unencoded-Digest validation against the current Data() and
+  // records the result in `integrity_disposition_`. Subsequent calls are
+  // no-ops.
+  void CheckResourceIntegrity();
+
  private:
   friend class ResourceLoader;
   friend class MemoryCache;
@@ -557,7 +562,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // MemoryPressureListener overrides:
   void OnMemoryPressure(base::MemoryPressureLevel) override;
 
-  void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);
 
   // Only call this from the MemoryCache. Calling it from anything else will

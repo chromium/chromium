@@ -43,9 +43,6 @@ class TextEncoding;
 // https://drafts.csswg.org/css-values-5/#request-url-modifiers
 //
 // TODO(crbug.com/435625756): @import does not yet apply these modifiers.
-// TODO(crbug.com/435625756): integrity() metadata is set on fetch requests
-// but SRI failures are not yet enforced by CSS resource loading pipelines
-// (ImageResource, RemoteFontFaceSource, SVGDocumentResource).
 struct CORE_EXPORT CSSUrlRequestModifiers {
   CrossOriginAttributeValue cross_origin = kCrossOriginAttributeNotSet;
   String integrity;
