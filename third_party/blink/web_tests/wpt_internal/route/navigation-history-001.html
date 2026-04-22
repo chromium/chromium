@@ -36,7 +36,10 @@
             precommit.resolve();
             await new Promise(r => t.step_timeout(r, 0));
           },
-          async handler() { handler.resolve(); }
+          async handler() {
+            handler.resolve();
+            await new Promise(resolve => requestAnimationFrame(resolve));
+          }
         })
       }, {once: true});
     }
@@ -46,7 +49,7 @@
     navigation.navigate("#aaaaa");
     await nav.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
     await navigation.transition.committed;
     assert_equals(getComputedStyle(elm).padding, no_match);
@@ -60,7 +63,7 @@
     navigation.back();
     await nav.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
     await handler.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
@@ -72,7 +75,7 @@
     navigation.forward();
     await nav.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
     await handler.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);

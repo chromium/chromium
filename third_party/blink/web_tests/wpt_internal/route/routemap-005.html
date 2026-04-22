@@ -46,11 +46,10 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  const entrychange = Promise.withResolvers();
-  const finished = Promise.withResolvers();
-  navigation.addEventListener("currententrychange", e => { entrychange.resolve(); });
-  navigation.addEventListener("navigatesuccess", e => { finished.resolve(); });
-  navigation.addEventListener("navigate", e => { e.intercept(); });
+  let entrychange, finished;
+  navigation.addEventListener("currententrychange", e => { entrychange?.resolve(); });
+  navigation.addEventListener("navigatesuccess", e => { finished?.resolve(); });
+  navigation.addEventListener("navigate", e => { e.intercept({handler: async () => new Promise(resolve => setTimeout(resolve, 100))}); });
 
   function assert_invariants(msg) {
     assert_equals(getComputedStyle(target).paddingLeft, "0px", msg);
@@ -78,6 +77,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", state);
     assert_invariants(state);
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r2");
     await entrychange.promise;
     // at:url-pattern("match-later-r2"), from:url-pattern("*route*"),
@@ -101,6 +102,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", state);
     assert_invariants(state);
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r3");
     await entrychange.promise;
     // from:url-pattern("match-later-r2") should match.
@@ -116,6 +119,8 @@
     // Nothing should match.
     assert_no_matches("at match-later-r3");
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r4");
     await entrychange.promise;
     // to:url-pattern("match-later-r4") should match.

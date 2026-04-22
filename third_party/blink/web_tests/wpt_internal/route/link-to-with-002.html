@@ -24,9 +24,9 @@
 <script>
   promise_test(async (t) => {
     await new Promise(r => window.onload = () => t.step_timeout(r, 0));
-    const nav = Promise.withResolvers();
-    const precommit = Promise.withResolvers();
-    const handler = Promise.withResolvers();
+    let nav = Promise.withResolvers();
+    let precommit = Promise.withResolvers();
+    let handler = Promise.withResolvers();
     navigation.onnavigate = (event) => {
       nav.resolve();
       event.intercept({
@@ -34,7 +34,10 @@
           precommit.resolve();
           await new Promise(r => t.step_timeout(r, 0));
         },
-        async handler() { handler.resolve(); }
+        async handler() {
+          handler.resolve();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
       })
     }
     assert_equals(getComputedStyle(link1).paddingTop, "0px", "initial");
@@ -45,7 +48,7 @@
     assert_equals(getComputedStyle(link1).paddingTop, "10px", "nav");
     assert_equals(getComputedStyle(link1).paddingBottom, "0px", "nav");
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "nav");
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(link1).paddingTop, "10px", "precommit");
     assert_equals(getComputedStyle(link1).paddingBottom, "0px", "precommit");
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "precommit");
@@ -62,12 +65,15 @@
     assert_equals(getComputedStyle(link1).paddingBottom, "0px", "final");
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "final");
 
+    nav = Promise.withResolvers();
+    precommit = Promise.withResolvers();
+    handler = Promise.withResolvers();
     navigation.navigate("bar");
     await nav.promise;
     assert_equals(getComputedStyle(link1).paddingTop, "10px", "nav2");
     assert_equals(getComputedStyle(link1).paddingBottom, "10px", "nav2");
     assert_equals(getComputedStyle(container).paddingLeft, "10px", "nav2");
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(link1).paddingTop, "10px", "precommit2");
     assert_equals(getComputedStyle(link1).paddingBottom, "10px", "precommit2");
     assert_equals(getComputedStyle(container).paddingLeft, "10px", "precommit2");

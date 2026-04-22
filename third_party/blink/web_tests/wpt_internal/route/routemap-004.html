@@ -32,47 +32,71 @@
   }
 
   @navigation (at: r1) {
-    #target { width: 100px; }
+    #target {
+      width: 100px;
+    }
   }
 
   @navigation (from: r1) {
-    #target { padding-top: 20px; }
+    #target {
+      padding-top: 20px;
+    }
   }
 
   @navigation (to: r2) {
-    #target { padding-bottom: 30px; }
+    #target {
+      padding-bottom: 30px;
+    }
   }
 
   @navigation (at: r2) {
-    #target { height: 90px; }
+    #target {
+      height: 90px;
+    }
   }
 
   @navigation (from: r2) {
-    #target { margin-left: 70px; }
+    #target {
+      margin-left: 70px;
+    }
   }
 
   @navigation (to: r4) {
-    #target { margin-right: 80px; }
+    #target {
+      margin-right: 80px;
+    }
   }
 
   /* These should never match in the test. */
   @navigation (to: r1) {
-    #target { padding-left: 666px; }
+    #target {
+      padding-left: 666px;
+    }
   }
 
   @navigation (from: r4) {
-    #target { padding-right: 666px; }
+    #target {
+      padding-right: 666px;
+    }
   }
 </style>
 <div id="target"></div>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  const entrychange = Promise.withResolvers();
-  const finished = Promise.withResolvers();
-  navigation.addEventListener("currententrychange", e => { entrychange.resolve(); });
-  navigation.addEventListener("navigatesuccess", e => { finished.resolve(); });
-  navigation.addEventListener("navigate", e => { e.intercept(); });
+  let entrychange, finished;
+  navigation.addEventListener("currententrychange", (e) => {
+    entrychange?.resolve();
+  });
+  navigation.addEventListener("navigatesuccess", (e) => {
+    finished?.resolve();
+  });
+  navigation.addEventListener("navigate", (e) => {
+    e.intercept({
+      handler: async () =>
+        new Promise((resolve) => requestAnimationFrame(resolve)),
+    });
+  });
 
   function assert_invariants(msg) {
     assert_equals(getComputedStyle(target).paddingLeft, "0px", msg);
@@ -99,6 +123,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", "at r1");
     assert_invariants("at r1");
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r2");
     await entrychange.promise;
     // "at:r2", "from:r1", and "to:r2" should match.
@@ -119,6 +145,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", "at r2");
     assert_invariants("at r2");
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r3");
     await entrychange.promise;
     // "from:r2" should match.
@@ -133,6 +161,8 @@
     // Nothing should match.
     assert_no_matches("at r3");
 
+    entrychange = Promise.withResolvers();
+    finished = Promise.withResolvers();
     navigation.navigate("match-later-r4");
     await entrychange.promise;
     // "to:r4" should match.

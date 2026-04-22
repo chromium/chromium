@@ -38,7 +38,10 @@
           precommit.resolve();
           await new Promise(r => t.step_timeout(r, 0));
         },
-        async handler() { handler.resolve(); }
+        async handler() {
+          handler.resolve();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
       })
     }
     assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
@@ -47,7 +50,7 @@
     await nav.promise;
     assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
     assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
-    await precommit.resolve;
+    await precommit.promise;
     assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
     assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
     await navigation.transition.committed;
