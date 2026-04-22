@@ -585,6 +585,11 @@ DEFINE_VARIATION_PARAM(kIPHiOSPriceTrackingDesktopFeature,
 DEFINE_VARIATION_PARAM(kIPHResumptionRailFeature, "IPH_ResumptionRail");
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_WIN)
+DEFINE_VARIATION_PARAM(kIPHSearchExtensionSideloadFeature,
+                       "IPH_SearchExtensionSideloadFeature");
+#endif  // BUILDFLAG(IS_WIN)
+
 // Defines the array of which features should be listed in the chrome://flags
 // UI to be able to select them alone for demo-mode. The features listed here
 // are possible to enable on their own in demo mode.
@@ -878,6 +883,11 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSignInBenefitsFeature),
         VARIATION_ENTRY(kIPHSupervisedUserProfileSigninFeature),
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+        VARIATION_ENTRY(kIPHSearchExtensionSideloadFeature),
+#endif  // BUILDFLAG(IS_WIN)
+
         // clang-format on
 };
 

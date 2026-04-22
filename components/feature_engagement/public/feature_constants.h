@@ -447,6 +447,16 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPriceTrackingDesktopFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHResumptionRailFeature);
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_WIN)
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHSearchExtensionSideloadFeature);
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string> kSideloadExtensionArm;
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string> kSideloadExtensionEdgeStoreUrl;
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string> kSideloadExtensionInstructionsUrl;
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace feature_engagement
 
 #endif  // COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_

@@ -606,6 +606,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RtlGestureNavigation"
       summary="the in product help dialog to educate users on how to do
                gesture navigation in RTL mode."/>
+  <variant name="IPH_SearchExtensionSideloadFeature"
+      summary="Showing the Search extension sideload promo on Windows"/>
   <variant name="IPH_SharedHighlightingBuilder"
       summary="the in product help message to notify the user that the share
                action can preemptively share a link-to-text"/>

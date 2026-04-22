@@ -359,6 +359,12 @@ const base::Feature* const kAllFeatures[] = {
 // keep-sorted end
 #endif  // BUILDFLAG(IS_WIN) ||  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN)
+    // keep-sorted start case=no
+    &kIPHSearchExtensionSideloadFeature,
+// keep-sorted end
+#endif  // BUILDFLAG(IS_WIN)
+
 };
 }  // namespace
 
