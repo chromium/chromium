@@ -91,6 +91,7 @@ source_set("impl") {
     sources += [
       "android/contextual_tasks_bridge.cc",
       "android/contextual_tasks_bridge.h",
+      "android/contextual_tasks_fusebox_utils.cc",
       "android/contextual_tasks_ui_service_delegate_android.cc",
       "android/contextual_tasks_ui_service_delegate_android.h",
     ]
@@ -569,6 +570,7 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImpl.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
     ]
 
@@ -576,10 +578,13 @@ if (is_android) {
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/omnibox:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/messages/android:java",
       "//components/strings:components_strings_grd",
@@ -587,32 +592,46 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
+      "//url:gurl_java",
     ]
   }
 
   generate_jni("jni_headers") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImpl.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
     ]
   }
 
   robolectric_library("junit") {
-    sources = [ "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java" ]
+    sources = [
+      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImplTest.java",
+      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java",
+    ]
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//base:supplier_java",
+      "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/omnibox:java",
       "//chrome/browser/ui/messages/android:java",
+      "//components/browser_ui/styles/android:java",
       "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
     ]
   }
 }

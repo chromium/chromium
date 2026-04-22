@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksFuseboxManagerImpl;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -1302,7 +1303,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
             mContextualTasksFuseboxManager =
-                    new ContextualTasksFuseboxManager(
+                    new ContextualTasksFuseboxManagerImpl(
                             mActivity,
                             () -> {
                                 ViewStub stub =

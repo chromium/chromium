@@ -56,7 +56,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
         mFuseboxSessionState = fuseboxSessionState;
     }
 
-    void destroy() {
+    public void destroy() {
         if (mFuseboxSessionState != null) {
             mFuseboxSessionState.destroy();
         }

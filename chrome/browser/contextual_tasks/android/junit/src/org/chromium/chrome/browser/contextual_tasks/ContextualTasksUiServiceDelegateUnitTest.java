@@ -78,6 +78,26 @@ public class ContextualTasksUiServiceDelegateUnitTest {
     }
 
     @Test
+    public void testOnWebUIDestroyed() {
+        ContextualTasksFuseboxManager.KEY.attachToHost(mUserDataHost, mFuseboxManager);
+
+        mDelegate.onWebUIDestroyed(mWindowAndroid, TEST_TASK_ID);
+
+        verify(mFuseboxManager).onWebUIDestroyed(eq(TEST_TASK_ID));
+    }
+
+    @Test
+    public void testOnTaskChanged() {
+        ContextualTasksFuseboxManager.KEY.attachToHost(mUserDataHost, mFuseboxManager);
+        String oldTaskId = "old-task-id";
+        String newTaskId = "new-task-id";
+
+        mDelegate.onTaskChanged(mWindowAndroid, oldTaskId, newTaskId);
+
+        verify(mFuseboxManager).onTaskChanged(eq(oldTaskId), eq(newTaskId));
+    }
+
+    @Test
     public void testShowUndoSnackbar() {
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
 
