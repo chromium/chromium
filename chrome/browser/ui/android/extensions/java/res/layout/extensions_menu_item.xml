@@ -12,41 +12,52 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?android:attr/selectableItemBackground"
     android:paddingStart="@dimen/extensions_menu_horizontal_padding"
     android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
     android:paddingBottom="16dp"
-    android:clickable="true"
-    android:focusable="true"
     tools:ignore="UnusedResources" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="48dp" >
 
-        <ImageView
-            android:id="@+id/extensions_menu_item_icon"
-            android:scaleType="fitCenter"
-            style="@style/ListMenuItemIconStyle.Start"
-            android:layout_width="@dimen/extensions_menu_icon_size"
-            android:layout_height="@dimen/extensions_menu_icon_size"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/extensions_menu_item_primary_action"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:importantForAccessibility="no" />
+            app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_toggle">
 
-        <TextView
-            android:id="@+id/extensions_menu_item_title"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_toggle"
-            app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0" />
+            <ImageView
+                android:id="@+id/extensions_menu_item_icon"
+                android:scaleType="fitCenter"
+                style="@style/ListMenuItemIconStyle.Start"
+                android:layout_width="@dimen/extensions_menu_icon_size"
+                android:layout_height="@dimen/extensions_menu_icon_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:id="@+id/extensions_menu_item_title"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
             android:id="@+id/extensions_menu_item_toggle"
@@ -85,3 +96,4 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>
+
