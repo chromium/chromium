@@ -191,6 +191,10 @@ namespace {
 
 using ::ui::mojom::blink::DragOperation;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+constexpr base::TimeDelta kWindowingControlsChangeTimeout = base::Seconds(5);
+#endif
+
 void ForEachLocalFrameControlledByWidget(
     LocalFrame* frame,
     base::FunctionRef<void(WebLocalFrameImpl*)> callback) {
@@ -1867,11 +1871,13 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (old_show_state != window_show_state_) {
-    View()->OnWindowShowStateChanged(old_show_state, window_show_state_);
-  }
-  if (old_resizable != resizable_) {
-    View()->OnResizableChanged(resizable_);
+  if (ForMainFrame()) {
+    if (old_show_state != window_show_state_) {
+      OnWindowShowStateChanged(old_show_state, window_show_state_);
+    }
+    if (old_resizable != resizable_) {
+      OnResizableChanged(resizable_);
+    }
   }
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -5441,5 +5447,174 @@ void WebFrameWidgetImpl::OnFirstContentfulPaint(
     const base::TimeTicks& first_paint_time) {
   widget_base_->OnFirstContentfulPaint(first_paint_time);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool WebFrameWidgetImpl::MaximizeRequested(
+    WindowingControlsChangeCallback callback) {
+  return HandleWindowShowStateChangeRequest(
+      WindowShowStateChangeType::kMaximize, std::move(callback));
+}
+
+bool WebFrameWidgetImpl::MinimizeRequested(
+    WindowingControlsChangeCallback callback) {
+  return HandleWindowShowStateChangeRequest(
+      WindowShowStateChangeType::kMinimize, std::move(callback));
+}
+
+bool WebFrameWidgetImpl::RestoreRequested(
+    WindowingControlsChangeCallback callback) {
+  return HandleWindowShowStateChangeRequest(WindowShowStateChangeType::kRestore,
+                                            std::move(callback));
+}
+
+bool WebFrameWidgetImpl::HandleWindowShowStateChangeRequest(
+    WindowShowStateChangeType type,
+    WindowingControlsChangeCallback callback) {
+  if (main_data().window_show_state_change_callback.has_value()) {
+    std::move(callback).Run(/*succeeded=*/false);
+    return false;
+  } else {
+    uint64_t id = base::RandUint64();
+    main_data().window_show_state_change_callback.emplace(id, type,
+                                                          std::move(callback));
+    PostDelayedRejectionForAWCPromise(id);
+    return true;
+  }
+}
+
+bool WebFrameWidgetImpl::SetResizableRequested(
+    bool resizable,
+    WindowingControlsChangeCallback callback) {
+  if (main_data().set_resizable_change_callback.has_value()) {
+    // Reject the current request if there's already a pending request.
+    std::move(callback).Run(/*succeeded=*/false);
+    return false;
+  } else {
+    if (Resizable() == resizable) {
+      std::move(callback).Run(/*succeeded=*/true);
+      // The desired resizable property is already set. We still need to mark
+      // what resizable value has been requested by the page.
+      return true;
+    } else {
+      // We need to wait for the window resizable property to be changed by the
+      // operating system.
+      uint64_t id = base::RandUint64();
+      main_data().set_resizable_change_callback.emplace(id, resizable,
+                                                        std::move(callback));
+      PostDelayedRejectionForAWCPromise(id);
+      return true;
+    }
+  }
+}
+
+void WebFrameWidgetImpl::OnWindowShowStateChanged(
+    ui::mojom::blink::WindowShowState old_state,
+    ui::mojom::blink::WindowShowState new_state) {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  CHECK_NE(old_state, new_state);
+  using ui::mojom::blink::WindowShowState;
+  switch (new_state) {
+    case WindowShowState::kDefault:
+    case WindowShowState::kNormal:
+      WasRestored();
+      break;
+    case WindowShowState::kMinimized:
+      WasMinimized();
+      break;
+    case WindowShowState::kMaximized:
+      WasMaximized();
+      if (old_state == WindowShowState::kMinimized ||
+          old_state == WindowShowState::kFullscreen) {
+        WasRestored();
+      }
+      break;
+    case WindowShowState::kInactive:
+    case WindowShowState::kFullscreen:
+    case WindowShowState::kEnd:
+      break;
+  }
+}
+
+void WebFrameWidgetImpl::OnResizableChanged(bool new_resizable) {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  if (main_data().set_resizable_change_callback.has_value() &&
+      main_data().set_resizable_change_callback->requested_resizable ==
+          new_resizable) {
+    std::move(main_data().set_resizable_change_callback->callback)
+        .Run(/*succeeded=*/true);
+    main_data().set_resizable_change_callback.reset();
+  }
+}
+
+void WebFrameWidgetImpl::WasMaximized() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMaximize);
+}
+
+void WebFrameWidgetImpl::WasMinimized() {
+  CHECK(ForMainFrame());
+  UpdateLifecycle(WebLifecycleUpdate::kLayout,
+                  DocumentUpdateReason::kComputedStyle);
+  for (Frame* frame = GetPage()->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      Document* document = local_frame->GetDocument();
+      CHECK(document);
+      // If the window is minimized, the MediaQueryList change events will be
+      // throttled. To ensure the listeners for `(display-state: minimized)`
+      // change will get executed, we need to dispatch them instead of
+      // enqueuing.
+      document->DispatchMediaQueryListEvents();
+    }
+  }
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMinimize);
+}
+
+void WebFrameWidgetImpl::WasRestored() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kRestore);
+}
+
+void WebFrameWidgetImpl::HandleWindowShowStateChangeCallbackWith(
+    WindowShowStateChangeType type) {
+  if (main_data().window_show_state_change_callback.has_value() &&
+      main_data().window_show_state_change_callback->requested_action == type) {
+    std::move(main_data().window_show_state_change_callback->callback)
+        .Run(/*succeeded=*/true);
+    main_data().window_show_state_change_callback.reset();
+  }
+}
+
+void WebFrameWidgetImpl::PostDelayedRejectionForAWCPromise(uint64_t id) {
+  GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      blink::BindOnce(&WebFrameWidgetImpl::RejectAWCPromise,
+                      Unretained(&main_data()), id),
+      kWindowingControlsChangeTimeout);
+}
+
+void WebFrameWidgetImpl::RejectAWCPromise(MainFrameData* main_data,
+                                          uint64_t id) {
+  CHECK(main_data);
+  if (main_data->window_show_state_change_callback.has_value() &&
+      main_data->window_show_state_change_callback->id == id) {
+    std::move(main_data->window_show_state_change_callback->callback)
+        .Run(/*succeeded=*/false);
+    main_data->window_show_state_change_callback.reset();
+  } else if (main_data->set_resizable_change_callback.has_value() &&
+             main_data->set_resizable_change_callback->id == id) {
+    std::move(main_data->set_resizable_change_callback->callback)
+        .Run(/*succeeded=*/false);
+    main_data->set_resizable_change_callback.reset();
+  }
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace blink

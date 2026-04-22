@@ -760,6 +760,30 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   WidgetBase* widget_base_for_testing() const { return widget_base_.get(); }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  enum class WindowShowStateChangeType {
+    kMaximize,
+    kMinimize,
+    kRestore,
+  };
+  using WindowingControlsChangeCallback = base::OnceCallback<void(bool)>;
+  bool MaximizeRequested(WindowingControlsChangeCallback callback);
+  bool MinimizeRequested(WindowingControlsChangeCallback callback);
+  bool RestoreRequested(WindowingControlsChangeCallback callback);
+  bool SetResizableRequested(bool resizable,
+                             WindowingControlsChangeCallback callback);
+
+  // Additional Windowing Controls API helpers.
+  void WasMaximized();
+  void WasMinimized();
+  void WasRestored();
+
+  // Resolve promises to window functions above.
+  void OnWindowShowStateChanged(ui::mojom::blink::WindowShowState old_state,
+                                ui::mojom::blink::WindowShowState new_state);
+  void OnResizableChanged(bool new_resizable);
+#endif
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation(bool urgent) override;
@@ -1064,6 +1088,16 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool HandleWindowShowStateChangeRequest(
+      WindowShowStateChangeType type,
+      WindowingControlsChangeCallback callback);
+  void PostDelayedRejectionForAWCPromise(uint64_t id);
+  struct MainFrameData;
+  static void RejectAWCPromise(MainFrameData* main_data, uint64_t id);
+  void HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType type);
+#endif
+
   // Let latched scroller know to unpin its selected scroll-marker.
   void NotifyLatchedScrollMarkerGroup(
       const cc::CompositorCommitData& commit_data);
@@ -1252,6 +1286,22 @@ class CORE_EXPORT WebFrameWidgetImpl
     // contents") like a <webview>. If false, the widget is the top level
     // widget.
     bool is_for_nested_main_frame = false;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    struct WindowShowStateCallbackData {
+      uint64_t id;
+      WindowShowStateChangeType requested_action;
+      WindowingControlsChangeCallback callback;
+    };
+    std::optional<WindowShowStateCallbackData>
+        window_show_state_change_callback;
+
+    struct SetResizableCallbackData {
+      uint64_t id;
+      bool requested_resizable;
+      WindowingControlsChangeCallback callback;
+    };
+    std::optional<SetResizableCallbackData> set_resizable_change_callback;
+#endif
   } main_frame_data_;
 
   MainFrameData& main_data() {
