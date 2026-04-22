@@ -836,10 +836,6 @@ class MockAutofillClient : public TestAutofillClient {
               (const FormFieldData& field, AutofillClient::IphFeature feature),
               (override));
   MOCK_METHOD(void, HideAutofillFieldIph, (), (override));
-  MOCK_METHOD(void,
-              ShowPlusAddressEmailOverrideNotification,
-              (const std::string&, AutofillClient::EmailOverrideUndoCallback),
-              (override));
   MOCK_METHOD(bool, IsTabInActorMode, (), (const override));
   MOCK_METHOD(AutofillAiManager*, GetAutofillAiManager, (), (override));
 };

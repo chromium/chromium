@@ -31,8 +31,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kManageCreditCard";
     case SuggestionType::kManageIban:
       return "kManageIban";
-    case SuggestionType::kManagePlusAddress:
-      return "kManagePlusAddress";
     case SuggestionType::kManageLoyaltyCard:
       return "kManageLoyaltyCard";
     case SuggestionType::kComposeResumeNudge:
@@ -83,8 +81,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kIbanEntry";
     case SuggestionType::kBnplEntry:
       return "kBnplEntry";
-    case SuggestionType::kFillExistingPlusAddress:
-      return "kFillExistingPlusAddress";
     case SuggestionType::kMerchantPromoCodeEntry:
       return "kMerchantPromoCodeEntry";
     case SuggestionType::kSeePromoCodeDetails:

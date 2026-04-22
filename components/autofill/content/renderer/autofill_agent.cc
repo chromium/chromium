@@ -1510,11 +1510,9 @@ void AutofillAgent::ShowSuggestions(
 
   last_queried_element_ = FieldRef(element);
 
-  // Password manager takes precedence over Autofill, but not about manual
-  // fallbacks.
+  // Password manager takes precedence over Autofill.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
-  if (auto input_element = element.DynamicTo<WebInputElement>();
-      input_element && !IsPlusAddressesManuallyTriggered(trigger_source)) {
+  if (auto input_element = element.DynamicTo<WebInputElement>()) {
     // Only manually triggered requests override generation requests.
     if (!IsPasswordsAutofillManuallyTriggered(trigger_source) &&
         password_generation_agent_ &&

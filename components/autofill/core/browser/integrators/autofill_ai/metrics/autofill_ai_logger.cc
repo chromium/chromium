@@ -348,7 +348,6 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(
           case FillingProduct::kMerchantPromoCode:
           case FillingProduct::kIban:
           case FillingProduct::kPassword:
-          case FillingProduct::kPlusAddresses:
           case FillingProduct::kAutofillAi:
           case FillingProduct::kLoyaltyCard:
           case FillingProduct::kIdentityCredential:

@@ -526,44 +526,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Combine(Bool(), Bool()),
                          PopupViewViewsBrowsertestBase::GetTestSuffix);
 
-class PopupViewViewsPlusAddressSuggestionBrowsertest
-    : public PopupViewViewsBrowsertestBase {
- public:
-  PopupViewViewsPlusAddressSuggestionBrowsertest() {
-    setting_service().set_is_plus_addresses_enabled(true);
-  }
-
- protected:
-  plus_addresses::FakePlusAddressAllocator& allocator() { return allocator_; }
-  plus_addresses::FakePlusAddressSettingService& setting_service() {
-    return setting_service_;
-  }
-
-  std::vector<Suggestion> GetPlusAddressSuggestion(
-      const std::vector<std::string>& affiliated_plus_addresses) {
-    return service_.GetSuggestionsFromPlusAddresses(affiliated_plus_addresses);
-  }
-
- private:
-  autofill::test::AutofillBrowserTestEnvironment autofill_env_;
-
-  plus_addresses::FakePlusAddressAllocator allocator_;
-  plus_addresses::FakePlusAddressSettingService setting_service_;
-  plus_addresses::FakePlusAddressService service_;
-};
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
-                       Filling) {
-  setting_service().set_has_accepted_notice(true);
-  PrepareSuggestions(
-      GetPlusAddressSuggestion({plus_addresses::test::kFakePlusAddress}));
-  ShowAndVerifyUi();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopupViewViewsPlusAddressSuggestionBrowsertest,
-                         Combine(Bool(), Bool()),
-                         PopupViewViewsBrowsertestBase::GetTestSuffix);
-
 }  // namespace
 }  // namespace autofill

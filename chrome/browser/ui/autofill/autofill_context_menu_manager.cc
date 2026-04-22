@@ -257,11 +257,6 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
     return;
   }
 
-  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS) {
-    ExecuteFallbackForPlusAddressesCommand(*autofill_driver);
-    return;
-  }
-
   if (command_id ==
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
     ExecuteFallbackForSelectPasswordCommand(*autofill_driver);
@@ -530,20 +525,6 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
       data_logs::FetchAutofillFeedbackData(
           &manager,
           LoadTriggerFormAndFieldLogs(manager, frame_token, params_)));
-}
-
-void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
-    AutofillDriver& autofill_driver) {
-  autofill_driver.RendererShouldTriggerSuggestions(
-      /*field_id=*/{autofill_driver.GetFrameToken(),
-                    FieldRendererId(params_.field_renderer_id)},
-      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-
-  base::RecordAction(base::UserMetricsAction(
-      "PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected"));
-  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-      delegate_->GetBrowserContext(),
-      plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(

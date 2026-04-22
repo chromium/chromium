@@ -34,7 +34,6 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
@@ -68,7 +67,6 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kIban:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kCompose:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIdentityCredential:

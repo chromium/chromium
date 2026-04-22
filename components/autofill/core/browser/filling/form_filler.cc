@@ -165,8 +165,6 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{IBAN_VALUE};
     case FillingProduct::kLoyaltyCard:
       return FieldTypeSet{LOYALTY_MEMBERSHIP_ID};
-    case FillingProduct::kPlusAddresses:
-      return FieldTypeSet{EMAIL_ADDRESS};
     case FillingProduct::kIdentityCredential:
       return FieldTypeSet{EMAIL_ADDRESS, NAME_FIRST, NAME_FULL};
     case FillingProduct::kAutocomplete:
@@ -284,7 +282,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutofillAi:
     case FillingProduct::kCreditCard:
     case FillingProduct::kLoyaltyCard:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kOneTimePassword:
       return true;
     case FillingProduct::kNone:
@@ -449,7 +446,6 @@ struct FormFiller::AugmentedFillingPayload {
       case FillingProduct::kIban:
       case FillingProduct::kLoyaltyCard:
       case FillingProduct::kMerchantPromoCode:
-      case FillingProduct::kPlusAddresses:
       case FillingProduct::kIdentityCredential:
       case FillingProduct::kOneTimePassword:
       case FillingProduct::kAtMemory:

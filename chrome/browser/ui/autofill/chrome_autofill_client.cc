@@ -730,13 +730,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
         chrome::ShowSettingsSubPage(browser, chrome::kTravelSubPage);
         return;
-      case SuggestionType::kManagePlusAddress:
-        CHECK(base::FeatureList::IsEnabled(
-            plus_addresses::features::kPlusAddressesEnabled));
-        ShowSingletonTab(
-            browser,
-            GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()));
-        return;
       case SuggestionType::kManageCreditCard:
       case SuggestionType::kManageIban:
         base::UmaHistogramEnumeration(
@@ -798,29 +791,6 @@ ChromeAutofillClient::ShowAutofillSuggestions(
                      weak_ptr_factory_.GetWeakPtr(), session_id, open_args,
                      delegate));
   return session_id;
-}
-
-void ChromeAutofillClient::ShowPlusAddressEmailOverrideNotification(
-    const std::string& original_email,
-    EmailOverrideUndoCallback email_override_undo_callback) {
-#if BUILDFLAG(IS_ANDROID)
-  GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kPlusAddressEmailOverride,
-      std::move(email_override_undo_callback));
-#else
-  if (ToastController* controller = GetToastController()) {
-    ToastParams params(ToastId::kPlusAddressOverride);
-    params.menu_model = std::make_unique<plus_addresses::PlusAddressMenuModel>(
-        base::UTF8ToUTF16(
-            GetIdentityManager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .email),
-        std::move(email_override_undo_callback),
-        base::BindRepeating(&AutofillClient::ShowAutofillSettings, GetWeakPtr(),
-                            SuggestionType::kManagePlusAddress));
-    controller->MaybeShowToast(std::move(params));
-  }
-#endif
 }
 
 void ChromeAutofillClient::UpdateAutofillDataListValues(

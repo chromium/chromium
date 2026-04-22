@@ -81,7 +81,6 @@ Suggestion::Text FormatLabelsByFillingProduct(
               : base::StrCat({additional_label, kLabelSeparator,
                               ExtractPassword(label)}));
     case FillingProduct::kAddress:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
@@ -533,7 +532,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kPassword:
     case FillingProduct::kPasskey:
     case FillingProduct::kCompose:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:

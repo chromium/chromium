@@ -2618,30 +2618,6 @@ TEST_F(PasswordAutofillAgentTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests that the popup is suppressed when the user selects address or payments
-// fallback even when the triggering field that is classified as password.
-// TODO(crbug.com/494507627): Re-enable after fixing.
-TEST_F(
-    PasswordAutofillAgentTest,
-    DISABLED_NoPopupOnPasswordFieldWhereAddressOrPaymentsManualFallbackWasSelected) {
-  SimulateOnFillPasswordForm(fill_data_);
-  // This call is necessary to setup the autofill agent appropriate for the
-  // user selection; simulates the menu actually popping up.
-  SimulatePointClick(gfx::Point(1, 1));
-
-  // No popup request when using address/payment/plus address manual fallback.
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
-  autofill_agent_->TriggerSuggestions(
-      form_util::GetFieldRendererId(username_element_),
-      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-
-  // However, the popup is requested for password manual fallback.
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
-  autofill_agent_->TriggerSuggestions(
-      form_util::GetFieldRendererId(username_element_),
-      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Users in pending state are shown a suggestion to "verify it's you" even when
 // there are no passwords.

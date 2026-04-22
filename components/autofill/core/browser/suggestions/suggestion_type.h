@@ -47,7 +47,7 @@ enum class SuggestionType {
   kManageAutofillAiTravel = 76,
   kManageCreditCard = 11,
   kManageIban = 12,
-  kManagePlusAddress = 13,
+  // kManagePlusAddress = 13, // DEPRECATED
   kManageLoyaltyCard = 68,
 
   // Compose popup suggestion shown when no Compose session exists.
@@ -116,7 +116,7 @@ enum class SuggestionType {
   // Plus address suggestions.
   // kCreateNewPlusAddress = 39, // DEPRECATED
   // kCreateNewPlusAddressInline = 52, // DEPRECATED
-  kFillExistingPlusAddress = 40,
+  // kFillExistingPlusAddress = 40, // DEPRECATED
   // kPlusAddressError = 57, // DEPRECATED
 
   // Promotion suggestions.

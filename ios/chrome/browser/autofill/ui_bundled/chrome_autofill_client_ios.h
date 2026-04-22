@@ -135,9 +135,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
-  void ShowPlusAddressEmailOverrideNotification(
-      const std::string& original_email,
-      EmailOverrideUndoCallback email_override_undo_callback) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;

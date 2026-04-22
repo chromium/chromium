@@ -252,7 +252,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
@@ -276,7 +275,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kBnplEntry:
-    case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kWebauthnCredential:

@@ -118,7 +118,6 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       }
       [[fallthrough]];
     case autofill::FillingProduct::kAddress:
-    case autofill::FillingProduct::kPlusAddresses:
       return manual_fill::ManualFillDataType::kAddress;
     case autofill::FillingProduct::kCreditCard:
     case autofill::FillingProduct::kIban:

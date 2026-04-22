@@ -24,7 +24,7 @@ namespace autofill {
 namespace {
 
 bool IsFieldOfProduct(const AutofillField& field, FillingProduct product) {
-  auto filling_products = DenseSet<FillingProduct>(
+  auto filling_products = FillingProductSet(
       field.Type().GetGroups(), &GetFillingProductFromFieldTypeGroup);
   return filling_products.contains(product);
 }

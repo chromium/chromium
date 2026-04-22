@@ -1094,7 +1094,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
-    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kAccountStoragePasswordEntry:
@@ -1115,7 +1114,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:

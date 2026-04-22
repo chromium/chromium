@@ -442,14 +442,6 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
   return SuggestionUiSessionId();
 }
 
-void ChromeAutofillClientIOS::ShowPlusAddressEmailOverrideNotification(
-    const std::string& original_email,
-    EmailOverrideUndoCallback email_override_undo_callback) {
-  [bridge_ showPlusAddressEmailOverrideNotification:
-               std::move(email_override_undo_callback)];
-}
-
-
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.

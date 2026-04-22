@@ -95,7 +95,6 @@ using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
 using base::test::TestFuture;
 using test::CreatePreallocatedPlusAddress;
-using test::IsSingleFillPlusAddressSuggestion;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -1056,15 +1055,6 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-// Tests the content of the "Manage plus addresses..." suggestion.
-TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
-  EXPECT_THAT(service().GetManagePlusAddressSuggestion(),
-              EqualsSuggestion(SuggestionType::kManagePlusAddress,
-                               l10n_util::GetStringUTF16(
-                                   IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-                               Suggestion::Icon::kGoogleMonochrome));
-}
 
 // Tests that the last plus address usage time is recorded correctly.
 TEST_F(PlusAddressSuggestionsTest, DidFillPlusAddress) {

@@ -89,9 +89,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageCreditCard, SuggestionType::kManageAutofillAi,
      SuggestionType::kManageAutofillAiIdentityDocs,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
-     SuggestionType::kManageLoyaltyCard, SuggestionType::kManagePlusAddress,
-     SuggestionType::kUndoOrClear, SuggestionType::kViewPasswordDetails,
-     SuggestionType::kPendingStateSignin,
+     SuggestionType::kManageLoyaltyCard, SuggestionType::kUndoOrClear,
+     SuggestionType::kViewPasswordDetails, SuggestionType::kPendingStateSignin,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.
@@ -129,7 +128,6 @@ bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
     case FillingProduct::kPasskey:
       return suggestion.HasDeactivatedStyle();
     case FillingProduct::kAddress:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
@@ -169,7 +167,6 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kAddress:
     case FillingProduct::kAutocomplete:
     case FillingProduct::kAutofillAi:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kIdentityCredential:
       label.SetMaximumWidthSingleLine(maximum_width_single_line);

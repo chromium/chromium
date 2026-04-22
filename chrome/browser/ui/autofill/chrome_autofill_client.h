@@ -184,9 +184,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
-  void ShowPlusAddressEmailOverrideNotification(
-      const std::string& original_email,
-      EmailOverrideUndoCallback email_final) final;
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) final;
   base::span<const Suggestion> GetAutofillSuggestions() const final;

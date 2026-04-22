@@ -526,7 +526,6 @@ UIImage* GetManualFillSymbol() {
     std::u16string mainFillingProductString;
     switch (_mainFillingProduct) {
       case FillingProduct::kAddress:
-      case FillingProduct::kPlusAddresses:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_ADDRESS_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);

@@ -37,8 +37,6 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "Password";
     case FillingProduct::kCompose:
       return "Compose";
-    case FillingProduct::kPlusAddresses:
-      return "PlusAddresses";
     case FillingProduct::kAutofillAi:
       return "AutofillAi";
     case FillingProduct::kLoyaltyCard:
@@ -99,9 +97,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
-    case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kManagePlusAddress:
-      return FillingProduct::kPlusAddresses;
     case SuggestionType::kDatalistEntry:
       return FillingProduct::kDataList;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:

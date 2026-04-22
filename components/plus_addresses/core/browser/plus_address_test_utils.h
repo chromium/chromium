@@ -72,18 +72,6 @@ base::Value CreatePreallocatedPlusAddress(
     base::Time end_of_life,
     std::string address = "some@plus.com");
 
-// Matches a fill plus address suggestion.
-testing::Matcher<autofill::Suggestion> EqualsFillPlusAddressSuggestion(
-    std::string_view address);
-
-// Matches a one-item vector with a standalone creation suggestion.
-testing::Matcher<std::vector<autofill::Suggestion>>
-IsSingleCreatePlusAddressSuggestion();
-
-// Matches a one-item vector with a fill plus address suggestion.
-testing::Matcher<std::vector<autofill::Suggestion>>
-IsSingleFillPlusAddressSuggestion(std::string_view address);
-
 }  // namespace plus_addresses::test
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_TEST_UTILS_H_

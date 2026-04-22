@@ -2614,7 +2614,7 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Autocomplete"/>
   <int value="6" label="Password"/>
   <int value="7" label="Compose"/>
-  <int value="8" label="PlusAddresses"/>
+  <int value="8" label="(DEPRECATED) PlusAddresses"/>
   <int value="9" label="AutofillAi"/>
   <int value="10" label="LoyaltyCard"/>
   <int value="11" label="IdentityCredential"/>
@@ -5607,7 +5607,7 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="Manage address"/>
   <int value="11" label="Manage credit card"/>
   <int value="12" label="Manage IBAN"/>
-  <int value="13" label="Manage plus address"/>
+  <int value="13" label="(Obsolete) Manage plus address"/>
   <int value="14" label="Compose proactive nudge"/>
   <int value="15" label="Compose resume nudge"/>
   <int value="16" label="Compose saved state notification"/>
@@ -5635,7 +5635,7 @@ Called by update_autofill_enums.py.-->
   <int value="37" label="(Obsolete) Credit card field-by-field filling"/>
   <int value="38" label="Iban entry"/>
   <int value="39" label="(Obsolete) Create new plus address"/>
-  <int value="40" label="Fill existing plus address"/>
+  <int value="40" label="(Obsolete) Fill existing plus address"/>
   <int value="41" label="Merchant promo code entry"/>
   <int value="42" label="See promo code details"/>
   <int value="43" label="Webauthn credential"/>

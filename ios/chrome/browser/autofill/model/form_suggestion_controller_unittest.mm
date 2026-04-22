@@ -872,30 +872,6 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
   EXPECT_TRUE(adjusted_suggestions[0].icon);
 }
 
-// Tests that plus address suggestions always have an icon when the features are
-// enabled.
-TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
-  base::test::ScopedFeatureList feature_list{
-      plus_addresses::features::kPlusAddressesEnabled};
-
-  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
-
-  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
-  FormSuggestion* suggestion = [FormSuggestion
-      suggestionWithValue:@""
-       displayDescription:nil
-                     icon:nil
-                     type:autofill::SuggestionType::kFillExistingPlusAddress
-                  payload:autofill::Suggestion::Payload()
-           requiresReauth:NO];
-  [suggestions addObject:suggestion];
-
-  NSArray<FormSuggestion*>* adjusted_suggestions =
-      [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
-  EXPECT_EQ(adjusted_suggestions.count, suggestions.count);
-  EXPECT_TRUE(adjusted_suggestions[0].icon);
-}
-
 std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {
   return params_info.param ? "Stateless" : "Stateful";
 }

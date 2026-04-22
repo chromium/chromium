@@ -573,7 +573,7 @@ enum AutofillSuggestionTriggerSource {
   kManualFallbackPasswords = 12,
   // Suggestions triggered by selecting the Plus Address manual fallback entry
   // from the Chrome context menu.
-  kManualFallbackPlusAddresses = 13,
+  // 13 is deprecated.
   // Suggestions are triggered after the user the user closed a dialog. For
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome

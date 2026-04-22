@@ -85,11 +85,6 @@ GURL StripAuthAndParams(const GURL& gurl);
 IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
-// Checks if the user triggered plus addresses on a field manually through the
-// Chrome context menu.
-bool IsPlusAddressesManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source);
-
 // Checks if the user triggered @memory on a field.
 bool IsAtMemoryTriggerSource(AutofillSuggestionTriggerSource trigger_source);
 

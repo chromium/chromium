@@ -35,7 +35,6 @@ class FakePlusAddressService : public PlusAddressService {
   size_t GetPlusAddressesCount() override;
   std::map<std::string, std::string> GetPlusAddressHatsData() const override;
   void DidFillPlusAddress() override;
-
   bool IsFieldEligibleForPlusAddress(
       const autofill::AutofillField& field) const;
   void GetAffiliatedPlusAddresses(

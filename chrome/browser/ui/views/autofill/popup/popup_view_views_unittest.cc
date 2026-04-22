@@ -107,7 +107,6 @@ const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kManageAddress,
     SuggestionType::kManageCreditCard,
     SuggestionType::kManageIban,
-    SuggestionType::kManagePlusAddress,
     SuggestionType::kDatalistEntry,
     SuggestionType::kScanCreditCard,
     SuggestionType::kAllSavedPasswordsEntry,

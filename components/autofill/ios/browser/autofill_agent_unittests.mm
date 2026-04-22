@@ -590,49 +590,6 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
   EXPECT_EQ(nil, completion_handler_icon);
 }
 
-// Verify that plus address suggestions are handled appropriately in
-// `showAutofillPopup`.
-TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
-  __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
-  __block BOOL completion_handler_called = NO;
-  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
-
-  const std::string fillExistingSuggestionText = "existing";
-  std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion(base::UTF8ToUTF16(fillExistingSuggestionText), u"",
-                           autofill::Suggestion::Icon::kNoIcon,
-                           autofill::SuggestionType::kFillExistingPlusAddress)};
-
-  // Completion handler to retrieve suggestions.
-  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
-                             id<FormSuggestionProvider> delegate) {
-    completion_handler_suggestions = [suggestions copy];
-    completion_handler_called = YES;
-  };
-
-  // Make plus address suggestions and note the conversion to `FormSuggestion`
-  // objects.
-  [autofill_agent_ showAutofillPopup:autofillSuggestions
-                  suggestionDelegate:mock_delegate.GetWeakPtr()];
-  [autofill_agent_ retrieveSuggestionsForForm:nil
-                                     webState:&fake_web_state_
-                            completionHandler:completionHandler];
-
-  // Wait until the expected handler is called.
-  ASSERT_TRUE(
-      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
-        return completion_handler_called;
-      }));
-
-  // The plus address suggestions should be handled by the conversion to
-  // `FormSuggestion` objects.
-  EXPECT_EQ(1U, completion_handler_suggestions.count);
-  EXPECT_EQ(autofill::SuggestionType::kFillExistingPlusAddress,
-            completion_handler_suggestions[0].type);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(fillExistingSuggestionText),
-              completion_handler_suggestions[0].value);
-}
-
 // Tests that for credit cards, a custom icon is preferred over the default
 // icon.
 TEST_F(AutofillAgentTests,

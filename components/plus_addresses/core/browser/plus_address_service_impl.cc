@@ -115,33 +115,6 @@ std::string GetPlusAddressFromPlusProfile(
   return affiliated_profile.plus_address.value();
 }
 
-// Returns a suggestion to fill an existing plus address.
-Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
-  Suggestion suggestion = Suggestion(std::move(plus_address),
-                                     SuggestionType::kFillExistingPlusAddress);
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-  }
-  suggestion.icon = Suggestion::Icon::kPlusAddress;
-  return suggestion;
-}
-
-std::vector<autofill::Suggestion> GetSuggestions(
-    const std::vector<std::string>& affiliated_plus_addresses) {
-  std::vector<Suggestion> suggestions;
-  suggestions.reserve(affiliated_plus_addresses.size());
-  for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
-    suggestions.push_back(CreateFillPlusAddressSuggestion(
-        base::UTF8ToUTF16(affiliated_plus_address)));
-  }
-  // It is required by `autofill::SuggestionGenerator` that this function should
-  // not filter plus addresses and should return an `autofill::Suggestion`
-  // object for each of them.
-  CHECK_EQ(suggestions.size(), affiliated_plus_addresses.size());
-  return suggestions;
-}
-
 }  // namespace
 
 PlusAddressServiceImpl::PlusAddressServiceImpl(
@@ -319,19 +292,6 @@ void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
             std::move(inner_callback).Run(std::move(plus_addresses));
           },
           std::move(callback)));
-}
-
-std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
-    const std::vector<std::string>& plus_addresses) {
-  return GetSuggestions(plus_addresses);
-}
-
-Suggestion PlusAddressServiceImpl::GetManagePlusAddressSuggestion() const {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-      SuggestionType::kManagePlusAddress);
-  suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
-  return suggestion;
 }
 
 void PlusAddressServiceImpl::ReservePlusAddress(

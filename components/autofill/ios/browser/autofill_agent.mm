@@ -452,8 +452,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
     return;
   }
 
-  if (suggestion.type == SuggestionType::kAutocompleteEntry ||
-      suggestion.type == SuggestionType::kFillExistingPlusAddress) {
+  if (suggestion.type == SuggestionType::kAutocompleteEntry) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         fieldRendererID:fieldRendererID
@@ -670,12 +669,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
                !base::FeatureList::IsEnabled(kAutofillUndoIos)) {
       // Show the "clear form" button.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.type ==
-                   SuggestionType::kFillExistingPlusAddress ||
-               popup_suggestion.type == SuggestionType::kFillAutofillAi) {
-      CHECK(popup_suggestion.type != SuggestionType::kFillAutofillAi ||
-            base::FeatureList::IsEnabled(
-                autofill::features::kAutofillAiCreateEntityDataManager));
+    } else if (popup_suggestion.type == SuggestionType::kFillAutofillAi) {
+      CHECK(base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiCreateEntityDataManager));
 
       // Show any plus_address or autofill AI suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);

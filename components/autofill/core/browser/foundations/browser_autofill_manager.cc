@@ -191,8 +191,6 @@
 
 namespace autofill {
 
-using FillingProductSet = DenseSet<FillingProduct>;
-
 using mojom::SubmissionSource;
 using payments::AmountExtractionManager;
 
@@ -264,7 +262,6 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kLoyaltyCard:
       return true;
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kCompose:
     case FillingProduct::kPasskey:
@@ -302,7 +299,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
-    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
@@ -314,7 +310,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kBnplEntry:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -439,7 +434,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
@@ -522,7 +516,7 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 
 // Returns what `FillingProduct`s should be asked for filling given this
 // `trigger_source`.
-DenseSet<FillingProduct> GetFillingProductsToSuggest(
+FillingProductSet GetFillingProductsToSuggest(
     AutofillSuggestionTriggerSource trigger_source) {
   using enum AutofillSuggestionTriggerSource;
   switch (trigger_source) {
@@ -537,15 +531,13 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
     case kPasswordManagerProcessedFocusedField:
     case kManualFallbackPasswords:
       return {FillingProduct::kPassword, FillingProduct::kPasskey};
-    case kManualFallbackPlusAddresses:
-      return {};
     case kPlusAddressUpdatedInBrowserProcess:
     case kOpenTextDataListChooser:
     case kFormControlElementClicked:
     case kTextFieldValueChanged:
     case kTextFieldDidReceiveKeyDown:
     case kiOS:
-      return DenseSet<FillingProduct>::all();
+      return FillingProductSet::all();
     case kGlic:
       return {FillingProduct::kAddress, FillingProduct::kCreditCard,
               FillingProduct::kPassword};
@@ -708,7 +700,6 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
-    case SuggestionType::kManagePlusAddress:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       return true;
@@ -739,7 +730,6 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kIbanEntry:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kSaveAndFillCreditCardEntry:
-    case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kIdentityCredential:
@@ -3401,7 +3391,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
-  const DenseSet<FillingProduct> relevant_filling_products =
+  const FillingProductSet relevant_filling_products =
       GetFillingProductsToSuggest(trigger_source);
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {

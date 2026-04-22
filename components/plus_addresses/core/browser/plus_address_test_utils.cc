@@ -157,21 +157,4 @@ base::Value CreatePreallocatedPlusAddress(base::Time end_of_life,
           .Set(PlusAddressPreallocator::kPlusAddressKey, std::move(address)));
 }
 
-Matcher<Suggestion> EqualsFillPlusAddressSuggestion(std::string_view address) {
-  std::vector<std::vector<Suggestion::Text>> labels;
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-  }
-  return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
-                                /*main_text=*/base::UTF8ToUTF16(address)),
-               Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
-               Field(&Suggestion::labels, labels));
-}
-
-Matcher<std::vector<Suggestion>> IsSingleFillPlusAddressSuggestion(
-    std::string_view address) {
-  return ElementsAre(EqualsFillPlusAddressSuggestion(address));
-}
-
 }  // namespace plus_addresses::test

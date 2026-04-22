@@ -346,8 +346,6 @@ struct Suggestion {
     kPassport,
     kPenSpark,
     kPersonCheck,
-    // TODO(crbug.com/503268023): Remove.
-    kPlusAddress,
     kQuestionMark,
     kRecoveryPassword,
     kScanCreditCard,

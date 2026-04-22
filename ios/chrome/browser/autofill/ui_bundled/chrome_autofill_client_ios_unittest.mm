@@ -250,15 +250,4 @@ TEST_F(ChromeAutofillClientIOSTest,
       PasswordFormClassification{});
 }
 
-// Tests that the call to `ShowPlusAddressEmailOverrideNotification` shows a
-// snackbar.
-TEST_F(ChromeAutofillClientIOSTest, CallToAgentUndoSnackbar) {
-  OCMExpect([mock_snackbar_handler_ showSnackbarWithMessage:[OCMArg isNotNil]
-                                                 buttonText:[OCMArg isNotNil]
-                                              messageAction:[OCMArg isNotNil]
-                                           completionAction:nil]);
-  client().ShowPlusAddressEmailOverrideNotification("", base::DoNothing());
-  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
-}
-
 }  // namespace autofill

@@ -250,10 +250,6 @@ bool AutofillClient::SupportsDeviceReauth() const {
          authenticator->CanAuthenticateWithBiometricOrScreenLock();
 }
 
-void AutofillClient::ShowPlusAddressEmailOverrideNotification(
-    const std::string& original_email,
-    EmailOverrideUndoCallback email_override_undo_callback) {}
-
 bool AutofillClient::ShowAutofillFieldIphForFeature(
     const FormFieldData&,
     AutofillClient::IphFeature feature) {
