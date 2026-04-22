@@ -483,6 +483,10 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
   params->disposition = open_in_background
                             ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                             : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  // Set navigation as renderer initiated to open links in their app/PWA (if
+  // installed).
+  params->is_renderer_initiated = true;
+  params->initiator_origin = url::Origin();
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       glic::Navigate(std::move(params));
   if (!navigation_handle.get()) {
