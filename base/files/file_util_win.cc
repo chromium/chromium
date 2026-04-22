@@ -194,14 +194,9 @@ DWORD DeleteFileRecursive(const FilePath& path,
     DWORD this_result = ERROR_SUCCESS;
     if (info.IsDirectory()) {
       if (recursive) {
-        // Use `IsLink` to ensure fresh data is used to determine whether or not
-        // `current` is a mount point or similar.
-        if (!FeatureList::IsEnabled(features::kPreventReparsePointTraversal) ||
-            !IsLink(current)) {
-          this_result = DeleteFileRecursive(current, pattern, true);
-          DCHECK_NE(static_cast<LONG>(this_result), ERROR_FILE_NOT_FOUND);
-          DCHECK_NE(static_cast<LONG>(this_result), ERROR_PATH_NOT_FOUND);
-        }
+        this_result = DeleteFileRecursive(current, pattern, true);
+        DCHECK_NE(static_cast<LONG>(this_result), ERROR_FILE_NOT_FOUND);
+        DCHECK_NE(static_cast<LONG>(this_result), ERROR_PATH_NOT_FOUND);
         if (this_result == ERROR_SUCCESS &&
             !::RemoveDirectory(current.value().c_str())) {
           this_result = ReturnLastErrorOrSuccessOnNotFound();
@@ -402,9 +397,7 @@ DWORD DoDeleteFile(const FilePath& path, bool recursive) {
                : ReturnLastErrorOrSuccessOnNotFound();
   }
 
-  if (recursive &&
-      (!FeatureList::IsEnabled(features::kPreventReparsePointTraversal) ||
-       !IsLink(path))) {
+  if (recursive) {
     const DWORD error_code =
         DeleteFileRecursive(path, FILE_PATH_LITERAL("*"), true);
     DCHECK_NE(static_cast<LONG>(error_code), ERROR_FILE_NOT_FOUND);
@@ -1072,23 +1065,10 @@ bool CreateWinHardLink(const FilePath& to_file, const FilePath& from_file) {
                           nullptr);
 }
 
+// TODO(rkc): Work out if we want to handle NTFS junctions here or not, handle
+// them if we do decide to.
 bool IsLink(const FilePath& file_path) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  // Query the attributes directly from the filesystem. GetFileAttributes() is
-  // used before FindFirstFile() because of the stale data issue.
-  DWORD attributes = ::GetFileAttributes(file_path.value().c_str());
-  if (attributes == INVALID_FILE_ATTRIBUTES ||
-      (attributes & FILE_ATTRIBUTE_REPARSE_POINT) == 0) {
-    return false;
-  }
-  WIN32_FIND_DATA find_data = {};
-  HANDLE find_handle = ::FindFirstFile(file_path.value().c_str(), &find_data);
-  if (find_handle == INVALID_HANDLE_VALUE) {
-    return false;
-  }
-  DWORD tag = find_data.dwReserved0;
-  ::FindClose(find_handle);
-  return IsReparseTagNameSurrogate(tag);
+  return false;
 }
 
 bool GetFileInfo(const FilePath& file_path, File::Info* results) {

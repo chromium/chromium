@@ -21,7 +21,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -39,7 +38,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -2309,135 +2307,6 @@ TEST_F(FileUtilTest, DeleteDirRecursiveWithOpenFile) {
   }
 #endif
 }
-
-#if BUILDFLAG(IS_WIN)
-TEST_F(FileUtilTest, DeletePathRecursively_DoesNotFollowJunctions) {
-  // Force the feature ON for this test so it always verifies the secure
-  // behavior.
-  test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPreventReparsePointTraversal);
-
-  // Create a target directory with a file.
-  FilePath target_dir = temp_dir_.GetPath().Append(FPL("target_dir"));
-  ASSERT_TRUE(CreateDirectory(target_dir));
-  FilePath target_file = target_dir.Append(FPL("target_file.txt"));
-  CreateTextFile(target_file, bogus_content);
-  ASSERT_TRUE(PathExists(target_file));
-
-  // Create a directory to be deleted.
-  FilePath deletion_dir = temp_dir_.GetPath().Append(FPL("deletion_dir"));
-  ASSERT_TRUE(CreateDirectory(deletion_dir));
-
-  // Create a junction in the deletion directory pointing to the target
-  // directory.
-  FilePath junction_path = deletion_dir.Append(FPL("junction"));
-  ASSERT_TRUE(CreateDirectory(junction_path));
-  std::optional<test::FilePathReparsePoint> reparse_point =
-      test::FilePathReparsePoint::Create(junction_path, target_dir);
-  ASSERT_TRUE(reparse_point.has_value());
-  ASSERT_TRUE(PathExists(junction_path.Append(FPL("target_file.txt"))));
-
-  // Delete the directory containing the junction.
-  EXPECT_TRUE(DeletePathRecursively(deletion_dir));
-
-  // Verify that the deletion directory is gone.
-  EXPECT_FALSE(PathExists(deletion_dir));
-
-  // Verify that the target directory and its contents were NOT deleted.
-  EXPECT_TRUE(PathExists(target_dir));
-  EXPECT_TRUE(PathExists(target_file));
-}
-
-TEST_F(FileUtilTest, DeleteFile_DoesNotFollowJunctions) {
-  // Force the feature ON for this test so it always verifies the secure
-  // behavior.
-  test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPreventReparsePointTraversal);
-
-  // Create a target directory with a file.
-  FilePath target_dir = temp_dir_.GetPath().Append(FPL("target_dir"));
-  ASSERT_TRUE(CreateDirectory(target_dir));
-  FilePath target_file = target_dir.Append(FPL("target_file.txt"));
-  CreateTextFile(target_file, bogus_content);
-  ASSERT_TRUE(PathExists(target_file));
-
-  // Create a junction pointing to the target directory.
-  FilePath junction_path = temp_dir_.GetPath().Append(FPL("junction"));
-  ASSERT_TRUE(CreateDirectory(junction_path));
-  std::optional<test::FilePathReparsePoint> reparse_point =
-      test::FilePathReparsePoint::Create(junction_path, target_dir);
-  ASSERT_TRUE(reparse_point.has_value());
-  ASSERT_TRUE(PathExists(junction_path.Append(FPL("target_file.txt"))));
-
-  // Delete the junction using DeleteFile.
-  EXPECT_TRUE(DeleteFile(junction_path));
-
-  // Verify that the junction is gone, but the target remains intact.
-  EXPECT_FALSE(PathExists(junction_path));
-  EXPECT_TRUE(PathExists(target_file));
-}
-
-TEST_F(FileUtilTest,
-       DeletePathRecursively_FollowsJunctionsWhenFeatureDisabled) {
-  // Force the feature OFF for this test to verify the legacy fallback behavior.
-  test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPreventReparsePointTraversal);
-
-  // Create a target directory with a file.
-  FilePath target_dir = temp_dir_.GetPath().Append(FPL("target_dir"));
-  ASSERT_TRUE(CreateDirectory(target_dir));
-  FilePath target_file = target_dir.Append(FPL("target_file.txt"));
-  CreateTextFile(target_file, bogus_content);
-  ASSERT_TRUE(PathExists(target_file));
-
-  // Create a directory to be deleted.
-  FilePath deletion_dir = temp_dir_.GetPath().Append(FPL("deletion_dir"));
-  ASSERT_TRUE(CreateDirectory(deletion_dir));
-
-  // Create a junction pointing to the target directory.
-  FilePath junction_path = deletion_dir.Append(FPL("junction"));
-  ASSERT_TRUE(CreateDirectory(junction_path));
-  std::optional<test::FilePathReparsePoint> reparse_point =
-      test::FilePathReparsePoint::Create(junction_path, target_dir);
-  ASSERT_TRUE(reparse_point.has_value());
-  ASSERT_TRUE(PathExists(junction_path.Append(FPL("target_file.txt"))));
-
-  // Delete the directory containing the junction.
-  EXPECT_TRUE(DeletePathRecursively(deletion_dir));
-
-  // Verify the legacy behavior: the junction is followed, deleting the target
-  // file.
-  EXPECT_FALSE(PathExists(deletion_dir));
-  EXPECT_TRUE(PathExists(target_dir));
-  EXPECT_FALSE(PathExists(target_file));
-}
-
-TEST_F(FileUtilTest, IsLink) {
-  // Create a target directory with a file.
-  FilePath target_dir = temp_dir_.GetPath().Append(FPL("target_dir"));
-  ASSERT_TRUE(CreateDirectory(target_dir));
-  FilePath target_file = target_dir.Append(FPL("target_file.txt"));
-  CreateTextFile(target_file, bogus_content);
-  ASSERT_TRUE(PathExists(target_file));
-
-  // File and directory are not links.
-  EXPECT_FALSE(IsLink(target_dir));
-  EXPECT_FALSE(IsLink(target_file));
-
-  // Create a junction pointing to the target directory.
-  FilePath junction_path = temp_dir_.GetPath().Append(FPL("junction"));
-  ASSERT_TRUE(CreateDirectory(junction_path));
-  std::optional<test::FilePathReparsePoint> reparse_point =
-      test::FilePathReparsePoint::Create(junction_path, target_dir);
-  ASSERT_TRUE(reparse_point.has_value());
-
-  // The junction is a link.
-  EXPECT_TRUE(IsLink(junction_path));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This test will validate that files which would block when read result in a

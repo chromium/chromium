@@ -198,11 +198,6 @@ BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPumpPeekMessageWithObserver, FEATURE_DISABLED_BY_DEFAULT);
-
-// Prevents base::DeletePathRecursively on Windows from traversing NTFS reparse
-// points (such as directory junctions). This protects against TOCTOU
-// vulnerabilities and prevents deleting files outside the target directory.
-BASE_FEATURE(kPreventReparsePointTraversal, FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool IsReducePPMsEnabled() {
