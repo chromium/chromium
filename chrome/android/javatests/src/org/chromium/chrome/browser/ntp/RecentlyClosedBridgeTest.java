@@ -125,6 +125,8 @@ public class RecentlyClosedBridgeTest {
     /** Tests opening the most recently closed tab in the foreground. */
     @Test
     @MediumTest
+    // Cast via wildcard-typed intermediate List is checked by javac as unchecked.
+    @SuppressWarnings("unchecked")
     public void testOpenMostRecentlyClosedEntry_Tab_InForeground() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A), getUrl(TEST_PAGE_B)};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
@@ -176,6 +178,8 @@ public class RecentlyClosedBridgeTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/355058571")
+    // Cast via wildcard-typed intermediate List is checked by javac as unchecked.
+    @SuppressWarnings("unchecked")
     public void testOpenRecentlyClosedTab_CurrentTabDisposition() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A), getUrl(TEST_PAGE_B)};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
@@ -240,6 +244,8 @@ public class RecentlyClosedBridgeTest {
     /** Tests opening a specific closed {@link Tab} that was frozen as a new background tab. */
     @Test
     @MediumTest
+    // Cast via wildcard-typed intermediate List is checked by javac as unchecked.
+    @SuppressWarnings("unchecked")
     public void testOpenRecentlyClosedTab_Frozen_InBackground() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A)};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
@@ -1501,6 +1507,8 @@ public class RecentlyClosedBridgeTest {
     /** Tests closing a tab will be saved as a TAB session entry in tab restore service. */
     @Test
     @MediumTest
+    // Cast via wildcard-typed intermediate List is checked by javac as unchecked.
+    @SuppressWarnings("unchecked")
     public void testCloseTabSaveAsTabSessionRestoreEntry() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A)};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
@@ -1512,7 +1520,7 @@ public class RecentlyClosedBridgeTest {
                     closeTabs(TabClosureParams.closeTab(tabA).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
-        final List<RecentlyClosedEntry> recentEntries = new ArrayList();
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     recentEntries.addAll(

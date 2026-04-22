@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +45,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -296,7 +296,7 @@ public class AuxiliarySearchProviderUnitTest {
         assertFalse(mAuxiliarySearchProvider.isAuxiliarySearchBridgeNullForTesting());
 
         long beginTime = 10;
-        Callback<@Nullable List<AuxiliarySearchDataEntry>> callback = mock(Callback.class);
+        Callback<@Nullable List<AuxiliarySearchDataEntry>> callback = MockitoHelper.mockCallback();
         GURL url = JUnitTestGURLs.URL_1;
         mAuxiliarySearchProvider.getCustomTabsAsync(url, beginTime, callback);
 

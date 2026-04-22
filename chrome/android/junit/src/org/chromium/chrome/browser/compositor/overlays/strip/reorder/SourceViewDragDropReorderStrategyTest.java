@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 
 import java.util.Collections;
-import java.util.List;
 
 /** Tests for {@link SourceViewDragDropReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -139,7 +139,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mTabStripDragHandler)
                 .startMultiTabDragAction(
                         eq(mContainerView),
-                        any(List.class),
+                        anyList(),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
                         anyFloat(),

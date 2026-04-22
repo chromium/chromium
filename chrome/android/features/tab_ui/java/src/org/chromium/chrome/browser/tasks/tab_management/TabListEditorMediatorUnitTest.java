@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -101,8 +102,11 @@ public final class TabListEditorMediatorUnitTest {
     private PropertyModel mModel;
     private TabListEditorMediator mMediator;
     private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
+    @Captor
     private ArgumentCaptor<SelectionObserver<TabListEditorItemSelectionId>>
             mSelectionObserverCaptor;
+
     private Set<TabListEditorItemSelectionId> mInitialSelectedItems;
 
     @Before
@@ -118,11 +122,12 @@ public final class TabListEditorMediatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabListEditorLayout.getToolbar()).thenReturn(mTabListEditorToolbar);
         mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
-        mSelectionObserverCaptor = ArgumentCaptor.forClass(SelectionObserver.class);
 
         setupMediator(CreationMode.FULL_SCREEN);
     }
 
+    // Mockito.reset() has a generic varargs parameter.
+    @SuppressWarnings("unchecked")
     private void setupMediator(@CreationMode int mode) {
         if (mMediator != null) {
             mMediator.destroy();
@@ -149,7 +154,6 @@ public final class TabListEditorMediatorUnitTest {
                         itemPickerSelectionHandler);
         mMediator.initializeWithTabListCoordinator(mTabListCoordinator, mResetHandler);
         mMediator.setNavigationProvider(mNavigationProvider);
-        mSelectionObserverCaptor = ArgumentCaptor.forClass(SelectionObserver.class);
 
         // Verify times(1) is correct because we reset the mock first.
         verify(mSelectionDelegate, times(1)).addObserver(mSelectionObserverCaptor.capture());

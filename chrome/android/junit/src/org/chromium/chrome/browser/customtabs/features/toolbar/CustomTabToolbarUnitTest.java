@@ -509,6 +509,7 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // reset() is a generic-varargs method.
     public void testContainerVisibilityChange() {
         // Self changes should be ignored.
         mToolbar.addContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -56,7 +57,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -270,7 +270,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .onClick(mock(View.class));
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
+                .mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.REJECTED, userResponse.get());
@@ -305,7 +305,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mBottomSheetObserver.getValue().onSheetClosed(0);
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
+                .mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController, never())
                 .hideContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
         assertNull(mMediator.getCurrentSheetContent());

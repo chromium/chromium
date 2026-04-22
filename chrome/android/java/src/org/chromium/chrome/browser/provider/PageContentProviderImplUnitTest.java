@@ -462,9 +462,7 @@ public class PageContentProviderImplUnitTest {
     private void setInnerTextExtractionResult(String result, int resultDelayMs) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<String> callback =
-                                    (Callback<String>)
-                                            invocationOnMock.getArgument(1, Callback.class);
+                            Callback<String> callback = invocationOnMock.getArgument(1);
                             mFakeTimeTestRule.advanceMillis(resultDelayMs);
                             callback.onResult(result);
                             return null;
@@ -476,9 +474,7 @@ public class PageContentProviderImplUnitTest {
     private void setProtoContentExtractionResult(AnnotatedPageContent proto, int resultDelayMs) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<byte[]> callback =
-                                    (Callback<byte[]>)
-                                            invocationOnMock.getArgument(1, Callback.class);
+                            Callback<byte[]> callback = invocationOnMock.getArgument(1);
                             mFakeTimeTestRule.advanceMillis(resultDelayMs);
                             callback.onResult(proto.toByteArray());
                             return null;
@@ -490,9 +486,7 @@ public class PageContentProviderImplUnitTest {
     private void setInnerTextExtractionError(int resultDelayMs) {
         doAnswer(
                         invocationOnMock -> {
-                            Callback<String> callback =
-                                    (Callback<String>)
-                                            invocationOnMock.getArgument(1, Callback.class);
+                            Callback<String> callback = invocationOnMock.getArgument(1);
                             mFakeTimeTestRule.advanceMillis(resultDelayMs);
                             callback.onResult(null);
                             return null;

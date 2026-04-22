@@ -65,6 +65,19 @@ public class SearchActivityPreferencesManagerTest {
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
+    @SuppressWarnings("unchecked") // mock() of generic Consumer type.
+    private static Consumer<SearchActivityPreferences> mockPrefsConsumer() {
+        return (Consumer<SearchActivityPreferences>) mock(Consumer.class);
+    }
+
+    // Typed wrapper around Mockito.clearInvocations() — @SafeVarargs avoids the
+    // unchecked generic-array creation warning at every call site.
+    @SafeVarargs
+    private static void clearPrefsConsumerInvocations(
+            Consumer<SearchActivityPreferences>... mocks) {
+        clearInvocations(mocks);
+    }
+
     @Before
     public void setUp() {
         LensController.setInstanceForTesting(mLensController);
@@ -199,8 +212,8 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     public void managerTest_updateIsPropagatedToAllObservers() {
-        Consumer<SearchActivityPreferences> observer1 = mock(Consumer.class);
-        Consumer<SearchActivityPreferences> observer2 = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> observer1 = mockPrefsConsumer();
+        Consumer<SearchActivityPreferences> observer2 = mockPrefsConsumer();
 
         // Add 2 distinct listeners and confirm everybody gets called immediately with initial
         // values.
@@ -208,7 +221,7 @@ public class SearchActivityPreferencesManagerTest {
         verify(observer1).accept(any());
         SearchActivityPreferencesManager.addObserver(observer2);
         verify(observer1).accept(any());
-        clearInvocations(observer1, observer2);
+        clearPrefsConsumerInvocations(observer1, observer2);
 
         // Perform an update and check the number of calls.
         var newSettings =
@@ -218,13 +231,13 @@ public class SearchActivityPreferencesManagerTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(eq(newSettings));
         verify(observer2).accept(eq(newSettings));
-        clearInvocations(observer1, observer2);
+        clearPrefsConsumerInvocations(observer1, observer2);
 
         // Add a new listener.
-        Consumer<SearchActivityPreferences> observer3 = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> observer3 = mockPrefsConsumer();
         SearchActivityPreferencesManager.addObserver(observer3);
         verify(observer3).accept(eq(newSettings));
-        clearInvocations(observer1, observer2, observer3);
+        clearPrefsConsumerInvocations(observer1, observer2, observer3);
 
         // Perform an update and check the number of calls.
         newSettings =
@@ -235,7 +248,7 @@ public class SearchActivityPreferencesManagerTest {
         verify(observer1).accept(eq(newSettings));
         verify(observer2).accept(eq(newSettings));
         verify(observer3).accept(eq(newSettings));
-        clearInvocations(observer1, observer2, observer3);
+        clearPrefsConsumerInvocations(observer1, observer2, observer3);
 
         // Finally, reset settings to safe defaults. All listeners should be notified.
         SearchActivityPreferencesManager.resetCachedValues();
@@ -247,22 +260,22 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     public void managerTest_eachObserverCanOnlyBeAddedOnce() {
-        final Consumer<SearchActivityPreferences> listener1 = mock(Consumer.class);
+        final Consumer<SearchActivityPreferences> listener1 = mockPrefsConsumer();
 
         // Add same listener a few times.
         SearchActivityPreferencesManager.addObserver(listener1);
         verify(listener1).accept(any());
-        clearInvocations(listener1);
+        clearPrefsConsumerInvocations(listener1);
 
         SearchActivityPreferencesManager.addObserver(listener1);
         verify(listener1, never()).accept(any());
 
         // Add a different listener.
-        Consumer<SearchActivityPreferences> listener2 = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> listener2 = mockPrefsConsumer();
         SearchActivityPreferencesManager.addObserver(listener2);
         verify(listener1, never()).accept(any());
         verify(listener2).accept(any());
-        clearInvocations(listener1, listener2);
+        clearPrefsConsumerInvocations(listener1, listener2);
 
         SearchActivityPreferencesManager.addObserver(listener2);
         SearchActivityPreferencesManager.addObserver(listener1);
@@ -279,7 +292,7 @@ public class SearchActivityPreferencesManagerTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(listener1).accept(any());
         verify(listener2).accept(any());
-        clearInvocations(listener1, listener2);
+        clearPrefsConsumerInvocations(listener1, listener2);
 
         // Finally, confirm reset.
         SearchActivityPreferencesManager.resetCachedValues();
@@ -303,9 +316,9 @@ public class SearchActivityPreferencesManagerTest {
 
         // Install receiver of the async pref update notification.
         // We expect the on-disk prefs to be already updated when this call is made.
-        Consumer<SearchActivityPreferences> listener = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
         SearchActivityPreferencesManager.addObserver(listener);
-        clearInvocations(listener);
+        clearPrefsConsumerInvocations(listener);
 
         // Save settings to disk.
         var persistedUrl = new GURL("https://URL");
@@ -345,9 +358,9 @@ public class SearchActivityPreferencesManagerTest {
     @Test
     public void managerTest_earlyInitializationOfTemplateUrlService() {
         // Install event listener.
-        Consumer<SearchActivityPreferences> listener = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
         SearchActivityPreferencesManager.addObserver(listener);
-        clearInvocations(listener);
+        clearPrefsConsumerInvocations(listener);
         verifyNoMoreInteractions(mTemplateUrlServiceMock);
 
         // Signal the Manager that Native Libraries are ready.
@@ -376,12 +389,12 @@ public class SearchActivityPreferencesManagerTest {
     @Test
     public void managerTest_lateInitializationOfTemplateUrlService() {
         // Install event listener.
-        Consumer<SearchActivityPreferences> listener = mock(Consumer.class);
+        Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
         ArgumentCaptor<SearchActivityPreferences> refPrefs =
                 ArgumentCaptor.forClass(SearchActivityPreferences.class);
 
         SearchActivityPreferencesManager.addObserver(listener);
-        clearInvocations(listener);
+        clearPrefsConsumerInvocations(listener);
 
         // Set up template url to have some data.
         doReturn("Cowabunga").when(mTemplateUrlMock).getShortName();

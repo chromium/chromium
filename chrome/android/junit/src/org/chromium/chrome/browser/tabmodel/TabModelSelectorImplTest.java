@@ -422,7 +422,7 @@ public class TabModelSelectorImplTest {
         when(regularTabModel.getTabUngrouper()).thenReturn(tabUngrouper);
         doAnswer(
                         invocation -> {
-                            List<Tab> tabs = (List<Tab>) invocation.getArguments()[0];
+                            List<Tab> tabs = invocation.getArgument(0);
                             for (Tab tab : tabs) {
                                 tab.setTabGroupId(null);
                                 when(regularTabModel.isTabInTabGroup(tab)).thenReturn(false);

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.function.BooleanSupplier;
 
@@ -99,7 +100,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.setIsAnimationAllowedPredicate(mMockAnimationChecker);
         mOptionalButtonView.layout(10, 10, 10, 10);
 
-        mMockBeginDelayedTransition = Mockito.mock(Callback.class);
+        mMockBeginDelayedTransition = MockitoHelper.mockCallback();
 
         mMockTransitionRoot = Mockito.mock(ViewGroup.class);
         when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
@@ -661,8 +662,8 @@ public class OptionalButtonViewTest {
         Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
         Runnable beforeShowTransitionCallback = mock(Runnable.class);
         Runnable beforeHideTransitionCallback = mock(Runnable.class);
-        Callback<Integer> transitionStartedCallback = mock(Callback.class);
-        Callback<Integer> transitionFinishedCallback = mock(Callback.class);
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
+        Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
@@ -743,8 +744,8 @@ public class OptionalButtonViewTest {
         Runnable beforeDelayedTransitionCallback = mock(Runnable.class);
         Runnable beforeShowTransitionCallback = mock(Runnable.class);
         Runnable beforeHideTransitionCallback = mock(Runnable.class);
-        Callback<Integer> transitionStartedCallback = mock(Callback.class);
-        Callback<Integer> transitionFinishedCallback = mock(Callback.class);
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
+        Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
 
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
@@ -1112,7 +1113,7 @@ public class OptionalButtonViewTest {
                         .setActionChipCollapseDelayMs(customDelay)
                         .build());
 
-        Callback<Integer> transitionStartedCallback = mock(Callback.class);
+        Callback<Integer> transitionStartedCallback = MockitoHelper.mockCallback();
         mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
 
         // Show action chip.

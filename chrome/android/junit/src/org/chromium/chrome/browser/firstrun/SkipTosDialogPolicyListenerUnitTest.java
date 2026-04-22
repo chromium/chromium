@@ -75,6 +75,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Spy public Callback<Boolean> mTosDialogCallback;
     @Spy public TestHistNameProvider mHistogramNameProvider;
     @Mock public OneshotSupplier<Boolean> mMockPolicyLoadListener;
+    @Mock public OneshotSupplier<PolicyService> mMockPolicyServiceSupplier;
     @Mock public EnterpriseInfo mMockEnterpriseInfo;
 
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
@@ -347,12 +348,13 @@ public class SkipTosDialogPolicyListenerUnitTest {
     public void testCreateAndOwnPolicyLoadListener()
             throws NoSuchFieldException, IllegalAccessException {
         AppRestrictionSupplier mockAppRestrictionInfo = Mockito.mock(AppRestrictionSupplier.class);
-        OneshotSupplier<PolicyService> mockSupplier =
-                (OneshotSupplier<PolicyService>) Mockito.mock(OneshotSupplier.class);
 
         SkipTosDialogPolicyListener targetListener =
                 new SkipTosDialogPolicyListener(
-                        mockAppRestrictionInfo, mockSupplier, mMockEnterpriseInfo, null);
+                        mockAppRestrictionInfo,
+                        mMockPolicyServiceSupplier,
+                        mMockEnterpriseInfo,
+                        null);
 
         Assert.assertNotNull(
                 "SkipTosDialogPolicyListener should create and own a PolicyLoadListener.",
@@ -430,6 +432,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         mSkipTosDialogPolicyListener.onAvailable(mTosDialogCallback);
     }
 
+    @SuppressWarnings("unchecked") // reset() is a generic-varargs method.
     private void setupMockPolicyLoadListenerInitialized(boolean hasPolicy) {
         Mockito.reset(mMockPolicyLoadListener);
         mPolicyLoadListenerCallback = null;

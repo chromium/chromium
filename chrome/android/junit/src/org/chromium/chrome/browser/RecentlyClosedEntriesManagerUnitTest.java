@@ -443,6 +443,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
         }
 
         // Verify the excess window entries are cleaned up.
+        @SuppressWarnings("unchecked") // List.class cannot be parameterized.
         ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager)
                 .closeWindows(listCaptor.capture(), eq(CloseWindowAppSource.RECENT_TABS));
@@ -766,6 +767,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
         // Verify the excess window entries is cleaned up from storage.
         mRecentlyClosedEntriesManager.onWindowsClosed(
                 Arrays.asList(newWindow1, newWindow2), /* isPermanentDeletion= */ false);
+        @SuppressWarnings("unchecked") // List.class cannot be parameterized.
         ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager)
                 .closeWindows(

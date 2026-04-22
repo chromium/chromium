@@ -59,8 +59,8 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class DefaultSearchEngineDialogTest {
     @Rule
-    public BaseActivityTestRule mActivityTestRule =
-            new BaseActivityTestRule(BlankUiTestActivity.class);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 

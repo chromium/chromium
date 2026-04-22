@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -1073,8 +1074,10 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    // Mockito.clearInvocations() takes generic T... varargs.
+    @SuppressWarnings("unchecked")
     public void testTextWrappingCallback() {
-        var callback = mock(Callback.class);
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
         mUrlBar.setUrlTextWrappingChangeListener(callback);
         doReturn(mLayout).when(mUrlBar).getLayout();
 

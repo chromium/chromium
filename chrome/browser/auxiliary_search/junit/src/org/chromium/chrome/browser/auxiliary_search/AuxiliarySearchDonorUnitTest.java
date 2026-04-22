@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.Au
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -440,7 +441,7 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     public void testOnConfigChanged() {
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
         assertTrue(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
@@ -472,7 +473,7 @@ public class AuxiliarySearchDonorUnitTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
         AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
         mAuxiliarySearchDonor.setPendingCallbackForTesting(callback);
 
         // Verifies that closeSession() which calls the pending callback is executed when device

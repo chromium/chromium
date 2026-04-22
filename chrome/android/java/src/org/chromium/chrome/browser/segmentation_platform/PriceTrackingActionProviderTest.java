@@ -99,8 +99,8 @@ public class PriceTrackingActionProviderTest {
     private void setIsBookmarkPriceTrackedResult(boolean isBookmarkPriceTracked) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(2))
-                                    .onResult(isBookmarkPriceTracked);
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(isBookmarkPriceTracked);
                             return null;
                         })
                 .when(mMockPriceTrackingUtilsJni)

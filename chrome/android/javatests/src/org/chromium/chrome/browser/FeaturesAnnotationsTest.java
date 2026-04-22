@@ -103,13 +103,13 @@ public class FeaturesAnnotationsTest {
     private static List<String> getFeatureList(boolean enabled) {
         String switchName = enabled ? "enable-features" : "disable-features";
         ArrayList<String> allFeatures =
-                new ArrayList(
+                new ArrayList<>(
                         Arrays.asList(
                                 CommandLine.getInstance().getSwitchValue(switchName).split(",")));
         // To avoid interferences with features enabled or disabled outside of
         // this test class, we only return the one we set in the tests.
         ArrayList<String> relevantFeatures =
-                new ArrayList(Arrays.asList("One", "Two", "Three", "Four"));
+                new ArrayList<>(Arrays.asList("One", "Two", "Three", "Four"));
         allFeatures.retainAll(relevantFeatures);
         return allFeatures;
     }

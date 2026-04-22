@@ -40,6 +40,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
     private SettableNonNullObservableSupplier<Boolean> mPersistentModeSupplier;
 
     @Before
+    @SuppressWarnings("unchecked") // Mockito.reset() is a generic-varargs method.
     public void beforeTest() {
         mPersistentModeSupplier = ObservableSuppliers.createNonNull(false);
 

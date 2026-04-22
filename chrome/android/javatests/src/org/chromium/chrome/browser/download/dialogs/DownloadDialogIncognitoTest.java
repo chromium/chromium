@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -35,6 +34,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Test to verify download dialog scenarios. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,7 +53,7 @@ public class DownloadDialogIncognitoTest {
 
     private ModalDialogManager mModalDialogManager;
 
-    private final Callback<Boolean> mResultCallback = Mockito.mock(Callback.class);
+    private final Callback<Boolean> mResultCallback = MockitoHelper.mockCallback();
 
     @Before
     public void setUpTest() throws Exception {

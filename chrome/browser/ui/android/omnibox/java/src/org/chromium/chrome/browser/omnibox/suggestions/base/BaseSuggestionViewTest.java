@@ -57,7 +57,7 @@ public class BaseSuggestionViewTest {
     // TODO(https://github.com/robolectric/robolectric/issues/3910) Remove the class below once
     // the above issue is resolved and our robolectric version is rolled forward to the version
     // that supports layout direction changes.
-    static class BaseSuggestionViewForTest extends BaseSuggestionView {
+    static class BaseSuggestionViewForTest extends BaseSuggestionView<View> {
         private int mCurrentDirection = View.LAYOUT_DIRECTION_LTR;
 
         BaseSuggestionViewForTest(View childView) {

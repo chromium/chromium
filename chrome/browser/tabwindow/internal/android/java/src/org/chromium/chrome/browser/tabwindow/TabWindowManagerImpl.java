@@ -215,7 +215,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
         mSelectorsToWindowId.put(selector, assignedWindowId);
         mActivityAssignments.put(activity, selector);
 
-        Pair<@WindowId Integer, TabModelSelector> res = Pair.create(assignedWindowId, selector);
+        Pair<@WindowId Integer, TabModelSelector> res =
+                Pair.<@WindowId Integer, TabModelSelector>create(assignedWindowId, selector);
         Log.i(
                 TAG_MULTI_INSTANCE,
                 "Returning new selector for " + activity + " with window id: " + res);

@@ -217,7 +217,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
                 ObservableSuppliers.createMonotonic();
 
-        mTabSwitcherSupplier = new OneshotSupplierImpl();
+        mTabSwitcherSupplier = new OneshotSupplierImpl<>();
         mManagerPhone =
                 new LayoutManagerChromePhone(
                         layoutManagerHost,
@@ -287,7 +287,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
                 ObservableSuppliers.createMonotonic();
 
-        mTabSwitcherSupplier = new OneshotSupplierImpl();
+        mTabSwitcherSupplier = new OneshotSupplierImpl<>();
         mManager =
                 new LayoutManagerChrome(
                         layoutManagerHost,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.search_engines.settings.common;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -42,8 +43,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-
-import java.util.Map;
 
 /** Unit tests for {@link BaseSiteSearchMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -144,6 +143,6 @@ public class BaseSiteSearchMediatorUnitTest {
                         eq(mTemplateUrl),
                         eq(templateUrlHost),
                         any(LargeIconBridge.class),
-                        any(Map.class));
+                        anyMap());
     }
 }

@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
@@ -105,9 +104,8 @@ public class TabGroupRowViewRenderTest {
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
-                                    GURL url = (GURL) invocation.getArguments()[0];
-                                    Callback<Drawable> callback =
-                                            (Callback<Drawable>) invocation.getArguments()[1];
+                                    GURL url = invocation.getArgument(0);
+                                    Callback<Drawable> callback = invocation.getArgument(1);
                                     callback.onResult(new ColorDrawable(urlToColor.get(url)));
                                     return null;
                                 })
@@ -119,7 +117,7 @@ public class TabGroupRowViewRenderTest {
         mTabGroupRowView = inflateAndAttach(mActivity, R.layout.tab_group_row);
     }
 
-    private <T extends View> T inflateAndAttach(Context context, @LayoutRes int layoutRes) {
+    private TabGroupRowView inflateAndAttach(Context context, @LayoutRes int layoutRes) {
         FrameLayout contentView = new FrameLayout(mActivity);
         contentView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -128,7 +126,7 @@ public class TabGroupRowViewRenderTest {
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(layoutRes, contentView);
         assertThat(contentView.getChildCount()).isEqualTo(1);
-        return (T) contentView.getChildAt(0);
+        return (TabGroupRowView) contentView.getChildAt(0);
     }
 
     private ClusterData makeCornerData(GURL... urls) {

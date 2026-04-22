@@ -82,7 +82,8 @@ public class FreManagementNoticeDialogHelperTest {
 
         doAnswer(
                         (args) -> {
-                            ((Callback<Boolean>) args.getArgument(1)).onResult(mIsAccountManaged);
+                            Callback<Boolean> cb = args.getArgument(1);
+                            cb.onResult(mIsAccountManaged);
                             return null;
                         })
                 .when(mSigninManager)

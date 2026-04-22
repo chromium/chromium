@@ -187,6 +187,7 @@ public class NtpThemeMediatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // any(Pair.class) widens to raw Pair.
     public void testSetLeadingIconFromBitmaps() {
         createMediator(true);
         Bitmap bitmap1 = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -320,7 +321,7 @@ public class NtpThemeMediatorUnitTest {
     @Test
     public void testFetchImageOrRunCallback_withUrl() {
         createMediator(true);
-        Callback<Bitmap> callback = mock(Callback.class);
+        Callback<Bitmap> callback = MockitoHelper.mockCallback();
         GURL url = new GURL("http://test.com");
         mMediator.fetchImageOrRunCallback(mImageFetcher, url, callback);
         verify(mImageFetcher).fetchImage(any(), eq(callback));

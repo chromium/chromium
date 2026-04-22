@@ -252,6 +252,8 @@ public class ChromeBackupAgentTest {
      * user.
      */
     @Test
+    // ObjectInputStream.readObject() returns Object; casts to generic ArrayList are unchecked.
+    @SuppressWarnings("unchecked")
     public void testOnBackup_firstBackup_signedInNotSyncing()
             throws IOException, ClassNotFoundException {
         // Mock the backup data.
@@ -503,7 +505,7 @@ public class ChromeBackupAgentTest {
         String syncingUserEmail = hasSyncingUser ? mAccountInfo.getEmail() : "";
         String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId().toString() : "";
         ArrayList<Pair<String, byte[]>> keysAndValues =
-                new ArrayList(
+                new ArrayList<>(
                         Arrays.asList(
                                 new Pair<>("native." + NATIVE_PREF_NOT_BACKED_UP, new byte[] {1}),
                                 new Pair<>(

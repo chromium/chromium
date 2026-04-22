@@ -59,8 +59,8 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
 
     protected XrSurfaceEntityHolderImpl(Session xrSession, SurfaceEntity surfaceEntity) {
         super(xrSession, surfaceEntity);
-        mMovableComponent = new XrMovableComponentImpl<>(xrSession, surfaceEntity);
-        mResizableComponent = new XrResizableComponentImpl<>(xrSession, surfaceEntity);
+        mMovableComponent = new XrMovableComponentImpl<SurfaceEntity>(xrSession, surfaceEntity);
+        mResizableComponent = new XrResizableComponentImpl<SurfaceEntity>(xrSession, surfaceEntity);
         mResizableComponent.addResizeListener(
                 new XrResizableComponent.OnResizeListener() {
                     @Override

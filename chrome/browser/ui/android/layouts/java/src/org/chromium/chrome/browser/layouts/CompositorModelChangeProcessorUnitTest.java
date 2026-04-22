@@ -48,7 +48,10 @@ public class CompositorModelChangeProcessorUnitTest {
     private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
 
     @Mock private SceneLayer mView;
-    @Mock private PropertyModelChangeProcessor.ViewBinder mViewBinder;
+
+    @Mock
+    private PropertyModelChangeProcessor.ViewBinder<PropertyModel, SceneLayer, PropertyKey>
+            mViewBinder;
 
     private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
             ObservableSuppliers.createNonNull(0L);

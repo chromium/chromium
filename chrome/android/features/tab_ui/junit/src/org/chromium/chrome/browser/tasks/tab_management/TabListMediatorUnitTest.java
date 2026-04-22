@@ -200,6 +200,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -381,6 +382,7 @@ public class TabListMediatorUnitTest {
     @Mock HandoffButtonState mHandoffButtonState;
     @Mock UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     @Mock MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -6078,9 +6080,7 @@ public class TabListMediatorUnitTest {
                             new Answer<>() {
                                 @Override
                                 public Void answer(InvocationOnMock invocation) {
-                                    OptimizationGuideCallback callback =
-                                            (OptimizationGuideCallback)
-                                                    invocation.getArguments()[2];
+                                    OptimizationGuideCallback callback = invocation.getArgument(2);
                                     callback.onOptimizationGuideDecision(
                                             decision, responseEntry.getValue());
                                     return null;
@@ -6144,7 +6144,7 @@ public class TabListMediatorUnitTest {
     /** Asserts that the given key is null (aka "unset") in the given model. */
     private void assertUnset(PropertyModel model, PropertyKey propertyKey) {
         if (propertyKey instanceof ReadableObjectPropertyKey) {
-            ReadableObjectPropertyKey objectKey = (ReadableObjectPropertyKey) propertyKey;
+            ReadableObjectPropertyKey<?> objectKey = (ReadableObjectPropertyKey<?>) propertyKey;
             assertNull(
                     "Expected property to be unset, property=" + objectKey, model.get(objectKey));
         } else {
@@ -6215,20 +6215,17 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         PropertyModel model = mModelList.get(0).model;
-        org.chromium.ui.modelutil.PropertyObservable.PropertyObserver<
-                        org.chromium.ui.modelutil.PropertyKey>
-                observer =
-                        mock(org.chromium.ui.modelutil.PropertyObservable.PropertyObserver.class);
-        model.addObserver(observer);
+        model.addObserver(mPropertyObserver);
 
         mMediator.setThumbnailSpinnerVisibility(mTab1, true);
-        verify(observer).onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        verify(mPropertyObserver)
+                .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
         assertTrue(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
 
         mMediator.setThumbnailSpinnerVisibility(mTab1, false);
-        verify(observer, times(2))
+        verify(mPropertyObserver, times(2))
                 .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
         assertFalse(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
-        verify(observer).onPropertyChanged(eq(model), eq(TabProperties.THUMBNAIL_FETCHER));
+        verify(mPropertyObserver).onPropertyChanged(eq(model), eq(TabProperties.THUMBNAIL_FETCHER));
     }
 }

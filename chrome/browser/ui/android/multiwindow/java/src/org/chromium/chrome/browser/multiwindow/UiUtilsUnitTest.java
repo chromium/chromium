@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link UiUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -88,7 +88,7 @@ public class UiUtilsUnitTest {
     @Test
     public void testShowNameWindowDialog_NonEmptyTitle_Success() {
         Activity activity = Robolectric.setupActivity(Activity.class);
-        Callback<String> mockCallback = mock(Callback.class);
+        Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
         String newTitle = "My Window";
 
@@ -109,7 +109,7 @@ public class UiUtilsUnitTest {
     @Test
     public void testShowNameWindowDialog_EmptyTitle_Success() {
         Activity activity = Robolectric.setupActivity(Activity.class);
-        Callback<String> mockCallback = mock(Callback.class);
+        Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
         String newTitle = "";
 
@@ -130,7 +130,7 @@ public class UiUtilsUnitTest {
     @Test
     public void testShowNameWindowDialog_SameTitle() {
         Activity activity = Robolectric.setupActivity(Activity.class);
-        Callback<String> mockCallback = mock(Callback.class);
+        Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
 
         UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);
@@ -148,7 +148,7 @@ public class UiUtilsUnitTest {
     @Test
     public void testShowNameWindowDialog_Cancel() {
         Activity activity = Robolectric.setupActivity(Activity.class);
-        Callback<String> mockCallback = mock(Callback.class);
+        Callback<String> mockCallback = MockitoHelper.mockCallback();
         String currentTitle = "Window 1";
 
         UiUtils.showNameWindowDialog(activity, currentTitle, mockCallback, mNameWindowDialogSource);

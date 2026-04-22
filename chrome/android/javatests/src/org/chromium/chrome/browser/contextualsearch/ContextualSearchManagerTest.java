@@ -1080,7 +1080,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @DisabledTest(message = "https://crbug.com/1048827, https://crbug.com/1181088")
     public void testLongpressExtendingSelectionExactResolve() throws Exception {
         // Set up UserAction monitoring.
-        Set<String> userActions = new HashSet();
+        Set<String> userActions = new HashSet<>();
         userActions.add("ContextualSearch.SelectionEstablished");
         userActions.add("ContextualSearch.ManualRefine");
         UserActionMonitor userActionMonitor = new UserActionMonitor(userActions);

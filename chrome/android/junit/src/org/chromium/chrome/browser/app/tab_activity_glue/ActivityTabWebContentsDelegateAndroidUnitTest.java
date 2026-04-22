@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -77,6 +78,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         private boolean mIsPopup;
         private boolean mIsDocumentPictureInPictureEnabled;
 
+        // Mockito.mock() returns raw Supplier; pass through to parameterized super ctor.
+        @SuppressWarnings("unchecked")
         public TestActivityTabWebContentsDelegateAndroid(
                 Tab tab,
                 Activity activity,
@@ -147,6 +150,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock DisplayAndroidManager mDisplayAndroidManager;
     @Mock AppTask mAppTask;
     @Mock PopupCreator mPopupCreator;
+
+    @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
@@ -247,12 +252,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 true,
                 null);
 
-        ArgumentCaptor<CompletableFuture> futureCaptor =
-                ArgumentCaptor.forClass(CompletableFuture.class);
         verify(mTabCreator, times(1))
                 .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
-        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+                        any(), anyBoolean(), any(), anyInt(), any(), mFutureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = mFutureCaptor.getValue();
         assertTrue(
                 "The final decision to add the tab to the TabModel should have already been made",
                 capturedFuture.isDone());
@@ -280,12 +283,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 true,
                 null);
 
-        ArgumentCaptor<CompletableFuture> futureCaptor =
-                ArgumentCaptor.forClass(CompletableFuture.class);
         verify(mTabCreator, times(1))
                 .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
-        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+                        any(), anyBoolean(), any(), anyInt(), any(), mFutureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = mFutureCaptor.getValue();
         assertTrue(
                 "The final decision to add the tab to the TabModel should have already been made",
                 capturedFuture.isDone());
@@ -313,12 +314,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 true,
                 null);
 
-        ArgumentCaptor<CompletableFuture> futureCaptor =
-                ArgumentCaptor.forClass(CompletableFuture.class);
         verify(mTabCreator, times(1))
                 .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
-        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+                        any(), anyBoolean(), any(), anyInt(), any(), mFutureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = mFutureCaptor.getValue();
         assertTrue(
                 "The final decision to add the tab to the TabModel should have already been made",
                 capturedFuture.isDone());

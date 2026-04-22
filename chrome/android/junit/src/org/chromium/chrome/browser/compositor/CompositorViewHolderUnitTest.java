@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
@@ -1234,13 +1235,13 @@ public class CompositorViewHolderUnitTest {
         when(virtualView.getAccessibilityDescription()).thenReturn("test-node");
         doAnswer(
                         invocation -> {
-                            ((List<org.chromium.chrome.browser.layouts.components.VirtualView>)
-                                            invocation.getArgument(0))
-                                    .add(virtualView);
+                            List<org.chromium.chrome.browser.layouts.components.VirtualView> list =
+                                    invocation.getArgument(0);
+                            list.add(virtualView);
                             return null;
                         })
                 .when(mLayoutManager)
-                .getVirtualViews(any(List.class));
+                .getVirtualViews(anyList());
 
         mCompositorViewHolder.onAccessibilityModeChanged(true);
         assertNotNull(mCompositorViewHolder.mAccessibilityView);

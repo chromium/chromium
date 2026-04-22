@@ -74,6 +74,7 @@ import org.chromium.components.segmentation_platform.SegmentationPlatformService
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -374,7 +375,7 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testProfileNotReady() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        Callback<Boolean> callback = MockitoHelper.mockCallback();
         mCoordinator.show(callback);
 
         assertTrue(mProfileSupplier.hasObservers());
@@ -417,7 +418,7 @@ public class HomeModulesCoordinatorUnitTest {
     public void testOnModuleChangedCallback() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
-        Callback<Boolean> onHomeModulesShownCallback = Mockito.mock(Callback.class);
+        Callback<Boolean> onHomeModulesShownCallback = MockitoHelper.mockCallback();
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setModelForTesting(mModel);
 

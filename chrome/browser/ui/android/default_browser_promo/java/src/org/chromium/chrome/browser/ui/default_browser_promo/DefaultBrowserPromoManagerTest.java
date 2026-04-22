@@ -30,8 +30,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -58,7 +60,9 @@ public class DefaultBrowserPromoManagerTest {
         // When fetchDefaultBrowserInfo is called, immediately invoke the callback.
         doAnswer(
                         invocation -> {
-                            invocation.getArgument(0, Callback.class).onResult(null);
+                            Callback<DefaultBrowserInfo.@Nullable DefaultInfo> cb =
+                                    invocation.getArgument(0);
+                            cb.onResult(null);
                             return null;
                         })
                 .when(mMockDefaultBrowserPromoUtils)

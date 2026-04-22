@@ -152,6 +152,8 @@ public class SuggestionLifecycleObserverHandlerUnitTest {
     }
 
     @Test
+    // reset(T...) is varargs; generic mock triggers unchecked.
+    @SuppressWarnings("unchecked")
     public void testReset_newSuggestion() {
         mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
                 SUGGESTION_ID, mUserResponseCallback);

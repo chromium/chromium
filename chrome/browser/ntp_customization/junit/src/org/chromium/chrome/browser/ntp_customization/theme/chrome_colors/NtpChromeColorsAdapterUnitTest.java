@@ -155,6 +155,8 @@ public class NtpChromeColorsAdapterUnitTest {
     }
 
     @Test
+    // clearInvocations(T...) is varargs; generic mock triggers unchecked.
+    @SuppressWarnings("unchecked")
     public void testSetSelectedPosition() {
         // Initial selected position is 0.
         assertEquals(0, mAdapter.getSelectedPositionForTesting());

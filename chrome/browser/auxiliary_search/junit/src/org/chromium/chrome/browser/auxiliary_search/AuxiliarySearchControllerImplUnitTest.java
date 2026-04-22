@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -29,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -262,7 +263,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         // Verifies that Donor won't donate if it can't.
         when(mAuxiliarySearchDonor.canDonate()).thenReturn(false);
         mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
-                entries, map, Mockito.mock(Callback.class), now);
+                entries, map, MockitoHelper.mockCallback(), now);
 
         verify(mAuxiliarySearchDonor, never())
                 .donateFavicons(any(), eq(map), MockitoHelper.anyCallback());
@@ -274,7 +275,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         .build();
         when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
         mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
-                entries, map, Mockito.mock(Callback.class), now);
+                entries, map, MockitoHelper.mockCallback(), now);
 
         verify(mAuxiliarySearchDonor)
                 .donateFavicons(
@@ -392,10 +393,10 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         mFaviconImageCallbackCaptor1.getValue().onFaviconAvailable(bitmap, null);
         verify(mAuxiliarySearchDonor, never())
-                .donateEntries(any(Map.class), mFaviconDonationCompleteCallbackCaptor.capture());
+                .donateEntries(anyMap(), mFaviconDonationCompleteCallbackCaptor.capture());
         mFaviconImageCallbackCaptor2.getValue().onFaviconAvailable(null, null);
         verify(mAuxiliarySearchDonor)
-                .donateEntries(any(Map.class), mFaviconDonationCompleteCallbackCaptor.capture());
+                .donateEntries(anyMap(), mFaviconDonationCompleteCallbackCaptor.capture());
         histogramWatcher.assertExpected();
 
         // Verifies the callback is called when the donation completes successfully.
@@ -441,7 +442,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         mCallbackCaptor.getAllValues().get(0).onResult(tabs);
 
         verify(mAuxiliarySearchDonor, never())
-                .donateEntries(any(List.class), any(int[].class), MockitoHelper.anyCallback());
+                .donateEntries(anyList(), any(int[].class), MockitoHelper.anyCallback());
     }
 
     @Test

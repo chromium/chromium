@@ -240,6 +240,7 @@ public class StripLayoutHelperTest {
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
+    @Captor private ArgumentCaptor<List<Animator>> mAnimationListCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private Activity mActivity;
@@ -747,13 +748,11 @@ public class StripLayoutHelperTest {
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         closeTabAt(stripLayoutHelperSpy, closeTabIndex);
 
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
+                .startAnimations(mAnimationListCaptor.capture(), any());
+        final List<Animator> animationList = mAnimationListCaptor.getValue();
         // Only the tabs that come after the closed tab should have to move and get animations
         // created.
         final int expectedAnimationCount = numTabs - closeTabIndex - 1;
@@ -783,13 +782,11 @@ public class StripLayoutHelperTest {
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         closeTabAt(stripLayoutHelperSpy, closeTabIndex);
 
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
+                .startAnimations(mAnimationListCaptor.capture(), any());
+        final List<Animator> animationList = mAnimationListCaptor.getValue();
         assertEquals("There should 1 animation for the closing tab.", 1, animationList.size());
     }
 
@@ -817,13 +814,11 @@ public class StripLayoutHelperTest {
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         closeTabAt(stripLayoutHelperSpy, closeTabIndex);
 
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
+                .startAnimations(mAnimationListCaptor.capture(), any());
+        final List<Animator> animationList = mAnimationListCaptor.getValue();
         assertEquals("There should be 1 animations for the closing tab.", 1, animationList.size());
     }
 
@@ -859,13 +854,11 @@ public class StripLayoutHelperTest {
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
         closeTabAt(stripLayoutHelperSpy, closeTabIndex);
 
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
+                .startAnimations(mAnimationListCaptor.capture(), any());
+        final List<Animator> animationList = mAnimationListCaptor.getValue();
         assertEquals(
                 "There should be one animation for the tab moving into the visible bounds",
                 1,
@@ -894,10 +887,8 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.tabCreated(
                 TIMESTAMP, mModel.getTabAt(mModel.getCount() - 1).getId(), true, false, false);
 
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
-        verify(stripLayoutHelperSpy).startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
+        verify(stripLayoutHelperSpy).startAnimations(mAnimationListCaptor.capture(), any());
+        final List<Animator> animationList = mAnimationListCaptor.getValue();
         assertEquals(
                 "There should be one animation for the newly created tab width",
                 1,

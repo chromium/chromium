@@ -258,7 +258,7 @@ public class TabStripPinUnpinTabsTest {
 
         // Multi-select all tabs.
         final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        final Set<Integer> tabIds = new HashSet();
+        final Set<Integer> tabIds = new HashSet<>();
         for (int i = 0; i < tabs.length; i++) {
             tabIds.add(tabs[i].getTabId());
         }
@@ -297,7 +297,7 @@ public class TabStripPinUnpinTabsTest {
 
         // Multi-select last two tabs.
         final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        final Set<Integer> tabIds = new HashSet();
+        final Set<Integer> tabIds = new HashSet<>();
         StripLayoutTab firstTabToPin = tabs[tabs.length - 2];
         StripLayoutTab secondTabToPin = tabs[tabs.length - 1];
         tabIds.add(firstTabToPin.getTabId());
@@ -348,7 +348,7 @@ public class TabStripPinUnpinTabsTest {
         verifyTabIsPinned(tabs, tabs[0], /* expectedDrawX= */ 0, /* expectedIndex= */ 0);
 
         // Multi-select the first pinned tab and last two unpinned tabs.
-        final Set<Integer> tabIds = new HashSet();
+        final Set<Integer> tabIds = new HashSet<>();
         StripLayoutTab tabPinned = tabs[0];
         StripLayoutTab firstTabToPin = tabs[tabs.length - 2];
         StripLayoutTab secondTabToPin = tabs[tabs.length - 1];

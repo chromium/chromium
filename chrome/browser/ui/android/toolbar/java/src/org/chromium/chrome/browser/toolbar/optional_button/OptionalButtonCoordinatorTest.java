@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.function.BooleanSupplier;
@@ -111,7 +112,7 @@ public class OptionalButtonCoordinatorTest {
                 .setTransitionFinishedCallback(mCallbackArgumentCaptor.capture());
         Callback<Integer> internalCallback = mCallbackArgumentCaptor.getValue();
 
-        Callback<Integer> externalCallback = Mockito.mock(Callback.class);
+        Callback<Integer> externalCallback = MockitoHelper.mockCallback();
 
         // Set a callback.
         mOptionalButtonCoordinator.setTransitionFinishedCallback(externalCallback);

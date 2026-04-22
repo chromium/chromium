@@ -149,7 +149,7 @@ public class TabViewAndroidDelegateTest {
                 .onProvideAutofillVirtualStructure(
                         structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
 
-        SparseArray<AutofillValue> values = new SparseArray();
+        SparseArray<AutofillValue> values = new SparseArray<>();
         mViewAndroidDelegate.autofill(values);
         verify(mTab).autofill(values);
     }

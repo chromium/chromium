@@ -151,6 +151,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock PreloadingFeatureMap mPreloadingFeatureMap;
     private @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
+    private @Captor ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
     private @Mock TemplateUrlService mTemplateUrlService;
@@ -1545,7 +1546,8 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
-                            ((Callback<GURL>) invocation.getArgument(1)).onResult(url);
+                            Callback<GURL> cb = invocation.getArgument(1);
+                            cb.onResult(url);
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
@@ -1587,7 +1589,8 @@ public class AutocompleteMediatorUnitTest {
         GURL url2 = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
-                            ((Callback<GURL>) invocation.getArgument(1)).onResult(url2);
+                            Callback<GURL> cb = invocation.getArgument(1);
+                            cb.onResult(url2);
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
@@ -1700,13 +1703,12 @@ public class AutocompleteMediatorUnitTest {
         var session = createSession(JUnitTestGURLs.BLUE_1, "Title", pageClassification);
         mMediator.beginInput(session);
 
-        ArgumentCaptor<Consumer<SiteSearchData>> callbackCaptor =
-                ArgumentCaptor.forClass(Consumer.class);
-        verify(mOmniboxActionDelegate).setOnKeywordModeEnteredCb(callbackCaptor.capture());
+        verify(mOmniboxActionDelegate)
+                .setOnKeywordModeEnteredCb(mKeywordModeEnteredCaptor.capture());
 
         SiteSearchData data = new SiteSearchData("keyword", "Full Name");
         mMediator.allowPendingItemSelection();
-        callbackCaptor.getValue().accept(data);
+        mKeywordModeEnteredCaptor.getValue().accept(data);
 
         verify(mTextStateProvider).setSiteSearchChip("Full Name");
         assertEquals("", session.getAutocompleteInput().getUserText());
@@ -1722,12 +1724,11 @@ public class AutocompleteMediatorUnitTest {
         session.getAutocompleteInput().setSiteSearchData(new SiteSearchData("keyword", "label"));
         mMediator.beginInput(session);
 
-        ArgumentCaptor<Consumer<SiteSearchData>> callbackCaptor =
-                ArgumentCaptor.forClass(Consumer.class);
-        verify(mOmniboxActionDelegate).setOnKeywordModeEnteredCb(callbackCaptor.capture());
+        verify(mOmniboxActionDelegate)
+                .setOnKeywordModeEnteredCb(mKeywordModeEnteredCaptor.capture());
 
         mMediator.allowPendingItemSelection();
-        callbackCaptor.getValue().accept(null);
+        mKeywordModeEnteredCaptor.getValue().accept(null);
         org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mTextStateProvider).setSiteSearchChip(null);
         assertEquals("b", session.getAutocompleteInput().getUserText());

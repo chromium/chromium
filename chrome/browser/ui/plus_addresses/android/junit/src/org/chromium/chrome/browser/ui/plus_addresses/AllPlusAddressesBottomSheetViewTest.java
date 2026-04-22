@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +41,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -105,7 +105,7 @@ public class AllPlusAddressesBottomSheetViewTest {
     @Test
     @SmallTest
     public void testSetOnQueryChangedCallback() {
-        Callback<String> callback = mock(Callback.class);
+        Callback<String> callback = MockitoHelper.mockCallback();
 
         mView.setOnQueryChangedCallback(callback);
 
@@ -118,7 +118,7 @@ public class AllPlusAddressesBottomSheetViewTest {
     @Test
     @SmallTest
     public void testSetSheetItemListAdapter() {
-        Callback<String> callback = mock(Callback.class);
+        Callback<String> callback = MockitoHelper.mockCallback();
         PropertyModel model = AllPlusAddressesBottomSheetProperties.createDefaultModel();
         model.get(PLUS_PROFILES)
                 .add(

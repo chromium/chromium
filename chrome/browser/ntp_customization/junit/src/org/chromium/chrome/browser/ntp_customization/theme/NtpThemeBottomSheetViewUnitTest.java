@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -51,6 +52,7 @@ public class NtpThemeBottomSheetViewUnitTest {
     @Mock private NtpThemeListItemView mThemeCollectionsSection;
     @Mock private OnClickListener mOnClickListener;
     @Mock private NtpThemeListThemeCollectionItemIconView mThemeCollectionsItemIconView;
+    @Captor private ArgumentCaptor<Pair<Drawable, Drawable>> mDrawablePairCaptor;
 
     private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
     private Context mContext;
@@ -112,10 +114,9 @@ public class NtpThemeBottomSheetViewUnitTest {
         final Pair<Drawable, Drawable> pair = new Pair<>(primaryDrawable, secondaryDrawable);
         mNtpThemeBottomSheetView.setLeadingIconForThemeCollections(pair);
 
-        ArgumentCaptor<Pair<Drawable, Drawable>> captor = ArgumentCaptor.forClass(Pair.class);
-        verify(mThemeCollectionsItemIconView).setImageDrawablePair(captor.capture());
+        verify(mThemeCollectionsItemIconView).setImageDrawablePair(mDrawablePairCaptor.capture());
 
-        Pair<Drawable, Drawable> capturedPair = captor.getValue();
+        Pair<Drawable, Drawable> capturedPair = mDrawablePairCaptor.getValue();
         ShadowDrawable shadowPrimary = shadowOf(capturedPair.first);
         assertEquals(
                 R.drawable.upload_an_image_icon_for_theme_bottom_sheet,

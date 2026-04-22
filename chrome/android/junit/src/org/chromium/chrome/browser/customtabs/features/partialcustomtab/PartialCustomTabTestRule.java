@@ -71,7 +71,6 @@ import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
@@ -282,7 +281,7 @@ public class PartialCustomTabTestRule implements TestRule {
                         anyInt(),
                         any(Context.class),
                         any(BooleanSupplier.class),
-                        any(Supplier.class),
+                        any(),
                         any(PartialCustomTabHandleStrategy.DragEventCallback.class)))
                 .thenReturn(null);
     }

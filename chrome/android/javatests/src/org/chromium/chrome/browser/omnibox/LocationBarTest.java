@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
@@ -165,7 +164,7 @@ public class LocationBarTest {
 
     private void assertLocationBarButtonsAre(Integer... expectedIdsArray) {
         Set<Integer> expectedIds = Set.of(expectedIdsArray);
-        Set<Integer> actualIds = new ArraySet();
+        Set<Integer> actualIds = new ArraySet<>();
 
         Map<Integer, String> knownIds =
                 Map.ofEntries(
@@ -187,10 +186,10 @@ public class LocationBarTest {
 
         if (expectedIds.equals(actualIds)) return;
 
-        Set<Integer> excessIds = new ArraySet(actualIds);
+        Set<Integer> excessIds = new ArraySet<>(actualIds);
         excessIds.removeAll(expectedIds);
 
-        Set<Integer> missingIds = new ArraySet(expectedIds);
+        Set<Integer> missingIds = new ArraySet<>(expectedIds);
         missingIds.removeAll(actualIds);
 
         var errorMsg = new StringBuilder();
@@ -357,7 +356,7 @@ public class LocationBarTest {
                     mUrlBar.requestFocus();
                 });
 
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.mic_button)));
+        ViewUtils.waitForVisibleView(withId(R.id.mic_button));
 
         onView(withId(R.id.mic_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));

@@ -144,7 +144,7 @@ public class FirstRunIntegrationTest {
 
     @Rule(order = 1)
     public final BaseActivityTestRule<FirstRunActivity> mActivityTestRule =
-            new BaseActivityTestRule(FirstRunActivity.class);
+            new BaseActivityTestRule<>(FirstRunActivity.class);
 
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mCustomizationRule =
@@ -243,7 +243,7 @@ public class FirstRunIntegrationTest {
         ActivityMonitor monitor = getMonitor(activityClass);
         mLastActivity = mInstrumentation.waitForMonitorWithTimeout(monitor, ACTIVITY_WAIT_LONG_MS);
         Assert.assertNotNull("Could not find " + activityClass.getName(), mLastActivity);
-        return (T) mLastActivity;
+        return activityClass.cast(mLastActivity);
     }
 
     private void skipTosDialogViaPolicy() {

@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -66,6 +65,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplaySt
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -346,7 +346,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
     @Test
     public void testSingleTabCardClickCallback() {
-        Callback<Integer> callback = Mockito.mock(Callback.class);
+        Callback<Integer> callback = MockitoHelper.mockCallback();
         int tabId = 3;
         when(mTab3.getId()).thenReturn(tabId);
         new SingleTabSwitcherOnNtpMediator(

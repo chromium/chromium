@@ -151,7 +151,7 @@ public class MismatchNotificationCheckerUnitTest {
             mAppData.userActCount = INIT_USER_ACT_COUNT;
             mAppData.closeType = CloseType.UNKNOWN.getNumber();
 
-            mOnClose = mock(Callback.class);
+            mOnClose = MockitoHelper.mockCallback();
             mSigninLauncher = mock(SigninAndHistorySyncActivityLauncher.class);
 
             mChecker =

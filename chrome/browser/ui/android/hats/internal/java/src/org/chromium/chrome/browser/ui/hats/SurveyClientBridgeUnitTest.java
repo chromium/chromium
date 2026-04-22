@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -53,6 +54,8 @@ public class SurveyClientBridgeUnitTest {
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock Profile mProfile;
     @Mock TabModelSelector mTabModelSelector;
+    @Captor ArgumentCaptor<Map<String, Boolean>> mBitValueCaptor;
+    @Captor ArgumentCaptor<Map<String, String>> mStringValueCaptor;
 
     WindowAndroid mWindow;
 
@@ -160,27 +163,25 @@ public class SurveyClientBridgeUnitTest {
                 stringFields,
                 new String[] {"stringVal1", "stringVal2"});
 
-        ArgumentCaptor<Map<String, Boolean>> bitValueCaptor = ArgumentCaptor.forClass(Map.class);
-        ArgumentCaptor<Map<String, String>> stringValueCaptor = ArgumentCaptor.forClass(Map.class);
-
         verify(mDelegateSurveyClient)
                 .showSurvey(
                         eq(mActivity),
                         eq(mActivityLifecycleDispatcher),
-                        bitValueCaptor.capture(),
-                        stringValueCaptor.capture());
+                        mBitValueCaptor.capture(),
+                        mStringValueCaptor.capture());
 
         // Check bit values
-        assertEquals("Bit PSD value mismatch.", true, bitValueCaptor.getValue().get("fieldTrue"));
-        assertEquals("Bit PSD value mismatch.", false, bitValueCaptor.getValue().get("fieldFalse"));
+        assertEquals("Bit PSD value mismatch.", true, mBitValueCaptor.getValue().get("fieldTrue"));
+        assertEquals(
+                "Bit PSD value mismatch.", false, mBitValueCaptor.getValue().get("fieldFalse"));
         assertEquals(
                 "String PSD value mismatch.",
                 "stringVal1",
-                stringValueCaptor.getValue().get("string1"));
+                mStringValueCaptor.getValue().get("string1"));
         assertEquals(
                 "String PSD value mismatch.",
                 "stringVal2",
-                stringValueCaptor.getValue().get("string2"));
+                mStringValueCaptor.getValue().get("string2"));
     }
 
     // Test activity that allows ActivityLifecycleDispatcherProvider casting in code.

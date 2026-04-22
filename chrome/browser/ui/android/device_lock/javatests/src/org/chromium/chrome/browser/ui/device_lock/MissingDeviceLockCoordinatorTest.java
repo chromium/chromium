@@ -53,7 +53,7 @@ public class MissingDeviceLockCoordinatorTest {
     private FakeModalDialogManager mModalDialogManager;
 
     private final AtomicReference<Boolean> mOnContinueWithoutDeviceLockCalledWith =
-            new AtomicReference();
+            new AtomicReference<>();
 
     @Before
     public void setUpTest() {

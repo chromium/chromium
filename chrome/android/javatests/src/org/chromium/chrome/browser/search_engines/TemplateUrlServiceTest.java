@@ -370,7 +370,7 @@ public class TemplateUrlServiceTest {
                         }));
 
         validateSearchQuery("cat", null, null);
-        Map<String, String> params = new HashMap();
+        Map<String, String> params = new HashMap<>();
         params.put("xyz", "a");
         validateSearchQuery("cat", new ArrayList<>(Arrays.asList("xyz=a")), params);
         params.put("abc", "b");

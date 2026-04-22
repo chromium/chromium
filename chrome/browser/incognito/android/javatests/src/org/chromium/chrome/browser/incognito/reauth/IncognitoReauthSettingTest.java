@@ -14,8 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
@@ -80,7 +78,7 @@ public class IncognitoReauthSettingTest {
         summaryText = summaryText.replaceAll("</?link>", "");
         scrollToSetting(withText(summaryText));
         onView(withText(summaryText)).perform(click());
-        intended(allOf(hasAction(Settings.ACTION_SECURITY_SETTINGS)));
+        intended(hasAction(Settings.ACTION_SECURITY_SETTINGS));
         Intents.release();
     }
 }

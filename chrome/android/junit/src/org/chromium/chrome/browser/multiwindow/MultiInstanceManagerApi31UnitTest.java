@@ -52,6 +52,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -117,6 +118,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -194,6 +196,9 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock private ChromeTabbedActivity mTabbedActivityTask66;
     @Mock private RecentlyClosedEntriesManagerTracker mRecentlyClosedTracker;
     @Mock private MessageDispatcher mMessageDispatcher;
+
+    @Captor private ArgumentCaptor<List<Integer>> mIntegerListCaptor;
+    @Captor private ArgumentCaptor<List<InstanceInfo>> mInstanceInfoListCaptor;
 
     private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
             mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
@@ -349,7 +354,7 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabbedActivityTask63.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
 
-        when(mActivityManager.getAppTasks()).thenReturn(new ArrayList());
+        when(mActivityManager.getAppTasks()).thenReturn(new ArrayList<>());
 
         mProfileProviderSupplier.set(mProfileProvider);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -384,7 +389,9 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         when(mNormalTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        doNothing().when(mMultiInstanceManager).showTargetSelectorDialog(any(), anyInt(), anyInt());
+        doNothing()
+                .when(mMultiInstanceManager)
+                .showTargetSelectorDialog(MockitoHelper.anyCallback(), anyInt(), anyInt());
 
         setupActivityForCreateNewWindowIntent(mCurrentActivity);
         RecentlyClosedEntriesManagerTrackerFactory.setInstanceForTesting(mRecentlyClosedTracker);
@@ -598,11 +605,11 @@ public class MultiInstanceManagerApi31UnitTest {
         mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 5000000);
         // Closing the two other instances that are not managing the current activity.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
-        ArgumentCaptor<List<Integer>> captor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager, times(1))
                 .closeWindows(
-                        captor.capture(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
-        List<List<Integer>> capturedLists = captor.getAllValues();
+                        mIntegerListCaptor.capture(),
+                        eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
+        List<List<Integer>> capturedLists = mIntegerListCaptor.getAllValues();
         assertEquals(1, capturedLists.size());
         assertEquals(2, capturedLists.get(0).size());
     }
@@ -853,11 +860,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         > initialTime);
 
         // Verify #onInstancesClosed is invoked.
-        ArgumentCaptor<List<InstanceInfo>> captor = ArgumentCaptor.forClass(List.class);
-        verify(mRecentlyClosedTracker).onInstancesClosed(captor.capture(), eq(false));
+        verify(mRecentlyClosedTracker)
+                .onInstancesClosed(mInstanceInfoListCaptor.capture(), eq(false));
 
         // Verify the captured InstanceInfo.
-        List<InstanceInfo> closedInstanceInfo = captor.getValue();
+        List<InstanceInfo> closedInstanceInfo = mInstanceInfoListCaptor.getValue();
         assertEquals("There should be exactly 1 InstanceInfo.", 1, closedInstanceInfo.size());
         assertEquals("Instance ID should be 1.", 1, closedInstanceInfo.get(0).instanceId);
 
@@ -1069,12 +1076,12 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
 
         // Verify closeWindows was called with the inactive instances exceeding the limit.
-        ArgumentCaptor<List<Integer>> captor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager)
                 .closeWindows(
-                        captor.capture(), eq(CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED));
+                        mIntegerListCaptor.capture(),
+                        eq(CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED));
 
-        List<Integer> closedInstances = captor.getValue();
+        List<Integer> closedInstances = mIntegerListCaptor.getValue();
         // Since we have 30 inactive instances and the limit is 25, 5 should be closed.
         assertEquals("Should have closed 5 instances", 5, closedInstances.size());
 
