@@ -10,10 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -28,7 +25,6 @@ import android.app.Activity;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -55,11 +51,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -70,7 +61,6 @@ import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenUrlOptions;
-import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowUpdate;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
@@ -82,7 +72,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -129,12 +118,8 @@ public class FeedStreamTest {
     @Mock private RecyclerView.Adapter<?> mAdapter;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Mock private FeedActionDelegate mActionDelegate;
-    @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
-    @Captor private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
-    @Captor private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
-    @Mock private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
     @Mock private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
     @Mock private Stream.StreamsMediator mStreamsMediator;
     // Enable the Features class, so we can call code which checks to see if features are enabled
@@ -148,8 +133,7 @@ public class FeedStreamTest {
                 Profile profile,
                 FeedSurfaceRendererBridge.Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
-                @StreamKind int streamKind,
-                SingleWebFeedParameters webFeedParameters) {
+                @StreamKind int streamKind) {
             mBridgeRenderer = renderer;
             return mFeedSurfaceRendererBridgeMock;
         }
@@ -173,7 +157,6 @@ public class FeedStreamTest {
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedRendererJniMock);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
@@ -193,7 +176,6 @@ public class FeedStreamTest {
                         mActionDelegate,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
-                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -722,249 +704,6 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
-    public void testUpdateWebFeedFollowState_follow_success() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-
-                    @Override
-                    @Nullable
-                    public WebFeedFollowUpdate.Callback callback() {
-                        return mWebFeedFollowUpdateCallback;
-                    }
-
-                    @Override
-                    public int webFeedChangeReason() {
-                        return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .followWebFeedById(
-                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
-                        eq(false),
-                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
-                        mFollowResultsCallbackCaptor.capture());
-        mFollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
-        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(true));
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateWebFeedFollowState_follow_null_callback() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .followWebFeedById(any(), eq(false), eq(0), mFollowResultsCallbackCaptor.capture());
-        // Just make sure no exception is thrown because there is no callback to call.
-        mFollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateWebFeedFollowState_follow_durable_failure() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-
-                    @Override
-                    public boolean isDurable() {
-                        return true;
-                    }
-
-                    @Override
-                    @Nullable
-                    public WebFeedFollowUpdate.Callback callback() {
-                        return mWebFeedFollowUpdateCallback;
-                    }
-
-                    @Override
-                    public int webFeedChangeReason() {
-                        return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .followWebFeedById(
-                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
-                        eq(true),
-                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
-                        mFollowResultsCallbackCaptor.capture());
-        mFollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new FollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, null));
-        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(false));
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateWebFeedFollowState_unfollow_durable_success() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-
-                    @Override
-                    @Nullable
-                    public WebFeedFollowUpdate.Callback callback() {
-                        return mWebFeedFollowUpdateCallback;
-                    }
-
-                    @Override
-                    public boolean isFollow() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isDurable() {
-                        return true;
-                    }
-
-                    @Override
-                    public int webFeedChangeReason() {
-                        return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(
-                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
-                        eq(true),
-                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
-                        mUnfollowResultsCallbackCaptor.capture());
-        mUnfollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
-        // Just make sure no exception is thrown because there is no callback to call.
-        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(true));
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateWebFeedFollowState_unfollow_null_callback() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-
-                    @Override
-                    public boolean isFollow() {
-                        return false;
-                    }
-
-                    @Override
-                    public int webFeedChangeReason() {
-                        return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(
-                        any(),
-                        eq(false),
-                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
-                        mUnfollowResultsCallbackCaptor.capture());
-        mUnfollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
-    }
-
-    @Test
-    @SmallTest
-    public void testUpdateWebFeedFollowState_unfollow_durable_failure() throws Exception {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler)
-                        mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
-
-        handler.updateWebFeedFollowState(
-                new WebFeedFollowUpdate() {
-                    @Override
-                    public String webFeedName() {
-                        return "webFeed1";
-                    }
-
-                    @Override
-                    @Nullable
-                    public WebFeedFollowUpdate.Callback callback() {
-                        return mWebFeedFollowUpdateCallback;
-                    }
-
-                    @Override
-                    public boolean isFollow() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isDurable() {
-                        return true;
-                    }
-
-                    @Override
-                    public int webFeedChangeReason() {
-                        return WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU;
-                    }
-                });
-
-        verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(
-                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
-                        eq(true),
-                        eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
-                        mUnfollowResultsCallbackCaptor.capture());
-        mUnfollowResultsCallbackCaptor
-                .getValue()
-                .onResult(new UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
-        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(false));
-    }
-
-    @Test
-    @SmallTest
     public void testAddToReadingList() {
         bindToView();
         String title = "title";
@@ -1185,135 +924,8 @@ public class FeedStreamTest {
                         mActionDelegate,
                         /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
-                        /* singleWebFeedParameters= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNull(stream.getUnreadContentObserverForTest());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testUnreadContentObserver_notNullWebFeed_sortOff() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        /* streamKind= */ StreamKind.FOLLOWING,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertNotNull(stream.getUnreadContentObserverForTest());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testUnreadContentObserver_notNullWebFeed_sortOn() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        StreamKind.FOLLOWING,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertNotNull(stream.getUnreadContentObserverForTest());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testSupportsOptions_InterestFeed_sortOff() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        StreamKind.FOR_YOU,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertFalse(stream.supportsOptions());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testSupportsOptions_InterestFeed_sortOn() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        StreamKind.FOR_YOU,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertFalse(stream.supportsOptions());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testSupportsOptions_WebFeed_sortOff() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        StreamKind.FOLLOWING,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertFalse(stream.supportsOptions());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.WEB_FEED_SORT)
-    public void testSupportsOptions_WebFeed_sortOn() {
-        FeedStream stream =
-                new FeedStream(
-                        mActivity,
-                        mProfileMock,
-                        mSnackbarManager,
-                        mBottomSheetController,
-                        mWindowAndroid,
-                        mShareDelegateSupplier,
-                        StreamKind.FOLLOWING,
-                        mActionDelegate,
-                        /* feedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
-                        null,
-                        /* singleWebFeedParameters= */ null,
-                        new FeedSurfaceRendererBridgeFactory());
-        assertTrue(stream.supportsOptions());
     }
 
     @Test

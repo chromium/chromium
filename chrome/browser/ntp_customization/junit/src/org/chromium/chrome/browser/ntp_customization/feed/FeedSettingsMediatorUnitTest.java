@@ -51,8 +51,6 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -70,7 +68,6 @@ public class FeedSettingsMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private PropertyModel mContainerPropertyModel;
     @Mock private PropertyModel mBottomSheetPropertyModel;
     @Mock private PropertyModel mFeedSettingsPropertyModel;
@@ -92,7 +89,6 @@ public class FeedSettingsMediatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mShadowActivity = Shadows.shadowOf(mActivity);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         FeedSettingsMediator.setPrefForTesting(mPrefChangeRegistrar, mPrefService);
         mFeedSettingsMediator =
                 new FeedSettingsMediator(
@@ -189,20 +185,15 @@ public class FeedSettingsMediatorUnitTest {
                 mFeedSettingsMediator.createListDelegate();
         Assert.assertTrue(delegateForNotSignedIn.getListItems().isEmpty());
 
-        // Verifies the sections when user has signed in and web feed is enabled.
+        // Verifies the sections when user has signed in.
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
-        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
         mFeedSettingsMediator.setListItemsContentForTesting(
                 mFeedSettingsMediator.buildFeedListContent());
-        ListContainerViewDelegate delegateForWebFeedEnabled =
-                mFeedSettingsMediator.createListDelegate();
-        List<Integer> content = delegateForWebFeedEnabled.getListItems();
+        ListContainerViewDelegate delegateForSignedIn = mFeedSettingsMediator.createListDelegate();
+        List<Integer> content = delegateForSignedIn.getListItems();
         Assert.assertTrue(content.contains(ACTIVITY));
-        Assert.assertTrue(content.contains(FOLLOWING));
-        Assert.assertTrue(content.contains(HIDDEN));
+        Assert.assertTrue(content.contains(INTERESTS));
 
-        // Verifies the sections when user has signed in and web feed is disabled.
-        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(false);
         mFeedSettingsMediator.setListItemsContentForTesting(
                 mFeedSettingsMediator.buildFeedListContent());
         ListContainerViewDelegate delegateForWebFeedDisabled =
@@ -212,13 +203,13 @@ public class FeedSettingsMediatorUnitTest {
         Assert.assertTrue(content.contains(INTERESTS));
 
         testCreateListContainerViewDelegateImplForSectionTitle(
-                delegateForWebFeedEnabled, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateForWebFeedDisabled);
 
         testCreateListContainerViewDelegateImplForSectionSubtitle(
-                delegateForWebFeedEnabled, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateForWebFeedDisabled);
 
         testCreateListContainerViewDelegateImplForSectionListener(
-                delegateForWebFeedEnabled, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateForWebFeedDisabled);
     }
 
     @Test

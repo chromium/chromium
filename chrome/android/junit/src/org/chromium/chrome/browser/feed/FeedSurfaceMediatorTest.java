@@ -45,8 +45,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -76,8 +74,6 @@ public class FeedSurfaceMediatorTest {
 
     // Mocked JNI.
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
-
     @Mock private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
@@ -103,7 +99,6 @@ public class FeedSurfaceMediatorTest {
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 

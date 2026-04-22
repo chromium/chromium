@@ -34,8 +34,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -70,8 +68,6 @@ public class FeedStreamCtrlClickTest {
     @Mock private FeedSurfaceRendererBridge mFeedSurfaceRendererBridgeMock;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJni;
-
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -94,8 +90,7 @@ public class FeedStreamCtrlClickTest {
                 Profile profile,
                 FeedSurfaceRendererBridge.Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
-                @StreamKind int streamKind,
-                SingleWebFeedParameters webFeedParameters) {
+                @StreamKind int streamKind) {
             mBridgeRenderer = renderer;
             return mFeedSurfaceRendererBridgeMock;
         }
@@ -107,7 +102,6 @@ public class FeedStreamCtrlClickTest {
 
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
 
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
@@ -126,7 +120,6 @@ public class FeedStreamCtrlClickTest {
                         mActionDelegate,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
-                        null,
                         new FeedSurfaceRendererBridgeFactory());
 
         mContentManager = new FeedListContentManager();

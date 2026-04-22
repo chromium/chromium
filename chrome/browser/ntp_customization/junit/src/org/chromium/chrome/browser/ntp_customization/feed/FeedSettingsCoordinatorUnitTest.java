@@ -38,8 +38,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -56,7 +54,6 @@ public class FeedSettingsCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private Profile mProfile;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
@@ -72,7 +69,6 @@ public class FeedSettingsCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         FeedSettingsMediator.setPrefForTesting(mPrefChangeRegistrar, mPrefService);
 
         mCoordinator =

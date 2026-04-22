@@ -47,7 +47,6 @@ if (is_android) {
       "android/jni_translation.cc",
       "android/navigation_recorder.cc",
       "android/refresh_task_scheduler_impl.cc",
-      "android/web_feed_bridge.cc",
       "feed_service_factory.cc",
       "rss_links_fetcher.cc",
       "web_feed_page_information_fetcher.cc",

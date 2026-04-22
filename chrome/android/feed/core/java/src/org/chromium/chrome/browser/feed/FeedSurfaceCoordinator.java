@@ -1104,7 +1104,6 @@ public class FeedSurfaceCoordinator
                 mActionDelegate,
                 /* feedContentFirstLoadWatcher= */ this,
                 streamsMediator,
-                /* singleWebFeedParameters= */ null,
                 new FeedSurfaceRendererBridge.Factory() {});
     }
 

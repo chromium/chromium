@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.R;
-import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -199,11 +198,6 @@ public class FeedActionDelegateImpl
                             new BookmarkManagerOpenerImpl(),
                             PriceDropNotificationManagerFactory.create(mProfile));
                 });
-    }
-
-    @Override
-    public void openWebFeed(String webFeedName, @SingleWebFeedEntryPoint int entryPoint) {
-        // TODO(crbug.com/407797637): Remove the function openWebFeed as Creator page is removed.
     }
 
     @Override

@@ -66,8 +66,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -189,7 +187,6 @@ public class FeedSurfaceCoordinatorTest {
     // Mocked JNI.
     @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -238,7 +235,6 @@ public class FeedSurfaceCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedSurfaceRendererBridgeJniMock);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         FeedProcessScopeDependencyProviderJni.setInstanceForTesting(mProcessScopeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);

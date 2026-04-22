@@ -71,8 +71,6 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -232,7 +230,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private SyncService mSyncService;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeJni;
@@ -315,8 +312,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
-        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
 

@@ -184,6 +184,7 @@ public interface SurfaceActionsHandler {
     }
 
     /** Attempts to follow or unfollow a WebFeed. */
+    @Deprecated
     default void updateWebFeedFollowState(WebFeedFollowUpdate update) {}
 
     /**

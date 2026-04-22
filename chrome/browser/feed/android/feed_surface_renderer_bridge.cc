@@ -60,23 +60,6 @@ static int64_t JNI_FeedSurfaceRendererBridge_Init(
       (int)SingleWebFeedEntryPoint::kOther));
 }
 
-static int64_t JNI_FeedSurfaceRendererBridge_InitWebFeed(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_this,
-    Profile* profile,
-    const JavaRef<jbyteArray>& j_web_feed_id,
-    int64_t native_feed_reliability_logging_bridge,
-    int32_t j_entry_point) {
-  std::string web_feed_id;
-  base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
-  return reinterpret_cast<intptr_t>(new FeedSurfaceRendererBridge(
-      j_this, profile, static_cast<int32_t>(StreamKind::kSingleWebFeed),
-      web_feed_id,
-      reinterpret_cast<FeedReliabilityLoggingBridge*>(
-          native_feed_reliability_logging_bridge),
-      j_entry_point));
-}
-
 FeedSurfaceRendererBridge::FeedSurfaceRendererBridge(
     const JavaRef<jobject>& j_this,
     Profile* profile,

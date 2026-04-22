@@ -88,12 +88,6 @@ public interface FeedActionDelegate {
     /** Add an item to the reading list. */
     default void addToReadingList(String title, String url) {}
 
-    /**
-     * Opens a specific WebFeed by name.
-     * @param webFeedName the relevant web feed name.
-     */
-    default void openWebFeed(String webFeedName, @SingleWebFeedEntryPoint int entryPoint) {}
-
     //
     // Optional methods for handing events.
     //

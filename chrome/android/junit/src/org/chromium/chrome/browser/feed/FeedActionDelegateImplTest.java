@@ -30,8 +30,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -55,7 +53,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public final class FeedActionDelegateImplTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     @Mock private SigninAndHistorySyncActivityLauncher mMockSigninAndHistorySyncActivityLauncher;
 
@@ -93,7 +90,6 @@ public final class FeedActionDelegateImplTest {
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
                 mMockSigninAndHistorySyncActivityLauncher);
         mFeedActionDelegateImpl = buildFeedActionDelegateImpl();
-        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
     }
 
     @Test

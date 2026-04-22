@@ -36,8 +36,6 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -69,7 +67,6 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -230,62 +227,6 @@ public class FeedStream implements Stream {
                 entityArray[i] = entityMids.get(i);
             }
             mBridge.updateUserProfileOnLinkClick(new GURL(url), entityArray);
-        }
-
-        @Override
-        public void updateWebFeedFollowState(WebFeedFollowUpdate update) {
-            byte[] webFeedId = update.webFeedName().getBytes(StandardCharsets.UTF_8);
-            WebFeedFollowUpdate.Callback updateCallback = update.callback();
-            if (update.isFollow()) {
-                Callback<WebFeedBridge.FollowResults> followCallback =
-                        results -> {
-                            boolean successfulFollow =
-                                    results.requestStatus
-                                            == WebFeedSubscriptionRequestStatus.SUCCESS;
-                            if (updateCallback != null) {
-                                updateCallback.requestComplete(successfulFollow);
-                            }
-                        };
-                WebFeedBridge.followFromId(
-                        webFeedId,
-                        update.isDurable(),
-                        update.webFeedChangeReason(),
-                        followCallback);
-            } else {
-                WebFeedBridge.unfollow(
-                        webFeedId,
-                        update.isDurable(),
-                        update.webFeedChangeReason(),
-                        results -> {
-                            if (updateCallback != null) {
-                                updateCallback.requestComplete(
-                                        results.requestStatus
-                                                == WebFeedSubscriptionRequestStatus.SUCCESS);
-                            }
-                        });
-            }
-        }
-
-        @Override
-        public void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {
-            @SingleWebFeedEntryPoint int singleWebFeedEntryPoint;
-
-            switch (entryPoint) {
-                case OpenWebFeedEntryPoint.ATTRIBUTION:
-                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.ATTRIBUTION;
-                    break;
-                case OpenWebFeedEntryPoint.RECOMMENDATION:
-                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.RECOMMENDATION;
-                    break;
-                case OpenWebFeedEntryPoint.GROUP_HEADER:
-                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.GROUP_HEADER;
-                    break;
-
-                default:
-                    singleWebFeedEntryPoint = SingleWebFeedEntryPoint.OTHER;
-            }
-
-            mActionDelegate.openWebFeed(webFeedName, singleWebFeedEntryPoint);
         }
 
         // TODO(crbug.com/407797637): Remove the unused parameter openOptions.
@@ -690,7 +631,6 @@ public class FeedStream implements Stream {
      * @param actionDelegate Implements some Feed actions.
      * @param feedContentFirstLoadWatcher a listener for events about feed loading.
      * @param streamsMediator the mediator for multiple streams.
-     * @param singleWebFeedParameters the parameters needed to create a single web feed.
      */
     public FeedStream(
             Activity activity,
@@ -703,16 +643,11 @@ public class FeedStream implements Stream {
             FeedActionDelegate actionDelegate,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
             StreamsMediator streamsMediator,
-            @Nullable SingleWebFeedParameters singleWebFeedParameters,
             FeedSurfaceRendererBridge.Factory feedSurfaceRendererBridgeFactory) {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mBridge =
                 feedSurfaceRendererBridgeFactory.create(
-                        profile,
-                        new Renderer(),
-                        mReliabilityLoggingBridge,
-                        streamKind,
-                        singleWebFeedParameters);
+                        profile, new Renderer(), mReliabilityLoggingBridge, streamKind);
         mActivity = activity;
         mProfile = profile;
         mStreamKind = streamKind;
@@ -765,12 +700,6 @@ public class FeedStream implements Stream {
         if (streamKind == StreamKind.FOLLOWING) {
             mUnreadContentObserver = new UnreadContentObserver(/* isWebFeed= */ true);
         }
-    }
-
-    @Override
-    public boolean supportsOptions() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)
-                && mStreamKind == StreamKind.FOLLOWING;
     }
 
     @Override
@@ -1247,10 +1176,6 @@ public class FeedStream implements Stream {
                     getLateralPaddingsPx(), LOADING_SPINNER_KEY, R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
-        if (mStreamKind == StreamKind.FOLLOWING) {
-            return new FeedListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, R.layout.following_empty_state);
-        }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
             return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.no_connection);
@@ -1277,10 +1202,6 @@ public class FeedStream implements Stream {
         switch (mStreamKind) {
             case StreamKind.FOR_YOU:
                 return StreamType.FOR_YOU;
-            case StreamKind.FOLLOWING:
-                return StreamType.WEB_FEED;
-            case StreamKind.SINGLE_WEB_FEED:
-                return StreamType.SINGLE_WEB_FEED;
             default:
                 return StreamType.UNSPECIFIED;
         }

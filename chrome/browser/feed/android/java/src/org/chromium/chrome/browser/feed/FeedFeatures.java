@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
@@ -13,13 +11,10 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
@@ -42,35 +37,8 @@ public final class FeedFeatures {
                 && isFeedEnabledByDse(profile);
     }
 
-    /**
-     * @param profile the profile of the current user.
-     * @return Whether the WebFeed UI should be enabled. Checks for the WEB_FEED flag, if the user
-     *     is signed in and confirms it's not a child profile.
-     */
-    public static boolean isWebFeedUIEnabled(Profile profile) {
-        boolean isPrimaryAccountSignedIn = false;
-        if (IdentityServicesProvider.get().getSigninManager(profile) != null) {
-            isPrimaryAccountSignedIn =
-                    assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
-                            .getIdentityManager()
-                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
-        }
-        return WebFeedBridge.isWebFeedEnabled()
-                && isPrimaryAccountSignedIn
-                && !profile.isChild()
-                && isFeedEnabledByDse(profile);
-    }
-
     private static boolean isFeedEnabledByDse(Profile profile) {
         return getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
-    }
-
-    public static boolean shouldUseWebFeedAwarenessIph() {
-        String awarenessStyleParam =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
-        return WebFeedBridge.isWebFeedEnabled()
-                && (awarenessStyleParam.equals("IPH") || awarenessStyleParam.isEmpty());
     }
 
     public static boolean shouldUseNewIndicator(Profile profile) {

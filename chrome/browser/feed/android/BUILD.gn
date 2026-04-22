@@ -45,11 +45,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/ScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollTracker.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollableContainerDelegate.java",
-    "java/src/org/chromium/chrome/browser/feed/SingleWebFeedParameters.java",
     "java/src/org/chromium/chrome/browser/feed/SnapScrollHelper.java",
     "java/src/org/chromium/chrome/browser/feed/Stream.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]
   deps = [
     ":feed_java_resources",
@@ -136,7 +134,6 @@ android_resources("feed_java_resources") {
     "java/res/drawable/home_surface_ui_background_topright_rounded.xml",
     "java/res/layout/feed_placeholder_layout.xml",
     "java/res/layout/feed_spinner.xml",
-    "java/res/layout/following_empty_state.xml",
     "java/res/layout/new_tab_page_feed_header.xml",
     "java/res/layout/no_connection.xml",
     "java/res/layout/no_content_v2.xml",
@@ -163,7 +160,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceRendererBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]
 }
 
@@ -234,7 +230,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRendererTest.java",
     "java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollTrackerTest.java",
-    "java/src/org/chromium/chrome/browser/feed/SingleWebFeedStreamTest.java",
   ]
 
   deps = [

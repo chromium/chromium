@@ -31,7 +31,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -188,14 +187,8 @@ public class FeedSettingsMediator {
     List<Integer> buildFeedListContent() {
         List<Integer> content = new ArrayList<>();
         if (FeedServiceBridge.isSignedIn()) {
-            if (WebFeedBridge.isWebFeedEnabled()) {
-                content.add(ACTIVITY);
-                content.add(FOLLOWING);
-                content.add(HIDDEN);
-            } else {
-                content.add(ACTIVITY);
-                content.add(INTERESTS);
-            }
+            content.add(ACTIVITY);
+            content.add(INTERESTS);
         }
         return content;
     }

@@ -3939,12 +3939,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DISCOVER_NO_CARDS_INSTRUCTIONS" desc="Message body for the article feed on the New Tab Page. Instructs the user to come back later when new feed content is available. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 7331961212006720987 for the corresponding message in Discover.">Check back later for new stories</message>
       <message name="IDS_DISCOVER_CANT_REFRESH" desc="Message title for the article feed on the New Tab Page. Shown when feed content is not available because there is no internet connection. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278). Also see TC ID 6114827482740570724 for the corresponding message in Discover.">Can't refresh Discover</message>
       <message name="IDS_DISCOVER_CANT_REFRESH_INSTRUCTIONS" desc="Message body for the article feed on the New Tab Page. Instructs the user to wait and try to refresh the feed once the internet connection returns. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 6114827482740570724 for the corresponding message in Discover.">Check back later for new stories</message>
-      <message name="IDS_WEB_FEED_NO_CARDS_TITLE" desc="Message title for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles.">
-        Keep up with your favorite sites
-      </message>
-      <message name="IDS_WEB_FEED_NO_CARDS_INSTRUCTIONS" desc="Message body for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Instructs the user to follow more sites or check back later. Please translate 'Follow' (with capital F) to match its use in TC ID 4108314971463891922.">
-        To follow a site, go to the site, open the Chrome menu, and tap Follow.
-      </message>
       <message name="IDS_FEED_SWIPE_REFRESH_IPH" desc="In-product help that prompts the user to use pull-down gesture to refresh the feed content.">
         For new stories, pull down to refresh
       </message>
