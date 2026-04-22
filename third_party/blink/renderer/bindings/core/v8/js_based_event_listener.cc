@@ -26,16 +26,12 @@ JSBasedEventListener::JSBasedEventListener() {
   if (IsMainThread()) {
     InstanceCounters::IncrementCounter(
         InstanceCounters::kJSEventListenerCounter);
-
-    if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
-      // Currently, resource timing context is only propagated on the main
-      // thread.
-      v8::Isolate* isolate =
-          ResourceInitiatorHelper::GetIsolateIfRunningScriptOnMainThread();
-      resource_timing_context_ =
-          isolate ? ResourceInitiatorHelper::GetResourceTimingContext(*isolate)
-                  : nullptr;
-    }
+  }
+  if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
+    v8::Isolate* isolate = ResourceInitiatorHelper::GetIsolateIfRunningScript();
+    resource_timing_context_ =
+        isolate ? ResourceInitiatorHelper::GetResourceTimingContext(*isolate)
+                : nullptr;
   }
 }
 

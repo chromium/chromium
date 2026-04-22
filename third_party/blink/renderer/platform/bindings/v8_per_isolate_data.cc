@@ -360,6 +360,16 @@ void V8PerIsolateData::SetTaskAttributionTrackerFactory(
   task_attribution_tracker_factory = factory;
 }
 
+void V8PerIsolateData::InitializeTaskAttributionTrackerOnWorkerThread() {
+  CHECK(!IsMainThread());
+  CHECK(!task_attribution_tracker_);
+  if (!base::FeatureList::IsEnabled(
+          kTaskAttributionInfrastructureDisabledForTesting)) {
+    CHECK(task_attribution_tracker_factory);
+    task_attribution_tracker_ = task_attribution_tracker_factory(GetIsolate());
+  }
+}
+
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
   // Each histogram has an implicit '0' bucket (for underflow), so we can always
   // bump the minimum to 1.

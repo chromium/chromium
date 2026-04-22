@@ -481,8 +481,7 @@ void FrameFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
     return;
   }
 
-  v8::Isolate* isolate =
-      ResourceInitiatorHelper::GetIsolateIfRunningScriptOnMainThread();
+  v8::Isolate* isolate = ResourceInitiatorHelper::GetIsolateIfRunningScript();
   if (isolate) {
     // It is the currently executing JavaScript that is fetching the resource.
     // The initiator is the JavaScript that originally dispatched currently

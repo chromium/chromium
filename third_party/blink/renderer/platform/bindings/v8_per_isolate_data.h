@@ -200,6 +200,10 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   static void SetTaskAttributionTrackerFactory(
       TaskAttributionTrackerFactoryPtr factory);
 
+  // If not on the main thread,`task_attribution_tracker_` can be initialized
+  // lazily on selected threads.
+  void InitializeTaskAttributionTrackerOnWorkerThread();
+
   // Returns the `scheduler::TaskAttributionTracker` associated with the
   // associated `v8::Isolate`. Returns null if the
   // TaskAttributionInfrastructureDisabledForTesting feature is enabled.

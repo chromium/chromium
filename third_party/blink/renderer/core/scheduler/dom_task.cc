@@ -168,6 +168,10 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // is no tracker.
   auto* tracker =
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+  // TODO(crbug.com/40919714): When "Initiator url for Resource timing" feature
+  // is mature, the |tracker| will exist in both main thread and worker thread.
+  // The "else" clause below and the clause to clear the context at the end of
+  // this function can be removed then.
   if (tracker) {
     task_attribution_scope = tracker->SetCurrentTaskState(
         web_scheduling_task_state_, TaskScopeType::kSchedulerPostTask);

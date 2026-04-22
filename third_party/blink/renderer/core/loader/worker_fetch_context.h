@@ -80,6 +80,7 @@ class WorkerFetchContext final : public BaseFetchContext {
                       WebScopedVirtualTimePauser&,
                       ResourceType) override;
   void AddAdditionalRequestHeaders(ResourceRequest&) override;
+  void FillInitiatorInfo(FetchInitiatorInfo& initiator_info) override;
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type) override;
   void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;

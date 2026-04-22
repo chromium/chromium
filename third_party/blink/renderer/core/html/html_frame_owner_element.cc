@@ -741,7 +741,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
     if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
       v8::Isolate* isolate =
-          ResourceInitiatorHelper::GetIsolateIfRunningScriptOnMainThread();
+          ResourceInitiatorHelper::GetIsolateIfRunningScript();
       fallback_timing_info_->initiator_url =
           isolate ? ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate)
                   : GetDocument().Url();

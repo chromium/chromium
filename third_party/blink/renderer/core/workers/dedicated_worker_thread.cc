@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -69,6 +70,10 @@ DedicatedWorkerThread::~DedicatedWorkerThread() = default;
 WorkerOrWorkletGlobalScope* DedicatedWorkerThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   DCHECK(pending_dedicated_worker_host_);
+  if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
+    V8PerIsolateData::From(GetIsolate())
+        ->InitializeTaskAttributionTrackerOnWorkerThread();
+  }
   return DedicatedWorkerGlobalScope::Create(
       std::move(creation_params), this, time_origin_,
       std::move(pending_dedicated_worker_host_),

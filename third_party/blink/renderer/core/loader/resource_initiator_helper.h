@@ -17,8 +17,7 @@ class ResourceInitiatorHelper final {
   STATIC_ONLY(ResourceInitiatorHelper);
 
  public:
-  static v8::Isolate* GetIsolateIfRunningScriptOnMainThread() {
-    CHECK(IsMainThread());
+  static v8::Isolate* GetIsolateIfRunningScript() {
     v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
     // We are assuming that |isolate->InContext()| indicates that JavaScript
     // is running, though this isn't guaranteed. There is no v8 API that is

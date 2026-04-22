@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
+#include "third_party/blink/renderer/core/loader/resource_initiator_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
@@ -230,6 +231,28 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   probe::ApplyDataSaverOverride(Probe(), save_data_enabled);
   if (save_data_enabled) {
     request.SetHttpHeaderField(http_names::kSaveData, AtomicString("on"));
+  }
+}
+
+// TODO(crbug.com/40919714): After determine exactly how we support initiator
+// for resource timing on worker threads, consider merging this function with
+// FrameFetchContext::FillInitiatorInfo().
+void WorkerFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
+  CHECK(RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled());
+  if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
+    // TODO(crbug.com/40919714): Fill |initiator_url|.
+    // Initiator is a referrer of an imported js file.
+    return;
+  }
+
+  v8::Isolate* isolate = ResourceInitiatorHelper::GetIsolateIfRunningScript();
+  if (isolate) {
+    // It is the currently executing JavaScript that is fetching the resource.
+    // The initiator is the JavaScript that originally dispatched currently
+    // executing JavaScript.
+    initiator_info.initiator_url =
+        ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate);
+    return;
   }
 }
 
