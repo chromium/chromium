@@ -35,7 +35,7 @@ struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
     return number.AsInt64();
   }
 
-  static int64_t unsigned_integer(const webnn::MLNumber& number) {
+  static uint64_t unsigned_integer(const webnn::MLNumber& number) {
     return number.AsUint64();
   }
 
