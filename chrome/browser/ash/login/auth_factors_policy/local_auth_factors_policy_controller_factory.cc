@@ -60,6 +60,12 @@ LocalAuthFactorsPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  if (!ash::UserDataAuthClient::Get()) {
+    LOG(WARNING)
+        << "UserDataAuthClient was null not building service instance.";
+    return nullptr;
+  }
+
   const AccountId& account_id = user->GetAccountId();
   return std::make_unique<LocalAuthFactorsPolicyController>(
       *g_browser_process->local_state(), profile, account_id);
