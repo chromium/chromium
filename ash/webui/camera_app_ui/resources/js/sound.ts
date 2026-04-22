@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from './assert.js';
-import {AsyncJobInfo, AsyncJobQueue} from './async_job_queue.js';
+import type {AsyncJobInfo} from './async_job_queue.js';
+import {AsyncJobQueue} from './async_job_queue.js';
 import {expandPath} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 

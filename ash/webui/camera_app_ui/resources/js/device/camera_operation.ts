@@ -12,6 +12,7 @@ import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
+import type {Resolution} from '../type.js';
 import {
   CameraSuspendError,
   ErrorLevel,
@@ -19,27 +20,25 @@ import {
   Facing,
   Mode,
   NoCameraError,
-  Resolution,
 } from '../type.js';
 import * as util from '../util.js';
 import {CancelableEvent, WaitableEvent} from '../waitable_event.js';
 
-import {Camera3DeviceInfo} from './camera3_device_info.js';
+import type {Camera3DeviceInfo} from './camera3_device_info.js';
+import type {CaptureCandidate} from './capture_candidate.js';
 import {
-  CaptureCandidate,
   FakeCameraCaptureCandidate,
 } from './capture_candidate.js';
 import {CaptureCandidatePreferrer} from './capture_candidate_preferrer.js';
 import {DeviceMonitor} from './device_monitor.js';
 import {Modes, Video} from './mode/index.js';
-import {Preview} from './preview.js';
-import {StreamConstraints} from './stream_constraints.js';
+import type {Preview} from './preview.js';
+import type {StreamConstraints} from './stream_constraints.js';
+import type {
+  CameraConfig, CameraConfigCandidate, CameraViewUi, ModeConstraints} from
+  './type.js';
 import {
-  CameraConfig,
-  CameraConfigCandidate,
   CameraInfo,
-  CameraViewUi,
-  ModeConstraints,
 } from './type.js';
 
 

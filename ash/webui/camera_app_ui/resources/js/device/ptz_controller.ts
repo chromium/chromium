@@ -8,7 +8,8 @@ import {Point} from '../geometry.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
-import {CropRegionRect, Mode, Resolution} from '../type.js';
+import type {CropRegionRect, Resolution} from '../type.js';
+import {Mode} from '../type.js';
 
 enum PtzAttr {
   PAN = 'pan',

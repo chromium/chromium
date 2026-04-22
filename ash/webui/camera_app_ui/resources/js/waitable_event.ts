@@ -10,10 +10,11 @@ export class WaitableEvent<T = void> {
 
   // The field is definitely assigned in the constructor since the argument to
   // the Promise constructor is called immediately, but TypeScript can't
-  // recognize that. Disable the check by adding "!" to the property name.
-  protected resolve!: (val: PromiseLike<T>|T) => void;
+  // recognize that. Since Chromium ESLint disallow non-null assertion operator
+  // on class property, assign it to an unused function.
+  protected resolve: (val: PromiseLike<T>|T) => void = () => {};
 
-  protected reject!: (val: Error) => void;
+  protected reject: (val: Error) => void = () => {};
 
   private readonly promise: Promise<T>;
 

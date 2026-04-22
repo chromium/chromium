@@ -4,14 +4,15 @@
 
 import {assert, assertEnumVariant} from '../../assert.js';
 import {queuedAsyncCallback} from '../../async_job_queue.js';
-import {CameraManager, CameraUi} from '../../device/index.js';
+import type {CameraManager, CameraUi} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as scannerChip from '../../scanner_chip.js';
 import * as state from '../../state.js';
-import {Mode, PreviewVideo} from '../../type.js';
+import type {PreviewVideo} from '../../type.js';
+import {Mode} from '../../type.js';
 
 import {DocumentCornerOverlay} from './document_corner_overlay.js';
 

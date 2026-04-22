@@ -4,25 +4,23 @@
 
 import {assert} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
-import {TakePhotoResult} from '../../mojo/image_capture.js';
+import type {TakePhotoResult} from '../../mojo/image_capture.js';
 import {Effect} from '../../mojo/type.js';
 import {PerfLogger} from '../../perf.js';
 import * as toast from '../../toast.js';
+import type {Facing, PreviewVideo} from '../../type.js';
 import {
-  Facing,
   PerfEvent,
-  PreviewVideo,
   Resolution,
 } from '../../type.js';
 import * as util from '../../util.js';
-import {StreamConstraints} from '../stream_constraints.js';
+import type {StreamConstraints} from '../stream_constraints.js';
 
-import {ModeBase} from './mode_base.js';
+import type {ModeBase} from './mode_base.js';
+import type {PhotoHandler, PhotoResult} from './photo.js';
 import {
   Photo,
   PhotoFactory,
-  PhotoHandler,
-  PhotoResult,
 } from './photo.js';
 
 /**

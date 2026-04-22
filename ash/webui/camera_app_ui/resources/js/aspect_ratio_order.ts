@@ -5,7 +5,7 @@
 import {assertExists} from './assert.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {convertMojoToAspectRatio} from './mojo/type_utils.js';
-import {AspectRatioSet} from './type.js';
+import type {AspectRatioSet} from './type.js';
 
 let aspectRatioOrder: AspectRatioSet[]|null = null;
 

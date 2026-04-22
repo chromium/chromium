@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
 import {
   classMap,
   css,
   html,
   LitElement,
-  PropertyDeclarations,
   repeat,
 } from 'chrome://resources/mwc/lit/index.js';
 

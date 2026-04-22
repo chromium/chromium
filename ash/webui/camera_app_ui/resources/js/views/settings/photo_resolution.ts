@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CameraManager} from '../../device/index.js';
-import {
-  PhotoResolutionOption,
-  PhotoResolutionOptionGroup,
-} from '../../device/type.js';
+import type {CameraManager} from '../../device/index.js';
+import type {
+  PhotoResolutionOption, PhotoResolutionOptionGroup} from
+  '../../device/type.js';
 import * as dom from '../../dom.js';
 import * as expert from '../../expert.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import {Facing, Resolution, ViewName} from '../../type.js';
+import type {Facing} from '../../type.js';
+import {Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
 import {BaseSettings} from './base.js';

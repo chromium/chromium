@@ -6,12 +6,12 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {
-  CrCheckboxElement,
-} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {
-  CrDialogElement,
-} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {
+  CrCheckboxElement} from
+    'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {
+  CrDialogElement} from
+    'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {
   createRef,
   css,

@@ -9,12 +9,11 @@ import {I18nString} from './i18n_string.js';
 import * as localDev from './local_dev.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
+import type {FpsRange, Resolution} from './type.js';
 import {
   AspectRatioSet,
   Facing,
-  FpsRange,
   ImageFormat,
-  Resolution,
 } from './type.js';
 
 /**
@@ -155,7 +154,7 @@ export function getKeyboardShortcut(event: KeyboardEvent): KeyboardShortcut {
 function isSupportedKeyboardKey(key: string): key is KeyboardKey {
   // This is to workaround current TypeScript limitation on Set.has.
   // See https://github.com/microsoft/TypeScript/issues/26255
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return KEYBOARD_KEY_SET.has(key as KeyboardKey);
 }
 

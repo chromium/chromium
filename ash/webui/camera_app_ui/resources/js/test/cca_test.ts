@@ -10,10 +10,10 @@ import {
 } from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import {Preview} from '../device/preview.js';
+import type {
+  PtzCapabilities, StrictPtzSettings} from '../device/ptz_controller.js';
 import {
   DIGITAL_ZOOM_CAPABILITIES,
-  PtzCapabilities,
-  StrictPtzSettings,
 } from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
@@ -36,13 +36,11 @@ import {
 } from '../views/document_review.js';
 import {windowController} from '../window_controller.js';
 
+import type {SettingMenu, SettingOption, UiComponent} from './cca_type.js';
 import {
   SELECTOR_MAP,
   SETTING_MENU_MAP,
   SETTING_OPTION_MAP,
-  SettingMenu,
-  SettingOption,
-  UiComponent,
 } from './cca_type.js';
 
 interface Coordinate {

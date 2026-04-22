@@ -6,7 +6,7 @@ import {assertInstanceof, assertNotReached} from './assert.js';
 import {queuedAsyncCallback} from './async_job_queue.js';
 import * as dom from './dom.js';
 import {DeviceOperator} from './mojo/device_operator.js';
-import {Resolution} from './type.js';
+import type {Resolution} from './type.js';
 
 /**
  * Rotates the given coordinates in [0, 1] square space by the given

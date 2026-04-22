@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Resolution} from '../type.js';
-import {StreamConstraints} from './stream_constraints.js';
+import type {Resolution} from '../type.js';
+
+import type {StreamConstraints} from './stream_constraints.js';
 
 /**
  * Candidate of capturing with specified photo or video resolution.

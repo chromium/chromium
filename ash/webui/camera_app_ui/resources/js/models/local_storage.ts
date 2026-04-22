@@ -32,7 +32,7 @@ export function getObject<T>(
   // and the same key will corresponds to the same / compatible types, so the
   // type assertion will always hold.
   // TODO(pihsun): actually verify the type at runtime here?
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return assertInstanceof(getHelper(key, defaultValue), Object) as
       Record<string, T>;
 }

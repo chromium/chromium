@@ -11,8 +11,8 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {Flag} from '../flag.js';
-import {I18nString} from '../i18n_string.js';
+import type {Flag} from '../flag.js';
+import type {I18nString} from '../i18n_string.js';
 
 /**
  * Returns the device board name.

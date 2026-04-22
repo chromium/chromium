@@ -4,7 +4,7 @@
 
 import * as metrics from './metrics.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import {Mode} from './type.js';
+import type {Mode} from './type.js';
 
 /**
  * Thrown when fails to parse intent url.

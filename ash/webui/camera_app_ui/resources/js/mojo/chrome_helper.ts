@@ -14,32 +14,24 @@ import {
 } from '../type.js';
 import {windowController} from '../window_controller.js';
 
+import type {
+  AspectRatio, BigBuffer, CameraAppHelperRemote, CaptureDestination,
+  CloudUpload, EventsSenderRemote, FileType, LidState, LocalFile, OcrResult,
+  ScreenState, WifiConfig} from './type.js';
 import {
-  AspectRatio,
-  BigBuffer,
   CameraAppHelper,
-  CameraAppHelperRemote,
   CameraIntentAction,
-  CaptureDestination,
-  CloudUpload,
-  EventsSenderRemote,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
-  FileType,
-  LidState,
   LidStateMonitorCallbackRouter,
-  LocalFile,
-  OcrResult,
   PdfBuilderRemote,
   Rotation,
   ScreenLockedMonitorCallbackRouter,
-  ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
   SWPrivacySwitchMonitorCallbackRouter,
   TabletModeMonitorCallbackRouter,
-  WifiConfig,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
 
@@ -56,7 +48,7 @@ function castToNumberArray(data: Uint8Array): number[] {
   // This cast is to workaround that the generated mojo binding only accepts
   // number[], but actually can be passed Uint8Array (which also supports
   // indexing via [] and length).
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return data as unknown as number[];
 }
 

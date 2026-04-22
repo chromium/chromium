@@ -11,17 +11,14 @@ import {
   assertNotReached,
 } from '../assert.js';
 import {AsyncJobQueue, queuedAsyncCallback} from '../async_job_queue.js';
+import type {
+  CameraConfig, CameraManager, CameraViewUi, GifResult, PhotoResult,
+  VideoResult} from '../device/index.js';
 import {
-  CameraConfig,
-  CameraManager,
-  CameraViewUi,
   getDefaultScanCorners,
-  GifResult,
-  PhotoResult,
   setAvc1Parameters,
-  VideoResult,
 } from '../device/index.js';
-import {TimeLapseResult} from '../device/mode/video.js';
+import type {TimeLapseResult} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
@@ -30,9 +27,9 @@ import {ModeSelector} from '../lit/components/mode-selector.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
-import {ResultSaver} from '../models/result_saver.js';
+import type {ResultSaver} from '../models/result_saver.js';
+import type {TimeLapseEncoderArgs} from '../models/video_saver.js';
 import {
-  TimeLapseEncoderArgs,
   TimeLapseSaver,
   VideoSaver,
 } from '../models/video_saver.js';
@@ -69,8 +66,8 @@ import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {Dialog} from './dialog.js';
+import type {DocumentReview} from './document_review.js';
 import {
-  DocumentReview,
   initializeInstance as initializeDocumentReview,
 } from './document_review.js';
 import {Flash} from './flash.js';

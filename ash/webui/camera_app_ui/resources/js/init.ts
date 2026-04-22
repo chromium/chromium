@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppWindow} from './app_window.js';
+import type {AppWindow} from './app_window.js';
 import * as comlink from './lib/comlink.js';
-import {TestBridge} from './test_bridge.js';
+import type {TestBridge} from './test_bridge.js';
 import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
 import {
   createUntrustedIframe,

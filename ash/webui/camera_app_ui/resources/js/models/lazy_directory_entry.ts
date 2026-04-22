@@ -4,10 +4,8 @@
 
 import {assert} from '../assert.js';
 
-import {
-  DirectoryAccessEntry,
-  FileAccessEntry,
-} from './file_system_access_entry.js';
+import type {
+  DirectoryAccessEntry, FileAccessEntry} from './file_system_access_entry.js';
 
 /**
  * Gets directory entry by given |name| under |parentDir| directory. If the

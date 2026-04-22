@@ -11,10 +11,10 @@ import {
   IMAGE_PREFIX,
   VIDEO_PREFIX,
 } from './file_namer.js';
+import type {
+  DirectoryAccessEntry, FileAccessEntry} from './file_system_access_entry.js';
 import {
-  DirectoryAccessEntry,
   DirectoryAccessEntryImpl,
-  FileAccessEntry,
 } from './file_system_access_entry.js';
 import * as idb from './idb.js';
 import {getMaybeLazyDirectory} from './lazy_directory_entry.js';

@@ -8,12 +8,11 @@ import * as expert from './expert.js';
 import * as metrics from './metrics.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
+import type {PerfEntry, PerfInformation} from './type.js';
 import {
   ErrorLevel,
   ErrorType,
-  PerfEntry,
   PerfEvent,
-  PerfInformation,
   Pressure,
 } from './type.js';
 

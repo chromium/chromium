@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as dom from '../../dom.js';
-import {ViewName} from '../../type.js';
+import type {ViewName} from '../../type.js';
 import {View} from '../view.js';
 
 /**

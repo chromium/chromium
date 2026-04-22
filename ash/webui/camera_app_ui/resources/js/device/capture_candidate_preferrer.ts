@@ -16,25 +16,19 @@ import {
 } from '../type.js';
 import {toAspectRatioSet} from '../util.js';
 
+import type {
+  Camera3DeviceInfo, CapturePreviewPairs} from './camera3_device_info.js';
+import type {CaptureCandidate} from './capture_candidate.js';
 import {
-  Camera3DeviceInfo,
-  CapturePreviewPairs,
-} from './camera3_device_info.js';
-import {
-  CaptureCandidate,
   PhotoCaptureCandidate,
   VideoCaptureCandidate,
 } from './capture_candidate.js';
+import type {
+  CameraConfig, PhotoAspectRatioOptionListener, PhotoResolutionOption,
+  PhotoResolutionOptionGroup, PhotoResolutionOptionListener, VideoFpsOption,
+  VideoResolutionOption, VideoResolutionOptionListener} from './type.js';
 import {
-  CameraConfig,
-  PhotoAspectRatioOptionListener,
-  PhotoResolutionOption,
-  PhotoResolutionOptionGroup,
-  PhotoResolutionOptionListener,
   SUPPORTED_CONSTANT_FPS,
-  VideoFpsOption,
-  VideoResolutionOption,
-  VideoResolutionOptionListener,
 } from './type.js';
 
 interface VideoLevelResolution {

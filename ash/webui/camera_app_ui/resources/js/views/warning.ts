@@ -8,10 +8,11 @@ import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
 
-import {EnterOptions, LeaveCondition, View} from './view.js';
+import type {EnterOptions, LeaveCondition} from './view.js';
+import {View} from './view.js';
 
 // This is used as an enum.
-/* eslint-disable @typescript-eslint/naming-convention */
+
 /**
  * The type of warning.
  */
@@ -21,7 +22,7 @@ export const WarningType = {
   NO_CAMERA: I18nString.ERROR_MSG_NO_CAMERA,
   DISABLED_CAMERA: I18nString.ERROR_MSG_DISABLED_CAMERA,
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+
 
 /**
  * Creates the warning-view controller.

@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from '../assert.js';
-import {Metadata} from '../type.js';
+import type {Metadata} from '../type.js';
 import {bitmapToJpegBlob, getNumberEnumMapping} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator, parseMetadata} from './device_operator.js';
+import type {CameraMetadata} from './type.js';
 import {
-  CameraMetadata,
   CameraMetadataTag,
   Effect,
   StreamType,
 } from './type.js';
+import type {MojoEndpoint} from './util.js';
 import {
   closeEndpoint,
-  MojoEndpoint,
 } from './util.js';
 
 export interface TakePhotoResult {
@@ -177,7 +177,7 @@ export class CrosImageCapture {
       // TODO(crbug.com/40267104): If this function only handles data
       // from Mojo, the assertion above should be changed to null and the
       // null error suppression can be removed.
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       for (const entry of metadata.entries!) {
         const key = cameraMetadataTagInverseLookup[entry.tag];
         if (key === undefined) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from './assert.js';
-import {WaitableEvent} from './waitable_event.js';
+import type {WaitableEvent} from './waitable_event.js';
 
 /**
  * Photo or video resolution.
@@ -33,7 +33,7 @@ export class Resolution {
   get aspectRatio(): number {
     // Special aspect ratio mapping rule, see http://b/147986763.
     if (this.width === 848 && this.height === 480) {
-      return (new Resolution(16, 9)).aspectRatio;
+      return new Resolution(16, 9).aspectRatio;
     }
     // Approximate to 4 decimal places to prevent precision error during
     // comparing.
@@ -66,9 +66,10 @@ export class Resolution {
    * @param resolution Resolution to be compared with.
    */
   equalsWithRotation(resolution: Resolution): boolean {
-    return (this.width === resolution.width &&
-            this.height === resolution.height) ||
-        (this.width === resolution.height && this.height === resolution.width);
+    return (
+        (this.width === resolution.width &&
+         this.height === resolution.height) ||
+        (this.width === resolution.height && this.height === resolution.width));
   }
 
   /**
@@ -165,7 +166,6 @@ export enum PhotoResolutionLevel {
   UNKNOWN = 'unknown',
 }
 
-/* eslint-disable cca/string-enum-order */
 export enum VideoResolutionLevel {
   FOUR_K = '4K',
   QUAD_HD = 'Quad HD',
@@ -178,13 +178,12 @@ export enum VideoResolutionLevel {
 
   UNKNOWN = 'unknown',
 }
-/* eslint-enable cca/string-enum-order */
 
 export enum AspectRatioSet {
   RATIO_4_3 = 1.3333,
   RATIO_16_9 = 1.7778,
-  RATIO_OTHER = 0.0000,
-  RATIO_SQUARE = 1.0000,
+  RATIO_OTHER = 0.0,
+  RATIO_SQUARE = 1.0,
 }
 
 export enum Rotation {
@@ -195,8 +194,9 @@ export enum Rotation {
 }
 // `ROTATION_ORDER` is used for document scanning fix mode to show/crop images.
 // The length must be fixed at 4.
-export const ROTATION_ORDER =
-    Object.values(Rotation).filter((r): r is Rotation => typeof r === 'number');
+export const ROTATION_ORDER = Object.values(Rotation).filter(
+    (r): r is Rotation => typeof r === 'number',
+);
 
 export interface VideoConfig {
   width: number;
@@ -327,8 +327,9 @@ export interface VideoTrackSettings {
  * This asserts that all property that should exists on video track settings
  * (.width, .height, .deviceId, .frameRate) all exists and narrow the type.
  */
-export function getVideoTrackSettings(videoTrack: MediaStreamTrack):
-    VideoTrackSettings {
+export function getVideoTrackSettings(
+    videoTrack: MediaStreamTrack,
+    ): VideoTrackSettings {
   // TODO(pihsun): The type from TypeScript lib.dom.d.ts is wrong on Chrome and
   // the .deviceId should never be undefined. Try to override that when we have
   // newer TypeScript compiler (>= 4.5) that supports overriding lib.dom.d.ts.
@@ -347,7 +348,9 @@ export function getVideoTrackSettings(videoTrack: MediaStreamTrack):
  */
 export class PreviewVideo {
   constructor(
-      readonly video: HTMLVideoElement, readonly onExpired: WaitableEvent) {}
+      readonly video: HTMLVideoElement,
+      readonly onExpired: WaitableEvent,
+  ) {}
 
   getStream(): MediaStream {
     return assertInstanceof(this.video.srcObject, MediaStream);

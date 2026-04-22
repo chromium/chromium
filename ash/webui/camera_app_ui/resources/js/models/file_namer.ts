@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../assert.js';
+import type {VideoType} from '../type.js';
 import {
   MimeType,
-  VideoType,
 } from '../type.js';
 
 export const IMAGE_PREFIX = 'IMG_';

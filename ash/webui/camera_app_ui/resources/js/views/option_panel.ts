@@ -10,7 +10,8 @@ import * as state from '../state.js';
 import {ViewName} from '../type.js';
 import * as util from '../util.js';
 
-import {EnterOptions, OptionPanelOptions, View} from './view.js';
+import type {EnterOptions} from './view.js';
+import {OptionPanelOptions, View} from './view.js';
 
 /**
  * View controller for options panel.

@@ -3,31 +3,27 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from './assert.js';
-import {Intent} from './intent.js';
+import type {Intent} from './intent.js';
 import * as comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import * as mojoType from './mojo/type.js';
+import type * as mojoType from './mojo/type.js';
 import * as mojoTypeUtils from './mojo/type_utils.js';
 import * as state from './state.js';
 import {State} from './state.js';
+import type {
+  AspectRatioSet, Facing, PerfEvent, PerfInformation, PhotoResolutionLevel,
+  Resolution, VideoResolutionLevel} from './type.js';
 import {
-  AspectRatioSet,
-  Facing,
   LocalStorageKey,
   Mode,
-  PerfEvent,
-  PerfInformation,
-  PhotoResolutionLevel,
-  Resolution,
-  VideoResolutionLevel,
 } from './type.js';
+import type {
+  Ga4EventParams, MemoryUsageEventDimension} from './untrusted_scripts.js';
 import {
-  Ga4EventParams,
   Ga4MetricDimension,
   getGaHelper,
-  MemoryUsageEventDimension,
 } from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 

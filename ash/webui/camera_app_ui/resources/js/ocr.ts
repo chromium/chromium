@@ -4,7 +4,7 @@
 
 import {assertInstanceof} from './assert.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import {OcrResult} from './mojo/type.js';
+import type {OcrResult} from './mojo/type.js';
 
 export interface PerformOcrResult {
   result: OcrResult;

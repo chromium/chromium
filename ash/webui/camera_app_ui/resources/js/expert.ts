@@ -4,7 +4,8 @@
 
 import * as localStorage from './models/local_storage.js';
 import * as state from './state.js';
-import {LocalStorageKey, PerfInformation} from './type.js';
+import type {PerfInformation} from './type.js';
+import {LocalStorageKey} from './type.js';
 
 export enum ExpertOption {
   CUSTOM_VIDEO_PARAMETERS = 'custom-video-parameters',

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // TODO(pihsun): Remove this once we fully specify all the types.
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 // File System Access API: This is currently a Chrome only API, and the spec is
 // still in working draft stage.
@@ -137,7 +137,7 @@ interface VideoFrameMetadata {
 }
 
 // This is a builtin name.
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 interface HTMLVideoElement {
   requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
   cancelVideoFrameCallback(handle: number): undefined;

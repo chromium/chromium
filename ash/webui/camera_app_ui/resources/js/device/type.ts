@@ -4,19 +4,14 @@
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import {
-  AspectRatioSet,
-  Facing,
-  Mode,
-  PhotoResolutionLevel,
-  Resolution,
-  VideoResolutionLevel,
-} from '../type.js';
+import type {
+  AspectRatioSet, Facing, Mode, PhotoResolutionLevel, Resolution,
+  VideoResolutionLevel} from '../type.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
-import {CaptureCandidate} from './capture_candidate.js';
-import {DeviceInfo} from './device_monitor.js';
-import {CaptureHandler} from './mode/index.js';
+import type {CaptureCandidate} from './capture_candidate.js';
+import type {DeviceInfo} from './device_monitor.js';
+import type {CaptureHandler} from './mode/index.js';
 
 /**
  * All supported constant fps options of video recording.

@@ -5,13 +5,13 @@
 import {assert, assertExists} from './assert.js';
 import * as comlink from './lib/comlink.js';
 import {isLocalDev} from './models/load_time_data.js';
+import type {
+  Ga4EventParams, GaHelper, MemoryUsageEventDimension} from
+  './untrusted_ga_helper.js';
 import {
-  Ga4EventParams,
   Ga4MetricDimension,
-  GaHelper,
-  MemoryUsageEventDimension,
 } from './untrusted_ga_helper.js';
-import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
+import type {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {expandPath} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -76,7 +76,7 @@ export async function injectUntrustedJSModule<T>(
 
   // loadScript adds the script exports to what's exported by the
   // untrustedRemote, so we manually cast it to the expected type.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return untrustedRemote as unknown as comlink.Remote<T>;
 }
 

@@ -15,6 +15,7 @@ import * as expert from '../expert.js';
 import {FaceOverlay} from '../face.js';
 import {Point} from '../geometry.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
+import type {CameraMetadata, CameraMetadataEntry} from '../mojo/type.js';
 import {
   AndroidControlAeAntibandingMode,
   AndroidControlAeMode,
@@ -24,19 +25,17 @@ import {
   AndroidControlAwbMode,
   AndroidControlAwbState,
   AndroidStatisticsFaceDetectMode,
-  CameraMetadata,
-  CameraMetadataEntry,
   CameraMetadataTag,
   StreamType,
 } from '../mojo/type.js';
+import type {MojoEndpoint} from '../mojo/util.js';
 import {
   closeEndpoint,
-  MojoEndpoint,
 } from '../mojo/util.js';
 import * as nav from '../nav.js';
+import type {PhotoModeAutoScanner} from '../photo_mode_auto_scanner.js';
 import {
   createInstance as createPhotoModeAutoScanner,
-  PhotoModeAutoScanner,
 } from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {
@@ -52,15 +51,14 @@ import {
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
+import type {PtzController, StrictPtzSettings} from './ptz_controller.js';
 import {
   assertStrictPtzSettings,
   DigitalZoomPtzController,
   MediaStreamPtzController,
-  PtzController,
-  StrictPtzSettings,
 } from './ptz_controller.js';
+import type {StreamConstraints} from './stream_constraints.js';
 import {
-  StreamConstraints,
   toMediaStreamConstraints,
 } from './stream_constraints.js';
 
@@ -727,7 +725,7 @@ export class Preview {
       // TODO(crbug.com/40267104): If this function only handles data
       // from Mojo, the assertion above should be changed to null and the
       // null error suppression can be removed.
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       for (const entry of metadata.entries!) {
         if (entry.count === 0) {
           continue;

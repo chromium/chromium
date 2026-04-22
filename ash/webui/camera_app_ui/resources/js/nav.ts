@@ -7,9 +7,9 @@ import {DEPLOYED_VERSION} from './deployed_version.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
-import {ViewName} from './type.js';
+import type {ViewName} from './type.js';
 import * as util from './util.js';
-import {EnterOptions, LeaveCondition, View} from './views/view.js';
+import type {EnterOptions, LeaveCondition, View} from './views/view.js';
 import {windowController} from './window_controller.js';
 
 /**

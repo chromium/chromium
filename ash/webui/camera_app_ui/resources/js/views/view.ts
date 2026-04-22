@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from '../assert.js';
-import {PtzController} from '../device/ptz_controller.js';
+import type {PtzController} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
-import {I18nString} from '../i18n_string.js';
+import type {I18nString} from '../i18n_string.js';
 import * as state from '../state.js';
-import {ViewName} from '../type.js';
-import {KeyboardShortcut} from '../util.js';
+import type {ViewName} from '../type.js';
+import type {KeyboardShortcut} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 export interface DialogEnterOptions {

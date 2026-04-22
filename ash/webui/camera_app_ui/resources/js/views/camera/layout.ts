@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CameraManager} from '../../device/index.js';
+import type {CameraManager} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import * as state from '../../state.js';
 import {windowController} from '../../window_controller.js';

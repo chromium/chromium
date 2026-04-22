@@ -4,14 +4,15 @@
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
-import {PtzController} from '../device/ptz_controller.js';
+import type {PtzController} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import * as metrics from '../metrics.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
 import {DelayInterval} from '../util.js';
 
-import {EnterOptions, PtzPanelOptions, View} from './view.js';
+import type {EnterOptions} from './view.js';
+import {PtzPanelOptions, View} from './view.js';
 
 /**
  * Detects hold gesture on UI and triggers corresponding handler.

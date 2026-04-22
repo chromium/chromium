@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {ExpertOption} from '../expert.js';
-import {State, StateUnion} from '../state.js';
+import type {StateUnion} from '../state.js';
+import {State} from '../state.js';
 import {ViewName} from '../type.js';
 
 export const SELECTOR_MAP = {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as dom from './dom.js';
-import {I18nString} from './i18n_string.js';
+import type {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 
 /**

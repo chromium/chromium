@@ -59,7 +59,7 @@ export function checkInstanceof<T>(
     value: unknown,
     // "unknown" doesn't work well here if the constructor have overloads with
     // different numbers of argument and strictNullChecks on.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     ctor: new (...args: any[]) => T,
     ): T|null {
   if (!(value instanceof ctor)) {
@@ -77,7 +77,7 @@ export function assertInstanceof<T>(
     value: unknown,
     // "unknown" doesn't work well here if the constructor have overloads with
     // different numbers of argument and strictNullChecks on.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     ctor: new (...args: any[]) => T,
     optMessage?: string,
     ): T {
@@ -159,7 +159,7 @@ export function checkEnumVariant<T extends string>(
   }
   // The value is already checked that it's a member of the enum above, so it's
   // safe to cast it to the enum.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return value as T;
 }
 

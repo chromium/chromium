@@ -17,9 +17,8 @@ import {
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import type {OcrResult, WifiConfig} from './mojo/type.js';
 import {
-  OcrResult,
-  WifiConfig,
   WifiEapMethod,
   WifiEapPhase2Method,
   WifiSecurityType,

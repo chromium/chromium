@@ -8,7 +8,8 @@ import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
-import {ErrorLevel, ErrorType, VideoConfig} from '../type.js';
+import type {VideoConfig} from '../type.js';
+import {ErrorLevel, ErrorType} from '../type.js';
 import {sleep} from '../util.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';

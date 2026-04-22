@@ -16,24 +16,22 @@ import {
   Resolution,
 } from '../../type.js';
 import {getFpsRangeFromConstraints} from '../../util.js';
-import {StreamConstraints} from '../stream_constraints.js';
+import type {StreamConstraints} from '../stream_constraints.js';
 
-import {
-  ModeBase,
-  ModeFactory,
-} from './mode_base.js';
+import type {ModeBase, ModeFactory} from './mode_base.js';
+import type {PhotoHandler} from './photo.js';
 import {
   PhotoFactory,
-  PhotoHandler,
 } from './photo.js';
-import {PortraitFactory, PortraitHandler} from './portrait.js';
+import type {PortraitHandler} from './portrait.js';
+import {PortraitFactory} from './portrait.js';
+import type {ScanHandler} from './scan.js';
 import {
   ScanFactory,
-  ScanHandler,
 } from './scan.js';
+import type {VideoHandler} from './video.js';
 import {
   VideoFactory,
-  VideoHandler,
 } from './video.js';
 
 export type{PhotoHandler, PhotoResult} from './photo.js';

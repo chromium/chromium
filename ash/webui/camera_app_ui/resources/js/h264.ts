@@ -9,7 +9,7 @@
  */
 
 import {assert, assertNotReached} from './assert.js';
-import {Resolution} from './type.js';
+import type {Resolution} from './type.js';
 import {getNumberEnumMapping} from './util.js';
 
 export enum Profile {

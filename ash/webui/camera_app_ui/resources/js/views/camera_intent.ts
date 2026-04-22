@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../assert.js';
-import {CameraManager, PhotoResult, VideoResult} from '../device/index.js';
+import type {CameraManager, PhotoResult, VideoResult} from '../device/index.js';
 import {I18nString} from '../i18n_string.js';
-import {Intent} from '../intent.js';
+import type {Intent} from '../intent.js';
 import * as metrics from '../metrics.js';
-import {FileAccessEntry} from '../models/file_system_access_entry.js';
+import type {FileAccessEntry} from '../models/file_system_access_entry.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {scaleImage} from '../thumbnailer.js';
-import {Resolution} from '../type.js';
+import type {Resolution} from '../type.js';
 import * as util from '../util.js';
 
 import {Camera} from './camera.js';

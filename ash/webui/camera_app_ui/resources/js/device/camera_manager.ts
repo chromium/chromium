@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertExists,
-} from '../assert.js';
+import {assert, assertExists} from '../assert.js';
 import * as expert from '../expert.js';
-import {Point} from '../geometry.js';
+import type {Point} from '../geometry.js';
 import * as metrics from '../metrics.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -15,16 +12,15 @@ import {LidState, ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
+import type {
+  Facing, PhotoResolutionLevel, PreviewVideo, VideoResolutionLevel} from
+  '../type.js';
 import {
   AspectRatioSet,
   CameraSuspendError,
-  Facing,
   Mode,
   PerfEvent,
-  PhotoResolutionLevel,
-  PreviewVideo,
   Resolution,
-  VideoResolutionLevel,
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
@@ -32,25 +28,21 @@ import {WarningType} from '../views/warning.js';
 import {WaitableEvent} from '../waitable_event.js';
 import {windowController} from '../window_controller.js';
 
-import {EventListener, OperationScheduler} from './camera_operation.js';
+import type {EventListener} from './camera_operation.js';
+import {OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
 import {Preview} from './preview.js';
-import {PtzController} from './ptz_controller.js';
-import {
-  CameraConfig,
-  CameraInfo,
-  CameraUi,
-  CameraViewUi,
-  ModeConstraints,
-  PhotoAspectRatioOptionListener,
-  PhotoResolutionOptionListener,
-  VideoResolutionOptionListener,
-} from './type.js';
+import type {PtzController} from './ptz_controller.js';
+import type {
+  CameraConfig, CameraInfo, CameraUi, CameraViewUi, ModeConstraints,
+  PhotoAspectRatioOptionListener, PhotoResolutionOptionListener,
+  VideoResolutionOptionListener} from './type.js';
 
 class ResumeStateWatchdog {
   // This is definitely assigned in this.start() in the first statement of the
-  // while loop.
-  private trialDone!: WaitableEvent<boolean>;
+  // while loop. Since Chromium ESLint disallow non-null assertion operator
+  // on class property, assign it to an unused WaitableEvent.
+  private trialDone = new WaitableEvent<boolean>();
 
   private succeed = false;
 
@@ -105,13 +97,13 @@ export class CameraManager implements EventListener {
 
   private readonly preview: Preview;
 
-  constructor(
-      defaultFacing: Facing|null,
-      modeConstraints: ModeConstraints,
-  ) {
-    this.preview = new Preview(async () => {
-      await this.reconfigure();
-    }, () => this.useSquareResolution());
+  constructor(defaultFacing: Facing|null, modeConstraints: ModeConstraints) {
+    this.preview = new Preview(
+        async () => {
+          await this.reconfigure();
+        },
+        () => this.useSquareResolution(),
+    );
 
     this.scheduler = new OperationScheduler(
         this,
@@ -127,16 +119,16 @@ export class CameraManager implements EventListener {
       }
     });
 
-    expert.addObserver(
-        expert.ExpertOption.SHOW_ALL_RESOLUTIONS,
-        async () => {
-          // Rebuilds the options to adapt to the new state. Then, reconfigure
-          // the stream so that it will apply the new resolution order. At last,
-          // update the checked status of the resolution options.
-          this.scheduler.reconfigurer.capturePreferrer.buildOptions();
-          await this.tryReconfigure(() => {/* Do nothing */});
-        },
-    );
+    expert.addObserver(expert.ExpertOption.SHOW_ALL_RESOLUTIONS, async () => {
+      // Rebuilds the options to adapt to the new state. Then, reconfigure
+      // the stream so that it will apply the new resolution order. At last,
+      // update the checked status of the resolution options.
+      this.scheduler.reconfigurer.capturePreferrer.buildOptions();
+      await this.tryReconfigure(
+          () => {
+              /* Do nothing */
+          });
+    });
   }
 
   getCameraInfo(): CameraInfo {
@@ -224,8 +216,8 @@ export class CameraManager implements EventListener {
    * @return Whether window is put to background in tablet mode.
    */
   private isTabletBackground(): boolean {
-    return state.get(state.State.TABLET) &&
-        document.visibilityState === 'hidden';
+    return (
+        state.get(state.State.TABLET) && document.visibilityState === 'hidden');
   }
 
   /**
@@ -263,8 +255,9 @@ export class CameraManager implements EventListener {
       await this.maybeSuspendResumeCamera();
     };
 
-    this.locked =
-        await helper.initScreenLockedMonitor(handleScreenLockedChange);
+    this.locked = await helper.initScreenLockedMonitor(
+        handleScreenLockedChange,
+    );
 
     const handleScreenStateChange = async () => {
       await this.maybeSuspendResumeCamera();
@@ -323,12 +316,14 @@ export class CameraManager implements EventListener {
       perfLogger.start(PerfEvent.CAMERA_SWITCHING);
       const deviceIds =
           this.scheduler.reconfigurer.getDeviceIdsSortedbyPreferredFacing(
-              this.getCameraInfo());
+              this.getCameraInfo(),
+          );
       if (deviceIds.length === 0) {
         return;
       }
-      let index =
-          deviceIds.findIndex((deviceId) => deviceId === this.getDeviceId());
+      let index = deviceIds.findIndex(
+          (deviceId) => deviceId === this.getDeviceId(),
+      );
       // findIndex() may return -1, which means the device is not in the list.
       // In this case, we will try to switch to the preferred facing device.
       index = (index + 1) % deviceIds.length;
@@ -351,8 +346,10 @@ export class CameraManager implements EventListener {
     });
   }
 
-  private async setCapturePref(deviceId: string, setPref: () => void):
-      Promise<boolean> {
+  private async setCapturePref(
+      deviceId: string,
+      setPref: () => void,
+      ): Promise<boolean> {
     if (!this.cameraAvailable) {
       return false;
     }
@@ -365,67 +362,96 @@ export class CameraManager implements EventListener {
     return this.tryReconfigure(setPref) ?? false;
   }
 
-  addPhotoResolutionOptionListener(listener: PhotoResolutionOptionListener):
-      void {
+  addPhotoResolutionOptionListener(
+      listener: PhotoResolutionOptionListener,
+      ): void {
     this.scheduler.reconfigurer.capturePreferrer
-        .addPhotoResolutionOptionListener(listener);
+        .addPhotoResolutionOptionListener(
+            listener,
+        );
   }
 
-  addPhotoAspectRatioOptionListener(listener: PhotoAspectRatioOptionListener):
-      void {
+  addPhotoAspectRatioOptionListener(
+      listener: PhotoAspectRatioOptionListener,
+      ): void {
     this.scheduler.reconfigurer.capturePreferrer
-        .addPhotoAspectRatioOptionListener(listener);
+        .addPhotoAspectRatioOptionListener(
+            listener,
+        );
   }
 
-  addVideoResolutionOptionListener(listener: VideoResolutionOptionListener):
-      void {
+  addVideoResolutionOptionListener(
+      listener: VideoResolutionOptionListener,
+      ): void {
     this.scheduler.reconfigurer.capturePreferrer
-        .addVideoResolutionOptionListener(listener);
+        .addVideoResolutionOptionListener(
+            listener,
+        );
   }
 
   async setPrefPhotoResolutionLevel(
-      deviceId: string, level: PhotoResolutionLevel): Promise<void> {
+      deviceId: string,
+      level: PhotoResolutionLevel,
+      ): Promise<void> {
     await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolutionLevel(
-          deviceId, level);
+          deviceId,
+          level,
+      );
     });
   }
 
   async setPrefPhotoAspectRatioSet(
-      deviceId: string, aspectRatioSet: AspectRatioSet): Promise<void> {
+      deviceId: string,
+      aspectRatioSet: AspectRatioSet,
+      ): Promise<void> {
     await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoAspectRatioSet(
-          deviceId, aspectRatioSet);
+          deviceId,
+          aspectRatioSet,
+      );
     });
   }
 
   async setPrefVideoResolutionLevel(
-      deviceId: string, level: VideoResolutionLevel): Promise<void> {
+      deviceId: string,
+      level: VideoResolutionLevel,
+      ): Promise<void> {
     await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolutionLevel(
-          deviceId, level);
+          deviceId,
+          level,
+      );
     });
   }
 
   /**
    * Used when showing all resolutions.
    */
-  async setPrefPhotoResolution(deviceId: string, resolution: Resolution):
-      Promise<void> {
+  async setPrefPhotoResolution(
+      deviceId: string,
+      resolution: Resolution,
+      ): Promise<void> {
     await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolution(
-          deviceId, resolution);
+          deviceId,
+          resolution,
+      );
     });
   }
 
   /**
    * Used when showing all resolutions.
    */
-  async setPrefVideoResolution(deviceId: string, resolution: Resolution):
-      Promise<void> {
+  async setPrefVideoResolution(
+      deviceId: string,
+      resolution: Resolution,
+      ): Promise<void> {
     await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolution(
-          deviceId, resolution);
+          deviceId,
+          resolution,
+      );
     });
   }
 
@@ -434,30 +460,43 @@ export class CameraManager implements EventListener {
    * resolution.
    */
   setPrefVideoConstFps(
-      deviceId: string, level: VideoResolutionLevel, fps: number,
-      shouldReconfigure: boolean): Promise<boolean>|null {
+      deviceId: string,
+      level: VideoResolutionLevel,
+      fps: number,
+      shouldReconfigure: boolean,
+      ): Promise<boolean>|null {
     // We only need to reconfigure the stream if the FPS preference has been
     // changed for selected resolution level.
     if (shouldReconfigure) {
       return this.setCapturePref(deviceId, () => {
         this.scheduler.reconfigurer.capturePreferrer.setPrefVideoConstFps(
-            deviceId, level, fps, shouldReconfigure);
+            deviceId,
+            level,
+            fps,
+            shouldReconfigure,
+        );
       });
     } else {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoConstFps(
-          deviceId, level, fps, shouldReconfigure);
+          deviceId,
+          level,
+          fps,
+          shouldReconfigure,
+      );
       return null;
     }
   }
 
   getPhotoResolutionLevel(resolution: Resolution): PhotoResolutionLevel {
     return this.scheduler.reconfigurer.capturePreferrer.getPhotoResolutionLevel(
-        resolution);
+        resolution,
+    );
   }
 
   getVideoResolutionLevel(resolution: Resolution): VideoResolutionLevel {
     return this.scheduler.reconfigurer.capturePreferrer.getVideoResolutionLevel(
-        resolution);
+        resolution,
+    );
   }
 
   getAspectRatioSet(resolution: Resolution): AspectRatioSet {
@@ -499,16 +538,18 @@ export class CameraManager implements EventListener {
     if (deviceId === null) {
       return false;
     }
-    return state.get(state.State.ENABLE_PTZ) &&
-        this.getCameraInfo().hasBuiltinPtzSupport(deviceId);
+    return (
+        state.get(state.State.ENABLE_PTZ) &&
+        this.getCameraInfo().hasBuiltinPtzSupport(deviceId));
   }
 
   /**
    * Whether app window is suspended.
    */
   private shouldSuspend(): boolean {
-    return this.locked || windowController.isMinimized() ||
-        this.suspendRequested || this.screenOff || this.isTabletBackground();
+    return (
+        this.locked || windowController.isMinimized() ||
+        this.suspendRequested || this.screenOff || this.isTabletBackground());
   }
 
   async startCapture(): Promise<[Promise<void>]> {
@@ -542,7 +583,8 @@ export class CameraManager implements EventListener {
       return false;
     }
     return this.scheduler.reconfigurer.capturePreferrer.preferSquarePhoto(
-        deviceId);
+        deviceId,
+    );
   }
 
   private setCameraAvailable(available: boolean): void {
@@ -572,7 +614,7 @@ export class CameraManager implements EventListener {
     // callback. Revisit this to push reconfigure jobs on an AsyncJobQueue and
     // returns result in a AsyncJob instead of directly returning a Promise?
     if (this.watchdog !== null) {
-      if (!await this.watchdog.waitNextReconfigure()) {
+      if (!(await this.watchdog.waitNextReconfigure())) {
         return false;
       }
       // The watchdog.waitNextReconfigure() only return the most recent

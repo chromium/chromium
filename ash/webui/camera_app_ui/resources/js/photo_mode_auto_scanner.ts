@@ -5,8 +5,10 @@
 import {assertExists} from './assert.js';
 import {OcrEventType, sendOcrEvent} from './metrics.js';
 import {AsyncIntervalRunner} from './models/async_interval.js';
-import {BarcodeScanner, ScanBarcodeResult} from './models/barcode.js';
-import {Ocr, PerformOcrResult} from './ocr.js';
+import type {ScanBarcodeResult} from './models/barcode.js';
+import {BarcodeScanner} from './models/barcode.js';
+import type {PerformOcrResult} from './ocr.js';
+import {Ocr} from './ocr.js';
 import {PerfLogger} from './perf.js';
 import * as scannerChip from './scanner_chip.js';
 import * as state from './state.js';

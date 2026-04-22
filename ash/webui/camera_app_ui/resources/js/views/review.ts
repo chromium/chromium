@@ -4,9 +4,9 @@
 
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
-import {I18nString} from '../i18n_string.js';
+import type {I18nString} from '../i18n_string.js';
 import {getObjectURL} from '../models/file_system.js';
-import {FileAccessEntry} from '../models/file_system_access_entry.js';
+import type {FileAccessEntry} from '../models/file_system_access_entry.js';
 import * as nav from '../nav.js';
 import {ViewName} from '../type.js';
 import {instantiateTemplate, setupI18nElements} from '../util.js';

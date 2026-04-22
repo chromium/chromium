@@ -75,7 +75,7 @@ export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
   closeWhenUnload(endpoint);
   // The mojoResponseHandler is designed to be able to handle all mojo
   // connection proxies.
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return new Proxy(endpoint, mojoResponseHandler as ProxyHandler<T>);
 }
 
@@ -98,6 +98,6 @@ export function fakeEndpoint<T>(): T {
     get: (): unknown =>
         new Proxy(() => {/* Doing nothing for fake */}, handler),
   };
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return new Proxy({}, handler) as T;
 }

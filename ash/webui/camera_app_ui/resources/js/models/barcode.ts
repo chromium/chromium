@@ -10,7 +10,7 @@ import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 import {lazySingleton} from '../util.js';
 
 import {AsyncIntervalRunner} from './async_interval.js';
-import {BarcodeWorker} from './barcode_worker.js';
+import type {BarcodeWorker} from './barcode_worker.js';
 
 export interface ScanBarcodeResult {
   barcode: DetectedBarcode;

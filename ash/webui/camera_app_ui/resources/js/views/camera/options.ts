@@ -4,12 +4,9 @@
 
 import * as animate from '../../animation.js';
 import {assert, assertExists} from '../../assert.js';
-import {
-  CameraConfig,
-  CameraInfo,
-  CameraManager,
-  CameraUi,
-} from '../../device/index.js';
+import type {
+  CameraConfig, CameraInfo, CameraManager, CameraUi} from
+  '../../device/index.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
@@ -17,7 +14,8 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, LocalStorageKey, Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
-import {OptionPanelOptions, PtzPanelOptions, StateOption} from '../view.js';
+import type {StateOption} from '../view.js';
+import {OptionPanelOptions, PtzPanelOptions} from '../view.js';
 
 /**
  * Creates a controller for the options of Camera view.

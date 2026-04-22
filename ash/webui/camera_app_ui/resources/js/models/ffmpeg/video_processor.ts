@@ -7,9 +7,9 @@ import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as comlink from '../../lib/comlink.js';
 import runFfmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';
-import {AsyncWriter} from '../async_writer.js';
+import type {AsyncWriter} from '../async_writer.js';
 
-import {VideoProcessorArgs} from './video_processor_args.js';
+import type {VideoProcessorArgs} from './video_processor_args.js';
 
 /**
  * A file stream in Emscripten.
@@ -338,13 +338,11 @@ class FfmpegVideoProcessor {
         return '../../../js/lib/ffmpeg.wasm';
       },
       // This is from emscripten.
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       noFSInit: true,  // It would be setup in preRun().
       preRun: [() => {
         // The FS property are injected by emscripten at runtime.
-        /* eslint-disable-next-line
-             @typescript-eslint/naming-convention,
-             @typescript-eslint/consistent-type-assertions */
+
         const fs = (config as unknown as {FS: Fs}).FS;
         assert(fs !== null);
         // 80 is just a random major number that won't collide with other

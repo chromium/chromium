@@ -23,7 +23,7 @@ import {
 import * as customEffect from './custom_effect.js';
 import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
-import {ModeConstraints} from './device/type.js';
+import type {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Intent} from './intent.js';
@@ -37,7 +37,7 @@ import {DefaultResultSaver} from './models/result_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import {WindowStateType} from './mojo/type.js';
-import {WindowInstance} from './multi_window_manager.js';
+import type {WindowInstance} from './multi_window_manager.js';
 import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';

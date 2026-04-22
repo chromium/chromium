@@ -20,7 +20,7 @@ export function overridableFunction<Args extends unknown[], Ret>(
     if (overrideMap.has(wrapper)) {
       // We guarantee that the overrideMap stores the same type as the original
       // function by the setOverride.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
       return (overrideMap.get(wrapper) as (...args: Args) => Ret)(...args);
     }
     return func(...args);

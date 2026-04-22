@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import {DeviceOperator} from '../mojo/device_operator.js';
+import type {
+  Facing, FpsRangeList, MaxFpsInfo, ResolutionList, VideoConfig} from
+  '../type.js';
 import {
-  Facing,
-  FpsRangeList,
-  MaxFpsInfo,
   Resolution,
-  ResolutionList,
-  VideoConfig,
 } from '../type.js';
 
 /**

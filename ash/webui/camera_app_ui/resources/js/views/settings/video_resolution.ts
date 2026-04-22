@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from '../../assert.js';
-import {CameraManager} from '../../device/index.js';
+import type {CameraManager} from '../../device/index.js';
+import type {
+  VideoResolutionOption, VideoResolutionOptionGroup} from
+  '../../device/type.js';
 import {
   SUPPORTED_CONSTANT_FPS,
-  VideoResolutionOption,
-  VideoResolutionOptionGroup,
 } from '../../device/type.js';
 import * as dom from '../../dom.js';
 import * as expert from '../../expert.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import {Facing, Resolution, ViewName} from '../../type.js';
+import type {Resolution} from '../../type.js';
+import {Facing, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
 import {BaseSettings} from './base.js';

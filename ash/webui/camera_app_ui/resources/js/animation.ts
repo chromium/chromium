@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from './assert.js';
-import {AsyncJobInfo, AsyncJobQueue} from './async_job_queue.js';
+import type {AsyncJobInfo} from './async_job_queue.js';
+import {AsyncJobQueue} from './async_job_queue.js';
 
 const jobQueueMap = new Map<HTMLElement, AsyncJobQueue>();
 

@@ -4,13 +4,13 @@
 
 import {assert} from './assert.js';
 import {ExpertOption} from './expert.js';
+import type {PerfInformation} from './type.js';
 import {
   Mode,
   PerfEvent,
-  PerfInformation,
   ViewName,
 } from './type.js';
-import {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
+import type {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
@@ -93,9 +93,9 @@ const stateValues =
 export function assertState(s: string): StateUnion {
   // This is to workaround current TypeScript limitation on Set.has.
   // See https://github.com/microsoft/TypeScript/issues/26255
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   assert((stateValues as Set<string>).has(s), `No such state: ${s}`);
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
   return s as StateUnion;
 }
 

@@ -8,46 +8,39 @@ import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import * as state from '../state.js';
+import type {
+  CropRegionRect, FpsRangeList, ResolutionList, VideoConfig} from '../type.js';
 import {
   CameraSuspendError,
-  CropRegionRect,
   ErrorLevel,
   ErrorType,
   Facing,
-  FpsRangeList,
   PortraitErrorNoFaceDetected,
   Resolution,
-  ResolutionList,
-  VideoConfig,
 } from '../type.js';
 import {CancelableEvent} from '../waitable_event.js';
 
+import type {
+  CameraAppDeviceRemote, CameraInfo, CameraMetadata, CameraMetadataEntry,
+  CaptureIntent, MojoBlob, PointF, StreamType} from './type.js';
 import {
   AndroidInfoSupportedHardwareLevel,
   CameraAppDeviceProvider,
-  CameraAppDeviceRemote,
   CameraEventObserverCallbackRouter,
   CameraFacing,
-  CameraInfo,
   CameraInfoObserverCallbackRouter,
-  CameraMetadata,
-  CameraMetadataEntry,
   CameraMetadataTag,
-  CaptureIntent,
   DocumentCornersObserverCallbackRouter,
   Effect,
   EntryType,
   GetCameraAppDeviceStatus,
-  MojoBlob,
-  PointF,
   PortraitModeSegResult,
   ResultMetadataObserverCallbackRouter,
   StillCaptureResultObserverCallbackRouter,
-  StreamType,
 } from './type.js';
+import type {MojoEndpoint} from './util.js';
 import {
   closeEndpoint,
-  MojoEndpoint,
   wrapEndpoint,
 } from './util.js';
 
@@ -110,7 +103,7 @@ function getMetadataData(
     // TODO(crbug.com/40267104): If this function only handles data
     // from Mojo, the assertion above should be changed to null and the
     // null error suppression can be removed.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     const entry = metadata.entries![i];
     if (entry.tag === tag) {
       return parseMetadata(entry);
@@ -483,7 +476,7 @@ export class DeviceOperator {
   async getPanDefault(deviceId: string): Promise<number|undefined> {
     // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
     // platform side.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     const tag = 0x8001000d as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -496,7 +489,7 @@ export class DeviceOperator {
   async getTiltDefault(deviceId: string): Promise<number|undefined> {
     // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
     // platform side.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     const tag = 0x80010016 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -509,7 +502,7 @@ export class DeviceOperator {
   async getZoomDefault(deviceId: string): Promise<number|undefined> {
     // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
     // platform side.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     const tag = 0x80010019 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -559,7 +552,7 @@ export class DeviceOperator {
     // This is a custom vendor tag, defined in common/vendor_tag_manager.h on
     // platform side.
     // TODO(wtlee): Change to portrait mode tag.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     const portraitModeTag = 0x80000000 as CameraMetadataTag;
 
     const portraitMode =
@@ -817,7 +810,7 @@ export class DeviceOperator {
    */
   async isDigitalZoomSupported(deviceId: string): Promise<boolean> {
     // Checks if the device can do zoom through the stream manipulator.
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     const digitalZoomTag = 0x80070000 as CameraMetadataTag;
     const digitalZoomData =
         await this.getStaticMetadata(deviceId, digitalZoomTag);

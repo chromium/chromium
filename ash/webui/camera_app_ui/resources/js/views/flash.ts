@@ -8,7 +8,8 @@ import {I18nString} from '../i18n_string.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
 
-import {FlashEnterOptions, View} from './view.js';
+import type {FlashEnterOptions} from './view.js';
+import {View} from './view.js';
 
 export class Flash extends View {
   private readonly processingMessage: HTMLElement;

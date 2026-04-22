@@ -9,7 +9,7 @@ import {
   assertNotReached,
 } from '../assert.js';
 import * as dom from '../dom.js';
-import {Point} from '../geometry.js';
+import type {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import {
   DocScanActionType,
@@ -20,7 +20,7 @@ import {
 } from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
-import {ResultSaver} from '../models/result_saver.js';
+import type {ResultSaver} from '../models/result_saver.js';
 import {
   ChromeHelper,
   createBigBufferFromBlob,
@@ -28,24 +28,21 @@ import {
   handleBigBufferError,
   shouldUseBigBuffer,
 } from '../mojo/chrome_helper.js';
-import {
-  BigBuffer,
-  PdfBuilderRemote,
-} from '../mojo/type.js';
+import type {BigBuffer, PdfBuilderRemote} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
+import type {Rotation} from '../type.js';
 import {
   MimeType,
   PerfEvent,
-  Rotation,
   ViewName,
 } from '../type.js';
+import type {KeyboardShortcut} from '../util.js';
 import {
   getKeyboardShortcut,
   instantiateTemplate,
-  KeyboardShortcut,
   loadImage,
   share,
 } from '../util.js';
