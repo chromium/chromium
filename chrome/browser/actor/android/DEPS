@@ -1,3 +1,4 @@
 include_rules = [
+  "+cc/slim/layer.h",
   "+components/browser_ui/notifications",
 ]

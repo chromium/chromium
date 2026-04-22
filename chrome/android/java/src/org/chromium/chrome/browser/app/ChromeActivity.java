@@ -30,6 +30,7 @@ import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.Pair;
+import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display.Mode;
 import android.view.MenuItem;
@@ -1436,9 +1437,35 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             () -> findViewById(android.R.id.content),
                             getTabModelSelectorSupplier(),
                             this::exitOverviewModeOnActorPiPExpand,
-                            this::toggleGlic);
+                            this::toggleGlic,
+                            getLastNormalSizeBeforeEnteringActorPiP(),
+                            this::onActorPictureInPictureChanged);
         }
         return mActorPipController;
+    }
+
+    // Gets the last normal size of the activity before entering Actor Picture-in-Picture mode. This
+    // is used to restore the activity to the correct size when exiting Actor Picture-in-Picture
+    // mode.
+    private Size getLastNormalSizeBeforeEnteringActorPiP() {
+        var compositorViewHolder = mCompositorViewHolderSupplier.get();
+        assumeNonNull(compositorViewHolder);
+        return compositorViewHolder.getLastNormalSize();
+    }
+
+    // When the Actor Picture-in-Picture mode changes, update the CompositorViewHolder's tab
+    // accordingly to make sure the CompositorViewHolder doesn't know about actuating tab when in
+    // PiP mode, and can update to the correct tab when exiting PiP mode.
+    private void onActorPictureInPictureChanged(boolean inPiP) {
+        Tab tab = getActivityTab();
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (tab == null || compositorViewHolder == null) return;
+        if (inPiP) {
+            compositorViewHolder.overrideTab(null);
+        } else {
+            assert !tab.getIsOffscreenRenderingSupplier().get();
+            compositorViewHolder.overrideTab(tab);
+        }
     }
 
     @Override

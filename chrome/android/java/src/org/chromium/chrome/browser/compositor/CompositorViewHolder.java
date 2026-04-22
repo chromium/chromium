@@ -60,6 +60,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -490,6 +491,11 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private Point getViewportSize() {
+        updateCachedSizes();
+        return mCachePoint;
+    }
+
+    private void updateCachedSizes() {
         // When in fullscreen mode, the window does not get resized when showing the onscreen
         // keyboard[1].  To work around this, we monitor the visible display frame to mimic the
         // resize state to ensure the web contents has the correct width and height.
@@ -519,15 +525,15 @@ public class CompositorViewHolder extends FrameLayout
         // Cache the latest valid normal size to be used when entering offscreen rendering mode like
         // Actor Picture-in-Picture. We only update the cache when we are not in PiP mode to avoid
         // picking up the shrinking dimensions during transition.
-        if (mCachePoint.x > 0
-                && mCachePoint.y > 0
+        int width = mCachePoint.x;
+        int height = mCachePoint.y;
+        if (width > 0
+                && height > 0
                 && (mActivity == null || !mActivity.isInPictureInPictureMode())) {
-            if (mLastNormalSize.x != mCachePoint.x || mLastNormalSize.y != mCachePoint.y) {
-                mLastNormalSize.set(mCachePoint.x, mCachePoint.y);
+            if (mLastNormalSize.x != width || mLastNormalSize.y != height) {
+                mLastNormalSize.set(width, height);
             }
         }
-
-        return mCachePoint;
     }
 
     @VisibleForTesting
@@ -974,6 +980,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     public Size getLastNormalSize() {
+        updateCachedSizes();
         return new Size(mLastNormalSize.x, mLastNormalSize.y);
     }
 

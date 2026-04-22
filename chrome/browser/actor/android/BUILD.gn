@@ -21,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorTaskHelper.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTaskId.java",
     "java/src/org/chromium/chrome/browser/actor/NoOpActorForegroundServiceController.java",
+    "java/src/org/chromium/chrome/browser/actor/OffscreenRenderingManager.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlProperties.java",
@@ -66,6 +67,7 @@ android_library("java") {
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -91,6 +93,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+    "java/src/org/chromium/chrome/browser/actor/OffscreenRenderingManager.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
   ]
 }
@@ -101,6 +104,8 @@ source_set("android") {
     "actor_keyed_service_android.h",
     "actor_task_android.cc",
     "actor_task_android.h",
+    "offscreen_rendering_manager_android.cc",
+    "offscreen_rendering_manager_android.h",
     "ui/actor_ui_tab_controller_android.cc",
     "ui/actor_ui_tab_controller_android.h",
   ]
@@ -108,12 +113,15 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//cc/slim",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/profiles",
     "//chrome/browser/tab",
     "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/android",
     "//ui/base/unowned_user_data",
   ]
 }
@@ -170,6 +178,7 @@ robolectric_library("junit") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_core_core_java",
