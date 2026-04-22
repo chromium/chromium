@@ -1468,7 +1468,9 @@ class ComputedStyle final : public ComputedStyleBase {
             EBorderStyle style, EBorderStyle other_style, int width,
             int other_width) -> bool {
       if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
-        return true;
+        if (!HasBorderShape() && !o.HasBorderShape()) {
+          return true;
+        }
       }
       if (style == EBorderStyle::kHidden &&
           other_style == EBorderStyle::kHidden) {
@@ -1494,7 +1496,8 @@ class ComputedStyle final : public ComputedStyleBase {
                                    BorderLeftStyle(), o.BorderLeftStyle(),
                                    BorderLeftWidthInternal(),
                                    o.BorderLeftWidthInternal()) &&
-           BorderImage() == o.BorderImage();
+           BorderImage() == o.BorderImage() &&
+           base::ValuesEquivalent(BorderShape(), o.BorderShape());
   }
 
   bool BorderVisualOverflowEqual(const ComputedStyle& o) const {
