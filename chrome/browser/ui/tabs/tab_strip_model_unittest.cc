@@ -2335,6 +2335,29 @@ TEST_P(TabStripModelTest, TabGroupsFocusingAutoCloseSwitchFocus) {
   EXPECT_EQ(4, tabstrip()->count());
 }
 
+TEST_P(TabStripModelTest, ActivateTabUnfocusesAndClosesGroupNoCrash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{"tab_groups_focusing_auto_close", "true"}});
+
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->SetFocusedGroup(group_id);
+
+  // Tab 2 is not in the group.
+  // This should call SetFocusedGroup(nullopt), which should close the group.
+  // This previously crashed due to ReentrancyCheck in CloseAllTabsInGroup
+  // because ActivateTabAt already has a ReentrancyCheck.
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(1, tabstrip()->count());
+}
+
 TEST_P(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {

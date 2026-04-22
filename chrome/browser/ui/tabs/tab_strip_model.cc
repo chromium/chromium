@@ -313,7 +313,7 @@ void TabStripModel::SetFocusedGroup(
     TabGroup* const group_to_close =
         group_model_->GetTabGroup(old_focused_group.value());
     if (group_to_close && !group_to_close->IsGroupClosing()) {
-      CloseAllTabsInGroup(old_focused_group.value());
+      CloseAllTabsInGroupImpl(old_focused_group.value());
     }
   }
 
