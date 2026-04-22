@@ -1117,10 +1117,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       prefs::kVerticalTabsExpandOnHoverEnabled, true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, false);
   EXPECT_FALSE(region_view()->is_expanded_on_hover());
+  EXPECT_TRUE(IsAnimatingSize());
+  EXPECT_EQ(TabStripAnimations::kCollapseOnHover,
+            BrowserAnimationController::From(browser())->GetCurrentMotion(
+                TabStripAnimations::kVerticalTabStrip));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,

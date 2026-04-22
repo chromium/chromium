@@ -1061,8 +1061,7 @@ void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {
 void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> hovered) {
   // If not collapsed, then we shouldn't be in or entering the expand on hover
   // state.
-  if (!state_controller_->IsCollapsed() ||
-      !state_controller_->IsExpandOnHoverEnabled()) {
+  if (!state_controller_->IsCollapsed()) {
     ResetExpandOnHoverTimers();
     is_expanded_on_hover_ = false;
     return;
@@ -1097,6 +1096,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> ho
   }
 
   const bool should_expand =
+      state_controller_->IsExpandOnHoverEnabled() &&
       (hovered.value_or(IsMouseHovered()) ||
        (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
 
