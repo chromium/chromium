@@ -52,6 +52,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class LogoMediatorUnitTest {
 
+    private static final String TEST_ANIMATED_LOGO_URL = "http://animated-logo.com";
+    private static final String TEST_CLICK_URL = "http://click-url.com";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
@@ -289,6 +292,40 @@ public class LogoMediatorUnitTest {
 
         assertEquals(drawable, logoMediator.getDefaultGoogleLogoDrawable());
         assertTrue(mLogoModel.get(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO));
+    }
+
+    @Test
+    public void testOnLogoClicked_AfterDestroy() {
+        LogoMediator logoMediator = createMediator();
+        logoMediator.destroy();
+
+        logoMediator.onLogoClicked(false);
+
+        verify(mLogoClickedCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testOnLogoClicked_LazyImageFetcher() {
+        LogoMediator logoMediator = createMediator();
+        Assert.assertNull(logoMediator.getImageFetcherForTesting());
+
+        logoMediator.setAnimatedLogoUrlForTesting(TEST_ANIMATED_LOGO_URL);
+
+        logoMediator.onLogoClicked(false);
+
+        Assert.assertNotNull(logoMediator.getImageFetcherForTesting());
+    }
+
+    @Test
+    public void testOnLogoClicked_StaticLogo_OpensUrl() {
+        LogoMediator logoMediator = createMediator();
+        logoMediator.setOnLogoClickUrlForTesting(TEST_CLICK_URL);
+
+        logoMediator.onLogoClicked(false);
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mLogoClickedCallback).onResult(captor.capture());
+        assertEquals(TEST_CLICK_URL, captor.getValue().getUrl());
     }
 
     private LogoMediator createMediator() {

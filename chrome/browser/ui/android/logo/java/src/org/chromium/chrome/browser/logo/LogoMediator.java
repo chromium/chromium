@@ -96,6 +96,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private boolean mShouldShowLogo;
     private boolean mIsDefaultSearchEngineGoogle;
     private boolean mIsLoadPending;
+    private boolean mIsDestroyed;
     private @Nullable String mOnLogoClickUrl;
     private @Nullable String mAnimatedLogoUrl;
     private boolean mShouldRecordLoadTime = true;
@@ -205,8 +206,11 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
     }
 
-    /** Cleans up any code as necessary.*/
+    /** Cleans up any code as necessary. */
     void destroy() {
+        if (mIsDestroyed) return;
+
+        mIsDestroyed = true;
         cleanUp();
 
         if (mProfile != null) {
@@ -251,13 +255,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         // record, don't bother loading the logo image.
         if (mHasLogoLoadedForCurrentSearchEngine || mProfile == null || !mShouldShowLogo) return;
 
-        if (mLogoBridge == null) {
-            mLogoBridge = new LogoBridge(mProfile);
-            mImageFetcher =
-                    ImageFetcherFactory.createImageFetcher(
-                            ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey());
-        }
-
         @Nullable Logo cachedDoodle =
                 DoodleCache.getInstance().getCachedDoodle(mSearchEngineKeyword);
         boolean isCacheHit = cachedDoodle != null;
@@ -280,6 +277,10 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         showSearchProviderInitialView();
+
+        if (mLogoBridge == null) {
+            mLogoBridge = new LogoBridge(mProfile);
+        }
 
         getSearchProviderLogo(
                 new LogoBridge.LogoObserver() {
@@ -360,9 +361,9 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     public void onLogoClicked(boolean isAnimatedLogoShowing) {
-        if (mLogoBridge == null) return;
+        if (mIsDestroyed) return;
 
-        if (!isAnimatedLogoShowing && mAnimatedLogoUrl != null && mImageFetcher != null) {
+        if (!isAnimatedLogoShowing && mAnimatedLogoUrl != null) {
             RecordHistogram.recordSparseHistogram(
                     LOGO_CLICK_UMA_NAME, LogoClickId.CTA_IMAGE_CLICKED);
             mLogoModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
@@ -379,7 +380,14 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     private void fetchAnimatedLogo() {
-        if (mImageFetcher == null || mAnimatedLogoUrl == null) return;
+        if (mAnimatedLogoUrl == null) return;
+
+        if (mImageFetcher == null) {
+            mImageFetcher =
+                    ImageFetcherFactory.createImageFetcher(
+                            ImageFetcherConfig.DISK_CACHE_ONLY,
+                            assumeNonNull(mProfile).getProfileKey());
+        }
 
         mImageFetcher.fetchGif(
                 ImageFetcher.Params.create(
@@ -490,6 +498,10 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
     void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
+    }
+
+    @Nullable ImageFetcher getImageFetcherForTesting() {
+        return mImageFetcher;
     }
 
     void setAnimatedLogoUrlForTesting(String animatedLogoUrl) {
