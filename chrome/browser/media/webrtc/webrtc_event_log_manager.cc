@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -452,7 +453,14 @@ bool WebRtcEventLogManager::IsRemoteLoggingAllowedForBrowserContext(
     // value. However, there is no single default value,
     // because it depends on whether the profile receives cloud-based
     // enterprise policies.
-    return DoesProfileDefaultToLoggingEnabled(profile);
+    // Return true if either Extension or Web API logging defaults to true
+    // to signal that remote logging is enabled for this browser context.
+    // Actual logging requests will always be checked for authorization
+    // separately, based on the specific API and origin.
+    return DoesProfileDefaultToLoggingEnabled(
+               profile, webrtc_logging::ApiType::kExtension) ||
+           DoesProfileDefaultToLoggingEnabled(profile,
+                                              webrtc_logging::ApiType::kWeb);
   }
 
   // There is a non-default value set, so this value is authoritative.

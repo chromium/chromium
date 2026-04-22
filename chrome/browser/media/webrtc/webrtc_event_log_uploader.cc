@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -114,8 +115,10 @@ void OnURLLoadUploadProgress(uint64_t current, uint64_t total) {
 }
 }  // namespace
 
-const char WebRtcEventLogUploaderImpl::kUploadURL[] =
-    "https://clients2.google.com/cr/report";
+bool IsOriginSameSiteWithUploadEndpoint(const url::Origin& origin) {
+  return net::SchemefulSite::IsSameSite(origin,
+                                        url::Origin::Create(GURL(kUploadURL)));
+}
 
 WebRtcEventLogUploaderImpl::Factory::Factory(
     scoped_refptr<base::SequencedTaskRunner> task_runner)

@@ -373,4 +373,16 @@ TEST_F(WebRtcLoggingControllerTest, UploadLog_KWeb_NotAuthorized) {
   EXPECT_FALSE(upload_future.Get<0>());
   EXPECT_EQ(upload_future.Get<2>(), "Not authorized");
 }
+
+TEST_F(WebRtcLoggingControllerTest, StartEventLogging_KWeb_NotAuthorized) {
+  LoadMainTestProfile(true);
+
+  base::test::TestFuture<bool, const std::string&, const std::string&>
+      event_log_future;
+  webrtc_logging_controller_->StartEventLogging(webrtc_logging::ApiType::kWeb,
+                                                "session_id", 1024, 1000, 123,
+                                                event_log_future.GetCallback());
+  EXPECT_FALSE(event_log_future.Get<0>());
+}
+
 }  // namespace webrtc_text_log

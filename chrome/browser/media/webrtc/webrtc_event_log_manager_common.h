@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/common/child_process_id.h"
 #include "ipc/constants.mojom-forward.h"
 
@@ -581,7 +582,8 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
     const base::FilePath& path);
 
 // Used to determine the default value for the policy controlling event logging.
-bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile);
+bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile,
+                                        webrtc_logging::ApiType api_type);
 
 }  // namespace webrtc_event_logging
 

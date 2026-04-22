@@ -14,12 +14,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/media/webrtc/rtc_diagnostic_logging_utils.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
@@ -33,11 +37,13 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -56,10 +62,28 @@ namespace {
 
 const char kTestUploadUrl[] = "https://upload.com/webrtc_upload";
 const char kTestReportId[] = "test_report_id";
+constexpr int kLid = 478;
 
 bool IsValidUuid(const std::string& uuid) {
   return base::Uuid::ParseCaseInsensitive(uuid).is_valid();
 }
+
+class MockWebRtcRemoteEventLogsObserver
+    : public webrtc_event_logging::WebRtcRemoteEventLogsObserver {
+ public:
+  MOCK_METHOD(void,
+              OnRemoteLogStarted,
+              (webrtc_event_logging::WebRtcEventLogPeerConnectionKey,
+               const base::FilePath&,
+               int),
+              (override));
+  MOCK_METHOD(void,
+              OnRemoteLogStopped,
+              (webrtc_event_logging::WebRtcEventLogPeerConnectionKey),
+              (override));
+};
+
+}  // namespace
 
 class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -68,6 +92,40 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
   RTCDiagnosticLoggingTest()
       : test_shared_url_loader_factory_(
             test_url_loader_factory_.GetSafeWeakWrapper()) {}
+
+  void SetRtcEventLogPolicyAndAddPeerConnection(
+      content::RenderFrameHost* rfh,
+      const GURL& url,
+      bool event_log_allowed = true,
+      const std::string& allowed_origin = "",
+      const std::string& session_id = "session_id") {
+    PrefService* prefs =
+        Profile::FromBrowserContext(rfh->GetBrowserContext())->GetPrefs();
+    prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed,
+                      event_log_allowed);
+    base::ListValue allowed_origins;
+    allowed_origins.Append(allowed_origin.empty() ? url.spec()
+                                                  : allowed_origin);
+    prefs->SetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+                   std::move(allowed_origins));
+
+    event_log_manager_->OnPeerConnectionAdded(
+        rfh->GetGlobalId(), kLid, base::GetCurrentProcId(), url.spec(), "");
+    event_log_manager_->OnPeerConnectionSessionIdSet(rfh->GetGlobalId(), kLid,
+                                                     session_id);
+  }
+
+  void SetAuthorizedOrigins(content::RenderFrameHost* rfh,
+                            const std::vector<std::string>& origins) {
+    PrefService* prefs =
+        Profile::FromBrowserContext(rfh->GetBrowserContext())->GetPrefs();
+    base::ListValue allowed_origins;
+    for (const auto& origin : origins) {
+      allowed_origins.Append(origin);
+    }
+    prefs->SetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+                   std::move(allowed_origins));
+  }
 
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -91,6 +149,16 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
     WebRtcLoggingController::AttachToRenderProcessHost(
         main_rfh()->GetProcess());
 
+    event_log_manager_ =
+        webrtc_event_logging::WebRtcEventLogManager::CreateSingletonInstance();
+    event_log_manager_->SetRemoteLogsObserver(&remote_observer_,
+                                              base::DoNothing());
+
+    base::test::TestFuture<void> future;
+    event_log_manager_->EnableForBrowserContext(profile(),
+                                                future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+
     profile()->GetPrefs()->SetBoolean(prefs::kWebRtcTextLogCollectionAllowed,
                                       true);
     base::ListValue allowed_origins;
@@ -113,6 +181,14 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
       uploader->Shutdown();
     }
     TestingBrowserProcess::GetGlobal()->SetWebRtcLogUploader(nullptr);
+
+    if (event_log_manager_) {
+      base::test::TestFuture<void> future;
+      event_log_manager_->ShutDownForTesting(future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+      event_log_manager_.reset();
+    }
+
     ChromeRenderViewHostTestHarness::TearDown();
 #if BUILDFLAG(IS_CHROMEOS)
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
@@ -131,6 +207,10 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
   WebRtcLoggingController* controller() {
     return GetControllerForProcess(main_rfh()->GetProcess());
   }
+
+  std::unique_ptr<webrtc_event_logging::WebRtcEventLogManager>
+      event_log_manager_;
+  testing::NiceMock<MockWebRtcRemoteEventLogsObserver> remote_observer_;
 
   std::tuple<std::string, std::string, std::string> StartAndStopLogging(
       bool upload,
@@ -650,7 +730,7 @@ TEST_F(RTCDiagnosticLoggingTest, AddMessagesUnauthorized) {
   ASSERT_NE(url::Origin::Create(GURL("https://example.com")),
             main_rfh()->GetLastCommittedOrigin());
 
-  // Add a message WHILE UNAUTHORIZED.
+  // Add a message while unauthorized.
   std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages2;
   messages2.push_back(chrome::mojom::WebRtcLoggingMessage::New(
       base::Time::Now(), "unauthorized message"));
@@ -689,5 +769,210 @@ TEST_F(RTCDiagnosticLoggingTest, AddMessagesUnauthorized) {
   base::DeletePathRecursively(log_dir);
 }
 
-}  // namespace
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_SameSiteFilename) {
+  const GURL url("https://example.google.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::FilePath log_file_path;
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&log_file_path));
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(log_file_path.empty());
+  EXPECT_TRUE(base::StartsWith(
+      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe(),
+      "webrtc_event_log_01"));
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_CrossSiteFilename) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::FilePath log_file_path;
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&log_file_path));
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(log_file_path.empty());
+  EXPECT_TRUE(base::StartsWith(
+      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe(),
+      "webrtc_event_log_99"));
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_NoUploadNoEventLogging) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/false, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_PolicyDisabled) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url,
+                                           /*event_log_allowed=*/false);
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/false, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_OriginBlocked) {
+  const GURL url("https://blocked.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url,
+                                           /*event_log_allowed=*/true,
+                                           "https://allowed.com");
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/false, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_NoWebApiSettings) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_OffTheRecord) {
+  TestingProfile* otr_profile = TestingProfile::Builder().BuildOffTheRecord(
+      profile(), Profile::OTRProfileID::PrimaryID());
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  content::RenderFrameHost* otr_rfh = otr_web_contents->GetPrimaryMainFrame();
+
+  const GURL url("https://example.com");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      otr_web_contents.get(), url);
+
+  WebRtcLoggingController::AttachToRenderProcessHost(otr_rfh->GetProcess());
+  SetRtcEventLogPolicyAndAddPeerConnection(otr_rfh, url);
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *otr_rfh, /*should_upload_on_stop=*/false, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *otr_rfh, "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       StartRtcPeerConnectionEventDiagnosticLogging_OriginChanged) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+  SetAuthorizedOrigins(main_rfh(),
+                       {"https://example.com", "https://other-example.com"});
+
+  // Must call StartRtcDiagnosticLogging first to set web_api_settings.
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/false, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  // Navigate to a different origin authorized by policy.
+  NavigateAndCommit(GURL("https://other-example.com"));
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<void> future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
 #endif

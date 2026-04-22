@@ -324,10 +324,7 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
   const int network_error_code = loader->NetError();
   pending_uploads_.erase(it);
   std::string report_id = std::move(response_body).value_or("");
-  // The log path can be empty here if we failed getting it before. We still
-  // upload the log if that's the case.
-  if (!upload_done_data.paths.directory.empty()) {
-    // TODO(jiayl): Add the RTP dump records to chrome://webrtc-logs.
+  if (!upload_done_data.paths.directory.empty() && !report_id.empty()) {
     base::FilePath log_list_path =
         webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(
             upload_done_data.paths.directory);

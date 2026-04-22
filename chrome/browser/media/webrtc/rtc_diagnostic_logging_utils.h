@@ -43,6 +43,12 @@ void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
 void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
                                 base::OnceClosure callback);
 
+// Starts RTC peer connection diagnostic logging.
+void StartRtcPeerConnectionEventDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    const std::string& session_id,
+    base::OnceClosure callback);
+
 }  // namespace rtc_diagnostic_logging
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_RTC_DIAGNOSTIC_LOGGING_UTILS_H_

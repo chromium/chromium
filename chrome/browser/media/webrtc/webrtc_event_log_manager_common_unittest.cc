@@ -717,8 +717,13 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
       std::make_unique<user_manager::ScopedUserManager>(
           std::move(fake_user_manager_));
 
-  EXPECT_EQ(DoesProfileDefaultToLoggingEnabled(testing_profile.get()),
+  EXPECT_EQ(DoesProfileDefaultToLoggingEnabled(
+                testing_profile.get(), webrtc_logging::ApiType::kExtension),
             test_case.defaults_to_logging_enabled);
+
+  EXPECT_EQ(DoesProfileDefaultToLoggingEnabled(testing_profile.get(),
+                                               webrtc_logging::ApiType::kWeb),
+            false);
 }
 
 INSTANTIATE_TEST_SUITE_P(

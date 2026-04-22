@@ -23,6 +23,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -1011,7 +1012,12 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
   return ExtractWebAppId(id_str);
 }
 
-bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
+bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile,
+                                        webrtc_logging::ApiType api_type) {
+  if (api_type == webrtc_logging::ApiType::kWeb) {
+    return false;
+  }
+
 // For Chrome OS, exclude special profiles and users.
 #if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =

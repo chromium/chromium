@@ -19,7 +19,15 @@ namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
+namespace url {
+class Origin;
+}
+
 namespace webrtc_event_logging {
+
+inline constexpr char kUploadURL[] = "https://clients2.google.com/cr/report";
+
+bool IsOriginSameSiteWithUploadEndpoint(const url::Origin& origin);
 
 // A sublcass of this interface will take ownership of a file, and either
 // upload it to a remote server (actual implementation), or pretend to do so
@@ -122,9 +130,6 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
 
   // Remove the log file which is owned by |this|.
   void DeleteHistoryFile();
-
-  // The URL used for uploading the logs.
-  static const char kUploadURL[];
 
   // The object lives on this IO-capable task runner.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

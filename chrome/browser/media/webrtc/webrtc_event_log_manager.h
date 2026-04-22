@@ -25,11 +25,13 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_remote.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/upload_list/upload_list.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/webrtc_event_logger.h"
 
+class RTCDiagnosticLoggingTest;
 class WebRTCInternalsIntegrationBrowserTest;
 
 namespace content {
@@ -206,6 +208,7 @@ class WebRtcEventLogManager final
                            RunTest);
   friend class WebRtcEventLogManagerTestBase;
   friend class ::WebRTCInternalsIntegrationBrowserTest;
+  friend class ::RTCDiagnosticLoggingTest;
 
   using PeerConnectionKey = WebRtcEventLogPeerConnectionKey;
 

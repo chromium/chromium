@@ -533,13 +533,13 @@ WebrtcLoggingPrivateStartEventLoggingFunction::Run() {
     return RespondNow(Error("WebRTC logging controller not found."));
   }
 
-  WebRtcLoggingController::StartEventLoggingCallback callback =
-      base::BindRepeating(
-          &WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback, this);
+  WebRtcLoggingController::StartEventLoggingCallback callback = base::BindOnce(
+      &WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback, this);
 
   webrtc_logging_controller->StartEventLogging(
-      params->session_id, params->max_log_size_bytes, params->output_period_ms,
-      params->web_app_id, callback);
+      webrtc_logging::ApiType::kExtension, params->session_id,
+      params->max_log_size_bytes, params->output_period_ms, params->web_app_id,
+      std::move(callback));
   return RespondLater();
 }
 

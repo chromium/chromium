@@ -17,6 +17,11 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "url/origin.h"
@@ -59,6 +64,40 @@ WebRtcLoggingController* GetControllerAndVerifySettings(
     return nullptr;
   }
   return controller;
+}
+
+bool IsDiagnosticEventLogCollectionAllowed(
+    content::RenderFrameHost& frame_host) {
+  const Profile* profile =
+      Profile::FromBrowserContext(frame_host.GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+  const PrefService* prefs = profile->GetPrefs();
+  if (!prefs->GetBoolean(prefs::kWebRtcEventLogCollectionAllowed)) {
+    return false;
+  }
+  const url::Origin& origin = frame_host.GetLastCommittedOrigin();
+  if (origin.opaque()) {
+    return false;
+  }
+
+  const GURL url = origin.GetURL();
+  for (const base::Value& value :
+       prefs->GetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins)) {
+    if (value.is_string()) {
+      ContentSettingsPattern pattern =
+          ContentSettingsPattern::FromString(value.GetString());
+      if (pattern.IsValid() && pattern.Matches(url)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 #endif
 
@@ -187,6 +226,46 @@ void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
             std::move(callback)));
       },
       base::WrapRefCounted(controller), std::move(callback)));
+#else
+  std::move(callback).Run();
+#endif
+}
+
+void StartRtcPeerConnectionEventDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    const std::string& session_id,
+    base::OnceClosure callback) {
+#if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
+  if (!IsDiagnosticEventLogCollectionAllowed(frame_host)) {
+    std::move(callback).Run();
+    return;
+  }
+  WebRtcLoggingController* controller =
+      GetControllerAndVerifySettings(frame_host);
+  if (!controller) {
+    std::move(callback).Run();
+    return;
+  }
+
+  static constexpr size_t kMaxLogSize = 1024 * 1024 * 4;
+  static constexpr int kOutputPeriodMs = 1000;
+  // Use different app_ids for same site vs cross site.
+  static constexpr int kAppIdSameSite = 1;
+  static constexpr int kAppIdCrossSite = 99;
+  const int web_app_id =
+      webrtc_event_logging::IsOriginSameSiteWithUploadEndpoint(
+          frame_host.GetLastCommittedOrigin())
+          ? kAppIdSameSite
+          : kAppIdCrossSite;
+
+  controller->StartEventLogging(
+      webrtc_logging::ApiType::kWeb, session_id, kMaxLogSize, kOutputPeriodMs,
+      web_app_id,
+      base::BindOnce(
+          [](base::OnceClosure callback, bool success,
+             const std::string& log_id,
+             const std::string& error_message) { std::move(callback).Run(); },
+          std::move(callback)));
 #else
   std::move(callback).Run();
 #endif

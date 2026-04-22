@@ -60,8 +60,7 @@ class WebRtcLoggingController
   // Argument #1: Indicate success/failure.
   // Argument #2: If success, the log's ID. Otherwise, empty.
   // Argument #3: If failure, the error message. Otherwise, empty.
-  typedef base::RepeatingCallback<
-      void(bool, const std::string&, const std::string&)>
+  typedef base::OnceCallback<void(bool, const std::string&, const std::string&)>
       StartEventLoggingCallback;
 
   struct WebApiSettings {
@@ -139,11 +138,12 @@ class WebRtcLoggingController
   // arguments will be set to the log-ID. Otherwise, the second of the string
   // arguments will contain the error message.
   // This function must be called on the UI thread.
-  void StartEventLogging(const std::string& session_id,
+  void StartEventLogging(webrtc_logging::ApiType api_type,
+                         const std::string& session_id,
                          size_t max_log_size_bytes,
                          int output_period_ms,
                          size_t web_app_id,
-                         const StartEventLoggingCallback& callback);
+                         StartEventLoggingCallback callback);
 
   base::RepeatingCallback<void(const std::string&)> GetLogMessageCallback();
 
@@ -218,6 +218,7 @@ class WebRtcLoggingController
   content::BrowserContext* GetBrowserContext() const;
 
   webrtc_logging::ApiType GetApiType() const;
+  bool IsWebApiDiagnosticLoggingStarted() const;
   std::string GetContentName() const;
   bool CanOperationProceedInWebApiMode() const;
 
