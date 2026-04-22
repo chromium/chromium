@@ -110,6 +110,7 @@ source_set("browser_tests") {
     ":live_caption",
     ":test_support",
     "//chrome/browser/accessibility",
+    "//chrome/browser/lifetime",
     "//chrome/test:test_support",
     "//components/live_caption",
     "//components/live_caption:constants",

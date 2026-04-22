@@ -16,3 +16,141 @@ source_set("termination_notification") {
 
   deps = [ "//content/public/browser" ]
 }
+
+source_set("lifetime") {
+  public = [
+    "application_lifetime.h",
+    "browser_shutdown.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  if (is_android) {
+    public += [ "application_lifetime_android.h" ]
+  }
+
+  if (is_chromeos) {
+    public += [ "application_lifetime_chromeos.h" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "application_lifetime_desktop.h",
+      "browser_close_manager.h",
+      "restartability_monitor.h",
+      "smart_restart_metrics_observer.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/upgrade_detector",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    public += [ "switch_utils.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "application_lifetime.cc",
+    "browser_shutdown.cc",
+  ]
+
+  public_deps = [
+    ":lifetime",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":termination_notification",
+    "//build/config/compiler:compiler_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:buildflags",
+    "//components/crash/core/common:crash_key",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/tracing:tracing_config",
+    "//content/public/browser",
+    "//content/public/common",
+    "//printing/buildflags",
+    "//rlz/buildflags",
+  ]
+
+  if (is_android) {
+    sources += [ "application_lifetime_android.cc" ]
+    deps += [ "//chrome/browser/lifetime/android:jni_headers" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "application_lifetime_chromeos.cc" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/profiles",
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/session_manager",
+      "//chromeos/ash/components/dbus/update_engine",
+      "//chromeos/ash/components/login/session",
+      "//chromeos/ash/components/settings",
+      "//chromeos/dbus/power",
+      "//components/user_manager",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "application_lifetime_mac.mm" ]
+    deps += [ "//ui/views" ]
+  }
+
+  if (use_aura) {
+    sources += [ "application_lifetime_aura.cc" ]
+    deps += [
+      "//ui/aura",
+      "//ui/views",
+    ]
+    if (is_chromeos) {
+      deps += [ "//ash" ]
+    }
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/browser/win" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "application_lifetime_desktop.cc",
+      "browser_close_manager.cc",
+      "restartability_monitor.cc",
+      "smart_restart_metrics_observer.cc",
+    ]
+    deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/download",
+      "//chrome/browser/first_run",
+      "//chrome/browser/metrics",
+      "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/notifications",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/keep_alive_registry",
+      "//ui/base/idle",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "switch_utils.cc" ]
+  }
+
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions" ]
+  }
+}

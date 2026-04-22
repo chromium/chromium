@@ -139,6 +139,7 @@ source_set("cocoa") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/headless",
     "//chrome/browser/history",
+    "//chrome/browser/lifetime",
     "//chrome/browser/mac",
     "//chrome/browser/notifications",
     "//chrome/browser/prefs",

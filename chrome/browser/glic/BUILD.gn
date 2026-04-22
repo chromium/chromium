@@ -826,6 +826,7 @@ if (!is_android) {
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/glic/suggestions:test_support",
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/lifetime",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/permissions:test_support",
       "//chrome/browser/ui",

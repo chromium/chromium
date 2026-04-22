@@ -46,6 +46,7 @@ static_library("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/devtools",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/autofill",

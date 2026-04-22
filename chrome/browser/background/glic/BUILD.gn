@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/background",
     "//chrome/browser/glic",
     "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/glic:resources_grit",

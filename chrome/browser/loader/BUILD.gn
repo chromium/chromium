@@ -53,6 +53,7 @@ if (!is_android) {
     deps = [
       ":impl",
       ":loader",
+      "//chrome/browser/lifetime",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

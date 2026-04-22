@@ -917,6 +917,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/infobars",
     "//chrome/browser/invalidation",
+    "//chrome/browser/lifetime",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/net",

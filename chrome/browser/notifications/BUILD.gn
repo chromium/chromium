@@ -199,6 +199,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/lifetime",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/metrics",
     "//chrome/browser/notifications/scheduler:factory",

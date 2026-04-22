@@ -74,6 +74,7 @@ static_library("session") {
     "//chrome/browser/component_updater",
     "//chrome/browser/first_run",
     "//chrome/browser/google",
+    "//chrome/browser/lifetime",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/metrics",

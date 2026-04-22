@@ -92,6 +92,7 @@ if (!is_android) {
     deps = [
       ":background_sync",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/lifetime",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",

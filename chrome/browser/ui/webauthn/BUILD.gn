@@ -157,6 +157,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/lifetime",
       "//chrome/browser/signin",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/webauthn",

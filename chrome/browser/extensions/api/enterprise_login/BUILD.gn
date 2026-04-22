@@ -19,6 +19,7 @@ source_set("enterprise_login") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/lifetime",
     "//chrome/common/extensions/api",
     "//components/prefs",
   ]

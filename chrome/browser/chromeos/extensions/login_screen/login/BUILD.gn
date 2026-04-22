@@ -32,6 +32,7 @@ static_library("login") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/session",

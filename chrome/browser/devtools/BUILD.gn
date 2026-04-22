@@ -112,6 +112,7 @@ static_library("devtools") {
   deps = [
     "//base",
     "//chrome/browser/infobars",
+    "//chrome/browser/lifetime",
     "//chrome/browser/net",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",

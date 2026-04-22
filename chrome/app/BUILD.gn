@@ -133,6 +133,7 @@ static_library("test_support") {
     "//chrome/browser:buildflags",
     "//chrome/browser:shell_integration",
     "//chrome/browser/diagnostics",
+    "//chrome/browser/lifetime",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",

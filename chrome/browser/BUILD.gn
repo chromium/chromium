@@ -271,10 +271,6 @@ static_library("browser") {
     "icon_loader.h",
     "icon_manager.cc",
     "icon_manager.h",
-    "lifetime/application_lifetime.cc",
-    "lifetime/application_lifetime.h",
-    "lifetime/browser_shutdown.cc",
-    "lifetime/browser_shutdown.h",
     "memory_details.cc",
     "memory_details.h",
     "net_benchmarking.cc",
@@ -517,6 +513,10 @@ static_library("browser") {
     # following header get componentized:
     # c/b/safe_browsing/android/safe_browsing_settings_navigation_android.h
     "//chrome/browser/interstitials:impl",
+
+    # lifetime:impl includes headers from //chrome/browser that can't be
+    # split out yet (e.g. browser_process.h, browser_process_platform_part.h).
+    "//chrome/browser/lifetime:impl",
 
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
@@ -919,6 +919,8 @@ static_library("browser") {
     "//chrome/browser/k_anonymity_service:impl",
     "//chrome/browser/language",
     "//chrome/browser/language:impl",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/lifetime:impl",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/local_network_access",
     "//chrome/browser/login_detection",
@@ -2167,8 +2169,6 @@ static_library("browser") {
       "lens/android/lens_policy_utils.cc",
       "lens/android/lens_prefs.cc",
       "lens/android/lens_prefs.h",
-      "lifetime/application_lifetime_android.cc",
-      "lifetime/application_lifetime_android.h",
       "memory_details_android.cc",
       "optimization_guide/android/optimization_guide_bridge.cc",
       "optimization_guide/android/optimization_guide_bridge.h",
@@ -2632,14 +2632,6 @@ static_library("browser") {
       "hid/web_view_chooser_context.cc",
       "intranet_redirect_detector.cc",
       "intranet_redirect_detector.h",
-      "lifetime/application_lifetime_desktop.cc",
-      "lifetime/application_lifetime_desktop.h",
-      "lifetime/browser_close_manager.cc",
-      "lifetime/browser_close_manager.h",
-      "lifetime/restartability_monitor.cc",
-      "lifetime/restartability_monitor.h",
-      "lifetime/smart_restart_metrics_observer.cc",
-      "lifetime/smart_restart_metrics_observer.h",
       "memory/oom_memory_details.cc",
       "preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.cc",
       "preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h",
@@ -3137,8 +3129,6 @@ static_library("browser") {
         "download/bubble/download_display_controller.h",
         "hid/hid_status_icon.cc",
         "hid/hid_status_icon.h",
-        "lifetime/switch_utils.cc",
-        "lifetime/switch_utils.h",
         "platform_util.cc",
         "profiles/avatar_menu.cc",
         "profiles/avatar_menu.h",
@@ -3224,8 +3214,6 @@ static_library("browser") {
       "hid/hid_pinned_notification.cc",
       "hid/hid_pinned_notification.h",
       "icon_loader_chromeos.cc",
-      "lifetime/application_lifetime_chromeos.cc",
-      "lifetime/application_lifetime_chromeos.h",
       "memory/memory_kills_monitor.cc",
       "memory/oom_kills_monitor.cc",
       "platform_util_ash.cc",
@@ -4408,7 +4396,6 @@ static_library("browser") {
       "global_keyboard_shortcuts_mac.h",
       "global_keyboard_shortcuts_mac.mm",
       "icon_loader_mac.mm",
-      "lifetime/application_lifetime_mac.mm",
       "memory_details_mac.cc",
       "platform_util_mac.mm",
       "process_singleton_mac.mm",
@@ -4711,10 +4698,7 @@ static_library("browser") {
 
   if (use_aura) {
     # Cross - platform Aura files.
-    sources += [
-      "lifetime/application_lifetime_aura.cc",
-      "platform_util_aura.cc",
-    ]
+    sources += [ "platform_util_aura.cc" ]
     deps += [
       "//ui/aura",
       "//ui/base/dragdrop:types",

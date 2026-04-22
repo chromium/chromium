@@ -133,6 +133,7 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/browser/actor",
       "//chrome/browser/desktop_to_mobile_promos:utils",
+      "//chrome/browser/lifetime",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/password_manager/password_change",

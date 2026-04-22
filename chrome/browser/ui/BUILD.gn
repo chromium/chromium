@@ -336,6 +336,8 @@ static_library("ui") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/language",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/lifetime:impl",
     "//chrome/browser/login_detection",
     "//chrome/browser/lookalikes",
     "//chrome/browser/media/router:media_router_feature",
@@ -822,6 +824,10 @@ static_library("ui") {
     # TODO(crbug.com/364667551): Remove this circular dependency when
     # c/b/ui/webui/feedback/feedback_dialog.h gets componentized.
     "//chrome/browser/feedback:feedback_impl",
+
+    # lifetime:impl includes headers from //chrome/browser/ui that can't be
+    # split out yet (e.g. browser.h, browser_finder.h, browser_window.h).
+    "//chrome/browser/lifetime:impl",
 
     # notifications:impl includes chrome/browser/ui/browser.h,
     # chrome/browser/ui/chrome_pages.h, chrome/browser/ui/browser_navigator.h

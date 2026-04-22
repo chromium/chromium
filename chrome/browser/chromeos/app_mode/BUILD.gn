@@ -91,6 +91,7 @@ static_library("app_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/extensions:external_loader",
+    "//chrome/browser/lifetime",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications:launch_utils",

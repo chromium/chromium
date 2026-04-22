@@ -150,6 +150,7 @@ source_set("profile_manager_impl") {
     "//chrome/browser:buildflags",
     "//chrome/browser/accessibility",
     "//chrome/browser/browsing_data",
+    "//chrome/browser/lifetime",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles/keep_alive",

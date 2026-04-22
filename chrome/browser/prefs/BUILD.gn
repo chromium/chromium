@@ -75,6 +75,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/gpu",
+    "//chrome/browser/lifetime",
     "//chrome/browser/login_detection",
     "//chrome/browser/media",
     "//chrome/browser/media/prefs",

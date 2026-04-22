@@ -259,6 +259,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/google",
     "//chrome/browser/history",
+    "//chrome/browser/lifetime",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/metrics/structured",
     "//chrome/browser/net",
