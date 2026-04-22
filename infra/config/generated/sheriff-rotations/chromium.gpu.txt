@@ -17,6 +17,7 @@ ci/GPU FYI Mac Builder
 ci/GPU FYI Mac Builder (asan)
 ci/GPU FYI Mac Builder (dbg)
 ci/GPU FYI Mac arm64 Builder
+ci/GPU FYI Mac arm64 Builder (asan)
 ci/GPU FYI Win Builder
 ci/GPU FYI Win arm64 Builder
 ci/GPU FYI Win x64 Builder

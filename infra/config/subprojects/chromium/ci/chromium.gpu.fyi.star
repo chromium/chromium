@@ -1040,7 +1040,7 @@ gpu.ci.mac_builder(
     ),
     targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder",
+        category = "Mac|Builder|x64",
         short_name = "rel",
     ),
 )
@@ -1079,7 +1079,7 @@ gpu.ci.mac_builder(
     # from ARM host.
     cpu = cpu.X86_64,
     console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder",
+        category = "Mac|Builder|x64",
         short_name = "asn",
     ),
 )
@@ -1113,7 +1113,7 @@ gpu.ci.mac_builder(
     ),
     targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder",
+        category = "Mac|Builder|x64",
         short_name = "dbg",
     ),
 )
@@ -1148,8 +1148,48 @@ gpu.ci.mac_builder(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder",
-        short_name = "arm",
+        category = "Mac|Builder|arm64",
+        short_name = "rel",
+    ),
+)
+
+gpu.ci.mac_builder(
+    name = "GPU FYI Mac arm64 Builder (asan)",
+    description_html = "Builds release Mac arm64 binaries with ASan enabled for GPU testing",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "asan",
+            "gpu_fyi_tests",
+            "mac",
+            "release_builder",
+            "remoteexec",
+            "try_builder",
+        ],
+    ),
+    targets = targets.bundle(),
+    # //tools/grit:brotli_mac_asan_workaround doesn't create bundle
+    # `obj/tools/grit/brotli_mac_asan_workaround/` when cross compiling
+    # from x64 host.
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Builder|arm64",
+        short_name = "asn",
     ),
 )
 
