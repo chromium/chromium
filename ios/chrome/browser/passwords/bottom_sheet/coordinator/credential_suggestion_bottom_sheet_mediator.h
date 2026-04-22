@@ -38,7 +38,7 @@ class WebStateList;
 @protocol CredentialSuggestionBottomSheetPresenter;
 @protocol ReauthenticationProtocol;
 
-// This mediator fetches a list suggestions to display in the bottom sheet.
+// This mediator fetches a list of suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
 @interface CredentialSuggestionBottomSheetMediator
@@ -76,10 +76,10 @@ class WebStateList;
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // Refocuses the login field that was blurred to show this bottom sheet, if
-// deemded needed.
+// deemed needed.
 - (void)refocus;
 
-// Set vector of credentials that is used for testing.
+// Sets the vector of credentials that is used for testing.
 - (void)setCredentialsForTesting:
     (std::vector<password_manager::CredentialUIEntry>)credentials;
 

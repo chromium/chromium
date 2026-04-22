@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -403,7 +403,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 #pragma mark - Subclassing
 
-// Perform suggestion selection
+// Performs suggestion selection.
 - (void)selectSuggestion:(FormSuggestion*)suggestion
                  atIndex:(NSInteger)index
               completion:(ProceduralBlock)completion {
@@ -433,7 +433,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 #pragma mark - Private
 
-// Return the active web state, if any.
+// Returns the active web state, if any.
 - (web::WebState*)activeWebState {
   return self.webStateList ? self.webStateList->GetActiveWebState() : nullptr;
 }
@@ -458,11 +458,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
                                currentDismissCount + 1);
     }
   }
-}
-
-// Logs reauthentication events.
-- (void)logReauthEvent:(ReauthenticationEvent)event {
-  base::UmaHistogramEnumeration("IOS.Reauth.Password.BottomSheet", event);
 }
 
 // Fetches all credentials for the current form.
@@ -587,7 +582,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 }
 
 // Refocuses the login fields that was blurred to show this bottom sheet, if
-// deemded needed.
+// deemed needed.
 - (void)refocus {
   if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
     tabHelper->RefocusElementIfNeeded(_params.frame_id);

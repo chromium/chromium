@@ -5971,16 +5971,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Reauth.Password.BottomSheet" enum="ReauthenticationEvent"
-    expires_after="2025-07-13">
-  <owner>sugoi@chromium.org</owner>
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Tracks the results and attempts of reauthentication when using suggestions
-    from the credential bottom sheet.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Reauth.Password.ManualFallback"
     enum="ReauthenticationEvent" expires_after="2022-07-03">
   <owner>sarraf@google.com</owner>
