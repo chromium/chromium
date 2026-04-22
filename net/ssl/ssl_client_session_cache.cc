@@ -223,13 +223,13 @@ void SSLClientSessionCache::OnUpdateMemoryLimit() {
     return;
   }
 
-  size_t target_size = config_.max_entries * memory_limit_ratio();
+  size_t target_size =
+      base::ScaleByMemoryLimit(config_.max_entries, memory_limit());
 
   // IMPORTANT: Ensure no memory is released during this call.
   // By using std::max, we ensure the new limit is at least the current size,
   // preventing growth without triggering immediate eviction.
-  size_t new_limit = std::max(cache_.size(), target_size);
-  cache_.UpdateMaxSize(new_limit);
+  cache_.UpdateMaxSize(std::max(cache_.size(), target_size));
 }
 
 void SSLClientSessionCache::OnReleaseMemory() {
@@ -243,7 +243,8 @@ void SSLClientSessionCache::OnReleaseMemory() {
   }
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     // Now we actually evict entries to reach the target size.
-    cache_.UpdateMaxSize(config_.max_entries * memory_limit_ratio());
+    cache_.UpdateMaxSize(
+        base::ScaleByMemoryLimit(config_.max_entries, memory_limit()));
     return;
   }
 

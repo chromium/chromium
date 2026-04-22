@@ -10,9 +10,11 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 
@@ -59,13 +61,13 @@ class MemoryConsumerRegistry;
 //   void OnUpdateMemoryLimit() override {
 //     // Update the maximum size of the cache, but don't decrease that maximum
 //     // size below its current size to avoid freeing memory.
-//     int new_max_size =
-//         std::max(cache_.size(), kDefaultCacheMaxSize * memory_limit() / 100);
-//     cache_.SetMaxSize(new_max_size);
+//     int target_cache_size = ScaleByMemoryLimit(kDefaultCacheMaxSize,
+//                                                memory_limit());
+//     cache_.SetMaxSize(std::max(cache_.size(), target_cache_size));
 //   }
 //   void OnReleaseMemory() override {
-//     int new_max_size = kDefaultCacheMaxSize * memory_limit() / 100;
-//     cache_.SetMaxSizeAndEvictExtraEntries(new_max_size);
+//     cache_.SetMaxSizeAndEvictExtraEntries(
+//         ScaleByMemoryLimit(kDefaultCacheMaxSize, memory_limit()));
 //   }
 //
 //  private:
@@ -191,6 +193,21 @@ class BASE_EXPORT MemoryConsumerRegistration
 
   raw_ptr<MemoryConsumerRegistry> registry_;
 };
+
+// Scales a baseline value linearly by the provided `memory_limit` (expressed as
+// a percentage, e.g., 100 for 1.0x).
+//
+// The result is truncated towards zero and clamped to the range of the
+// type to prevent overflow.
+template <typename T>
+T ScaleByMemoryLimit(T baseline, int memory_limit) {
+  static_assert(std::is_integral_v<T>, "T must be an integral type.");
+  CHECK_GE(memory_limit, 0);
+  // Calculate the ratio first (memory_limit / 100.0) to avoid potential
+  // overflow during multiplication and then scale the baseline.
+  double ratio = memory_limit / 100.0;
+  return base::saturated_cast<T>(baseline * ratio);
+}
 
 }  // namespace base
 

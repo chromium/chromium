@@ -578,9 +578,9 @@ void MemoryCache::OnUpdateMemoryLimit() {
   // It is important to not do any memory management in this function. The max
   // size is updated to the requested limit without calling
   // PruneStrongReferences().
-  strong_references_max_size_ =
-      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get() *
-      memory_limit_ratio();
+  strong_references_max_size_ = base::ScaleByMemoryLimit(
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get(),
+      memory_limit());
 }
 
 bool MemoryCache::HasStrongReferenceForTesting(Resource* resource) const {

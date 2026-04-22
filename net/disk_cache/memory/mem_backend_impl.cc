@@ -352,9 +352,7 @@ int32_t MemBackendImpl::CalculateTargetMemoryLimit() const {
         std::lerp(min, max, memory_limit_ratio() / 0.5));
   }
 
-  int64_t target_size =
-      (static_cast<int64_t>(max_size_) * memory_limit()) / 100;
-  return base::checked_cast<int32_t>(target_size);
+  return base::ScaleByMemoryLimit(max_size_, memory_limit());
 }
 
 void MemBackendImpl::OnUpdateMemoryLimit() {
