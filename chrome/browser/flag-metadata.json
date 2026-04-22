@@ -3308,6 +3308,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "enable-extensions-menu-teardown-fix",
+    "owners": ["massan@google.com", "evasu@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-external-display-hdr10",
     "owners": [ "sashamcintosh@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 140

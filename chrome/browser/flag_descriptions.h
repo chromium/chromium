@@ -1914,6 +1914,12 @@ inline constexpr char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
+inline constexpr char kEnableExtensionsMenuTeardownFixName[] =
+    "Enable Extensions Menu Teardown Fix";
+inline constexpr char kEnableExtensionsMenuTeardownFixDescription[] =
+    "Enables a fix that defers extensions menu closure when an action is "
+    "triggered from the menu.";
+
 inline constexpr char kEnablePeripheralCustomizationName[] =
     "Enable peripheral customization";
 inline constexpr char kEnablePeripheralCustomizationDescription[] =

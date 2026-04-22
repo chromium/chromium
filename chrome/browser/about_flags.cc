@@ -12958,6 +12958,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kProfileDiscOnAllPages)},
 #endif
 
+    {"enable-extensions-menu-teardown-fix",
+     flag_descriptions::kEnableExtensionsMenuTeardownFixName,
+     flag_descriptions::kEnableExtensionsMenuTeardownFixDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableExtensionsMenuTeardownFix)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"bookmarks-bar-ntp", flag_descriptions::kBookmarksBarNTPName,
      flag_descriptions::kBookmarksBarNTPDescription, kOsAndroid,
