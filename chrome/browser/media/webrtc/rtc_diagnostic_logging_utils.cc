@@ -70,7 +70,6 @@ void StartRtcDiagnosticLogging(
     base::flat_map<std::string, std::string> metadata,
     base::OnceCallback<void(const std::string&)> callback) {
   std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::move(callback).Run(uuid);
 
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   url::Origin origin = frame_host.GetLastCommittedOrigin();
@@ -78,20 +77,24 @@ void StartRtcDiagnosticLogging(
   if (!main_frame_host ||
       !main_frame_host->GetLastCommittedOrigin().IsSameOriginWith(origin) ||
       !main_frame_host->IsInPrimaryMainFrame()) {
+    std::move(callback).Run(uuid);
     return;
   }
   content::BrowserContext* browser_context = frame_host.GetBrowserContext();
   if (!WebRtcLoggingController::IsWebRtcTextLogAllowed(
           browser_context, webrtc_logging::ApiType::kWeb, origin)) {
+    std::move(callback).Run(uuid);
     return;
   }
   content::RenderProcessHost* process_host = frame_host.GetProcess();
   if (!process_host) {
+    std::move(callback).Run(uuid);
     return;
   }
   auto* controller =
       WebRtcLoggingController::FromRenderProcessHost(process_host);
   if (!controller) {
+    std::move(callback).Run(uuid);
     return;
   }
 
@@ -102,18 +105,36 @@ void StartRtcDiagnosticLogging(
   WebRtcLoggingController::WebApiSettings web_api_settings{
       .should_upload_on_stop = should_upload_on_stop, .origin = origin};
 
+  base::OnceClosure closure = base::BindOnce(
+      [](std::string uuid,
+         base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run(uuid);
+      },
+      std::move(uuid), std::move(callback));
+
   controller->StartLogging(
       base::BindOnce(
           [](scoped_refptr<WebRtcLoggingController> controller,
              std::unique_ptr<WebRtcLogMetaDataMap> metadata,
-             const url::Origin origin, bool success,
-             const std::string& error_message) {
+             const url::Origin origin, base::OnceClosure closure, bool success,
+             const std::string&) {
             if (success && VerifySettings(controller.get(), origin)) {
-              controller->SetMetaData(std::move(metadata), base::DoNothing());
+              controller->SetMetaData(
+                  std::move(metadata),
+                  base::BindOnce(
+                      [](base::OnceClosure closure, bool, const std::string&) {
+                        std::move(closure).Run();
+                      },
+                      std::move(closure)));
+            } else {
+              std::move(closure).Run();
             }
           },
-          base::WrapRefCounted(controller), std::move(metadata_map), origin),
+          base::WrapRefCounted(controller), std::move(metadata_map), origin,
+          std::move(closure)),
       web_api_settings);
+#else
+  std::move(callback).Run(uuid);
 #endif
 }
 

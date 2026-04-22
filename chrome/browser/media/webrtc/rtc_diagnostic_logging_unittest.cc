@@ -147,17 +147,17 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
     std::string uuid = future.Get();
     EXPECT_TRUE(IsValidUuid(uuid));
 
-    // Wait for it to transition to STARTED.
-    task_environment()->RunUntilIdle();
-
     // Add a message if logging started.
     auto* controller = GetControllerForProcess(rph);
-    if (controller && controller->web_api_settings().has_value()) {
-      std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages;
-      messages.push_back(chrome::mojom::WebRtcLoggingMessage::New(
-          base::Time::Now(), "test message in StartAndStopLogging"));
-      controller->OnAddMessages(std::move(messages));
+    EXPECT_TRUE(controller);
+    if (!controller) {
+      return {};
     }
+    EXPECT_TRUE(controller->web_api_settings().has_value());
+    std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages;
+    messages.push_back(chrome::mojom::WebRtcLoggingMessage::New(
+        base::Time::Now(), "test message in StartAndStopLogging"));
+    controller->OnAddMessages(std::move(messages));
 
     if (stop_action == StopAction::kFinish) {
       base::test::TestFuture<void> stop_future;
