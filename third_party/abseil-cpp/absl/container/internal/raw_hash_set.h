@@ -374,18 +374,6 @@ struct IsDecomposable<
 
 ABSL_DLL extern ctrl_t kDefaultIterControl;
 
-// We use these sentinel capacity values in debug mode to indicate different
-// classes of bugs.
-enum InvalidCapacity : size_t {
-  kAboveMaxValidCapacity = ~size_t{} - 100,
-  kReentrance,
-  kDestroyed,
-
-  // These two must be last because we use `>= kMovedFrom` to mean moved-from.
-  kMovedFrom,
-  kSelfMovedFrom,
-};
-
 // Returns a pointer to a control byte that can be used by default-constructed
 // iterators. We don't expect this pointer to be dereferenced.
 inline ctrl_t* DefaultIterControl() { return &kDefaultIterControl; }
@@ -432,6 +420,142 @@ struct uninitialized_tag_t {};
 // Sentinel value to indicate creation of an empty table without a seed.
 struct no_seed_empty_tag_t {};
 
+// Returns whether `n` is a valid capacity (i.e., number of slots).
+//
+// A valid capacity is a non-zero integer `2^m - 1`.
+constexpr bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
+
+// Whether a table is small enough that we don't need to hash any keys.
+constexpr bool IsSmallCapacity(size_t capacity) { return capacity <= 1; }
+
+// Converts `n` into the next valid capacity, per `IsValidCapacity`.
+constexpr size_t NormalizeCapacity(size_t n) {
+  return n ? ~size_t{} >> countl_zero(n) : 1;
+}
+
+// Returns the next valid capacity after `n`.
+constexpr size_t NextCapacity(size_t n) {
+  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(n) || n == 0);
+  return n * 2 + 1;
+}
+
+// Returns the previous valid capacity before `n`.
+constexpr size_t PreviousCapacity(size_t n) {
+  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(n));
+  return n / 2;
+}
+
+// General notes on capacity/growth methods below:
+// - We use 7/8th as maximum load factor. For 16-wide groups, that gives an
+//   average of two empty slots per group.
+// - For (capacity+1) >= Group::kWidth, growth is 7/8*capacity.
+// - For (capacity+1) < Group::kWidth, growth == capacity. In this case, we
+//   never need to probe (the whole table fits in one group) so we don't need a
+//   load factor less than 1.
+
+// Given `capacity`, applies the load factor; i.e., it returns the maximum
+// number of values we should put into the table before a resizing rehash.
+constexpr size_t CapacityToGrowth(size_t capacity) {
+  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
+  // `capacity*7/8`
+  if (Group::kWidth == 8 && capacity == 7) {
+    // x-x/8 does not work when x==7.
+    return 6;
+  }
+  return capacity - capacity / 8;
+}
+
+// Given `size`, "unapplies" the load factor to find how large the capacity
+// should be to stay within the load factor.
+//
+// For size == 0, returns 0.
+// For other values, returns the same as `NormalizeCapacity(size*8/7)`.
+constexpr size_t SizeToCapacity(size_t size) {
+  if (size == 0) {
+    return 0;
+  }
+  // The minimum possible capacity is NormalizeCapacity(size).
+  // Shifting right `~size_t{}` by `leading_zeros` yields
+  // NormalizeCapacity(size).
+  int leading_zeros = absl::countl_zero(size);
+  constexpr size_t kLast3Bits = size_t{7} << (sizeof(size_t) * 8 - 3);
+  // max_size_for_next_capacity = max_load_factor * next_capacity
+  //                            = (7/8) * (~size_t{} >> leading_zeros)
+  //                            = (7/8*~size_t{}) >> leading_zeros
+  //                            = kLast3Bits >> leading_zeros
+  size_t max_size_for_next_capacity = kLast3Bits >> leading_zeros;
+  // Decrease shift if size is too big for the minimum capacity.
+  leading_zeros -= static_cast<int>(size > max_size_for_next_capacity);
+  if constexpr (Group::kWidth == 8) {
+    // Formula doesn't work when size==7 for 8-wide groups.
+    leading_zeros -= (size == 7);
+  }
+  return (~size_t{}) >> leading_zeros;
+}
+
+// The number of slots in the backing array. This is always 2^N-1 for an
+// integer N.
+// NOTE: this class exists to simplify experiments with different ways to store
+// capacity within size.
+// NOTE: we tried experimenting with compressing the capacity and storing it
+// together with size_: (a) using 6 bits to store the corresponding power (N in
+// 2^N-1), and (b) storing 2^N as the most significant bit of size_ and storing
+// size in the low bits. Both of these experiments were regressions, presumably
+// because we need capacity to do find operations.
+class HashtableCapacity {
+ public:
+  static constexpr HashtableCapacity CreateDestroyed() {
+    return HashtableCapacity(kDestroyed);
+  }
+  static constexpr HashtableCapacity CreateReentrance() {
+    return HashtableCapacity(kReentrance);
+  }
+  static constexpr HashtableCapacity CreateMovedFrom() {
+    return HashtableCapacity(kMovedFrom);
+  }
+  static constexpr HashtableCapacity CreateSelfMovedFrom() {
+    return HashtableCapacity(kSelfMovedFrom);
+  }
+
+  explicit HashtableCapacity(uninitialized_tag_t) {}
+  explicit constexpr HashtableCapacity(size_t capacity) : capacity_(capacity) {
+    ABSL_SWISSTABLE_ASSERT(capacity == 0 || IsValidCapacity(capacity));
+  }
+
+  constexpr bool IsValid() const { return capacity_ <= kAboveMaxValidCapacity; }
+
+  constexpr bool IsDestroyed() const { return capacity_ == kDestroyed; }
+  constexpr bool IsReentrance() const { return capacity_ == kReentrance; }
+  // Returns true if the table is moved-from including self moved-from.
+  constexpr bool IsMovedFrom() const { return capacity_ >= kMovedFrom; }
+  constexpr bool IsSelfMovedFrom() const { return capacity_ == kSelfMovedFrom; }
+
+  constexpr size_t capacity() const {
+    ABSL_SWISSTABLE_ASSERT(IsValid());
+    return capacity_;
+  }
+
+ private:
+  // We use these sentinel capacity values in debug mode to indicate different
+  // classes of bugs.
+  enum InvalidCapacity : size_t {
+    kAboveMaxValidCapacity = ~size_t{} - 100,
+    kReentrance,
+    kDestroyed,
+
+    // These two must be last because we use `>= kMovedFrom` to mean moved-from.
+    kMovedFrom,
+    kSelfMovedFrom,
+  };
+
+  explicit constexpr HashtableCapacity(InvalidCapacity capacity)
+      : capacity_(capacity) {
+    ABSL_SWISSTABLE_ASSERT(capacity_ > kAboveMaxValidCapacity);
+  }
+
+  size_t capacity_;
+};
+
 // Per table hash salt. This gets mixed into H1 to randomize iteration order
 // per-table.
 // The seed is needed to ensure non-determinism of iteration order.
@@ -449,7 +573,7 @@ class PerTableSeed {
   size_t seed() const { return seed_; }
 
  private:
-  friend class HashtableSize;
+  friend class HashtableInlineData;
   explicit PerTableSeed(uint16_t seed) : seed_(seed) {}
 
   // The most significant bit of the seed is always 1 when there is a non-zero
@@ -457,19 +581,28 @@ class PerTableSeed {
   const uint16_t seed_;
 };
 
-// The size and also has additionally
+// Capacity, size and also has additionally
 // 1) one bit that stores whether we have infoz.
 // 2) PerTableSeed::kBitCount bits for the seed. (For SOO tables, the lowest
 //    bit of the seed is repurposed to track if sampling has been tried).
-class HashtableSize {
+class HashtableInlineData {
  public:
   static constexpr size_t kSizeBitCount = 64 - PerTableSeed::kBitCount - 1;
 
-  explicit HashtableSize(uninitialized_tag_t) {}
-  explicit HashtableSize(no_seed_empty_tag_t) : data_(0) {}
-  HashtableSize(full_soo_tag_t, bool has_tried_sampling)
-      : data_(kSizeOneNoMetadata |
+  explicit HashtableInlineData(uninitialized_tag_t)
+      : capacity_(uninitialized_tag_t{}) {}
+  explicit HashtableInlineData(HashtableCapacity capacity, no_seed_empty_tag_t)
+      : capacity_(capacity), data_(0) {}
+  HashtableInlineData(HashtableCapacity capacity, full_soo_tag_t,
+                      bool has_tried_sampling)
+      : capacity_(capacity),
+        data_(kSizeOneNoMetadata |
               (has_tried_sampling ? kSooHasTriedSamplingMask : 0)) {}
+
+  size_t capacity() const { return capacity_.capacity(); }
+  HashtableCapacity maybe_invalid_capacity() const { return capacity_; }
+  void set_capacity(HashtableCapacity c) { capacity_ = c; }
+  void set_capacity(size_t c) { set_capacity(HashtableCapacity(c)); }
 
   // Returns actual size of the table.
   size_t size() const { return static_cast<size_t>(data_ >> kSizeShift); }
@@ -538,6 +671,8 @@ class HashtableSize {
   // For SOO tables, the seed is unused, and bit 0 is repurposed to track
   // whether the table has already queried should_sample_soo().
   static constexpr uint64_t kSooHasTriedSamplingMask = 1;
+  HashtableCapacity capacity_;
+  // Stores the size and metadata bits. See above for layout.
   uint64_t data_;
 };
 
@@ -782,14 +917,6 @@ class GrowthInfo {
 static_assert(sizeof(GrowthInfo) == sizeof(size_t), "");
 static_assert(alignof(GrowthInfo) == alignof(size_t), "");
 
-// Returns whether `n` is a valid capacity (i.e., number of slots).
-//
-// A valid capacity is a non-zero integer `2^m - 1`.
-constexpr bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
-
-// Whether a table is small enough that we don't need to hash any keys.
-constexpr bool IsSmallCapacity(size_t capacity) { return capacity <= 1; }
-
 // Returns the number of "cloned control bytes".
 //
 // This is the number of control bytes that are present both at the beginning
@@ -928,13 +1055,15 @@ inline GrowthInfo& GetGrowthInfoFromControl(ctrl_t* control) {
 class CommonFields : public CommonFieldsGenerationInfo {
  public:
   explicit CommonFields(soo_tag_t)
-      : capacity_(SooCapacity()), size_(no_seed_empty_tag_t{}) {}
+      : inline_data_(HashtableCapacity(SooCapacity()), no_seed_empty_tag_t{}) {}
   explicit CommonFields(full_soo_tag_t, bool has_tried_sampling)
-      : capacity_(SooCapacity()), size_(full_soo_tag_t{}, has_tried_sampling) {}
+      : inline_data_(HashtableCapacity(SooCapacity()), full_soo_tag_t{},
+                     has_tried_sampling) {}
   explicit CommonFields(non_soo_tag_t)
-      : capacity_(0), size_(no_seed_empty_tag_t{}) {}
+      : inline_data_(HashtableCapacity(0), no_seed_empty_tag_t{}) {}
   // For use in swapping.
-  explicit CommonFields(uninitialized_tag_t) : size_(uninitialized_tag_t{}) {}
+  explicit CommonFields(uninitialized_tag_t)
+      : inline_data_(uninitialized_tag_t{}) {}
 
   // Not copyable
   CommonFields(const CommonFields&) = delete;
@@ -942,10 +1071,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   // Copy with guarantee that it is not SOO.
   CommonFields(non_soo_tag_t, const CommonFields& that)
-      : capacity_(that.capacity_),
-        size_(that.size_),
-        heap_or_soo_(that.heap_or_soo_) {
-  }
+      : inline_data_(that.inline_data_), heap_or_soo_(that.heap_or_soo_) {}
 
   // Movable
   CommonFields(CommonFields&& that) = default;
@@ -983,35 +1109,39 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void set_slots(void* s) { heap_or_soo_.slot_array().set(s); }
 
   // The number of filled slots.
-  size_t size() const { return size_.size(); }
+  size_t size() const { return inline_data_.size(); }
   // Sets the size to zero, but keeps hashinfoz bit and seed.
-  void set_size_to_zero() { size_.set_size_keep_metadata(0); }
+  void set_size_to_zero() { inline_data_.set_size_keep_metadata(0); }
   void set_empty_soo() {
     AssertInSooMode();
-    size_.set_size_keep_metadata(0);
+    inline_data_.set_size_keep_metadata(0);
   }
   void set_full_soo() {
     AssertInSooMode();
-    size_.set_size_keep_metadata(1);
+    inline_data_.set_size_keep_metadata(1);
   }
   void increment_size() {
     ABSL_SWISSTABLE_ASSERT(size() < capacity());
-    size_.increment_size();
+    inline_data_.increment_size();
   }
   void increment_size(size_t n) {
     ABSL_SWISSTABLE_ASSERT(size() + n <= capacity());
-    size_.increment_size(n);
+    inline_data_.increment_size(n);
   }
   void decrement_size() {
     ABSL_SWISSTABLE_ASSERT(!empty());
-    size_.decrement_size();
+    inline_data_.decrement_size();
   }
-  bool empty() const { return size_.empty(); }
-  void set_soo_has_tried_sampling() { size_.set_soo_has_tried_sampling(); }
-  bool soo_has_tried_sampling() const { return size_.soo_has_tried_sampling(); }
+  bool empty() const { return inline_data_.empty(); }
+  void set_soo_has_tried_sampling() {
+    inline_data_.set_soo_has_tried_sampling();
+  }
+  bool soo_has_tried_sampling() const {
+    return inline_data_.soo_has_tried_sampling();
+  }
 
   // The seed used for the hash function.
-  PerTableSeed seed() const { return size_.seed(); }
+  PerTableSeed seed() const { return inline_data_.seed(); }
   // Generates a new seed the hash function.
   // The table will be invalidated if `!empty()` because hash is being changed.
   // In such cases, we will need to rehash the table.
@@ -1019,22 +1149,23 @@ class CommonFields : public CommonFieldsGenerationInfo {
     // Note: we can't use has_infoz() here because we set has_infoz later than
     // we generate the seed.
     if (ABSL_PREDICT_FALSE(has_infoz)) {
-      size_.set_sampled_seed();
+      inline_data_.set_sampled_seed();
       return;
     }
-    size_.generate_new_seed();
+    inline_data_.generate_new_seed();
   }
-  void set_no_seed_for_testing() { size_.set_no_seed_for_testing(); }
+  void set_no_seed_for_testing() { inline_data_.set_no_seed_for_testing(); }
 
   // The total number of available slots.
-  size_t capacity() const { return capacity_; }
-  void set_capacity(size_t c) {
-    // We allow setting above the max valid capacity for debugging purposes.
-    ABSL_SWISSTABLE_ASSERT(c == 0 || IsValidCapacity(c) ||
-                           c > kAboveMaxValidCapacity);
-    capacity_ = c;
+  size_t capacity() const { return inline_data_.capacity(); }
+  HashtableCapacity maybe_invalid_capacity() const {
+    return inline_data_.maybe_invalid_capacity();
   }
-  bool is_small() const { return IsSmallCapacity(capacity_); }
+  void set_capacity(HashtableCapacity c) { inline_data_.set_capacity(c); }
+  void set_capacity(size_t c) {
+    set_capacity(HashtableCapacity(c));
+  }
+  bool is_small() const { return IsSmallCapacity(capacity()); }
 
   // The number of slots we can still fill without needing to rehash.
   // This is stored in the heap allocation before the control bytes.
@@ -1050,10 +1181,10 @@ class CommonFields : public CommonFieldsGenerationInfo {
     return const_cast<CommonFields*>(this)->growth_info();
   }
 
-  bool has_infoz() const { return size_.has_infoz(); }
+  bool has_infoz() const { return inline_data_.has_infoz(); }
   void set_has_infoz() {
-    ABSL_SWISSTABLE_ASSERT(size_.is_sampled_seed());
-    size_.set_has_infoz();
+    ABSL_SWISSTABLE_ASSERT(inline_data_.is_sampled_seed());
+    inline_data_.set_has_infoz();
   }
 
   HashtablezInfoHandle* infoz_ptr() const {
@@ -1101,8 +1232,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void move_non_heap_or_soo_fields(CommonFields& that) {
     static_cast<CommonFieldsGenerationInfo&>(*this) =
         std::move(static_cast<CommonFieldsGenerationInfo&>(that));
-    capacity_ = that.capacity_;
-    size_ = that.size_;
+    inline_data_ = that.inline_data_;
   }
 
   // Returns the number of control bytes set to kDeleted. For testing only.
@@ -1119,8 +1249,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
     f();
     return;
 #endif
-    const size_t cap = capacity();
-    set_capacity(InvalidCapacity::kReentrance);
+    const HashtableCapacity cap = maybe_invalid_capacity();
+    set_capacity(HashtableCapacity::CreateReentrance());
     f();
     set_capacity(cap);
   }
@@ -1139,18 +1269,10 @@ class CommonFields : public CommonFieldsGenerationInfo {
     ABSL_SWISSTABLE_ASSERT(!has_infoz());
   }
 
-  // The number of slots in the backing array. This is always 2^N-1 for an
-  // integer N. NOTE: we tried experimenting with compressing the capacity and
-  // storing it together with size_: (a) using 6 bits to store the corresponding
-  // power (N in 2^N-1), and (b) storing 2^N as the most significant bit of
-  // size_ and storing size in the low bits. Both of these experiments were
-  // regressions, presumably because we need capacity to do find operations.
-  size_t capacity_;
-
   // TODO(b/289225379): we could put size_ into HeapOrSoo and make capacity_
   // encode the size in SOO case. We would be making size()/capacity() more
   // expensive in order to have more SOO space.
-  HashtableSize size_;
+  HashtableInlineData inline_data_;
 
   // Either the control/slots pointers or the SOO slot.
   HeapOrSoo heap_or_soo_;
@@ -1158,18 +1280,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
 template <class Policy, class... Params>
 class raw_hash_set;
-
-// Returns the next valid capacity after `n`.
-constexpr size_t NextCapacity(size_t n) {
-  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(n) || n == 0);
-  return n * 2 + 1;
-}
-
-// Returns the previous valid capacity before `n`.
-constexpr size_t PreviousCapacity(size_t n) {
-  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(n));
-  return n / 2;
-}
 
 // Applies the following mapping to every byte in the control array:
 //   * kDeleted -> kEmpty
@@ -1180,59 +1290,6 @@ constexpr size_t PreviousCapacity(size_t n) {
 //   ctrl[capacity] == ctrl_t::kSentinel
 //   ctrl[i] != ctrl_t::kSentinel for all i < capacity
 void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity);
-
-// Converts `n` into the next valid capacity, per `IsValidCapacity`.
-constexpr size_t NormalizeCapacity(size_t n) {
-  return n ? ~size_t{} >> countl_zero(n) : 1;
-}
-
-// General notes on capacity/growth methods below:
-// - We use 7/8th as maximum load factor. For 16-wide groups, that gives an
-//   average of two empty slots per group.
-// - For (capacity+1) >= Group::kWidth, growth is 7/8*capacity.
-// - For (capacity+1) < Group::kWidth, growth == capacity. In this case, we
-//   never need to probe (the whole table fits in one group) so we don't need a
-//   load factor less than 1.
-
-// Given `capacity`, applies the load factor; i.e., it returns the maximum
-// number of values we should put into the table before a resizing rehash.
-constexpr size_t CapacityToGrowth(size_t capacity) {
-  ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
-  // `capacity*7/8`
-  if (Group::kWidth == 8 && capacity == 7) {
-    // x-x/8 does not work when x==7.
-    return 6;
-  }
-  return capacity - capacity / 8;
-}
-
-// Given `size`, "unapplies" the load factor to find how large the capacity
-// should be to stay within the load factor.
-//
-// For size == 0, returns 0.
-// For other values, returns the same as `NormalizeCapacity(size*8/7)`.
-constexpr size_t SizeToCapacity(size_t size) {
-  if (size == 0) {
-    return 0;
-  }
-  // The minimum possible capacity is NormalizeCapacity(size).
-  // Shifting right `~size_t{}` by `leading_zeros` yields
-  // NormalizeCapacity(size).
-  int leading_zeros = absl::countl_zero(size);
-  constexpr size_t kLast3Bits = size_t{7} << (sizeof(size_t) * 8 - 3);
-  // max_size_for_next_capacity = max_load_factor * next_capacity
-  //                            = (7/8) * (~size_t{} >> leading_zeros)
-  //                            = (7/8*~size_t{}) >> leading_zeros
-  //                            = kLast3Bits >> leading_zeros
-  size_t max_size_for_next_capacity = kLast3Bits >> leading_zeros;
-  // Decrease shift if size is too big for the minimum capacity.
-  leading_zeros -= static_cast<int>(size > max_size_for_next_capacity);
-  if constexpr (Group::kWidth == 8) {
-    // Formula doesn't work when size==7 for 8-wide groups.
-    leading_zeros -= (size == 7);
-  }
-  return (~size_t{}) >> leading_zeros;
-}
 
 template <class InputIter>
 size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
@@ -1598,7 +1655,9 @@ constexpr size_t MaxSizeAtMaxValidCapacity(size_t slot_size) {
 }
 
 constexpr size_t MaxStorableSize() {
-  return static_cast<size_t>(uint64_t{1} << HashtableSize::kSizeBitCount) - 1;
+  return static_cast<size_t>(uint64_t{1}
+                             << HashtableInlineData::kSizeBitCount) -
+         1;
 }
 
 // There are no more than 2^sizeof(key_type) unique key_types (and hashtable
@@ -1613,8 +1672,8 @@ constexpr size_t MaxValidSizeForKeySize(size_t key_size) {
 template <size_t kSizeOfSizeT = sizeof(size_t)>
 constexpr size_t MaxValidSizeForSlotSize(size_t slot_size) {
   if constexpr (kSizeOfSizeT == 8) {
-    // For small slot sizes we are limited by HashtableSize::kSizeBitCount.
-    if (slot_size < size_t{1} << (64 - HashtableSize::kSizeBitCount)) {
+    // For small slot sizes we are limited by HashtableStackData::kSizeBitCount.
+    if (slot_size < size_t{1} << (64 - HashtableInlineData::kSizeBitCount)) {
       return MaxStorableSize();
     }
   }
@@ -1897,7 +1956,10 @@ class raw_hash_set {
     return SooEnabled() && size <= SooCapacity();
   }
   // Whether this table is in SOO mode or non-SOO mode.
-  bool is_soo() const { return fits_in_soo(maybe_invalid_capacity()); }
+  bool is_soo() const {
+    HashtableCapacity cap = maybe_invalid_capacity();
+    return cap.IsValid() && fits_in_soo(cap.capacity());
+  }
   bool is_full_soo() const { return is_soo() && !empty(); }
 
   bool is_small() const { return common().is_small(); }
@@ -2347,7 +2409,7 @@ class raw_hash_set {
   ~raw_hash_set() {
     destructor_impl();
     if constexpr (SwisstableAssertAccessToDestroyedTable()) {
-      common().set_capacity(InvalidCapacity::kDestroyed);
+      common().set_capacity(HashtableCapacity::CreateDestroyed());
     }
   }
 
@@ -2399,7 +2461,7 @@ class raw_hash_set {
 
   ABSL_ATTRIBUTE_REINITIALIZES void clear() {
     if (SwisstableGenerationsEnabled() &&
-        maybe_invalid_capacity() >= InvalidCapacity::kMovedFrom) {
+        maybe_invalid_capacity().IsMovedFrom()) {
       common().set_capacity(DefaultCapacity());
     }
     AssertNotDebugCapacity();
@@ -3044,7 +3106,9 @@ class raw_hash_set {
   // construction when the size can fit in SOO capacity.
   bool should_sample_soo() {
     ABSL_SWISSTABLE_ASSERT(is_soo());
-    if (!ShouldSampleHashtablezInfoForAlloc<CharAlloc>()) return false;
+    if constexpr (!ShouldSampleHashtablezInfoForAlloc<CharAlloc>()) {
+      return false;
+    }
     if (common().soo_has_tried_sampling()) {
       // Already evaluated sampling on this SOO table; do not re-evaluate
       // sampling each time it transitions from empty to full SOO state.
@@ -3070,7 +3134,7 @@ class raw_hash_set {
     };
     if constexpr (SwisstableAssertAccessToDestroyedTable()) {
       CommonFields common_copy(non_soo_tag_t{}, this->common());
-      common().set_capacity(InvalidCapacity::kDestroyed);
+      common().set_capacity(HashtableCapacity::CreateDestroyed());
       IterateOverFullSlots(common_copy, sizeof(slot_type), destroy_slot);
       common().set_capacity(common_copy.capacity());
     } else {
@@ -3091,7 +3155,7 @@ class raw_hash_set {
 
   void destructor_impl() {
     if (SwisstableGenerationsEnabled() &&
-        maybe_invalid_capacity() >= InvalidCapacity::kMovedFrom) {
+        maybe_invalid_capacity().IsMovedFrom()) {
       return;
     }
     if (capacity() == 0) return;
@@ -3186,12 +3250,13 @@ class raw_hash_set {
     // than using NDEBUG) to avoid issues in which NDEBUG is enabled in some
     // translation units but not in others.
     if (SwisstableGenerationsEnabled()) {
-      that.common().set_capacity(this == &that ? InvalidCapacity::kSelfMovedFrom
-                                               : InvalidCapacity::kMovedFrom);
+      that.common().set_capacity(this == &that
+                                     ? HashtableCapacity::CreateSelfMovedFrom()
+                                     : HashtableCapacity::CreateMovedFrom());
     }
     if (!SwisstableGenerationsEnabled() ||
-        maybe_invalid_capacity() == DefaultCapacity() ||
-        maybe_invalid_capacity() > kAboveMaxValidCapacity) {
+        !maybe_invalid_capacity().IsValid() ||
+        capacity() == DefaultCapacity()) {
       return;
     }
     common().increment_generation();
@@ -3360,21 +3425,21 @@ class raw_hash_set {
       return;
     }
 #endif
-    const size_t cap = maybe_invalid_capacity();
-    if (ABSL_PREDICT_TRUE(cap < InvalidCapacity::kAboveMaxValidCapacity)) {
+    const HashtableCapacity cap = maybe_invalid_capacity();
+    if (ABSL_PREDICT_TRUE(cap.IsValid())) {
       return;
     }
-    assert(cap != InvalidCapacity::kReentrance &&
+    assert(!cap.IsReentrance() &&
            "Reentrant container access during element construction/destruction "
            "is not allowed.");
     if constexpr (SwisstableAssertAccessToDestroyedTable()) {
-      if (cap == InvalidCapacity::kDestroyed) {
+      if (cap.IsDestroyed()) {
         ABSL_RAW_LOG(FATAL, "Use of destroyed hash table.");
       }
     }
     if (SwisstableGenerationsEnabled() &&
-        ABSL_PREDICT_FALSE(cap >= InvalidCapacity::kMovedFrom)) {
-      if (cap == InvalidCapacity::kSelfMovedFrom) {
+        ABSL_PREDICT_FALSE(cap.IsMovedFrom())) {
+      if (cap.IsSelfMovedFrom()) {
         // If this log triggers, then a hash table was move-assigned to itself
         // and then used again later without being reinitialized.
         ABSL_RAW_LOG(FATAL, "Use of self-move-assigned hash table.");
@@ -3502,9 +3567,11 @@ class raw_hash_set {
   CommonFields& common() { return settings_.template get<0>(); }
   const CommonFields& common() const { return settings_.template get<0>(); }
 
-  // For use when the capacity is potentially invalid so we shouldn't assume
-  // that the capacity is valid (which is done in `capacity()`).
-  size_t maybe_invalid_capacity() const { return common().capacity(); }
+  // For use when the capacity is potentially invalid we return
+  // HashtableCapacity directly.
+  HashtableCapacity maybe_invalid_capacity() const {
+    return common().maybe_invalid_capacity();
+  }
   ctrl_t* control() const {
     ABSL_SWISSTABLE_ASSERT(!is_soo());
     return common().control();

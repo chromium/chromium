@@ -2602,7 +2602,7 @@ std::vector<int> OrderOfIteration(const T& t) {
 // in seed.
 void GenerateIrrelevantSeeds(int cnt) {
   for (int i = cnt % 17; i > 0; --i) {
-    HashtableSize::NextSeed();
+    HashtableInlineData::NextSeed();
   }
 }
 
@@ -4128,7 +4128,7 @@ TEST(Table, MovedFromCallsFail) {
 TEST(HashtableSize, GenerateNewSeedDoesntChangeSize) {
   size_t size = 1;
   do {
-    HashtableSize hs(no_seed_empty_tag_t{});
+    HashtableInlineData hs(HashtableCapacity(15), no_seed_empty_tag_t{});
     hs.increment_size(size);
     EXPECT_EQ(hs.size(), size);
     hs.generate_new_seed();
@@ -4155,7 +4155,7 @@ TEST(Table, MaxValidSize) {
       } else if (i <= 21) {
         ASSERT_GE(max_size, uint64_t{1} << 40);
       }
-      ASSERT_LE(max_size, uint64_t{1} << HashtableSize::kSizeBitCount);
+      ASSERT_LE(max_size, uint64_t{1} << HashtableInlineData::kSizeBitCount);
       ASSERT_LT(absl::uint128(max_size) * slot_size, uint64_t{1} << 63);
     }
   }

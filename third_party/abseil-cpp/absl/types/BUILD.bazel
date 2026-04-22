@@ -93,6 +93,7 @@ cc_library(
         "//absl/algorithm",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:hardening",
         "//absl/base:nullability",
         "//absl/base:throw_delegate",
         "//absl/hash:weakly_mixed_integer",
@@ -133,6 +134,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:hardening",
         "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
         "//absl/base:throw_delegate",
@@ -258,6 +260,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:hardening",
     ],
 )
 

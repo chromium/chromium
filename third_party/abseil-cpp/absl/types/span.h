@@ -64,6 +64,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
@@ -335,7 +336,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //
   // Returns a reference to the i'th element of this span.
   constexpr reference operator[](size_type i) const noexcept {
-    ABSL_HARDENING_ASSERT(i < size());
+    absl::base_internal::HardeningAssertLT(i, size());
     return ptr_[i];
   }
 
@@ -354,7 +355,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // Returns a reference to the first element of this span. The span must not
   // be empty.
   constexpr reference front() const noexcept {
-    ABSL_HARDENING_ASSERT(size() > 0);
+    absl::base_internal::HardeningAssertGT(size(), static_cast<size_t>(0));
     return *data();
   }
 
@@ -363,7 +364,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // Returns a reference to the last element of this span. The span must not
   // be empty.
   constexpr reference back() const noexcept {
-    ABSL_HARDENING_ASSERT(size() > 0);
+    absl::base_internal::HardeningAssertGT(size(), static_cast<size_t>(0));
     return *(data() + size() - 1);
   }
 
@@ -429,7 +430,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //
   // Removes the first `n` elements from the span.
   void remove_prefix(size_type n) noexcept {
-    ABSL_HARDENING_ASSERT(size() >= n);
+    absl::base_internal::HardeningAssertGE(size(), n);
     ptr_ += n;
     len_ -= n;
   }
@@ -438,7 +439,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //
   // Removes the last `n` elements from the span.
   void remove_suffix(size_type n) noexcept {
-    ABSL_HARDENING_ASSERT(size() >= n);
+    absl::base_internal::HardeningAssertGE(size(), n);
     len_ -= n;
   }
 
@@ -737,7 +738,7 @@ constexpr Span<T> MakeSpan(T* absl_nullable ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
 template <int&... ExplicitArgumentBarrier, typename T>
 Span<T> MakeSpan(T* absl_nullable begin ABSL_ATTRIBUTE_LIFETIME_BOUND,
                  T* absl_nullable end) noexcept {
-  ABSL_HARDENING_ASSERT(begin <= end);
+  absl::base_internal::HardeningAssertLE(begin, end);
   return Span<T>(begin, static_cast<size_t>(end - begin));
 }
 
@@ -798,7 +799,7 @@ template <int&... ExplicitArgumentBarrier, typename T>
 Span<const T> MakeConstSpan(T* absl_nullable begin
                                 ABSL_ATTRIBUTE_LIFETIME_BOUND,
                             T* absl_nullable end) noexcept {
-  ABSL_HARDENING_ASSERT(begin <= end);
+  absl::base_internal::HardeningAssertLE(begin, end);
   return Span<const T>(begin, end - begin);
 }
 

@@ -52,7 +52,7 @@ namespace base_internal {
 // Prefer a more specific assertion function over this more general one,
 // as assertion functions which perform the comparison themselves
 // can have the cost of the comparison attributed to them.
-inline void HardeningAssert(bool cond) {
+constexpr void HardeningAssert(bool cond) {
   ABSL_ASSERT(cond);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(!cond)) {
@@ -66,7 +66,7 @@ inline void HardeningAssert(bool cond) {
 //
 // When `NDEBUG` is not defined, `HardeningAssertSlow`'s behavior is identical
 // to `ABSL_ASSERT`.
-inline void HardeningAssertSlow(bool cond) {
+constexpr void HardeningAssertSlow(bool cond) {
   ABSL_ASSERT(cond);
 #if (ABSL_OPTION_HARDENED == 1) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(!cond)) {
@@ -76,7 +76,7 @@ inline void HardeningAssertSlow(bool cond) {
 }
 
 template <typename T>
-inline void HardeningAssertGT(T val1, T val2) {
+constexpr void HardeningAssertGT(T val1, T val2) {
   ABSL_ASSERT(val1 > val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 > val2)) {
@@ -86,7 +86,7 @@ inline void HardeningAssertGT(T val1, T val2) {
 }
 
 template <typename T>
-inline void HardeningAssertGE(T val1, T val2) {
+constexpr void HardeningAssertGE(T val1, T val2) {
   ABSL_ASSERT(val1 >= val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 >= val2)) {
@@ -96,7 +96,7 @@ inline void HardeningAssertGE(T val1, T val2) {
 }
 
 template <typename T>
-inline void HardeningAssertLT(T val1, T val2) {
+constexpr void HardeningAssertLT(T val1, T val2) {
   ABSL_ASSERT(val1 < val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 < val2)) {
@@ -106,7 +106,7 @@ inline void HardeningAssertLT(T val1, T val2) {
 }
 
 template <typename T>
-inline void HardeningAssertLE(T val1, T val2) {
+constexpr void HardeningAssertLE(T val1, T val2) {
   ABSL_ASSERT(val1 <= val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 <= val2)) {
@@ -115,12 +115,12 @@ inline void HardeningAssertLE(T val1, T val2) {
 #endif
 }
 
-inline void HardeningAssertInBounds(size_t index, size_t size) {
+constexpr void HardeningAssertInBounds(size_t index, size_t size) {
   HardeningAssertLT(index, size);
 }
 
 template <typename T>
-inline void HardeningAssertNonEmpty(const T& container) {
+constexpr void HardeningAssertNonEmpty(const T& container) {
   ABSL_ASSERT(!container.empty());
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(container.empty())) {
@@ -130,7 +130,7 @@ inline void HardeningAssertNonEmpty(const T& container) {
 }
 
 template <typename T>
-inline void HardeningAssertNonNull(T ptr) {
+constexpr void HardeningAssertNonNull(T ptr) {
   ABSL_ASSERT(ptr != nullptr);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(ptr == nullptr)) {
