@@ -21,11 +21,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Collections;
-import java.util.function.Supplier;
 
 /** Unit tests for {@link ActorTaskHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +37,7 @@ public class ActorTaskHelperTest {
     @Mock private ActorTask mActorTask;
 
     private Activity mActivity;
-    private Supplier<Profile> mProfileSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private ActorTaskHelper mActorTaskHelper;
 
     @Before
@@ -44,7 +45,8 @@ public class ActorTaskHelperTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
-        mProfileSupplier = () -> mProfile;
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
+        mProfileSupplier.set(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorService);
 
         mActorTaskHelper = new ActorTaskHelper(mActivity, mProfileSupplier);
