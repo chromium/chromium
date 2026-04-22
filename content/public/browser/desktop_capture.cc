@@ -50,7 +50,7 @@ namespace content::desktop_capture {
 // (e.g., PowerPoint) when the user shares the slideshow window.
 // TODO(crbug.com/409473386): Remove this feature once it has been in stable for
 // at least one milestone.
-BASE_FEATURE(kUseHeuristicForFindingEditor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseHeuristicForFindingEditor, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
