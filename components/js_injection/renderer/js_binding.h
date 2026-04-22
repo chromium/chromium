@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "v8/include/cppgc/persistent.h"
+#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8.h"
 
 namespace v8 {
@@ -39,6 +40,8 @@ class JsCommunication;
 // to the page. JsBinding is owned by v8.
 class JsBinding final : public gin::Wrappable<JsBinding>,
                         public mojom::BrowserToJsMessaging {
+  CPPGC_USING_PRE_FINALIZER(JsBinding, Dispose);
+
  public:
   static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
                                                     gin::kJsBinding};
@@ -75,6 +78,8 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
       mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessaging> receiver);
 
  private:
+  void Dispose();
+
   // gin::WrappableBase implementation.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
