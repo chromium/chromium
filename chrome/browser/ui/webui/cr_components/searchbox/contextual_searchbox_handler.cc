@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -662,30 +663,32 @@ void ContextualSearchboxHandler::OnInputStateChanged(
   page_->OnInputStateChanged(state);
 }
 
-void ContextualSearchboxHandler::InitializeInputStateModel() {
-  // This implicitly also initializes the file upload status observer.
+base::WeakPtr<contextual_search::InputStateModel>
+ContextualSearchboxHandler::GetOrCreateInputStateModel() {
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
-    return;
+    return nullptr;
   }
 
-  auto* service = AimEligibilityServiceFactory::GetForProfile(profile_);
-  const omnibox::SearchboxConfig* config =
-      service ? service->GetSearchboxConfig() : nullptr;
+  auto* user_data =
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          web_contents_);
+  if (!user_data) {
+    contextual_tasks::ContextualTasksWebContentsUserData::CreateForWebContents(
+        web_contents_);
+    user_data =
+        contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+            web_contents_);
+  }
 
-  const signin::IdentityManager* identity_manager =
-      profile_ ? IdentityManagerFactory::GetForProfile(profile_) : nullptr;
-  bool has_primary_account =
-      identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return user_data->GetOrCreateInputStateModel(*session_handle);
+}
 
-  GURL url = web_contents_ ? web_contents_->GetLastCommittedURL() : GURL();
-  bool is_off_the_record = profile_ && profile_->IsOffTheRecord();
-
-  // Create the model with clean arguments
-  input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-      *session_handle, config ? *config : omnibox::SearchboxConfig(), url,
-      is_off_the_record, has_primary_account);
+void ContextualSearchboxHandler::InitializeInputStateModel() {
+  input_state_model_ = GetOrCreateInputStateModel();
+  if (!input_state_model_) {
+    return;
+  }
 
   if (profile_) {
     input_state_model_->SetPrefService(profile_->GetPrefs());
