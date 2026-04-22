@@ -646,4 +646,29 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         // Should exit basic mode because pendingBasicMode_ was false.
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
       });
+
+  test('enters NLM mode if initial URL has NLM param', async () => {
+    loadTimeData.overrideValues({
+      enableCustomNlmUi: true,
+      nlmUrlParam: 'ajid',
+    });
+
+    const nlmFixtureUrl = new URL(fixtureUrl);
+    nlmFixtureUrl.searchParams.set('ajid', '1');
+
+    const proxy = new TestContextualTasksBrowserProxy(nlmFixtureUrl.toString());
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Verify composeboxHeaderWrapper is hidden.
+    const headerWrapper =
+        appElement.shadowRoot.querySelector('#composeboxHeaderWrapper');
+    assertTrue(!!headerWrapper);
+    assertTrue(headerWrapper.hasAttribute('hidden'));
+  });
+
+
 });

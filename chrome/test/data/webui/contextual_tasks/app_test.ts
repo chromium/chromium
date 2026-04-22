@@ -551,7 +551,7 @@ suite('ContextualTasksAppTest', function() {
     const frameRect = appElement.$.threadFrame.getBoundingClientRect();
 
     // Verify styles applied
-    assertEquals('relative', composebox.style.position);
+    assertEquals('fixed', composebox.style.position);
     assertEquals(
         `${window.innerHeight - (frameRect.top + rect.bottom)}px`,
         composebox.style.bottom);
@@ -568,6 +568,91 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.left);
     assertEquals('', composebox.style.width);
     assertEquals('', composebox.style.height);
+  });
+
+  test('composebox bounds update styles in nlm', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const composebox = appElement.$.composebox;
+    assertTrue(!!composebox);
+
+    const rect = {
+      top: 10,
+      left: 20,
+      width: 100,
+      height: 200,
+      right: 120,
+      bottom: 210,
+    };
+
+    // Simulate callback update
+    appElement.setForcedComposeboxBoundsForTesting(rect);
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    const frameRect = appElement.$.threadFrame.getBoundingClientRect();
+
+    // Verify styles applied
+    assertEquals('fixed', composebox.style.position);
+
+    // Verify zero state clears styles
+    appElement.setIsZeroStateForTesting(true);
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    assertEquals('', composebox.style.position);
+
+    // Verify inNlm restores styles even in zero state
+    appElement.setInNlmForTesting(true);
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    // Re-apply forced bounds as they were cleared in zero state.
+    appElement.setForcedComposeboxBoundsForTesting(rect);
+    await appElement.updateComplete;
+
+    assertEquals('fixed', composebox.style.position);
+    assertEquals(
+        `${window.innerHeight - (frameRect.top + rect.bottom)}px`,
+        composebox.style.bottom);
+    assertEquals(`${frameRect.left + rect.left}px`, composebox.style.left);
+    assertEquals(`${rect.width}px`, composebox.style.width);
+    assertEquals('', composebox.style.height);
+  });
+
+  test('composebox hidden in nlm when no forced bounds', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    appElement.setInNlmForTesting(true);
+    await appElement.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(appElement.$.composebox.hidden);
+
+    // Set forced bounds
+    const rect = {
+      top: 10,
+      left: 20,
+      width: 100,
+      height: 200,
+      right: 120,
+      bottom: 210,
+    };
+    appElement.setForcedComposeboxBoundsForTesting(rect);
+    await appElement.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(appElement.$.composebox.hidden);
   });
 
   test('composebox hidden when jump fix conditions met', async () => {

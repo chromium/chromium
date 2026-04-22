@@ -236,6 +236,10 @@ extern bool ShouldForceCountryCodeUS();
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();
 
+// Returns the URL parameter name to check for NLM mode.
+extern std::string GetContextualTasksNlmUrlParam();
+extern bool IsCustomNlmUiEnabled();
+
 // Whether the contextual tasks context quality should be logged.
 extern bool ShouldLogContextualTasksContextQuality();
 

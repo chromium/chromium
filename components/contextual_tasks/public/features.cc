@@ -106,6 +106,9 @@ BASE_FEATURE(kContextualTasksVideoCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksPdfCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables custom UI for NLM.
+BASE_FEATURE(kContextualTasksCustomNlmUi, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUpdateModelOnNavigation);
 }
@@ -291,6 +294,10 @@ const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
     &kContextualTasks,
     "ContextualTasksEnableNativeZeroStateSuggestions",
     true);
+
+// The URL parameter name to check for NLM mode.
+const base::FeatureParam<std::string> kContextualTasksNlmUrlParam{
+    &kContextualTasksCustomNlmUi, "ContextualTasksNlmUrlParam", "ajid"};
 
 const base::FeatureParam<std::string> kContextualTasksDisplayUrlScheme(
     &kContextualTasks,
@@ -494,6 +501,14 @@ bool GetEnableContextualTasksSmartCompose() {
 
 bool GetEnableNativeZeroStateSuggestions() {
   return kContextualTasksEnableNativeZeroStateSuggestions.Get();
+}
+
+std::string GetContextualTasksNlmUrlParam() {
+  return kContextualTasksNlmUrlParam.Get();
+}
+
+bool IsCustomNlmUiEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksCustomNlmUi);
 }
 
 bool ShouldUseSearchResultsScope() {

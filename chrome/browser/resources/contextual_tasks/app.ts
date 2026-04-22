@@ -170,6 +170,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      inNlm_: {
+        type: Boolean,
+        reflect: true,
+      },
       // Whether top level navigation was aborted. One example where this can
       // occur is if a user is offline.
       isLoadError_: {
@@ -233,6 +237,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableBasicMode');
   protected accessor enableBasicModeZOrder_: boolean =
       loadTimeData.getBoolean('enableBasicModeZOrder');
+  private nlmUrlParam_: string = loadTimeData.getString('nlmUrlParam');
+  private enableCustomNlmUi_: boolean =
+      loadTimeData.getBoolean('enableCustomNlmUi');
   // Whether top-level navigation failed. Initialized based on online status
   // though top-level navigation could fail for numerous reasons.
   protected accessor isLoadError_: boolean = !window.navigator.onLine;
@@ -254,6 +261,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('isGhostLoaderVisible') ? false : undefined;
   protected accessor enableNativeZeroStateSuggestions_: boolean =
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
+  protected accessor inNlm_: boolean = false;
   protected accessor isGhostLoaderVisible_: boolean =
       loadTimeData.getBoolean('isGhostLoaderVisible');
   protected accessor useStratusDarkModeColors_: boolean =
@@ -412,6 +420,9 @@ export class ContextualTasksAppElement extends CrLitElement {
           this.forcedComposeboxBounds_ = null;
         }
       }),
+      callbackRouter.setInNlm.addListener((inNlm: boolean) => {
+        this.inNlm_ = inNlm;
+      }),
       callbackRouter.onLensOverlayStateChanged.addListener(
           (isOverlayShowing, isOverlayOpenForAimVisualSearch) => {
             this.isLensOverlayShowing_ = isOverlayShowing;
@@ -553,6 +564,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     const {isZeroState} =
         await this.browserProxy_.handler.isZeroState(threadUrlAsUrl.href);
     this.isZeroState_ = isZeroState;
+
+    this.inNlm_ = this.checkInNlm_(threadUrlAsUrl);
 
     // The thread URL is considered pending (not loaded immediately in the
     // webview) until oauth tokens are received from the WebUI controller. This
@@ -886,6 +899,12 @@ export class ContextualTasksAppElement extends CrLitElement {
       return true;
     }
 
+    // If in NLM mode, only show the composebox if the forcedComposeboxBounds
+    // are set. We expect NLM mode to send us bounds.
+    if (this.inNlm_ && !this.forcedComposeboxBounds_) {
+      return true;
+    }
+
     // If on an AI page and not the zero state, only show the composebox if the
     // forcedcomposeboxBounds are set. No-op if the feature flag is not enabled.
     if (this.enableComposeboxJumpFix_ && this.isAiPage_ && !this.isZeroState_ &&
@@ -897,8 +916,21 @@ export class ContextualTasksAppElement extends CrLitElement {
     return false;
   }
 
+  protected isComposeboxHeaderWrapperHidden_(): boolean {
+    return (this.enableBasicMode_ && this.isInBasicMode_ &&
+            !this.enableBasicModeZOrder_) ||
+        this.inNlm_;
+  }
+
+  private checkInNlm_(url: URL): boolean {
+    if (!this.enableCustomNlmUi_) {
+      return false;
+    }
+    return url.searchParams.has(this.nlmUrlParam_);
+  }
+
   getComposeboxBoundsStyles() {
-    if (this.isZeroState_ || !this.forcedComposeboxBounds_) {
+    if ((this.isZeroState_ && !this.inNlm_) || !this.forcedComposeboxBounds_) {
       return '';
     }
 
@@ -921,7 +953,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     const style: string[] = [
       `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
                                          // container.
-      `position: relative;`,
+      `position: fixed;`,
       `bottom: ${window.innerHeight - relativeRect.bottom}px;`,
       `left: ${relativeRect.left}px;`,
       `width: ${relativeRect.width}px;`,
@@ -956,10 +988,12 @@ export class ContextualTasksAppElement extends CrLitElement {
     const borderRadius =
         roundedClipPathEnabled ? COMPOSEBOX_BORDER_RADIUS_PX : 0;
 
-    return getNonOccludedClipPath(
-               composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
-               frameRect.width, frameRect.height, borderRadius) +
+    const result =
+        getNonOccludedClipPath(
+            composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
+            frameRect.width, frameRect.height, borderRadius) +
         'z-index: 100;';
+    return result;
   }
 
   protected getComposeboxBoundsRelativeToThreadFrame_() {
@@ -1255,6 +1289,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   setIsZeroStateForTesting(isZeroState: boolean|undefined) {
     this.isZeroState_ = isZeroState;
+  }
+
+  setInNlmForTesting(inNlm: boolean) {
+    this.inNlm_ = inNlm;
   }
 
   setForcedComposeboxBoundsForTesting(bounds: Rect|null) {
