@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class FilePath;
@@ -19,7 +18,6 @@ class FilePath;
 class Browser;
 class BrowserWindowInterface;
 class Profile;
-class SessionID;
 
 namespace content {
 class WebContents;
@@ -109,21 +107,6 @@ Browser* FindTabbedBrowser(const Profile* profile,
 // returned. Returns nullptr if no such browser currently exists.
 // WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithProfile(const Profile* profile);
-
-
-
-// Returns an existing browser with the provided ID. Returns nullptr if no such
-// browser currently exists.
-Browser* FindBrowserWithID(SessionID desired_id);
-
-// Returns the browser represented by `window`. Returns nullptr if no such
-// browser currently exists.
-Browser* FindBrowserWithWindow(gfx::NativeWindow window);
-
-// Returns the browser with the currently active window. Returns nullptr if no
-// such browser currently exists.
-// WARNING: Do not use this method. See comment at top of file.
-Browser* FindBrowserWithActiveWindow();
 
 // Returns the browser containing the specified `web_contents` as a tab in that
 // browser. Returns nullptr if no such browser currently exists. `web_contents`

@@ -333,42 +333,6 @@ Browser* FindBrowserWithProfile(const Profile* profile) {
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-Browser* FindBrowserWithID(SessionID desired_id) {
-  Browser* found = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->GetSessionID() == desired_id) {
-          found = browser->GetBrowserForMigrationOnly();
-        }
-        return !found;
-      });
-  return found;
-}
-
-Browser* FindBrowserWithWindow(gfx::NativeWindow window) {
-  if (!window) {
-    return nullptr;
-  }
-  Browser* found = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->GetWindow() &&
-            browser->GetWindow()->GetNativeWindow() == window) {
-          found = browser->GetBrowserForMigrationOnly();
-        }
-        return !found;
-      });
-  return found;
-}
-
-Browser* FindBrowserWithActiveWindow() {
-  BrowserWindowInterface* browser =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  return browser && browser->GetWindow()->IsActive()
-             ? browser->GetBrowserForMigrationOnly()
-             : nullptr;
-}
-
 Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
   Browser* found = nullptr;
