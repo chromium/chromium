@@ -87,6 +87,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self validateFields];
 
   [self loadModel];
+
+  // This is used to dismiss date picker UI when the user taps outside of it.
+  UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(handleTapOutside:)];
+  // This allows the user to both dismiss a date picker and select another field
+  // with a single tap.
+  tapGesture.cancelsTouchesInView = NO;
+  [self.view addGestureRecognizer:tapGesture];
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -116,6 +125,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       dateItem.editingEnabled = self.tableView.editing;
       dateItem.delegate = self;
+      dateItem.textFieldDelegate = self;
     }
   }
 
@@ -275,6 +285,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Actions
+
+- (void)handleTapOutside:(UITapGestureRecognizer*)gesture {
+  if (gesture.state == UIGestureRecognizerStateEnded) {
+    // Whenever a user taps outside of the current field or date picker, stop
+    // editing. This will dismiss the date picker UI used by date items.
+    [self.view endEditing:YES];
+  }
+}
 
 - (void)didTapCancel {
   [self.delegate dismissViewController:self];
@@ -436,6 +454,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableViewItemDidEndEditing:
     (TableViewTextEditItem*)tableViewTextEditItem {
   [self validateFields];
+}
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textField:(UITextField*)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString*)string {
+  // If the input view is a UIDatePicker, block all direct keyboard input.
+  if ([textField.inputView isKindOfClass:[UIDatePicker class]]) {
+    return NO;
+  }
+  return YES;
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
