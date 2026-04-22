@@ -52,12 +52,6 @@ NSString* kDefaultAppsSettingsInstructionsVideo =
 // Chrome is no longer the default browser.
 constexpr base::TimeDelta kLatestURLOpenForDefaultBrowser = base::Days(21);
 
-// Cool down between fullscreen promos.
-constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
-
-// Short cool down between promos.
-constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
-
 // Creates storage object from legacy keys.
 NSMutableDictionary<NSString*, NSObject*>* CreateStorageObjectFromLegacyKeys() {
   NSMutableDictionary<NSString*, NSObject*>* dictionary =
@@ -133,13 +127,6 @@ bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
   return base::Time::Now() - time < delay;
 }
 
-// `YES` if user interacted with the first run default browser screen.
-BOOL HasUserInteractedWithFirstRunPromoBefore() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kUserHasInteractedWithFirstRunPromo);
-  return number.boolValue;
-}
-
 // Returns the number of time the fullscreen default browser promo has been
 // displayed.
 NSInteger GenericPromoInteractionCount() {
@@ -154,19 +141,6 @@ NSInteger TailoredPromoInteractionCount() {
   NSNumber* number =
       GetObjectFromStorageForKey<NSNumber>(kTailoredPromoInteractionCount);
   return number.integerValue;
-}
-
-// Computes cooldown between fullscreen promos.
-base::TimeDelta ComputeCooldown() {
-  // `true` if the user is in the short delay group experiment and tap on the
-  // "No thanks" button in first run default browser screen. Short cool down
-  // should be set only one time, so after the first run promo there is a short
-  // cool down before the next promo and after it goes back to normal.
-  if (DisplayedFullscreenPromoCount() < 2 &&
-      HasUserInteractedWithFirstRunPromoBefore()) {
-    return kPromosShortCoolDown;
-  }
-  return kFullscreenPromoCoolDown;
 }
 
 // Returns number of days since user last interacted with one of the promos.
@@ -417,11 +391,6 @@ bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
   return wasLikelyDefaultBrowser && !isStillLikelyDefaultBrowser;
 }
 
-bool UserInFullscreenPromoCooldown() {
-  return HasRecordedEventForKeyLessThanDelay(
-      kLastTimeUserInteractedWithFullscreenPromo, ComputeCooldown());
-}
-
 // Visible for testing.
 NSString* const kDefaultBrowserUtilsKey = @"DefaultBrowserUtils";
 
@@ -450,21 +419,6 @@ bool IsPostRestoreDefaultBrowserEligibleUser() {
          IsChromeLikelyDefaultBrowser();
 }
 
-DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type) {
-  switch (type) {
-    case DefaultPromoTypeGeneral:
-      return DefaultPromoTypeForUMA::kGeneral;
-    case DefaultPromoTypeMadeForIOS:
-      return DefaultPromoTypeForUMA::kMadeForIOS;
-    case DefaultPromoTypeStaySafe:
-      return DefaultPromoTypeForUMA::kStaySafe;
-    case DefaultPromoTypeAllTabs:
-      return DefaultPromoTypeForUMA::kAllTabs;
-    default:
-      NOTREACHED();
-  }
-}
-
 void LogDefaultBrowserPromoHistogramForAction(
     DefaultPromoType type,
     IOSDefaultBrowserPromoAction action) {
@@ -481,21 +435,6 @@ void LogDefaultBrowserPromoHistogramForAction(
       base::UmaHistogramEnumeration(
           "IOS.DefaultBrowserFullscreenTailoredPromoStaySafe", action);
       break;
-    default:
-      NOTREACHED();
-  }
-}
-
-const std::string IOSDefaultBrowserPromoActionToString(
-    IOSDefaultBrowserPromoAction action) {
-  switch (action) {
-    case IOSDefaultBrowserPromoAction::kActionButton:
-      return "PrimaryAction";
-    case IOSDefaultBrowserPromoAction::kCancel:
-      return "Cancel";
-    case IOSDefaultBrowserPromoAction::kDismiss:
-      return "Dismiss";
-    case IOSDefaultBrowserPromoAction::kRemindMeLater:
     default:
       NOTREACHED();
   }
@@ -547,54 +486,6 @@ void RecordPromoDisplayStatsToUMA() {
 }
 
 // Migration to FET
-
-base::Time GetDefaultBrowserFREPromoTimestampIfLast() {
-  // Get FRE promo timestamp. It is the last seen timestamp if user has seen
-  // only 1 promo. If user has seen more promos, then we assume that FRE
-  // happened far past enough for it not be important.
-  if (HasUserInteractedWithFirstRunPromoBefore() &&
-      DisplayedFullscreenPromoCount() == 1) {
-    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
-        kLastTimeUserInteractedWithFullscreenPromo);
-    if (timestamp != nil) {
-      return base::Time::FromNSDate(timestamp);
-    }
-  }
-
-  return base::Time::UnixEpoch();
-}
-
-base::Time GetGenericDefaultBrowserPromoTimestamp() {
-  // Get the latest promo timestamp if user has seen the generic promo before
-  // even when the generic promo is not the latest promo. This is the best we
-  // can get considering the actual timestamp is overwritten.
-  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
-      kUserHasInteractedWithFullscreenPromo);
-  if (number.boolValue) {
-    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
-        kLastTimeUserInteractedWithFullscreenPromo);
-    if (timestamp != nil) {
-      return base::Time::FromNSDate(timestamp);
-    }
-  }
-
-  return base::Time::UnixEpoch();
-}
-
-base::Time GetTailoredDefaultBrowserPromoTimestamp() {
-  // Get the latest promo timestamp if user has seen the tailored promo before
-  // even when the tailored promo is not the latest promo. This is the best we
-  // can get considering the actual timestamp is overwritten.
-  if (HasUserInteractedWithTailoredFullscreenPromoBefore()) {
-    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
-        kLastTimeUserInteractedWithFullscreenPromo);
-    if (timestamp != nil) {
-      return base::Time::FromNSDate(timestamp);
-    }
-  }
-
-  return base::Time::UnixEpoch();
-}
 
 void LogNonModalPromoMigrationDone() {
   NSDictionary<NSString*, NSObject*>* update =

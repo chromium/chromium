@@ -13,7 +13,6 @@ namespace feature_engagement {
 class Tracker;
 }
 namespace base {
-class Time;
 class TimeDelta;
 }  // namespace base
 @protocol PictureInPictureCommands;
@@ -213,10 +212,6 @@ bool IsChromeLikelyDefaultBrowser7Days();
 bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
                                                int likelyNotDefaultInterval);
 
-// Return YES if the user has seen a full screen promo recently, and shouldn't
-// see another one.
-bool UserInFullscreenPromoCooldown();
-
 // List of all key used to store data in NSUserDefaults. Still used as key
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
@@ -225,21 +220,10 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 // post restore default browser promo.
 bool IsPostRestoreDefaultBrowserEligibleUser();
 
-// Converts Default browser promo type NSEnum to an enum that can be used by
-// UMA.
-DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type);
-
 // Log given default browser promo action to the UMA histogram coorespnding to
 // the given promo type.
 void LogDefaultBrowserPromoHistogramForAction(
     DefaultPromoType type,
-    IOSDefaultBrowserPromoAction action);
-
-// Below collect and compute data to record for an experiment. It is potentially
-// a lot of data but this is planned as a short and small experiment.
-
-// Returns string representation of the enum value.
-const std::string IOSDefaultBrowserPromoActionToString(
     IOSDefaultBrowserPromoAction action);
 
 // Returns the feature associated with a given promo reason.
@@ -265,18 +249,6 @@ const std::string GetFeatureEventNameForPromoReason(
 void RecordPromoDisplayStatsToUMA();
 
 // Migration to FET.
-
-// Returns Default Browser FRE promo timestamp if it was the last default
-// browser promo user seen. Otherwise, returns unix epoch.
-base::Time GetDefaultBrowserFREPromoTimestampIfLast();
-
-// Returns generic Default Browser timestamp if user seen a generic promo
-// before. Otherwise, returns unix epoch.
-base::Time GetGenericDefaultBrowserPromoTimestamp();
-
-// Returns tailored Default Browser timestamp if user seen a tailored promo
-// before. Otherwise, returns unix epoch.
-base::Time GetTailoredDefaultBrowserPromoTimestamp();
 
 // Records the last action the user took when a Default Browser Promo was
 // presented.
