@@ -375,6 +375,39 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
   }
 }
 
+// Tests that the encoder can handle a frame size change that keeps the area the
+// same but increases one of the dimensions (e.g., a rotation). This is a
+// regression test for crbug.com/504587797.
+TEST_P(VideoEncoderTest, EncodesRotatedFrameSize) {
+  if (is_testing_external_video_encoder() ||
+      (GetParam().codec != VideoCodec::kVP8 &&
+       GetParam().codec != VideoCodec::kVP9)) {
+    GTEST_SKIP() << "Skipping test for non-VP8/VP9 or external encoders.";
+  }
+
+  CreateEncoder();
+  SetVEAFactoryAutoRespond(true);
+
+  const gfx::Size size1(128, 72);
+  const gfx::Size size2(72, 128);  // Same area, but larger height.
+
+  auto video_frame1 = CreateTestVideoFrame(size1);
+  EXPECT_TRUE(video_encoder()->EncodeVideoFrame(
+      std::move(video_frame1), NowTicks(),
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {
+        EXPECT_TRUE(encoded_frame);
+      })));
+  RunTasksAndAdvanceClock();
+
+  auto video_frame2 = CreateTestVideoFrame(size2);
+  EXPECT_TRUE(video_encoder()->EncodeVideoFrame(
+      std::move(video_frame2), NowTicks(),
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {
+        EXPECT_TRUE(encoded_frame);
+      })));
+  RunTasksAndAdvanceClock();
+}
+
 // Verify that everything goes well even if ExternalVideoEncoder is destroyed
 // before it has a chance to receive the VEA creation callback.  For all other
 // encoders, this tests that the encoder can be safely destroyed before the task

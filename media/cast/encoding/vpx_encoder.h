@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -45,12 +47,7 @@ class VpxEncoder final : public SoftwareVideoEncoder {
   void GenerateKeyFrame() final;
 
  private:
-  bool is_initialized() const {
-    // ConfigureForNewFrameSize() sets the timebase denominator value to
-    // non-zero if the encoder is successfully initialized, and it is zero
-    // otherwise.
-    return config_.g_timebase.den != 0;
-  }
+  bool is_initialized() const { return last_init_size_.has_value(); }
 
   // If the |encoder_| is live, attempt reconfiguration to allow it to encode
   // frames at a new |frame_size|.  Otherwise, tear it down and re-create a new
@@ -91,6 +88,9 @@ class VpxEncoder final : public SoftwareVideoEncoder {
 
   // The higher the speed, the less CPU usage, and the lower quality.
   int encoding_speed_;
+
+  // The size used for the last initialization of the encoder.
+  std::optional<gfx::Size> last_init_size_;
 };
 
 }  // namespace cast
