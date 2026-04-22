@@ -47,11 +47,6 @@
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_NNAPI)
-#include "third_party/tflite/src/tensorflow/lite/core/c/c_api_types.h"
-#include "third_party/tflite/src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
-#endif
-
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
@@ -392,22 +387,6 @@ class GraphImplTflite::ComputeResources {
                       mojom::Device context_device,
                       bool graph_requires_fp32_precision,
                       int num_of_threads) {
-#if BUILDFLAG(BUILD_TFLITE_WITH_NNAPI)
-    if (context_device == mojom::Device::kNpu) {
-      TfLiteDelegate* delegate = new ::tflite::StatefulNnApiDelegate();
-      builder.AddDelegate(delegate);
-      delegates_.emplace_back(
-          TfLiteDelegatePtr(
-              delegate,
-              [](TfLiteDelegate* delegate) {
-                // Cast `delegate` back to a C++ object type so that the correct
-                // destructor is invoked.
-                delete static_cast<::tflite::StatefulNnApiDelegate*>(delegate);
-              }),
-          mojom::Device::kNpu);
-    }
-#endif
-
     if (context_device == mojom::Device::kGpu) {
 #if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
       // TODO(crbug.com/394119734): Simplify this check once these functions are
