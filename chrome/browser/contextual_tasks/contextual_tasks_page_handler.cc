@@ -190,6 +190,7 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
         prefs::kPinContextualTaskButton,
         base::BindRepeating(&ContextualTasksPageHandler::OnPrefChanged,
                             base::Unretained(this)));
+    OnPrefChanged();
   }
 }
 
@@ -284,6 +285,9 @@ void ContextualTasksPageHandler::ShowThreadHistory() {
 }
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
+  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
+    OnPrefChanged();
+  }
   std::move(callback).Run(web_ui_controller_->IsShownInTab());
 }
 
