@@ -15,7 +15,6 @@ import android.util.Rational;
 import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.pip.BasicPictureInPicture;
@@ -55,9 +54,9 @@ public class ActorPictureInPictureController
     private static final long PIP_EXIT_DELAY_MS = TimeUnit.MINUTES.toMillis(1);
 
     private final ComponentActivity mActivity;
-    private final Supplier<Profile> mProfileSupplier;
-    private final Supplier<ViewGroup> mRootViewSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
+    private final Supplier<@Nullable ViewGroup> mRootViewSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Runnable mHideTabSwitcherCallback;
     private final Callback<Boolean> mToggleGlicCallback;
     private final BasicPictureInPicture mPipDelegate;
@@ -79,9 +78,9 @@ public class ActorPictureInPictureController
      */
     public ActorPictureInPictureController(
             ComponentActivity activity,
-            Supplier<Profile> profileSupplier,
-            Supplier<ViewGroup> rootViewSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
+            Supplier<@Nullable ViewGroup> rootViewSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Runnable hideTabSwitcherCallback,
             Callback<Boolean> toggleGlicCallback) {
         mActivity = activity;
@@ -291,7 +290,7 @@ public class ActorPictureInPictureController
     /** Handles when the Activity enters/exits PiP. */
     @Override
     public void onPictureInPictureEvent(
-            @NonNull PictureInPictureDelegate.Event event, @Nullable Configuration newConfig) {
+            PictureInPictureDelegate.Event event, @Nullable Configuration newConfig) {
         if (event == PictureInPictureDelegate.Event.ENTERED) {
             mInActorPiP = true;
             ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.ENTERED);

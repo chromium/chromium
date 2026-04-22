@@ -85,8 +85,8 @@ public class TabModalLifetimeHandler
     private final Supplier<ComposedBrowserControlsVisibilityDelegate>
             mAppVisibilityDelegateSupplier;
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
-    private final Supplier<ToolbarManager> mToolbarManagerSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<BrowserControlsVisibilityManager>
             mBrowserControlsVisibilityManagerSupplier;
     private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
@@ -128,9 +128,9 @@ public class TabModalLifetimeHandler
             ModalDialogManager manager,
             Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegateSupplier,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
-            Supplier<ToolbarManager> toolbarManagerSupplier,
+            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier,
             Runnable hideContextualSearch,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,
             Supplier<FullscreenManager> fullscreenManagerSupplier,
             BackPressManager backPressManager,

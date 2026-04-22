@@ -12,6 +12,7 @@ import androidx.annotation.Px;
 
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
@@ -25,15 +26,16 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
-    private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private final Supplier<@Nullable ManualFillingComponent> mManualFillingComponentSupplier;
 
     /**
      * Creates a new visibility delegate.
+     *
      * @param activity A {@link WeakReference} to an {@link Activity}.
      */
     public ChromeKeyboardVisibilityDelegate(
             WeakReference<Activity> activity,
-            Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+            Supplier<@Nullable ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
     }
@@ -51,7 +53,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
 
     @Override
     public boolean isKeyboardShowing(View view) {
-        ManualFillingComponent manualFillingComponent = mManualFillingComponentSupplier.get();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
         return isSoftKeyboardShowing(view)
                 || (manualFillingComponent != null
                         && manualFillingComponent.isFillingViewShown(view));

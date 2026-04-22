@@ -98,26 +98,30 @@ used:
 - **Good Fix**: Alter the receiver class to accept `Supplier<@Nullable T>`.
   - Then, handle the nullability inside the receiver class using the rules above
     (`assumeNonNull` or `assert`).
-- **Lazy Suppliers and Assertions**: When a getter is passed as a Supplier to be
-  used later, and the value might be null at construction time but expected to
-  be non-null when used:
-  - Avoid asserting in the getter itself if that getter is called during
-    construction to create the supplier.
-  - Instead, make the getter return `@Nullable`.
-  - In the caller, if the receiver expects a non-null supplier, add the
-    assertion *inside* the supplier lambda (e.g.,
-    `() -> { var x = getter(); assert x != null; return x; }`). This defers the
-    assertion until the supplier is resolved.
+- **Lazy Suppliers and Assertions**: When passing a `Supplier` which might, at
+  the time of passing, be supplying null (e.g., it is resolved later), do NOT
+  introduce a new lambda just to wrap the call with an assertion (like
+  `() -> { var x = getter(); assert x != null; return x; }`). Instead, change
+  the receiver's parameter type to `Supplier<@Nullable T>` since it is actually
+  supplying a nullable value at construction time. Handle the nullity inside the
+  receiver class when the supplier is eventually invoked.
 - **Supplier Argument Types**: Consider changing Supplier arguments to
   `Supplier<@Nullable T>` or `MonotonicObservableSupplier<T>` in method
   signatures to avoid forcing non-nullability on callers.
 
 ### 5. Annotations Placement
 
+- **Correct Imports**: ALWAYS use `org.chromium.build.annotations.Nullable` and
+  `org.chromium.build.annotations.NullMarked`. Do NOT use `androidx.annotation`
+  or `javax.annotation` variations.
 - **`@NullMarked`**: Apply to the class level when you are ready to make the
   whole class null-safe.
 - **`@Nullable`**: Apply to fields, parameters, and return types that can be
   null.
+- **`@NonNull` Default**: Values are `@NonNull` by default in a `@NullMarked`
+  class. Do NOT use `@NonNull` explicitly on fields, parameters, or return
+  types. Use `@NonNull` only in the context of nullable generic parameters if
+  absolutely necessary.
 - **`@SuppressWarnings("NullAway")`**:
   - Use as a last resort.
   - **Do NOT add to constructors**. Fix the warnings in the constructor instead.

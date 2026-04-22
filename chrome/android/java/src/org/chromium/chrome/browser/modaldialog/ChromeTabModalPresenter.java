@@ -54,7 +54,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     private final Activity mActivity;
 
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
-    private final Supplier<ToolbarManager> mToolbarManagerSupplier;
+    private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
     private final Runnable mHideContextualSearch;
     private final FullscreenManager mFullscreenManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -113,7 +113,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     public ChromeTabModalPresenter(
             Activity activity,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
-            Supplier<ToolbarManager> toolbarManagerSupplier,
+            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier,
             Runnable hideContextualSearch,
             FullscreenManager fullscreenManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -233,7 +233,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         var toolbarManager = mToolbarManagerSupplier.get();
         if (toolbarManager == null) return;
 
-        View menuButton = mToolbarManagerSupplier.get().getMenuButtonView();
+        View menuButton = toolbarManager.getMenuButtonView();
 
         if (restricted) {
             mActiveTab = mTabModelSelector.getCurrentTab();
@@ -253,7 +253,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             // Force toolbar to show and disable overflow menu.
             onTabModalDialogStateChanged(true);
 
-            mToolbarManagerSupplier.get().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+            toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
 
             if (menuButton != null) menuButton.setEnabled(false);
         } else {

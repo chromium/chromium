@@ -42,7 +42,6 @@ import android.widget.FrameLayout;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -69,6 +68,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -533,7 +533,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @VisibleForTesting
-    public static void createWindowErrorSnackbar(String error, SnackbarManager snackbarManager) {
+    public static void createWindowErrorSnackbar(
+            String error, @Nullable SnackbarManager snackbarManager) {
         if (snackbarManager != null) {
             Snackbar snackbar =
                     Snackbar.make(
@@ -608,11 +609,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // TODO(crbug.com/40160784): Transition this::method refs to dedicated suppliers.
         if (supportsTabModalDialogs()) {
+            var modalDialogManager = getModalDialogManager();
+            assert modalDialogManager != null;
             mTabModalLifetimeHandler =
                     new TabModalLifetimeHandler(
                             this,
                             getLifecycleDispatcher(),
-                            getModalDialogManager(),
+                            modalDialogManager,
                             () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
                             this::getTabObscuringHandler,
                             this::getToolbarManager,
@@ -627,7 +630,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     private void setupUnownedUserDataSuppliers() {
-        UnownedUserDataHost host = getWindowAndroid().getUnownedUserDataHost();
+        var windowAndroid = getWindowAndroid();
+        assumeNonNull(windowAndroid);
+        UnownedUserDataHost host = windowAndroid.getUnownedUserDataHost();
         ShareDelegateSupplier.attach(host, mShareDelegateSupplier);
         TabModelSelectorSupplier.attach(host, mTabModelSelectorSupplier);
         EphemeralTabCoordinatorSupplier.attach(host, mEphemeralTabCoordinatorSupplier);
@@ -674,20 +679,24 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             getEdgeToEdgeSupplier(),
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
                             mRootUiCoordinator::getBottomSheetControlsLayer);
+            var windowAndroid = getWindowAndroid();
+            assert windowAndroid != null;
+            var modalDialogManager = getModalDialogManager();
+            assert modalDialogManager != null;
             SnackbarManager snackbarManager =
                     new SnackbarManager(
                             this,
                             mBottomContainer,
-                            getWindowAndroid(),
+                            windowAndroid,
                             mChromeActivitySnackbarHelper.getBottomMarginSupplier(),
-                            getModalDialogManager());
+                            modalDialogManager);
             mSnackbarManagerSupplier.set(snackbarManager);
             mChromeActivitySnackbarHelper.setSnackbarManager(snackbarManager);
             getInsetObserver().addObserver(snackbarManager);
-            SnackbarManagerProvider.attach(getWindowAndroid(), snackbarManager);
+            SnackbarManagerProvider.attach(windowAndroid, snackbarManager);
             // TODO (crbug.com/365110749): Remove wiring the InsetObserver when the dialog window
             // returns expected system insets.
-            getModalDialogManager().setInsetObserver(getInsetObserver());
+            modalDialogManager.setInsetObserver(getInsetObserver());
 
             // Make the activity listen to policy change events
             CombinedPolicyProvider.get().addPolicyChangeListener(this);
@@ -697,8 +706,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // SurfaceView's 'hole' clipping during animations that are notified to the window.
             CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
             assumeNonNull(compositorViewHolder);
-            getWindowAndroid()
-                    .setAnimationPlaceholderView(compositorViewHolder.getCompositorView());
+            windowAndroid.setAnimationPlaceholderView(compositorViewHolder.getCompositorView());
 
             initializeTabModels();
             if (isFinishing()) return;
@@ -1047,8 +1055,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         getTabContentManager().initWithNative();
         Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
         PrefService prefs = UserPrefs.get(originalProfile);
+        var windowAndroid = getWindowAndroid();
+        assert windowAndroid != null;
         assumeNonNull(mCompositorViewHolderSupplier.get())
-                .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
+                .onNativeLibraryReady(windowAndroid, getTabContentManager(), prefs);
         mRootUiCoordinator.createContextualSearchManager(originalProfile);
         TraceEvent.end("ChromeActivity:CompositorInitialization");
     }
@@ -2139,7 +2149,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         AsyncTabParamsManagerSingleton.getInstance()));
 
         // This must be initialized after initialization of tab reparenting controller.
-        DisplayAndroid display = getWindowAndroid().getDisplay();
+        var windowAndroid = getWindowAndroid();
+        assumeNonNull(windowAndroid);
+        DisplayAndroid display = windowAndroid.getDisplay();
         mDisplayAndroidObserver =
                 new DisplayAndroidObserver() {
                     @Override
@@ -2182,14 +2194,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private void initializeManualFillingComponent(ProfileProvider profileProvider) {
         if (isDestroyed()) return;
+        var windowAndroid = getWindowAndroid();
+        assert windowAndroid != null;
         mManualFillingComponentSupplier
                 .get()
                 .initialize(
-                        getWindowAndroid(),
+                        windowAndroid,
                         profileProvider.getOriginalProfile(),
                         mRootUiCoordinator.getBottomSheetController(),
                         mRootUiCoordinator::isContextualSearchOpened,
-                        (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
+                        (ChromeKeyboardVisibilityDelegate) windowAndroid.getKeyboardDelegate(),
                         mBackPressManager,
                         mEdgeToEdgeControllerSupplier,
                         getInsetObserver(),
@@ -2447,7 +2461,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // TODO(crbug.com/40743190): The responsibility of managing the availability of the
         // LayoutManager
         //                should be moved to the RootUiCoordinator.
-        LayoutManagerAppUtils.attach(getWindowAndroid(), layoutManager);
+        var windowAndroid = getWindowAndroid();
+        assert windowAndroid != null;
+        LayoutManagerAppUtils.attach(windowAndroid, layoutManager);
         mLayoutManagerSupplier.set(layoutManager);
 
         layoutManager.addSceneChangeObserver(this);
@@ -2460,7 +2476,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         compositorViewHolder.setUrlBar(urlBar);
 
         ApplicationViewportInsetTracker insetSupplier =
-                getWindowAndroid().getApplicationBottomInsetTracker();
+                windowAndroid.getApplicationBottomInsetTracker();
         insetSupplier.setKeyboardInsetSupplier(getInsetObserver().getSupplierForKeyboardInset());
         insetSupplier.setKeyboardAccessoryInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
@@ -2917,8 +2933,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.universal_install) {
             RecordUserAction.record("UniversalInstallFromMenu");
+            var windowAndroid = getWindowAndroid();
+            assert windowAndroid != null;
+            var modalDialogManager = getModalDialogManager();
+            assert modalDialogManager != null;
             return AppInstallMenuHandler.doUniversalInstall(
-                    this, getWindowAndroid(), getModalDialogManager(), currentTab);
+                    this, windowAndroid, modalDialogManager, currentTab);
         }
 
         if (id == R.id.open_webapk_id) {
@@ -3104,7 +3124,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
+    public boolean onActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent intent) {
         if (super.onActivityResultWithNative(requestCode, resultCode, intent)) return true;
         return false;
     }
@@ -3158,7 +3179,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mRootUiCoordinator;
     }
 
-    public ContextualSearchManager getContextualSearchManagerForTesting() {
+    public @Nullable ContextualSearchManager getContextualSearchManagerForTesting() {
         return mRootUiCoordinator.getContextualSearchManagerSupplier().get();
     }
 
@@ -3254,8 +3275,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /** Returns whether the print action was successfully started. */
     private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
-        PrintingController printingController =
-                PrintingControllerImpl.getInstance(getWindowAndroid());
+        var windowAndroid = getWindowAndroid();
+        assert windowAndroid != null;
+        PrintingController printingController = PrintingControllerImpl.getInstance(windowAndroid);
 
         Tab currentTab = currentTabSupplier.get();
         if (currentTab == null) return false;
@@ -3405,7 +3427,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
-    public TabStateThemeResourceProvider getThemeResourceProviderForTesting() {
+    public @Nullable TabStateThemeResourceProvider getThemeResourceProviderForTesting() {
         return mThemeResourceProvider;
     }
 

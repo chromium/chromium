@@ -33,14 +33,14 @@ public class ChromeWindow extends ActivityWindowAndroid {
     public interface KeyboardVisibilityDelegateFactory {
         ChromeKeyboardVisibilityDelegate create(
                 WeakReference<Activity> activity,
-                Supplier<ManualFillingComponent> manualFillingComponentSupplier);
+                Supplier<@Nullable ManualFillingComponent> manualFillingComponentSupplier);
     }
 
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
 
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     /**
      * Creates Chrome specific ActivityWindowAndroid.
@@ -55,8 +55,8 @@ public class ChromeWindow extends ActivityWindowAndroid {
     public ChromeWindow(
             Activity activity,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<ManualFillingComponent> manualFillingComponentSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ManualFillingComponent> manualFillingComponentSupplier,
             IntentRequestTracker intentRequestTracker,
             InsetObserver insetObserver) {
         super(
@@ -90,7 +90,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
     }
 
     @Override
-    public ModalDialogManager getModalDialogManager() {
+    public @Nullable ModalDialogManager getModalDialogManager() {
         return mModalDialogManagerSupplier.get();
     }
 
