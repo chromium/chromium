@@ -298,6 +298,43 @@ public class ExtensionsToolbarTest {
                 "Popup should have closed");
     }
 
+    @Test
+    @LargeTest
+    public void testUninstallPoppedOutExtension() throws IOException {
+        String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
+
+        // Open the extensions menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            // Click on the extension item.
+            ViewUtils.onViewWaiting(withText("Extension")).perform(click());
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Ensure the popup has opened.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
+
+        // Uninstall the extension.
+        uninstallTestExtension(extensionId);
+
+        // The extension should disappear from the toolbar.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
+
+        // The popup should be gone.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 0,
+                "Popup should have closed");
+    }
+
     private String loadBasicExtension(String dirName, String name, String actionTitle)
             throws IOException {
         File dir = mTempDir.newFolder(dirName);
