@@ -65,6 +65,17 @@ suite('CrUrlListItemTest', () => {
     assertEquals('99+', count.textContent);
   });
 
+  test('DescriptionWithBdi', async () => {
+    element.description = '1.google.com';
+    await element.updateComplete;
+    const descriptionText =
+        element.shadowRoot.querySelector('.description-text')!;
+    assertTrue(!!descriptionText);
+    const bdi = descriptionText.querySelector('bdi');
+    assertTrue(!!bdi);
+    assertEquals('1.google.com', bdi.textContent);
+  });
+
   test('SetsActiveClass', () => {
     assertFalse(element.classList.contains('active'));
     element.dispatchEvent(new PointerEvent('pointerdown'));

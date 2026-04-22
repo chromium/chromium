@@ -56,7 +56,7 @@ export function getHtml(this: CrUrlListItemElement) {
     <span class="title">${this.title}</span>
     <div class="descriptions">
       <div class="description" ?hidden="${!this.description}">
-        <span class="description-text">${this.description}</span>
+        <span class="description-text"><bdi>${this.description}</bdi></span>
         <span class="description-meta" ?hidden="${!this.descriptionMeta}">
           &middot; ${this.descriptionMeta}
         </span>
