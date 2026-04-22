@@ -208,7 +208,21 @@ void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   if (info.account_id == account_id_ && !info.account_image.IsEmpty()) {
     UpdateProfileInfo(profile_path_);
-    observed_account_.Reset();
+  }
+}
+void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
+  // If the account has been removed, we should cancel the process.
+  if (info.account_id == account_id_ && !canceling_) {
+    HandleCancel(base::ListValue());
+  }
+}
+
+void ManagedUserProfileNoticeHandler::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  // If the identity manager has been shutdown, we should cancel the process.
+  if (!canceling_) {
+    HandleCancel(base::ListValue());
   }
 }
 
@@ -220,6 +234,9 @@ void ManagedUserProfileNoticeHandler::OnJavascriptAllowed() {
   } else {
     observed_account_.Observe(
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui())));
+  }
+  if (javascript_allowed_callback_) {
+    std::move(javascript_allowed_callback_).Run();
   }
 }
 
@@ -379,6 +396,19 @@ void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
   DCHECK(IsJavascriptAllowed());
   if (profile_path != profile_path_) {
+    return;
+  }
+
+  // If the user has canceled the process, we should not update the profile info.
+  if (canceling_) {
+    return;
+  }
+
+  // If the account has been removed, we should not update the profile info.
+  if (auto account_info =
+          IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+              ->FindExtendedAccountInfoByAccountId(account_id_);
+      account_info.IsEmpty()) {
     return;
   }
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());

@@ -235,6 +235,8 @@ class SigninViewController {
       CreateLocalProfileWithoutSigninStep);
   FRIEND_TEST_ALL_PREFIXES(SyncSettingsInteractiveTest,
                            PressingSignOutButtonsSignsOutUser);
+  FRIEND_TEST_ALL_PREFIXES(ProfileManagementDisclaimerServiceBrowserTest,
+                           CancelFlowOnAccountRemoval);
   friend class ChromeSignoutConfirmationPromptPixelTest;
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;

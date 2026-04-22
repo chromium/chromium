@@ -35,6 +35,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -87,7 +88,7 @@ class ManagedUserProfileNoticeHandlerTestBase
     message_handler_.reset();
 
     message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
-        /*browser=*/nullptr, screen_type, std::move(dialog_params));
+        browser(), screen_type, std::move(dialog_params));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -655,3 +656,90 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          "accept-current-profile",
                                          "cancel"));
 #endif
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase, OnExtendedAccountInfoRemoved) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+
+  handler()->OnExtendedAccountInfoRemoved(account_info());
+  DeleteHandler();
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase,
+       OnOtherExtendedAccountInfoRemoved) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+
+  EXPECT_CALL(mock_process_user_choice_callback, Run(_)).Times(0);
+  EXPECT_CALL(mock_done_callback, Run()).Times(0);
+
+  AccountInfo other_info;
+  other_info.account_id = CoreAccountId::FromGaiaId(GaiaId("other"));
+  handler()->OnExtendedAccountInfoRemoved(other_info);
+
+  testing::Mock::VerifyAndClearExpectations(&mock_process_user_choice_callback);
+  testing::Mock::VerifyAndClearExpectations(&mock_done_callback);
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+
+  // This will delete the handler and trigger the `mock_done_callback` to be
+  // called.
+  DeleteHandler();
+}
+
+TEST_F(ManagedUserProfileNoticeHandlerTestBase, OnIdentityManagerShutdown) {
+  base::MockCallback<signin::SigninChoiceCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
+
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(signin::SIGNIN_CHOICE_CANCEL));
+  EXPECT_CALL(mock_done_callback, Run());
+
+  handler()->OnIdentityManagerShutdown(nullptr);
+  // This will delete the handler and trigger the `mock_done_callback` to be
+  // called.
+  DeleteHandler();
+}
+

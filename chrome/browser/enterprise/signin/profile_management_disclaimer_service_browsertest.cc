@@ -10,7 +10,10 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/browser_features.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -22,6 +25,8 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1005,4 +1010,51 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
     EXPECT_FALSE(GetIdentityManager(GetProfile())
                      ->HasAccountWithRefreshToken(account_info.account_id));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
+                       CancelFlowOnAccountRemoval) {
+  auto* disclaimer_service = GetDisclaimerService();
+
+  // User accepts the disclaimer.
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  // Set primary account.
+  AccountInfo primary_account_info =
+      MakeValidPrimaryAccountInfoAvailableAndUpdate("bob@example.com",
+                                                    "example.com");
+
+  base::test::TestFuture<Profile*, bool> future;
+  disclaimer_service->EnsureManagedProfileForAccount(
+      primary_account_info.account_id,
+      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+      future.GetCallback());
+
+  base::RunLoop().RunUntilIdle();
+
+  SigninViewController* signin_view_controller =
+      browser()->GetFeatures().signin_view_controller();
+  ASSERT_TRUE(signin_view_controller->ShowsModalDialog());
+  content::WebContents* dialog_web_contents =
+      signin_view_controller->GetModalDialogWebContentsForTesting();
+
+  ManagedUserProfileNoticeHandler* handler =
+      dialog_web_contents->GetWebUI()
+          ->GetController()
+          ->GetAs<ManagedUserProfileNoticeUI>()
+          ->GetHandlerForTesting();
+
+  ASSERT_TRUE(handler);
+
+  base::test::TestFuture<void> javascript_allowed_future;
+  handler->SetJavaScriptAllowedCallbackForTesting(
+    javascript_allowed_future.GetCallback());
+  ASSERT_TRUE(javascript_allowed_future.Wait());
+
+  // Remove the account while the flow is in progress.
+  identity_test_env()->ClearPrimaryAccount();
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<Profile*>(), nullptr);
 }
