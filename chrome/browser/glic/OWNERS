@@ -1,14 +1,14 @@
+bryantchandler@chromium.org
 carlosk@chromium.org
 dewittj@chromium.org
 harringtond@chromium.org
 iwells@chromium.org
+perrier@chromium.org
 vollick@chromium.org
-bryantchandler@chromium.org
 wry@chromium.org
 
 per-file BUILD.gn=file://chrome/browser/glic/BUILD_OWNERS
 per-file *policy*=bokan@chromium.org
-per-file *profile_manager*=perrier@chromium.org
 per-file *settings*=bokan@chromium.org
 per-file *test*=dfried@chromium.org
 
