@@ -513,6 +513,9 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
+        } else if (isContextualTasksFusebox()) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            // No icon shown for Fusebox.
         } else if (maybeUpdateStatusIconForSearchEngineIcon()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             // No need to proceed further if we've already updated it for the search engine icon.
@@ -599,7 +602,7 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        if (isHubSearch()) {
+        if (isHubSearch() || isContextualTasksFusebox()) {
             return false;
         }
 
@@ -902,6 +905,11 @@ public class StatusMediator
     }
 
     private void updateStatusViewVisibility() {
+        if (isContextualTasksFusebox()) {
+            setShowStatusView(false);
+            return;
+        }
+
         setShowStatusView(
                 mUrlHasFocus
                         || isHubSearch()
@@ -930,6 +938,11 @@ public class StatusMediator
     private boolean isHubSearch() {
         return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
                 == PageClassification.ANDROID_HUB_VALUE;
+    }
+
+    private boolean isContextualTasksFusebox() {
+        return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
+                == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
     }
 
     private static boolean isPageInfoMovedToAppMenu() {

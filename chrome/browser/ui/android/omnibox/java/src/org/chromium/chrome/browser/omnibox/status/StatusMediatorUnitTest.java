@@ -193,6 +193,21 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void searchEngineLogo_contextualTasksFusebox_evenWhenNtp() {
+        doReturn(PageClassification.CO_BROWSING_COMPOSEBOX_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+
+        // It should NOT show the status view at all (to avoid the gap).
+        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
     public void testStatusViewHoverActions() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
