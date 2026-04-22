@@ -104,6 +104,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -612,7 +613,7 @@ class LocationBarMediator
         // described in the documentation for LocationBar#showUrlBarCursorWithoutFocusAnimations.
         beginInput(
                 new AutocompleteInput()
-                        .setSuppressAutomaticSuggestionsUntilUserStartsTyping(true)
+                        .setAutocompleteState(AutocompleteState.STANDBY)
                         .setFocusReason(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD));
     }
 
@@ -635,7 +636,7 @@ class LocationBarMediator
             // Programmatic reselection of user text on UrlBar does not propagate the change to
             // TextChange listeners.
             mCurrentInput
-                    .setSuppressAutomaticSuggestionsUntilUserStartsTyping(true)
+                    .setAutocompleteState(AutocompleteState.STANDBY)
                     .setUserText(mCurrentInput.getInitialUserText());
             mUrlCoordinator.setUrlBarData(
                     UrlBarData.forNonUrlText(mCurrentInput.getUserText()),
@@ -741,7 +742,7 @@ class LocationBarMediator
             // This only matters in scenarios where a physical keyboard is connected.
             // See handleEscPress below.
             mScrimHandler.setVisibility(
-                    !mCurrentInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+                    mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
 
         mStatusCoordinator.onDefaultMatchClassified(
@@ -1155,8 +1156,7 @@ class LocationBarMediator
                     if (mScrimHandler != null) {
                         mScrimHandler.updateScrimVisualState();
                         mScrimHandler.setVisibility(
-                                !mCurrentInput
-                                        .shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+                                mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
                     }
                     mAutocompleteCoordinator.beginInput(session);
                     mFuseboxCoordinator.beginInput(session);

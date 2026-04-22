@@ -107,6 +107,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -2399,7 +2400,7 @@ public class LocationBarMediatorTest {
         // prefocused. We don't want to show the scrim in that scenario either.
         OmniboxFeatures.setIsDesktopModeForTesting(true);
         mMediator.beginInput(
-                new AutocompleteInput().setSuppressAutomaticSuggestionsUntilUserStartsTyping(true));
+                new AutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY));
         verify(mScrimHandler).setVisibility(false);
         clearInvocations(mScrimHandler);
         mMediator.onSuggestionsChanged(null, false);

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -516,7 +517,7 @@ class AutocompleteMediator
 
         if (mAutocompleteInput == null) return;
 
-        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
+        if (mAutocompleteInput.getAutocompleteState() != AutocompleteState.ENABLED) {
             // Ensure we don't show any lingering suggestions if the user jumps between
             // an active input session and NTP on LFF where the omnibox is prefocused but
             // suggestions list are not shown.
@@ -1059,7 +1060,7 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
         if (mShouldPreventOmniboxAutocomplete) return;
 
-        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
+        if (mAutocompleteInput.getAutocompleteState() != AutocompleteState.ENABLED) {
             return;
         }
 
@@ -1259,7 +1260,7 @@ class AutocompleteMediator
         mIgnoreOmniboxItemSelection = true;
 
         // Prevent clearing the text from triggering a new autocomplete request.
-        mAutocompleteInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(true);
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.STANDBY);
 
         if (siteSearchData != null) {
             // In keyword mode, the query string starts fresh/empty. The keyword is presented as a

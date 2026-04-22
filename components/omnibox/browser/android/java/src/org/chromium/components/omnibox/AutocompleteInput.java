@@ -53,6 +53,19 @@ public class AutocompleteInput implements UserData {
         int COUNT = 4;
     }
 
+    @IntDef({AutocompleteState.DISABLED, AutocompleteState.STANDBY, AutocompleteState.ENABLED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AutocompleteState {
+        /** Fully disabled autocompletion. */
+        int DISABLED = 0;
+
+        /** Autocompletion disabled until user starts typing. */
+        int STANDBY = 1;
+
+        /** Fully enabled autocompletion, including zero-state suggestions. */
+        int ENABLED = 2;
+    }
+
     /** Data class representing the active site search mode state in the Omnibox. */
     public static class SiteSearchData {
         public final String keyword;
@@ -71,7 +84,7 @@ public class AutocompleteInput implements UserData {
     private String mPageTitle;
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
-    private boolean mSuppressAutomaticSuggestionsUntilUserStartsTyping;
+    private @AutocompleteState int mAutocompleteState = AutocompleteState.ENABLED;
     private Range<Integer> mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
@@ -120,8 +133,7 @@ public class AutocompleteInput implements UserData {
         mPageTitle = other.mPageTitle;
         mAllowExactKeywordMatch = other.mAllowExactKeywordMatch;
         mHasAttachments = other.mHasAttachments;
-        mSuppressAutomaticSuggestionsUntilUserStartsTyping =
-                other.mSuppressAutomaticSuggestionsUntilUserStartsTyping;
+        mAutocompleteState = other.mAutocompleteState;
         mSelection = other.mSelection;
         mRefineActionUsage = other.mRefineActionUsage;
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
@@ -475,7 +487,7 @@ public class AutocompleteInput implements UserData {
         mSiteSearchData.set(null);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
-        mSuppressAutomaticSuggestionsUntilUserStartsTyping = false;
+        mAutocompleteState = AutocompleteState.ENABLED;
 
         return this;
     }
@@ -498,22 +510,20 @@ public class AutocompleteInput implements UserData {
     }
 
     /**
-     * Returns whether automatic suggestions should be suppressed until user starts typing.
-     * Internally tracks and updates own state to reflect typing started.
+     * Returns the current {@link AutocompleteState}. Internally tracks and updates own state to
+     * reflect typing started.
      */
-    public boolean shouldSuppressAutomaticSuggestionsUntilUserStartsTyping() {
-        // Update own state. If user text diverged, we no longer want to suppress suggestions,
-        // even if the user reverts the text to its initial state.
-        mSuppressAutomaticSuggestionsUntilUserStartsTyping =
-                mSuppressAutomaticSuggestionsUntilUserStartsTyping
-                        && TextUtils.equals(mUserText.get(), mInitialUserText);
-
-        return mSuppressAutomaticSuggestionsUntilUserStartsTyping;
+    public @AutocompleteState int getAutocompleteState() {
+        if (mAutocompleteState == AutocompleteState.STANDBY
+                && !TextUtils.equals(mUserText.get(), mInitialUserText)) {
+            mAutocompleteState = AutocompleteState.ENABLED;
+        }
+        return mAutocompleteState;
     }
 
-    public AutocompleteInput setSuppressAutomaticSuggestionsUntilUserStartsTyping(
-            boolean suppress) {
-        mSuppressAutomaticSuggestionsUntilUserStartsTyping = suppress;
+    /** Sets the {@link AutocompleteState}. */
+    public AutocompleteInput setAutocompleteState(@AutocompleteState int state) {
+        mAutocompleteState = state;
         return this;
     }
 
