@@ -21,9 +21,14 @@ from typing import Tuple, List
 _HEADER_RE = re.compile(r'(?:(private)\s+)?(?:(textual)\s+)?header\s+"([^"]+)"')
 _SIMPLE_HEADER_RE = re.compile(r'(\bheader\s+")([^"]+)(")')
 _REQUIRES_RE = re.compile(r'^\s*requires\s+(.*)')
-_STRIP_PREFIX = re.compile(r'^usr/include/(?:(?:x86_64)-(?:linux|cros)-gnu/)?')
+_STRIP_PREFIX = re.compile(
+    r'^usr/include/(?:(?:x86_64|i386|arm|arm64)-(?:linux|cros)-gnu/)?')
+# Maps GN CPU arg to LLVM CPU arg
 _CPU_ARG = {
     'x64': 'x86_64',
+    'arm64': 'arm64',
+    'arm': 'arm',
+    'x86': 'i386',
 }
 _DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
 _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
@@ -347,6 +352,19 @@ def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
 def main(args):
   """Executes the modulemap generation pipeline."""
   clang_cpu = _CPU_ARG[args.cpu]
+  if args.os == 'android':
+    # The real triple is x86_64-linux-android29, for example, but it appears
+    # to work fine without the version number, and this way we don't have to
+    # keep updating it.
+    target = f'{clang_cpu}-linux-android'
+  elif args.os == 'fuchsia':
+    target = f'{clang_cpu}-unknown-fuchsia'
+  elif args.os == "mac":
+    target = f'{clang_cpu}-apple-macos'
+  elif args.os == "ios":
+    target = f'{clang_cpu}-apple-ios'
+  else:
+    target = f'{clang_cpu}-unknown-{args.os}-gnu'
   deps = calculate_transitive_headers(
       clang_args=[
           str(args.clang),
@@ -355,7 +373,7 @@ def main(args):
           '-D_FORTIFY_SOURCE=3',
           # Target architecture is required for preprocessor to define built-in
           # target-specific macros (e.g., __x86_64__).
-          f'--target={clang_cpu}-unknown-{args.os}-gnu',
+          f'--target={target}',
           f'--sysroot={args.sysroot}',
           # Ensure we're using the right libc++
           '-nostdinc++',
