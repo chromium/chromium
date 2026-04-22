@@ -143,6 +143,7 @@ suite('NewTabPageLogoTest', () => {
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       doodle.image.light.backgroundColor.value = 0xff0000ff;
+      loadTimeData.overrideValues({animatedDoodlesEnabled: true});
 
       // Act.
       const logo = await createLogo(
@@ -151,8 +152,8 @@ suite('NewTabPageLogoTest', () => {
             backgroundColor: color ? hexColorToSkColor(color) : undefined,
           }));
       // Assert.
-      assertStyle($$(logo, '#imageDoodle')!, 'padding', '16px 24px');
-      assertStyle($$(logo, '#imageDoodle')!, 'border-radius', '20px');
+      assertStyle($$(logo, '#imageDoodle')!, 'padding', '16px');
+      assertStyle($$(logo, '#imageDoodle')!, 'border-radius', '28px');
       assertStyle(
           $$(logo, '#imageDoodle')!, 'background-color', 'rgb(0, 0, 255)');
     });
