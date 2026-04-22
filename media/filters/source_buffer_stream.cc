@@ -1022,9 +1022,9 @@ size_t SourceBufferStream::FreeBuffers(size_t total_bytes_to_free,
     }
 
     if (current_range->GetMemoryUsage() == 0) {
-      DCHECK_NE(current_range, selected_range_);
-      DCHECK(range_for_next_append_ == ranges_.end() ||
-             range_for_next_append_->get() != current_range);
+      CHECK_NE(current_range, selected_range_);
+      CHECK(range_for_next_append_ == ranges_.end() ||
+            range_for_next_append_->get() != current_range);
 
       // Delete |current_range| by popping it out of |ranges_|.
       reverse_direction ? ranges_.pop_back() : ranges_.pop_front();
