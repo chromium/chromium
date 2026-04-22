@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {

@@ -22,6 +22,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/actor_switches.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"

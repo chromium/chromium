@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"

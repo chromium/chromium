@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"

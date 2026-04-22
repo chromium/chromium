@@ -29,6 +29,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/actor/core/origin_checker.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"

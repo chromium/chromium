@@ -27,6 +27,7 @@
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/key_dispatcher.h"
 #include "chrome/renderer/actor/tool_utils.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"

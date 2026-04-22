@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 

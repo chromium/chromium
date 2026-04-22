@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

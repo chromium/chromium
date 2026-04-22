@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_test.h"

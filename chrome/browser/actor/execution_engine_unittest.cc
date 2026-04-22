@@ -41,6 +41,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/mock_tab_interface.h"

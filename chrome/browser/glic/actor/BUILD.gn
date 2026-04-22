@@ -19,6 +19,7 @@ source_set("actor") {
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/signin",
     "//chrome/common:actor_webui_mojom",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors/core",
     "//components/tabs:public",

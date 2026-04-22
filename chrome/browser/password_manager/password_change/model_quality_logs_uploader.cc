@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"

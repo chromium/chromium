@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/url_constants.h"
 

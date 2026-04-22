@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "url/gurl.h"
 
 namespace actor {

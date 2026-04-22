@@ -14,6 +14,7 @@
 
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
 namespace actor {
 

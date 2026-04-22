@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"

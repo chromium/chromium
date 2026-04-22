@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
@@ -18,7 +19,7 @@ class WebContents;
 namespace password_manager {
 enum class LogInWithChangedPasswordOutcome;
 struct PasswordForm;
-}
+}  // namespace password_manager
 
 // Helper class which handles Model Logging Quality logic and uploads the
 // logs to the Server.

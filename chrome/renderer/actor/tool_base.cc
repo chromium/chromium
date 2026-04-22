@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/tool_utils.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"

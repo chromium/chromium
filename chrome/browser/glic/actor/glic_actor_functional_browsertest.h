@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
 namespace glic::actor {
 

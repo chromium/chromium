@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"

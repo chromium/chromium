@@ -6,6 +6,7 @@
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic::actor {

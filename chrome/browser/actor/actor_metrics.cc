@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace actor {

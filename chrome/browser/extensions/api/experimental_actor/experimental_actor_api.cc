@@ -33,6 +33,7 @@
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/sessions/content/session_tab_helper.h"

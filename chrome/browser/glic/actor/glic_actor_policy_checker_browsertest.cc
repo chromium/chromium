@@ -41,6 +41,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_util.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -576,14 +577,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   {
     SCOPED_TRACE("In allowlist");
     TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
-                            /*url_allowlist=*/{"example.com"},
-                            /*url_blocklist=*/{}, GURL("https://example.com"),
-                            {
-                                .may_act_on_url_block_reason =
-                                    actor::MayActOnUrlBlockReason::kAllowed,
-                                .can_act_on_web = true,
-                            });
-    }
+                          /*url_allowlist=*/{"example.com"},
+                          /*url_blocklist=*/{}, GURL("https://example.com"),
+                          {
+                              .may_act_on_url_block_reason =
+                                  actor::MayActOnUrlBlockReason::kAllowed,
+                              .can_act_on_web = true,
+                          });
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,

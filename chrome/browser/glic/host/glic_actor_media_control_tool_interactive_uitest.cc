@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic::test {

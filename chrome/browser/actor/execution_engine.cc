@@ -55,6 +55,7 @@
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/origin_checker.h"
 #include "components/actor/core/safety_list_manager.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"

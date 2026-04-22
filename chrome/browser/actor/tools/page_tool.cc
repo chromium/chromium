@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"

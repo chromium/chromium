@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
 namespace optimization_guide::proto {
 class ActionsResult;

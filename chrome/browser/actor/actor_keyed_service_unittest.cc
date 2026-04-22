@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

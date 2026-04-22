@@ -52,6 +52,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -1188,8 +1189,8 @@ void BuildActionsResultWithObservations(
   }
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  ProfileBrowserCollection::GetForProfile(profile)
-      ->ForEach([&response](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&response](BrowserWindowInterface* browser) {
         apc::WindowObservation* window_observation = response->add_windows();
         window_observation->set_id(browser->GetSessionID().id());
         window_observation->set_active(browser->IsActive());

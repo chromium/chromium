@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/install_static",
   "+chrome/services/file_util/public",
   "+chromeos/startup/startup.h",
+  "+components/actor/public",
   "+components/autofill/content/common",
   "+components/autofill/core/common",
   "+components/bookmarks/common",

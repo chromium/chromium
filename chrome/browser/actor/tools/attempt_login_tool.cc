@@ -24,6 +24,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -149,9 +150,8 @@ AttemptLoginTool::~AttemptLoginTool() {
   // avoid uploading incorrect logs.
   // TODO(crbug.com/485620841): Remove this check once the prototyping is
   // complete for Automated Password Change.
-  bool prototype_features_enabled =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheckupPrototype);
+  bool prototype_features_enabled = base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordCheckupPrototype);
 
   if (opt_guide_service &&
       base::FeatureList::IsEnabled(

@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 
 class GURL;

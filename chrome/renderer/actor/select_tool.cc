@@ -14,6 +14,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/actor/tool_utils.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/platform/web_string.h"

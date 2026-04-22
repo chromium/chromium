@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"

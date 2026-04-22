@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
@@ -96,8 +97,9 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       client_(client),
       logs_uploader_(logs_uploader) {
   // Record metrics if form has been detected and the time it took.
-  success_callback_ = base::BindOnce(&LogPasswordFormDetectedMetric, creation_time_)
-                  .Then(std::move(success_callback));
+  success_callback_ =
+      base::BindOnce(&LogPasswordFormDetectedMetric, creation_time_)
+          .Then(std::move(success_callback));
   failure_callback_ =
       base::BindOnce(&LogFormNotFoundMetric).Then(std::move(failure_callback));
   CHECK(logs_uploader_);

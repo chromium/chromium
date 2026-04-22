@@ -59,6 +59,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -231,8 +232,9 @@ enum PlatformDownloadPathType {
 // How the platform path is determined is based on PlatformDownloadPathType.
 base::FilePath GetPlatformDownloadPath(const DownloadItem* download,
                                        PlatformDownloadPathType path_type) {
-  if (path_type == PLATFORM_TARGET_PATH)
+  if (path_type == PLATFORM_TARGET_PATH) {
     return download->GetTargetFilePath();
+  }
   return download->GetFullPath();
 }
 
@@ -261,10 +263,11 @@ void CheckDownloadUrlDone(
     // If this type of files is handled by the enhanced SafeBrowsing download
     // protection, mark it as potentially dangerous content until we are done
     // with scanning it.
-    if (is_content_check_supported)
+    if (is_content_check_supported) {
       danger_type = download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT;
-    else
+    } else {
       danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    }
   } else if (result ==
              safe_browsing::DownloadCheckResult::ALLOWLISTED_BY_POLICY) {
     danger_type = download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY;
@@ -452,8 +455,9 @@ void MaybeReportDangerousDownloadBlocked(
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   // If |download| has a deep scanning malware verdict, then it means the
   // dangerous file has already been reported.
@@ -461,8 +465,10 @@ void MaybeReportDangerousDownloadBlocked(
       download->GetUserData(enterprise_connectors::ScanResult::kKey));
   if (scan_result) {
     for (const auto& metadata : scan_result->file_metadata) {
-      if (enterprise_connectors::ContainsMalwareVerdict(metadata.scan_response))
+      if (enterprise_connectors::ContainsMalwareVerdict(
+              metadata.scan_response)) {
         return;
+      }
     }
   }
 
@@ -704,14 +710,16 @@ void ChromeDownloadManagerDelegate::SetNextId(uint32_t next_id) {
   // database failed to initialize.
   bool history_db_available = (next_id != download::DownloadItem::kInvalidId);
   RecordDatabaseAvailability(history_db_available);
-  if (history_db_available)
+  if (history_db_available) {
     next_download_id_ = next_id;
+  }
   next_id_retrieved_ = true;
 
   IdCallbackVector callbacks;
   id_callbacks_.swap(callbacks);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     ReturnNextId(std::move(callback));
+  }
 }
 
 void ChromeDownloadManagerDelegate::GetNextId(
@@ -735,8 +743,9 @@ void ChromeDownloadManagerDelegate::ReturnNextId(
   DCHECK(!profile_->IsOffTheRecord());
   // kInvalidId is returned to indicate the error.
   std::move(callback).Run(next_download_id_);
-  if (next_download_id_ != download::DownloadItem::kInvalidId)
+  if (next_download_id_ != download::DownloadItem::kInvalidId) {
     ++next_download_id_;
+  }
 }
 
 bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
@@ -799,14 +808,16 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
     const GURL& url,
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (path.Extension().empty())
+  if (path.Extension().empty()) {
     return false;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // TODO(crbug.com/40129365): This determination is done based on |path|, while
   // ShouldOpenDownload() detects extension downloads based on the
   // characteristics of the download. Reconcile this.
-  if (path.MatchesExtension(extensions::kExtensionFileExtension))
+  if (path.MatchesExtension(extensions::kExtensionFileExtension)) {
     return false;
+  }
 #endif
 
   bool should_open = download_prefs_->IsAutoOpenEnabled(url, path);
@@ -829,14 +840,16 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFileByPolicy(
     const GURL& url,
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (path.Extension().empty())
+  if (path.Extension().empty()) {
     return false;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // TODO(crbug.com/40129365): This determination is done based on |path|, while
   // ShouldOpenDownload() detects extension downloads based on the
   // characteristics of the download. Reconcile this.
-  if (path.MatchesExtension(extensions::kExtensionFileExtension))
+  if (path.MatchesExtension(extensions::kExtensionFileExtension)) {
     return false;
+  }
 #endif
   return download_prefs_->IsAutoOpenByPolicy(url, path);
 }
@@ -995,8 +1008,9 @@ void ChromeDownloadManagerDelegate::ShouldCompleteDownloadInternal(
     uint32_t download_id,
     base::OnceClosure user_complete_callback) {
   DownloadItem* item = download_manager_->GetDownload(download_id);
-  if (!item)
+  if (!item) {
     return;
+  }
   auto [async_completion, sync_completion] =
       base::SplitOnceCallback(std::move(user_complete_callback));
   if (ShouldCompleteDownload(item, std::move(async_completion))) {
@@ -1228,8 +1242,9 @@ void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
 
   const PrefService* prefs = profile_->GetPrefs();
   if (file_type_policies->GetFileDangerLevel(*filename, source_url, prefs) ==
-      safe_browsing::DownloadFileType::NOT_DANGEROUS)
+      safe_browsing::DownloadFileType::NOT_DANGEROUS) {
     return;
+  }
 
   base::FilePath default_filename = base::FilePath::FromUTF8Unsafe(
       l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
@@ -1243,8 +1258,9 @@ void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
           policy::policy_prefs::kForceGoogleSafeSearch)) {
     GURL safe_url;
     safe_search_api::ForceGoogleSafeSearch(params->url(), &safe_url);
-    if (!safe_url.is_empty())
+    if (!safe_url.is_empty()) {
       params->set_url(std::move(safe_url));
+    }
   }
 }
 
@@ -1260,11 +1276,13 @@ void ChromeDownloadManagerDelegate::OpenDownloadUsingPlatformHandler(
 void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   DCHECK_EQ(DownloadItem::COMPLETE, download->GetState());
   DCHECK(!download->GetTargetFilePath().empty());
-  if (!download->CanOpenDownload())
+  if (!download->CanOpenDownload()) {
     return;
+  }
 
-  if (!IsMostRecentDownloadItemAtFilePath(download))
+  if (!IsMostRecentDownloadItemAtFilePath(download)) {
     return;
+  }
   MaybeSendDangerousDownloadOpenedReport(download,
                                          false /* show_download_in_folder */);
 
@@ -1309,17 +1327,20 @@ bool ChromeDownloadManagerDelegate::IsMostRecentDownloadItemAtFilePath(
   std::vector<raw_ptr<DownloadItem, VectorExperimental>> all_downloads;
   for (auto* profile_to_check : profiles_to_check) {
     content::DownloadManager* manager = profile_to_check->GetDownloadManager();
-    if (manager)
+    if (manager) {
       manager->GetAllDownloads(&all_downloads);
+    }
   }
 
   for (const download::DownloadItem* item : all_downloads) {
     if (item->GetGuid() == download->GetGuid() ||
-        item->GetTargetFilePath() != download->GetTargetFilePath())
+        item->GetTargetFilePath() != download->GetTargetFilePath()) {
       continue;
+    }
 
-    if (item->GetState() == DownloadItem::IN_PROGRESS)
+    if (item->GetState() == DownloadItem::IN_PROGRESS) {
       return false;
+    }
   }
 
   return true;
@@ -1327,8 +1348,9 @@ bool ChromeDownloadManagerDelegate::IsMostRecentDownloadItemAtFilePath(
 
 void ChromeDownloadManagerDelegate::ShowDownloadInShell(
     DownloadItem* download) {
-  if (!download->CanShowInFolder())
+  if (!download->CanShowInFolder()) {
     return;
+  }
 
   MaybeSendDangerousDownloadOpenedReport(download,
                                          true /* show_download_in_folder */);
@@ -1504,7 +1526,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     return;
   }
 
-    // Figure out type of dialog and display.
+  // Figure out type of dialog and display.
   DownloadLocationDialogType dialog_type = DownloadLocationDialogType::DEFAULT;
 
   switch (reason) {
@@ -1525,11 +1547,11 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       break;
   }
 
-    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
-    ShowDownloadDialog(
-        native_window, download->GetTotalBytes(), dialog_type, suggested_path,
-        base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
-    return;
+  gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
+  ShowDownloadDialog(
+      native_window, download->GetTotalBytes(), dialog_type, suggested_path,
+      base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
+  return;
 
 #else   // BUILDFLAG(IS_ANDROID)
   auto trigger_user_takeover = base::BindOnce(
@@ -1631,19 +1653,19 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (download::IsPathValidationSuccessful(result)) {
     if (download_prefs_->PromptForDownload()) {
-        download::DownloadItem* download =
-            download_manager_->GetDownloadByGuid(download_guid);
-        content::WebContents* web_contents =
-            download ? content::DownloadItemUtils::GetWebContents(download)
-                     : nullptr;
-        gfx::NativeWindow native_window =
-            web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
-        // Null native window will be handled by ShowDownloadDialog().
-        ShowDownloadDialog(
-            native_window, 0 /* total_bytes */,
-            DownloadLocationDialogType::NAME_CONFLICT, target_path,
-            base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
-        return;
+      download::DownloadItem* download =
+          download_manager_->GetDownloadByGuid(download_guid);
+      content::WebContents* web_contents =
+          download ? content::DownloadItemUtils::GetWebContents(download)
+                   : nullptr;
+      gfx::NativeWindow native_window =
+          web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+      // Null native window will be handled by ShowDownloadDialog().
+      ShowDownloadDialog(
+          native_window, 0 /* total_bytes */,
+          DownloadLocationDialogType::NAME_CONFLICT, target_path,
+          base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
+      return;
     }
 
     // If user chose not to show download location dialog, uses current unique
@@ -1712,8 +1734,9 @@ void ChromeDownloadManagerDelegate::GetFileMimeType(
 void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     uint32_t download_id,
     safe_browsing::DownloadCheckResult result) {
-  if (!download_manager_)
+  if (!download_manager_) {
     return;
+  }
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (!item ||
       (item->GetState() != DownloadItem::IN_PROGRESS &&
@@ -1889,8 +1912,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
 void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
     uint32_t download_id,
     safe_browsing::DownloadCheckResult result) {
-  if (!download_manager_)
+  if (!download_manager_) {
     return;
+  }
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (!item || (item->GetState() != DownloadItem::IN_PROGRESS &&
                 item->GetDangerType() !=
@@ -2086,8 +2110,9 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
   policy::DownloadRestriction download_restriction =
       download_prefs_->download_restriction();
 
-  if (IsDangerTypeBlocked(danger_type))
+  if (IsDangerTypeBlocked(danger_type)) {
     return true;
+  }
 
   bool file_type_dangerous =
       (item && DownloadItemModel(item).GetDangerLevel() !=

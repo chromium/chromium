@@ -6,6 +6,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic::actor {

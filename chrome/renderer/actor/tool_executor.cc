@@ -28,6 +28,7 @@
 #include "chrome/renderer/actor/select_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "chrome/renderer/actor/type_tool.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace mojo {

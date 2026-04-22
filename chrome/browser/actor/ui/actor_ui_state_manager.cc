@@ -18,6 +18,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -269,29 +270,29 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             this->OnActorTaskStateChange(e.task_id, e.state);
           },
           [this](const StopTask& e) {
-              // Cancelled tasks are intentionally not stored.
-              if (e.final_state == ActorTask::State::kCancelled) {
-                NotifyActorTaskStopped(e.task_id);
-                return;
-              }
-              stopped_task_info_.emplace(
-                  e.task_id,
-                  StoppedTaskInfo{
-                      .final_state = e.final_state,
-                      .title = e.title,
-                      .last_acted_on_tab_handle = e.last_acted_on_tab_handle,
-                      .duration = e.duration,
-                  });
+            // Cancelled tasks are intentionally not stored.
+            if (e.final_state == ActorTask::State::kCancelled) {
               NotifyActorTaskStopped(e.task_id);
+              return;
+            }
+            stopped_task_info_.emplace(
+                e.task_id,
+                StoppedTaskInfo{
+                    .final_state = e.final_state,
+                    .title = e.title,
+                    .last_acted_on_tab_handle = e.last_acted_on_tab_handle,
+                    .duration = e.duration,
+                });
+            NotifyActorTaskStopped(e.task_id);
 
-              // After expiry, remove the task and notify observers.
-              base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-                  FROM_HERE,
-                  base::BindOnce(&ActorUiStateManager::ActorTaskRemoved,
-                                 weak_factory_.GetWeakPtr(), e.task_id),
-                  base::Seconds(
-                      features::kGlicActorUiCompletedTaskExpiryDelaySeconds
-                          .Get()));
+            // After expiry, remove the task and notify observers.
+            base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(&ActorUiStateManager::ActorTaskRemoved,
+                               weak_factory_.GetWeakPtr(), e.task_id),
+                base::Seconds(
+                    features::kGlicActorUiCompletedTaskExpiryDelaySeconds
+                        .Get()));
           },
           [](const StoppedActingOnTab& e) {
             auto* tab = e.tab_handle.Get();

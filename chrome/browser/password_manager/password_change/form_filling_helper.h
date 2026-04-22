@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 

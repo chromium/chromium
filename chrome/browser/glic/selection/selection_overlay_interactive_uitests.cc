@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -219,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteActiveRegion) {
                         "el.selectedRegions.length === 1"));
 }
 
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteLastRegionClosesUI) {
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       DeleteLastRegionClosesUI) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
@@ -256,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteLastRegionClosesUI
       // 3. Move mouse directly to the close button.
       MoveMouseTo(kOverlayWebContentsId, kCloseButton),
 
-      // 4. Click the mouse. This avoids failing if the element disappears immediately.
+      // 4. Click the mouse. This avoids failing if the element disappears
+      // immediately.
       ClickMouse(),
 
       // 5. Verify that the overlay is dismissed.

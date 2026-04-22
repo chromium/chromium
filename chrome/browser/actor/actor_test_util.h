@@ -28,6 +28,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"

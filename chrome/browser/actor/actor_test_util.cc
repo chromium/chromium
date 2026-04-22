@@ -39,6 +39,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

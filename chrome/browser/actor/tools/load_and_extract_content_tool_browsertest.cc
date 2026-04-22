@@ -33,6 +33,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/safety_list_manager.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/browser_context.h"

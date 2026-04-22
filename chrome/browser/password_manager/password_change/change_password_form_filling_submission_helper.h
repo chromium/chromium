@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -83,7 +84,6 @@ class ChangePasswordFormFillingSubmissionHelper {
       const std::u16string& username,
       const std::u16string& login_password,
       const std::u16string& generated_password);
-
 
   // Saves a password with a given `username`. Must be called only after
   // `callback_` was invoked.
@@ -160,7 +160,6 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   // Timeout for verifying submission detection.
   base::OneShotTimer timeout_timer_;
-
 
   std::unique_ptr<FormFillingHelper> form_filler_;
 

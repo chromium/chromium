@@ -29,6 +29,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/origin_checker.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"

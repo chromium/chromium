@@ -739,6 +739,7 @@ mojom("mojo_bindings") {
   }
 
   public_deps = [
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
     "//components/no_state_prefetch/common:mojo_bindings",

@@ -47,6 +47,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/activity_reporter",
   "+components/actor/core",
+  "+components/actor/public",
   "+components/affiliations",
   "+components/allocation_recorder",
   "+components/android_autofill/browser",

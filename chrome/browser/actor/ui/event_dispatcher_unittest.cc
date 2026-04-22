@@ -28,6 +28,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/shared_types.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor::ui {

@@ -28,6 +28,7 @@
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"

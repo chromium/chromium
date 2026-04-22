@@ -21,6 +21,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/safety_list_manager.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/ukm/test_ukm_recorder.h"
