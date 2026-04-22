@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
-import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -81,7 +80,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -116,7 +114,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -272,7 +269,6 @@ public class StripLayoutHelperManager
             (tabModel) -> {
                 tabModelSwitched(tabModel.isIncognito());
             };
-    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private final ActorUiTabController.Observer mActorObserver;
 
     private @MonotonicNonNull TabModelObserver mTabModelObserver; // Set on native initialization.
@@ -590,7 +586,6 @@ public class StripLayoutHelperManager
         mTrailingButtonsCoordinator =
                 new StripLayoutTrailingButtonsCoordinator(
                         context,
-                        mUpdateHost,
                         mRenderHost,
                         glicClickHandler,
                         mDensity,
@@ -599,7 +594,8 @@ public class StripLayoutHelperManager
                         glicKeyboardFocusHandler,
                         isAppInDesktopWindow(),
                         mIsTopResumedActivity,
-                        glicKeyedService);
+                        glicKeyedService,
+                        this::updateButtonMargins);
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
@@ -709,8 +705,7 @@ public class StripLayoutHelperManager
                 (LayerTitleCache layerTitleCache) -> {
                     mNormalHelper.setLayerTitleCache(layerTitleCache);
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
-                    setGlicButtonText(
-                            mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
+                    mTrailingButtonsCoordinator.setLayerTitleCache(layerTitleCache);
                 });
 
         if (mDesktopWindowStateManager != null) {
@@ -788,11 +783,6 @@ public class StripLayoutHelperManager
         // Delete the EventFilter to avoid any updates on destroyed StripLayoutHelpers.
         mEventFilter = null;
         mTabStripEventHandler = null;
-        if (mPrefChangeRegistrar != null) {
-            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
-            mPrefChangeRegistrar.destroy();
-            mPrefChangeRegistrar = null;
-        }
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
         if (mTabModelSelector != null) {
@@ -837,12 +827,6 @@ public class StripLayoutHelperManager
     public void onPauseWithNative() {
         // Clear any persisting tab strip hover state when the activity is paused.
         getActiveStripLayoutHelper().onHoverExit(/* inTabStrip= */ false);
-    }
-
-    /** Sets the Glic button text and refreshes the layout to accommodate new width. */
-    public void setGlicButtonText(@Nullable String text) {
-        mTrailingButtonsCoordinator.setGlicButtonText(text, mLayerTitleCacheSupplier.get());
-        updateButtonMargins();
     }
 
     private void handleModelSelectorButtonClick() {
@@ -1685,13 +1669,7 @@ public class StripLayoutHelperManager
         // Register Glic pref change observer for Glic button pin state.
         Profile profile = standardModel.getProfile();
         if (profile != null) {
-            if (mPrefChangeRegistrar != null) {
-                mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
-                mPrefChangeRegistrar.destroy();
-            }
-            mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
-            mPrefChangeRegistrar.addObserver(
-                    GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, () -> updateStripButtons());
+            mTrailingButtonsCoordinator.onProfileAvailable(profile);
         }
     }
 

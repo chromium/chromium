@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
@@ -24,17 +23,26 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.Str
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
+import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Coordinator for the trailing buttons on the tab strip. */
 @NullMarked
 public class StripLayoutTrailingButtonsCoordinator {
+    /** Observer for changes to the trailing buttons layout state. */
+    public interface StripLayoutTrailingButtonsObserver {
+        /** Called when the trailing buttons layout footprint (e.g. width or visibility) changes. */
+        void onTrailingButtonsLayoutStateChanged();
+    }
+
     // Glic button constants.
     private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 5.f;
     private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 28.f;
@@ -59,20 +67,31 @@ public class StripLayoutTrailingButtonsCoordinator {
                             - GLIC_BUTTON_BACKGROUND_WIDTH_DP)
                     / 2;
 
+    // Core Dependencies
     private final Context mContext;
-    private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
-    private final Runnable mGlicClickHandler;
-    private final float mDensity;
-    private final @Nullable GlobalShowHideObserver mGlicUiObserver;
-    private final @Nullable GlicKeyedService mGlicKeyedService;
+    private final StripLayoutTrailingButtonsObserver mObserver;
 
+    // Configuration & Delegates
+    private final float mDensity;
+    private final float mStripEndPadding;
+    private final Runnable mGlicClickHandler;
+    private final @Nullable GlicKeyedService mGlicKeyedService;
+    private final @Nullable GlobalShowHideObserver mGlicUiObserver;
+
+    // Lifecycle & Caching Objects
+    private @Nullable Profile mProfile;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable LayerTitleCache mLayerTitleCache;
+
+    // UI Components
     private @Nullable TintedCompositorTextButton mGlicButton;
+
+    // Layout & State Parameters
     private float mWidth;
     private float mRightPadding;
     private float mLeftPadding;
     private float mTopPadding;
-    private final float mStripEndPadding;
     private boolean mIsGlicUiVisible;
     private boolean mIsMsbVisible;
 
@@ -80,7 +99,6 @@ public class StripLayoutTrailingButtonsCoordinator {
      * Creates the trailing buttons coordinator.
      *
      * @param context The {@link Context} for constructing the button.
-     * @param updateHost The {@link LayoutUpdateHost} for requesting updates.
      * @param renderHost The {@link LayoutRenderHost} for requesting renders.
      * @param glicClickHandler The {@link Runnable} to execute on Glic button click.
      * @param density The display density.
@@ -93,7 +111,6 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public StripLayoutTrailingButtonsCoordinator(
             Context context,
-            LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             Runnable glicClickHandler,
             float density,
@@ -102,14 +119,15 @@ public class StripLayoutTrailingButtonsCoordinator {
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             boolean isAppInDesktopWindow,
             boolean isTopResumedActivity,
-            @Nullable GlicKeyedService glicKeyedService) {
+            @Nullable GlicKeyedService glicKeyedService,
+            StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
-        mUpdateHost = updateHost;
         mRenderHost = renderHost;
         mGlicClickHandler = glicClickHandler;
         mDensity = density;
         mStripEndPadding = stripEndPadding;
         mGlicKeyedService = glicKeyedService;
+        mObserver = observer;
 
         if (mGlicKeyedService != null) {
             mGlicUiObserver =
@@ -176,6 +194,9 @@ public class StripLayoutTrailingButtonsCoordinator {
 
             mGlicButton.setAccessibilityDescription(
                     mContext.getString(R.string.glic_tab_strip_button_tooltip));
+
+            mGlicButton.setText(
+                    mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
         }
 
         updateGlicButtonOpacity(isAppInDesktopWindow, isTopResumedActivity);
@@ -185,6 +206,43 @@ public class StripLayoutTrailingButtonsCoordinator {
     public void destroy() {
         if (mGlicKeyedService != null && mGlicUiObserver != null) {
             mGlicKeyedService.removeGlobalShowHideObserver(mGlicUiObserver);
+        }
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+    }
+
+    /**
+     * Registers a pref observer for Glic button changes when the profile is available.
+     *
+     * @param profile The {@link Profile} to observe.
+     */
+    public void onProfileAvailable(Profile profile) {
+        if (mProfile == profile) return;
+
+        mProfile = profile;
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+
+        mPrefChangeRegistrar = new PrefChangeRegistrar(UserPrefs.get(profile));
+        mPrefChangeRegistrar.addObserver(
+                GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, this::onGlicPrefChanged);
+
+        onGlicPrefChanged();
+    }
+
+    private void onGlicPrefChanged() {
+        if (mGlicButton == null || mProfile == null) return;
+        boolean isPinned =
+                UserPrefs.get(mProfile).getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+
+        if (mGlicButton.isVisible() != isPinned) {
+            mGlicButton.setVisible(isPinned);
+            updateGlicButtonPosition();
+            mObserver.onTrailingButtonsLayoutStateChanged();
         }
     }
 
@@ -210,25 +268,38 @@ public class StripLayoutTrailingButtonsCoordinator {
         updateGlicButtonPosition();
     }
 
+    /** Sets the cache used for generating textures for the trailing buttons. */
+    public void setLayerTitleCache(@Nullable LayerTitleCache titleCache) {
+        mLayerTitleCache = titleCache;
+        if (mGlicButton != null) {
+            updateGlicButtonTextProperties();
+        }
+    }
+
     /**
      * Updates the text displayed on the Glic button.
      *
      * @param text The new text.
-     * @param titleCache The {@link LayerTitleCache} to cache the title.
      */
-    public void setGlicButtonText(@Nullable String text, @Nullable LayerTitleCache titleCache) {
+    public void setGlicButtonText(@Nullable String text) {
         if (mGlicButton == null || TextUtils.equals(mGlicButton.getText(), text)) return;
         mGlicButton.setText(text);
+        updateGlicButtonTextProperties();
+    }
 
-        if (titleCache != null) {
-            mGlicButton.setTextResourceId(titleCache.getUpdatedGlicButtonText(text));
+    private void updateGlicButtonTextProperties() {
+        if (mGlicButton == null) return;
+        String text = mGlicButton.getText();
+
+        if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
+            mGlicButton.setTextResourceId(mLayerTitleCache.getUpdatedGlicButtonText(text));
         } else {
             mGlicButton.setTextResourceId(Resources.ID_NULL);
         }
 
-        updateGlicButtonWidth(titleCache);
+        updateGlicButtonWidth(mLayerTitleCache);
         updateGlicButtonPosition();
-        mUpdateHost.requestUpdate();
+        mObserver.onTrailingButtonsLayoutStateChanged();
     }
 
     private void updateGlicButtonWidth(@Nullable LayerTitleCache titleCache) {

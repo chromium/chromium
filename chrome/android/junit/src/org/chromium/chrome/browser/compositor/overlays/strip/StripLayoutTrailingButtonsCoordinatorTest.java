@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,8 +34,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator.StripLayoutTrailingButtonsObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
@@ -47,7 +46,6 @@ import org.chromium.ui.base.TestActivity;
 public class StripLayoutTrailingButtonsCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private GlicKeyedService mGlicKeyedService;
@@ -55,11 +53,28 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
+    @Mock private StripLayoutTrailingButtonsObserver mObserver;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        mCoordinator =
+                new StripLayoutTrailingButtonsCoordinator(
+                        mActivity,
+                        mRenderHost,
+                        mGlicClickHandler,
+                        /* density= */ 1.0f,
+                        /* stripEndPadding= */ 0.0f,
+                        /* toolbarControlContainer= */ null,
+                        /* keyboardFocusHandler= */ null,
+                        /* isAppInDesktopWindow= */ false,
+                        /* isTopResumedActivity= */ false,
+                        mGlicKeyedService,
+                        mObserver);
+        mCoordinator.onProfileAvailable(null);
+        mCoordinator.setLayerTitleCache(mLayerTitleCache);
     }
 
     @After
@@ -69,52 +84,34 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         }
     }
 
-    private void initializeTest() {
-        mCoordinator =
-                new StripLayoutTrailingButtonsCoordinator(
-                        mActivity,
-                        mUpdateHost,
-                        mRenderHost,
-                        mGlicClickHandler,
-                        /* density= */ 1.0f,
-                        /* stripEndPadding= */ 0.0f,
-                        /* toolbarControlContainer= */ null,
-                        /* keyboardFocusHandler= */ null,
-                        /* isAppInDesktopWindow= */ false,
-                        /* isTopResumedActivity= */ false,
-                        mGlicKeyedService);
-    }
-
     @Test
     @DisableFeatures(ChromeFeatureList.GLIC)
     public void testGlicButtonDisabled() {
-        initializeTest();
         assertNull("Glic button should not be created.", mCoordinator.getGlicButton());
     }
 
     @Test
     public void testGlicButtonEnabled() {
-        initializeTest();
         assertNotNull("Glic button should be created.", mCoordinator.getGlicButton());
     }
 
     @Test
     public void testSetGlicButtonText() {
-        initializeTest();
         assertNotNull("Glic button should be created.", mCoordinator.getGlicButton());
 
+        // Start with with no-text state button
+        mCoordinator.setGlicButtonText(null);
         float initialWidth = mCoordinator.getGlicButton().getWidth();
         when(mLayerTitleCache.getUpdatedGlicButtonText(any())).thenReturn(123);
-        when(mLayerTitleCache.getTitleWidth(anyBoolean(), any())).thenReturn(100);
-
-        mCoordinator.setGlicButtonText("Glic Text", mLayerTitleCache);
+        when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
+        mCoordinator.setGlicButtonText("Glic Text");
 
         verify(mLayerTitleCache).getUpdatedGlicButtonText("Glic Text");
         assertTrue(
                 "Glic button width should increase to accommodate text.",
                 mCoordinator.getGlicButton().getWidth() > initialWidth);
 
-        mCoordinator.setGlicButtonText(null, mLayerTitleCache);
+        mCoordinator.setGlicButtonText(null);
 
         assertEquals(
                 "Glic button width should return to original singular icon width.",
@@ -125,7 +122,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testGlicButtonUnfocusedOpacity() {
-        initializeTest();
         TintedCompositorTextButton glicButton = mCoordinator.getGlicButton();
         assertNotNull("Glic button should be created.", glicButton);
 
@@ -150,7 +146,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testGlicPressedState_GlicUiShowHide() {
-        initializeTest();
         assertNotNull("Glic button should be created.", mCoordinator.getGlicButton());
 
         ArgumentCaptor<GlobalShowHideObserver> observerCaptor =
