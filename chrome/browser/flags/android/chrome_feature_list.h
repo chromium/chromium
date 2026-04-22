@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -36,7 +37,7 @@ BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBarFastFollow);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbarV2);
-BASE_DECLARE_FEATURE(kAndroidContextMenuDuplicateTabs);
+BASE_DECLARE_FEATURE(kAndroidContextMenuNewActions);
 BASE_DECLARE_FEATURE(kAndroidDataImporterService);
 BASE_DECLARE_FEATURE(kAndroidDesktopDensity);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);

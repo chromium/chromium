@@ -269,13 +269,13 @@
     "expiry_milestone": 149
   },
   {
-    "name": "android-context-menu-duplicate-tabs",
+    "name": "android-context-menu-new-actions",
     "owners": [
       "hitarthkothari@google.com",
       "ckitagawa@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "android-data-importer-service",

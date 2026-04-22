@@ -467,7 +467,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             // Share is only available for single tab selection.
             itemList.add(createShareItem(isIncognito));
         }
-        if (ChromeFeatureList.sAndroidContextMenuDuplicateTabs.isEnabled()) {
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
             itemList.add(createDuplicateTabsItem(isIncognito));
         }
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
@@ -490,7 +490,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         List<ListItem> reorderItems = createReorderItems(anchorInfo, isIncognito);
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
-        if (ChromeFeatureList.sAndroidContextMenuDuplicateTabs.isEnabled()) {
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
             itemList.add(createDuplicateTabsItem(isIncognito));
         }
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));

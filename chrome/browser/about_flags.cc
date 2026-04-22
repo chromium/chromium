@@ -12026,10 +12026,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if (BUILDFLAG(IS_ANDROID))
-    {"android-context-menu-duplicate-tabs",
-     flag_descriptions::kAndroidContextMenuDuplicateTabsName,
-     flag_descriptions::kAndroidContextMenuDuplicateTabsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuDuplicateTabs)},
+    {"android-context-menu-new-actions",
+     flag_descriptions::kAndroidContextMenuNewActionsName,
+     flag_descriptions::kAndroidContextMenuNewActionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuNewActions)},
 #endif
 
     {"block-v8-optimizer-on-unfamiliar-sites",

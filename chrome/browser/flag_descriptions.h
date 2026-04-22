@@ -5117,11 +5117,10 @@ inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
 inline constexpr char kAndroidCaretBrowsingDescription[] =
     "Allows users to interact with a webpage using a keyboard.";
 
-inline constexpr char kAndroidContextMenuDuplicateTabsName[] =
-    "Android context menu duplicate tabs";
-inline constexpr char kAndroidContextMenuDuplicateTabsDescription[] =
-    "Adds a new context menu option allowing users to duplicate the"
-    "selected tabs";
+inline constexpr char kAndroidContextMenuNewActionsName[] =
+    "Android context menu new actions";
+inline constexpr char kAndroidContextMenuNewActionsDescription[] =
+    "Adds new context menu actions.";
 
 inline constexpr char kAndroidDataImporterServiceName[] =
     "Data Importer Service";

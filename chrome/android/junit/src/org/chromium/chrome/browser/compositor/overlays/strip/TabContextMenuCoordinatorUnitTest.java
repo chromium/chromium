@@ -2054,7 +2054,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS,
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
     })
     public void testListMenuItems_singleTab_duplicateTab_featureEnabled() {
@@ -2072,7 +2072,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS})
+    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
     @EnableFeatures({ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP})
     public void testListMenuItems_singleTab_duplicateTab_featureDisabled() {
         var modelList = new ModelList();
@@ -2097,7 +2097,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS,
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
     })
     public void testListMenuItems_multipleTabs_duplicateTabs_featureEnabled() {
@@ -2116,7 +2116,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP})
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS})
+    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
     public void testListMenuItems_multipleTabs_duplicateTabs_featureDisabled() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
