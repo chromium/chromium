@@ -80,6 +80,21 @@ source_set("impl") {
     "//third_party/blink/public/common",
   ]
 }
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_api.cc",
+    "fake_api.h",
+  ]
+  deps = [
+    ":indigo",
+    "//base",
+    "//net",
+    "//net:test_support",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
 
 source_set("unit_tests") {
   testonly = true
@@ -94,6 +109,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":indigo",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",

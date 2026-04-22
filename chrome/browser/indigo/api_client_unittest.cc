@@ -233,6 +233,49 @@ TEST_F(IndigoApiClientTest, GenerateMissingResultOrError) {
       "Missing result or error in response from https://example.com/generate");
 }
 
+TEST_F(IndigoApiClientTest, GenerateInvalidDataUrl) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(
+      kTestGenerateUrl,
+      R"({"result": {"generatedImageUrl": "https://not-a-data-url.com"}})");
+
+  base::test::TestFuture<base::expected<GeneratedImage, GenerateImageError>>
+      future;
+  client.Generate(kTestBytes, future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message,
+            "Not a data URL: https://not-a-data-url.com");
+}
+
+TEST_F(IndigoApiClientTest, GenerateUnsupportedMimeType) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(
+      kTestGenerateUrl,
+      R"({"result": {"generatedImageUrl": "data:image/xyz;base64,YWJj"}})");
+
+  base::test::TestFuture<base::expected<GeneratedImage, GenerateImageError>>
+      future;
+  client.Generate(kTestBytes, future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "Unsupported image MIME type: image/xyz");
+}
+
 TEST_F(IndigoApiClientTest, GenerateNoUser) {
   ApiClient client(identity_test_env_.identity_manager(),
                    shared_url_loader_factory_);
@@ -351,6 +394,24 @@ TEST_F(IndigoApiClientTest, GenerateSignOutDuringMainRequest) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Request cancelled");
+}
+
+TEST_F(IndigoApiClientTest, GenerateImageTooLarge) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  std::vector<uint8_t> large_bytes(4 * 1024 * 1024 + 1, 0);
+
+  base::test::TestFuture<base::expected<GeneratedImage, GenerateImageError>>
+      future;
+  client.Generate(large_bytes, future.GetCallback());
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "Product image is too large (> 4MB)");
 }
 
 }  // namespace

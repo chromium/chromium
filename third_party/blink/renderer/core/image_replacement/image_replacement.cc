@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/image_replacement/image_replacement.h"
 
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -14,9 +15,57 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace blink {
+
+namespace {
+
+mojom::blink::ImageDataPtr ImageDataForImageResource(
+    ImageResourceContent* image_content) {
+  Image* image = image_content->GetImage();
+  if (!image) {
+    return nullptr;
+  }
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (!image->HasDefaultOrientation()) {
+    paint_image =
+        Image::ResizeAndOrientImage(paint_image, image->Orientation());
+  }
+  sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();
+  if (!sk_image) {
+    return nullptr;
+  }
+  SkPixmap pixmap;
+  Vector<uint8_t> buffer;
+  if (!sk_image->peekPixels(&pixmap)) {
+    SkImageInfo info = sk_image->imageInfo();
+    buffer.resize(info.computeMinByteSize());
+    pixmap.reset(info, buffer.data(), info.minRowBytes());
+    if (!sk_image->readPixels(pixmap, 0, 0)) {
+      return nullptr;
+    }
+  }
+
+  // TODO(b/501538138): Consider encoding on a background thread, rescaling
+  // the image if it's larger than 2048 in some dimension, and passing the
+  // original bytes unmodified if it is already suitable, as possible future
+  // optimizations.
+  Vector<unsigned char> webp_bytes;
+  if (!ImageEncoder::Encode(&webp_bytes, pixmap,
+                            ImageEncoder::ComputeWebpOptions(0.8))) {
+    return nullptr;
+  }
+
+  mojom::blink::ImageDataPtr image_data = mojom::blink::ImageData::New();
+  image_data->webp_bytes = base::span<const uint8_t>(webp_bytes);
+  return image_data;
+}
+
+}  // namespace
 
 // static
 base::expected<mojo::PendingRemote<mojom::blink::ImageReplacement>, String>
@@ -94,6 +143,12 @@ void ImageReplacement::StartReplacement(
     image_element_->ResetImageReplacement();
     return;
   }
+  mojom::blink::ImageDataPtr image_data =
+      ImageDataForImageResource(image_content);
+  if (!image_data) {
+    image_element_->ResetImageReplacement();
+    return;
+  }
 
   // If the image element stopped displaying primary content between now and
   // when `CreateImageReplacement()` was called, we would have already called
@@ -120,7 +175,8 @@ void ImageReplacement::StartReplacement(
           kTraverseDocumentBoundaries | kApplyRemoteViewportTransform);
     }
 
-    host_->ReplacementFrameAttached(frame->GetLocalFrameToken(), quad);
+    host_->ReplacementFrameAttached(frame->GetLocalFrameToken(), quad,
+                                    std::move(image_data));
   }
 }
 

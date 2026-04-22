@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -26,6 +27,11 @@ interface ImageReplacement {
   RenderReplacement();
 };
 
+struct ImageData {
+  // Encoded image bytes (always WebP).
+  mojo_base.mojom.BigBuffer webp_bytes;
+};
+
 // Renderer -> Browser interface to communicate status for a single image
 // replacement.
 interface ImageReplacementHost {
@@ -39,5 +45,8 @@ interface ImageReplacementHost {
   //     to the remote content.
   //   `quad`: The bounding quad of the replacement frame in the main viewport
   //     space, in physical pixels.
-  ReplacementFrameAttached(LocalFrameToken replacement_frame_token, gfx.mojom.QuadF quad);
+  //   `original_image`: Bytes for the original image.
+  ReplacementFrameAttached(LocalFrameToken replacement_frame_token,
+                           gfx.mojom.QuadF quad,
+                           ImageData original_image);
 };

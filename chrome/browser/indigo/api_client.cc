@@ -18,7 +18,9 @@
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "net/base/data_url.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace indigo {
 
@@ -115,6 +117,16 @@ class GenerateRequest : public google_apis::UrlFetchRequestBase {
         return complete(base::unexpected(
             GenerateImageError{"Invalid generated image URL: " + *url_string}));
       }
+      std::string mime_type;
+      std::string charset;
+      if (!net::DataURL::Parse(url, &mime_type, &charset, nullptr)) {
+        return complete(base::unexpected(
+            GenerateImageError{"Not a data URL: " + *url_string}));
+      }
+      if (!blink::IsSupportedImageMimeType(mime_type)) {
+        return complete(base::unexpected(
+            GenerateImageError{"Unsupported image MIME type: " + mime_type}));
+      }
       return complete(GeneratedImage{url});
     }
 
@@ -197,6 +209,12 @@ void ApiClient::ReconstructRequestSender() {
 
 void ApiClient::Generate(base::span<const uint8_t> product_image_bytes,
                          GenerateCallback callback) {
+  if (product_image_bytes.size() > 4 * 1024 * 1024) {
+    std::move(callback).Run(base::unexpected(
+        GenerateImageError{"Product image is too large (> 4MB)"}));
+    return;
+  }
+
   if (!request_sender_) {
     std::move(callback).Run(
         base::unexpected(GenerateImageError{"No signed in user"}));

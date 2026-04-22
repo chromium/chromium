@@ -7,6 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/indigo/fake_api.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -20,6 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,8 +56,12 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
         content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
     ASSERT_TRUE(subframe.get());
 
-    host_remote_->ReplacementFrameAttached(subframe->GetFrameToken(),
-                                           gfx::QuadF());
+    auto image_data = blink::mojom::ImageData::New();
+    image_data->webp_bytes =
+        mojo_base::BigBuffer(std::vector<uint8_t>{1, 2, 3});
+    host_remote_->ReplacementFrameAttached(
+        subframe->GetFrameToken(),
+        gfx::QuadF(gfx::RectF(0.f, 0.f, 100.f, 100.f)), std::move(image_data));
 
     start_replacement_future_.SetValue();
   }
@@ -79,17 +86,37 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
 }  // namespace
 
 class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
- public:
-  IndigoImageReplacementManagerBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kIndigo);
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(fake_api_.InitializeAndListen());
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIndigo, {{features::kIndigoGenerateUrl.name,
+                             fake_api_.GetGenerateUrl().spec()}});
+
+    InProcessBrowserTest::SetUp();
   }
 
- protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+    fake_api_.StartAcceptingConnections();
   }
 
- private:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  FakeApi fake_api_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -137,6 +164,38 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
     })();
   )js")
                   .ExtractBool());
+
+  mock_replacement.WaitForRenderReplacement();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       SendsGenerateRequest) {
+  identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  mock_replacement.WaitForStartReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  EXPECT_TRUE(
+      fake_api_.RequestHasValidProductImage(std::vector<uint8_t>{1, 2, 3}));
+  fake_api_.SendSuccessResponse(GURL(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
+      "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="));
 
   mock_replacement.WaitForRenderReplacement();
 }

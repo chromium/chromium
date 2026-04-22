@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -86,6 +87,11 @@ class IndigoService : public KeyedService,
   }
   base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
       LocalEligibilityChangedCallback callback);
+
+  ApiClient& GetApiClient() const {
+    CHECK(api_client_);
+    return *api_client_;
+  }
 
   // Anchored messages are rate-limited to reduce user fatigue. Clients should
   // use `CanShowAnchoredMessage` to check eligibility before displaying an

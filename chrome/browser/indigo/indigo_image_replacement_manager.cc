@@ -6,7 +6,11 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/indigo/indigo_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
@@ -42,7 +46,8 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
     const blink::LocalFrameToken& replacement_frame_token,
-    const gfx::QuadF& quad) {
+    const gfx::QuadF& quad,
+    blink::mojom::ImageDataPtr original_image) {
   content::RenderFrameHost* image_replacement_subframe =
       content::RenderFrameHost::FromFrameToken(
           content::GlobalRenderFrameHostToken(
@@ -93,6 +98,37 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     if (auto* controller = indigo::IndigoPageActionController::From(tab)) {
       controller->ShowToolbarInside(bounds_rect);
     }
+  }
+
+  // Generate a new image based on the original image bytes.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  IndigoService* service = IndigoServiceFactory::GetForProfile(profile);
+  if (service) {
+    service->GetApiClient().Generate(
+        original_image->webp_bytes,
+        base::BindOnce(
+            [](base::WeakPtr<content::WebContents> web_contents,
+               base::expected<GeneratedImage, GenerateImageError> result) {
+              if (!web_contents) {
+                return;
+              }
+              if (!result.has_value()) {
+                LOG(ERROR) << "Generate image failed: "
+                           << result.error().message;
+                return;
+              }
+
+              // Open the resulting data URL in a new tab.
+              // This is temporary until we can load it into the replacement
+              // frame.
+              content::OpenURLParams open_params(
+                  result->image_url, content::Referrer(),
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+              web_contents->OpenURL(open_params, base::NullCallback());
+            },
+            web_contents->GetWeakPtr()));
   }
 }
 

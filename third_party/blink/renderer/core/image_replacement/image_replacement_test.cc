@@ -36,6 +36,11 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkWebpDecoder.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
@@ -81,10 +86,30 @@ class ErrorEventListener : public NativeEventListener {
 
 class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  public:
-  void ReplacementFrameAttached(const blink::LocalFrameToken& frame_token,
-                                const gfx::QuadF& quad) override {
+  void ReplacementFrameAttached(
+      const blink::LocalFrameToken& frame_token,
+      const gfx::QuadF& quad,
+      mojom::blink::ImageDataPtr original_image) override {
+    EXPECT_TRUE(original_image);
+    if (original_image) {
+      EXPECT_GT(original_image->webp_bytes.size(), 0u);
+
+      // Decode the image.
+      auto data = SkData::MakeWithCopy(original_image->webp_bytes.data(),
+                                       original_image->webp_bytes.size());
+      auto codec = SkWebpDecoder::Decode(data, nullptr);
+      EXPECT_TRUE(codec);
+      if (codec) {
+        SkImageInfo info = codec->getInfo();
+        decoded_bitmap_.allocPixels(info);
+        EXPECT_EQ(codec->getPixels(info, decoded_bitmap_.getPixels(),
+                                   decoded_bitmap_.rowBytes()),
+                  SkCodec::kSuccess);
+      }
+    }
     frame_token_ = frame_token;
     quad_ = quad;
+    original_image_ = std::move(original_image);
   }
 
   const std::optional<blink::LocalFrameToken>& frame_token() const {
@@ -92,6 +117,8 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
   }
 
   const std::optional<gfx::QuadF>& quad() const { return quad_; }
+
+  const SkBitmap& decoded_bitmap() const { return decoded_bitmap_; }
 
   mojo::Receiver<mojom::blink::ImageReplacementHost>& receiver() {
     return receiver_;
@@ -101,6 +128,8 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
   mojo::Receiver<mojom::blink::ImageReplacementHost> receiver_{this};
   std::optional<blink::LocalFrameToken> frame_token_;
   std::optional<gfx::QuadF> quad_;
+  mojom::blink::ImageDataPtr original_image_;
+  SkBitmap decoded_bitmap_;
 };
 
 class ImageReplacementSimTest : public SimTest {};
@@ -189,6 +218,128 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   EXPECT_FALSE(img->UserAgentShadowRoot()->HasChildren());
   EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
                    ->GetImageReplacement(img));
+}
+
+TEST_F(ImageReplacementSimTest, OriginalImageIsEncodedCorrectly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+
+  // A 1x1 solid green PNG.
+  constexpr char kGreenPngDataUrl[] =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU"
+      "lEQVR42mNk+M/wHwAEBgIApD5fRAAAAABJRU5ErkJggg==";
+  main_resource.Complete("<img src=\"" + String(kGreenPngDataUrl) +
+                         "\" id=\"target\">");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_TRUE(img->complete());
+  ASSERT_TRUE(img->GetLayoutObject());
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  // Verify the decoded image in the mock host.
+  const SkBitmap& bitmap = mock_host.decoded_bitmap();
+  ASSERT_FALSE(bitmap.isNull());
+  EXPECT_EQ(bitmap.width(), 1);
+  EXPECT_EQ(bitmap.height(), 1);
+
+  // Verify that it is close to green (0, 255, 0).
+  // Lossy compression might alter the color slightly, so we check for a range.
+  SkColor color = bitmap.getColor(0, 0);
+  EXPECT_NEAR(SkColorGetR(color), 0, 10);
+  EXPECT_NEAR(SkColorGetG(color), 255, 10);
+  EXPECT_NEAR(SkColorGetB(color), 0, 10);
+}
+
+TEST_F(ImageReplacementSimTest, OriginalImageRespectsOrientation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+
+  // Image with orientation 8 (Left-Bottom).
+  // The base64 string was generated from
+  // third_party/blink/web_tests/external/wpt/css/css-images/image-orientation/support/exif-orientation-8-llo.jpg
+  constexpr char kExifJpegDataUrl[] =
+      "data:image/jpeg;base64,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";
+  main_resource.Complete("<img src=\"" + String(kExifJpegDataUrl) +
+                         "\" id=\"target\">");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_TRUE(img->complete());
+  ASSERT_TRUE(img->GetLayoutObject());
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  if (!result.has_value()) {
+    FAIL() << "CreateAndBindReceiver failed: " << result.error();
+  }
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  // Verify the decoded image in the mock host.
+  const SkBitmap& bitmap = mock_host.decoded_bitmap();
+  ASSERT_FALSE(bitmap.isNull());
+
+  EXPECT_EQ(bitmap.width(), 50);
+  EXPECT_EQ(bitmap.height(), 100);
 }
 
 TEST_F(ImageReplacementSimTest, ImageReplacementSendsCorrectQuad) {

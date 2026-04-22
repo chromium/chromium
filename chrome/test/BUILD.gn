@@ -2698,6 +2698,7 @@ if (!is_android) {
       "//chrome/browser/importer",
       "//chrome/browser/importer:browser_tests",
       "//chrome/browser/indigo",
+      "//chrome/browser/indigo:test_support",
       "//chrome/browser/indigo/onboarding:browser_tests",
       "//chrome/browser/language",
       "//chrome/browser/language_detection:browser_tests",
