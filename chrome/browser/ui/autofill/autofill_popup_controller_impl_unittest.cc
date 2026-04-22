@@ -714,6 +714,35 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 }
 
+// Tests that suggestion filter match has correct range when the suggestion
+// contains characters that change their length after lowercasing.
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltering_MatchingMainText_SuggestionLengthChangingCase) {
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
+
+  // "e\u0301" is "e" with a combining acute accent (length 2 in UTF-16).
+  // Searching for "e" should match it and return length 2.
+  ShowSuggestions(
+      manager(), {
+                     Suggestion(u"e\u0301", SuggestionType::kAutocompleteEntry),
+                 });
+
+  controller.SetFilter(AutofillPopupController::StringFilter(u"e"),
+                       AutofillPopupController::FilterSource::kInputChanged);
+
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+  EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 1u);
+
+  // The match range should be (0, 2) in "e\u0301" (length 2).
+  EXPECT_THAT(controller.GetSuggestionFilterMatches(),
+              ::testing::ElementsAre(
+                  std::optional<AutofillPopupController::SuggestionFilterMatch>(
+                      AutofillPopupController::SuggestionFilterMatch{
+                          .main_text_match = gfx::Range(0, 2),
+                      })));
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_SuggestionIsDeletedFromFilteredList) {
   AutofillPopupController& controller =

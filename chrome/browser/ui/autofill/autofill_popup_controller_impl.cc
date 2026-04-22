@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/string_search.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,11 +118,12 @@ SuggestionFiltrationResult FilterSuggestions(
         result.AddSuggestion(suggestion, std::move(filter_match));
       };
 
-  std::optional<std::u16string> lower_string_filter =
-      std::holds_alternative<AutofillPopupController::StringFilter>(filter)
-          ? std::optional(base::i18n::ToLower(
-                *std::get<AutofillPopupController::StringFilter>(filter)))
-          : std::nullopt;
+  std::optional<base::i18n::FixedPatternStringSearch> search;
+  if (std::holds_alternative<AutofillPopupController::StringFilter>(filter)) {
+    search.emplace(*std::get<AutofillPopupController::StringFilter>(filter),
+                   /*case_sensitive=*/false);
+  }
+
   for (const Suggestion& suggestion : suggestions) {
     if (suggestion.filtration_policy ==
         Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
@@ -129,15 +131,15 @@ SuggestionFiltrationResult FilterSuggestions(
     } else if (suggestion.filtration_policy ==
                Suggestion::FiltrationPolicy::kStatic) {
       add_suggestion_filtration_result(suggestion);
-    } else if (lower_string_filter) {
-      if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
-                           .find(lower_string_filter.value());
-          pos != std::u16string::npos) {
+    } else if (search) {
+      size_t match_index = 0;
+      size_t match_length = 0;
+      if (search->Search(suggestion.main_text.value, &match_index,
+                         &match_length, /*forward_search=*/true)) {
         add_suggestion_filtration_result(
-            suggestion,
-            AutofillPopupController::SuggestionFilterMatch{
-                .main_text_match =
-                    gfx::Range(pos, pos + lower_string_filter.value().size())});
+            suggestion, AutofillPopupController::SuggestionFilterMatch{
+                            .main_text_match = gfx::Range(
+                                match_index, match_index + match_length)});
       }
     } else if (std::holds_alternative<SuggestionTabIndex>(filter) &&
                std::get<SuggestionTabIndex>(filter) == suggestion.tab_index) {
