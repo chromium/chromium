@@ -78,9 +78,7 @@ void PushNotificationProfileService::OnPrimaryAccountChanged(
   if (!service->DeviceTokenIsSet()) {
     return;
   }
-  const signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin;
-
-  switch (event.GetEventTypeFor(consent_level)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // The PostTask function must be used for the OnPrimaryAccountSet to
       // ensure that the appropriate Profile has been updated with the newly

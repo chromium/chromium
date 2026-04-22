@@ -36,7 +36,6 @@ namespace {
 
 using ::password_manager::prefs::kCredentialsEnablePasskeys;
 using ::password_manager::prefs::kCredentialsEnableService;
-using ::signin::ConsentLevel;
 
 // Returns true if an import is blocked by a policy with `pref_name`.
 bool ImportBlockedByPolicy(const PrefService* pref_service,
@@ -111,11 +110,12 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
   _consumer = consumer;
 
   // Sign-in is required as a first step in the import flow.
-  CHECK(_identityManager->HasPrimaryAccount(ConsentLevel::kSignin),
+  CHECK(_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M152);
-  [_consumer setUserEmail:_identityManager
-                              ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
-                              .email];
+  [_consumer
+      setUserEmail:_identityManager
+                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                       .email];
 }
 
 #pragma mark - Public

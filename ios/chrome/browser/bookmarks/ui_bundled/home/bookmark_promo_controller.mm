@@ -181,10 +181,9 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  // The account storage promo is not shown if the user is signed-in, so
-  // events with sign-in consent level should be captured and handled.
-  [self handlePrimaryAccountChange:event
-                      consentLevel:signin::ConsentLevel::kSignin];
+  // The account storage promo is not shown if the user is signed-in, so sign-in
+  // events should be captured and handled.
+  [self handlePrimaryAccountChange:event];
 }
 
 #pragma mark - SigninPromoViewConsumer
@@ -207,11 +206,10 @@
 
 #pragma mark - Private methods
 
-// Handles the given primary account change event for the given consent level.
+// Handles the given primary account change event.
 - (void)handlePrimaryAccountChange:
-            (const signin::PrimaryAccountChangeEvent&)event
-                      consentLevel:(signin::ConsentLevel)consentLevel {
-  switch (event.GetEventTypeFor(consentLevel)) {
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoViewMediator.showSpinner) {
         self.shouldShowSigninPromo = NO;
