@@ -4,18 +4,16 @@
 
 chrome.browserAction.onClicked.addListener(() => {
   chrome.test.assertEq(undefined, chrome.storage);
-  chrome.permissions.request(
-      {permissions:['storage']},
-      (granted) => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertTrue(granted);
-        chrome.test.assertTrue(!!chrome.storage);
-        chrome.permissions.contains({permissions: ['storage']}, (result) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertTrue(result);
-          chrome.test.notifyPass();
-        });
-      });
+  chrome.permissions.request({permissions: ['storage']}, (granted) => {
+    chrome.test.assertNoLastError();
+    chrome.test.assertTrue(granted);
+    chrome.test.assertTrue(!!chrome.storage);
+    chrome.permissions.contains({permissions: ['storage']}, (result) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(result);
+      chrome.test.notifyPass();
+    });
+  });
 });
 
 chrome.test.sendMessage('ready');

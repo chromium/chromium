@@ -4,4 +4,4 @@
 
 document.body.onload = () => {
   window.domAutomationController.send('panel_dom');
-}
+};

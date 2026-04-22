@@ -4,8 +4,8 @@
 
 function register() {
   return navigator.serviceWorker.register('sw.js')
-    .then(() => navigator.serviceWorker.ready)
-    .then(() => 'ready');
+      .then(() => navigator.serviceWorker.ready)
+      .then(() => 'ready');
 }
 
 async function doFetch(url) {

@@ -6,5 +6,5 @@ chrome.runtime.onConnect.addListener(port => {
   // Store the port to prevent it from garbage collection, which may
   // result in closing the port.
   self.port = port;
-  port.postMessage({ msg: 'Hello' });
+  port.postMessage({msg: 'Hello'});
 });

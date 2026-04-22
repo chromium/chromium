@@ -25,7 +25,7 @@ async function perform2SecondsOfWebSocketActivity() {
   // and invalidate the test.
   const MESSAGE = 'test message';
   const start = performance.now();
-  const waitForMs = 2 * 1000; // wait for 2 seconds.
+  const waitForMs = 2 * 1000;  // wait for 2 seconds.
 
   let reachedEnd = false;
 

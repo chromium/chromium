@@ -10,10 +10,11 @@ function copyTextData(text) {
   input.value = text;
   input.focus();
   input.select();
-  if (document.execCommand('Copy'))
+  if (document.execCommand('Copy')) {
     chrome.test.succeed();
-  else
+  } else {
     chrome.test.fail('copy text failed');
+  }
 }
 
 function testCopyFoo() {
@@ -27,6 +28,6 @@ function testCopyBar() {
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     testCopyFoo,
-    testCopyBar
+    testCopyBar,
   ]);
-})
+});

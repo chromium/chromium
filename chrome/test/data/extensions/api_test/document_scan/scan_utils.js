@@ -18,7 +18,7 @@ async function openScanner(scannerId) {
 }
 
 async function getOptionGroups(scannerHandle) {
- return new Promise(resolve => {
+  return new Promise(resolve => {
     chrome.documentScan.getOptionGroups(scannerHandle, resolve);
   });
 }
@@ -34,7 +34,7 @@ async function getScannerId() {
     local: true,
     secure: true,
   };
-  let response = await getScannerList(filter);
+  const response = await getScannerList(filter);
   if (response.result != OperationResult.SUCCESS) {
     return null;
   }
@@ -50,13 +50,13 @@ async function getScannerHandle() {
     return null;
   }
 
-  let openResponse = await openScanner(scannerId);
+  const openResponse = await openScanner(scannerId);
   return openResponse.scannerHandle;
 }
 
 async function startScan(scannerHandle, maxReadSize) {
   return new Promise(resolve => {
-    let options = {
+    const options = {
       format: 'format',
     };
     if (maxReadSize != undefined) {

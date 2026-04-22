@@ -26,8 +26,8 @@ chrome.runtime.onConnectNative.addListener(port => {
               message.caller_url, `${window.location.origin}/`);
 
           chrome.test.assertTrue(!!message.args);
-          chrome.test.assertTrue(message.args.includes(
-              `--native-messaging-connect-extension=${
+          chrome.test.assertTrue(
+              message.args.includes(`--native-messaging-connect-extension=${
                   document.location.host}`));
           chrome.test.assertTrue(message.args.includes(
               `--native-messaging-connect-host=${APP_NAME}`));
@@ -41,7 +41,7 @@ chrome.runtime.onConnectNative.addListener(port => {
           } else {
             port.postMessage(messagesToSend[currentMessage]);
           }
-        };
+        }
         port.onMessage.addListener(onMessage);
       },
 
@@ -52,7 +52,7 @@ chrome.runtime.onConnectNative.addListener(port => {
 
         // Send first message that should stop the host.
         port.postMessage({'stopHostTest': true});
-      }
+      },
     ]);
   });
 });

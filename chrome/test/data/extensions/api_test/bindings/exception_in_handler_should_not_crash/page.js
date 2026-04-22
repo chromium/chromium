@@ -5,7 +5,7 @@
 // A named function that throws the error, used to verify that the error message
 // has a stack trace that contains the relevant stack frames.
 function throwNewError(message) {
-  throw new Error(message)
+  throw new Error(message);
 }
 
 chrome.test.runTests([
@@ -21,7 +21,7 @@ chrome.test.runTests([
   },
 
   function tabsOnCreatedThrowsError() {
-    var listener = function() {
+    const listener = function() {
       throwNewError('hi');
     };
     chrome.test.setExceptionHandler(function(message, exception) {
@@ -44,5 +44,5 @@ chrome.test.runTests([
     chrome.permissions.getAll(function() {
       throwNewError('boom');
     });
-  }
+  },
 ]);

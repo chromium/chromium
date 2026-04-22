@@ -2,19 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let testWindowId1, testWindowId2;
+let testWindowId1;
+let testWindowId2;
 
 function contains(arr, value) {
-  return arr.some(function(element) { return element == value; });
+  return arr.some(function(element) {
+    return element == value;
+  });
 }
 
 function checkEqualSets(set1, set2) {
-  if (set1.length != set2.length)
+  if (set1.length != set2.length) {
     return false;
+  }
 
   for (let x = 0; x < set1.length; x++) {
-    if (!set2.some(function(v) { return v == set1[x]; }))
+    if (!set2.some(function(v) {
+          return v == set1[x];
+        })) {
       return false;
+    }
   }
 
   return true;
@@ -26,140 +33,167 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 let isAndroid = false;
 
 loadScript.then(async function() {
-chrome.test.runTests([
-  async function setup() {
-    const tabs1 = ['http://e.com', 'http://a.com', 'http://a.com/b.html',
-                 'http://b.com', 'http://a.com/d.html', 'http://a.com/c.html'];
-    const tabs2 = ['http://c.com/', 'http://a.com', 'http://a.com/b.html'];
-    testWindowId1 = (await chrome.windows.create({url: tabs1})).id;
-    testWindowId2 = (await chrome.windows.create({url: tabs2})).id;
-    isAndroid = (await chrome.runtime.getPlatformInfo()).os == 'android';
-    waitForAllTabs(chrome.test.succeed);
-  },
+  chrome.test.runTests([
+    async function setup() {
+      const tabs1 = [
+        'http://e.com', 'http://a.com', 'http://a.com/b.html', 'http://b.com',
+        'http://a.com/d.html', 'http://a.com/c.html'
+      ];
+      const tabs2 = ['http://c.com/', 'http://a.com', 'http://a.com/b.html'];
+      testWindowId1 = (await chrome.windows.create({url: tabs1})).id;
+      testWindowId2 = (await chrome.windows.create({url: tabs2})).id;
+      isAndroid = (await chrome.runtime.getPlatformInfo()).os == 'android';
+      waitForAllTabs(chrome.test.succeed);
+    },
 
-  // TODO(crbug.com/40254426): "Current window" can rely on window focus, which
-  // can be flaky outside of interactive UI tests. We should move this to an
-  // interactive UI test (but not the rest of these, which are useful to run on
-  // other platforms as part of the browser test suite).
-  // function highlightCurrentWindow() {
-  //   // Check that omitting the windowId highlights the current window
-  //   chrome.windows.getCurrent(pass(function(win1) {
-  //     chrome.tabs.highlight({tabs: [0]}, pass(function(win2) {
-  //       assertEq(win1.id, win2.id);
-  //     }));
-  //   }));
-  // },
+    // TODO(crbug.com/40254426): "Current window" can rely on window focus,
+    // which can be flaky outside of interactive UI tests. We should move this
+    // to an interactive UI test (but not the rest of these, which are useful to
+    // run on other platforms as part of the browser test suite). function
+    // highlightCurrentWindow() {
+    //   // Check that omitting the windowId highlights the current window
+    //   chrome.windows.getCurrent(pass(function(win1) {
+    //     chrome.tabs.highlight({tabs: [0]}, pass(function(win2) {
+    //       assertEq(win1.id, win2.id);
+    //     }));
+    //   }));
+    // },
 
-  function highlightA() {
-    chrome.tabs.query({windowId: testWindowId1, url: 'http://a.com/*'},
+    function highlightA() {
+      chrome.tabs.query(
+          {windowId: testWindowId1, url: 'http://a.com/*'},
+          pass(function(tabs) {
+            assertEq(4, tabs.length);
+            // TODO(https://crbug.com/473593117): Port this once we support
+            // the tabs.onHighlighted event.
+            if (!isAndroid) {
+              chrome.test.listenOnce(
+                  chrome.tabs.onHighlighted, function(highlightInfo) {
+                    const tabIds = tabs.map(function(tab) {
+                      return tab.id;
+                    });
+                    assertEq(highlightInfo.windowId, testWindowId1);
+                    assertTrue(
+                        checkEqualSets(tabIds, highlightInfo.tabIds),
+                        `Expected ${JSON.stringify(tabIds)}; ` +
+                            `found ${JSON.stringify(highlightInfo.tabIds)}`);
+                  });
+            }
+            const tabIndices = tabs.map(function(tab) {
+              return tab.index;
+            });
+            chrome.tabs.highlight(
+                {
+                  windowId: testWindowId1,
+                  tabs: tabIndices,
+                },
+                pass(function(win) {
+                  // Verify the 'highlighted' property for every tab.
+                  win.tabs.forEach(function(tab) {
+                    assertEq(contains(tabIndices, tab.index), tab.highlighted);
+                  });
+                }));
+          }));
+    },
+
+    function highlightB() {
+      chrome.tabs.query(
+          {windowId: testWindowId1, url: 'http://b.com/*'},
+          pass(function(tabs) {
+            assertEq(1, tabs.length);
+            // TODO(https://crbug.com/473593117): Port this once we support
+            // the tabs.onHighlighted event.
+            if (!isAndroid) {
+              chrome.test.listenOnce(
+                  chrome.tabs.onHighlighted, function(highlightInfo) {
+                    const tabIds = tabs.map(function(tab) {
+                      return tab.id;
+                    });
+                    assertEq(highlightInfo.windowId, testWindowId1);
+                    assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds));
+                  });
+            }
+            const tabIndices = tabs.map(function(tab) {
+              return tab.index;
+            });
+            chrome.tabs.highlight(
+                {windowId: testWindowId1, tabs: tabIndices},
+                pass(function(win) {
+                  // Verify the 'highlighted' property for every tab.
+                  win.tabs.forEach(function(tab) {
+                    assertEq(contains(tabIndices, tab.index), tab.highlighted);
+                  });
+                }));
+          }));
+    },
+
+    function highlightAWindow2() {
+      chrome.tabs.query(
+          {windowId: testWindowId2, url: 'http://a.com/*'},
+          pass(function(tabs) {
+            assertEq(2, tabs.length);
+            // TODO(https://crbug.com/473593117): Port this once we support
+            // the tabs.onHighlighted event.
+            if (!isAndroid) {
+              chrome.test.listenOnce(
+                  chrome.tabs.onHighlighted, function(highlightInfo) {
+                    const tabIds = tabs.map(function(tab) {
+                      return tab.id;
+                    });
+                    assertEq(highlightInfo.windowId, testWindowId2);
+                    assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds));
+                  });
+            }
+            const tabIndices = tabs.map(function(tab) {
+              return tab.index;
+            });
+            chrome.tabs.highlight(
+                {windowId: testWindowId2, tabs: tabIndices},
+                pass(function(win) {
+                  // Verify the 'highlighted' property for every tab.
+                  win.tabs.forEach(function(tab) {
+                    assertEq(contains(tabIndices, tab.index), tab.highlighted);
+                  });
+
+                  // Verify that nothing has changed in window 1.
+                  chrome.tabs.query(
+                      {windowId: testWindowId1, highlighted: true},
                       pass(function(tabs) {
-      assertEq(4, tabs.length);
-      // TODO(https://crbug.com/473593117): Port this once we support
-      // the tabs.onHighlighted event.
-      if (!isAndroid) {
-        chrome.test.listenOnce(chrome.tabs.onHighlighted,
-                               function(highlightInfo) {
-          const tabIds = tabs.map(function(tab) { return tab.id; });
-          assertEq(highlightInfo.windowId, testWindowId1);
-          assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds),
-                     `Expected ${JSON.stringify(tabIds)}; ` +
-                     `found ${JSON.stringify(highlightInfo.tabIds)}`);
-        });
-      }
-      const tabIndices = tabs.map(function(tab) { return tab.index; });
-      chrome.tabs.highlight({
-        windowId: testWindowId1,
-        tabs: tabIndices
-      }, pass(function(win) {
-        // Verify the 'highlighted' property for every tab.
-        win.tabs.forEach(function(tab) {
-          assertEq(contains(tabIndices, tab.index), tab.highlighted);
-        });
-      }));
-    }));
-  },
+                        assertEq(1, tabs.length);
+                      }));
+                }));
+          }));
+    },
 
-  function highlightB() {
-    chrome.tabs.query({windowId: testWindowId1, url: 'http://b.com/*'},
-                      pass(function(tabs) {
-      assertEq(1, tabs.length);
-      // TODO(https://crbug.com/473593117): Port this once we support
-      // the tabs.onHighlighted event.
-      if (!isAndroid) {
-        chrome.test.listenOnce(chrome.tabs.onHighlighted,
-                               function(highlightInfo) {
-          const tabIds = tabs.map(function(tab) { return tab.id; });
-          assertEq(highlightInfo.windowId, testWindowId1);
-          assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds));
-        });
-      }
-      const tabIndices = tabs.map(function(tab) { return tab.index; });
-      chrome.tabs.highlight({windowId: testWindowId1, tabs: tabIndices},
-                         pass(function(win) {
-        // Verify the 'highlighted' property for every tab.
-        win.tabs.forEach(function(tab) {
-          assertEq(contains(tabIndices, tab.index), tab.highlighted);
-        });
-      }));
-    }));
-  },
+    function removeTab() {
+      chrome.tabs.query(
+          {windowId: testWindowId2, highlighted: true, active: false},
+          pass(function(tabs) {
+            const tabId = tabs[0].id;
+            // TODO(https://crbug.com/473593117): Port this once we support
+            // the tabs.onHighlighted event.
+            if (!isAndroid) {
+              chrome.test.listenOnce(
+                  chrome.tabs.onHighlighted, function(highlightInfo) {
+                    assertEq(1, highlightInfo.tabIds.length);
+                    assertTrue(tabId != highlightInfo.tabIds[0]);
+                  });
+            }
+            chrome.tabs.remove(tabId, pass(function() {
+                                 assertTrue(true);
+                               }));
+          }));
+    },
 
-  function highlightAWindow2() {
-    chrome.tabs.query({windowId: testWindowId2, url: 'http://a.com/*'},
-                      pass(function(tabs) {
-      assertEq(2, tabs.length);
-      // TODO(https://crbug.com/473593117): Port this once we support
-      // the tabs.onHighlighted event.
-      if (!isAndroid) {
-        chrome.test.listenOnce(chrome.tabs.onHighlighted,
-                               function(highlightInfo) {
-          const tabIds = tabs.map(function(tab) { return tab.id; });
-          assertEq(highlightInfo.windowId, testWindowId2);
-          assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds));
-        });
-      }
-      const tabIndices = tabs.map(function(tab) { return tab.index; });
-      chrome.tabs.highlight({windowId: testWindowId2, tabs: tabIndices},
-                         pass(function(win) {
-        // Verify the 'highlighted' property for every tab.
-        win.tabs.forEach(function(tab) {
-          assertEq(contains(tabIndices, tab.index), tab.highlighted);
-        });
+    function noTabsHighlighted() {
+      chrome.tabs.highlight(
+          {windowId: testWindowId1, tabs: []}, fail('No highlighted tab'));
+    },
 
-        // Verify that nothing has changed in window 1.
-        chrome.tabs.query({windowId: testWindowId1, highlighted: true},
-                          pass(function(tabs) {
-          assertEq(1, tabs.length);
-        }));
-      }));
-    }));
-  },
-
-  function removeTab() {
-    chrome.tabs.query(
-        {windowId: testWindowId2, highlighted: true, active: false},
-        pass(function(tabs) {
-      const tabId = tabs[0].id;
-      // TODO(https://crbug.com/473593117): Port this once we support
-      // the tabs.onHighlighted event.
-      if (!isAndroid) {
-        chrome.test.listenOnce(chrome.tabs.onHighlighted,
-                               function(highlightInfo) {
-          assertEq(1, highlightInfo.tabIds.length);
-          assertTrue(tabId != highlightInfo.tabIds[0]);
-        });
-      }
-      chrome.tabs.remove(tabId, pass(function() { assertTrue(true); }));
-    }));
-  },
-
-  function noTabsHighlighted() {
-    chrome.tabs.highlight({windowId: testWindowId1, tabs: []},
-                       fail('No highlighted tab'));
-  },
-
-  function indexNotFound() {
-    chrome.tabs.highlight({windowId: testWindowId1, tabs: [3333]},
-                       fail('No tab at index: 3333.'));
-  }
-])});
+    function indexNotFound() {
+      chrome.tabs.highlight(
+          {windowId: testWindowId1, tabs: [3333]},
+          fail('No tab at index: 3333.'));
+    },
+  ]);
+});

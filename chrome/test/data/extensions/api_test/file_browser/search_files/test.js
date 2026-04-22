@@ -23,14 +23,14 @@ async function getDownloads() {
   return new Promise((resolve, reject) => {
     chrome.fileManagerPrivate.getVolumeMetadataList((volumeMetadaList) => {
       const downloads =
-          volumeMetadaList.filter((v) => v.volumeId.startsWith('downloads:'))
+          volumeMetadaList.filter((v) => v.volumeId.startsWith('downloads:'));
       if (downloads.length !== 1) {
         reject(`Expected 1 downloads directory found ${downloads.length}`);
       } else {
         chrome.fileSystem.requestFileSystem(
             {
               volumeId: downloads[0].volumeId,
-              writable: !downloads[0].isReadOnly
+              writable: !downloads[0].isReadOnly,
             },
             (fileSystem) => {
               resolve(fileSystem.root);
@@ -131,8 +131,7 @@ chrome.test.runTests([
             resolve(entryList);
           });
     });
-    assertHasEntries(
-        ['/bar_01012020.jpg', '/bar_15012020.jpg'], jan01Entries);
+    assertHasEntries(['/bar_01012020.jpg', '/bar_15012020.jpg'], jan01Entries);
     const noEntries = await new Promise((resolve) => {
       chrome.fileManagerPrivate.searchFiles(
           {

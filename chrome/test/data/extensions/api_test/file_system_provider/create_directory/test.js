@@ -14,7 +14,7 @@ const TESTING_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'kitty',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -54,8 +54,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata[`/${TESTING_DIRECTORY.name}`] =
-      TESTING_DIRECTORY;
+  testUtil.defaultMetadata[`/${TESTING_DIRECTORY.name}`] = TESTING_DIRECTORY;
 
   chrome.fileSystemProvider.onCreateDirectoryRequested.addListener(
       onCreateDirectoryRequested);
@@ -75,7 +74,8 @@ function runTests() {
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, entry.name);
             chrome.test.assertTrue(entry.isDirectory);
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -84,13 +84,13 @@ function runTests() {
     // exists.
     function createDirectoryErrorExists() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name, {create: true, exclusive: true},
-          function(entry) {
+          TESTING_DIRECTORY.name,
+          {create: true, exclusive: true}, function(entry) {
             chrome.test.fail('Created a directory, but should fail.');
           }, chrome.test.callbackPass(function(error) {
             chrome.test.assertEq('InvalidModificationError', error.name);
           }));
-    }
+    },
   ]);
 }
 
@@ -98,7 +98,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

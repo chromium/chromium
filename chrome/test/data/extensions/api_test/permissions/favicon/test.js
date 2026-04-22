@@ -4,7 +4,6 @@
 
 
 window.onload = function() {
-
   chrome.test.runTests([
     function favicon() {
       const img = document.getElementById('favicon');
@@ -18,7 +17,6 @@ window.onload = function() {
       chrome.test.assertEq(0, img.naturalWidth);
       chrome.test.assertEq(0, img.naturalHeight);
       chrome.test.succeed();
-    }
+    },
   ]);
-
 };

@@ -8,8 +8,8 @@ chrome.test.runTests([
       chrome.test.assertEq('writable.txt', entry.name);
       // Test that we cannot get a writable entry for the root entry.
       chrome.fileSystem.getWritableEntry(
-          entry.filesystem.root, chrome.test.callbackFail(
-              'Invalid parameters'));
+          entry.filesystem.root,
+          chrome.test.callbackFail('Invalid parameters'));
     }));
-  }
+  },
 ]);

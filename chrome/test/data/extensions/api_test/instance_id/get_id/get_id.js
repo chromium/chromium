@@ -9,7 +9,7 @@ async function getIDWithoutCallback() {
     chrome.test.succeed();
   } catch (e) {
     chrome.test.fail(`getID Promise rejected with error: ${e}`);
-  };
+  }
 }
 
 function getIDWithCallback() {
@@ -38,12 +38,12 @@ function getIDTwice() {
     oldID = id;
 
     chrome.instanceID.getID(function(id) {
-        if (!id || id != oldID) {
-          chrome.test.fail('Same ID should be returned.');
-          return;
-        }
-        chrome.test.succeed();
-      });
+      if (!id || id != oldID) {
+        chrome.test.fail('Same ID should be returned.');
+        return;
+      }
+      chrome.test.succeed();
+    });
   });
 }
 

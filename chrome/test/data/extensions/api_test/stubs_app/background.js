@@ -11,17 +11,20 @@ function getApiPaths() {
   apiDefinitions.forEach(function(module) {
     const namespace = module.namespace;
     let apiFeature = apiFeatures[namespace];
-    if (Array.isArray(apiFeature))
+    if (Array.isArray(apiFeature)) {
       apiFeature = apiFeatures[namespace][0];
+    }
 
     // Skip internal APIs.
-    if (apiFeature.internal)
+    if (apiFeature.internal) {
       return;
+    }
 
     // Get the API functions and events.
     [module.functions, module.events].forEach(function(section) {
-      if (typeof(section) == 'undefined')
+      if (typeof (section) === 'undefined') {
         return;
+      }
       // Pieces of the module don't inherit from Array/Object.
       Array.prototype.forEach.call(section, function(entry) {
         const fullName = `${namespace}.${entry.name}`;
@@ -35,10 +38,13 @@ function getApiPaths() {
         // - `permissions.removeHostAccessRequest()` (restricted to MV3)
         // TODO(crbug.com/40609281)
         const skipPaths = [
-          'idle.getAutoLockDelay', 'power.reportActivity',
-          'runtime.getContexts', 'runtime.onUserScriptConnect',
-          'runtime.onUserScriptMessage', 'permissions.addHostAccessRequest',
-          'permissions.removeHostAccessRequest'
+          'idle.getAutoLockDelay',
+          'power.reportActivity',
+          'runtime.getContexts',
+          'runtime.onUserScriptConnect',
+          'runtime.onUserScriptMessage',
+          'permissions.addHostAccessRequest',
+          'permissions.removeHostAccessRequest',
         ];
         if (!skipPaths.includes(fullName)) {
           apiPaths.push(fullName);
@@ -74,8 +80,9 @@ function testPath(path) {
 
     // The component should be defined unless it is lastError, which depends on
     // there being an error.
-    if (typeof(module) == 'undefined' && path != 'runtime.lastError')
+    if (typeof (module) === 'undefined' && path != 'runtime.lastError') {
       return false;
+    }
   }
   return true;
 }
@@ -93,7 +100,8 @@ function doTest() {
   if (failures.length == 0) {
     chrome.test.notifyPass();
   } else {
-    console.log(`failures on:\n${failures.join('\n')}\n\n\n` +
+    console.log(
+        `failures on:\n${failures.join('\n')}\n\n\n` +
         '>>> See comment in stubs_apitest.cc for a ' +
         'hint about fixing this failure.\n\n');
     chrome.test.notifyFail('failed');

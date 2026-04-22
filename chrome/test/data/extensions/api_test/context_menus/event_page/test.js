@@ -4,20 +4,21 @@
 
 chrome.test.runTests([
   function stringID() {
-    let id1 = chrome.contextMenus.create(
-        {id: 'id1', title: 'title1'}, function() {
+    const id1 =
+        chrome.contextMenus.create({id: 'id1', title: 'title1'}, function() {
           chrome.test.assertNoLastError();
           chrome.test.assertEq('id1', id1);
           chrome.contextMenus.remove('id1', chrome.test.callbackPass());
-    });
+        });
   },
 
   function generatedID() {
     chrome.contextMenus.create(
         {title: 'title2'},
-        chrome.test.callbackFail('Extensions using event pages or Service ' +
-                                 'Workers must pass an id parameter to ' +
-                                 'chrome.contextMenus.create'));
+        chrome.test.callbackFail(
+            'Extensions using event pages or Service ' +
+            'Workers must pass an id parameter to ' +
+            'chrome.contextMenus.create'));
   },
 
   function noOnClick() {
@@ -27,5 +28,5 @@ chrome.test.runTests([
             'Extensions using event pages or Service Workers cannot pass an ' +
             'onclick parameter to chrome.contextMenus.create. Instead, use ' +
             'the chrome.contextMenus.onClicked event.'));
-  }
+  },
 ]);

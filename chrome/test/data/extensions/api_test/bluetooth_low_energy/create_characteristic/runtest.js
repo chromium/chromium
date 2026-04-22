@@ -19,25 +19,33 @@ function failOnSuccess() {
 }
 
 
-var service = { uuid: '00001234-0000-1000-8000-00805f9b34fb', isPrimary: true };
+const service = {
+  uuid: '00001234-0000-1000-8000-00805f9b34fb',
+  isPrimary: true
+};
 chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
-  if (failOnError(serviceId))
+  if (failOnError(serviceId)) {
     return;
+  }
 
-  var characteristic = { uuid: '00001234-0000-1000-8000-00805f9b34fa',
-    properties: ['read']};
+  const characteristic = {
+    uuid: '00001234-0000-1000-8000-00805f9b34fa',
+    properties: ['read']
+  };
   // Invalid service ID.
-  chrome.bluetoothLowEnergy.createCharacteristic(characteristic,
-      'invalidServiceId', function(characteristicId) {
-    if (failOnSuccess())
-      return;
-
-    // Valid service ID.
-    chrome.bluetoothLowEnergy.createCharacteristic(characteristic, serviceId,
-          function(characteristicId) {
-        if (failOnError(characteristicId))
+  chrome.bluetoothLowEnergy.createCharacteristic(
+      characteristic, 'invalidServiceId', function(characteristicId) {
+        if (failOnSuccess()) {
           return;
-        chrome.test.succeed();
-    });
-  });
+        }
+
+        // Valid service ID.
+        chrome.bluetoothLowEnergy.createCharacteristic(
+            characteristic, serviceId, function(characteristicId) {
+              if (failOnError(characteristicId)) {
+                return;
+              }
+              chrome.test.succeed();
+            });
+      });
 });

@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 // The id of an extension we're using for install tests.
-var extensionId = "enfkhcelefdadlmkffamgdlgplcionje";
+const extensionId = 'enfkhcelefdadlmkffamgdlgplcionje';
 
 // The id of an app we're using for install tests.
-var appId = "iladmdjkfniedhfhcfoefgojhgaiaccc";
+const appId = 'iladmdjkfniedhfhcfoefgojhgaiaccc';
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertNoLastError = chrome.test.assertNoLastError;
-var assertTrue = chrome.test.assertTrue;
-var callbackFail = chrome.test.callbackFail;
-var callbackPass = chrome.test.callbackPass;
-var listenOnce = chrome.test.listenOnce;
-var runTests = chrome.test.runTests;
-var succeed = chrome.test.succeed;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertNoLastError = chrome.test.assertNoLastError;
+const assertTrue = chrome.test.assertTrue;
+const callbackFail = chrome.test.callbackFail;
+const callbackPass = chrome.test.callbackPass;
+const listenOnce = chrome.test.listenOnce;
+const runTests = chrome.test.runTests;
+const succeed = chrome.test.succeed;
 
 // Calls |callback| with true/false indicating whether an item with the |id|
 // is installed.
@@ -37,10 +37,10 @@ function checkInstalled(callback) {
 // This returns the string contents of the extension's manifest file.
 function getManifest(alternativePath) {
   // Do a synchronous XHR to get the manifest.
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET",
-           alternativePath ? alternativePath : "extension/manifest.json",
-           false);
+  const xhr = new XMLHttpRequest();
+  xhr.open(
+      'GET', alternativePath ? alternativePath : 'extension/manifest.json',
+      false);
   xhr.send(null);
   return xhr.responseText;
 }
@@ -50,15 +50,13 @@ function getManifest(alternativePath) {
 function installAndCleanUp(installOptions, whileInstalled) {
   // Begin installing.
   chrome.webstorePrivate.beginInstallWithManifest3(
-      installOptions,
-      callbackPass(function(result) {
+      installOptions, callbackPass(function(result) {
         assertNoLastError();
-        assertEq("", result);
+        assertEq('', result);
 
         // Now complete the installation.
         chrome.webstorePrivate.completeInstall(
-            extensionId,
-            callbackPass(function(result) {
+            extensionId, callbackPass(function(result) {
               assertNoLastError();
               assertEq(undefined, result);
 
@@ -75,15 +73,13 @@ function installAndCleanUp(installOptions, whileInstalled) {
 function install(installOptions) {
   // Begin installing.
   chrome.webstorePrivate.beginInstallWithManifest3(
-      installOptions,
-      callbackPass(function(result) {
+      installOptions, callbackPass(function(result) {
         assertNoLastError();
-        assertEq("", result);
+        assertEq('', result);
 
         // Now complete the installation.
         chrome.webstorePrivate.completeInstall(
-            extensionId,
-            callbackPass(function(result) {
+            extensionId, callbackPass(function(result) {
               assertNoLastError();
               assertEq(undefined, result);
             }));

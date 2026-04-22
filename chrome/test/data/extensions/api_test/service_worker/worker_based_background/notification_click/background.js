@@ -7,11 +7,11 @@ chrome.test.assertFalse(chrome.test.isProcessingUserGesture());
 
 // Note: showNotification() requires SW to be activated first.
 self.onactivate = function(e) {
-  self.registration.showNotification('Hello world',
-      {body: 'Body here'})
+  self.registration.showNotification('Hello world', {body: 'Body here'})
       .then((e) => {
         chrome.test.notifyPass();
-      }).catch((e) => {
+      })
+      .catch((e) => {
         chrome.test.notifyFailure('showNotification failed');
       });
 };

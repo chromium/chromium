@@ -14,7 +14,7 @@ chrome.test.runTests([
           }
           checkEntry(entries[0], 'open_existing1.txt', false, false);
           checkEntry(entries[1], 'open_existing2.txt', false, false);
-        })
+        }),
     );
-  }
+  },
 ]);

@@ -29,8 +29,7 @@ function getEntry(volumeType, path) {
 // Run the tests.
 chrome.test.runTests([
   function testMountCrostini() {
-    chrome.fileManagerPrivate.mountCrostini(
-        chrome.test.callbackPass());
+    chrome.fileManagerPrivate.mountCrostini(chrome.test.callbackPass());
   },
   function testSharePathsWithCrostiniSuccess() {
     getEntry('downloads', 'share_dir').then((entry) => {

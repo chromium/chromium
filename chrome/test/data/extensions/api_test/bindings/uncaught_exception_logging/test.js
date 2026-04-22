@@ -5,18 +5,18 @@
 function verifyException(expectedMessage, tabId) {
   function onDebuggerEvent(debuggee, method, params) {
     if (debuggee.tabId == tabId && method == 'Runtime.exceptionThrown') {
-      var exception = params.exceptionDetails.exception;
+      const exception = params.exceptionDetails.exception;
       if (exception.value.indexOf(expectedMessage) > -1) {
         chrome.debugger.onEvent.removeListener(onDebuggerEvent);
         chrome.test.succeed();
       }
     }
-  };
+  }
   chrome.debugger.onEvent.addListener(onDebuggerEvent);
-  chrome.debugger.attach({ tabId: tabId }, "1.1", function() {
+  chrome.debugger.attach({tabId: tabId}, '1.1', function() {
     // Enabling console provides both stored and new messages via the
     // Console.messageAdded event.
-    chrome.debugger.sendCommand({ tabId: tabId }, "Runtime.enable");
+    chrome.debugger.sendCommand({tabId: tabId}, 'Runtime.enable');
   });
 }
 
@@ -32,19 +32,16 @@ chrome.test.runTests([
   async function testExceptionInInjectedScript() {
     function injectScriptAndSendMessage(tab) {
       chrome.tabs.executeScript(
-          tab.id,
-          { file: 'content_script.js' },
-          function() {
+          tab.id, {file: 'content_script.js'}, function() {
             verifyException('Exception thrown in injected script.', tab.id);
           });
     }
 
     chrome.test.getConfig(async function(config) {
-      const testUrl =
-          `http://localhost:${config.testServer.port}/` +
+      const testUrl = `http://localhost:${config.testServer.port}/` +
           'extensions/test_file.html';
       const tab = await openTab(testUrl);
       injectScriptAndSendMessage(tab);
     });
-  }
+  },
 ]);

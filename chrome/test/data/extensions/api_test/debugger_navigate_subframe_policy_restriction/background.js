@@ -16,7 +16,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     function onEvent(debuggeeId, message, params) {
       if (message === 'Network.requestWillBeSentExtraInfo') {
         requestExtraInfoCount++;
-      } else if (message ===  'Network.responseReceivedExtraInfo') {
+      } else if (message === 'Network.responseReceivedExtraInfo') {
         responseExtraInfoCount++;
       }
     }
@@ -24,12 +24,13 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     const tab = await openTab(topURL);
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
     chrome.debugger.sendCommand(debuggee, 'Page.enable', null);
     chrome.debugger.sendCommand(debuggee, 'Network.enable', null);
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Page.getFrameTree', resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Page.getFrameTree', resolve));
 
     // Navigation causes OOPIF-transfer
     // Verify that ExtraInfo events are being received
@@ -40,26 +41,31 @@ chrome.test.getConfig(config => chrome.test.runTests([
         frame.src = '${subframeURL}';
       })
     `;
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Runtime.evaluate', {
-            expression,
-            awaitPromise: true
-        }, resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Runtime.evaluate', {
+              expression,
+              awaitPromise: true,
+            },
+            resolve));
     chrome.test.assertNoLastError();
-    chrome.test.assertTrue(requestExtraInfoCount > 0,
+    chrome.test.assertTrue(
+        requestExtraInfoCount > 0,
         'No "requestWillBeSentExtraInfo" event received for OOPIF transfer');
     requestExtraInfoCount = 0;
-    chrome.test.assertTrue(responseExtraInfoCount > 0,
+    chrome.test.assertTrue(
+        responseExtraInfoCount > 0,
         'No "responseReceivedExtraInfo" event received for OOPIF transfer');
     responseExtraInfoCount = 0;
 
     // Attach to OOPIF target
-    const targets = await new Promise(resolve =>
-      chrome.debugger.getTargets(resolve));
+    const targets =
+        await new Promise(resolve => chrome.debugger.getTargets(resolve));
     const oopifTarget = targets.find(target => target.url === subframeURL);
     const frameTarget = {targetId: oopifTarget.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(frameTarget, protocolVersion, resolve));
+    await new Promise(
+        resolve =>
+            chrome.debugger.attach(frameTarget, protocolVersion, resolve));
     chrome.debugger.sendCommand(frameTarget, 'Network.enable', null);
 
     // Navigation to restricted origin
@@ -72,19 +78,23 @@ chrome.test.getConfig(config => chrome.test.runTests([
         frame.src = '${restrictedURL}';
       })
     `;
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Runtime.evaluate', {
-            expression: expression2,
-            awaitPromise: true
-        }, resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Runtime.evaluate', {
+              expression: expression2,
+              awaitPromise: true,
+            },
+            resolve));
 
     chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
-    chrome.test.assertEq(0, requestExtraInfoCount,
+    chrome.test.assertEq(
+        0, requestExtraInfoCount,
         '"requestWillBeSentExtraInfo" event received for navigation to ' +
-        '"restricted origin');
-    chrome.test.assertEq(0, responseExtraInfoCount,
-      '"responseReceivedExtraInfo" event received for navigation to ' +
-      'restricted origin');
+            '"restricted origin');
+    chrome.test.assertEq(
+        0, responseExtraInfoCount,
+        '"responseReceivedExtraInfo" event received for navigation to ' +
+            'restricted origin');
     chrome.test.succeed();
-  }
+  },
 ]));

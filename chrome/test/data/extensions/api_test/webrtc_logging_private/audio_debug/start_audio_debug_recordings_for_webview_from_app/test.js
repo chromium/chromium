@@ -10,18 +10,17 @@ function assertNoLastError(message) {
 }
 
 function executeWindowTest(testBody) {
-  chrome.app.window.create(
-      'appwindow.html', {}, function(appWindow) {
-        assertNoLastError('window.create');
-        appWindow.contentWindow.onload = function() {
-          testBody(appWindow.contentWindow);
-        };
-      });
+  chrome.app.window.create('appwindow.html', {}, function(appWindow) {
+    assertNoLastError('window.create');
+    appWindow.contentWindow.onload = function() {
+      testBody(appWindow.contentWindow);
+    };
+  });
 }
 
 function createWebviews(doc, numWebviews, onWebviewsLoaded) {
-  var webviewStates = {};
-  for (var i = 0; i < numWebviews; i++) {
+  const webviewStates = {};
+  for (let i = 0; i < numWebviews; i++) {
     // Initialize object with mapping from id to isLoaded boolean.
     webviewStates['webview' + i] = false;
   }
@@ -31,17 +30,17 @@ function createWebviews(doc, numWebviews, onWebviewsLoaded) {
     });
   }
   function onLoadStop(e) {
-    var webview = e.target;
+    const webview = e.target;
     e.target.removeEventListener('loadstop', onLoadStop);
-    var wasLoaded = allLoaded();
+    const wasLoaded = allLoaded();
     webviewStates[webview.id] = true;
-    var isLoaded = allLoaded();
+    const isLoaded = allLoaded();
     if (!wasLoaded && isLoaded) {
       onWebviewsLoaded();
     }
   }
   Object.keys(webviewStates).forEach(function(webviewId) {
-    var webview = doc.createElement('webview');
+    const webview = doc.createElement('webview');
     webview.src = 'data:text/plain, test';
     webview.addEventListener('loadstop', onLoadStop);
     webview.id = webviewId;
@@ -52,10 +51,9 @@ function createWebviews(doc, numWebviews, onWebviewsLoaded) {
 function testStartStopWithOneWebview() {
   executeWindowTest(function(win) {
     createWebviews(win.document, 1, function() {
-      win.attemptAudioDebugRecording(
-          function() {
-            chrome.test.succeed('Started and stopped with 1 webview');
-          }, chrome.test.fail);
+      win.attemptAudioDebugRecording(function() {
+        chrome.test.succeed('Started and stopped with 1 webview');
+      }, chrome.test.fail);
     });
   });
 }
@@ -63,22 +61,18 @@ function testStartStopWithOneWebview() {
 function testFailWithMoreThanOneWebview() {
   executeWindowTest(function(win) {
     createWebviews(win.document, 2, function() {
-      win.attemptAudioDebugRecording(
-          function() {
-            chrome.test.fail('Expected runtime error');
-          },
-          chrome.test.succeed);
+      win.attemptAudioDebugRecording(function() {
+        chrome.test.fail('Expected runtime error');
+      }, chrome.test.succeed);
     });
   });
 }
 
 function testFailWithZeroWebviews() {
   executeWindowTest(function(win) {
-    win.attemptAudioDebugRecording(
-        function() {
-          chrome.test.fail('Expected runtime error');
-        },
-        chrome.test.succeed);
+    win.attemptAudioDebugRecording(function() {
+      chrome.test.fail('Expected runtime error');
+    }, chrome.test.succeed);
   });
 }
 

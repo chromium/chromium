@@ -13,40 +13,44 @@ const assertFalse = chrome.test.assertFalse;
 
 const kWindowRect = {
   width: 400,
-  height: 400
+  height: 400,
 };
 
 const scriptUrl =
-      '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+    '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
 
 const loadScript = chrome.test.loadScript(scriptUrl);
-loadScript.then(() => {chrome.test.getConfig((config) => {
-  const kError = 'Taking screenshots has been disabled';
-  const kUrl = `http://localhost:${config.testServer.port}/simple.html`;
-  chrome.test.runTests([
-    function captureVisibleDisabled() {
-      createWindow([kUrl], kWindowRect, pass(function(winId, tabIds) {
-        waitForAllTabs(pass(function() {
-          chrome.tabs.query({active: true, windowId: winId},
-                            pass(function(tabs) {
-            assertEq('complete', tabs[0].status);
-            chrome.tabs.captureVisibleTab(winId, fail(kError));
-          }));
-        }));
-      }));
-    },
+loadScript.then(() => {
+  chrome.test.getConfig((config) => {
+    const kError = 'Taking screenshots has been disabled';
+    const kUrl = `http://localhost:${config.testServer.port}/simple.html`;
+    chrome.test.runTests([
+      function captureVisibleDisabled() {
+        createWindow(
+            [kUrl], kWindowRect, pass(function(winId, tabIds) {
+              waitForAllTabs(pass(function() {
+                chrome.tabs.query(
+                    {active: true, windowId: winId}, pass(function(tabs) {
+                      assertEq('complete', tabs[0].status);
+                      chrome.tabs.captureVisibleTab(winId, fail(kError));
+                    }));
+              }));
+            }));
+      },
 
-    function captureVisibleDisabledInNullWindow() {
-      chrome.tabs.create({url: kUrl}, pass(() => {
-        waitForAllTabs(pass(() => {
-          chrome.tabs.captureVisibleTab(null, fail(kError));
-        }));
-      }));
-    },
+      function captureVisibleDisabledInNullWindow() {
+        chrome.tabs.create({url: kUrl}, pass(() => {
+                             waitForAllTabs(pass(() => {
+                               chrome.tabs.captureVisibleTab(
+                                   null, fail(kError));
+                             }));
+                           }));
+      },
 
-    function captureVisibleDisabledInCurrentWindow() {
-      chrome.tabs.captureVisibleTab(chrome.windows.WINDOW_ID_CURRENT,
-                                    fail(kError));
-    }
-  ])});
+      function captureVisibleDisabledInCurrentWindow() {
+        chrome.tabs.captureVisibleTab(
+            chrome.windows.WINDOW_ID_CURRENT, fail(kError));
+      },
+    ]);
+  });
 });

@@ -7,11 +7,12 @@
 //     --gtest_filter=ExtensionApiTest.ContentSettingsGetResourceIdentifiers
 
 Object.prototype.forEach = function(f) {
-  for (let key in this) {
-    if (this.hasOwnProperty(key))
+  for (const key in this) {
+    if (this.hasOwnProperty(key)) {
       f(key, this[key]);
+    }
   }
-}
+};
 
 const cs = chrome.contentSettings;
 chrome.test.runTests([
@@ -31,7 +32,7 @@ chrome.test.runTests([
         },
       ],
       popups: undefined,
-      notifications: undefined
+      notifications: undefined,
     };
     contentTypes.forEach(function(type, identifiers) {
       cs[type].getResourceIdentifiers(chrome.test.callbackPass(function(value) {

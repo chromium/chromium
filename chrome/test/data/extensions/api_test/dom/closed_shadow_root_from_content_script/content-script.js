@@ -4,7 +4,7 @@
 
 chrome.test.runTests([function() {
   const host = document.getElementById('host');
-  let shadowRoot = chrome.dom.openOrClosedShadowRoot(host);
+  const shadowRoot = chrome.dom.openOrClosedShadowRoot(host);
   chrome.test.assertEq(shadowRoot.childElementCount, 2);
   chrome.test.assertThrows(
       chrome.dom.openOrClosedShadowRoot, [new Object()],

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 async function getFirstTab() {
-  let tabs = await chrome.tabs.query({});
+  const tabs = await chrome.tabs.query({});
   chrome.test.assertTrue(tabs.length >= 1);
   return tabs[0];
 }

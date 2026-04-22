@@ -25,20 +25,26 @@ const SECOND_FILE_SYSTEM_ID = 'ice-cream';
  * @param {function()} callback Success callback.
  */
 function setUp(callback) {
-  Promise.all([
-    new Promise(function(fulfill, reject) {
-      chrome.fileSystemProvider.mount(
-          {fileSystemId: FIRST_FILE_SYSTEM_ID, displayName: 'vanilla.zip'},
-          chrome.test.callbackPass(fulfill));
-    }),
-    new Promise(function(fulfill, reject) {
-      chrome.fileSystemProvider.mount(
-          {fileSystemId: SECOND_FILE_SYSTEM_ID, displayName: 'ice-cream.zip'},
-          chrome.test.callbackPass(fulfill));
-    })
-  ]).then(callback).catch(function(error) {
-    chrome.test.fail(error.stack || error);
-  });
+  Promise
+      .all([
+        new Promise(function(fulfill, reject) {
+          chrome.fileSystemProvider.mount(
+              {fileSystemId: FIRST_FILE_SYSTEM_ID, displayName: 'vanilla.zip'},
+              chrome.test.callbackPass(fulfill));
+        }),
+        new Promise(function(fulfill, reject) {
+          chrome.fileSystemProvider.mount(
+              {
+                fileSystemId: SECOND_FILE_SYSTEM_ID,
+                displayName: 'ice-cream.zip'
+              },
+              chrome.test.callbackPass(fulfill));
+        }),
+      ])
+      .then(callback)
+      .catch(function(error) {
+        chrome.test.fail(error.stack || error);
+      });
 }
 
 /**
@@ -62,19 +68,16 @@ function runTests() {
             onMountCompleted);
       };
 
-      chrome.fileManagerPrivate.onMountCompleted.addListener(
-          onMountCompleted);
+      chrome.fileManagerPrivate.onMountCompleted.addListener(onMountCompleted);
       chrome.fileSystemProvider.unmount(
-          {fileSystemId: FIRST_FILE_SYSTEM_ID},
-          chrome.test.callbackPass());
+          {fileSystemId: FIRST_FILE_SYSTEM_ID}, chrome.test.callbackPass());
     },
 
     // Tests the fileSystemProvider.unmount() with a wrong id. Verifies that
     // it fails with a correct error code.
     function unmountWrongId() {
       chrome.fileSystemProvider.unmount(
-          {fileSystemId: 'wrong-fs-id'},
-          chrome.test.callbackFail('NOT_FOUND'));
+          {fileSystemId: 'wrong-fs-id'}, chrome.test.callbackFail('NOT_FOUND'));
     },
 
     // Tests if fileManagerPrivate.removeMount() for provided file systems emits
@@ -144,7 +147,7 @@ function runTests() {
           chrome.test.assertNoLastError();
         });
       });
-    }
+    },
   ]);
 }
 
@@ -152,7 +155,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

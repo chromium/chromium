@@ -10,8 +10,8 @@ chrome.test.runTests([() => {
     secure: true,
   };
   chrome.documentScan.getScannerList(filter, response => {
-    chrome.test.assertEq(chrome.documentScan.OperationResult.ACCESS_DENIED,
-                         response.result);
+    chrome.test.assertEq(
+        chrome.documentScan.OperationResult.ACCESS_DENIED, response.result);
     chrome.test.assertEq(0, response.scanners.length);
     chrome.test.succeed();
   });

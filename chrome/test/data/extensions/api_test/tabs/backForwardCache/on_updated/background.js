@@ -9,10 +9,12 @@ let shouldIgnore = true;
 function expect(data) {
   chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
     // Wait until the first loading of a non-blank url.
-    if (info.status === 'loading' && info.url != 'about:blank')
+    if (info.status === 'loading' && info.url != 'about:blank') {
       shouldIgnore = false;
-    if (shouldIgnore)
+    }
+    if (shouldIgnore) {
       return;
+    }
 
     // Ignore 'frozen' updates. This test focuses on navigation status
     // transitions ('loading' and 'complete') during BackForwardCache restores.
@@ -39,8 +41,8 @@ function checkExpectations() {
   if (capturedEventData.length < expectedEventData.length) {
     return;
   }
-  chrome.test.assertEq(JSON.stringify(expectedEventData),
-      JSON.stringify(capturedEventData));
+  chrome.test.assertEq(
+      JSON.stringify(expectedEventData), JSON.stringify(capturedEventData));
   chrome.test.succeed();
 }
 
@@ -75,5 +77,5 @@ chrome.test.getConfig(async function(config) {
     ]);
 
     chrome.tabs.update(tab.id, {url: urlA});
-  }])
+  }]);
 });

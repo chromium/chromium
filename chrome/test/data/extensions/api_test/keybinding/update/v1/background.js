@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // Called when the user clicks on the browser action.
-chrome.action.onClicked.addListener(function (tab) {
+chrome.action.onClicked.addListener(function(tab) {
   chrome.scripting.executeScript({
-    target: { tabId: tab.id },
+    target: {tabId: tab.id},
     func: () => {
       document.body.bgColor = 'red';
-    }
+    },
   });
 });
 

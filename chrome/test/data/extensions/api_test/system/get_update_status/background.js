@@ -26,5 +26,5 @@ chrome.test.runTests([
       chrome.test.assertEq(status.downloadProgress, 1);
       chrome.test.succeed();
     });
-  }
+  },
 ]);

@@ -12,7 +12,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   // Notifications permission request is not allowed.
   function requestNotifications() {
@@ -33,7 +33,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   // Geolocation permission request is not allowed.
   function geolocation_getCurrentPosition() {
@@ -50,7 +50,7 @@ chrome.test.runTests([
       } else {
         chrome.test.fail();
       }
-    })
+    });
   },
   function requestCamera() {
     if (navigator.mediaDevices) {
@@ -67,6 +67,6 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
-  }
+        });
+  },
 ]);

@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var kAdvertisement = {
+const kAdvertisement = {
   type: 'broadcast',
   serviceUuids: ['value1', 'value2'],
   manufacturerData: [
     {id: 321, data: [1, 2, 3]},
-    {id: 567, data: [8, 2, 3]}
+    {id: 567, data: [8, 2, 3]},
   ],
   solicitUuids: ['value3', 'value4'],
   serviceData: [
     {uuid: 'uuid8', data: [1, 2, 3]},
-    {uuid: 'uuid36', data: [8, 2, 3]}
-  ]
+    {uuid: 'uuid36', data: [8, 2, 3]},
+  ],
 };
 
-var registeredAdvertisements = [];
+const registeredAdvertisements = [];
 
 chrome.test.runTests([
   function registerFirstAdvertisement() {
     chrome.bluetoothLowEnergy.registerAdvertisement(
-        kAdvertisement,
-        chrome.test.callbackPass(function(id) {
+        kAdvertisement, chrome.test.callbackPass(function(id) {
           chrome.test.assertTrue(!!id);
           registeredAdvertisements.push(id);
         }));
@@ -30,8 +29,7 @@ chrome.test.runTests([
 
   function registerSecondAdvertisement() {
     chrome.bluetoothLowEnergy.registerAdvertisement(
-        kAdvertisement,
-        chrome.test.callbackPass(function(id) {
+        kAdvertisement, chrome.test.callbackPass(function(id) {
           chrome.test.assertTrue(!!id);
           chrome.test.assertEq(-1, registeredAdvertisements.indexOf(id));
           registeredAdvertisements.push(id);
@@ -45,8 +43,7 @@ chrome.test.runTests([
   function unregisterFails() {
     registeredAdvertisements.forEach(function(id) {
       chrome.bluetoothLowEnergy.unregisterAdvertisement(
-          id,
-          chrome.test.callbackFail("This advertisement does not exist"));
+          id, chrome.test.callbackFail('This advertisement does not exist'));
     });
-  }
+  },
 ]);

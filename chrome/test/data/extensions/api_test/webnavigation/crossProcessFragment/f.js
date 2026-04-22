@@ -10,7 +10,6 @@ function updateFragment() {
 
 onload = function() {
   setTimeout(function() {
-    location.href =
-        `http://127.0.0.1:${location.search.substr(1)}/test3`;
+    location.href = `http://127.0.0.1:${location.search.substr(1)}/test3`;
   }, 0);
 };

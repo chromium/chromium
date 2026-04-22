@@ -27,7 +27,7 @@ function navigate(url) {
     };
     chrome.tabs.onUpdated.addListener(listener);
   });
-};
+}
 
 function resultFromTab(code) {
   return new Promise(
@@ -56,57 +56,58 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
-  // Test that modifications to CSP 'frame-ancestors' are honored.
-  async function testModifyCSPHeaderFrameAncestors() {
-    const url = getServerURL(
-        'extensions/api_test/webrequest/csp/document-with-iframe.html');
-    const headersListener = replaceStarWithNoneListener('frame-ancestors');
-    chrome.webRequest.onHeadersReceived.addListener(
-        headersListener, {
-          urls: [getServerURL(
-              'set-header?Content-Security-Policy%3A%20frame-ancestors%20*')]
-        },
-        ['blocking', 'responseHeaders']);
+    // Test that modifications to CSP 'frame-ancestors' are honored.
+    async function testModifyCSPHeaderFrameAncestors() {
+      const url = getServerURL(
+          'extensions/api_test/webrequest/csp/document-with-iframe.html');
+      const headersListener = replaceStarWithNoneListener('frame-ancestors');
+      chrome.webRequest.onHeadersReceived.addListener(
+          headersListener, {
+            urls: [getServerURL(
+                'set-header?Content-Security-Policy%3A%20frame-ancestors%20*')],
+          },
+          ['blocking', 'responseHeaders']);
 
-    await navigate(url);
-    const blocked = await resultFromTab(checkIfIframeBlocked);
-    chrome.test.assertTrue(blocked, 'CSP was not modified.');
-    chrome.webRequest.onHeadersReceived.removeListener(headersListener);
-    chrome.test.succeed();
-  },
+      await navigate(url);
+      const blocked = await resultFromTab(checkIfIframeBlocked);
+      chrome.test.assertTrue(blocked, 'CSP was not modified.');
+      chrome.webRequest.onHeadersReceived.removeListener(headersListener);
+      chrome.test.succeed();
+    },
 
-  // Test that modifications to CSP 'frame-ancestors' with the 'extraHeaders'
-  // option are honored.
-  async function testModifyCSPHeaderFrameAncestorsExtraHeaders() {
-    const url = getServerURL(
-        'extensions/api_test/webrequest/csp/document-with-iframe.html');
-    const headersListener = replaceStarWithNoneListener('frame-ancestors');
-    chrome.webRequest.onHeadersReceived.addListener(
-        headersListener, {
-          urls: [getServerURL(
-              'set-header?Content-Security-Policy%3A%20frame-ancestors%20*')]
-        },
-        ['blocking', 'responseHeaders', 'extraHeaders']);
+    // Test that modifications to CSP 'frame-ancestors' with the 'extraHeaders'
+    // option are honored.
+    async function testModifyCSPHeaderFrameAncestorsExtraHeaders() {
+      const url = getServerURL(
+          'extensions/api_test/webrequest/csp/document-with-iframe.html');
+      const headersListener = replaceStarWithNoneListener('frame-ancestors');
+      chrome.webRequest.onHeadersReceived.addListener(
+          headersListener, {
+            urls: [getServerURL(
+                'set-header?Content-Security-Policy%3A%20frame-ancestors%20*')],
+          },
+          ['blocking', 'responseHeaders', 'extraHeaders']);
 
-    await navigate(url);
-    const blocked = await resultFromTab(checkIfIframeBlocked);
-    chrome.test.assertTrue(blocked, 'CSP was not modified.');
-    chrome.webRequest.onHeadersReceived.removeListener(headersListener);
-    chrome.test.succeed();
-  },
+      await navigate(url);
+      const blocked = await resultFromTab(checkIfIframeBlocked);
+      chrome.test.assertTrue(blocked, 'CSP was not modified.');
+      chrome.webRequest.onHeadersReceived.removeListener(headersListener);
+      chrome.test.succeed();
+    },
 
-  // Test that modifications to CSP 'img-src' are honored.
-  async function testModifyCSPHeaders() {
-    const url = getServerURL('extensions/api_test/webrequest/csp/img.html');
-    const headersListener = replaceStarWithNoneListener('img-src');
-    chrome.webRequest.onHeadersReceived.addListener(
-        headersListener, {urls: [url]}, ['blocking', 'responseHeaders']);
+    // Test that modifications to CSP 'img-src' are honored.
+    async function testModifyCSPHeaders() {
+      const url = getServerURL('extensions/api_test/webrequest/csp/img.html');
+      const headersListener = replaceStarWithNoneListener('img-src');
+      chrome.webRequest.onHeadersReceived.addListener(
+          headersListener, {urls: [url]}, ['blocking', 'responseHeaders']);
 
-    await navigate(url);
-    const blocked = await resultFromTab(
-        `document.getElementById('result').innerText === 'blocked';`);
-    chrome.test.assertTrue(blocked, 'CSP was not modified.');
-    chrome.webRequest.onHeadersReceived.removeListener(headersListener);
-    chrome.test.succeed();
-  },
-])});
+      await navigate(url);
+      const blocked = await resultFromTab(
+          `document.getElementById('result').innerText === 'blocked';`);
+      chrome.test.assertTrue(blocked, 'CSP was not modified.');
+      chrome.webRequest.onHeadersReceived.removeListener(headersListener);
+      chrome.test.succeed();
+    },
+  ]);
+});

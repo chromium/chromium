@@ -17,7 +17,7 @@ chrome.test.runTests([async function testNavigationToUntrustedWebUIUrl() {
           resolve));
   chrome.test.assertLastError(JSON.stringify({
     code: -32000,
-    message: 'Navigating to a URL with a privileged scheme is not allowed'
+    message: 'Navigating to a URL with a privileged scheme is not allowed',
   }));
 
   chrome.test.succeed();

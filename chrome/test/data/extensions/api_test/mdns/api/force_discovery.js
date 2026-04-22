@@ -12,6 +12,6 @@ onload = function() {
         });
       }, {serviceType: '_googlecast._tcp.local'});
       chrome.test.notifyPass();
-    }
+    },
   ]);
 };

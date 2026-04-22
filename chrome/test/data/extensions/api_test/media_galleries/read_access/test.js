@@ -35,8 +35,9 @@ function ReadDirectoryTest() {
 
 function ReadFileToBytesTest() {
   function verifyFilesystem(filesystem) {
-    verifyJPEG(filesystem.root, 'test.jpg', expectedGalleryEntryLength,
-               chrome.test.succeed);
+    verifyJPEG(
+        filesystem.root, 'test.jpg', expectedGalleryEntryLength,
+        chrome.test.succeed);
   }
 
   TestFirstFilesystem(verifyFilesystem);
@@ -61,4 +62,4 @@ chrome.test.getConfig(function(config) {
     ReadFileToBytesTest,
     GetMediaFileSystemMetadataTest,
   ]);
-})
+});

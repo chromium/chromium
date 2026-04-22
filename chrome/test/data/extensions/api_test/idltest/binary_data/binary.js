@@ -20,7 +20,7 @@ function makeBuffer() {
   const ab = new ArrayBuffer(bufferSize);
   const view = new Uint8Array(ab);
   for (let i = 0; i < bufferSize; i++) {
-    view[i] = i+3;
+    view[i] = i + 3;
   }
   return view;
 }
@@ -56,7 +56,7 @@ const tests = [
         assertTrue(expected[i] == String.fromCharCode(view[i]));
       }
     }));
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

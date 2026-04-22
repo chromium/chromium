@@ -37,5 +37,5 @@ chrome.test.runTests([
           assertCorrectLog('api_call', 'runtime.connect', result);
           chrome.test.succeed();
         });
-  }
+  },
 ]);

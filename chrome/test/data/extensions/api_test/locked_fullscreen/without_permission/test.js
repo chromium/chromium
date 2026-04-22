@@ -38,8 +38,9 @@ const tests = {
 };
 
 chrome.test.getConfig(function(config) {
-  if (config.customArg in tests)
+  if (config.customArg in tests) {
     chrome.test.runTests([tests[config.customArg]]);
-  else
+  } else {
     chrome.test.fail(`Test "${config.customArg}"" doesnt exist!`);
+  }
 });

@@ -19,23 +19,27 @@ const test = {
 // Registers a service worker and stores it in registeredServiceWorker.
 // Intended to be called from content::ExecJs.
 test.registerServiceWorker = function(path) {
-  return navigator.serviceWorker.register(path).then(function() {
-    // Wait until the service worker is active.
-    return navigator.serviceWorker.ready;
-  }).then(function(r) {
-    test.registeredServiceWorker = r.active;
-    return '';
-  }).catch(function(err) {
-    return err.message;
-  });
+  return navigator.serviceWorker.register(path)
+      .then(function() {
+        // Wait until the service worker is active.
+        return navigator.serviceWorker.ready;
+      })
+      .then(function(r) {
+        test.registeredServiceWorker = r.active;
+        return '';
+      })
+      .catch(function(err) {
+        return err.message;
+      });
 };
 
 // Watch for messages.
 navigator.serviceWorker.addEventListener('message', function(e) {
   test.lastMessageFromServiceWorker = e.data;
   // Echo message if requested.
-  if (e.data.echo)
+  if (e.data.echo) {
     e.data.echo.port.postMessage(e.data.echo.message);
+  }
 });
 
 // Returns a Promise for the next message's data sent to |endpoint|.

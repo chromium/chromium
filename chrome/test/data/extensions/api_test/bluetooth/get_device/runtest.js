@@ -17,21 +17,18 @@ function failOnError() {
   }
 }
 
-chrome.bluetooth.getDevice('11:12:13:14:15:16',
-  function(device) {
-    failOnError();
-    devices.push(device);
+chrome.bluetooth.getDevice('11:12:13:14:15:16', function(device) {
+  failOnError();
+  devices.push(device);
 
-    chrome.bluetooth.getDevice('21:22:23:24:25:26',
-      function(device) {
-        // device should not exists
-        if (device || !chrome.runtime.lastError) {
-          chrome.test.fail('Unexpected device or missing error');
-        }
+  chrome.bluetooth.getDevice('21:22:23:24:25:26', function(device) {
+    // device should not exists
+    if (device || !chrome.runtime.lastError) {
+      chrome.test.fail('Unexpected device or missing error');
+    }
 
-        chrome.test.sendMessage('ready',
-          function(message) {
-            chrome.test.runTests([testGetDevice]);
-          });
-      });
+    chrome.test.sendMessage('ready', function(message) {
+      chrome.test.runTests([testGetDevice]);
+    });
   });
+});

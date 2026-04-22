@@ -8,19 +8,18 @@
 const GIF_DATA = new Uint8Array([
   71, 73, 70,  56,  57,  97, 1,   0, 1, 0, 128, 0,  0, 0,
   0,  0,  255, 255, 255, 33, 249, 4, 1, 0, 0,   0,  0, 44,
-  0,  0,  0,   0,   1,   0,  1,   0, 0, 2, 1,   68, 0, 59
+  0,  0,  0,   0,   1,   0,  1,   0, 0, 2, 1,   68, 0, 59,
 ]);
 const GIF_FILE = new File([GIF_DATA], 'readwrite.gif', {type: 'image/gif'});
 
 // A 1x1 transparent PNG in 95 bytes.
 const PNG_DATA = new Uint8Array([
-  137, 80,  78,  71, 13,  10, 26,  10,  0,  0,  0,   13, 73, 72,  68,
-  82,  0,   0,   0,  1,   0,  0,   0,   1,  1,  3,   0,  0,  0,   37,
-  219, 86,  202, 0,  0,   0,  3,   80,  76, 84, 69,  0,  0,  0,   167,
-  122, 61,  218, 0,  0,   0,  1,   116, 82, 78, 83,  0,  64, 230, 216,
-  102, 0,   0,   0,  10,  73, 68,  65,  84, 8,  215, 99, 96, 0,   0,
-  0,   2,   0,   1,  226, 33, 188, 51,  0,  0,  0,   0,  73, 69,  78,
-  68,  174, 66,  96, 130
+  137, 80,  78, 71, 13,  10, 26,  10, 0,  0,  0,   13,  73,  72,  68,  82,
+  0,   0,   0,  1,  0,   0,  0,   1,  1,  3,  0,   0,   0,   37,  219, 86,
+  202, 0,   0,  0,  3,   80, 76,  84, 69, 0,  0,   0,   167, 122, 61,  218,
+  0,   0,   0,  1,  116, 82, 78,  83, 0,  64, 230, 216, 102, 0,   0,   0,
+  10,  73,  68, 65, 84,  8,  215, 99, 96, 0,  0,   0,   2,   0,   1,   226,
+  33,  188, 51, 0,  0,   0,  0,   73, 69, 78, 68,  174, 66,  96,  130,
 ]);
 const PNG_FILE = new File([PNG_DATA], 'readonly.png', {type: 'image/png'});
 
@@ -36,7 +35,7 @@ const GIF_ENTRY = Object.freeze({
   mimeType: GIF_FILE.type,
   file: GIF_FILE,
   writable: true,
-  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readwrite-gif-id'}
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readwrite-gif-id'},
 });
 const PNG_ENTRY = Object.freeze({
   isDirectory: false,
@@ -45,7 +44,7 @@ const PNG_ENTRY = Object.freeze({
   modificationTime: new Date(),
   mimeType: PNG_FILE.type,
   file: PNG_FILE,
-  writable: false
+  writable: false,
   // does not have `cloudIdentifier` on purpose
 });
 const TXT_ENTRY = Object.freeze({
@@ -56,7 +55,7 @@ const TXT_ENTRY = Object.freeze({
   mimeType: TXT_FILE.type,
   file: TXT_FILE,
   writable: false,
-  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readonly-txt-id'}
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'readonly-txt-id'},
 });
 const ROOT_ENTRY = Object.freeze({
   isDirectory: true,
@@ -64,7 +63,7 @@ const ROOT_ENTRY = Object.freeze({
   size: 0,
   modificationTime: new Date(),
   mimeType: 'text/directory',
-  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'root-id'}
+  cloudIdentifier: {providerName: PROVIDER_NAME, id: 'root-id'},
 });
 
 const ENTRY_PATHS = {
@@ -80,7 +79,7 @@ const METADATA_FIELD_NAMES = [
   'modificationTime',
   'isDirectory',
   'size',
-  'cloudIdentifier'
+  'cloudIdentifier',
 ];
 
 // A mapping from |requestId| to file entry. Used to respond to subsequent file
@@ -94,7 +93,7 @@ function trace(...args) {
 function mountFileSystem() {
   chrome.fileSystemProvider.mount({
     fileSystemId: 'test-image-provider-fs',
-    displayName: 'Test Image Provider FS'
+    displayName: 'Test Image Provider FS',
   });
 }
 
@@ -103,7 +102,7 @@ function makeEntry(entryTemplate, options) {
   const entry = {};
   for (const prop of METADATA_FIELD_NAMES) {
     if (options[prop]) {
-      entry[prop] = entryTemplate[prop]
+      entry[prop] = entryTemplate[prop];
     }
   }
   return entry;
@@ -175,7 +174,7 @@ chrome.fileSystemProvider.onReadDirectoryRequested.addListener(function(
   }
   const entries = [
     makeEntry(GIF_ENTRY, options),
-    makeEntry(PNG_ENTRY, options)
+    makeEntry(PNG_ENTRY, options),
   ];
   onSuccess(entries, false /* hasMore */);
 });
@@ -184,7 +183,7 @@ chrome.fileSystemProvider.onUnmountRequested.addListener(function(
     options, onSuccess, onError) {
   trace('unmount', options);
   chrome.fileSystemProvider.unmount(
-      {fileSystemId: options.fileSystemId}, onSuccess)
+      {fileSystemId: options.fileSystemId}, onSuccess);
 });
 
 chrome.fileSystemProvider.onGetActionsRequested.addListener(function(

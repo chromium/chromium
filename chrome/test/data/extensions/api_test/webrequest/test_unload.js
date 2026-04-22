@@ -29,8 +29,10 @@ function getInitiatorURLForHostname(hostname) {
 
 // Get the URL of a page that inserts a frame with the given URL upon load.
 function getPageWithFrame(frameUrl, hostname) {
-  return getServerURL('extensions/api_test/webrequest/unload/load_frame.html?' +
-      encodeURIComponent(frameUrl), hostname);
+  return getServerURL(
+      'extensions/api_test/webrequest/unload/load_frame.html?' +
+          encodeURIComponent(frameUrl),
+      hostname);
 }
 
 // Invokes |callback| when when the onSendHeaders event occurs. When used with
@@ -39,8 +41,8 @@ function getPageWithFrame(frameUrl, hostname) {
 // This allows the test to deterministically cancel the request, which should
 // trigger onErrorOccurred.
 function waitUntilSendHeaders(type, url, callback) {
-  chrome.test.assertTrue(/^https?:.+\/slow\?/.test(url),
-      `Must be a slow URL, but was ${url}`);
+  chrome.test.assertTrue(
+      /^https?:.+\/slow\?/.test(url), `Must be a slow URL, but was ${url}`);
 
   chrome.webRequest.onSendHeaders.addListener(function listener() {
     chrome.webRequest.onSendHeaders.removeListener(listener);
@@ -52,30 +54,33 @@ function waitUntilSendHeaders(type, url, callback) {
 }
 
 (function() {
-  // Load the actual test file.
-  const id = location.search.slice(1);
-  chrome.test.assertTrue(/^\d+$/.test(id),
-      `Page URL should end with digits, but got ${id}`);
-  console.log(`Running test_unload ${id}`);
+// Load the actual test file.
+const id = location.search.slice(1);
+chrome.test.assertTrue(
+    /^\d+$/.test(id), `Page URL should end with digits, but got ${id}`);
+console.log(`Running test_unload ${id}`);
 
-  const s = document.createElement('script');
-  // test_unload1.js, test_unload2.js, ..., etc.
-  // These tests are in separate files to make sure that the tests are
-  // independent of each other. If they were put in one file, then the tabId
-  // of one test would depend on the number of tabs from the previous tests.
-  s.src = `test_unload${id}` + '.js';
-  s.onerror = function() {
-    chrome.test.fail(`Failed to load test ${s.src}`);
-  };
+const s = document.createElement('script');
+// test_unload1.js, test_unload2.js, ..., etc.
+// These tests are in separate files to make sure that the tests are
+// independent of each other. If they were put in one file, then the tabId
+// of one test would depend on the number of tabs from the previous tests.
+s.src = `test_unload${id}` +
+    '.js';
+s.onerror = function() {
+  chrome.test.fail(`Failed to load test ${s.src}`);
+};
 
-  // At the next test, a call to RunExtensionSubtest causes the extension to
-  // reload. As a result, all extension pages are closed. If the extension page
-  // was the only tab in the browser, then the browser would exit and cause the
-  // test to end too early. To avoid this problem, create an extra non-extension
-  // tab before starting tests.
-  chrome.tabs.create({
-    url: 'data:,'
-  }, function() {
-    document.body.appendChild(s);
-  });
+// At the next test, a call to RunExtensionSubtest causes the extension to
+// reload. As a result, all extension pages are closed. If the extension page
+// was the only tab in the browser, then the browser would exit and cause the
+// test to end too early. To avoid this problem, create an extra non-extension
+// tab before starting tests.
+chrome.tabs.create(
+    {
+      url: 'data:,',
+    },
+    function() {
+      document.body.appendChild(s);
+    });
 })();

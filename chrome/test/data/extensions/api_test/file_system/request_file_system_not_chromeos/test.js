@@ -6,8 +6,9 @@ chrome.test.runTests([
   function readOnlyVolume() {
     chrome.fileSystem.requestFileSystem(
         {volumeId: 'testing:read-only'},
-        chrome.test.callbackFail('Operation not supported on the current ' +
-            'platform.',
+        chrome.test.callbackFail(
+            'Operation not supported on the current ' +
+                'platform.',
             function(fileSystem) {
               chrome.test.assertFalse(!!fileSystem);
             }));

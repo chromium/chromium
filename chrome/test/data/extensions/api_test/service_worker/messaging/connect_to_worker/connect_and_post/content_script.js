@@ -5,7 +5,7 @@
 const port = chrome.runtime.connect();
 
 // Post messages to keep the service worker alive.
-port.postMessage({ msg: 'Hello' });
+port.postMessage({msg: 'Hello'});
 setInterval(() => {
-  port.postMessage({ msg: 'Hello' });
-}, 100); // Post message every 100ms to prolong SW lifetime.
+  port.postMessage({msg: 'Hello'});
+}, 100);  // Post message every 100ms to prolong SW lifetime.

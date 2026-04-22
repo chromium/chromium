@@ -56,7 +56,7 @@ const tests = [
       checkItemInList(items, 'enabled_app', true, 'hosted_app', {
         appLaunchUrl: 'http://www.google.com/',
         offlineEnabled: true,
-        updateUrl: 'http://example.com/update.xml'
+        updateUrl: 'http://example.com/update.xml',
       });
       checkItemInList(
           items, 'disabled_app', false, 'hosted_app',
@@ -66,7 +66,7 @@ const tests = [
           {homepageUrl: 'http://example.com/'});
       checkItemInList(items, 'disabled_extension', false, 'extension', {
         optionsUrl: 'chrome-extension://<ID>/pages/options.html',
-        disabledReason: 'unknown'
+        disabledReason: 'unknown',
       });
       checkItemInList(
           items, 'description', true, 'extension',
@@ -110,7 +110,7 @@ const tests = [
   },
 
   function permissionWarnings() {
-    let manifestStr = `{
+    const manifestStr = `{
            "name": "Hello World!",
            "manifest_version": 2,
            "version": "1.0",
@@ -128,8 +128,7 @@ const tests = [
           chrome.test.assertTrue(
               warnings.indexOf(
                   'Read and change your data on all flickr.com sites ' +
-                  'and api.flickr.com') !=
-              -1);
+                  'and api.flickr.com') != -1);
           chrome.test.assertTrue(
               warnings.indexOf('Read and change your bookmarks') != -1);
           chrome.test.assertTrue(
@@ -142,17 +141,17 @@ const tests = [
 
     chrome.management.getAll(callback(function(items) {
       const extension = getItemNamed(items, 'Extension Management API Test');
-      chrome.management.getPermissionWarningsById(extension.id,
-                                                  callback(function(warnings) {
-        chrome.test.assertEq(1, warnings.length);
-        chrome.test.assertEq(
-            'Manage your apps, extensions, and themes', warnings[0]);
-      }));
+      chrome.management.getPermissionWarningsById(
+          extension.id, callback(function(warnings) {
+            chrome.test.assertEq(1, warnings.length);
+            chrome.test.assertEq(
+                'Manage your apps, extensions, and themes', warnings[0]);
+          }));
     }));
   },
 
   function permissionWarningsClipboardReadApi() {
-    let manifestStr = `{
+    const manifestStr = `{
            "name": "Clipboard!",
            "version": "1.0",
            "manifest_version": 2,
@@ -195,14 +194,14 @@ const tests = [
       checkItem(disabled, 'disabled_extension', false, 'extension');
       chrome.management.setEnabled(
           disabled.id, true, callback(function() {
-            chrome.management.get(
-                disabled.id, callback(function(nowEnabled) {
-                  checkItem(
-                      nowEnabled, 'disabled_extension', true, 'extension');
-                }));
+            chrome.management.get(disabled.id, callback(function(nowEnabled) {
+                                    checkItem(
+                                        nowEnabled, 'disabled_extension', true,
+                                        'extension');
+                                  }));
           }));
     }));
-  }
+  },
 ];
 
 const SCRIPT_URL = '_test_resources/api_test/management/common.js';

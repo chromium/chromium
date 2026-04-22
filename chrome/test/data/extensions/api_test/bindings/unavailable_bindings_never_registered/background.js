@@ -7,9 +7,10 @@ function assertAlarmsIsNotRegistered() {
 }
 
 function assertRuntimeIsRegistered() {
-  var runtime = chrome.runtime;
-  chrome.test.assertTrue(!!(runtime && runtime.reload && runtime.connect),
-                         'runtime is not registered');
+  const runtime = chrome.runtime;
+  chrome.test.assertTrue(
+      !!(runtime && runtime.reload && runtime.connect),
+      'runtime is not registered');
 }
 
 function assertStorageIsNotRegistered() {
@@ -17,9 +18,10 @@ function assertStorageIsNotRegistered() {
 }
 
 function assertStorageIsRegistered() {
-  var storage = chrome.storage;
-  chrome.test.assertTrue(!!(storage && storage.local && storage.local.get),
-                         'storage is not registered');
+  const storage = chrome.storage;
+  chrome.test.assertTrue(
+      !!(storage && storage.local && storage.local.get),
+      'storage is not registered');
 }
 
 function test() {
@@ -27,26 +29,28 @@ function test() {
   assertRuntimeIsRegistered();
   assertStorageIsNotRegistered();
 
-  chrome.permissions.request({permissions: ['storage']},
-                             chrome.test.callbackPass(function() {
-    assertAlarmsIsNotRegistered();
-    assertRuntimeIsRegistered();
-    assertStorageIsRegistered();
+  chrome.permissions.request(
+      {permissions: ['storage']}, chrome.test.callbackPass(function() {
+        assertAlarmsIsNotRegistered();
+        assertRuntimeIsRegistered();
+        assertStorageIsRegistered();
 
-    chrome.permissions.remove({permissions: ['storage']},
-                              chrome.test.callbackPass(function() {
-      assertAlarmsIsNotRegistered();
-      assertRuntimeIsRegistered();
-      assertStorageIsRegistered();
+        chrome.permissions.remove(
+            {permissions: ['storage']}, chrome.test.callbackPass(function() {
+              assertAlarmsIsNotRegistered();
+              assertRuntimeIsRegistered();
+              assertStorageIsRegistered();
 
-      // Although storage should throw an error on use since it's removed.
-      chrome.test.assertThrows(
-          chrome.storage.local.get, chrome.storage.local, [function(){}],
-          `'storage.get' is not available in this context.`);
+              // Although storage should throw an error on use since it's
+              // removed.
+              chrome.test.assertThrows(
+                  chrome.storage.local.get, chrome.storage.local,
+                  [function() {}],
+                  `'storage.get' is not available in this context.`);
 
-      chrome.test.succeed();
-    }));
-  }));
+              chrome.test.succeed();
+            }));
+      }));
 }
 
 chrome.test.runTests([test]);

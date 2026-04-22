@@ -14,20 +14,21 @@ onload = function() {
         chrome.test.assertTrue(
             error.details.hasOwnProperty('expectedErrorMessage'));
         chrome.test.assertEq(error.details.expectedMessageId, error.messageId);
-        chrome.test.assertEq(error.details.expectedErrorMessage,
-                             error.errorMessage);
+        chrome.test.assertEq(
+            error.details.expectedErrorMessage, error.errorMessage);
         currentError += 1;
         const tempTotalMessages = +error.details.totalMessages;
-        if (totalMessages == 0)
+        if (totalMessages == 0) {
           totalMessages = tempTotalMessages;
-        else
+        } else {
           chrome.test.assertEq(totalMessages, tempTotalMessages);
+        }
         if (currentError == totalMessages) {
           chrome.gcm.onSendError.removeListener(eventHandler);
           chrome.test.succeed();
         }
       };
       chrome.gcm.onSendError.addListener(eventHandler);
-    }
+    },
   ]);
 };

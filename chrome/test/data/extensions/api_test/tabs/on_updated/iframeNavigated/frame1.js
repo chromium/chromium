@@ -4,5 +4,5 @@
 
 window.onload = function() {
   // Navigate during the onload so that 'complete' status won't fire.
-  location.href = "iframe2.html";
-}
+  location.href = 'iframe2.html';
+};

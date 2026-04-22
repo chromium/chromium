@@ -4,11 +4,11 @@
 
 chrome.test.runTests([
   function getVolumeList() {
-    chrome.fileSystem.getVolumeList(
-        chrome.test.callbackFail('Operation only supported for kiosk apps ' +
+    chrome.fileSystem.getVolumeList(chrome.test.callbackFail(
+        'Operation only supported for kiosk apps ' +
             'running in a kiosk session.',
-            function(volumeList) {
-              chrome.test.assertFalse(!!volumeList);
-            }));
-  }
+        function(volumeList) {
+          chrome.test.assertFalse(!!volumeList);
+        }));
+  },
 ]);

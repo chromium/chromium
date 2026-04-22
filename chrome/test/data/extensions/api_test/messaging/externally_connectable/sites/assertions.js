@@ -40,10 +40,8 @@ function clobber(obj, name, qualifiedName) {
   // Clobbering Object.valueOf breaks v8.
   // Clobbering %FunctionPrototype%.caller and .arguments will break because
   // these properties are poisoned accessors in ES6.
-  if (name == 'constructor' ||
-      name == 'toString' ||
-      name == '__proto__' ||
-      name == 'name' && typeof obj == 'function' ||
+  if (name == 'constructor' || name == 'toString' || name == '__proto__' ||
+      name == 'name' && typeof obj === 'function' ||
       qualifiedName == 'Function.call' ||
       (obj !== Function && qualifiedName == 'Function.caller') ||
       (obj !== Function && qualifiedName == 'Function.arguments') ||
@@ -51,7 +49,8 @@ function clobber(obj, name, qualifiedName) {
     return;
   }
   const desc = getOwnPropertyDescriptor(obj, name);
-  if (!desc.configurable) return;
+  if (!desc.configurable)
+    return;
   let newDesc;
   if (desc.get || desc.set || typeof desc.value !== 'function') {
     newDesc = {
@@ -66,7 +65,7 @@ function clobber(obj, name, qualifiedName) {
     newDesc = {
       value: function() {
         throw new Error(`Clobbered ${qualifiedName} function`);
-      }
+      },
     };
   }
   defineProperty(obj, name, newDesc);
@@ -83,8 +82,9 @@ forEach.call(builtinTypes, function(builtin) {
   forEach.call(getOwnPropertyNames(builtin), function(name) {
     clobber(builtin, name, `${typename}.${name}`);
   });
-  if (builtin.name)
+  if (builtin.name) {
     clobber(window, builtin.name, `window.${builtin.name}`);
+  }
 });
 
 // Codes for test results. Must match ExternallyConnectableMessagingTest::Result
@@ -169,8 +169,9 @@ function checkResponse(response, expectedMessage, isApp) {
   // Check the correct content was echoed.
   const expectedJson = stringify(expectedMessage);
   const actualJson = stringify(response.message);
-  if (actualJson == expectedJson)
+  if (actualJson == expectedJson) {
     return;
+  }
   console.warn(`Expected message ${expectedJson} got ${actualJson}`);
   throw new ResultError(results.INCORRECT_RESPONSE_MESSAGE);
 }
@@ -195,13 +196,15 @@ function checkRuntime() {
 
 function checkTlsChannelIdResponse(response) {
   if (chrome.runtime.lastError) {
-    if (chrome.runtime.lastError.message == kCouldNotEstablishConnection)
+    if (chrome.runtime.lastError.message == kCouldNotEstablishConnection) {
       return sendToBrowserForTlsChannelId(
           results.COULD_NOT_ESTABLISH_CONNECTION_ERROR);
+    }
     return sendToBrowserForTlsChannelId(results.OTHER_ERROR);
   }
-  if (response.sender.tlsChannelId !== undefined)
+  if (response.sender.tlsChannelId !== undefined) {
     return sendToBrowserForTlsChannelId(response.sender.tlsChannelId);
+  }
   return sendToBrowserForTlsChannelId('');
 }
 
@@ -219,7 +222,7 @@ window.actions = {
       iframe.src = src;
       document.body.appendChild(iframe);
     });
-  }
+  },
 };
 
 window.assertions = {
@@ -233,14 +236,14 @@ window.assertions = {
 
       async function canSendMessage() {
         const response = await new Promise((resolve, reject) => {
-          chrome.runtime.sendMessage(
-              extensionId, message, function(response) {
-                if (chrome.runtime.lastError) {
-                  reject(chrome.runtime.lastError.message);
-                }
-                resolve(response);
-              });
-        }).catch(throwResultError);
+                           chrome.runtime.sendMessage(
+                               extensionId, message, function(response) {
+                                 if (chrome.runtime.lastError) {
+                                   reject(chrome.runtime.lastError.message);
+                                 }
+                                 resolve(response);
+                               });
+                         }).catch(throwResultError);
         checkResponse(response, message, isApp);
       }
 
@@ -303,27 +306,27 @@ window.assertions = {
     }
     return runIllegalFunction(chrome.runtime.connect) &&
         runIllegalFunction(function() {
-          chrome.runtime.connect('');
-        }) &&
+             chrome.runtime.connect('');
+           }) &&
         runIllegalFunction(function() {
-          chrome.runtime.connect(42);
-        }) &&
+             chrome.runtime.connect(42);
+           }) &&
         runIllegalFunction(function() {
-          chrome.runtime.connect('', 42);
-        }) &&
+             chrome.runtime.connect('', 42);
+           }) &&
         runIllegalFunction(function() {
-          chrome.runtime.connect({name: 'noname'});
-        }) &&
+             chrome.runtime.connect({name: 'noname'});
+           }) &&
         runIllegalFunction(chrome.runtime.sendMessage) &&
         runIllegalFunction(function() {
-          chrome.runtime.sendMessage('');
-        }) &&
+             chrome.runtime.sendMessage('');
+           }) &&
         runIllegalFunction(function() {
-          chrome.runtime.sendMessage(42);
-        }) &&
+             chrome.runtime.sendMessage(42);
+           }) &&
         runIllegalFunction(function() {
-          chrome.runtime.sendMessage('', 42);
-        });
+             chrome.runtime.sendMessage('', 42);
+           });
   },
 
   areAnyRuntimePropertiesDefined: function(names) {
@@ -350,15 +353,17 @@ window.assertions = {
       throw err;
     }
 
-    if (!message)
+    if (!message) {
       message = kMessage;
+    }
 
     const port = chrome.runtime.connect(
         extensionId, {includeTlsChannelId: includeTlsChannelId});
     return new Promise(resolve => {
-      port.onMessage.addListener(resolve);
-      port.postMessage(message);
-    }).then(checkTlsChannelIdResponse);
+             port.onMessage.addListener(resolve);
+             port.postMessage(message);
+           })
+        .then(checkTlsChannelIdResponse);
   },
 
   getTlsChannelIdFromSendMessage: function(
@@ -372,8 +377,9 @@ window.assertions = {
       throw err;
     }
 
-    if (!message)
+    if (!message) {
       message = kMessage;
+    }
 
     return new Promise(resolve => {
              chrome.runtime.sendMessage(
@@ -381,7 +387,6 @@ window.assertions = {
                  {includeTlsChannelId: includeTlsChannelId}, resolve);
            })
         .then(checkTlsChannelIdResponse);
-  }
+  },
 };
-
 }());

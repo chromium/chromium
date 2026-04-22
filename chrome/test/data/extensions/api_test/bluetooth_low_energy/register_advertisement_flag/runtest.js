@@ -2,33 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var registerAdvertisement =
-    chrome.bluetoothLowEnergy.registerAdvertisement;
-var unregisterAdvertisement =
+const registerAdvertisement = chrome.bluetoothLowEnergy.registerAdvertisement;
+const unregisterAdvertisement =
     chrome.bluetoothLowEnergy.unregisterAdvertisement;
 
-var serviceUuidsValue = ['value1', 'value2'];
-var manufacturerDataValue = [{id: 321, data: [1, 2, 3]},
-                             {id: 567, data: [8, 2, 3]}]
-var solicitUuidsValue = ['value3', 'value4'];
-var serviceDataValue = [{uuid: 'uuid8', data: [1, 2, 3]},
-                        {uuid: 'uuid36', data: [8, 2, 3]}]
+const serviceUuidsValue = ['value1', 'value2'];
+const manufacturerDataValue =
+    [{id: 321, data: [1, 2, 3]}, {id: 567, data: [8, 2, 3]}];
+const solicitUuidsValue = ['value3', 'value4'];
+const serviceDataValue =
+    [{uuid: 'uuid8', data: [1, 2, 3]}, {uuid: 'uuid36', data: [8, 2, 3]}];
 
-var advertisement = {
+const advertisement = {
   type: 'broadcast',
   serviceUuids: serviceUuidsValue,
   manufacturerData: manufacturerDataValue,
   solicitUuids: solicitUuidsValue,
-  serviceData: serviceDataValue
+  serviceData: serviceDataValue,
 };
 
-registerAdvertisement(advertisement, function (advertisementId) {
+registerAdvertisement(advertisement, function(advertisementId) {
   if (chrome.runtime.lastError || !advertisementId) {
     chrome.test.fail(chrome.runtime.lastError.message);
     return;
   }
 
-  unregisterAdvertisement(advertisementId, function () {
+  unregisterAdvertisement(advertisementId, function() {
     if (chrome.runtime.lastError) {
       chrome.test.fail(chrome.runtime.lastError.message);
       return;

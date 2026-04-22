@@ -7,7 +7,7 @@
 function readFileEntry(fileEntry, callback) {
   fileEntry.file(
       function(file) {
-        var fileReader = new FileReader();
+        const fileReader = new FileReader();
         fileReader.onload = function(e) {
           callback(e.target.result);
         };
@@ -22,7 +22,7 @@ function readFileEntry(fileEntry, callback) {
 }
 
 function readFileEntries(directoryEntry, callback) {
-  var reader = directoryEntry.createReader();
+  const reader = directoryEntry.createReader();
   reader.readEntries(callback, function(error) {
     chrome.test.fail('Failed to readEntries: ' + error);
   });
@@ -40,8 +40,7 @@ function testGetsReadOnlyDirectoryEntry() {
     chrome.test.assertTrue(directoryEntry.isDirectory);
     chrome.test.assertEq('WebRTC Logs', directoryEntry.name);
     directoryEntry.getFile(
-        'new.file', {create: true, exclusive: true},
-        function() {
+        'new.file', {create: true, exclusive: true}, function() {
           chrome.test.fail('DirectoryEntry allowed file creation');
         }, chrome.test.succeed);
   });
@@ -60,7 +59,7 @@ function testCanReadFile() {
   chrome.webrtcLoggingPrivate.getLogsDirectory(function(directoryEntry) {
     readFileEntries(directoryEntry, function(entries) {
       chrome.test.assertEq(1, entries.length);
-      var fileEntry = entries[0];
+      const fileEntry = entries[0];
       chrome.test.assertTrue(fileEntry.isFile);
       chrome.test.assertEq('test.file', fileEntry.name);
       readFileEntry(fileEntry, function(contents) {
@@ -75,7 +74,7 @@ function testCanRemoveFile() {
   chrome.webrtcLoggingPrivate.getLogsDirectory(function(directoryEntry) {
     readFileEntries(directoryEntry, function(entries) {
       chrome.test.assertEq(1, entries.length);
-      var fileEntry = entries[0];
+      const fileEntry = entries[0];
       chrome.test.assertTrue(fileEntry.isFile);
       fileEntry.remove(function() {
         readFileEntries(directoryEntry, function(entries) {
@@ -91,13 +90,13 @@ function testCannotWriteToFile() {
   chrome.webrtcLoggingPrivate.getLogsDirectory(function(directoryEntry) {
     readFileEntries(directoryEntry, function(entries) {
       chrome.test.assertEq(1, entries.length);
-      var fileEntry = entries[0];
+      const fileEntry = entries[0];
       fileEntry.createWriter(function(fileWriter) {
         function expectErrorSet() {
           chrome.test.assertTrue(!!fileWriter.error);
           chrome.test.succeed();
-        };
-        var data = new Blob(['example'], {type: 'text/plain'});
+        }
+        const data = new Blob(['example'], {type: 'text/plain'});
         fileWriter.onprogress = expectErrorSet;
         fileWriter.onerror = expectErrorSet;
         fileWriter.writeEnd = expectErrorSet;
@@ -107,7 +106,7 @@ function testCannotWriteToFile() {
   });
 }
 
-var testGroups = {
+const testGroups = {
   'test_without_directory': [
     testGetsReadOnlyDirectoryEntry,
     testEmptyDirectory,
@@ -122,12 +121,12 @@ var testGroups = {
 };
 
 chrome.test.getConfig(function(config) {
-  var testGroupName = config.customArg;
+  const testGroupName = config.customArg;
   if (!testGroupName) {
     chrome.test.fail('No tests specified');
     return;
   }
-  var tests = testGroups[testGroupName];
+  const tests = testGroups[testGroupName];
   if (!tests) {
     chrome.test.fail('No tests found with name=' + testGroupName);
     return;

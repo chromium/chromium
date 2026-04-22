@@ -17,8 +17,9 @@ chrome.test.runTests([
         'OPEN_AS_REGULAR_TAB' in chrome.management.LaunchType,
         '"OPEN_AS_REGULAR_TAB" is not present on management.LaunchType');
     // The value of the enum should be its string value.
-    chrome.test.assertEq(chrome.management.LaunchType.OPEN_AS_REGULAR_TAB,
-                         'OPEN_AS_REGULAR_TAB');
+    chrome.test.assertEq(
+        chrome.management.LaunchType.OPEN_AS_REGULAR_TAB,
+        'OPEN_AS_REGULAR_TAB');
     // There should be more than one value for the enum.
     chrome.test.assertTrue(
         Object.keys(chrome.management.LaunchType).length > 1);
@@ -30,15 +31,17 @@ chrome.test.runTests([
     chrome.test.assertTrue(
         'GRANTED' in chrome.notifications.PermissionLevel,
         '"GRANTED" is not present on notifications.PermissionLevel');
-    chrome.test.assertEq(chrome.notifications.PermissionLevel.GRANTED,
-                         'granted');
+    chrome.test.assertEq(
+        chrome.notifications.PermissionLevel.GRANTED, 'granted');
     chrome.test.assertTrue(
         Object.keys(chrome.notifications.PermissionLevel).length > 1);
 
-    chrome.test.assertTrue('PlatformArch' in chrome.runtime,
-                           '"PlatformArch" is not present on chrome.runtime.');
-    chrome.test.assertTrue('X86_64' in chrome.runtime.PlatformArch,
-                           '"X86_64" is not present on runtime.PlatformArch.');
+    chrome.test.assertTrue(
+        'PlatformArch' in chrome.runtime,
+        '"PlatformArch" is not present on chrome.runtime.');
+    chrome.test.assertTrue(
+        'X86_64' in chrome.runtime.PlatformArch,
+        '"X86_64" is not present on runtime.PlatformArch.');
     chrome.test.assertEq('x86-64', chrome.runtime.PlatformArch.X86_64);
 
     chrome.test.assertTrue(
@@ -52,5 +55,5 @@ chrome.test.runTests([
         chrome.omnibox.OnInputEnteredDisposition.NEW_FOREGROUND_TAB);
 
     chrome.test.succeed();
-  }
+  },
 ]);

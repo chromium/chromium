@@ -6,13 +6,15 @@ chrome.test.runTests([
   function testUnregister() {
     const senderIds = ['Sender1', 'Sender2'];
     chrome.gcm.register(senderIds, function(registrationId) {
-      if (chrome.runtime.lastError)
+      if (chrome.runtime.lastError) {
         chrome.test.fail();
+      }
       chrome.gcm.unregister(function() {
-        if (chrome.runtime.lastError)
+        if (chrome.runtime.lastError) {
           chrome.test.fail();
-        else
+        } else {
           chrome.test.succeed();
+        }
       });
     });
   },
@@ -25,5 +27,5 @@ chrome.test.runTests([
         chrome.test.fail();
       }
     });
-  }
+  },
 ]);

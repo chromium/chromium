@@ -34,10 +34,11 @@ function checkItem(item, name, enabled, type, additionalProperties) {
   assertEq(type, item.type);
   assertEq(enabled, item.enabled);
 
-  for (let propname in additionalProperties) {
+  for (const propname in additionalProperties) {
     let value = additionalProperties[propname];
-    if (typeof value === 'string')
+    if (typeof value === 'string') {
       value = value.replace('<ID>', item.id);
+    }
     assertTrue(propname in item);
     assertEq(value, item[propname]);
   }

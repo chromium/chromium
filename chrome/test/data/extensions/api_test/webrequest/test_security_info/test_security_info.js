@@ -28,7 +28,7 @@ function isSha256Fingerprint(input) {
       // Scheme wildcard (*) does not include ws(s).
       `*://${urlObj.hostname}${urlObj.pathname}`,
       `ws://${urlObj.hostname}${urlObj.pathname}`,
-      `wss://${urlObj.hostname}${urlObj.pathname}`
+      `wss://${urlObj.hostname}${urlObj.pathname}`,
     ];
   } else {
     filter = [requestUrl];

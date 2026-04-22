@@ -17,24 +17,28 @@ chrome.test.getConfig(config => chrome.test.runTests([
     function dispatchMessage(key, args) {
       if (key === 'Target.receivedMessageFromTarget') {
         const message = JSON.parse(args.message);
-        if ('id' in message)
+        if ('id' in message) {
           dispatchMessage(message.id, message);
-        else
+        } else {
           dispatchMessage(message.method, message.params);
+        }
         return;
       }
       const cb = protocolCallbacks.get(key);
-      if (!cb)
+      if (!cb) {
         return;
+      }
       protocolCallbacks.delete(key);
       cb(args);
     }
 
-    chrome.debugger.onEvent.addListener((_, method, params) =>
-        dispatchMessage(method, params));
+    chrome.debugger.onEvent.addListener(
+        (_, method, params) => dispatchMessage(method, params));
 
     function onceEvent(name) {
-      return new Promise(resolve => {protocolCallbacks.set(name, resolve);});
+      return new Promise(resolve => {
+        protocolCallbacks.set(name, resolve);
+      });
     }
 
     let callId = 0;
@@ -43,24 +47,23 @@ chrome.test.getConfig(config => chrome.test.runTests([
       const message = {
         id: ++callId,
         method,
-        params
+        params,
       };
       chrome.debugger.sendCommand(debuggee, 'Target.sendMessageToTarget', {
         targetId: targetDebuggee.targetId,
-        message: JSON.stringify(message)
+        message: JSON.stringify(message),
       });
       return new Promise(resolve => protocolCallbacks.set(message.id, resolve));
     }
 
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
 
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Target.setAutoAttach', {
-            autoAttach: true,
-            waitForDebuggerOnStart: false,
-            flatten: false},
-        resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Target.setAutoAttach',
+            {autoAttach: true, waitForDebuggerOnStart: false, flatten: false},
+            resolve));
     chrome.debugger.sendCommand(debuggee, 'Runtime.enable', null);
     const expression = `
         const frame = document.body.firstElementChild;
@@ -72,18 +75,19 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     const childDebuggee = {targetId: attachedParams.targetInfo.targetId};
     const anotherTab = await openTab(topURL);
-    const targets = await new Promise(resolve =>
-        chrome.debugger.getTargets(resolve));
+    const targets =
+        await new Promise(resolve => chrome.debugger.getTargets(resolve));
 
-    const anotherTabTarget = targets.find(
-        t => t.type === 'page' && t.tabId === anotherTab.id);
+    const anotherTabTarget =
+        targets.find(t => t.type === 'page' && t.tabId === anotherTab.id);
 
-    const result = await sendMessageToTarget(childDebuggee,
-        'Target.attachToTarget', {targetId: anotherTabTarget.id});
+    const result = await sendMessageToTarget(
+        childDebuggee, 'Target.attachToTarget',
+        {targetId: anotherTabTarget.id});
 
     chrome.test.assertTrue('error' in result, 'Expected error, got success!');
     chrome.test.assertEq(result.error.message, 'Not allowed');
 
     chrome.test.succeed();
-  }
+  },
 ]));

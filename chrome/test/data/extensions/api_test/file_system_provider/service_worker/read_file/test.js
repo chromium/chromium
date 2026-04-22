@@ -168,7 +168,7 @@ async function main() {
           (await remoteProvider.waitForEvent('onReadFileRequested'))
               .openRequestId);
       chrome.test.assertEq(
-          TestFileSystemProvider.INITIAL_TEXT, await read2.promise)
+          TestFileSystemProvider.INITIAL_TEXT, await read2.promise);
       // The first file should have been closed.
       chrome.test.assertEq(
           openRequest1.requestId,

@@ -7,6 +7,6 @@ chrome.test.sendMessage('app_launched');
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.app.window.create('main.html', {
     width: 600,
-    height: 600
+    height: 600,
   });
 });

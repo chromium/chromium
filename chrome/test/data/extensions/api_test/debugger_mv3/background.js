@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab } from '/_test_resources/test_util/tabs_util.js';
+import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
-let protocolVersion = '1.3';
+const protocolVersion = '1.3';
 
 chrome.test.getConfig(config => chrome.test.runTests([
   async function consoleEventOrdering() {
     const tab = await openTab(chrome.runtime.getURL('inspected.html'));
 
-    const debuggee = { tabId: tab.id };
+    const debuggee = {tabId: tab.id};
 
-    let eventOrder = [];
+    const eventOrder = [];
 
     await chrome.debugger.attach(debuggee, protocolVersion);
 
@@ -26,11 +26,11 @@ chrome.test.getConfig(config => chrome.test.runTests([
     });
 
     const result = await chrome.debugger.sendCommand(
-      debuggee,
-      'Runtime.evaluate',
-      {
-        expression: `console.log('Hello World'); 'done'`,
-      }
+        debuggee,
+        'Runtime.evaluate',
+        {
+          expression: `console.log('Hello World'); 'done'`,
+        },
     );
 
     eventOrder.push(`evaluateResult: ${result.result.value}`);

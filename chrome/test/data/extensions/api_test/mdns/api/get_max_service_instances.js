@@ -8,6 +8,6 @@ onload = function() {
       // Ensure that the constant is actually set.
       chrome.test.assertTrue(chrome.mdns.MAX_SERVICE_INSTANCES_PER_EVENT > 0);
       chrome.test.notifyPass();
-    }
+    },
   ]);
 };

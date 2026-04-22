@@ -4,11 +4,12 @@
 
 // Test clipboard extension api chrome.clipboard.onClipboardDataChanged event.
 
-let testSuccessCount = 0;
+const testSuccessCount = 0;
 
 function verifySetImageDataResult(expectedError) {
-  if (expectedError)
+  if (expectedError) {
     chrome.test.assertLastError(expectedError);
+  }
   chrome.test.succeed();
 }
 
@@ -18,18 +19,17 @@ function testSetImageDataClipboard(
   oReq.open('GET', imageUrl, true);
   oReq.responseType = 'arraybuffer';
 
-  oReq.onload = function (oEvent) {
+  oReq.onload = function(oEvent) {
     const arrayBuffer = oReq.response;
 
     if (arrayBuffer) {
       if (additionalItems) {
-        chrome.clipboard.setImageData(arrayBuffer, imageType, additionalItems,
-                                      function() {
-          verifySetImageDataResult(expectedError);
-        });
+        chrome.clipboard.setImageData(
+            arrayBuffer, imageType, additionalItems, function() {
+              verifySetImageDataResult(expectedError);
+            });
       } else {
-        chrome.clipboard.setImageData(arrayBuffer, imageType,
-                                      function() {
+        chrome.clipboard.setImageData(arrayBuffer, imageType, function() {
           verifySetImageDataResult(expectedError);
         });
       }
@@ -57,13 +57,13 @@ function testSaveBadImageData(baseUrl) {
 function testSavePngImageWithAdditionalDataToClipboard(baseUrl) {
   const additionalItems = [];
   const textItem = {
-      type: 'textPlain',
-      data: 'Hello, world'
-  }
+    type: 'textPlain',
+    data: 'Hello, world',
+  };
   const htmlItem = {
-      type: 'textHtml',
-      data: '<b>This is an html markup</b>'
-  }
+    type: 'textHtml',
+    data: '<b>This is an html markup</b>',
+  };
   additionalItems.push(textItem);
   additionalItems.push(htmlItem);
   testSetImageDataClipboard(
@@ -74,19 +74,18 @@ function testSavePngImageWithAdditionalDataToClipboardDuplicateTypeItems(
     baseUrl) {
   const additionalItems = [];
   const textItem1 = {
-      type: 'textPlain',
-      data: 'Hello, world'
-  }
+    type: 'textPlain',
+    data: 'Hello, world',
+  };
   const textItem2 = {
-      type: 'textPlain',
-      data: 'Another text item'
-  }
+    type: 'textPlain',
+    data: 'Another text item',
+  };
   additionalItems.push(textItem1);
   additionalItems.push(textItem2);
   testSetImageDataClipboard(
       `${baseUrl}/icon1.png`, 'png',
-      'Unsupported additionalItems parameter data.',
-      additionalItems);
+      'Unsupported additionalItems parameter data.', additionalItems);
 }
 
 function bindTest(test, param) {
@@ -102,7 +101,8 @@ chrome.test.getConfig(function(config) {
     bindTest(testSaveJpegImageToClipboard, baseUrl),
     bindTest(testSaveBadImageData, baseUrl),
     bindTest(testSavePngImageWithAdditionalDataToClipboard, baseUrl),
-    bindTest(testSavePngImageWithAdditionalDataToClipboardDuplicateTypeItems,
-             baseUrl)
+    bindTest(
+        testSavePngImageWithAdditionalDataToClipboardDuplicateTypeItems,
+        baseUrl),
   ]);
-})
+});

@@ -7,18 +7,18 @@
 chrome.test.runTests([
   function geolocation_getCurrentPosition() {
     try {
-      navigator.geolocation.getCurrentPosition(chrome.test.fail,
-                                               chrome.test.succeed);
+      navigator.geolocation.getCurrentPosition(
+          chrome.test.fail, chrome.test.succeed);
     } catch (e) {
       chrome.test.fail();
     }
   },
   function geolocation_watchPosition() {
     try {
-      navigator.geolocation.watchPosition(chrome.test.fail,
-                                          chrome.test.succeed);
+      navigator.geolocation.watchPosition(
+          chrome.test.fail, chrome.test.succeed);
     } catch (e) {
       chrome.test.fail();
     }
-  }
+  },
 ]);

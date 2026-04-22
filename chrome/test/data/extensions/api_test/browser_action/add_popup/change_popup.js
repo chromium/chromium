@@ -4,7 +4,7 @@
 
 chrome.tabs.query({active: true}, function(tabs) {
   chrome.browserAction.setPopup({
-    popup: 'another_popup.html'
+    popup: 'another_popup.html',
   });
   chrome.test.notifyPass();
 });

@@ -9,12 +9,13 @@ chrome.test.runTests([
 
       // Test that we can get the display path of the file, and that it begins
       // with the home directory indicator (currently '~').
-      chrome.fileSystem.getDisplayPath(entry, chrome.test.callbackPass(
-          function(path) {
-        chrome.test.assertTrue(path.indexOf('~/') == 0 ||  // POSIX
-                               path.indexOf('~\\') == 0);  // Windows
-        chrome.test.assertTrue(path.indexOf('gold.txt') >= 0);
-      }));
+      chrome.fileSystem.getDisplayPath(
+          entry, chrome.test.callbackPass(function(path) {
+            chrome.test.assertTrue(
+                path.indexOf('~/') == 0 ||  // POSIX
+                path.indexOf('~\\') == 0);  // Windows
+            chrome.test.assertTrue(path.indexOf('gold.txt') >= 0);
+          }));
     }));
-  }
+  },
 ]);

@@ -27,8 +27,9 @@ async function getActivatedInstrumentationServiceWorker() {
     const worker = registration.installing;
 
     registration.installing.addEventListener('statechange', () => {
-      if (worker.state == 'activated')
+      if (worker.state == 'activated') {
         resolve();
+      }
     });
   });
 
@@ -41,17 +42,17 @@ async function getActivatedInstrumentationServiceWorker() {
     });
 
     registration.active.postMessage(
-        messageChannel.port2, [ messageChannel.port2 ]);
+        messageChannel.port2, [messageChannel.port2]);
 
     messageChannel.port1.start();
   });
 
-  return [ registration, messageChannel.port1 ];
+  return [registration, messageChannel.port1];
 }
 
 chrome.test.getConfig(async config => {
   const expected = config.customArg;
-  const [ registration, messagePort ] =
+  const [registration, messagePort] =
       await getActivatedInstrumentationServiceWorker();
 
   chrome.test.runTests([
@@ -143,6 +144,6 @@ chrome.test.getConfig(async config => {
         chrome.test.assertEq(expected, 'denied');
         chrome.test.succeed();
       }
-    }
+    },
   ]);
 });

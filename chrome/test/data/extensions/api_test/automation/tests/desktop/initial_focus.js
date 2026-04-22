@@ -4,7 +4,7 @@
 
 const allTests = [
   function testInitialFocus() {
-    let url = `data:text/html,<!doctype html>${
+    const url = `data:text/html,<!doctype html>${
         encodeURI('<input autofocus title=abc>')}`;
     chrome.automation.getDesktop(function(rootNode) {
       rootNode.addEventListener('focus', function(event) {

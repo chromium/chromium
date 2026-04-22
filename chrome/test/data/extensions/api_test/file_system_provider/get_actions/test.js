@@ -14,7 +14,7 @@ const TESTING_ACTIONS_DIR = Object.freeze({
   isDirectory: true,
   name: 'actions',
   size: 0,
-  modificationTime: new Date(2014, 3, 27, 9, 38, 14)
+  modificationTime: new Date(2014, 3, 27, 9, 38, 14),
 });
 
 /**
@@ -25,7 +25,7 @@ const TESTING_NO_ACTIONS_DIR = Object.freeze({
   isDirectory: true,
   name: 'no-actions',
   size: 0,
-  modificationTime: new Date(2014, 3, 27, 9, 38, 14)
+  modificationTime: new Date(2014, 3, 27, 9, 38, 14),
 });
 
 /**
@@ -91,21 +91,18 @@ function runTests() {
     // Get actions for a directory with actions.
     function getActionsSuccess() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_ACTIONS_DIR.name,
-          {create: false},
+          TESTING_ACTIONS_DIR.name, {create: false},
           chrome.test.callbackPass(function(dirEntry) {
             chrome.fileManagerPrivate.getCustomActions(
-                [dirEntry],
-                chrome.test.callbackPass(function(actions) {
+                [dirEntry], chrome.test.callbackPass(function(actions) {
                   chrome.test.assertEq(2, actions.length);
-                  chrome.test.assertEq(TESTING_ACTIONS_DIR_ACTIONS[0].id,
-                      actions[0].id);
-                  chrome.test.assertFalse(!!actions[0].title);
-                  chrome.test.assertEq(TESTING_ACTIONS_DIR_ACTIONS[1].id,
-                      actions[1].id);
                   chrome.test.assertEq(
-                      TESTING_ACTIONS_DIR_ACTIONS[1].title,
-                      actions[1].title);
+                      TESTING_ACTIONS_DIR_ACTIONS[0].id, actions[0].id);
+                  chrome.test.assertFalse(!!actions[0].title);
+                  chrome.test.assertEq(
+                      TESTING_ACTIONS_DIR_ACTIONS[1].id, actions[1].id);
+                  chrome.test.assertEq(
+                      TESTING_ACTIONS_DIR_ACTIONS[1].title, actions[1].title);
                 }));
           }),
           function(error) {
@@ -116,12 +113,10 @@ function runTests() {
     // Get actions for a directory with no actions.
     function getNoActionsSuccess() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_NO_ACTIONS_DIR.name,
-          {create: false},
+          TESTING_NO_ACTIONS_DIR.name, {create: false},
           chrome.test.callbackPass(function(dirEntry) {
             chrome.fileManagerPrivate.getCustomActions(
-                [dirEntry],
-                chrome.test.callbackPass(function(actions) {
+                [dirEntry], chrome.test.callbackPass(function(actions) {
                   chrome.test.assertEq(0, actions.length);
                 }));
           }),
@@ -133,12 +128,10 @@ function runTests() {
     // Get actions for multiple entries.
     function getNoActionsMultipleSuccess() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_ACTIONS_DIR.name,
-          {create: false},
+          TESTING_ACTIONS_DIR.name, {create: false},
           chrome.test.callbackPass(function(dirEntry) {
             testUtil.fileSystem.root.getDirectory(
-                TESTING_NO_ACTIONS_DIR.name,
-                {create: false},
+                TESTING_NO_ACTIONS_DIR.name, {create: false},
                 chrome.test.callbackPass(function(dirEntry2) {
                   chrome.fileManagerPrivate.getCustomActions(
                       [dirEntry, dirEntry2],
@@ -153,7 +146,7 @@ function runTests() {
           function(error) {
             chrome.test.fail(error.name);
           });
-    }
+    },
   ]);
 }
 
@@ -161,7 +154,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

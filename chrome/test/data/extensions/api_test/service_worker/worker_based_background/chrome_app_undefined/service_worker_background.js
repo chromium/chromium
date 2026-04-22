@@ -7,5 +7,5 @@ chrome.test.runTests([
   function testChromeAppBinding() {
     chrome.test.assertTrue(chrome.app === undefined);
     chrome.test.succeed();
-  }
+  },
 ]);

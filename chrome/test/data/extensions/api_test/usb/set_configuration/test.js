@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var usb = chrome.usb;
+const usb = chrome.usb;
 
-var tests = [
+const tests = [
   function setConfiguration() {
-    usb.findDevices({vendorId: 0, productId: 0}, function (devices) {
-      var device = devices[0];
-      usb.getConfiguration(device, function (result) {
-        chrome.test.assertLastError("The device is not in a configured state.");
-        usb.setConfiguration(device, 1, function () {
+    usb.findDevices({vendorId: 0, productId: 0}, function(devices) {
+      const device = devices[0];
+      usb.getConfiguration(device, function(result) {
+        chrome.test.assertLastError('The device is not in a configured state.');
+        usb.setConfiguration(device, 1, function() {
           chrome.test.assertNoLastError();
-          usb.getConfiguration(device, function (result) {
+          usb.getConfiguration(device, function(result) {
             chrome.test.assertNoLastError();
             usb.closeDevice(device);
             chrome.test.succeed();
@@ -20,7 +20,7 @@ var tests = [
         });
       });
     });
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

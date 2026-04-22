@@ -13,7 +13,8 @@ onmessage = function(event) {
   sandboxedWindowSecret = undefined;
   try {
     sandboxedWindowSecret = sandboxedWindow.SECRET;
-  } catch (e) {}
+  } catch (e) {
+  }
   chrome.test.assertEq(undefined, sandboxedWindowSecret);
 
   chrome.test.succeed();
@@ -29,6 +30,6 @@ onload = function() {
       const iframe = document.createElement('iframe');
       iframe.src = 'sandboxed.html';
       document.body.appendChild(iframe);
-    }
+    },
   ]);
 };

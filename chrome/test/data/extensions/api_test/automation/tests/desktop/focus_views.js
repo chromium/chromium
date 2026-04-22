@@ -4,17 +4,16 @@
 
 const allTests = [
   function testFocusLocationBar() {
-    const firstFocusableNode = findAutomationNode(rootNode,
-        function(node) {
-          return node.role == 'textField' && node.state.focusable;
-        });
+    const firstFocusableNode = findAutomationNode(rootNode, function(node) {
+      return node.role == 'textField' && node.state.focusable;
+    });
 
     assertTrue(!!firstFocusableNode);
     listenOnce(firstFocusableNode, EventType.FOCUS, function(e) {
       chrome.test.succeed();
     }, true);
     firstFocusableNode.focus();
-  }
+  },
 ];
 
 setUpAndRunDesktopTests(allTests);

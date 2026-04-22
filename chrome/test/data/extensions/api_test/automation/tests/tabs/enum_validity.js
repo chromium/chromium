@@ -8,11 +8,11 @@ const allTests = [function testAutomationNodeProperties() {
 
   // Property accesses on this node will trigger native C++ property getters
   // which should not crash.
-  for (let name in automationRootNode) {
+  for (const name in automationRootNode) {
     automationRootNode[name];
   }
 
-  for (let name in automationNode) {
+  for (const name in automationNode) {
     automationNode[name];
   }
 

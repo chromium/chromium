@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 const testPort = chrome.runtime.connect({
-  name: 'port from interstitial'
+  name: 'port from interstitial',
 });
 
 let currentTest;
@@ -37,7 +37,7 @@ function testSendMessage() {
 
 function testDisconnectByBackground() {
   const port = chrome.runtime.connect({
-    name: 'disconnect by background'
+    name: 'disconnect by background',
   });
   port.onDisconnect.addListener(function() {
     done('testDisconnectByBackground');
@@ -46,7 +46,7 @@ function testDisconnectByBackground() {
 
 function testDisconnectByInterstitial() {
   const port = chrome.runtime.connect({
-    name: 'disconnect by interstitial'
+    name: 'disconnect by interstitial',
   });
   port.disconnect();
   done('testDisconnectByInterstitial');

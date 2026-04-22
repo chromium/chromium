@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var EVENT_MESSAGE_EXTENSION_STRING = "Extension";
+const EVENT_MESSAGE_EXTENSION_STRING = 'Extension';
 
 // Constants as functions, not to be called until after runTests.
 function getURLHttpSimpleLoad() {
@@ -21,45 +21,46 @@ function runTests(tests) {
 }
 
 function size(obj) {
-  var size = 0, key;
+  let size = 0;
+  let key;
   for (key in obj) {
-    if (obj.hasOwnProperty(key)) size++;
+    if (obj.hasOwnProperty(key))
+      size++;
   }
   return size;
-};
+}
 
 runTests([
   function testSendMessage() {
-    var expectedEvents = {
-      "onBeforeRequest-Extension": 1,
-      "onBeforeSendHeaders-Extension": 1,
-      "onHeadersReceived-Extension": 1
+    const expectedEvents = {
+      'onBeforeRequest-Extension': 1,
+      'onBeforeSendHeaders-Extension': 1,
+      'onHeadersReceived-Extension': 1,
       // "onAuthRequired-Extension" is not sent for this test case.
     };
     var done = chrome.test.listenForever(
-        chrome.declarativeWebRequest.onMessage,
-        function(details) {
-      if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
-        chrome.test.fail("Invalid message: " + details.message);
-      }
-      chrome.test.assertEq(getURLHttpSimpleLoad(), details.url);
-      chrome.test.assertEq('outermost_frame', details.frameType);
-      chrome.test.assertEq('active', details.documentLifecycle);
-      chrome.test.assertFalse('parentDocumentId' in details);
-      chrome.test.assertFalse('documentId' in details);
-      var messageKey = details.stage + "-" + details.message;
-      if (messageKey in expectedEvents) {
-        delete expectedEvents[messageKey];
-        if (size(expectedEvents) == 0) {
-          done();
-        }
-      } else {
-        chrome.test.fail();
-      }
-    });
+        chrome.declarativeWebRequest.onMessage, function(details) {
+          if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
+            chrome.test.fail('Invalid message: ' + details.message);
+          }
+          chrome.test.assertEq(getURLHttpSimpleLoad(), details.url);
+          chrome.test.assertEq('outermost_frame', details.frameType);
+          chrome.test.assertEq('active', details.documentLifecycle);
+          chrome.test.assertFalse('parentDocumentId' in details);
+          chrome.test.assertFalse('documentId' in details);
+          const messageKey = details.stage + '-' + details.message;
+          if (messageKey in expectedEvents) {
+            delete expectedEvents[messageKey];
+            if (size(expectedEvents) == 0) {
+              done();
+            }
+          } else {
+            chrome.test.fail();
+          }
+        });
 
     chrome.declarativeWebRequest.onRequest.removeRules(null, function() {
-      var rule = {
+      const rule = {
         conditions: [
           new chrome.declarativeWebRequest.RequestMatcher(
               {url: {urlEquals: getURLHttpSimpleLoad()}}),
@@ -70,8 +71,8 @@ runTests([
         ],
       };
       chrome.declarativeWebRequest.onRequest.addRules([rule], function() {
-        chrome.tabs.create({"url": getURLHttpSimpleLoad()});
+        chrome.tabs.create({'url': getURLHttpSimpleLoad()});
       });
     });
-  }
+  },
 ]);

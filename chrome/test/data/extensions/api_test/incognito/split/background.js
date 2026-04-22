@@ -6,7 +6,8 @@ const pass = chrome.test.callbackPass;
 const assertEq = chrome.test.assertEq;
 const assertTrue = chrome.test.assertTrue;
 
-let win, tab;
+let win;
+let tab;
 const inIncognitoContext = chrome.extension.inIncognitoContext;
 
 // Lifted from the bookmarks api_test.
@@ -15,18 +16,21 @@ function compareNode(left, right) {
   // chrome.test.log(JSON.stringify(left, null, 2));
   // chrome.test.log(JSON.stringify(right, null, 2));
   // TODO(erikkay): do some comparison of dateAdded
-  if (left.id != right.id)
+  if (left.id != right.id) {
     return `id mismatch: ${left.id} != ${right.id}`;
+  }
   if (left.title != right.title) {
     // TODO(erikkay): This resource dependency still isn't working reliably.
     // See bug 19866.
     // return `title mismatch: ${left.title} != ${right.title}`;
     chrome.test.log(`title mismatch: ${left.title} != ${right.title}`);
   }
-  if (left.url != right.url)
+  if (left.url != right.url) {
     return `url mismatch: ${left.url} != ${right.url}`;
-  if (left.index != right.index)
+  }
+  if (left.index != right.index) {
     return `index mismatch: ${left.index} != ${right.index}`;
+  }
   return true;
 }
 
@@ -42,8 +46,7 @@ chrome.tabs.onUpdated.addListener(function(id, info, tab) {
   }
 });
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (inIncognitoContext != sender.tab.incognito) {
     chrome.test.notifyFail(
         '[FAIL] Split-mode incognito test received a message from ' +
@@ -59,12 +62,12 @@ chrome.test.getConfig(function(config) {
       // and 1 regular. Since we are in split mode, we should only see the
       // window for our profile.
       chrome.windows.getAll({populate: true}, pass(function(windows) {
-        assertEq(1, windows.length);
+                              assertEq(1, windows.length);
 
-        win = windows[0];
-        tab = win.tabs[0];
-        assertEq(inIncognitoContext, win.incognito);
-      }));
+                              win = windows[0];
+                              tab = win.tabs[0];
+                              assertEq(inIncognitoContext, win.incognito);
+                            }));
     },
 
     // Tests that we can update an incognito tab and get the event for it.
@@ -77,8 +80,9 @@ chrome.test.getConfig(function(config) {
             assertEq(tab.id, id);
             assertEq(inIncognitoContext, tab.incognito);
             assertEq(newUrl, tab.url);
-            if (info.status == 'complete')
+            if (info.status == 'complete') {
               done();
+            }
           });
 
       // Update our tab.
@@ -93,16 +97,18 @@ chrome.test.getConfig(function(config) {
 
       // Test that chrome.extension.inIncognitoContext is true for incognito
       // tabs.
-      chrome.tabs.create({windowId: win.id, url: testUrl},
-        pass(function(tab) {
-          chrome.tabs.executeScript(tab.id,
-            {code: 'chrome.runtime.sendMessage({' +
-                   '  inIncognitoContext: chrome.extension.inIncognitoContext' +
-                   '});'},
-            pass(function() {
-              assertEq(undefined, chrome.runtime.lastError);
-            }));
-        }));
+      chrome.tabs.create(
+          {windowId: win.id, url: testUrl}, pass(function(tab) {
+            chrome.tabs.executeScript(
+                tab.id, {
+                  code: 'chrome.runtime.sendMessage({' +
+                      '  inIncognitoContext: chrome.extension.inIncognitoContext' +
+                      '});'
+                },
+                pass(function() {
+                  assertEq(undefined, chrome.runtime.lastError);
+                }));
+          }));
 
       const done = chrome.test.listenForever(
           chrome.runtime.onMessage, function(request, sender, sendResponse) {
@@ -118,7 +124,7 @@ chrome.test.getConfig(function(config) {
       // TODO(crbug.com/414844449): Port to desktop Android, which has different
       // concepts of parent IDs and default visibility.
       const isAndroid =
-        (await chrome.runtime.getPlatformInfo()).os === 'android';
+          (await chrome.runtime.getPlatformInfo()).os === 'android';
       if (isAndroid) {
         // Satisfy the C++ event listeners so other tests can proceed.
         chrome.test.sendMessage(message);
@@ -130,12 +136,12 @@ chrome.test.getConfig(function(config) {
       const nodeNormal = {
         parentId: '1',
         title: 'normal',
-        url: 'http://google.com/'
+        url: 'http://google.com/',
       };
       const nodeIncog = {
         parentId: '1',
         title: 'incog',
-        url: 'http://google.com/'
+        url: 'http://google.com/',
       };
       let node = inIncognitoContext ? nodeIncog : nodeNormal;
       let count = 0;
@@ -151,15 +157,17 @@ chrome.test.getConfig(function(config) {
                   `Bookmarks created. Incognito=${inIncognitoContext}`);
               done();
             }
-      });
-      chrome.test.sendMessage(message, pass(function() {
-        chrome.bookmarks.create(node, pass(function(results) {
-          node.id = results.id;  // since we couldn't know this going in
-          node.index = results.index;
-          chrome.test.assertTrue(
-              compareNode(node, results), 'created node != source');
-        }));
-      }));
+          });
+      chrome.test.sendMessage(
+          message, pass(function() {
+            chrome.bookmarks.create(
+                node, pass(function(results) {
+                  node.id = results.id;  // since we couldn't know this going in
+                  node.index = results.index;
+                  chrome.test.assertTrue(
+                      compareNode(node, results), 'created node != source');
+                }));
+          }));
     },
 
     // Tests that we can set cookies in both processes.
@@ -167,6 +175,6 @@ chrome.test.getConfig(function(config) {
       document.cookie = 'k=v';
       chrome.test.assertNe(-1, document.cookie.indexOf('k=v'));
       chrome.test.succeed();
-    }
+    },
   ]);
 });

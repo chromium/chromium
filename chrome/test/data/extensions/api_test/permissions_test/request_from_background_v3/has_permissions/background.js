@@ -11,7 +11,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function checkGeolocation() {
     navigator.permissions.query({name: 'geolocation'})
@@ -21,13 +21,12 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
 
     // Geolocation request is not allowed from a service worker.
     if (navigator.geolocation) {
       chrome.test.fail();
-    }
-    else {
+    } else {
       chrome.test.succeed();
     }
   },
@@ -38,7 +37,7 @@ chrome.test.runTests([
       } else {
         chrome.test.fail();
       }
-    })
+    });
   },
   function noMediaDevicesCheck() {
     if (navigator.mediaDevices) {
@@ -55,6 +54,6 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
-  }
+        });
+  },
 ]);

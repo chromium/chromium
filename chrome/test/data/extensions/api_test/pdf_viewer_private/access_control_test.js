@@ -28,7 +28,7 @@ chrome.test.runTests([
       'data:,www.allowed-domain.com%2Fdocument.pdf',
       'chrome://www.allowed-domain.com/document.pdf',
       'javascript://www.allowed-domain.com/document.pdf',
-      'invalid-scheme://www.allowed-domain.com/document.pdf'
+      'invalid-scheme://www.allowed-domain.com/document.pdf',
     ];
     for (const url in nonHttpsUrls) {
       const result =

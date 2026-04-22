@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 function checkWindowRestored() {
   const standalone = matchMedia('(display-mode: standalone)');
-  chrome.test.assertTrue(standalone.matches,
-    `Display mode of the restored window is 'standalone'`);
+  chrome.test.assertTrue(
+      standalone.matches,
+      `Display mode of the restored window is 'standalone'`);
 
   chrome.test.succeed();
 }
 
 function checkWindowFullscreened() {
   const fullscreen = matchMedia('(display-mode: fullscreen)');
-  chrome.test.assertTrue(fullscreen.matches,
-    `Display mode of the fullscreened window is 'fullscreen'`);
+  chrome.test.assertTrue(
+      fullscreen.matches,
+      `Display mode of the fullscreened window is 'fullscreen'`);
 
   window.onresize = checkWindowRestored;
   chrome.app.window.current().restore();
@@ -21,10 +23,10 @@ function checkWindowFullscreened() {
 window.onload = function() {
   function checkDisplayModeMediaFeature() {
     const standalone = matchMedia('(display-mode: standalone)');
-    chrome.test.assertTrue(standalone.matches,
-                           `Initially display mode is 'standalone'`);
+    chrome.test.assertTrue(
+        standalone.matches, `Initially display mode is 'standalone'`);
     window.onresize = checkWindowFullscreened;
     chrome.app.window.current().fullscreen();
-  };
+  }
   chrome.test.runTests([checkDisplayModeMediaFeature]);
-}
+};

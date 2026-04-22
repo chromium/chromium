@@ -18,12 +18,10 @@ function failOnError() {
   }
 }
 
-chrome.bluetooth.getDevices(
-  function(result) {
-    failOnError();
-    devices = result;
-    chrome.test.sendMessage('ready',
-      function(message) {
-        chrome.test.runTests([testGetDevices]);
-      });
+chrome.bluetooth.getDevices(function(result) {
+  failOnError();
+  devices = result;
+  chrome.test.sendMessage('ready', function(message) {
+    chrome.test.runTests([testGetDevices]);
   });
+});

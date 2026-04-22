@@ -6,12 +6,14 @@ chrome.test.runTests([
   function withoutForeground() {
     chrome.fileSystem.requestFileSystem(
         {volumeId: 'testing:read-only'},
-        chrome.test.callbackFail('Impossible to ask for user consent as ' +
-            'there is no app window visible.', function(fs) {}));
+        chrome.test.callbackFail(
+            'Impossible to ask for user consent as ' +
+                'there is no app window visible.',
+            function(fs) {}));
   },
   function withForeground() {
-    chrome.app.window.create('test.html', {},
-        chrome.test.callbackPass(function(appWindow) {
+    chrome.app.window.create(
+        'test.html', {}, chrome.test.callbackPass(function(appWindow) {
           chrome.fileSystem.requestFileSystem(
               {volumeId: 'testing:read-only'},
               chrome.test.callbackPass(function(fileSystem) {

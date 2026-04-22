@@ -9,5 +9,5 @@ chrome.test.runTests([
         chrome.test.callbackFail('Security error.', function(fileSystem) {
           chrome.test.assertFalse(!!fileSystem);
         }));
-  }
+  },
 ]);

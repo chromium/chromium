@@ -8,7 +8,7 @@
 
 const ERROR_ATTACH = 'Error: Another extension is already attached';
 
-let availableTests = [
+const availableTests = [
   async function attachSecondExtension() {
     await chrome.test.assertPromiseRejects(
         chrome.webAuthenticationProxy.attach(), ERROR_ATTACH);

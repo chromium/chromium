@@ -9,4 +9,4 @@ window.onload = function() {
       document.title = 'bar';
     }, 0);
   }, 0);
-}
+};

@@ -4,7 +4,11 @@
 
 chrome.runtime.onConnect.addListener(port => {
   // Expect no message from content script.
-  port.onMessage.addListener(msg => { chrome.test.fail(); });
+  port.onMessage.addListener(msg => {
+    chrome.test.fail();
+  });
   // Expect disconnect from content script.
-  port.onDisconnect.addListener(() => { chrome.test.succeed(); });
+  port.onDisconnect.addListener(() => {
+    chrome.test.succeed();
+  });
 });

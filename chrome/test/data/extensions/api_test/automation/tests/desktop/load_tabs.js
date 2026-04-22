@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const html = '<button>alpha</button><input type='text'>hello</input>';
+const html = '<button>alpha</button><input type=' text '>hello</input>';
 
 function getAllWebViews() {
   function findAllWebViews(node, nodes) {

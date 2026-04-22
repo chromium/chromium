@@ -10,17 +10,21 @@ this.onmessage = function(e) {
   switch (e.data) {
     case 'checknotification':
       const permission = Notification.permission;
-      respond(permission == 'granted' ?
-          'OK' : (`Unexpected Notification.permission: ${permission}`));
+      respond(
+          permission == 'granted' ?
+              'OK' :
+              (`Unexpected Notification.permission: ${permission}`));
       break;
     case 'shownotification':
-      const result = registration.showNotification(
-          'Hello title.', {body: 'Hello body.'});
-      e.waitUntil(result.then(function() {
-        respond('OK');
-      }, function(err) {
-        respond('showNotification failed.');
-      }));
+      const result =
+          registration.showNotification('Hello title.', {body: 'Hello body.'});
+      e.waitUntil(result.then(
+          function() {
+            respond('OK');
+          },
+          function(err) {
+            respond('showNotification failed.');
+          }));
       break;
     default:
       respond(`Received unexpected message: ${e.data}`);

@@ -26,33 +26,36 @@ function checkIsDefined(prop) {
 
 function getLocation() {
   return isServiceWorker ? self.location.toString() : window.location.href;
-};
+}
 
 function getPath() {
-  return isServiceWorker ? `/${SERVICE_WORKER_SCRIPT_NAME}`
-      : '/_generated_background_page.html';
-};
+  return isServiceWorker ? `/${SERVICE_WORKER_SCRIPT_NAME}` :
+                           '/_generated_background_page.html';
+}
 
 chrome.test.runTests([
 
   function testID() {
-    if (!checkIsDefined('id'))
+    if (!checkIsDefined('id')) {
       return;
+    }
     assertEq(EXTENSION_ID, chrome.runtime.id);
     succeed();
   },
 
   function testGetURL() {
-    if (!checkIsDefined('getURL'))
+    if (!checkIsDefined('getURL')) {
       return;
-    assertEq(`chrome-extension://${chrome.runtime.id}${getPath()}`,
-             getLocation());
+    }
+    assertEq(
+        `chrome-extension://${chrome.runtime.id}${getPath()}`, getLocation());
     succeed();
   },
 
   function testGetManifest() {
-    if (!checkIsDefined('getManifest'))
+    if (!checkIsDefined('getManifest')) {
       return;
+    }
     const manifest = chrome.runtime.getManifest();
     if (!manifest || !manifest.background ||
         !(manifest.background.scripts || manifest.background.service_worker)) {
@@ -75,8 +78,9 @@ chrome.test.runTests([
   },
 
   function testGetVersion() {
-    if (!checkIsDefined('getVersion'))
+    if (!checkIsDefined('getVersion')) {
       return;
+    }
     const version = chrome.runtime.getVersion();
     assertEq('1', version);
     succeed();

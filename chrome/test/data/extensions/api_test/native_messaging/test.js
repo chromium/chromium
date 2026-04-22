@@ -76,6 +76,6 @@ chrome.test.getConfig(function(config) {
               function(response) {
                 chrome.test.assertEq(undefined, response);
               }));
-    }
+    },
   ]);
 });

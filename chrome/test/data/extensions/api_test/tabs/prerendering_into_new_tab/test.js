@@ -21,17 +21,16 @@ async function setup() {
   const kInitiatorUrl = getUrl('initiator.html');
   const kEmptyJsUrl = getUrl('empty.js');
   await new Promise(resolve => {
-    const onBeforeRequest =
-        (details => {
-          if (details.documentLifecycle === 'prerender') {
-            prerenderingTabId = details.tabId;
-            prerenderingFrameId = details.frameId;
-            prerenderingDocumentId = details.documentId;
-            chrome.test.assertNe(0, prerenderingFrameId);
-            chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
-            resolve();
-          }
-        });
+    const onBeforeRequest = (details => {
+      if (details.documentLifecycle === 'prerender') {
+        prerenderingTabId = details.tabId;
+        prerenderingFrameId = details.frameId;
+        prerenderingDocumentId = details.documentId;
+        chrome.test.assertNe(0, prerenderingFrameId);
+        chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
+        resolve();
+      }
+    });
     chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequest, {urls: [kEmptyJsUrl]}, []);
     chrome.test.waitForRoundTrip('msg', () => {
@@ -100,7 +99,7 @@ async function testGetTitleByDocumentId() {
       [
         prerenderingTabId,
         {documentId: prerenderingDocumentId, code: 'document.title;'},
-        results => chrome.test.fail('should not succeed.')
+        results => chrome.test.fail('should not succeed.'),
       ],
       'Error in invocation of tabs.executeScript(optional integer tabId, ' +
           'extensionTypes.InjectDetails details, optional function ' +
@@ -132,19 +131,18 @@ async function testOnAttachedWithoutActivation() {
       null, pass(function(tab) {
         windowId = tab.windowId;
         waitForAllTabs(pass(function() {
-          createWindow(
-              [''], {}, pass(function(winId, tabIds) {
-                secondWindowId = winId;
-                chrome.test.assertNe(windowId, -1);
-                chrome.test.assertNe(secondWindowId, -1);
-                chrome.tabs.move(
-                    prerenderingTabId, {windowId: secondWindowId, index: 0},
-                    function() {
-                      chrome.test.assertEq(
-                          chrome.runtime.lastError.message,
-                          `No tab with id: ${prerenderingTabId}.`);
-                    });
-              }));
+          createWindow([''], {}, pass(function(winId, tabIds) {
+                         secondWindowId = winId;
+                         chrome.test.assertNe(windowId, -1);
+                         chrome.test.assertNe(secondWindowId, -1);
+                         chrome.tabs.move(
+                             prerenderingTabId,
+                             {windowId: secondWindowId, index: 0}, function() {
+                               chrome.test.assertEq(
+                                   chrome.runtime.lastError.message,
+                                   `No tab with id: ${prerenderingTabId}.`);
+                             });
+                       }));
         }));
       }));
 
@@ -158,7 +156,7 @@ async function testOnAttachedAfterActivation() {
     if (details.documentLifecycle === 'prerender') {
       chrome.tabs.executeScript(tabId, {
         code: `document.getElementById('link').click();`,
-        runAt: 'document_idle'
+        runAt: 'document_idle',
       });
 
       let windowId = -1;
@@ -168,24 +166,23 @@ async function testOnAttachedAfterActivation() {
             windowId = tab.windowId;
 
             waitForAllTabs(pass(function() {
-              createWindow([''], {}, pass(function(winId, tabIds) {
-                             secondWindowId = winId;
-                             chrome.test.listenOnce(
-                                 chrome.tabs.onAttached,
-                                 function(testTabId, info) {
-                                   // Ensure notification is correct.
-                                   assertEq(testTabId, prerenderingTabId);
-                                   assertEq(winId, info.newWindowId);
-                                   chrome.test.succeed();
-                                 });
+              createWindow(
+                  [''], {}, pass(function(winId, tabIds) {
+                    secondWindowId = winId;
+                    chrome.test.listenOnce(
+                        chrome.tabs.onAttached, function(testTabId, info) {
+                          // Ensure notification is correct.
+                          assertEq(testTabId, prerenderingTabId);
+                          assertEq(winId, info.newWindowId);
+                          chrome.test.succeed();
+                        });
 
-                             chrome.test.assertNe(windowId, -1);
-                             chrome.test.assertNe(secondWindowId, -1);
-                             chrome.tabs.move(
-                                 prerenderingTabId,
-                                 {windowId: secondWindowId, index: 0},
-                                 function() {});
-                           }));
+                    chrome.test.assertNe(windowId, -1);
+                    chrome.test.assertNe(secondWindowId, -1);
+                    chrome.tabs.move(
+                        prerenderingTabId, {windowId: secondWindowId, index: 0},
+                        function() {});
+                  }));
             }));
           }));
     }

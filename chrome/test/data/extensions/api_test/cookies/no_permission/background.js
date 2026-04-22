@@ -6,5 +6,5 @@ chrome.test.runTests([
   function readCookies() {
     chrome.test.assertEq(undefined, chrome.cookies);
     chrome.test.succeed();
-  }
+  },
 ]);

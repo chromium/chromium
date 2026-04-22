@@ -12,34 +12,34 @@ function expect(expected, message) {
 }
 
 const HTTP_PROXY = {
-  host: '1.1.1.1'
+  host: '1.1.1.1',
 };
 const HTTP_PROXY_EXPECTED = {
   scheme: 'http',
   host: '1.1.1.1',
-  port: 80
+  port: 80,
 };
 const HTTPS_PROXY = {
-  host: '2.2.2.2'
+  host: '2.2.2.2',
 };
 const HTTPS_PROXY_EXPECTED = {
   scheme: 'http',
   host: '2.2.2.2',
-  port: 80
+  port: 80,
 };
 const FTP_PROXY = {
   host: '3.3.3.3',
-  port: 9000
+  port: 9000,
 };
 const FTP_PROXY_EXPECTED = {
   scheme: 'http',  // this is added.
   host: '3.3.3.3',
-  port: 9000
+  port: 9000,
 };
 const FALLBACK_PROXY = {
   scheme: 'socks4',
   host: '4.4.4.4',
-  port: 9090
+  port: 9090,
 };
 const FALLBACK_PROXY_EXPECTED = FALLBACK_PROXY;
 
@@ -56,8 +56,14 @@ const RULES_EXPECTED = {
   fallbackProxy: FALLBACK_PROXY_EXPECTED,
 };
 
-const CONFIG = { rules : RULES, mode: 'fixed_servers' };
-const CONFIG_EXPECTED = { rules : RULES_EXPECTED, mode: 'fixed_servers' };
+const CONFIG = {
+  rules: RULES,
+  mode: 'fixed_servers'
+};
+const CONFIG_EXPECTED = {
+  rules: RULES_EXPECTED,
+  mode: 'fixed_servers'
+};
 
 chrome.test.runTests([
   // Verify that execution has started to make sure flaky timeouts are not
@@ -66,23 +72,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setIndividualProxies() {
-    chrome.proxy.settings.set(
-        {value: CONFIG},
-        chrome.test.callbackPass());
+    chrome.proxy.settings.set({value: CONFIG}, chrome.test.callbackPass());
   },
   function verifyRegular() {
     chrome.proxy.settings.get(
         {incognito: false},
-        expect({ value: CONFIG_EXPECTED,
-                 levelOfControl: 'controlled_by_this_extension' },
-               'invalid proxy settings'));
+        expect(
+            {
+              value: CONFIG_EXPECTED,
+              levelOfControl: 'controlled_by_this_extension'
+            },
+            'invalid proxy settings'));
   },
   function verifyIncognito() {
     chrome.proxy.settings.get(
         {incognito: true},
-        expect({ value: CONFIG_EXPECTED,
-                 incognitoSpecific: false,
-                 levelOfControl: 'controlled_by_this_extension' },
-               'invalid proxy settings'));
-   }
+        expect(
+            {
+              value: CONFIG_EXPECTED,
+              incognitoSpecific: false,
+              levelOfControl: 'controlled_by_this_extension'
+            },
+            'invalid proxy settings'));
+  },
 ]);

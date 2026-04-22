@@ -75,7 +75,7 @@ class Entry {
         },
         null, children);
   }
-};
+}
 
 export class TestFileSystemProvider {
   constructor(fileSystemId) {
@@ -420,7 +420,7 @@ export class TestFileSystemProvider {
     this.recordEvent(`${name}Stalled`, options);
     return new Promise(resolve => {
       this.stalledRequests[options.requestId] = resolve;
-    })
+    });
   }
 
   /**
@@ -525,7 +525,7 @@ export class TestFileSystemProvider {
     }
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
-  };
+  }
 
   /**
    * FSP: implementation for the file close request event. The file,
@@ -548,7 +548,7 @@ export class TestFileSystemProvider {
 
     delete this.openedFiles[options.openRequestId];
     onSuccess();
-  };
+  }
 
   /**
    *
@@ -657,7 +657,7 @@ export class TestFileSystemProvider {
       isDirectory: true,
       name: dirName,
       modificationTime: new Date(2014, 4, 28, 10, 39, 15),
-    }
+    };
 
     const entry = new Entry(dirName, emptyDirMetadata, null, null);
     parentDir.children[dirName] = entry;
@@ -699,7 +699,7 @@ export class TestFileSystemProvider {
 
     dir.children[fileName] = Entry.file(fileName, new Date(), '');
     onSuccess();
-  };
+  }
 
   /**
    * FSP: implementation for the execute action request event.
@@ -787,7 +787,7 @@ export class TestFileSystemProvider {
       return;
     }
     onSuccess(entry.metadata);
-  };
+  }
 
   /**
    * FSP: implementation for the file open request event. Further file
@@ -823,7 +823,7 @@ export class TestFileSystemProvider {
     }
 
     onSuccess();
-  };
+  }
 
   /**
    * FSP: implementation of moving an entry within the same file system.
@@ -1025,7 +1025,7 @@ export class TestFileSystemProvider {
     }
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
-  };
+  }
 
   /**
    * FSP: implementation for truncating a file to the specified length.
@@ -1041,7 +1041,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    let entry = this.findEntryByPath(options.filePath);
+    const entry = this.findEntryByPath(options.filePath);
     if (!entry) {
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
       return;
@@ -1069,7 +1069,7 @@ export class TestFileSystemProvider {
     // This handler does not take the options arguments.
     this.recordEvent('onMountRequested', {});
     onSuccess();
-  };
+  }
 
   /**
    * FSP: requests to unmount this filesystem.
@@ -1087,7 +1087,7 @@ export class TestFileSystemProvider {
     } else {
       onSuccess();
     }
-  };
+  }
 
   /**
    * FSP: requests writing contents to a file, previously opened with <code>
@@ -1201,7 +1201,7 @@ export class TestFileSystemProvider {
 
     onSuccess();
   }
-};
+}
 
 /**
  * @type {string}

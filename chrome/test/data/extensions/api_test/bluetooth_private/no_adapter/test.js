@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 function testSetAdapterStateFails() {
-  var newState = {
+  const newState = {
     name: 'Dome',
     powered: true,
-    discoverable: true
+    discoverable: true,
   };
 
   chrome.bluetoothPrivate.setAdapterState(newState, function() {
@@ -15,4 +15,4 @@ function testSetAdapterStateFails() {
   });
 }
 
-chrome.test.runTests([ testSetAdapterStateFails ]);
+chrome.test.runTests([testSetAdapterStateFails]);

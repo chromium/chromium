@@ -17,8 +17,7 @@ function testWriteFromFile() {
   function chooseEntryCallback(entry) {
     fileEntry = entry;
 
-    chrome.imageWriterPrivate.listRemovableStorageDevices(
-        listDevicesCallback);
+    chrome.imageWriterPrivate.listRemovableStorageDevices(listDevicesCallback);
   }
 
   function listDevicesCallback(deviceList) {
@@ -34,9 +33,7 @@ function testWriteFromFile() {
         storageDevice.storageUnitId, 'Storage Unit should be defined.');
 
     chrome.imageWriterPrivate.writeFromFile(
-        storageDevice.storageUnitId,
-        fileEntry,
-        startWriteCallback);
+        storageDevice.storageUnitId, fileEntry, startWriteCallback);
   }
 
   function startWriteCallback() {
@@ -58,12 +55,9 @@ function testWriteFromFile() {
     chrome.test.fail('An error occurred during writing.');
   }
 
-  chrome.imageWriterPrivate.onWriteProgress.
-      addListener(writeProgressCallback);
-  chrome.imageWriterPrivate.onWriteComplete.
-      addListener(writeCompleteCallback);
-  chrome.imageWriterPrivate.onWriteError.
-      addListener(writeErrorCallback);
+  chrome.imageWriterPrivate.onWriteProgress.addListener(writeProgressCallback);
+  chrome.imageWriterPrivate.onWriteComplete.addListener(writeCompleteCallback);
+  chrome.imageWriterPrivate.onWriteError.addListener(writeErrorCallback);
 
   chrome.fileSystem.chooseEntry(chooseEntryCallback);
 }

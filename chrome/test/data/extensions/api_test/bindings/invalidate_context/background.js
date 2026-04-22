@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var frame;
-var frameRuntime;
-var frameStorage;
-var frameTabs;
+let frame;
+let frameRuntime;
+let frameStorage;
+let frameTabs;
 
 function createFrame() {
   frame = document.createElement('iframe');
@@ -17,7 +17,7 @@ function createFrame() {
 }
 
 function testPort(port, expectEventsValid) {
-  var result = {
+  const result = {
     disconnectThrow: false,
     postMessageThrow: false,
     onMessageEvent: undefined,
@@ -75,8 +75,9 @@ chrome.test.runTests([
       chrome.test.assertTrue(!!frameStorage);
       frameTabs = frame.contentWindow.chrome.tabs;
       chrome.test.assertTrue(!!frameTabs);
-      chrome.test.assertEq(chrome.runtime.getURL('background.js'),
-                           frameRuntime.getURL('background.js'));
+      chrome.test.assertEq(
+          chrome.runtime.getURL('background.js'),
+          frameRuntime.getURL('background.js'));
       frameStorage.set({foo: 'bar'}, function() {
         chrome.test.assertFalse(!!chrome.runtime.lastError);
         chrome.test.assertFalse(!!frameRuntime.lastError);
@@ -93,20 +94,22 @@ chrome.test.runTests([
     document.body.removeChild(frame);
     try {
       frameStorage.set({foo: 'baz'});
-    } catch (e) {}
+    } catch (e) {
+    }
 
     try {
-      let url = frameRuntime.getURL('background.js');
-    } catch (e) {}
+      const url = frameRuntime.getURL('background.js');
+    } catch (e) {
+    }
 
     chrome.test.succeed();
   },
   function usePortAfterInvalidation() {
-    var listener = function() {};
+    const listener = function() {};
     chrome.runtime.onConnect.addListener(listener);
     createFrame().then(() => {
-      var frameRuntime = frame.contentWindow.chrome.runtime;
-      var port = frameRuntime.connect();
+      const frameRuntime = frame.contentWindow.chrome.runtime;
+      const port = frameRuntime.connect();
       chrome.test.assertTrue(!!port);
 
       port.postMessage;
@@ -118,8 +121,8 @@ chrome.test.runTests([
   },
   function usePortAfterInvalidationAndDisconnect() {
     createFrame().then(() => {
-      var frameRuntime = frame.contentWindow.chrome.runtime;
-      var port = frameRuntime.connect();
+      const frameRuntime = frame.contentWindow.chrome.runtime;
+      const port = frameRuntime.connect();
       chrome.test.assertTrue(!!port);
 
       port.disconnect();
@@ -131,8 +134,8 @@ chrome.test.runTests([
   },
   function usePortAfterInvalidationAndEventsCreated() {
     createFrame().then(() => {
-      var frameRuntime = frame.contentWindow.chrome.runtime;
-      var port = frameRuntime.connect();
+      const frameRuntime = frame.contentWindow.chrome.runtime;
+      const port = frameRuntime.connect();
       chrome.test.assertTrue(!!port);
 
       port.onMessage;

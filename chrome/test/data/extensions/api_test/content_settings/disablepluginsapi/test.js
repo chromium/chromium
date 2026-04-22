@@ -9,7 +9,7 @@ function setPluginsSetting() {
       {
         primaryPattern: 'https://www.example.com/*',
         secondaryPattern: '<all_urls>',
-        setting: 'allow'
+        setting: 'allow',
       },
       () => {
         chrome.test.assertNoLastError();

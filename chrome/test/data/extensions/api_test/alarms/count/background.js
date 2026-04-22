@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 // Create alarms that won't have time to run.
-const createParams = {delayInMinutes: 60.0, periodInMinutes: 60};
+const createParams = {
+  delayInMinutes: 60.0,
+  periodInMinutes: 60
+};
 const MAX_ALARMS = 500;
 
 chrome.test.runTests([

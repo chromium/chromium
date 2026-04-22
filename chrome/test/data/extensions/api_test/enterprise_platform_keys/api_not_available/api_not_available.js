@@ -4,8 +4,8 @@
 
 chrome.test.runTests([
   function notAvailable() {
-    chrome.test.assertTrue(!chrome.enterprise ||
-                           !chrome.enterprise.platformKeys);
+    chrome.test.assertTrue(
+        !chrome.enterprise || !chrome.enterprise.platformKeys);
     chrome.test.succeed();
-  }
+  },
 ]);

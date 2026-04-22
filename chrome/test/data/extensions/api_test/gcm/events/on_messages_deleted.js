@@ -8,6 +8,6 @@ onload = function() {
       chrome.test.listenOnce(chrome.gcm.onMessagesDeleted, function() {
         chrome.test.assertTrue(true);
       });
-    }
+    },
   ]);
 };

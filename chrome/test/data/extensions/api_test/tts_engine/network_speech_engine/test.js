@@ -4,15 +4,15 @@
 
 // browser_tests.exe --gtest_filter="TtsApiTest.*"
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 chrome.test.runTests([
   function testNetworkSpeechVoices() {
     chrome.tts.getVoices(pass(function(voices) {
       chrome.test.assertTrue(voices.length >= 19);
-      for (var i = 0; i < voices.length; i++) {
+      for (let i = 0; i < voices.length; i++) {
         chrome.test.assertEq(true, voices[i].remote);
       }
     }));
-  }
+  },
 ]);

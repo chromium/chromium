@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let normalWindow, normalTab;
-let incognitoWindow, incognitoTab;
+let normalWindow;
+let normalTab;
+let incognitoWindow;
+let incognitoTab;
 
 const assertEq = chrome.test.assertEq;
 const assertTrue = chrome.test.assertTrue;
@@ -16,7 +18,7 @@ chrome.test.getConfig(config => {
     async function setupWindows() {
       // The test harness should have set us up with 2 windows: 1 incognito
       // and 1 regular. Verify that we can see both when we ask for it.
-      let windows = await chrome.windows.getAll({populate: true});
+      const windows = await chrome.windows.getAll({populate: true});
       assertEq(2, windows.length);
 
       if (windows[0].incognito) {
@@ -35,10 +37,10 @@ chrome.test.getConfig(config => {
 
     // Tests that we can update an incognito tab and get the event for it.
     async function tabUpdate() {
-      let newUrl = 'about:blank';
+      const newUrl = 'about:blank';
 
       // Prepare the event listeners first.
-      let done =
+      const done =
           chrome.test.listenForever(chrome.tabs.onUpdated, (id, info, tab) => {
             if (id == incognitoTab.id) {
               assertTrue(tab.incognito);
@@ -70,8 +72,9 @@ chrome.test.getConfig(config => {
       });
 
       // Create, select, move, and close a tab in our incognito window.
-      let newTab = await chrome.tabs.create({windowId: incognitoTab.windowId});
-      let movedTab = await chrome.tabs.move(newTab.id, {index: 0});
+      const newTab =
+          await chrome.tabs.create({windowId: incognitoTab.windowId});
+      const movedTab = await chrome.tabs.move(newTab.id, {index: 0});
       assertEq(incognitoTab.incognito, movedTab.incognito);
       await chrome.tabs.remove(movedTab.id);
     },
@@ -81,7 +84,7 @@ chrome.test.getConfig(config => {
     async function contentScriptTestIncognito() {
       assertTrue(!chrome.extension.inIncognitoContext);
 
-      let testUrl = 'http://localhost:PORT/extensions/test_file.html'.replace(
+      const testUrl = 'http://localhost:PORT/extensions/test_file.html'.replace(
           /PORT/, config.testServer.port);
 
       // Test that chrome.extension.inIncognitoContext is true for incognito
@@ -95,7 +98,7 @@ chrome.test.getConfig(config => {
         },
         func: () => {
           document.title = chrome.extension.inIncognitoContext;
-        }
+        },
       });
 
       // Get the title of the tab after the script has run.
@@ -112,7 +115,7 @@ chrome.test.getConfig(config => {
         },
         func: () => {
           document.title = chrome.extension.inIncognitoContext;
-        }
+        },
       });
 
       // Get the title of the tab after the script has run.
@@ -125,7 +128,7 @@ chrome.test.getConfig(config => {
     // non-incognito windows.
     async function moveTabBetweenProfiles() {
       // Create a tab in the non-incognito window...
-      let tab = await chrome.tabs.create(
+      const tab = await chrome.tabs.create(
           {windowId: normalWindow.id, url: 'about:blank'});
       // ... and then try to move it to the incognito window.
       await chrome.test.assertPromiseRejects(
@@ -151,6 +154,6 @@ chrome.test.getConfig(config => {
           chrome.windows.create({tabId: normalTab.id, incognito: true}),
           crossProfileMoveErrorMsg);
       chrome.test.succeed();
-    }
+    },
   ]);
 });

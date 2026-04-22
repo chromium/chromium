@@ -9,18 +9,18 @@ function runTests() {
           chrome.test.callbackPass(function(volumeList) {
             const origLength = volumeList.length;
 
-           // Confirm that adding a newly mounted volume emits an event, and
-           // that the volume list is updated.
-           chrome.fileSystem.onVolumeListChanged.addListener(
-               chrome.test.callbackPass((event) => {
-                 chrome.test.assertEq(origLength + 1, event.volumes.length);
-                 chrome.fileSystem.getVolumeList(
-                     chrome.test.callbackPass((volumeList) => {
-                       chrome.test.assertEq(origLength + 1, volumeList.length);
-                     }));
-               }));
-      }));
-    }
+            // Confirm that adding a newly mounted volume emits an event, and
+            // that the volume list is updated.
+            chrome.fileSystem.onVolumeListChanged.addListener(
+                chrome.test.callbackPass((event) => {
+                  chrome.test.assertEq(origLength + 1, event.volumes.length);
+                  chrome.fileSystem.getVolumeList(
+                      chrome.test.callbackPass((volumeList) => {
+                        chrome.test.assertEq(origLength + 1, volumeList.length);
+                      }));
+                }));
+          }));
+    },
   ]);
 }
 

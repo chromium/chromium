@@ -8,7 +8,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.query({windowId: window.id}, function(tabs) {
       const chromeExtUrl = 'chrome://extensions/';
       for (let i = 0; i < tabs.length; i++) {
-        if (tabs[i].url == chromeExtUrl){
+        if (tabs[i].url == chromeExtUrl) {
           chrome.tabs.update(tabs[i].id, {selected: true});
           return;
         }

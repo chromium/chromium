@@ -33,7 +33,7 @@ function verifyRegistration(scheme) {
       chrome.test.assertEq(url, event.data.protocol);
       event.source.close();
       resolve();
-    }, {once: true})
+    }, {once: true});
     a.click();
   });
 }
@@ -142,6 +142,6 @@ chrome.test.getConfig(function(config) {
         }, {once: true});
         chrome.test.sendMessage('request_complete');
       });
-    }
+    },
   ]);
 });

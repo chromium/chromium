@@ -26,41 +26,34 @@ const kTestPageId = 'pageId';
 const kTestSupervisedPrefName = 'signin.allowed_on_next_startup';
 
 function callbackResult(result) {
-  if (chrome.runtime.lastError)
+  if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  else if (result == false)
+  } else if (result == false) {
     chrome.test.fail(`Failed: ${result}`);
+  }
 }
 
 const availableTests = [
   function setPref() {
     chrome.settingsPrivate.setPref(
-        kTestPrefName,
-        kTestPrefValue,
-        kTestPageId,
-        function(success) {
+        kTestPrefName, kTestPrefValue, kTestPageId, function(success) {
           callbackResult(success);
           chrome.test.succeed();
         });
   },
   function setPref_CrOSSetting() {
     chrome.settingsPrivate.setPref(
-        'cros.accounts.allowBWSI',
-        false,
-        kTestPageId,
-        function(success) {
+        'cros.accounts.allowBWSI', false, kTestPageId, function(success) {
           callbackResult(success);
           chrome.test.succeed();
         });
   },
   function getPref() {
-    chrome.settingsPrivate.getPref(
-        kTestPrefName,
-        function(value) {
-          chrome.test.assertNe(null, value);
-          callbackResult(true);
-          chrome.test.succeed();
-        });
+    chrome.settingsPrivate.getPref(kTestPrefName, function(value) {
+      chrome.test.assertNe(null, value);
+      callbackResult(true);
+      chrome.test.succeed();
+    });
   },
   function getEnforcedPref() {
     chrome.settingsPrivate.getPref(kTestEnforcedPrefName, function(value) {
@@ -111,21 +104,18 @@ const availableTests = [
     });
   },
   function getPref_CrOSSetting() {
-    chrome.settingsPrivate.getPref(
-        'cros.accounts.allowBWSI',
-        function(value) {
-          chrome.test.assertNe(null, value);
-          callbackResult(true);
-          chrome.test.succeed();
-        });
+    chrome.settingsPrivate.getPref('cros.accounts.allowBWSI', function(value) {
+      chrome.test.assertNe(null, value);
+      callbackResult(true);
+      chrome.test.succeed();
+    });
   },
   function getAllPrefs() {
-    chrome.settingsPrivate.getAllPrefs(
-        function(prefs) {
-          chrome.test.assertTrue(prefs.length > 0);
-          callbackResult(true);
-          chrome.test.succeed();
-        });
+    chrome.settingsPrivate.getAllPrefs(function(prefs) {
+      chrome.test.assertTrue(prefs.length > 0);
+      callbackResult(true);
+      chrome.test.succeed();
+    });
   },
   function onPrefsChanged() {
     chrome.settingsPrivate.onPrefsChanged.addListener(function(prefs) {
@@ -137,10 +127,7 @@ const availableTests = [
     });
 
     chrome.settingsPrivate.setPref(
-        kTestPrefName,
-        kTestPrefValue,
-        kTestPageId,
-        function() {});
+        kTestPrefName, kTestPrefValue, kTestPageId, function() {});
   },
   function onPrefsChanged_CrOSSetting() {
     chrome.settingsPrivate.onPrefsChanged.addListener(function(prefs) {
@@ -152,10 +139,7 @@ const availableTests = [
     });
 
     chrome.settingsPrivate.setPref(
-        'cros.accounts.allowBWSI',
-        false,
-        kTestPageId,
-        function() {});
+        'cros.accounts.allowBWSI', false, kTestPageId, function() {});
   },
   function getManagedByParentPref() {
     chrome.settingsPrivate.getPref(kTestSupervisedPrefName, function(value) {

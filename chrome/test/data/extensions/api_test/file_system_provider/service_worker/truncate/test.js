@@ -76,7 +76,7 @@ async function main() {
           !!error, 'Unexpectedly succeeded to truncate beyond a file.');
       chrome.test.assertEq('InvalidModificationError', error.name);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

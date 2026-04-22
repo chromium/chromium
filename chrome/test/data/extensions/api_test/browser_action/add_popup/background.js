@@ -7,7 +7,7 @@ chrome.tabs.query({active: true}, function(tabs) {
   chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.browserAction.setPopup({
       tabId: tab.id,
-      popup: 'a_popup.html'
+      popup: 'a_popup.html',
     });
     chrome.test.notifyPass();
   });

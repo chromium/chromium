@@ -55,7 +55,9 @@ let testEntries = [];
 chrome.test.runTests([
   function testGetTestEntries() {
     getFileEntries('testing', [
-      'test_dir/test_file.txt', 'test_audio.mp3', 'test_image.jpg'
+      'test_dir/test_file.txt',
+      'test_audio.mp3',
+      'test_image.jpg',
     ]).then(callbackPass(entries => {
       testEntries = entries;
     }));

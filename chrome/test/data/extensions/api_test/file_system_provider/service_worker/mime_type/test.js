@@ -52,13 +52,13 @@ async function main() {
       },
       contents: '',
     },
-  })
+  });
 
   chrome.test.runTests([
     // Test if the file with a MIME type handled by another app appears on a
     // task list.
     async function withMimeIsTask() {
-      let fileEntry =
+      const fileEntry =
           await fileSystem.getFileEntry(`/${testFileName}`, {create: false});
 
       const result = await getFileTasks(fileEntry);
@@ -76,7 +76,7 @@ async function main() {
     // registered to handle this MME type. This is another code path, than
     // collecting tasks (tested above).
     async function withMimeExecute() {
-      let fileEntry =
+      const fileEntry =
           await fileSystem.getFileEntry(`/${testFileName}`, {create: false});
       const nextMessage = new Promise(resolve => {
         const listener = (msg, sender, sendResponse) => {
@@ -100,7 +100,7 @@ async function main() {
     // The test app must not appear on the task list for the file without a MIME
     // type set.
     async function withoutMime() {
-      let fileEntry = await fileSystem.getFileEntry(
+      const fileEntry = await fileSystem.getFileEntry(
           `/${testFileNoMimeType}`, {create: false});
       const result = await getFileTasks(fileEntry);
 

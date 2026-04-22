@@ -5,13 +5,15 @@
 function testCancelPairing() {
   chrome.bluetoothPrivate.onPairing.addListener(function(pairingEvent) {
     chrome.test.assertEq('requestAuthorization', pairingEvent.pairing);
-    chrome.bluetoothPrivate.setPairingResponse({
-        device: pairingEvent.device,
-        response: 'cancel',
-    }, function() {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+    chrome.bluetoothPrivate.setPairingResponse(
+        {
+          device: pairingEvent.device,
+          response: 'cancel',
+        },
+        function() {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
   });
 }
 

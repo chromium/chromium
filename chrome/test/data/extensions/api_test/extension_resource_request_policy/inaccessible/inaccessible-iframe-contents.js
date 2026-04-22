@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 console.log('here');
-chrome.test.notifyFail('Iframe from another extension not listed in ' +
+chrome.test.notifyFail(
+    'Iframe from another extension not listed in ' +
     'web_accessible_resources should not have been loaded');

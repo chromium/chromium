@@ -8,15 +8,15 @@
 
 // See if the background contents loaded first and already opened the tabs.
 chrome.tabs.query({}, function(tabs) {
-  for (var i = 0; i < tabs.length; ++i) {
-    if (tabs[i].url.match("popup\.html$")) {
+  for (let i = 0; i < tabs.length; ++i) {
+    if (tabs[i].url.match('popup\.html$')) {
       chrome.test.notifyPass();
       return;
     }
   }
   // No tab loaded yet - add a listener and wait for it to load.
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (tab.url.match("popup\.html$")) {
+    if (tab.url.match('popup\.html$')) {
       chrome.test.notifyPass();
     }
   });

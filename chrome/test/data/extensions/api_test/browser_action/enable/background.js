@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 function enableBrowserAction(message) {
-   if(message == 'start enabled') {
-      chrome.browserAction.disable(function() {
-          chrome.test.notifyPass();
-      });
-   } else {
-      chrome.browserAction.enable(function() {
-          chrome.test.notifyPass();
-      });
-   }
+  if (message == 'start enabled') {
+    chrome.browserAction.disable(function() {
+      chrome.test.notifyPass();
+    });
+  } else {
+    chrome.browserAction.enable(function() {
+      chrome.test.notifyPass();
+    });
+  }
 }
 
 chrome.test.sendMessage('ready', function(message) {

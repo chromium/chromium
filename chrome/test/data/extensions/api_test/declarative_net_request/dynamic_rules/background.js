@@ -5,10 +5,11 @@
 function updateDynamicRules(options, expectedError) {
   return new Promise(resolve => {
     chrome.declarativeNetRequest.updateDynamicRules(options, () => {
-      if (expectedError)
+      if (expectedError) {
         chrome.test.assertLastError(expectedError);
-      else
+      } else {
         chrome.test.assertNoLastError();
+      }
 
       resolve();
     });
@@ -58,7 +59,7 @@ function dynamicRulesEqual(expectedRules, ruleFilter) {
       resolve();
     });
   });
-};
+}
 
 let currentRules = [];
 
@@ -117,8 +118,8 @@ chrome.test.runTests([
     await updateDynamicRules(
         {addRules: [createLargeRegexRuleWithID(5)]},
         'Rule with id 5 was skipped as the "regexFilter" value exceeded the ' +
-        '2KB memory limit when compiled. Learn more: ' +
-        'https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#regex-rules');
+            '2KB memory limit when compiled. Learn more: ' +
+            'https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#regex-rules');
 
     chrome.test.succeed();
   },

@@ -8,7 +8,7 @@ chrome.test.runTests([
         {suggestedName: 'open_existing.txt'},
         chrome.test.callbackPass(function(entry) {
           checkEntry(entry, 'open_existing.txt', false, false);
-        })
+        }),
     );
-  }
+  },
 ]);

@@ -11,8 +11,9 @@ function listenUntil(event, expected) {
     for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
-        if (expected.length == 0)
+        if (expected.length == 0) {
           done();
+        }
         return;
       }
     }
@@ -25,72 +26,86 @@ chrome.test.runTests([
   function changeDefault() {
     // Changing the regular settings when no incognito-specific settings are
     // defined should fire two events.
-    listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: false,
-      levelOfControl: 'controlled_by_this_extension'
-    },
-    {
-      value: false,
-      incognitoSpecific: false,
-      levelOfControl: 'controlled_by_this_extension'
-    }]);
-    pw.hyperlinkAuditingEnabled.set({
-      value:false
-    }, chrome.test.callbackPass());
+    listenUntil(pw.hyperlinkAuditingEnabled.onChange, [
+      {
+        value: false,
+        levelOfControl: 'controlled_by_this_extension',
+      },
+      {
+        value: false,
+        incognitoSpecific: false,
+        levelOfControl: 'controlled_by_this_extension',
+      }
+    ]);
+    pw.hyperlinkAuditingEnabled.set(
+        {
+          value: false,
+        },
+        chrome.test.callbackPass());
   },
   function changeIncognitoOnly() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: true,
-      incognitoSpecific: true,
-      levelOfControl: 'controlled_by_this_extension'
-    }]);
-    pw.hyperlinkAuditingEnabled.set({
-      value: true,
-      scope: 'incognito_persistent'
-    }, chrome.test.callbackPass());
+                  value: true,
+                  incognitoSpecific: true,
+                  levelOfControl: 'controlled_by_this_extension',
+                }]);
+    pw.hyperlinkAuditingEnabled.set(
+        {
+          value: true,
+          scope: 'incognito_persistent',
+        },
+        chrome.test.callbackPass());
   },
   function changeDefaultOnly() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: true,
-      levelOfControl: 'controlled_by_this_extension'
-    }]);
-    pw.hyperlinkAuditingEnabled.set({
-      value: true
-    }, chrome.test.callbackPass());
+                  value: true,
+                  levelOfControl: 'controlled_by_this_extension',
+                }]);
+    pw.hyperlinkAuditingEnabled.set(
+        {
+          value: true,
+        },
+        chrome.test.callbackPass());
   },
   function changeIncognitoOnlyBack() {
     // Change the incognito setting back to false so that we get an event when
     // clearing the value.
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: false,
-      incognitoSpecific: true,
-      levelOfControl: 'controlled_by_this_extension'
-    }]);
-    pw.hyperlinkAuditingEnabled.set({
-      value: false,
-      scope: 'incognito_persistent'
-    }, chrome.test.callbackPass());
+                  value: false,
+                  incognitoSpecific: true,
+                  levelOfControl: 'controlled_by_this_extension',
+                }]);
+    pw.hyperlinkAuditingEnabled.set(
+        {
+          value: false,
+          scope: 'incognito_persistent',
+        },
+        chrome.test.callbackPass());
   },
   function clearIncognito() {
     listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: true,
-      incognitoSpecific: false,
-      levelOfControl: 'controlled_by_this_extension'
-    }]);
-    pw.hyperlinkAuditingEnabled.clear({
-      scope: 'incognito_persistent'
-    }, chrome.test.callbackPass());
+                  value: true,
+                  incognitoSpecific: false,
+                  levelOfControl: 'controlled_by_this_extension',
+                }]);
+    pw.hyperlinkAuditingEnabled.clear(
+        {
+          scope: 'incognito_persistent',
+        },
+        chrome.test.callbackPass());
   },
   function clearDefault() {
-    listenUntil(pw.hyperlinkAuditingEnabled.onChange, [{
-      value: true,
-      levelOfControl: 'controllable_by_this_extension'
-    },
-    {
-      value: true,
-      incognitoSpecific: false,
-      levelOfControl: 'controllable_by_this_extension'
-    }]);
+    listenUntil(pw.hyperlinkAuditingEnabled.onChange, [
+      {
+        value: true,
+        levelOfControl: 'controllable_by_this_extension',
+      },
+      {
+        value: true,
+        incognitoSpecific: false,
+        levelOfControl: 'controllable_by_this_extension',
+      }
+    ]);
     pw.hyperlinkAuditingEnabled.clear({}, chrome.test.callbackPass());
-  }
+  },
 ]);

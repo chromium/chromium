@@ -6,11 +6,12 @@ const allTests = [
   function testGetDesktop() {
     chrome.automation.getDesktop(function(arg) {
       assertEq(undefined, arg);
-      assertEq('getDesktop is unsupported by this platform',
-               chrome.runtime.lastError.message);
+      assertEq(
+          'getDesktop is unsupported by this platform',
+          chrome.runtime.lastError.message);
       chrome.test.succeed();
     });
-  }
+  },
 ];
 
 chrome.test.runTests(allTests);

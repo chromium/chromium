@@ -15,7 +15,7 @@ const TESTING_TIRAMISU_FILE = Object.freeze({
   isDirectory: false,
   name: 'tiramisu.txt',
   size: 1337,
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -135,7 +135,8 @@ function runTests() {
                 function(error) {
                   chrome.test.fail(error.name);
                 });
-          }), {writable: true, openedFilesLimit: 2});
+          }),
+          {writable: true, openedFilesLimit: 2});
     },
 
     // Verifies that after unmounting, the file system is not available in
@@ -144,32 +145,32 @@ function runTests() {
       chrome.fileSystemProvider.unmount(
           {fileSystemId: testUtil.FILE_SYSTEM_ID},
           chrome.test.callbackPass(function() {
-            chrome.fileSystemProvider.getAll(chrome.test.callbackPass(
-                function(fileSystems) {
+            chrome.fileSystemProvider.getAll(
+                chrome.test.callbackPass(function(fileSystems) {
                   chrome.test.assertEq(0, fileSystems.length);
                 }));
             chrome.fileSystemProvider.get(
-                testUtil.FILE_SYSTEM_ID,
-                chrome.test.callbackFail('NOT_FOUND'));
+                testUtil.FILE_SYSTEM_ID, chrome.test.callbackFail('NOT_FOUND'));
           }));
     },
 
     // Verifies that if mounting fails, then the file system is not added to the
     // getAll() list.
     function mountError() {
-      chrome.fileSystemProvider.mount({
-        fileSystemId: '',
-        displayName: ''
-      }, chrome.test.callbackFail('INVALID_OPERATION', function() {
-        chrome.fileSystemProvider.getAll(chrome.test.callbackPass(
-            function(fileSystems) {
-              chrome.test.assertEq(0, fileSystems.length);
-            }));
-        chrome.fileSystemProvider.get(
-            testUtil.FILE_SYSTEM_ID,
-            chrome.test.callbackFail('NOT_FOUND'));
-      }));
-    }
+      chrome.fileSystemProvider.mount(
+          {
+            fileSystemId: '',
+            displayName: '',
+          },
+          chrome.test.callbackFail('INVALID_OPERATION', function() {
+            chrome.fileSystemProvider.getAll(
+                chrome.test.callbackPass(function(fileSystems) {
+                  chrome.test.assertEq(0, fileSystems.length);
+                }));
+            chrome.fileSystemProvider.get(
+                testUtil.FILE_SYSTEM_ID, chrome.test.callbackFail('NOT_FOUND'));
+          }));
+    },
   ]);
 }
 
@@ -177,7 +178,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp();

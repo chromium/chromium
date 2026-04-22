@@ -22,8 +22,9 @@ const onRuleMatchedDebugCallback = (rule) => {
 
 let testServerPort;
 function getServerURL(host) {
-  if (!testServerPort)
+  if (!testServerPort) {
     throw new Error('Called getServerURL outside of runTests.');
+  }
   return `https://${host}:${testServerPort}`;
 }
 
@@ -46,14 +47,14 @@ function verifyExpectedRuleInfo(expectedRuleInfo) {
       documentIds[matchedRule.request.parentDocumentId] = nextDocumentId++;
     }
     matchedRule.request.parentDocumentId =
-      documentIds[matchedRule.request.parentDocumentId];
+        documentIds[matchedRule.request.parentDocumentId];
   }
   if ('documentId' in matchedRule.request) {
     if (documentIds[matchedRule.request.documentId] === undefined) {
       documentIds[matchedRule.request.documentId] = nextDocumentId++;
     }
     matchedRule.request.documentId =
-      documentIds[matchedRule.request.documentId];
+        documentIds[matchedRule.request.documentId];
   }
 
   chrome.test.assertEq(expectedRuleInfo, matchedRule);
@@ -77,7 +78,7 @@ const tests = [
     resetMatchedRules();
 
     const baseUrl = getServerURL('a.test') +
-          '/extensions/api_test/declarative_net_request/fenced_frames/';
+        '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'blocked.html';
     const fencedFrameUrl = baseUrl + 'blocked_fenced_frame.html';
     navigateTab(url, (tab) => {
@@ -92,24 +93,23 @@ const tests = [
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,
-          url: fencedFrameUrl
+          url: fencedFrameUrl,
         },
-        rule: {ruleId: 1, rulesetId: 'rules'}
+        rule: {ruleId: 1, rulesetId: 'rules'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
 
-      const getFencedFrameWidth =
-        '(async function() {' +
-        '  while(true) { ' +
-        '    await new Promise(requestAnimationFrame);' +
-        '    let width =' +
-        '      document.getElementsByTagName("fencedframe")[0].clientWidth;' +
-        '    if (width == 0) {' +
-        '      chrome.runtime.sendMessage({width: width});' +
-        '      break;' +
-        '    }' +
-        '  }' +
-        '})()';
+      const getFencedFrameWidth = '(async function() {' +
+          '  while(true) { ' +
+          '    await new Promise(requestAnimationFrame);' +
+          '    let width =' +
+          '      document.getElementsByTagName("fencedframe")[0].clientWidth;' +
+          '    if (width == 0) {' +
+          '      chrome.runtime.sendMessage({width: width});' +
+          '      break;' +
+          '    }' +
+          '  }' +
+          '})()';
 
       chrome.runtime.onMessage.addListener(results => {
         // Ensure the clientWidth is 0 indicating
@@ -118,8 +118,8 @@ const tests = [
         chrome.test.assertEq(0, results.width);
         chrome.test.succeed();
       });
-      chrome.tabs.executeScript(tab.id, {frameId: 0,
-                                         code: getFencedFrameWidth});
+      chrome.tabs.executeScript(
+          tab.id, {frameId: 0, code: getFencedFrameWidth});
     });
   },
 
@@ -129,7 +129,7 @@ const tests = [
     resetMatchedRules();
 
     const baseUrl = getServerURL('a.test') +
-          '/extensions/api_test/declarative_net_request/fenced_frames/';
+        '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'allow.html';
     const fencedFrameUrl = baseUrl + 'allowed_fenced_frame.html';
     navigateTab(url, (tab) => {
@@ -144,9 +144,9 @@ const tests = [
           parentFrameId: 0,
           type: 'sub_frame',
           tabId: tab.id,
-          url: fencedFrameUrl
+          url: fencedFrameUrl,
         },
-        rule: {ruleId: 4, rulesetId: 'rules'}
+        rule: {ruleId: 4, rulesetId: 'rules'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
@@ -158,7 +158,7 @@ const tests = [
     resetMatchedRules();
 
     const baseUrl = getServerURL('a.test') +
-      '/extensions/api_test/declarative_net_request/fenced_frames/';
+        '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'resource1.html';
     const matchedImageUrl = baseUrl + 'icon1.png';
     navigateTab(url, (tab) => {
@@ -174,9 +174,9 @@ const tests = [
           parentFrameId: 0,
           type: 'image',
           tabId: tab.id,
-          url: matchedImageUrl
+          url: matchedImageUrl,
         },
-        rule: { ruleId: 5, rulesetId: 'rules' }
+        rule: {ruleId: 5, rulesetId: 'rules'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
@@ -188,7 +188,7 @@ const tests = [
     resetMatchedRules();
 
     const baseUrl = getServerURL('a.test') +
-      '/extensions/api_test/declarative_net_request/fenced_frames/';
+        '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'resource2.html';
     const matchedImageUrl = baseUrl + 'icon2.png';
     navigateTab(url, (tab) => {
@@ -204,14 +204,14 @@ const tests = [
           parentFrameId: 0,
           type: 'image',
           tabId: tab.id,
-          url: matchedImageUrl
+          url: matchedImageUrl,
         },
-        rule: { ruleId: 6, rulesetId: 'rules' }
+        rule: {ruleId: 6, rulesetId: 'rules'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
     });
-  }
+  },
 ];
 
 chrome.test.getConfig(async (config) => {

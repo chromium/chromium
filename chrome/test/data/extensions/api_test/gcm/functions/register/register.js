@@ -8,5 +8,5 @@ chrome.test.runTests([
     chrome.gcm.register(senderIds, function(registrationId) {
       chrome.test.succeed();
     });
-  }
+  },
 ]);

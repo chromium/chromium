@@ -25,5 +25,5 @@ chrome.test.runTests([
 
       chrome.tabs.update(tabId, {url: getURL('a.html')});
     });
-  }
+  },
 ]);

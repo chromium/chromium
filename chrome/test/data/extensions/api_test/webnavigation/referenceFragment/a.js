@@ -4,4 +4,4 @@
 
 onload = function() {
   document.location = 'a.html#anchor';
-}
+};

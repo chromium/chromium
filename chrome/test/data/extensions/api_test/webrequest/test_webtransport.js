@@ -30,7 +30,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -43,7 +43,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -56,7 +56,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -71,7 +71,7 @@ chrome.tabs.getCurrent(function(tab) {
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -87,7 +87,7 @@ chrome.tabs.getCurrent(function(tab) {
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -103,18 +103,23 @@ chrome.tabs.getCurrent(function(tab) {
                     statusLine: 'HTTP/1.1 200',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
               ],
-              [  // event order
+              [
+                // event order
                 [
-                  'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                  'onHeadersReceived', 'onResponseStarted', 'onCompleted'
-                ]
+                  'onBeforeRequest',
+                  'onBeforeSendHeaders',
+                  'onSendHeaders',
+                  'onHeadersReceived',
+                  'onResponseStarted',
+                  'onCompleted',
+                ],
               ],
               {urls: ['https://*/*']},  // filter
-              ['blocking']              // extraInfoSpec
+              ['blocking'],             // extraInfoSpec
           );
           const done = chrome.test.callbackAdded();
           await expectSessionEstablished(url);
@@ -144,9 +149,9 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
-                  retval: {cancel: true}
+                  retval: {cancel: true},
                 },
                 {
                   label: 'onErrorOccurred',
@@ -160,15 +165,16 @@ chrome.tabs.getCurrent(function(tab) {
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT',
-                    documentId: documentId
-                  }
+                    documentId: documentId,
+                  },
                 },
               ],
-              [  // event order
-                ['onBeforeRequest', 'onErrorOccurred']
+              [
+                // event order
+                ['onBeforeRequest', 'onErrorOccurred'],
               ],
               {urls: ['https://*/*']},  // filter
-              ['blocking']              // extraInfoSpec
+              ['blocking'],             // extraInfoSpec
           );
           const done = chrome.test.callbackAdded();
           await expectSessionFailed(url);
@@ -195,7 +201,7 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -208,9 +214,9 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
-                  retval: {cancel: true}
+                  retval: {cancel: true},
                 },
                 {
                   label: 'onErrorOccurred',
@@ -224,15 +230,16 @@ chrome.tabs.getCurrent(function(tab) {
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT',
-                    documentId: documentId
-                  }
+                    documentId: documentId,
+                  },
                 },
               ],
-              [  // event order
-                ['onBeforeRequest', 'onBeforeSendHeaders', 'onErrorOccurred']
+              [
+                // event order
+                ['onBeforeRequest', 'onBeforeSendHeaders', 'onErrorOccurred'],
               ],
               {urls: ['https://*/*']},  // filter
-              ['blocking']              // extraInfoSpec
+              ['blocking'],             // extraInfoSpec
           );
 
           const done = chrome.test.callbackAdded();
@@ -313,7 +320,7 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -326,7 +333,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -339,7 +346,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -354,18 +361,21 @@ chrome.tabs.getCurrent(function(tab) {
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_METHOD_NOT_SUPPORTED',
-                    documentId: documentId
-                  }
+                    documentId: documentId,
+                  },
                 },
               ],
-              [  // event order
+              [
+                // event order
                 [
-                  'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                  'onErrorOccurred'
-                ]
+                  'onBeforeRequest',
+                  'onBeforeSendHeaders',
+                  'onSendHeaders',
+                  'onErrorOccurred',
+                ],
               ],
               {urls: ['https://*/*']},  // filter
-              ['blocking']              // extraInfoSpec
+              ['blocking'],             // extraInfoSpec
           );
 
           const done = chrome.test.callbackAdded();
@@ -396,7 +406,7 @@ chrome.tabs.getCurrent(function(tab) {
                     tabId: tabId,
                     frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -409,7 +419,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -422,7 +432,7 @@ chrome.tabs.getCurrent(function(tab) {
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
                 },
                 {
@@ -437,9 +447,9 @@ chrome.tabs.getCurrent(function(tab) {
                     statusCode: 200,
                     statusLine: 'HTTP/1.1 200',
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: documentId
+                    documentId: documentId,
                   },
-                  retval: {cancel: true}
+                  retval: {cancel: true},
                 },
                 {
                   label: 'onErrorOccurred',
@@ -453,18 +463,22 @@ chrome.tabs.getCurrent(function(tab) {
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT',
-                    documentId: documentId
-                  }
+                    documentId: documentId,
+                  },
                 },
               ],
-              [  // event order
+              [
+                // event order
                 [
-                  'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                  'onHeadersReceived', 'onErrorOccurred'
-                ]
+                  'onBeforeRequest',
+                  'onBeforeSendHeaders',
+                  'onSendHeaders',
+                  'onHeadersReceived',
+                  'onErrorOccurred',
+                ],
               ],
               {urls: ['https://*/*']},  // filter
-              ['blocking']              // extraInfoSpec
+              ['blocking'],             // extraInfoSpec
           );
           const done = chrome.test.callbackAdded();
           await expectSessionFailed(url);

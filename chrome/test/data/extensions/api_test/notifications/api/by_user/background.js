@@ -8,10 +8,10 @@ let theOnlyTestDone = null;
 const notificationData = {
   type: 'basic',
   iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAA' +
-           'CNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHw' +
-           'AAAABJRU5ErkJggg==',
+      'CNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHw' +
+      'AAAABJRU5ErkJggg==',
   title: 'Attention!',
-  message: 'Check out Cirque du Soleil'
+  message: 'Check out Cirque du Soleil',
 };
 
 const results = {
@@ -20,23 +20,25 @@ const results = {
   BAT: false,
   BIFF: false,
   BLAT: true,
-  BLOT: true
+  BLOT: true,
 };
 
-function createCallback(id) { }
+function createCallback(id) {}
 
-function notifyPass() { chrome.test.notifyPass(); }
+function notifyPass() {
+  chrome.test.notifyPass();
+}
 
 const onClosedHooks = {
   FOO: notifyPass,
   BAR: notifyPass,
   BIFF: function() {
-    notifications.create('BLAT', notificationData, function () {
+    notifications.create('BLAT', notificationData, function() {
       if (chrome.runtime.lastError) {
         chrome.test.notifyFail(lastError.message);
         return;
       }
-      notifications.create('BLOT', notificationData, function () {
+      notifications.create('BLOT', notificationData, function() {
         if (chrome.runtime.lastError) {
           chrome.test.notifyFail(lastError.message);
           return;
@@ -55,8 +57,9 @@ function onClosedListener(id, byUser) {
   }
   delete results[id];
 
-  if (typeof onClosedHooks[id] === 'function')
+  if (typeof onClosedHooks[id] === 'function') {
     onClosedHooks[id]();
+  }
 
   if (Object.keys(results).length === 0) {
     chrome.test.notifyPass('Done!');
@@ -80,4 +83,4 @@ function theOnlyTest() {
   notifications.create('BIFF', notificationData, createCallback);
 }
 
-chrome.test.runTests([ theOnlyTest ]);
+chrome.test.runTests([theOnlyTest]);

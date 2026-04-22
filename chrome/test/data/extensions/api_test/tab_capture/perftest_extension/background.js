@@ -32,8 +32,8 @@ chrome.runtime.onMessageExternal.addListener((request, from, sendResponse) => {
           maxWidth: 1920,
           maxHeight: 1080,
           maxFrameRate: 60,
-        }
-      }
+        },
+      },
     };
     console.log('Starting tab capture...');
     chrome.tabCapture.capture(captureOptions, captureStream => {
@@ -98,26 +98,28 @@ chrome.runtime.onMessageExternal.addListener((request, from, sendResponse) => {
 
   // Plug the capture into a video element to finish assembling the end-to-end
   // system.
-  startStreamingPromise.then(receiveStream => {
-    console.log('Starting receiver video playback...');
-    window.currentStream = receiveStream;
-    window.receiverVideo = document.createElement('video');
-    window.receiverVideo.srcObject = receiveStream;
-    window.receiverVideo.play();
+  startStreamingPromise
+      .then(receiveStream => {
+        console.log('Starting receiver video playback...');
+        window.currentStream = receiveStream;
+        window.receiverVideo = document.createElement('video');
+        window.receiverVideo.srcObject = receiveStream;
+        window.receiverVideo.play();
 
-    console.log('Sending success response...');
-    sendResponse({success: true});
-  }).catch(error => {
-    console.log('Sending error response...');
-    let errorMessage;
-    if (typeof error === 'object' &&
-        ('stack' in error || 'message' in error)) {
-      errorMessage = (error.stack || error.message);
-    } else {
-      errorMessage = String(error);
-    }
-    sendResponse({success: false, reason: errorMessage});
-  });
+        console.log('Sending success response...');
+        sendResponse({success: true});
+      })
+      .catch(error => {
+        console.log('Sending error response...');
+        let errorMessage;
+        if (typeof error === 'object' &&
+            ('stack' in error || 'message' in error)) {
+          errorMessage = (error.stack || error.message);
+        } else {
+          errorMessage = String(error);
+        }
+        sendResponse({success: false, reason: errorMessage});
+      });
 
   return true;  // Indicate that sendResponse() will be called asynchronously.
 });

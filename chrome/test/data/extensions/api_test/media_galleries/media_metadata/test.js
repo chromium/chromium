@@ -8,12 +8,12 @@ function RunMetadataTest(filename, callOptions, verifyMetadataFunction) {
   function getMediaFileSystemsCallback(results) {
     chrome.test.assertEq(1, results.length);
     const gallery = results[0];
-    gallery.root.getFile(filename, {create: false}, verifyFileEntry,
-      chrome.test.fail);
+    gallery.root.getFile(
+        filename, {create: false}, verifyFileEntry, chrome.test.fail);
   }
 
   function verifyFileEntry(fileEntry) {
-    fileEntry.file(verifyFile, chrome.test.fail)
+    fileEntry.file(verifyFile, chrome.test.fail);
   }
 
   function verifyFile(file) {
@@ -57,8 +57,8 @@ function MP3MIMETypeOnlyTest() {
     chrome.test.succeed();
   }
 
-  RunMetadataTest('id3_png_test.mp3', {metadataType: 'mimeTypeOnly'},
-                  verifyMetadata);
+  RunMetadataTest(
+      'id3_png_test.mp3', {metadataType: 'mimeTypeOnly'}, verifyMetadata);
 }
 
 function MP3TagsTest() {
@@ -90,8 +90,8 @@ function MP3TagsTest() {
     chrome.test.succeed();
   }
 
-  return RunMetadataTest('id3_png_test.mp3', {metadataType: 'mimeTypeAndTags'},
-                         verifyMetadata);
+  return RunMetadataTest(
+      'id3_png_test.mp3', {metadataType: 'mimeTypeAndTags'}, verifyMetadata);
 }
 
 function MP3AttachedImageTest() {
@@ -112,13 +112,13 @@ function MP3AttachedImageTest() {
       const first = new Uint8Array(reader.result, 0, 8);
       const last =
           new Uint8Array(reader.result, reader.result.byteLength - 8, 8);
-      chrome.test.assertEq('\x89PNG\r\n\x1a\n',
-                           String.fromCharCode.apply(null, first));
-      chrome.test.assertEq('IEND\xae\x42\x60\x82',
-                           String.fromCharCode.apply(null, last));
+      chrome.test.assertEq(
+          '\x89PNG\r\n\x1a\n', String.fromCharCode.apply(null, first));
+      chrome.test.assertEq(
+          'IEND\xae\x42\x60\x82', String.fromCharCode.apply(null, last));
 
       chrome.test.succeed();
-    }
+    };
     reader.readAsArrayBuffer(metadata.attachedImages[0]);
   }
 
@@ -133,26 +133,29 @@ function RotatedVideoTest() {
     chrome.test.assertEq(3, metadata.rawTags.length);
 
     chrome.test.assertEq('mov,mp4,m4a,3gp,3g2,mj2', metadata.rawTags[0].type);
-    chrome.test.assertEq('isom3gp4',
-                         metadata.rawTags[0].tags['compatible_brands']);
-    chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                         metadata.rawTags[0].tags['creation_time']);
+    chrome.test.assertEq(
+        'isom3gp4', metadata.rawTags[0].tags['compatible_brands']);
+    chrome.test.assertEq(
+        '2014-02-11T00:39:25.000000Z',
+        metadata.rawTags[0].tags['creation_time']);
     chrome.test.assertEq('isom', metadata.rawTags[0].tags['major_brand']);
     chrome.test.assertEq('0', metadata.rawTags[0].tags['minor_version']);
 
     chrome.test.assertEq('h264', metadata.rawTags[1].type);
-    chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                         metadata.rawTags[1].tags['creation_time']);
-    chrome.test.assertEq('VideoHandle',
-                         metadata.rawTags[1].tags['handler_name']);
+    chrome.test.assertEq(
+        '2014-02-11T00:39:25.000000Z',
+        metadata.rawTags[1].tags['creation_time']);
+    chrome.test.assertEq(
+        'VideoHandle', metadata.rawTags[1].tags['handler_name']);
     chrome.test.assertEq('eng', metadata.rawTags[1].tags['language']);
     chrome.test.assertEq('90', metadata.rawTags[1].tags['rotate']);
 
     chrome.test.assertEq('aac', metadata.rawTags[2].type);
-    chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                         metadata.rawTags[2].tags['creation_time']);
-    chrome.test.assertEq('SoundHandle',
-                         metadata.rawTags[2].tags['handler_name']);
+    chrome.test.assertEq(
+        '2014-02-11T00:39:25.000000Z',
+        metadata.rawTags[2].tags['creation_time']);
+    chrome.test.assertEq(
+        'SoundHandle', metadata.rawTags[2].tags['handler_name']);
     chrome.test.assertEq('eng', metadata.rawTags[2].tags['language']);
 
     chrome.test.assertEq(0, metadata.attachedImages.length);
@@ -170,7 +173,7 @@ chrome.test.getConfig(function(config) {
   // Should still be able to sniff MP3 MIME type without proprietary codecs.
   let testsToRun = [
     ImageMIMETypeOnlyTest,
-    InvalidMultimediaFileTest
+    InvalidMultimediaFileTest,
   ];
 
   if (useProprietaryCodecs) {
@@ -178,7 +181,7 @@ chrome.test.getConfig(function(config) {
       MP3MIMETypeOnlyTest,
       MP3TagsTest,
       MP3AttachedImageTest,
-      RotatedVideoTest
+      RotatedVideoTest,
     ]);
   }
 

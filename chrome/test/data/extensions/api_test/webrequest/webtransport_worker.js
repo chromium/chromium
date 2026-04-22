@@ -54,9 +54,9 @@ async function expectSessionFailed(url, target) {
     await transport.ready;
     target.postMessage('Ready should be rejected.');
   } catch (e) {
-   if (e.name !== 'WebTransportError') {
-     target.postMessage(
-         `Error name should be WebTransportError but is ${e.name}.`);
+    if (e.name !== 'WebTransportError') {
+      target.postMessage(
+          `Error name should be WebTransportError but is ${e.name}.`);
     } else {
       target.postMessage('PASS');
     }

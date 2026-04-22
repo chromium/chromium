@@ -5,6 +5,6 @@
 window.onload = function() {
   // Navigate after onload so that 'complete' status will fire.
   setTimeout(function() {
-    location.href = "iframe3.html";
+    location.href = 'iframe3.html';
   }, 0);
-}
+};

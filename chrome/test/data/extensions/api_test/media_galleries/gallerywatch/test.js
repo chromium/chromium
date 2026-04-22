@@ -6,18 +6,18 @@ let galleries;
 const INVALID_GALLERY_ID = '11000';
 
 // chrome.mediaGalleries.getMediaFileSystems callback.
-const mediaFileSystemsListCallback = function (results) {
+const mediaFileSystemsListCallback = function(results) {
   galleries = results;
   chrome.test.sendMessage('get_media_file_systems_callback_ok');
 };
 
 // Gallery changed event handler.
-const onGalleryChangedCallback = function (details) {
+const onGalleryChangedCallback = function(details) {
   chrome.test.sendMessage('gallery_changed_event_received');
 };
 
 // Add watch request callback.
-const onAddWatchRequestCallback = function (details) {
+const onAddWatchRequestCallback = function(details) {
   if (details.success) {
     chrome.test.sendMessage('add_watch_request_succeeded');
   } else {
@@ -53,29 +53,28 @@ const createUnlistenedAddWatchCallback = function(expectedNumCalls) {
       chrome.test.sendMessage('add_watch_request_runtime_error');
     }
   };
-}
+};
 
 // Helpers to add and remove event listeners.
 function addGalleryChangedListener() {
-  chrome.mediaGalleries.onGalleryChanged.addListener(
-      onGalleryChangedCallback);
+  chrome.mediaGalleries.onGalleryChanged.addListener(onGalleryChangedCallback);
   chrome.test.sendMessage('add_gallery_changed_listener_ok');
-};
+}
 
 function addCheckingGalleryChangedListener() {
   chrome.mediaGalleries.onGalleryChanged.addListener(
       onGalleryChangedCheckingCallback);
   chrome.test.sendMessage('add_gallery_changed_listener_ok');
-};
+}
 
 function setupWatchOnValidGalleries() {
   for (let i = 0; i < galleries.length; ++i) {
     const info = chrome.mediaGalleries.getMediaFileSystemMetadata(galleries[i]);
-    chrome.mediaGalleries.addGalleryWatch(info.galleryId,
-                                          onAddWatchRequestCallback);
+    chrome.mediaGalleries.addGalleryWatch(
+        info.galleryId, onAddWatchRequestCallback);
   }
   chrome.test.sendMessage('add_gallery_watch_ok');
-};
+}
 
 function setupWatchOnUnlistenedValidGalleries() {
   const callback = createUnlistenedAddWatchCallback(galleries.length);
@@ -83,17 +82,17 @@ function setupWatchOnUnlistenedValidGalleries() {
     const info = chrome.mediaGalleries.getMediaFileSystemMetadata(galleries[i]);
     chrome.mediaGalleries.addGalleryWatch(info.galleryId, callback);
   }
-};
+}
 
 function setupWatchOnInvalidGallery() {
-  chrome.mediaGalleries.addGalleryWatch(INVALID_GALLERY_ID,
-                                        onAddWatchRequestCallback);
+  chrome.mediaGalleries.addGalleryWatch(
+      INVALID_GALLERY_ID, onAddWatchRequestCallback);
 }
 
 function getMediaFileSystems() {
   chrome.mediaGalleries.getMediaFileSystems(mediaFileSystemsListCallback);
   chrome.test.sendMessage('get_media_file_systems_ok');
-};
+}
 
 function removeGalleryWatch() {
   for (let i = 0; i < galleries.length; ++i) {
@@ -101,10 +100,10 @@ function removeGalleryWatch() {
     chrome.mediaGalleries.removeGalleryWatch(info.galleryId);
   }
   chrome.test.sendMessage('remove_gallery_watch_ok');
-};
+}
 
 function removeGalleryChangedListener() {
   chrome.mediaGalleries.onGalleryChanged.removeListener(
       onGalleryChangedCallback);
   chrome.test.sendMessage('remove_gallery_changed_listener_ok');
-};
+}

@@ -122,10 +122,10 @@ function testGetContentMetadataEmpty() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'audio/mpeg', false, (metadata) => {
-    chrome.test.assertEq(undefined, metadata);
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  });
+        chrome.test.assertEq(undefined, metadata);
+        chrome.test.assertNoLastError();
+        chrome.test.succeed();
+      });
 }
 
 /*
@@ -136,14 +136,14 @@ function testGetContentMetadataAudioTags() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'audio/mpeg', false, (metadata) => {
-    chrome.test.assertEq('audio/mpeg', metadata.mimeType);
-    chrome.test.assertNoLastError();
+        chrome.test.assertEq('audio/mpeg', metadata.mimeType);
+        chrome.test.assertNoLastError();
 
-    verifyExpectedAudioMetadata(metadata);
-    chrome.test.assertEq(0, metadata.attachedImages.length);
+        verifyExpectedAudioMetadata(metadata);
+        chrome.test.assertEq(0, metadata.attachedImages.length);
 
-    chrome.test.succeed();
-  });
+        chrome.test.succeed();
+      });
 }
 
 /*
@@ -154,21 +154,21 @@ function testGetContentMetadataAudioTagsImages() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'audio/mpeg', true, (metadata) => {
-    chrome.test.assertEq('audio/mpeg', metadata.mimeType);
-    chrome.test.assertNoLastError();
+        chrome.test.assertEq('audio/mpeg', metadata.mimeType);
+        chrome.test.assertNoLastError();
 
-    verifyExpectedAudioMetadata(metadata);
-    chrome.test.assertEq(1, metadata.attachedImages.length);
+        verifyExpectedAudioMetadata(metadata);
+        chrome.test.assertEq(1, metadata.attachedImages.length);
 
-    const data = metadata.attachedImages[0].data;
-    if (!data || !data.startsWith('data:image/png;base64,')) {
-      chrome.test.fail('Attached image expected.');
-    } else {
-      const type = metadata.attachedImages[0].type;
-      chrome.test.assertEq('image/png', type);
-      chrome.test.succeed();
-    }
-  });
+        const data = metadata.attachedImages[0].data;
+        if (!data || !data.startsWith('data:image/png;base64,')) {
+          chrome.test.fail('Attached image expected.');
+        } else {
+          const type = metadata.attachedImages[0].type;
+          chrome.test.assertEq('image/png', type);
+          chrome.test.succeed();
+        }
+      });
 }
 
 /*
@@ -186,26 +186,24 @@ function verifyExpectedVideoMetadata(metadata) {
   chrome.test.assertEq(3, metadata.rawTags.length);
 
   chrome.test.assertEq('mov,mp4,m4a,3gp,3g2,mj2', metadata.rawTags[0].type);
-  chrome.test.assertEq('isom3gp4',
-                       metadata.rawTags[0].tags['compatible_brands']);
-  chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                       metadata.rawTags[0].tags['creation_time']);
+  chrome.test.assertEq(
+      'isom3gp4', metadata.rawTags[0].tags['compatible_brands']);
+  chrome.test.assertEq(
+      '2014-02-11T00:39:25.000000Z', metadata.rawTags[0].tags['creation_time']);
   chrome.test.assertEq('isom', metadata.rawTags[0].tags['major_brand']);
   chrome.test.assertEq('0', metadata.rawTags[0].tags['minor_version']);
 
   chrome.test.assertEq('h264', metadata.rawTags[1].type);
-  chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                       metadata.rawTags[1].tags['creation_time']);
-  chrome.test.assertEq('VideoHandle',
-                       metadata.rawTags[1].tags['handler_name']);
+  chrome.test.assertEq(
+      '2014-02-11T00:39:25.000000Z', metadata.rawTags[1].tags['creation_time']);
+  chrome.test.assertEq('VideoHandle', metadata.rawTags[1].tags['handler_name']);
   chrome.test.assertEq('eng', metadata.rawTags[1].tags['language']);
   chrome.test.assertEq('90', metadata.rawTags[1].tags['rotate']);
 
   chrome.test.assertEq('aac', metadata.rawTags[2].type);
-  chrome.test.assertEq('2014-02-11T00:39:25.000000Z',
-                       metadata.rawTags[2].tags['creation_time']);
-  chrome.test.assertEq('SoundHandle',
-                       metadata.rawTags[2].tags['handler_name']);
+  chrome.test.assertEq(
+      '2014-02-11T00:39:25.000000Z', metadata.rawTags[2].tags['creation_time']);
+  chrome.test.assertEq('SoundHandle', metadata.rawTags[2].tags['handler_name']);
   chrome.test.assertEq('eng', metadata.rawTags[2].tags['language']);
 }
 
@@ -218,14 +216,14 @@ function testGetContentMetadataVideoTagsImages() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'video/mp4', true, (metadata) => {
-    chrome.test.assertEq('video/mp4', metadata.mimeType);
-    chrome.test.assertNoLastError();
+        chrome.test.assertEq('video/mp4', metadata.mimeType);
+        chrome.test.assertNoLastError();
 
-    verifyExpectedVideoMetadata(metadata);
-    chrome.test.assertEq(0, metadata.attachedImages.length);
+        verifyExpectedVideoMetadata(metadata);
+        chrome.test.assertEq(0, metadata.attachedImages.length);
 
-    chrome.test.succeed();
-  });
+        chrome.test.succeed();
+      });
 }
 
 /*
@@ -236,10 +234,10 @@ function testGetContentMetadataRetainsInputMimeType() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'audio/input-type', false, (metadata) => {
-    chrome.test.assertEq('audio/input-type', metadata.mimeType);
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  });
+        chrome.test.assertEq('audio/input-type', metadata.mimeType);
+        chrome.test.assertNoLastError();
+        chrome.test.succeed();
+      });
 }
 
 /*
@@ -251,14 +249,14 @@ function testGetContentMetadataVideoResetsAudioMime() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'audio/input-type', true, (metadata) => {
-    chrome.test.assertEq('video/input-type', metadata.mimeType);
-    chrome.test.assertNoLastError();
+        chrome.test.assertEq('video/input-type', metadata.mimeType);
+        chrome.test.assertNoLastError();
 
-    chrome.test.assertEq(1920, metadata.width);
-    chrome.test.assertEq(1080, metadata.height);
+        chrome.test.assertEq(1920, metadata.width);
+        chrome.test.assertEq(1080, metadata.height);
 
-    chrome.test.succeed();
-  });
+        chrome.test.succeed();
+      });
 }
 
 /*
@@ -270,14 +268,14 @@ function testGetContentMetadataUnsupportedMimetypeError() {
 
   chrome.fileManagerPrivate.getContentMetadata(
       entry, 'image/jpeg', false, (metadata) => {
-    chrome.test.assertEq(undefined, metadata);
+        chrome.test.assertEq(undefined, metadata);
 
-    if (!chrome.runtime.lastError) {
-      chrome.test.fail('chrome.runtime.lastError expected.');
-    } else {
-      chrome.test.succeed();
-    }
-  });
+        if (!chrome.runtime.lastError) {
+          chrome.test.fail('chrome.runtime.lastError expected.');
+        } else {
+          chrome.test.succeed();
+        }
+      });
 }
 
 /*

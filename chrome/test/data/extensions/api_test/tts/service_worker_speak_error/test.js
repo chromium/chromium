@@ -12,7 +12,7 @@ chrome.test.runTests([testSpeakError = async () => {
             'enqueue': true,
             'onEvent': (_event) => {
               chrome.test.fail();
-            }
+            },
           })
       .catch(e => chrome.test.assertEq('Invalid lang.', e));
   // Sync version.
@@ -22,7 +22,7 @@ chrome.test.runTests([testSpeakError = async () => {
         'rate': -5,  // Invalid rate will throw an error.
         'onEvent': (event) => {
           chrome.test.fail();
-        }
+        },
       },
       function() {
         // Should have failed.

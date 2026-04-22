@@ -2,44 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var deviceAddress0 = '11:22:33:44:55:66';
-var deviceAddress1 = '77:88:99:AA:BB:CC';
-var badDeviceAddress = 'bad-address';
-var ble = chrome.bluetoothLowEnergy;
+const deviceAddress0 = '11:22:33:44:55:66';
+const deviceAddress1 = '77:88:99:AA:BB:CC';
+const badDeviceAddress = 'bad-address';
+const ble = chrome.bluetoothLowEnergy;
 
-var errorAlreadyConnected = 'Already connected';
-var errorNotConnected = 'Not connected';
-var errorNotFound = 'Instance not found';
-var errorOperationFailed = 'Operation failed';
-var errorAuthFailed = 'Authentication failed';
-var errorInProgress = 'In progress';
-var errorCanceled = 'Request canceled';
-var errorTimeout = 'Operation timed out';
-var errorUnsupportedDevice = 'This device is not supported on ' +
+const errorAlreadyConnected = 'Already connected';
+const errorNotConnected = 'Not connected';
+const errorNotFound = 'Instance not found';
+const errorOperationFailed = 'Operation failed';
+const errorAuthFailed = 'Authentication failed';
+const errorInProgress = 'In progress';
+const errorCanceled = 'Request canceled';
+const errorTimeout = 'Operation timed out';
+const errorUnsupportedDevice = 'This device is not supported on ' +
     'the current platform';
-var errorNoMemory = 'No memory';
-var errorJniEnvironment = 'JNI environment error';
-var errorJniThreadAttach = 'JNI thread attach error';
-var errorWakelock = 'Wakelock error';
+const errorNoMemory = 'No memory';
+const errorJniEnvironment = 'JNI environment error';
+const errorJniThreadAttach = 'JNI thread attach error';
+const errorWakelock = 'Wakelock error';
 
 function expectError(message) {
-  if (!chrome.runtime.lastError)
+  if (!chrome.runtime.lastError) {
     chrome.test.fail('Expected error: <' + message + '> but there was none.');
-  if (chrome.runtime.lastError.message != message)
-    chrome.test.fail('Expected error: <' + message + '> but it was: <' +
+  }
+  if (chrome.runtime.lastError.message != message) {
+    chrome.test.fail(
+        'Expected error: <' + message + '> but it was: <' +
         chrome.runtime.lastError.message + '>');
+  }
 }
 
 function expectSuccess() {
-  if (chrome.runtime.lastError)
+  if (chrome.runtime.lastError) {
     chrome.test.fail('Unexpected error: ' + chrome.runtime.lastError.message);
+  }
 }
 
-var queue = [];
+let queue = [];
 
 function runNext() {
   if (queue.length == 0) {
-    chrome.test.fail("No more tests!");
+    chrome.test.fail('No more tests!');
   }
   (queue.shift())();
 }
@@ -143,7 +147,7 @@ queue = [
   function() {
     expectSuccess();
     chrome.test.succeed();
-  }
+  },
 ];
 
 runNext();

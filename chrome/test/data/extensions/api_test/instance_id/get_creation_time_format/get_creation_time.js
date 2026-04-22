@@ -27,6 +27,6 @@ chrome.test.runTests([
         }
       });
     });
-  }
+  },
 
 ]);

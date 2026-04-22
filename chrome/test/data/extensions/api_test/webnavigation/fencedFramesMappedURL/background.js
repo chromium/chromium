@@ -6,30 +6,29 @@ const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(() => {
-  chrome.test.sendMessage('ready', async function (response) {
+  chrome.test.sendMessage('ready', async function(response) {
     const config = await promise(chrome.test.getConfig);
     const port = config.testServer.port;
-    const actual_fenced_frame_url =
-      `https://b.test:${port}` +
-      `/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html`;
+    const actual_fenced_frame_url = `https://b.test:${port}` +
+        `/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html`;
 
     chrome.test.runTests([
       () => {
         chrome.test.listenOnce(
-          chrome.webNavigation.onBeforeNavigate,
-          function (details) {
-            chrome.test.assertEq(details.frameType, 'fenced_frame');
-            chrome.test.assertEq(details.url, actual_fenced_frame_url);
-          }
+            chrome.webNavigation.onBeforeNavigate,
+            function(details) {
+              chrome.test.assertEq(details.frameType, 'fenced_frame');
+              chrome.test.assertEq(details.url, actual_fenced_frame_url);
+            },
         );
       },
       () => {
         chrome.test.listenOnce(
-          chrome.webNavigation.onCommitted,
-          function (details) {
-            chrome.test.assertEq(details.frameType, 'fenced_frame');
-            chrome.test.assertEq(details.url, actual_fenced_frame_url);
-          }
+            chrome.webNavigation.onCommitted,
+            function(details) {
+              chrome.test.assertEq(details.frameType, 'fenced_frame');
+              chrome.test.assertEq(details.url, actual_fenced_frame_url);
+            },
         );
       },
     ]);

@@ -35,9 +35,10 @@ function testMulticast() {
   function waitForMessage(socketId, callback) {
     let cancelled = false;
     let relayCanceller = null;
-    socket.recvFrom(socketId, 1024, function (result) {
-      if (cancelled)
+    socket.recvFrom(socketId, 1024, function(result) {
+      if (cancelled) {
         return;
+      }
 
       if (result.resultCode == kTestMessageLength * 2 &&
           kTestMessage === arrayBufferToString(result.data)) {
@@ -58,24 +59,22 @@ function testMulticast() {
   }
 
   function testMulticastSettings() {
-    socket.create('udp', {}, function (socketInfo) {
+    socket.create('udp', {}, function(socketInfo) {
       let socketId;
       if (socketInfo) {
         socketId = socketInfo.socketId;
-        socket.setMulticastTimeToLive(socketId, 0, function (result) {
-          chrome.test.assertEq(0, result,
-              'Error setting multicast time to live.');
-          socket.setMulticastTimeToLive(socketId, -3, function (result) {
-            chrome.test.assertEq(-4, result,
-                'Error setting multicast time to live.');
-            socket.setMulticastLoopbackMode(socketId, false,
-                function (result) {
-              chrome.test.assertEq(0, result,
-                  'Error setting multicast loop back mode.');
-              socket.setMulticastLoopbackMode(socketId, true,
-                  function (result) {
-                chrome.test.assertEq(0, result,
-                    'Error setting multicast loop back mode.');
+        socket.setMulticastTimeToLive(socketId, 0, function(result) {
+          chrome.test.assertEq(
+              0, result, 'Error setting multicast time to live.');
+          socket.setMulticastTimeToLive(socketId, -3, function(result) {
+            chrome.test.assertEq(
+                -4, result, 'Error setting multicast time to live.');
+            socket.setMulticastLoopbackMode(socketId, false, function(result) {
+              chrome.test.assertEq(
+                  0, result, 'Error setting multicast loop back mode.');
+              socket.setMulticastLoopbackMode(socketId, true, function(result) {
+                chrome.test.assertEq(
+                    0, result, 'Error setting multicast loop back mode.');
                 socket.destroy(socketId);
                 testMulticastRecv();
               });
@@ -91,21 +90,21 @@ function testMulticast() {
   function testSendMessage(message, address) {
     // Send the UDP message to the address with multicast ttl = 0.
     address = address || kMulticastAddress;
-    socket.create('udp', {}, function (socketInfo) {
+    socket.create('udp', {}, function(socketInfo) {
       let clientSocketId;
       if (socketInfo) {
         clientSocketId = socketInfo.socketId;
-        chrome.test.assertTrue(clientSocketId > 0,
-            'Cannot create client udp socket.');
-        socket.setMulticastTimeToLive(clientSocketId, 0, function (result) {
-          chrome.test.assertEq(0, result,
-              'Cannot create client udp socket.');
-          socket.connect(clientSocketId, address, kPort, function (result) {
-            chrome.test.assertEq(0, result,
-                'Cannot connect to localhost.');
-            socket.write(clientSocketId, stringToArrayBuffer(kTestMessage),
-                function (result) {
-                  chrome.test.assertTrue(result.bytesWritten >= 0,
+        chrome.test.assertTrue(
+            clientSocketId > 0, 'Cannot create client udp socket.');
+        socket.setMulticastTimeToLive(clientSocketId, 0, function(result) {
+          chrome.test.assertEq(0, result, 'Cannot create client udp socket.');
+          socket.connect(clientSocketId, address, kPort, function(result) {
+            chrome.test.assertEq(0, result, 'Cannot connect to localhost.');
+            socket.write(
+                clientSocketId, stringToArrayBuffer(kTestMessage),
+                function(result) {
+                  chrome.test.assertTrue(
+                      result.bytesWritten >= 0,
                       `Send to failed. ${JSON.stringify(result)}`);
                   socket.destroy(clientSocketId);
                 });
@@ -119,7 +118,7 @@ function testMulticast() {
 
   function recvBeforeAddMembership(serverSocketId) {
     let recvTimeout;
-    const canceller = waitForMessage(serverSocketId, function (cancelled) {
+    const canceller = waitForMessage(serverSocketId, function(cancelled) {
       clearTimeout(recvTimeout);
       if (cancelled) {
         recvWithMembership(serverSocketId);
@@ -127,8 +126,8 @@ function testMulticast() {
         chrome.test.fail('Received message before joining the group');
       }
     });
-    testSendMessage(kTestMessage); // Meant to be lost.
-    recvTimeout = setTimeout(function () {
+    testSendMessage(kTestMessage);  // Meant to be lost.
+    recvTimeout = setTimeout(function() {
       canceller();
       testSendMessage(kTestMessage, '127.0.0.1', kPort);
     }, 2000);
@@ -136,10 +135,10 @@ function testMulticast() {
 
   function recvWithMembership(serverSocketId) {
     // Join group.
-    socket.joinGroup(serverSocketId, kMulticastAddress, function (result) {
+    socket.joinGroup(serverSocketId, kMulticastAddress, function(result) {
       chrome.test.assertEq(0, result, 'Join group failed.');
       let recvTimeout;
-      const canceller = waitForMessage(serverSocketId, function (cancelled) {
+      const canceller = waitForMessage(serverSocketId, function(cancelled) {
         clearTimeout(recvTimeout);
         if (!cancelled) {
           recvWithoutMembership(serverSocketId);
@@ -148,7 +147,7 @@ function testMulticast() {
         }
       });
       testSendMessage(kTestMessage);
-      recvTimeout = setTimeout(function () {
+      recvTimeout = setTimeout(function() {
         canceller();
         socket.destroy(serverSocketId);
         chrome.test.fail('Cannot receive from multicast group.');
@@ -157,10 +156,10 @@ function testMulticast() {
   }
 
   function recvWithoutMembership(serverSocketId) {
-    socket.leaveGroup(serverSocketId, kMulticastAddress, function (result) {
+    socket.leaveGroup(serverSocketId, kMulticastAddress, function(result) {
       chrome.test.assertEq(0, result, 'leave group failed.');
       let recvTimeout;
-      const canceller = waitForMessage(serverSocketId, function (cancelled) {
+      const canceller = waitForMessage(serverSocketId, function(cancelled) {
         clearTimeout(recvTimeout);
         if (cancelled) {
           leaveGroupAndDisconnect(serverSocketId);
@@ -170,14 +169,14 @@ function testMulticast() {
         }
       });
       testSendMessage(request);
-      recvTimeout = setTimeout(function () {
+      recvTimeout = setTimeout(function() {
         canceller();
       }, 2000);
     });
   }
 
   function leaveGroupAndDisconnect(serverSocketId) {
-    socket.joinGroup(serverSocketId, kMulticastAddress, function (result) {
+    socket.joinGroup(serverSocketId, kMulticastAddress, function(result) {
       chrome.test.assertNoLastError();
       chrome.test.assertEq(0, result, 'Join group failed.');
       socket.leaveGroup(serverSocketId, kMulticastAddress, () => {
@@ -190,11 +189,11 @@ function testMulticast() {
   }
 
   function testMulticastRecv() {
-    socket.create('udp', {}, function (socketInfo) {
+    socket.create('udp', {}, function(socketInfo) {
       let serverSocketId;
       if (socketInfo) {
         serverSocketId = socketInfo.socketId;
-        socket.bind(serverSocketId, '0.0.0.0', kPort, function (result) {
+        socket.bind(serverSocketId, '0.0.0.0', kPort, function(result) {
           chrome.test.assertEq(0, result, 'Bind failed.');
           recvBeforeAddMembership(serverSocketId);
         });

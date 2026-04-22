@@ -30,7 +30,7 @@ async function main() {
       chrome.test.assertEq('InvalidModificationError', error.name);
       chrome.test.succeed();
     },
-  ])
+  ]);
 }
 
 main();

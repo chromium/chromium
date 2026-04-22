@@ -9,5 +9,5 @@ chrome.test.runTests([
         chrome.test.callbackPass(function(fileSystem) {
           chrome.test.assertTrue(!!fileSystem);
         }));
-  }
+  },
 ]);

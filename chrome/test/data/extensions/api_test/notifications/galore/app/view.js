@@ -5,7 +5,7 @@
 let mainWindow;
 let sections = [];
 
-const settings = {}
+const settings = {};
 // Initial values.
 settings.priority = '0';
 settings.progress = 10;
@@ -18,24 +18,30 @@ function onMainWindowClosed() {
 }
 
 function createAppWindow(onLoad) {
-  chrome.app.window.create('window.html', {
-    id: 'window',
-    defaultWidth: 440, minWidth: 440, maxWidth: 840,
-    defaultHeight: 640, minHeight: 640, maxHeight: 940,
-    hidden: true
-  }, function(w) {
-    mainWindow = w;
-    mainWindow.contentWindow.onload = function() {
-      setButtonHandlers();
-      getElement('body').dataset.priority = settings.priority;
-      onLoad();
-    };
-    mainWindow.onClosed.addListener(onMainWindowClosed)
-  });
+  chrome.app.window.create(
+      'window.html', {
+        id: 'window',
+        defaultWidth: 440,
+        minWidth: 440,
+        maxWidth: 840,
+        defaultHeight: 640,
+        minHeight: 640,
+        maxHeight: 940,
+        hidden: true,
+      },
+      function(w) {
+        mainWindow = w;
+        mainWindow.contentWindow.onload = function() {
+          setButtonHandlers();
+          getElement('body').dataset.priority = settings.priority;
+          onLoad();
+        };
+        mainWindow.onClosed.addListener(onMainWindowClosed);
+      });
 }
 
 function resovleImageUrl(imageUrl, callback) {
-  if (imageUrl.substr(0,4) != 'http') {
+  if (imageUrl.substr(0, 4) != 'http') {
     callback(imageUrl);
     return;
   }
@@ -45,17 +51,17 @@ function resovleImageUrl(imageUrl, callback) {
   xhr.responseType = 'blob';
   xhr.onload = function() {
     callback(URL.createObjectURL(this.response));
-  }
+  };
   xhr.send();
 }
 
-function addNotificationButton(sectionTitle,
-                               buttonTitle,
-                               iconUrl,
-                               onClickHandler) {
+function addNotificationButton(
+    sectionTitle, buttonTitle, iconUrl, onClickHandler) {
   const button = getElement('#templates .notification').cloneNode(true);
   const image = button.querySelector('img');
-  resovleImageUrl(iconUrl, function(url) { image.src = url });
+  resovleImageUrl(iconUrl, function(url) {
+    image.src = url;
+  });
   image.src = iconUrl;
   image.alt = buttonTitle;
   button.name = buttonTitle;
@@ -65,10 +71,10 @@ function addNotificationButton(sectionTitle,
 
 function addProgressControl(sectionTitle) {
   const control = getElement('#templates .progress-control').cloneNode(true);
-  getSection(sectionTitle).appendChild(control)
+  getSection(sectionTitle).appendChild(control);
 
   const progress = control.querySelector('.progress');
-  progress.id = 'progress'
+  progress.id = 'progress';
   progress.value = settings.progress;
 
   const progressOneshot = control.querySelector('.progress-oneshot');
@@ -76,17 +82,18 @@ function addProgressControl(sectionTitle) {
   progressOneshot.checked = true;
 
   const progressSec = control.querySelector('.progress-sec');
-  progressSec.id = 'progress-sec'
+  progressSec.id = 'progress-sec';
   progressSec.value = settings.progressSec;
 
   const progressStep = control.querySelector('.progress-step');
-  progressStep.id = 'progress-step'
+  progressStep.id = 'progress-step';
   progressStep.value = settings.progressStep;
 }
 
 function showWindow() {
-  if (mainWindow)
+  if (mainWindow) {
     mainWindow.show();
+  }
 }
 
 function logEvent(message) {
@@ -120,8 +127,9 @@ function updateRecordingStatsDisplay(text) {
 
 function clearEvents() {
   const events = getElement('#events');
-  while (events.lastChild)
+  while (events.lastChild) {
     events.removeChild(events.lastChild);
+  }
 }
 
 function getSection(title) {
@@ -146,9 +154,11 @@ function getElement(element) {
 }
 
 function getElements(elements) {
-  if (typeof elements === 'string')
+  if (typeof elements === 'string') {
     elements = mainWindow.contentWindow.document.querySelectorAll(elements);
-  if (String(elements) === '[object NodeList]')
+  }
+  if (String(elements) === '[object NodeList]') {
     elements = Array.prototype.slice.call(elements);
+  }
   return Array.isArray(elements) ? elements : [elements];
 }

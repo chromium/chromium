@@ -15,7 +15,7 @@ function testDeviceInfo() {
 
   chrome.test.assertEq(2, devices[0].uuids.length);
 
-  let uuids = new Set(devices[0].uuids);
+  const uuids = new Set(devices[0].uuids);
   chrome.test.assertTrue(uuids.has('00001105-0000-1000-8000-00805f9b34fb'));
   chrome.test.assertTrue(uuids.has('00001106-0000-1000-8000-00805f9b34fb'));
 
@@ -39,12 +39,10 @@ function failOnError() {
   }
 }
 
-chrome.bluetooth.getDevices(
-  function(result) {
-    failOnError();
-    devices = result;
-    chrome.test.sendMessage('ready',
-      function(message) {
-        chrome.test.runTests([testDeviceInfo]);
-      });
+chrome.bluetooth.getDevices(function(result) {
+  failOnError();
+  devices = result;
+  chrome.test.sendMessage('ready', function(message) {
+    chrome.test.runTests([testDeviceInfo]);
   });
+});

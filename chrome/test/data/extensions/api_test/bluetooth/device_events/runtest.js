@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var kExpectedDeviceNames = {
-  "21:22:23:24:25:26": "the real d2",
-  "31:32:33:34:35:36": "d3"
+const kExpectedDeviceNames = {
+  '21:22:23:24:25:26': 'the real d2',
+  '31:32:33:34:35:36': 'd3',
 };
 
 function testDeviceEvents() {
-  var expectedAddresses = Object.keys(kExpectedDeviceNames);
+  const expectedAddresses = Object.keys(kExpectedDeviceNames);
   chrome.test.assertEq(expectedAddresses.length, Object.keys(devices).length);
 
-  for (var i = 0; i < expectedAddresses.length; ++i) {
-    var address = expectedAddresses[i];
+  for (let i = 0; i < expectedAddresses.length; ++i) {
+    const address = expectedAddresses[i];
     chrome.test.assertTrue(address in devices);
     chrome.test.assertEq(kExpectedDeviceNames[address], devices[address].name);
   }

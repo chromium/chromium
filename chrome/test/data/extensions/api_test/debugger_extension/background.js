@@ -6,7 +6,7 @@ const pass = chrome.test.callbackPass;
 const fail = chrome.test.callbackFail;
 
 let debuggee;
-let protocolVersion = '1.3';
+const protocolVersion = '1.3';
 
 // Returns true if the platform is Android.
 async function isAndroid() {
@@ -22,27 +22,31 @@ chrome.test.runTests([
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
-    chrome.debugger.attach(debuggee, protocolVersion,
-                           fail('Cannot attach to this target.'));
+    chrome.debugger.attach(
+        debuggee, protocolVersion, fail('Cannot attach to this target.'));
     chrome.tabs.remove(tab.id);
   },
 
   function attach() {
-    let extensionId = chrome.runtime.getURL('').split('/')[2];
+    const extensionId = chrome.runtime.getURL('').split('/')[2];
     debuggee = {extensionId: extensionId};
     chrome.debugger.attach(debuggee, protocolVersion, pass());
   },
 
   function attachToMissing() {
-    let missingDebuggee = {extensionId: 'foo'};
-    chrome.debugger.attach(missingDebuggee, protocolVersion,
-        fail('No background page with given id ' +
-            missingDebuggee.extensionId + '.'));
+    const missingDebuggee = {extensionId: 'foo'};
+    chrome.debugger.attach(
+        missingDebuggee, protocolVersion,
+        fail(
+            'No background page with given id ' + missingDebuggee.extensionId +
+            '.'));
   },
 
   function attachAgain() {
-    chrome.debugger.attach(debuggee, protocolVersion,
-        fail('Another debugger is already attached ' +
+    chrome.debugger.attach(
+        debuggee, protocolVersion,
+        fail(
+            'Another debugger is already attached ' +
             'to the background page with id: ' + debuggee.extensionId + '.'));
   },
 
@@ -51,8 +55,10 @@ chrome.test.runTests([
   },
 
   function detachAgain() {
-    chrome.debugger.detach(debuggee,
-        fail('Debugger is not attached to the background page with id: ' +
+    chrome.debugger.detach(
+        debuggee,
+        fail(
+            'Debugger is not attached to the background page with id: ' +
             debuggee.extensionId + '.'));
   },
 
@@ -65,12 +71,11 @@ chrome.test.runTests([
       return;
     }
     chrome.debugger.getTargets(function(targets) {
-      let target = targets.filter(
-        function(t) {
-          return t.type == 'background_page' &&
-                 t.extensionId == debuggee.extensionId &&
-                 t.title == 'Extension Debugger';
-        })[0];
+      const target = targets.filter(function(t) {
+        return t.type == 'background_page' &&
+            t.extensionId == debuggee.extensionId &&
+            t.title == 'Extension Debugger';
+      })[0];
       if (target) {
         chrome.debugger.attach({targetId: target.id}, protocolVersion, pass());
       } else {
@@ -80,11 +85,12 @@ chrome.test.runTests([
   },
 
   async function discoverWorker() {
-    let workerPort = new SharedWorker('worker.js').port;
+    const workerPort = new SharedWorker('worker.js').port;
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {
-        let page = targets.filter(
-            function(t) { return t.type == 'worker' })[0];
+        const page = targets.filter(function(t) {
+          return t.type == 'worker';
+        })[0];
         if (page) {
           chrome.debugger.attach({targetId: page.id}, protocolVersion, pass());
         } else {
@@ -93,5 +99,5 @@ chrome.test.runTests([
       });
     };
     workerPort.start();
-  }
+  },
 ]);

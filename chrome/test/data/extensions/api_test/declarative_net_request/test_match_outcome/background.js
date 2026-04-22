@@ -36,7 +36,7 @@ chrome.test.runTests([
         {
           url: 'http://example.example',
           type: 'sub_frame',
-          initiator: 'http:://example.example'
+          initiator: 'http:://example.example',
         },
         chrome.test.callbackFail('Invalid test request initiator.'));
   },
@@ -52,16 +52,16 @@ chrome.test.runTests([
         {
           url: 'http://example.example',
           type: 'sub_frame',
-          topUrl: 'http:://example.example'
+          topUrl: 'http:://example.example',
         },
         chrome.test.callbackFail('Invalid test request top URL.'));
   },
 
   async function testNoMatch() {
-    let result = await testMatchOutcome({
+    const result = await testMatchOutcome({
       url: 'https://no-match.example/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -94,7 +94,7 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://block2.example/path',
       type: 'sub_frame',
-      method: 'post'
+      method: 'post',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 4, rulesetId: 'rules1'}]}, result);
@@ -107,14 +107,14 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://allow-all-requests.example/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
     result = await testMatchOutcome({
       url: 'https://allow-all-requests.example/path',
       type: 'main_frame',
-      method: 'post'
+      method: 'post',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1, rulesetId: 'rules1'}]}, result);
@@ -124,7 +124,7 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'ws://allow-all-requests.example/path',
       type: 'main_frame',
-      method: 'post'
+      method: 'post',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -140,7 +140,7 @@ chrome.test.runTests([
       url: 'https://block3.example/path',
       initiator: 'https://wrong-initiator.example/path',
       type: 'sub_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -148,7 +148,7 @@ chrome.test.runTests([
       url: 'https://block3.example/path',
       initiator: 'https://initiator.example/path',
       type: 'sub_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 5, rulesetId: 'rules1'}]}, result);
@@ -157,7 +157,7 @@ chrome.test.runTests([
       url: 'https://block4.example/path',
       initiator: 'https://block4.example/path',
       type: 'sub_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -165,7 +165,7 @@ chrome.test.runTests([
       url: 'https://block4.example/path',
       initiator: 'https://different.example/path',
       type: 'sub_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 6, rulesetId: 'rules1'}]}, result);
@@ -177,7 +177,7 @@ chrome.test.runTests([
     let result = await testMatchOutcome({
       url: 'https://modify-headers.example/path',
       type: 'sub_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1, rulesetId: 'modifyheaders'}]}, result);
@@ -185,14 +185,14 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://modify-headers.example/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {
           matchedRules: [
             {ruleId: 1, rulesetId: 'modifyheaders'},
-            {ruleId: 2, rulesetId: 'modifyheaders'}
-          ]
+            {ruleId: 2, rulesetId: 'modifyheaders'},
+          ],
         },
         result);
 
@@ -203,7 +203,7 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://modify-headers.example2/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1, rulesetId: 'modifyheaders'}]}, result);
@@ -212,7 +212,7 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://modify-headers.example3/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 4, rulesetId: 'modifyheaders'}]}, result);
@@ -228,7 +228,7 @@ chrome.test.runTests([
       url: 'https://tabid.example/path',
       type: 'image',
       method: 'get',
-      tabId: 31337
+      tabId: 31337,
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -237,8 +237,8 @@ chrome.test.runTests([
         id: 1337,
         priority: 1,
         action: {type: 'block'},
-        condition: {requestDomains: ['tabid.example'], tabIds: [31337]}
-      }]
+        condition: {requestDomains: ['tabid.example'], tabIds: [31337]},
+      }],
     });
 
     result = await testMatchOutcome(
@@ -249,7 +249,7 @@ chrome.test.runTests([
       url: 'https://tabid.example/path',
       type: 'image',
       method: 'get',
-      tabId: 123
+      tabId: 123,
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -257,7 +257,7 @@ chrome.test.runTests([
       url: 'https://tabid.example/path',
       type: 'image',
       method: 'get',
-      tabId: 31337
+      tabId: 31337,
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1337, rulesetId: '_session'}]}, result);
@@ -274,7 +274,7 @@ chrome.test.runTests([
       url: 'https://foo.example/path',
       topUrl: 'https://block5.example/path_ignored',
       type: 'image',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 7, rulesetId: 'rules1'}]}, result);
@@ -283,7 +283,7 @@ chrome.test.runTests([
       url: 'https://foo.example/path',
       topUrl: 'https://not-block5.example/path_ignored',
       type: 'image',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -291,7 +291,7 @@ chrome.test.runTests([
       url: 'https://foo.example/path',
       topUrl: 'https://allow.block5.example/path_ignored',
       type: 'image',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -300,7 +300,7 @@ chrome.test.runTests([
       topUrl: 'https://another.example/path',
       initiator: 'https://block5.example/path_ignored',
       type: 'image',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -308,7 +308,7 @@ chrome.test.runTests([
       url: 'https://foo.example/path',
       initiator: 'https://block5.example/path_ignored',
       type: 'image',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 7, rulesetId: 'rules1'}]}, result);
@@ -321,7 +321,7 @@ chrome.test.runTests([
     let result = await testMatchOutcome({
       url: 'https://allowed-redirect.example/ad.js',
       initiator: 'https://allowed-redirect.example',
-      type: 'script'
+      type: 'script',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 2, rulesetId: 'rules2'}]}, result);
@@ -339,10 +339,10 @@ chrome.test.runTests([
     result = await testMatchOutcome({
       url: 'https://allowed-redirect.example/ad.js',
       initiator: 'https://not-allowed-redirect.example',
-      type: 'script'
+      type: 'script',
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
     chrome.test.succeed();
-  }
+  },
 ]);

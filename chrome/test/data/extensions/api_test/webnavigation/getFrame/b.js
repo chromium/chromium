@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 onload = function() {
-  var frame = document.getElementById('frame');
+  let frame = document.getElementById('frame');
   frame.parentNode.removeChild(frame);
   frame = null;
 };

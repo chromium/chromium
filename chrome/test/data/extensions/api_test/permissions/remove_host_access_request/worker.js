@@ -82,5 +82,5 @@ chrome.test.runTests([
             `'pattern'.`);
 
     chrome.test.succeed();
-  }
-])
+  },
+]);

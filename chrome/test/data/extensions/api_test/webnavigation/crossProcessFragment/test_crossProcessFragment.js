@@ -13,179 +13,263 @@ onload = async function() {
     // Navigates to a different site, but then modifies the reference
     // framgent.
     function crossProcessFragment() {
-      expect([
-        { label: 'a-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('f.html') }},
-        { label: 'a-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('f.html') }},
-        { label: 'a-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('f.html') }},
-        { label: 'a-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('f.html') }},
-        { label: 'a-onReferenceFragmentUpdated',
-          event: 'onReferenceFragmentUpdated',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('f.html#foo') }},
-        { label: 'b-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}3` }},
-        { label: 'b-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: `${urlTest}3` }},
-        { label: 'b-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}3` }},
-        { label: 'b-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}3` }}],
-        [ navigationOrder('a-'),
-          [ 'a-onCompleted', 'b-onBeforeNavigate',
-            'a-onReferenceFragmentUpdated', 'b-onCommitted'] ]);
+      expect(
+          [
+            {
+              label: 'a-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('f.html')
+              }
+            },
+            {
+              label: 'a-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('f.html')
+              }
+            },
+            {
+              label: 'a-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('f.html')
+              }
+            },
+            {
+              label: 'a-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('f.html')
+              }
+            },
+            {
+              label: 'a-onReferenceFragmentUpdated',
+              event: 'onReferenceFragmentUpdated',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('f.html#foo')
+              }
+            },
+            {
+              label: 'b-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}3`
+              }
+            },
+            {
+              label: 'b-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: `${urlTest}3`
+              }
+            },
+            {
+              label: 'b-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}3`
+              }
+            },
+            {
+              label: 'b-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}3`
+              }
+            }
+          ],
+          [
+            navigationOrder('a-'),
+            [
+              'a-onCompleted', 'b-onBeforeNavigate',
+              'a-onReferenceFragmentUpdated', 'b-onCommitted'
+            ]
+          ]);
 
-      chrome.tabs.update( tab.id, { url: getURL(`f.html?${port}`) });
+      chrome.tabs.update(tab.id, {url: getURL(`f.html?${port}`)});
     },
 
     // A page with an iframe that changes its reference fragment before
     // the iframe committed.
     function crossProcessFragmentIFrame() {
-      expect([
-        { label: 'a-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('g.html') }},
-        { label: 'a-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('g.html') }},
-        { label: 'a-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('g.html') }},
-        { label: 'a-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('g.html') }},
-        { label: 'a-onReferenceFragmentUpdated',
-          event: 'onReferenceFragmentUpdated',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('g.html#foo') }},
-        { label: 'b-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 1,
-                     parentFrameId: 0,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}4` }},
-        { label: 'b-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'auto_subframe',
-                     url: `${urlTest}4` }},
-        { label: 'b-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}4` }},
-        { label: 'b-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}4` }}],
-        [ navigationOrder('a-'), navigationOrder('b-'),
-          [ 'a-onCompleted', 'b-onBeforeNavigate',
-            'a-onReferenceFragmentUpdated'] ]);
+      expect(
+          [
+            {
+              label: 'a-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('g.html')
+              }
+            },
+            {
+              label: 'a-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('g.html')
+              }
+            },
+            {
+              label: 'a-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('g.html')
+              }
+            },
+            {
+              label: 'a-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('g.html')
+              }
+            },
+            {
+              label: 'a-onReferenceFragmentUpdated',
+              event: 'onReferenceFragmentUpdated',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('g.html#foo')
+              }
+            },
+            {
+              label: 'b-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 1,
+                parentFrameId: 0,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}4`
+              }
+            },
+            {
+              label: 'b-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 1,
+                parentFrameId: 0,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'auto_subframe',
+                url: `${urlTest}4`
+              }
+            },
+            {
+              label: 'b-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 1,
+                parentFrameId: 0,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}4`
+              }
+            },
+            {
+              label: 'b-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 1,
+                parentFrameId: 0,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}4`
+              }
+            }
+          ],
+          [
+            navigationOrder('a-'), navigationOrder('b-'),
+            [
+              'a-onCompleted', 'b-onBeforeNavigate',
+              'a-onReferenceFragmentUpdated'
+            ]
+          ]);
 
-      chrome.tabs.update(tabId, { url: getURL(`g.html?${port}`)});
+      chrome.tabs.update(tabId, {url: getURL(`g.html?${port}`)});
     },
 
   ]);

@@ -9,8 +9,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab(config.customArg);
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
     await new Promise(
         resolve => chrome.debugger.sendCommand(
             debuggee, 'ServiceWorker.enable', resolve));
@@ -20,5 +20,5 @@ chrome.test.getConfig(config => chrome.test.runTests([
         `'ServiceWorker.enable' wasn't found`,
         JSON.parse(chrome.runtime.lastError.message).message);
     chrome.test.succeed();
-  }
+  },
 ]));

@@ -13,11 +13,11 @@ chrome.test.runTests([
       format: 'format',
     };
     chrome.documentScan.startScan(scannerHandle, options, response => {
-      chrome.test.assertEq(chrome.documentScan.OperationResult.ACCESS_DENIED,
-                           response.result);
+      chrome.test.assertEq(
+          chrome.documentScan.OperationResult.ACCESS_DENIED, response.result);
       chrome.test.assertEq(scannerHandle, response.scannerHandle);
       chrome.test.assertEq(null, response.job);
       chrome.test.succeed();
     });
-  }
+  },
 ]);

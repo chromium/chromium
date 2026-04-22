@@ -15,7 +15,7 @@ const frameId3 = 'frame3';
 function removeFrameOnStart(frameURL, frameId) {
   chrome.webRequest.onBeforeRequest.addListener(function listener(details) {
     chrome.tabs.executeScript(tabId, {
-      code: `document.getElementById('${frameId}').remove();`
+      code: `document.getElementById('${frameId}').remove();`,
     });
     chrome.webRequest.onBeforeRequest.removeListener(listener);
   }, {
@@ -29,8 +29,8 @@ function removeFrameOnStart(frameURL, frameId) {
 // framework because we are only interested in seeing whether the details in the
 // onErrorOccurred event are valid.
 function awaitOnErrorOccurred(num, callback) {
-  var callbackDone = chrome.test.callbackAdded();
-  var results = [];
+  const callbackDone = chrome.test.callbackAdded();
+  const results = [];
   chrome.webRequest.onErrorOccurred.addListener(function listener(details) {
     delete details.requestId;
     delete details.timeStamp;
@@ -51,13 +51,13 @@ function awaitOnErrorOccurred(num, callback) {
 
 // Generate a deterministic frameId for a given frameId.
 function normalizeFrameId(frameId) {
-  chrome.test.assertTrue(typeof frameId == 'number');
+  chrome.test.assertTrue(typeof frameId === 'number');
   if (frameId === -1 || frameId === 0) {
-    return frameId; // unknown or main frame.
+    return frameId;  // unknown or main frame.
   }
   if (!(frameId in normalizeFrameId.cached)) {
     normalizeFrameId.cached[frameId] =
-      Object.keys(normalizeFrameId.cached).length + 1;
+        Object.keys(normalizeFrameId.cached).length + 1;
   }
   return normalizeFrameId.cached[frameId];
 }
@@ -70,12 +70,12 @@ runTests([
     const mainUrl = getServerURL('empty.html', hostname1);
     const frameUrl1 = getSlowURL(hostname1);
     const frameUrl2 = getSlowURL(hostname2);
-    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname1)
+    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname1);
 
     awaitOnErrorOccurred(2, function(results) {
       // The order of the URLs doesn't matter.
-      var expectedUrls = [frameUrl1, frameUrl2].sort();
-      var actualUrls = results.map(r => r.url).sort();
+      const expectedUrls = [frameUrl1, frameUrl2].sort();
+      const actualUrls = results.map(r => r.url).sort();
       chrome.test.assertEq(expectedUrls, actualUrls);
       delete results[0].url;
       delete results[1].url;
@@ -83,7 +83,7 @@ runTests([
 
       // documentId/parentDocumentId are unique identifiers. Only
       // their presence is useful not the explicit value.
-      for (var i=0; i < results.length; ++i) {
+      for (let i = 0; i < results.length; ++i) {
         chrome.test.assertFalse('documentId' in results[i]);
         chrome.test.assertTrue('parentDocumentId' in results[i]);
         delete results[i].parentDocumentId;
@@ -91,29 +91,34 @@ runTests([
 
       // The main purpose of this check is to see whether the frameId/tabId
       // makes sense.
-      chrome.test.assertEq([{
-        method: 'GET',
-        documentLifecycle: 'active',
-        frameId: 1,
-        frameType: 'sub_frame',
-        parentFrameId: 0,
-        tabId,
-        type: 'sub_frame',
-        fromCache: false,
-        initiator: initiator,
-        error: 'net::ERR_ABORTED',
-      }, {
-        method: 'GET',
-        documentLifecycle: 'active',
-        frameId: 2,
-        frameType: 'sub_frame',
-        parentFrameId: 0,
-        tabId,
-        type: 'sub_frame',
-        fromCache: false,
-        initiator: initiator,
-        error: 'net::ERR_ABORTED',
-      }], results);
+      chrome.test.assertEq(
+          [
+            {
+              method: 'GET',
+              documentLifecycle: 'active',
+              frameId: 1,
+              frameType: 'sub_frame',
+              parentFrameId: 0,
+              tabId,
+              type: 'sub_frame',
+              fromCache: false,
+              initiator: initiator,
+              error: 'net::ERR_ABORTED',
+            },
+            {
+              method: 'GET',
+              documentLifecycle: 'active',
+              frameId: 2,
+              frameType: 'sub_frame',
+              parentFrameId: 0,
+              tabId,
+              type: 'sub_frame',
+              fromCache: false,
+              initiator: initiator,
+              error: 'net::ERR_ABORTED',
+            }
+          ],
+          results);
     });
 
     removeFrameOnStart(frameUrl1, frameId1);
@@ -130,7 +135,7 @@ runTests([
 
           document.body.appendChild(f1);
           document.body.appendChild(f2);
-        `
+        `,
       });
     });
   },
@@ -147,19 +152,21 @@ runTests([
       chrome.test.assertTrue('parentDocumentId' in results[0]);
       delete results[0].parentDocumentId;
 
-      chrome.test.assertEq([{
-        method: 'GET',
-        url: frameUrl,
-        documentLifecycle: 'active',
-        frameId: 3,
-        frameType: 'sub_frame',
-        parentFrameId: 0,
-        tabId,
-        type: 'sub_frame',
-        fromCache: false,
-        initiator: getServerDomain(initiators.WEB_INITIATED, hostname1),
-        error: 'net::ERR_ABORTED',
-      }], results);
+      chrome.test.assertEq(
+          [{
+            method: 'GET',
+            url: frameUrl,
+            documentLifecycle: 'active',
+            frameId: 3,
+            frameType: 'sub_frame',
+            parentFrameId: 0,
+            tabId,
+            type: 'sub_frame',
+            fromCache: false,
+            initiator: getServerDomain(initiators.WEB_INITIATED, hostname1),
+            error: 'net::ERR_ABORTED',
+          }],
+          results);
     });
 
     removeFrameOnStart(frameUrl, frameId3);
@@ -169,7 +176,7 @@ runTests([
         f.id = '${frameId3}';
         f.src = '${frameUrl}';
         document.body.appendChild(f);
-      `
+      `,
     });
   },
 ]);

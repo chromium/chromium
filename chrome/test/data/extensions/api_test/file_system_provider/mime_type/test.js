@@ -21,7 +21,7 @@ const TESTING_WITH_MIME_FILE = Object.freeze({
   name: 'first-file.abc',
   size: 4096,
   modificationTime: new Date(2014, 4, 28, 10, 39, 15),
-  mimeType: TESTING_MIME_TYPE
+  mimeType: TESTING_MIME_TYPE,
 });
 
 /**
@@ -32,7 +32,7 @@ const TESTING_WITHOUT_MIME_FILE = Object.freeze({
   isDirectory: false,
   name: 'second-file.abc',
   size: 4096,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -62,41 +62,10 @@ function runTests() {
     // appears on a task list.
     function withMimeIsTask() {
       testUtil.fileSystem.root.getFile(
-          TESTING_WITH_MIME_FILE.name,
-          {},
+          TESTING_WITH_MIME_FILE.name, {},
           chrome.test.callbackPass(function(entry) {
-            testUtil.toExternalEntry(entry).then(function(externalEntry) {
-              chrome.test.assertTrue(!!externalEntry);
-              chrome.fileManagerPrivate.getFileTasks(
-                  [externalEntry], [''],
-                  chrome.test.callbackPass(function(resultingTasks) {
-                    const tasks = resultingTasks.tasks;
-                    chrome.test.assertEq(1, tasks.length);
-                    chrome.test.assertEq(
-                        'pkplfbidichfdicaijlchgnapepdginl',
-                        tasks[0].descriptor.appId);
-                    chrome.test.assertEq(
-                        'app',
-                        tasks[0].descriptor.taskType);
-                    chrome.test.assertEq(
-                        'magic_handler',
-                        tasks[0].descriptor.actionId);
-                  }));
-            }).catch(chrome.test.fail);
-          }), function(error) {
-            chrome.test.fail(error.name);
-          });
-    },
-
-    // Confirm, that executing that task, will actually run an OnLaunched event.
-    // This is another code path, than collecting tasks (tested above).
-    function withMimeExecute() {
-      testUtil.fileSystem.root.getFile(
-          TESTING_WITH_MIME_FILE.name,
-          {},
-          chrome.test.callbackPass(function(entry) {
-            testUtil.toExternalEntry(entry).then(
-                chrome.test.callbackPass(function(externalEntry) {
+            testUtil.toExternalEntry(entry)
+                .then(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
                       [externalEntry], [''],
@@ -107,11 +76,39 @@ function runTests() {
                             'pkplfbidichfdicaijlchgnapepdginl',
                             tasks[0].descriptor.appId);
                         chrome.test.assertEq(
-                            'app',
-                            tasks[0].descriptor.taskType);
+                            'app', tasks[0].descriptor.taskType);
                         chrome.test.assertEq(
-                            'magic_handler',
-                            tasks[0].descriptor.actionId);
+                            'magic_handler', tasks[0].descriptor.actionId);
+                      }));
+                })
+                .catch(chrome.test.fail);
+          }),
+          function(error) {
+            chrome.test.fail(error.name);
+          });
+    },
+
+    // Confirm, that executing that task, will actually run an OnLaunched event.
+    // This is another code path, than collecting tasks (tested above).
+    function withMimeExecute() {
+      testUtil.fileSystem.root.getFile(
+          TESTING_WITH_MIME_FILE.name, {},
+          chrome.test.callbackPass(function(entry) {
+            testUtil.toExternalEntry(entry)
+                .then(chrome.test.callbackPass(function(externalEntry) {
+                  chrome.test.assertTrue(!!externalEntry);
+                  chrome.fileManagerPrivate.getFileTasks(
+                      [externalEntry], [''],
+                      chrome.test.callbackPass(function(resultingTasks) {
+                        const tasks = resultingTasks.tasks;
+                        chrome.test.assertEq(1, tasks.length);
+                        chrome.test.assertEq(
+                            'pkplfbidichfdicaijlchgnapepdginl',
+                            tasks[0].descriptor.appId);
+                        chrome.test.assertEq(
+                            'app', tasks[0].descriptor.taskType);
+                        chrome.test.assertEq(
+                            'magic_handler', tasks[0].descriptor.actionId);
                         const onLaunched =
                             chrome.test.callbackPass(function(event) {
                               chrome.test.assertTrue(!!event);
@@ -128,12 +125,13 @@ function runTests() {
                             });
                         chrome.app.runtime.onLaunched.addListener(onLaunched);
                         chrome.fileManagerPrivate.executeTask(
-                          tasks[0].descriptor,
-                            [externalEntry],
+                            tasks[0].descriptor, [externalEntry],
                             chrome.test.callbackPass(function() {}));
                       }));
-                })).catch(chrome.test.fail);
-          }), function(error) {
+                }))
+                .catch(chrome.test.fail);
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -142,11 +140,10 @@ function runTests() {
     // testing extension.
     function withoutMime() {
       testUtil.fileSystem.root.getFile(
-          TESTING_WITHOUT_MIME_FILE.name,
-          {},
+          TESTING_WITHOUT_MIME_FILE.name, {},
           chrome.test.callbackPass(function(entry) {
-            testUtil.toExternalEntry(entry).then(
-                chrome.test.callbackPass(function(externalEntry) {
+            testUtil.toExternalEntry(entry)
+                .then(chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
                       [externalEntry], [''],
@@ -154,11 +151,13 @@ function runTests() {
                         const tasks = resultingTasks.tasks;
                         chrome.test.assertEq(0, tasks.length);
                       }));
-                })).catch(chrome.test.fail);
-          }), function(error) {
+                }))
+                .catch(chrome.test.fail);
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
-    }
+    },
   ]);
 }
 
@@ -166,7 +165,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

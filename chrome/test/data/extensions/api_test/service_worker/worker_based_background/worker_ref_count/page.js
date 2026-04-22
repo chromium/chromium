@@ -6,7 +6,7 @@ const FAILURE_MESSAGE = 'FAILURE';
 
 function getServiceWorker() {
   return new Promise(function(resolve, reject) {
-    navigator.serviceWorker.ready.then(function (registration) {
+    navigator.serviceWorker.ready.then(function(registration) {
       resolve(registration.active);
     });
   });

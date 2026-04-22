@@ -25,8 +25,9 @@ function removeUniqueValue(array, value) {
 
 // Asserts that two arrays are equal when treated as sets.
 function assertSetEq(expected, actual) {
-  if (!actual)
+  if (!actual) {
     actual = [];
+  }
   test.assertEq(expected.slice().sort(), actual.slice().sort());
 }
 
@@ -41,12 +42,13 @@ function checkGrantedHosts(callback) {
       return;
     }
     grantedHosts.forEach(function(host) {
-      chrome.permissions.contains({origins: [host]},
-                                  test.callbackPass(function(contains) {
-        test.assertTrue(contains);
-        if (--countDown == 0)
-          callback();
-      }));
+      chrome.permissions.contains(
+          {origins: [host]}, test.callbackPass(function(contains) {
+            test.assertTrue(contains);
+            if (--countDown == 0) {
+              callback();
+            }
+          }));
     });
   }));
 }
@@ -55,21 +57,22 @@ function checkGrantedHosts(callback) {
 // that our expected host permissions agree with Chrome's.
 function requestHost(host, expectedGranted, expectedError) {
   return function(callback) {
-    chrome.permissions.request({origins: [host]},
-                               test.callback(function(granted) {
-      if (granted)
-        pushUniqueValue(grantedHosts, host);
-      if (expectedGranted) {
-        test.assertTrue(
-            granted,
-            `Access to ${host} was not granted, but should have been`);
-      } else {
-        test.assertFalse(
-            !!granted,
-            `Access to ${host} was granted, but should not have been`);
-      }
-      checkGrantedHosts(callback);
-    }, expectedError));
+    chrome.permissions.request(
+        {origins: [host]}, test.callback(function(granted) {
+          if (granted) {
+            pushUniqueValue(grantedHosts, host);
+          }
+          if (expectedGranted) {
+            test.assertTrue(
+                granted,
+                `Access to ${host} was not granted, but should have been`);
+          } else {
+            test.assertFalse(
+                !!granted,
+                `Access to ${host} was granted, but should not have been`);
+          }
+          checkGrantedHosts(callback);
+        }, expectedError));
   };
 }
 
@@ -77,28 +80,28 @@ function requestHost(host, expectedGranted, expectedError) {
 // that our expected host permissions agree with Chrome's.
 function removeHost(host, expectedRemoved) {
   return function(callback) {
-    chrome.permissions.remove({origins: [host]},
-                              test.callbackPass(function(removed) {
-      if (removed) {
-        test.assertTrue(expectedRemoved, `Access to ${host} removed`);
-        removeUniqueValue(grantedHosts, host);
-      } else {
-        test.assertFalse(expectedRemoved, `Access to ${host} not removed`);
-      }
-      checkGrantedHosts(callback);
-    }));
-  }
+    chrome.permissions.remove(
+        {origins: [host]}, test.callbackPass(function(removed) {
+          if (removed) {
+            test.assertTrue(expectedRemoved, `Access to ${host} removed`);
+            removeUniqueValue(grantedHosts, host);
+          } else {
+            test.assertFalse(expectedRemoved, `Access to ${host} not removed`);
+          }
+          checkGrantedHosts(callback);
+        }));
+  };
 }
 
 // Returns a function which checks that permissions.contains(host) returns
 // |expected|.
 function contains(host, expected) {
   return function(callback) {
-    chrome.permissions.contains({origins: [host]},
-                                test.callbackPass(function(result) {
-      test.assertEq(expected, result);
-      callback();
-    }));
+    chrome.permissions.contains(
+        {origins: [host]}, test.callbackPass(function(result) {
+          test.assertEq(expected, result);
+          callback();
+        }));
   };
 }
 
@@ -108,7 +111,8 @@ function contains(host, expected) {
 //
 // The test is kept alive until all callbacks in the chain have been run.
 function chain(callbacks) {
-  const head = callbacks[0], tail = callbacks.slice(1);
+  const head = callbacks[0];
+  const tail = callbacks.slice(1);
   if (tail.length == 0) {
     head();
     return;
@@ -125,69 +129,70 @@ function chain(callbacks) {
 
 function main() {
   chain([
-                 // Simple request #1.
-        contains('http://google.com/*', false),
-     requestHost('http://google.com/*', true),
-        contains('http://google.com/*', true),
-        contains('http://google.com/foo/*', true),
-        contains('http://google.com:1234/foo/*', true),
-        contains('http://www.google.com/*', false),
+    // Simple request #1.
+    contains('http://google.com/*', false),
+    requestHost('http://google.com/*', true),
+    contains('http://google.com/*', true),
+    contains('http://google.com/foo/*', true),
+    contains('http://google.com:1234/foo/*', true),
+    contains('http://www.google.com/*', false),
 
-                 // Simple request #2.
-     requestHost('http://*.yahoo.com/*', true),
-        contains('http://yahoo.com/*', true),
-        contains('http://yahoo.com/foo/*', true),
-        contains('http://www.yahoo.com/*', true),
-        contains('http://www.yahoo.com/foo/*', true),
-        contains('http://www.yahoo.com:5678/foo/*', true),
+    // Simple request #2.
+    requestHost('http://*.yahoo.com/*', true),
+    contains('http://yahoo.com/*', true),
+    contains('http://yahoo.com/foo/*', true),
+    contains('http://www.yahoo.com/*', true),
+    contains('http://www.yahoo.com/foo/*', true),
+    contains('http://www.yahoo.com:5678/foo/*', true),
 
-                 // Can request access to a subset of a host that's allowed.
-     requestHost('http://yahoo.com/*', true),
+    // Can request access to a subset of a host that's allowed.
+    requestHost('http://yahoo.com/*', true),
 
-                 // Can remove it.
-      removeHost('http://yahoo.com/*', true),
+    // Can remove it.
+    removeHost('http://yahoo.com/*', true),
 
-                 // However, since it's still granted by the *.yahoo.com/*
-                 // permission, it's still considered to contain it.
-        contains('http://yahoo.com/*', true),
+    // However, since it's still granted by the *.yahoo.com/*
+    // permission, it's still considered to contain it.
+    contains('http://yahoo.com/*', true),
 
-                 // Can remove the whole host, though.
-      removeHost('http://*.yahoo.com/*', true),
-        contains('http://google.com/*', true),
-        contains('http://yahoo.com/*', false),
-        contains('http://www.yahoo.com/*', false),
+    // Can remove the whole host, though.
+    removeHost('http://*.yahoo.com/*', true),
+    contains('http://google.com/*', true),
+    contains('http://yahoo.com/*', false),
+    contains('http://www.yahoo.com/*', false),
 
-                 // Widening the net (and then deleting it).
-     requestHost('http://*.google.com/*', true),
-        contains('http://google.com/*', true),
-        contains('http://www.google.com/*', true),
-      removeHost('http://google.com/*', true),
-        contains('http://google.com/*', true),
-        contains('http://www.google.com/*', true),
-      removeHost('http://*.google.com/*', true),
-        contains('http://google.com/*', false),
-        contains('http://www.google.com/*', false),
+    // Widening the net (and then deleting it).
+    requestHost('http://*.google.com/*', true),
+    contains('http://google.com/*', true),
+    contains('http://www.google.com/*', true),
+    removeHost('http://google.com/*', true),
+    contains('http://google.com/*', true),
+    contains('http://www.google.com/*', true),
+    removeHost('http://*.google.com/*', true),
+    contains('http://google.com/*', false),
+    contains('http://www.google.com/*', false),
 
-                 // https schemes should fail because they're not covered by
-                 // this extension's optional permission pattern.
-     requestHost('https://google.com/*', false, ERROR),
-     requestHost('https://*.yahoo.com/*', false, ERROR),
+    // https schemes should fail because they're not covered by
+    // this extension's optional permission pattern.
+    requestHost('https://google.com/*', false, ERROR),
+    requestHost('https://*.yahoo.com/*', false, ERROR),
 
-                 // There is a sneaky ftp://ftp.example.com/* pattern in the
-                 // manifest. Test it.
-     requestHost('ftp://example.com/*', false, ERROR),
-        contains('ftp://example.com/*', false),
-     requestHost('ftp://www.example.com/*', false, ERROR),
-        contains('ftp://www.example.com/*', false),
-     requestHost('ftp://secret.ftp.example.com/*', false, ERROR),
-        contains('ftp://secret.ftp.example.com/*', false),
-     requestHost('ftp://ftp.example.com/*', true),
-        contains('ftp://ftp.example.com/*', true),
-      removeHost('ftp://ftp.example.com/*', true),
-        contains('ftp://ftp.example.com/*', false),
+    // There is a sneaky ftp://ftp.example.com/* pattern in the
+    // manifest. Test it.
+    requestHost('ftp://example.com/*', false, ERROR),
+    contains('ftp://example.com/*', false),
+    requestHost('ftp://www.example.com/*', false, ERROR),
+    contains('ftp://www.example.com/*', false),
+    requestHost('ftp://secret.ftp.example.com/*', false, ERROR),
+    contains('ftp://secret.ftp.example.com/*', false),
+    requestHost('ftp://ftp.example.com/*', true),
+    contains('ftp://ftp.example.com/*', true),
+    removeHost('ftp://ftp.example.com/*', true),
+    contains('ftp://ftp.example.com/*', false),
 
-                 // And finally...
-                 test.succeed]);
+    // And finally...
+    test.succeed
+  ]);
 }
 
 test.runTests([main]);

@@ -4,8 +4,7 @@
 
 chrome.test.runTests([
   function storageIsDisabled() {
-    chrome.storage.managed.get(
-        chrome.test.callbackFail(
-            '"managed" is not available in this instance of Chrome'));
-  }
+    chrome.storage.managed.get(chrome.test.callbackFail(
+        '"managed" is not available in this instance of Chrome'));
+  },
 ]);

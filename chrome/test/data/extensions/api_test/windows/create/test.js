@@ -22,17 +22,20 @@ chrome.test.runTests([
   },
   function sizeTooBig() {
     // Setting origin + bad width/height should not crash.
-    chrome.windows.create({
-      'type': 'normal',
-      'left': 0,
-      'top': 0,
-      'width': 2147483647,
-      'height': 2147483647,
-    }, (w => {
-      chrome.test.assertLastError('Invalid value for bounds. Bounds must be ' +
-                                  'at least 50% within visible screen space.');
-      chrome.test.succeed();
-    }));
+    chrome.windows.create(
+        {
+          'type': 'normal',
+          'left': 0,
+          'top': 0,
+          'width': 2147483647,
+          'height': 2147483647,
+        },
+        (w => {
+          chrome.test.assertLastError(
+              'Invalid value for bounds. Bounds must be ' +
+              'at least 50% within visible screen space.');
+          chrome.test.succeed();
+        }));
   },
   async function createDataHasTabId() {
     // Arrange: Create a new window with one tab and get that tab's ID.

@@ -7,8 +7,9 @@ let matchedRuleInfos = [];
 let expectedCallback = null;
 
 const onRuleMatchedDebugCallback = info => {
-  if (expectedCallback)
+  if (expectedCallback) {
     expectedCallback(info);
+  }
 };
 
 function navigateAndWaitForUrlMatch(navigatePath, waitPath) {
@@ -20,8 +21,9 @@ function navigateAndWaitForUrlMatch(navigatePath, waitPath) {
   return new Promise(resolve => {
     expectedCallback = info => {
       matchedRuleInfos.push(info);
-      if (info.request.url == waitUrl)
+      if (info.request.url == waitUrl) {
         resolve();
+      }
     };
     chrome.tabs.update({url: baseUrl + navigatePath});
   });
@@ -43,26 +45,24 @@ async function setup() {
               priority: 1,
               condition: {
                 urlFilter: 'block_main',
-                resourceTypes: ['main_frame']
+                resourceTypes: ['main_frame'],
 
               },
-              action: {type: 'block'}
+              action: {type: 'block'},
             },
             {
               id: 2,
               priority: 1,
-              condition:
-                  {urlFilter: 'block_sub', resourceTypes: ['sub_frame']},
-              action: {type: 'block'}
+              condition: {urlFilter: 'block_sub', resourceTypes: ['sub_frame']},
+              action: {type: 'block'},
             },
             {
               id: 3,
               priority: 1,
-              condition:
-                  {urlFilter: 'block_image', resourceTypes: ['image']},
-              action: {type: 'block'}
-            }
-          ]
+              condition: {urlFilter: 'block_image', resourceTypes: ['image']},
+              action: {type: 'block'},
+            },
+          ],
         },
         chrome.test.succeed);
   });

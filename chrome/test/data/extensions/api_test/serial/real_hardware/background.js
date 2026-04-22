@@ -9,7 +9,7 @@ const testGetDevices = function() {
     chrome.test.assertTrue(array.indexOf(devices[0].path) >= 0);
     chrome.test.assertTrue(array.indexOf(devices[1].path) >= 0);
     chrome.test.succeed();
-  }
+  };
 
   chrome.serial.getDevices(onGetDevices);
 };

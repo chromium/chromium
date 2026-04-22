@@ -19,7 +19,7 @@ PreferenceChangeListener.prototype.start = function(event) {
   event.addListener(listener);
   this.doneCallback_ = function() {
     event.removeListener(listener);
-  }
+  };
 };
 
 PreferenceChangeListener.prototype.stop = function(callback) {
@@ -47,8 +47,9 @@ PreferenceChangeListener.prototype.onPrefChanged_ = function(pref) {
   this.encounteredEvents.push(pref);
   const callbacks = this.valueCallbacks_[pref.value];
   delete this.valueCallbacks_[pref.value];
-  if (callbacks)
+  if (callbacks) {
     callbacks.forEach(callback => callback());
+  }
 };
 
 let hyperlinkAuditingChangeListener = null;
@@ -80,7 +81,7 @@ if (chrome.extension.inIncognitoContext) {
             const events =
                 hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
-              {levelOfControl: 'controllable_by_this_extension', value: true}
+              {levelOfControl: 'controllable_by_this_extension', value: true},
             ]);
           }));
 
@@ -93,7 +94,7 @@ if (chrome.extension.inIncognitoContext) {
             const events =
                 hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
-              {value: false, levelOfControl: 'controlled_by_this_extension'}
+              {value: false, levelOfControl: 'controlled_by_this_extension'},
             ]);
           }));
 
@@ -113,7 +114,7 @@ if (chrome.extension.inIncognitoContext) {
             const events =
                 hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
-              {levelOfControl: 'controllable_by_this_extension', value: true}
+              {levelOfControl: 'controllable_by_this_extension', value: true},
             ]);
           }));
 
@@ -124,6 +125,6 @@ if (chrome.extension.inIncognitoContext) {
       const listener = hyperlinkAuditingChangeListener;
       hyperlinkAuditingChangeListener = null;
       listener.stop(chrome.test.callbackPass());
-    }
+    },
   ]);
 }

@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 chrome.test.sendMessage('popup_loaded', message => {
-  chrome.permissions.request({ origins: ['https://www.google.com/']});
+  chrome.permissions.request({origins: ['https://www.google.com/']});
 });

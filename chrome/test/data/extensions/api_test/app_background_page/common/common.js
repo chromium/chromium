@@ -1,36 +1,36 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-var scriptMessageEvent;
-var pageToScriptTunnel;
-var scriptToPageTunnel;
+let scriptMessageEvent;
+let pageToScriptTunnel;
+let scriptToPageTunnel;
 
 function setStatus(status) {
   document.getElementById('status').innerText = status;
 }
 
 function setupScriptTunnel() {
-  scriptMessageEvent = document.createEvent("Event");
+  scriptMessageEvent = document.createEvent('Event');
   scriptMessageEvent.initEvent('scriptMessage', true, true);
 
-  pageToScriptTunnel = document.getElementById("pageToScriptTunnel");
-  scriptToPageTunnel = document.getElementById("scriptToPageTunnel");
+  pageToScriptTunnel = document.getElementById('pageToScriptTunnel');
+  scriptToPageTunnel = document.getElementById('scriptToPageTunnel');
 
-  scriptToPageTunnel.addEventListener("scriptMessage", function() {
-    var data = JSON.parse(scriptToPageTunnel.innerText);
+  scriptToPageTunnel.addEventListener('scriptMessage', function() {
+    const data = JSON.parse(scriptToPageTunnel.innerText);
     window[data.name](data.args);
   });
 }
 
 function messageData(data) {
-  var args = [];
-  for (var i = 0; i < data.length; i++) {
+  const args = [];
+  for (let i = 0; i < data.length; i++) {
     args.push(data[i]);
   }
   return {
-    'name': data.callee.name.replace(/notify/g, "on"),
-    'args': args
-  }
+    'name': data.callee.name.replace(/notify/g, 'on'),
+    'args': args,
+  };
 }
 
 function notifyBackgroundPageResponded() {

@@ -13,9 +13,9 @@ const tests = [
 
     chrome.management.getPermissionWarningsByManifest(
         manifestStr, chrome.test.callback(function(warnings) {
-      chrome.test.assertEq(1, warnings.length);
-      chrome.test.assertEq('Read data you copy and paste', warnings[0]);
-    }));
+          chrome.test.assertEq(1, warnings.length);
+          chrome.test.assertEq('Read data you copy and paste', warnings[0]);
+        }));
   },
 ];
 

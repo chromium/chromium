@@ -5,7 +5,7 @@
 // Register a listener with a callback that blocks all requests.
 chrome.webRequest.onBeforeRequest.addListener(function localListener(details) {
   return {cancel: true};
-}, { urls: ['<all_urls>']}, ['blocking']);
+}, {urls: ['<all_urls>']}, ['blocking']);
 
 // Tell the C++ side of things to proceed with the test.
 chrome.test.sendMessage('ready');

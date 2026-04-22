@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var usb = chrome.usb;
+const usb = chrome.usb;
 
 function createErrorTest(resultCode, errorMessage) {
   return function() {
     usb.findDevices({vendorId: 0, productId: 0}, function(devices) {
-      var device = devices[0];
-      var transfer = new Object();
-      transfer.direction = "out";
+      const device = devices[0];
+      const transfer = new Object();
+      transfer.direction = 'out';
       transfer.endpoint = 1;
       transfer.data = new ArrayBuffer(0);
-      usb.bulkTransfer(device, transfer, function (result) {
+      usb.bulkTransfer(device, transfer, function(result) {
         if (errorMessage) {
           chrome.test.assertLastError(errorMessage);
         } else {
@@ -28,17 +28,17 @@ function createErrorTest(resultCode, errorMessage) {
 function createIsochronousErrorTest(resultCode, errorMessage) {
   return function() {
     usb.findDevices({vendorId: 0, productId: 0}, function(devices) {
-      var device = devices[0];
-      var transfer = {
+      const device = devices[0];
+      const transfer = {
         'transferInfo': {
-          'direction': "in",
+          'direction': 'in',
           'endpoint': 2,
-          'length': 160
+          'length': 160,
         },
         'packets': 10,
-        'packetLength': 16
+        'packetLength': 16,
       };
-      usb.isochronousTransfer(device, transfer, function (result) {
+      usb.isochronousTransfer(device, transfer, function(result) {
         if (errorMessage) {
           chrome.test.assertLastError(errorMessage);
           // Device responds with only 8-byte packets and the second half fail.
@@ -55,12 +55,12 @@ function createIsochronousErrorTest(resultCode, errorMessage) {
   };
 }
 
-var tests = [
+const tests = [
   createErrorTest(0, undefined),
-  createErrorTest(1, "Transfer failed."),
-  createErrorTest(2, "Transfer timed out."),
+  createErrorTest(1, 'Transfer failed.'),
+  createErrorTest(2, 'Transfer timed out.'),
   createIsochronousErrorTest(0, undefined),
-  createIsochronousErrorTest(1, "Transfer failed."),
+  createIsochronousErrorTest(1, 'Transfer failed.'),
 ];
 
 chrome.test.runTests(tests);

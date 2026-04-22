@@ -6,7 +6,7 @@ const tests = [
   function simple() {
     chrome.test.assertEq(undefined, chrome.contextMenus);
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

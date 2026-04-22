@@ -22,8 +22,7 @@ chrome.test.runTests([
     chrome.windows.create({url: ['a.html', 'b.html']}, function(win) {
       // Detatch the first tab.  See that the tab is findable with the new
       // window ID.
-      testGetNewWindowView(
-          {type: 'normal', tabId: win.tabs[0].id}, ['a.html']);
+      testGetNewWindowView({type: 'normal', tabId: win.tabs[0].id}, ['a.html']);
     });
-  }
+  },
 ]);

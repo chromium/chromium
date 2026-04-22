@@ -73,7 +73,7 @@ async function main() {
       chrome.test.assertEq(
           0, await remoteProvider.getEventCount('onFileOpenRequested'));
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

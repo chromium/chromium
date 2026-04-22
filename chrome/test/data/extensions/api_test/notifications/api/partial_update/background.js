@@ -5,19 +5,23 @@
 const notifications = chrome.notifications;
 
 function arrayEquals(a, b) {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (a.length !== b.length) return false;
+  if (a === b)
+    return true;
+  if (a == null || b == null)
+    return false;
+  if (a.length !== b.length)
+    return false;
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false;
+    if (a[i] !== b[i])
+      return false;
   }
   return true;
-};
+}
 
 function create(id, options) {
-  return new Promise(function (resolve, reject) {
-    notifications.create(id, options, function (id) {
+  return new Promise(function(resolve, reject) {
+    notifications.create(id, options, function(id) {
       if (chrome.runtime.lastError) {
         reject(new Error('Unable to create notification'));
         return;
@@ -27,11 +31,11 @@ function create(id, options) {
       return;
     });
   });
-};
+}
 
 function update(id, options) {
-  return new Promise(function (resolve, reject) {
-    notifications.update(id, options, function (ok) {
+  return new Promise(function(resolve, reject) {
+    notifications.update(id, options, function(ok) {
       if (chrome.runtime.lastError || !ok) {
         reject(new Error('Unable to update notification'));
         return;
@@ -44,8 +48,8 @@ function update(id, options) {
 }
 
 function clear(id) {
-  return new Promise(function (resolve, reject) {
-    notifications.clear(id, function (ok) {
+  return new Promise(function(resolve, reject) {
+    notifications.clear(id, function(ok) {
       if (chrome.runtime.lastError || !ok) {
         reject(new Error('Unable to clear notification'));
         return;
@@ -57,8 +61,8 @@ function clear(id) {
 }
 
 function getAll() {
-  return new Promise(function (resolve, reject) {
-    notifications.getAll(function (ids) {
+  return new Promise(function(resolve, reject) {
+    notifications.getAll(function(ids) {
       if (chrome.runtime.lastError) {
         reject(new Error(chrome.runtime.lastError.message));
         return;
@@ -66,7 +70,7 @@ function getAll() {
 
       if (ids === undefined) {
         resolve([]);
-        return
+        return;
       }
 
       const idList = Object.keys(ids);
@@ -76,30 +80,36 @@ function getAll() {
 }
 
 function clearAll() {
-  return getAll().then(function (ids) {
-    const idPromises = ids.map(function (id) { return clear(id); });
+  return getAll().then(function(ids) {
+    const idPromises = ids.map(function(id) {
+      return clear(id);
+    });
     return Promise.all(idPromises);
   });
 }
 
 function succeedTest(testName) {
-  return function () {
+  return function() {
     return clearAll().then(
-        function () { chrome.test.succeed(testName); },
-        function (error) {
-          console.log('Unknown error in clearAll: ' +
-              JSON.stringify(arguments));
+        function() {
+          chrome.test.succeed(testName);
+        },
+        function(error) {
+          console.log(
+              'Unknown error in clearAll: ' + JSON.stringify(arguments));
         });
   };
 }
 
 function failTest(testName) {
-  return function () {
+  return function() {
     return clearAll().then(
-        function () { chrome.test.fail(testName); },
-        function (error) {
-          console.log('Unknown error in clearAll: ' +
-              JSON.stringify(error.message));
+        function() {
+          chrome.test.fail(testName);
+        },
+        function(error) {
+          console.log(
+              'Unknown error in clearAll: ' + JSON.stringify(error.message));
         });
   };
 }
@@ -120,7 +130,7 @@ function testPartialUpdate() {
     message: 'Basic message',
     iconUrl: redDot,
     silent: false,
-    buttons: [{title: 'Button'}]
+    buttons: [{title: 'Button'}],
   };
 
   // Create a notification.
@@ -130,7 +140,7 @@ function testPartialUpdate() {
         return update('testId', {
           title: 'Changed!',
           message: 'Too late! The show ended yesterday',
-          silent: true
+          silent: true,
         });
       })
       // Then update a few more items
@@ -139,7 +149,7 @@ function testPartialUpdate() {
       })
       // The test will continue in C++, checking that all the updates "took"
       .then(chrome.test.succeed, chrome.test.fail);
-};
+}
 
 
 chrome.test.runTests([testPartialUpdate]);

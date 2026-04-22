@@ -10,8 +10,8 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function testGetURL() {
-    chrome.test.assertEq(`chrome-extension://${EXTENSION_ID}/foo`,
-                         chrome.runtime.getURL('foo'));
+    chrome.test.assertEq(
+        `chrome-extension://${EXTENSION_ID}/foo`, chrome.runtime.getURL('foo'));
     chrome.test.succeed();
   },
 ]);

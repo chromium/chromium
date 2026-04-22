@@ -142,7 +142,7 @@ const allTests = [
     assertEq(5, position.textOffset);
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'position.html');

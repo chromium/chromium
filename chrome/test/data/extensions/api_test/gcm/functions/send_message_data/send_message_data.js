@@ -8,8 +8,8 @@ const MESSAGE = {
   timeToLive: 100,
   data: {
     key1: 'value1',
-    key2: 'value2'
-  }
+    key2: 'value2',
+  },
 };
 
 chrome.test.runTests([
@@ -17,5 +17,5 @@ chrome.test.runTests([
     chrome.gcm.send(MESSAGE, function(messageId) {
       chrome.test.succeed();
     });
-  }
+  },
 ]);

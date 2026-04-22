@@ -49,7 +49,7 @@ function onPinRequested(responseDetails) {
           signRequestId: SIGN_REQUEST_ID,
           requestType: 'PUK',
           errorType: 'MAX_ATTEMPTS_EXCEEDED',
-          attemptsLeft: 0
+          attemptsLeft: 0,
         };
     chrome.certificateProvider.requestPin(code, onPinRequested);
     chrome.test.sendMessage(lastError == '' ? 'Invalid PIN' : lastError);

@@ -5,21 +5,22 @@
 chrome.test.runTests([
   function restoreEntryWorks() {
     const id = 'magic id';
-    chrome.fileSystem.isRestorable(id, chrome.test.callbackPass(
-        function(isRestorable) {
-      chrome.test.assertTrue(isRestorable);
-    }));
-    chrome.fileSystem.restoreEntry(id, chrome.test.callbackPass(
-        function(restoredEntry) {
-      chrome.test.assertNe(null, restoredEntry);
-      chrome.test.assertTrue(restoredEntry.isDirectory);
-      chrome.test.assertEq(
-          chrome.fileSystem.retainEntry(restoredEntry), id);
-      restoredEntry.getFile(
-          'writable.txt', {}, chrome.test.callback(function(entry) {
-        checkEntry(entry, 'writable.txt', false /* isNew */,
-                   true /*shouldBeWritable */);
-      }));
-    }));
-  }
+    chrome.fileSystem.isRestorable(
+        id, chrome.test.callbackPass(function(isRestorable) {
+          chrome.test.assertTrue(isRestorable);
+        }));
+    chrome.fileSystem.restoreEntry(
+        id, chrome.test.callbackPass(function(restoredEntry) {
+          chrome.test.assertNe(null, restoredEntry);
+          chrome.test.assertTrue(restoredEntry.isDirectory);
+          chrome.test.assertEq(
+              chrome.fileSystem.retainEntry(restoredEntry), id);
+          restoredEntry.getFile(
+              'writable.txt', {}, chrome.test.callback(function(entry) {
+                checkEntry(
+                    entry, 'writable.txt', false /* isNew */,
+                    true /*shouldBeWritable */);
+              }));
+        }));
+  },
 ]);

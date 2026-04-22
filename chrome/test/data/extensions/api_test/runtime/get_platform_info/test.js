@@ -4,11 +4,10 @@
 
 // These are found here:
 //   https://developer.chrome.com/extensions/runtime#type-PlatformOs
-let platformOsList =
-    ['mac', 'win', 'android', 'cros', 'linux', 'openbsd'];
-let platformArchList =
-  ['arm', 'arm64', 'x86-32', 'x86-64', 'mips', 'mips64', 'riscv64'];
-let platformNaclArchList = ['arm', 'x86-32', 'x86-64', 'mips', 'mips64'];
+const platformOsList = ['mac', 'win', 'android', 'cros', 'linux', 'openbsd'];
+const platformArchList =
+    ['arm', 'arm64', 'x86-32', 'x86-64', 'mips', 'mips64', 'riscv64'];
+const platformNaclArchList = ['arm', 'x86-32', 'x86-64', 'mips', 'mips64'];
 
 chrome.test.runTests([
 
@@ -29,7 +28,7 @@ chrome.test.runTests([
           chrome.test.assertFalse('nacl_arch' in platformInfo);
         } else {
           chrome.test.assertTrue(
-            platformNaclArchList.includes(platformInfo.nacl_arch));
+              platformNaclArchList.includes(platformInfo.nacl_arch));
         }
         chrome.test.succeed();
       });

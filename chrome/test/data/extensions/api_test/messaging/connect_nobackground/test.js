@@ -30,6 +30,6 @@ chrome.test.getConfig(function(config) {
       '/extensions/test_file.html?will_test_connect_and_sendMessage';
   // Content script will try to connect and trigger onConnect.
   chrome.tabs.create({
-    url: url
+    url: url,
   });
 });

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 onload = function() {
-  var f = document.createElement('iframe');
+  const f = document.createElement('iframe');
   f.src = 'iframe.html';
   document.body.appendChild(f);
 };

@@ -17,8 +17,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     chrome.debugger.onEvent.addListener((debuggee, method, params) => {
       const cb = eventCallbacks.get(method);
-      if (!cb)
+      if (!cb) {
         return;
+      }
       eventCallbacks.delete(method);
       cb({debuggee, params});
     });
@@ -31,10 +32,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     await chrome.debugger.attach(debuggee, protocolVersion);
 
-    await chrome.debugger.sendCommand(debuggee, 'Target.setAutoAttach', {
-      autoAttach: true,
-      waitForDebuggerOnStart: false,
-      flatten: true});
+    await chrome.debugger.sendCommand(
+        debuggee, 'Target.setAutoAttach',
+        {autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
     await chrome.debugger.sendCommand(debuggee, 'Runtime.enable', null);
     const expression = `
         const frame = document.body.firstElementChild;
@@ -45,48 +45,50 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const {params: attachedParams} = await onceEvent('Target.attachedToTarget');
     const childDebuggerSession = {
       ...debuggee,
-      sessionId: attachedParams.sessionId
+      sessionId: attachedParams.sessionId,
     };
     const anotherTab = await openTab(topURL);
-    const targets = await new Promise(resolve =>
-        chrome.debugger.getTargets(resolve));
+    const targets =
+        await new Promise(resolve => chrome.debugger.getTargets(resolve));
 
-    const anotherTabTarget = targets.find(
-        t => t.type === 'page' && t.tabId === anotherTab.id);
+    const anotherTabTarget =
+        targets.find(t => t.type === 'page' && t.tabId === anotherTab.id);
 
     // Child session does not allow connecting to another target.
-    await chrome.test.assertPromiseRejects(chrome.debugger.sendCommand(
-      childDebuggerSession,
-      'Target.attachToTarget',
-      {targetId: anotherTabTarget.id},
-    ), 'Error: {"code":-32000,"message":"Not allowed"}');
+    await chrome.test.assertPromiseRejects(
+        chrome.debugger.sendCommand(
+            childDebuggerSession,
+            'Target.attachToTarget',
+            {targetId: anotherTabTarget.id},
+            ),
+        'Error: {"code":-32000,"message":"Not allowed"}');
 
     // Can evaluate in the child session.
     const response = await chrome.debugger.sendCommand(
-      childDebuggerSession,
-      'Runtime.evaluate',
-      {expression: 'window.location.href'},
+        childDebuggerSession,
+        'Runtime.evaluate',
+        {expression: 'window.location.href'},
     );
     chrome.test.assertEq('b.com', new URL(response.result.value).hostname);
 
 
     await chrome.debugger.sendCommand(
-      childDebuggerSession,
-      'Runtime.enable',
-      null,
+        childDebuggerSession,
+        'Runtime.enable',
+        null,
     );
 
     // Can receive events from the child session.
-    const eventPromise = onceEvent('Runtime.consoleAPICalled')
+    const eventPromise = onceEvent('Runtime.consoleAPICalled');
     await chrome.debugger.sendCommand(
-      childDebuggerSession,
-      'Runtime.evaluate',
-      {expression: `console.log('test')`},
+        childDebuggerSession,
+        'Runtime.evaluate',
+        {expression: `console.log('test')`},
     );
     const message = await eventPromise;
     chrome.test.assertEq('test', message.params.args[0].value);
     chrome.test.assertEq(attachedParams.sessionId, message.debuggee.sessionId);
 
     chrome.test.succeed();
-  }
+  },
 ]));

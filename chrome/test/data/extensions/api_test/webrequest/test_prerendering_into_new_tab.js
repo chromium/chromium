@@ -25,8 +25,8 @@ runTests([function simpleLoad() {
             parentFrameId: -1,
             frameType: 'outermost_frame',
             type: 'main_frame',
-            documentLifecycle: 'active'
-          }
+            documentLifecycle: 'active',
+          },
         },
         {
           label: 'onBeforeSendHeaders-1',
@@ -39,8 +39,8 @@ runTests([function simpleLoad() {
             parentFrameId: -1,
             frameType: 'outermost_frame',
             type: 'main_frame',
-            documentLifecycle: 'active'
-          }
+            documentLifecycle: 'active',
+          },
         },
         {
           label: 'onSendHeaders-1',
@@ -53,8 +53,8 @@ runTests([function simpleLoad() {
             parentFrameId: -1,
             frameType: 'outermost_frame',
             type: 'main_frame',
-            documentLifecycle: 'active'
-          }
+            documentLifecycle: 'active',
+          },
         },
         {
           label: 'onHeadersReceived-1',
@@ -69,8 +69,8 @@ runTests([function simpleLoad() {
             type: 'main_frame',
             documentLifecycle: 'active',
             statusCode: 200,
-            statusLine: 'HTTP/1.1 200 OK'
-          }
+            statusLine: 'HTTP/1.1 200 OK',
+          },
         },
         {
           label: 'onResponseStarted-1',
@@ -87,8 +87,8 @@ runTests([function simpleLoad() {
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
-            ip: '127.0.0.1'
-          }
+            ip: '127.0.0.1',
+          },
         },
         {
           label: 'onCompleted-1',
@@ -105,8 +105,8 @@ runTests([function simpleLoad() {
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
-            ip: '127.0.0.1'
-          }
+            ip: '127.0.0.1',
+          },
         },
         {
           label: 'onBeforeRequest-2',
@@ -121,8 +121,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'main_frame',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onBeforeSendHeaders-2',
@@ -137,8 +137,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'main_frame',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onSendHeaders-2',
@@ -153,8 +153,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'main_frame',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onHeadersReceived-2',
@@ -171,8 +171,8 @@ runTests([function simpleLoad() {
             documentLifecycle: 'prerender',
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onResponseStarted-2',
@@ -191,8 +191,8 @@ runTests([function simpleLoad() {
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
             ip: '127.0.0.1',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onCompleted-2',
@@ -211,8 +211,8 @@ runTests([function simpleLoad() {
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
             ip: '127.0.0.1',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onBeforeRequest-3',
@@ -228,8 +228,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'script',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onBeforeSendHeaders-3',
@@ -245,8 +245,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'script',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onSendHeaders-3',
@@ -262,8 +262,8 @@ runTests([function simpleLoad() {
             frameType: 'outermost_frame',
             type: 'script',
             documentLifecycle: 'prerender',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onHeadersReceived-3',
@@ -281,8 +281,8 @@ runTests([function simpleLoad() {
             documentLifecycle: 'prerender',
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onResponseStarted-3',
@@ -302,8 +302,8 @@ runTests([function simpleLoad() {
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
             ip: '127.0.0.1',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onCompleted-3',
@@ -323,8 +323,8 @@ runTests([function simpleLoad() {
             statusLine: 'HTTP/1.1 200 OK',
             fromCache: false,
             ip: '127.0.0.1',
-            tabId: 1
-          }
+            tabId: 1,
+          },
         },
         {
           label: 'onBeforeRequest-4',
@@ -340,7 +340,7 @@ runTests([function simpleLoad() {
             type: 'xmlhttprequest',
             documentLifecycle: 'active',
             frameUrl: 'unknown frame URL',
-            tabId: 1
+            tabId: 1,
           },
         },
         {
@@ -357,7 +357,7 @@ runTests([function simpleLoad() {
             type: 'xmlhttprequest',
             documentLifecycle: 'active',
             requestHeadersValid: true,
-            tabId: 1
+            tabId: 1,
           },
         },
         {
@@ -374,7 +374,7 @@ runTests([function simpleLoad() {
             type: 'xmlhttprequest',
             documentLifecycle: 'active',
             requestHeadersValid: true,
-            tabId: 1
+            tabId: 1,
           },
         },
         {
@@ -393,7 +393,7 @@ runTests([function simpleLoad() {
             type: 'xmlhttprequest',
             documentLifecycle: 'active',
             responseHeadersExist: true,
-            tabId: 1
+            tabId: 1,
           },
         },
         {
@@ -414,7 +414,7 @@ runTests([function simpleLoad() {
             statusCode: 200,
             statusLine: 'HTTP/1.1 200 OK',
             ip: '127.0.0.1',
-            tabId: 1
+            tabId: 1,
           },
         },
         {
@@ -435,9 +435,9 @@ runTests([function simpleLoad() {
             ip: '127.0.0.1',
             responseHeadersExist: true,
             fromCache: true,
-            tabId: 1
+            tabId: 1,
           },
-        }
+        },
       ],
       [
         // Events
@@ -445,14 +445,22 @@ runTests([function simpleLoad() {
         // *-2: for prerendering.
         // *-3: for a script sub-resource in the prerendering page.
         // *-4: for fetch request made after the page activation.
-        ['onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
-          'onHeadersReceived-1', 'onResponseStarted-1', 'onCompleted-1'],
-          ['onBeforeRequest-2', 'onBeforeSendHeaders-2', 'onSendHeaders-2',
-          'onHeadersReceived-2', 'onResponseStarted-2', 'onCompleted-2'],
-          ['onBeforeRequest-3', 'onBeforeSendHeaders-3', 'onSendHeaders-3',
-          'onHeadersReceived-3', 'onResponseStarted-3', 'onCompleted-3'],
-          ['onBeforeRequest-4', 'onBeforeSendHeaders-4', 'onSendHeaders-4',
-           'onHeadersReceived-4', 'onResponseStarted-4', 'onCompleted-4'],
+        [
+          'onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
+          'onHeadersReceived-1', 'onResponseStarted-1', 'onCompleted-1'
+        ],
+        [
+          'onBeforeRequest-2', 'onBeforeSendHeaders-2', 'onSendHeaders-2',
+          'onHeadersReceived-2', 'onResponseStarted-2', 'onCompleted-2'
+        ],
+        [
+          'onBeforeRequest-3', 'onBeforeSendHeaders-3', 'onSendHeaders-3',
+          'onHeadersReceived-3', 'onResponseStarted-3', 'onCompleted-3'
+        ],
+        [
+          'onBeforeRequest-4', 'onBeforeSendHeaders-4', 'onSendHeaders-4',
+          'onHeadersReceived-4', 'onResponseStarted-4', 'onCompleted-4'
+        ],
       ],
       {urls: ['<all_urls>']},  // filter
       ['requestHeaders', 'responseHeaders']);
@@ -467,7 +475,7 @@ runTests([function simpleLoad() {
     if (details.url === kEmptyJsUrl) {
       chrome.tabs.executeScript(initiatorTabId, {
         code: `document.getElementById(\'link\').click();`,
-        runAt: 'document_idle'
+        runAt: 'document_idle',
       });
       chrome.webRequest.onCompleted.removeListener(activationCallback);
     }

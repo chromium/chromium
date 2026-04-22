@@ -7,7 +7,8 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const extensionOrigin = new URL(chrome.runtime.getURL('')).origin;
   let response = 'pong';
-  if (request != 'ping' || sender.origin != extensionOrigin)
+  if (request != 'ping' || sender.origin != extensionOrigin) {
     response = `Unexpected message "${request}" from origin "${sender.origin}"`;
+  }
   sendResponse({message: response, senderUrl: sender.url});
 });

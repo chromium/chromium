@@ -13,15 +13,15 @@ const testBasicEvents = function() {
     chrome.test.assertTrue(id.length > 0);
     chrome.test.assertEq(idString, id);
     chrome.test.succeed();
-  }
+  };
 
   const options = {
     type: 'basic',
     iconUrl: 'icon.png',
     title: 'Attention!',
-    message: 'Check out Cirque du Soleil'
+    message: 'Check out Cirque du Soleil',
   };
   notifications.create(idString, options, onCreateCallback);
 };
 
-chrome.test.runTests([ testBasicEvents ]);
+chrome.test.runTests([testBasicEvents]);

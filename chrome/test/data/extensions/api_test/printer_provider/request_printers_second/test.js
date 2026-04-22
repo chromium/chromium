@@ -10,43 +10,43 @@ chrome.test.sendMessage('loaded', function(test) {
       return;
     }
 
-    chrome.printerProvider.onGetPrintersRequested.addListener(
-        function(callback) {
-          chrome.test.assertFalse(!!chrome.printerProviderInternal);
-          chrome.test.assertTrue(!!callback);
+    chrome.printerProvider.onGetPrintersRequested.addListener(function(
+        callback) {
+      chrome.test.assertFalse(!!chrome.printerProviderInternal);
+      chrome.test.assertTrue(!!callback);
 
-          if (test == 'IGNORE_CALLBACK') {
-            chrome.test.succeed();
-            return;
-          }
+      if (test == 'IGNORE_CALLBACK') {
+        chrome.test.succeed();
+        return;
+      }
 
-          if (test == 'INVALID_VALUE') {
-            chrome.test.assertThrows(
-                callback,
-                ['XXX'],
-                'Error validating the callback argument: '+
+      if (test == 'INVALID_VALUE') {
+        chrome.test.assertThrows(
+            callback, ['XXX'],
+            'Error validating the callback argument: ' +
                 'Expected an object, found string.');
-          } else if (test == 'EMPTY') {
-            callback([]);
-          } else {
-            chrome.test.assertEq('OK', test);
-            callback([{
-              id: 'printer1',
-              name: 'Printer 1',
-              description: 'Test printer'
-            }, {
-              id: 'printerNoDesc',
-              name: 'Printer 2'
-            }]);
+      } else if (test == 'EMPTY') {
+        callback([]);
+      } else {
+        chrome.test.assertEq('OK', test);
+        callback([
+          {
+            id: 'printer1',
+            name: 'Printer 1',
+            description: 'Test printer',
+          },
+          {
+            id: 'printerNoDesc',
+            name: 'Printer 2',
           }
+        ]);
+      }
 
-          chrome.test.assertThrows(
-              callback,
-              [],
-              'Event callback must not be called more than once.');
+      chrome.test.assertThrows(
+          callback, [], 'Event callback must not be called more than once.');
 
-          chrome.test.succeed();
-        });
+      chrome.test.succeed();
+    });
 
     chrome.test.sendMessage('ready');
   }]);

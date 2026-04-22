@@ -29,7 +29,7 @@ const allTests = [
           }, 0);
         }, 0);
       }
-    };
+    }
     function observerTwo(change) {
       if (change.type == 'subtreeCreated' && change.target.name == 'New') {
         observerTwoCallCount++;
@@ -49,7 +49,7 @@ const allTests = [
           }, 0);
         }
       }
-    };
+    }
     chrome.automation.addTreeChangeObserver('allTreeChanges', observerOne);
     chrome.automation.addTreeChangeObserver('allTreeChanges', observerTwo);
 
@@ -65,36 +65,37 @@ const allTests = [
       }
     });
 
-    const removeButton = rootNode.find({ attributes: { name: 'Remove' }});
+    const removeButton = rootNode.find({attributes: {name: 'Remove'}});
     removeButton.doDefault();
   },
 
   function testTreeChangedObserverForLiveRegionsOnly() {
     // This test would fail if we set the filter to allTreeChanges.
     chrome.automation.addTreeChangeObserver(
-        'liveRegionTreeChanges',
-        function(change) {
-      if (change.target.name == 'Dead') {
-        // The internal bindings will notify us of a subtreeUpdateEnd if there
-        // was a live region within the updates sent during unserialization. The
-        // target in this case is picked by simply choosing the first target in
-        // all tree changes, which could have been anything.
-        if (change.type != 'subtreeUpdateEnd')
-          chrome.test.fail();
-      }
-      // TODO(tjudkins): This test currently ends up calling chrome.test.succeed
-      // 3 separate times for different tree changed events that fit the
-      // condition it sets. We should probably also make it conditional on the
-      // change.type and limit it to one of nodeChanged, nodeCreated or
-      // textChanged.
-      if (change.target.name == 'Live') {
-        chrome.test.succeed();
-      }
-    });
+        'liveRegionTreeChanges', function(change) {
+          if (change.target.name == 'Dead') {
+            // The internal bindings will notify us of a subtreeUpdateEnd if
+            // there was a live region within the updates sent during
+            // unserialization. The target in this case is picked by simply
+            // choosing the first target in all tree changes, which could have
+            // been anything.
+            if (change.type != 'subtreeUpdateEnd') {
+              chrome.test.fail();
+            }
+          }
+          // TODO(tjudkins): This test currently ends up calling
+          // chrome.test.succeed 3 separate times for different tree changed
+          // events that fit the condition it sets. We should probably also make
+          // it conditional on the change.type and limit it to one of
+          // nodeChanged, nodeCreated or textChanged.
+          if (change.target.name == 'Live') {
+            chrome.test.succeed();
+          }
+        });
 
-    const liveButton = rootNode.find({ attributes: { name: 'Live' }});
+    const liveButton = rootNode.find({attributes: {name: 'Live'}});
     liveButton.doDefault();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'tree_change.html');

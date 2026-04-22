@@ -7,7 +7,12 @@ const LinkAttributes = ['url'];
 const DocumentAttributes =
     ['docUrl', 'docTitle', 'docLoaded', 'docLoadingProgress'];
 const ScrollableAttributes = [
-  'scrollX', 'scrollXMin', 'scrollXMax', 'scrollY', 'scrollYMin', 'scrollYMax'
+  'scrollX',
+  'scrollXMin',
+  'scrollXMax',
+  'scrollY',
+  'scrollYMin',
+  'scrollYMax',
 ];
 const EditableTextAttributes = ['textSelStart', 'textSelEnd'];
 const RangeAttributes =
@@ -15,21 +20,25 @@ const RangeAttributes =
 const TableAttributes =
     ['tableRowCount', 'tableColumnCount', 'ariaRowCount', 'ariaColumnCount'];
 const TableCellAttributes = [
-  'tableCellColumnIndex', 'tableCellAriaColumnIndex', 'tableCellColumnSpan',
-  'tableCellRowIndex', 'tableCellAriaRowIndex', 'tableCellRowSpan'
+  'tableCellColumnIndex',
+  'tableCellAriaColumnIndex',
+  'tableCellColumnSpan',
+  'tableCellRowIndex',
+  'tableCellAriaRowIndex',
+  'tableCellRowSpan',
 ];
 
 const disabledTests = [
   // http://crbug.com/41320992
   function testDocumentAndScrollAttributes_flaky() {
     for (let i = 0; i < DocumentAttributes.length; i++) {
-      let attribute = DocumentAttributes[i];
+      const attribute = DocumentAttributes[i];
       assertTrue(
           attribute in rootNode,
           `rootNode should have a ${attribute} attribute`);
     }
     for (let i = 0; i < ScrollableAttributes.length; i++) {
-      let attribute = ScrollableAttributes[i];
+      const attribute = ScrollableAttributes[i];
       assertTrue(
           attribute in rootNode,
           `rootNode should have a ${attribute} attribute`);
@@ -45,7 +54,7 @@ const disabledTests = [
     assertEq(0, rootNode.scrollYMin);
     assertEq(0, rootNode.scrollYMax);
     chrome.test.succeed();
-  }
+  },
 ];
 
 const allTests = [
@@ -53,8 +62,9 @@ const allTests = [
     const combobox = rootNode.find({role: 'textFieldWithComboBox'});
     assertTrue(combobox.isComboBox);
     combobox.addEventListener(EventType.FOCUS, () => {
-      assertTrue('activeDescendant' in combobox,
-                 'combobox button should have an activedescendant attribute');
+      assertTrue(
+          'activeDescendant' in combobox,
+          'combobox button should have an activedescendant attribute');
       const listbox = rootNode.find({role: 'listBox'});
       assertFalse(listbox.isComboBox);
       const opt6 = listbox.children[5];
@@ -83,9 +93,9 @@ const allTests = [
   function testEditableTextAttributes() {
     const textFields = rootNode.findAll({role: 'textField'});
     assertEq(3, textFields.length);
-    for (let textField of textFields) {
+    for (const textField of textFields) {
       const description = textField.description;
-      for (let attribute of EditableTextAttributes) {
+      for (const attribute of EditableTextAttributes) {
         assertTrue(
             attribute in textField,
             `textField (${description}) should have a ` +
@@ -101,7 +111,7 @@ const allTests = [
 
       const textArea = textFields[1];
       assertEq('textarea', textArea.name);
-      for (let attribute of EditableTextAttributes) {
+      for (const attribute of EditableTextAttributes) {
         assertTrue(
             attribute in textArea,
             `textArea should have a ${attribute} attribute`);
@@ -119,12 +129,12 @@ const allTests = [
 
         const ariaTextbox = textFields[2];
         assertEq('textbox-role', ariaTextbox.name);
-        assertEq(undefined, ariaTextbox.textSelStart,
-                 'ariaTextbox.textSelStart');
+        assertEq(
+            undefined, ariaTextbox.textSelStart, 'ariaTextbox.textSelStart');
         assertEq(undefined, ariaTextbox.textSelEnd, 'ariaTextbox.textSelEnd');
         ariaTextbox.addEventListener(EventType.FOCUS, () => {
-          assertEq(undefined, ariaTextbox.textSelStart,
-                   'ariaTextbox.textSelStart');
+          assertEq(
+              undefined, ariaTextbox.textSelStart, 'ariaTextbox.textSelStart');
           assertEq(undefined, ariaTextbox.textSelEnd, 'ariaTextbox.textSelEnd');
           chrome.test.succeed();
         }, true);
@@ -152,7 +162,7 @@ const allTests = [
     for (let i = 0; i < ranges.length; i++) {
       const range = ranges[i];
       for (let j = 0; j < RangeAttributes.length; j++) {
-        let attribute = RangeAttributes[j];
+        const attribute = RangeAttributes[j];
         assertTrue(
             attribute in range,
             `${range.role} (${range.description}) should have a ` +
@@ -273,7 +283,7 @@ const allTests = [
         ActiveDescendantAttribute, LinkAttributes, DocumentAttributes,
         ScrollableAttributes, EditableTextAttributes, RangeAttributes,
         TableAttributes, TableCellAttributes);
-    for (let attributeAttr in allAttributes) {
+    for (const attributeAttr in allAttributes) {
       assertFalse(attributeAttr in div);
     }
     chrome.test.succeed();
@@ -334,7 +344,7 @@ const allTests = [
     assertTrue(img.isImage);
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'attributes.html');

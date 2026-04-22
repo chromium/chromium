@@ -61,7 +61,7 @@ const tests = [
 
   function uninstallDisabledExtension() {
     uninstall('disabled_extension');
-  }
+  },
 ];
 
 const SCRIPT_URL = '_test_resources/api_test/management/common.js';

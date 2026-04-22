@@ -87,20 +87,19 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.cookies.getPartitionKey({documentId: noHostPermissionsDocId}),
         `Error: No host permissions for cookies at url: "${
-            noHostPermissionsFrame.url}".`)
+            noHostPermissionsFrame.url}".`);
     chrome.test.succeed();
   },
   async function testFameIdOnlyInput() {
     await chrome.test.assertPromiseRejects(
         chrome.cookies.getPartitionKey({frameId: 0}),
-        'Error: `frameId` may not be 0 if no `tabId` is present.')
+        'Error: `frameId` may not be 0 if no `tabId` is present.');
 
     const expectedCrossSiteKey = {
-      partitionKey:
-          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true}
+      partitionKey: {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true},
     };
 
-    let actualPartitionKey =
+    const actualPartitionKey =
         await chrome.cookies.getPartitionKey({frameId: crossSiteFrame.frameId});
     chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
     chrome.test.succeed();
@@ -110,8 +109,7 @@ chrome.test.runTests([
     chrome.test.assertNe(topLevelDocId.length, 0);
 
     const expectedTopLevelKey = {
-      partitionKey:
-          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: false}
+      partitionKey: {topLevelSite: 'http://a.com', hasCrossSiteAncestor: false},
     };
 
     let actualPartitionKey =
@@ -125,7 +123,7 @@ chrome.test.runTests([
     actualPartitionKey = await chrome.cookies.getPartitionKey({
       tabId: tab.id,
       frameId: topLevelFrame.frameId,
-      documentId: topLevelDocId
+      documentId: topLevelDocId,
     });
     chrome.test.assertEq(expectedTopLevelKey, actualPartitionKey);
 
@@ -141,8 +139,7 @@ chrome.test.runTests([
     chrome.test.assertNe(crossSiteDocId.length, 0);
 
     const expectedCrossSiteKey = {
-      partitionKey:
-          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true}
+      partitionKey: {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true},
     };
 
     let actualPartitionKey =
@@ -156,7 +153,7 @@ chrome.test.runTests([
     actualPartitionKey = await chrome.cookies.getPartitionKey({
       tabId: tab.id,
       frameId: crossSiteFrame.frameId,
-      documentId: crossSiteDocId
+      documentId: crossSiteDocId,
     });
     chrome.test.assertEq(expectedCrossSiteKey, actualPartitionKey);
 

@@ -13,6 +13,6 @@ function onBeforeRequest(details) {
 chrome.webRequest.onBeforeRequest.addListener(
     onBeforeRequest, {types: ['sub_frame'], urls: ['<all_urls>']});
 
-var readyMessage =
+const readyMessage =
     chrome.extension.inIncognitoContext ? 'incognito ready' : 'ready';
 chrome.test.sendMessage(readyMessage);

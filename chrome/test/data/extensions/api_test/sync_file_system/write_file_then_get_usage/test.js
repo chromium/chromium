@@ -9,15 +9,14 @@ const TEST_DATA = '12345';
 let dataSize;
 
 const testStep = [
-  function () {
+  function() {
     chrome.syncFileSystem.requestFileSystem(testStep.shift());
   },
   // Create empty file.
   function(fs) {
     fileSystem = fs;
     fileSystem.root.getFile(
-        'Test.txt', {create: true},
-        testStep.shift(),
+        'Test.txt', {create: true}, testStep.shift(),
         errorHandler('getFile (create)'));
   },
   function(entry) {
@@ -36,7 +35,7 @@ const testStep = [
   function() {
     fileEntry.createWriter(testStep.shift(), errorHandler('createWriter'));
   },
-  function (fileWriter) {
+  function(fileWriter) {
     fileWriter.onwriteend = function(e) {
       testStep.shift()();
     };
@@ -49,7 +48,7 @@ const testStep = [
   function() {
     fileEntry.getMetadata(testStep.shift(), errorHandler('getMetadata'));
   },
-  function (metadata) {
+  function(metadata) {
     chrome.test.assertEq(dataSize, metadata.size);
     testStep.shift()();
   },
@@ -61,7 +60,7 @@ const testStep = [
     const usageAfterWrite = storageInfo.usageBytes;
     chrome.test.assertEq(dataSize, usageAfterWrite - usageBeforeWrite);
     chrome.test.succeed();
-  }
+  },
 ];
 
 function errorHandler(msg) {

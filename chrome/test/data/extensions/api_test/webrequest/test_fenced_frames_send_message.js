@@ -20,7 +20,7 @@ runTests([
     const expectedEvents = [
       'onBeforeRequest',
       'onBeforeSendHeaders',
-      'onHeadersReceived'
+      'onHeadersReceived',
     ];
 
     // We need to capture the frame IDs dynamically because they can vary
@@ -37,7 +37,7 @@ runTests([
       }
     };
     chrome.webRequest.onBeforeRequest.addListener(
-          getFrameIdsListener,{urls: ['<all_urls>']});
+        getFrameIdsListener, {urls: ['<all_urls>']});
 
     chrome.declarativeWebRequest.onMessage.addListener((details) => {
       if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
@@ -84,5 +84,5 @@ runTests([
     chrome.declarativeWebRequest.onRequest.addRules([rule], function() {
       chrome.tabs.create({url: getURLHttpSimpleLoad()});
     });
-  }
+  },
 ]);

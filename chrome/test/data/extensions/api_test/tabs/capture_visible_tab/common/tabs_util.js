@@ -14,8 +14,9 @@ function createWindow(tabUrls, winOptions, callback) {
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (let i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++) {
       newTabIds.push(win.tabs[i].id);
+    }
 
     callback(win.id, newTabIds);
   });
@@ -26,23 +27,25 @@ function createWindow(tabUrls, winOptions, callback) {
 // |callback| should look like function() {...}.
 function waitForAllTabs(callback) {
   // Wait for all tabs to load.
-  function waitForTabs(){
+  function waitForTabs() {
     chrome.windows.getAll({populate: true}, function(windows) {
       let ready = true;
-      for (let i in windows){
-        for (let j in windows[i].tabs) {
+      for (const i in windows) {
+        for (const j in windows[i].tabs) {
           if (windows[i].tabs[j].status != 'complete') {
             ready = false;
             break;
           }
         }
-        if (!ready)
+        if (!ready) {
           break;
+        }
       }
-      if (ready)
+      if (ready) {
         callback();
-      else
+      } else {
         setTimeout(waitForTabs, 30);
+      }
     });
   }
   waitForTabs();
@@ -52,37 +55,41 @@ function waitForAllTabs(callback) {
 // color of each pixel in a small region of the image.  Strings
 // representing pixels look like this: '255,255,255,0'.
 function getPixels(imgUrl, windowRect, callbackFn) {
-  assertEq('string', typeof(imgUrl));
-  fetch(imgUrl).then(function(response) {
-    if (!response.ok) {
-      throw response;
-    }
-    return response.blob();
-  }).then(function(blob) {
-    return createImageBitmap(blob, 0, 0, windowRect.width, windowRect.height);
-  }).then(pass(function(img) {
-    // Comparing pixels is slow enough to hit timeouts if we run on
-    // the whole image..  Compare a 10x10 region.
-    const canvas = new OffscreenCanvas(10, 10);
+  assertEq('string', typeof (imgUrl));
+  fetch(imgUrl)
+      .then(function(response) {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.blob();
+      })
+      .then(function(blob) {
+        return createImageBitmap(
+            blob, 0, 0, windowRect.width, windowRect.height);
+      })
+      .then(pass(function(img) {
+        // Comparing pixels is slow enough to hit timeouts if we run on
+        // the whole image..  Compare a 10x10 region.
+        const canvas = new OffscreenCanvas(10, 10);
 
-    const context = canvas.getContext('2d');
-    context.drawImage(
-      img,
-      10, 10, 10, 10,  // Source rect: Crop to x in 10..20, y in 10..20.
-      0, 0, 10, 10);   // Dest rect is 10x10.  No resizing is done.
+        const context = canvas.getContext('2d');
+        context.drawImage(
+            img, 10, 10, 10,
+            10,             // Source rect: Crop to x in 10..20, y in 10..20.
+            0, 0, 10, 10);  // Dest rect is 10x10.  No resizing is done.
 
-    const imageData = context.getImageData(0, 0, 10, 10).data;
+        const imageData = context.getImageData(0, 0, 10, 10).data;
 
-    const pixelColors = [];
-    for (let i = 0, n = imageData.length; i < n; i += 4) {
-      pixelColors.push([imageData[i+0],
-                        imageData[i+1],
-                        imageData[i+2],
-                        imageData[i+3]].join(','));
-    }
+        const pixelColors = [];
+        for (let i = 0, n = imageData.length; i < n; i += 4) {
+          pixelColors.push([
+            imageData[i + 0], imageData[i + 1], imageData[i + 2],
+            imageData[i + 3]
+          ].join(','));
+        }
 
-    callbackFn(pixelColors);
-  }));
+        callbackFn(pixelColors);
+      }));
 }
 
 // Check that pixels in a small region of |imgUrl| are the color
@@ -110,15 +117,17 @@ function countPixelsWithColors(imgUrl, windowRect, expectedColors, callback) {
   getPixels(imgUrl, windowRect, function(pixelColors) {
     for (let i = 0, ie = pixelColors.length; i < ie; ++i) {
       const colorIdx = expectedColors.indexOf(pixelColors[i]);
-      if (colorIdx != -1)
+      if (colorIdx != -1) {
         colorCounts[colorIdx]++;
+      }
     }
-    callback(colorCounts,          // Mapping from color to # pixels.
-             pixelColors.length);  // Total pixels examined.
+    callback(
+        colorCounts,          // Mapping from color to # pixels.
+        pixelColors.length);  // Total pixels examined.
   });
 }
 
 function assertIsStringWithPrefix(prefix, str) {
-  assertEq('string', typeof(str));
+  assertEq('string', typeof (str));
   assertEq(prefix, str.substr(0, prefix.length));
 }

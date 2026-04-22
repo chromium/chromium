@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 onconnect = (e) => {
-  var port = e.ports[0];
+  const port = e.ports[0];
   port.postMessage(location.href);
   close();
 };

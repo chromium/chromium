@@ -30,5 +30,5 @@ chrome.test.runTests([
     chrome.test.assertEq('pong', response.message);
     chrome.test.assertEq(self.location.href, response.senderUrl);
     chrome.test.succeed();
-  }
+  },
 ]);

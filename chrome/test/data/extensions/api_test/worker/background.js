@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 function createWorker(workerFactory, onsuccess, onerror) {
-  var worker = workerFactory();
-  var onmessage = message => {
+  const worker = workerFactory();
+  const onmessage = message => {
     if (worker.constructor === Worker) {
       worker.terminate();
     }
@@ -21,10 +21,11 @@ function createWorker(workerFactory, onsuccess, onerror) {
 function fetchFromWorker(workerFactory, fetchUrl, allowed, rejected) {
   const worker = workerFactory();
   const onmessage = message => {
-    if (message.data)
+    if (message.data) {
       allowed();
-    else
+    } else {
       rejected();
+    }
   };
   if (worker.constructor === Worker) {
     worker.postMessage(fetchUrl);
@@ -40,20 +41,26 @@ function fetchFromSameOriginWorkerTest(workerFactory, fetchUrl) {
   fetchFromWorker(
       workerFactory,
       fetchUrl,
-      () => { chrome.test.succeed(); },
-      () => { chrome.test.fail(); }
+      () => {
+        chrome.test.succeed();
+      },
+      () => {
+        chrome.test.fail();
+      },
   );
 }
 
 function noRedirectTest(workerFactory, expectedUrl) {
   createWorker(
-    workerFactory,
-    workerUrl => {
-      // The expected URL will be the absolute URL of the script.
-      chrome.test.assertTrue(workerUrl.endsWith(expectedUrl));
-      chrome.test.succeed();
-    },
-    () => { chrome.test.fail(); }
+      workerFactory,
+      workerUrl => {
+        // The expected URL will be the absolute URL of the script.
+        chrome.test.assertTrue(workerUrl.endsWith(expectedUrl));
+        chrome.test.succeed();
+      },
+      () => {
+        chrome.test.fail();
+      },
   );
 }
 
@@ -66,36 +73,42 @@ chrome.test.getConfig(function(config) {
 
   chrome.test.runTests([
     fetchFromSameOriginWorkerTest.bind(
-      undefined,
-      () => { return new Worker(workerForFetchUrl) },
-      sameOriginFetchUrl),
+        undefined,
+        () => {
+          return new Worker(workerForFetchUrl);
+        },
+        sameOriginFetchUrl),
     fetchFromSameOriginWorkerTest.bind(
-      undefined,
-      () => { return new SharedWorker(workerForFetchUrl) },
-      sameOriginFetchUrl),
+        undefined,
+        () => {
+          return new SharedWorker(workerForFetchUrl);
+        },
+        sameOriginFetchUrl),
     noRedirectTest.bind(
-      undefined,
-      () => { return new Worker(workerUrl) },
-      workerUrl),
+        undefined,
+        () => {
+          return new Worker(workerUrl);
+        },
+        workerUrl),
     noRedirectTest.bind(
-      undefined,
-      () => { return new Worker(workerUrl, {type: 'module'}) },
-      workerUrl),
+        undefined,
+        () => {
+          return new Worker(workerUrl, {type: 'module'});
+        },
+        workerUrl),
     noRedirectTest.bind(
-      undefined,
-      () => {
-        return new SharedWorker(
-            sharedWorkerUrl,
-            {name: 'noRedirectTest-classic'})
-      },
-      sharedWorkerUrl),
+        undefined,
+        () => {
+          return new SharedWorker(
+              sharedWorkerUrl, {name: 'noRedirectTest-classic'});
+        },
+        sharedWorkerUrl),
     noRedirectTest.bind(
-      undefined,
-      () => {
-        return new SharedWorker(
-            sharedWorkerUrl,
-            {name: 'noRedirectTest-module', type: 'module'})
-      },
-      sharedWorkerUrl),
+        undefined,
+        () => {
+          return new SharedWorker(
+              sharedWorkerUrl, {name: 'noRedirectTest-module', type: 'module'});
+        },
+        sharedWorkerUrl),
   ]);
 });

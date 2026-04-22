@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(config => {
-  let port = config.testServer.port;
+  const port = config.testServer.port;
 
-  let script = document.createElement('script');
+  const script = document.createElement('script');
   script.src = `http://example.com:${port}/script.js`;
   script.onload = () => {
     chrome.test.notifyFail('Script load succeeded unexpectedly');

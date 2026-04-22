@@ -4,14 +4,18 @@
 
 function testCreateAppShortcut(id, error) {
   chrome.test.runWithUserGesture(function() {
-    if (!error)
+    if (!error) {
       chrome.management.createAppShortcut(id, callback(function() {}));
-    else
+    } else {
       chrome.management.createAppShortcut(id, callback(function() {}, error));
+    }
   });
 }
 
-let enabledAppId, disabledAppId, enabledExtensionId, packagedAppId;
+let enabledAppId;
+let disabledAppId;
+let enabledExtensionId;
+let packagedAppId;
 const isMac = /Mac/.test(navigator.platform);
 const ONLY_PACKAGED_APP_MAC =
     'Shortcuts can only be created for new-style packaged apps on Mac.';
@@ -42,7 +46,7 @@ const tests = [
 
   function createNotExistAppShortcut() {
     testCreateAppShortcut('abcd', 'Failed to find extension with id abcd.');
-  }
+  },
 ];
 
 const SCRIPT_URL = '_test_resources/api_test/management/common.js';

@@ -6,7 +6,9 @@ chrome.test.runTests([
   function readOnlyVolume() {
     chrome.fileSystem.requestFileSystem(
         {volumeId: 'testing:read-only'},
-        chrome.test.callbackFail('Operation only supported for kiosk apps ' +
-            'running in a kiosk session.', function(fs) {}));
+        chrome.test.callbackFail(
+            'Operation only supported for kiosk apps ' +
+                'running in a kiosk session.',
+            function(fs) {}));
   },
 ]);

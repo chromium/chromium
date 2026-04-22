@@ -74,7 +74,7 @@ chrome.test.runTests([
   function setup() {
     chrome.test.getConfig(pass(function(config) {
       emptyDocumentURL = `http://localhost:${config.testServer.port}` +
-                         '/extensions/api_test/tabs/connect/empty.html';
+          '/extensions/api_test/tabs/connect/empty.html';
       setupWindow([emptyDocumentURL], pass());
       waitForReady(pass(function(tab) {
         testTab = tab;
@@ -114,8 +114,8 @@ chrome.test.runTests([
   function connectPostMessageTypes() {
     const port = chrome.tabs.connect(testTab.id);
     // Test the content script echoes the message back.
-    const echoMsg = {num: 10, string: 'hi', array: [1,2,3,4,5],
-                   obj:{dec: 1.0}};
+    const echoMsg =
+        {num: 10, string: 'hi', array: [1, 2, 3, 4, 5], obj: {dec: 1.0}};
     listenOnce(port.onMessage, function(msg) {
       assertEq(echoMsg.num, msg.num);
       assertEq(echoMsg.string, msg.string);
@@ -129,10 +129,10 @@ chrome.test.runTests([
     const port = chrome.tabs.connect(testTab.id);
     let count = 0;
     const done = function(msg) {
-      assertEq(count++, msg);
-      if (count == 100) {
-        done();
-      }
+    assertEq(count++, msg);
+    if (count == 100) {
+      done();
+    }
     });
     for (let i = 0; i < 100; i++) {
       port.postMessage(i);
@@ -143,26 +143,28 @@ chrome.test.runTests([
     // Expect a disconnect event when you connect to a non-existent tab, and
     // once disconnected, expect an error while trying to post messages.
     chrome.tabs.create({}, pass(function(tab) {
-      chrome.tabs.remove(tab.id, pass(function() {
-        const p = chrome.tabs.connect(tab.id);
-        p.onDisconnect.addListener(callbackFail(couldNotEstablishError,
-                                                function() {
-          try {
-            p.postMessage();
-            fail('Error should have been thrown.');
-          } catch (e) {
-            // Do nothing- an exception should be thrown.
-          }
-        }));
-      }));
-    }));
+                         chrome.tabs.remove(
+                             tab.id, pass(function() {
+                               const p = chrome.tabs.connect(tab.id);
+                               p.onDisconnect.addListener(callbackFail(
+                                   couldNotEstablishError, function() {
+                                     try {
+                                       p.postMessage();
+                                       fail('Error should have been thrown.');
+                                     } catch (e) {
+                                       // Do nothing- an exception should be
+                                       // thrown.
+                                     }
+                                   }));
+                             }));
+                       }));
   },
 
   function sendRequest() {
     const request = 'test';
     chrome.tabs.sendRequest(testTab.id, request, pass(function(response) {
-      assertEq(request, response);
-    }));
+                              assertEq(request, response);
+                            }));
   },
 
   function sendRequestToImpossibleTab() {
@@ -171,11 +173,13 @@ chrome.test.runTests([
 
   function sendRequestToRemovedTab() {
     chrome.tabs.create({}, pass(function(tab) {
-      chrome.tabs.remove(tab.id, pass(function() {
-        chrome.tabs.sendRequest(tab.id, 'test',
-                                callbackFail(couldNotEstablishError));
-      }));
-    }));
+                         chrome.tabs.remove(
+                             tab.id, pass(function() {
+                               chrome.tabs.sendRequest(
+                                   tab.id, 'test',
+                                   callbackFail(couldNotEstablishError));
+                             }));
+                       }));
   },
 
   function sendRequestMultipleTabs() {
@@ -190,10 +194,10 @@ chrome.test.runTests([
       const gotDuplicates = false;
       const messages = new Set();
       const done = function(msg) {
-        if (messages.has(msg))
-          gotDuplicates = true;
-        else
-          messages.add(msg);
+      if (messages.has(msg))
+        gotDuplicates = true;
+      else
+        messages.add(msg);
       });
       chrome.tabs.sendMessage(testTab.id, {send: 'msg1'}, function() {
         chrome.tabs.sendMessage(secondTab.id, {send: 'msg2'}, function() {

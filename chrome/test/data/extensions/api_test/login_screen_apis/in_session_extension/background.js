@@ -66,7 +66,7 @@ const tests = {
     const credentials = await chrome.loginScreenStorage.retrieveCredentials();
     chrome.test.assertEq(loginScreenStorageResult, credentials);
     chrome.test.succeed();
-  }
+  },
 };
 
 // |waitForTestName()| waits for the browser test to reply with a test name

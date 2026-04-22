@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.app.runtime.onLaunched.addListener(function() {
-  var expectedPackageName = null;
+  let expectedPackageName = null;
 
   chrome.test.runTests([
     function getConfig() {
@@ -23,6 +23,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
             chrome.arcAppsPrivate.launchApp(
                 appsInfo[0].packageName, chrome.test.callbackPass());
           }));
-    }
+    },
   ]);
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var error;
+let error;
 
 function testStartStopNotifications() {
   if (error !== undefined) {
@@ -14,20 +14,20 @@ function testStartStopNotifications() {
   chrome.test.succeed();
 }
 
-var errorAlreadyNotifying = 'Already notifying';
-var errorNotFound = 'Instance not found';
-var errorNotNotifying = 'Not notifying';
-var errorOperationFailed = 'Operation failed';
-var errorPermissionDenied = 'Permission denied';
+const errorAlreadyNotifying = 'Already notifying';
+const errorNotFound = 'Instance not found';
+const errorNotNotifying = 'Not notifying';
+const errorOperationFailed = 'Operation failed';
+const errorPermissionDenied = 'Permission denied';
 
 var charId0 = 'char_id0';
-var charId1 = 'char_id1';
-var charId2 = 'char_id2';
+const charId1 = 'char_id1';
+const charId2 = 'char_id2';
 
 var changedChrcs = {};
-var ble = chrome.bluetoothLowEnergy;
-var start = ble.startCharacteristicNotifications;
-var stop = ble.stopCharacteristicNotifications;
+const ble = chrome.bluetoothLowEnergy;
+const start = ble.startCharacteristicNotifications;
+const stop = ble.stopCharacteristicNotifications;
 
 
 function earlyError(message) {
@@ -39,8 +39,9 @@ function expectError(expectedMessage) {
   if (!chrome.runtime.lastError) {
     earlyError('Expected error: ' + expectedMessage);
   } else if (chrome.runtime.lastError.message != expectedMessage) {
-    earlyError('Expected error: ' + expectedMessage + ', got error: ' +
-        expectedMessage);
+    earlyError(
+        'Expected error: ' + expectedMessage +
+        ', got error: ' + expectedMessage);
   }
   return error !== undefined;
 }
@@ -52,51 +53,61 @@ function expectSuccess() {
   return error !== undefined;
 }
 
-ble.onCharacteristicValueChanged.addListener(function (chrc) {
+ble.onCharacteristicValueChanged.addListener(function(chrc) {
   changedChrcs[chrc.instanceId] = chrc;
 });
 
-start('foo', function () {
-  if (expectError(errorNotFound))
+start('foo', function() {
+  if (expectError(errorNotFound)) {
     return;
+  }
 
-  start(charId2, function () {
-    if (expectError(errorPermissionDenied))
+  start(charId2, function() {
+    if (expectError(errorPermissionDenied)) {
       return;
+    }
 
-    stop(charId0, function () {
-      if (expectError(errorNotNotifying))
+    stop(charId0, function() {
+      if (expectError(errorNotNotifying)) {
         return;
+      }
 
-      start(charId0, function () {
-        if (expectError(errorOperationFailed))
+      start(charId0, function() {
+        if (expectError(errorOperationFailed)) {
           return;
+        }
 
-        start(charId0, function () {
-          if (expectSuccess())
+        start(charId0, function() {
+          if (expectSuccess()) {
             return;
+          }
 
-          start(charId0, function () {
-            if (expectError(errorAlreadyNotifying))
+          start(charId0, function() {
+            if (expectError(errorAlreadyNotifying)) {
               return;
+            }
 
-            start(charId1, function () {
-              if (expectSuccess())
+            start(charId1, function() {
+              if (expectSuccess()) {
                 return;
+              }
 
-              stop(charId1, function () {
-                if (expectSuccess())
+              stop(charId1, function() {
+                if (expectSuccess()) {
                   return;
+                }
 
-                stop(charId1, function () {
-                  if (expectError(errorNotNotifying))
+                stop(charId1, function() {
+                  if (expectError(errorNotNotifying)) {
                     return;
+                  }
 
-                  stop(charId2, function () {
-                    if (expectError(errorNotNotifying))
+                  stop(charId2, function() {
+                    if (expectError(errorNotNotifying)) {
                       return;
+                    }
 
-                    chrome.test.sendMessage('ready', function (message) {
+                    chrome.test.sendMessage('ready', function(message) {
                       chrome.test.runTests([testStartStopNotifications]);
                     });
                   });

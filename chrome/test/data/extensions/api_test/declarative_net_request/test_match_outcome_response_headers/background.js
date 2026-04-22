@@ -15,7 +15,8 @@ chrome.test.runTests([
     // and avoid race conditions. This works since the tests run sequentially.
     chrome.declarativeNetRequest.updateEnabledRulesets(
         {
-          enableRulesetIds: ['header_matching', 'inter_phase', 'modify_headers']
+          enableRulesetIds:
+              ['header_matching', 'inter_phase', 'modify_headers'],
         },
         chrome.test.succeed);
   },
@@ -26,7 +27,7 @@ chrome.test.runTests([
       url: 'https://header-matching.example-1/path',
       type: 'main_frame',
       method: 'get',
-      responseHeaders: {'example-header': ['value']}
+      responseHeaders: {'example-header': ['value']},
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1, rulesetId: 'header_matching'}]}, result);
@@ -35,14 +36,14 @@ chrome.test.runTests([
       url: 'https://header-matching.example-1/path',
       type: 'main_frame',
       method: 'get',
-      responseHeaders: {}
+      responseHeaders: {},
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
     result = await testMatchOutcome({
       url: 'https://excluded-header-matching.example/path',
       type: 'main_frame',
-      method: 'get'
+      method: 'get',
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 2, rulesetId: 'header_matching'}]}, result);
@@ -51,7 +52,7 @@ chrome.test.runTests([
       url: 'https://excluded-header-matching.example/path',
       type: 'main_frame',
       method: 'get',
-      responseHeaders: {'nonsense-header': ['value']}
+      responseHeaders: {'nonsense-header': ['value']},
     });
     chrome.test.assertEq({matchedRules: []}, result);
 
@@ -65,7 +66,7 @@ chrome.test.runTests([
           url: 'https://header-matching.example-1/path',
           type: 'main_frame',
           method: 'get',
-          responseHeaders: {'@invalid-header': ['value']}
+          responseHeaders: {'@invalid-header': ['value']},
         },
         chrome.test.callbackFail('Invalid header name "@invalid-header".'));
 
@@ -74,7 +75,7 @@ chrome.test.runTests([
           url: 'https://header-matching.example-1/path',
           type: 'main_frame',
           method: 'get',
-          responseHeaders: {'header': 'not-list'}
+          responseHeaders: {'header': 'not-list'},
         },
         chrome.test.callbackFail(
             'Values for header "header" must be specified as a list.'));
@@ -84,7 +85,7 @@ chrome.test.runTests([
           url: 'https://header-matching.example-1/path',
           type: 'main_frame',
           method: 'get',
-          responseHeaders: {'header': ['invalid\nvalue']}
+          responseHeaders: {'header': ['invalid\nvalue']},
         },
         chrome.test.callbackFail('Invalid header value for header "header".'));
 
@@ -146,11 +147,11 @@ chrome.test.runTests([
             {ruleId: 107, rulesetId: 'modify_headers'},
             {ruleId: 105, rulesetId: 'modify_headers'},
             {ruleId: 106, rulesetId: 'modify_headers'},
-            {ruleId: 104, rulesetId: 'modify_headers'}
-          ]
+            {ruleId: 104, rulesetId: 'modify_headers'},
+          ],
         },
         result);
 
     chrome.test.succeed();
-  }
+  },
 ]);

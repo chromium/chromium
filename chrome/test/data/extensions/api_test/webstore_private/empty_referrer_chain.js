@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tests = [
+const tests = [
   function getReferrerChain() {
     chrome.webstorePrivate.getReferrerChain((result) => {
-      chrome.test.assertEq("", result);
+      chrome.test.assertEq('', result);
       chrome.test.succeed();
     });
   },

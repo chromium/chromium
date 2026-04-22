@@ -14,6 +14,6 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq('Failed to fetch', e.message);
         chrome.test.succeed();
       }
-    }
+    },
   ]);
 });

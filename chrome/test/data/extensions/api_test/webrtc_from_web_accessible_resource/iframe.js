@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var successCallback = chrome.test.succeed;
-var failCallback = chrome.test.fail;
+let successCallback = chrome.test.succeed;
+let failCallback = chrome.test.fail;
 
 if (document.location.search === '?fail') {
   successCallback = chrome.test.fail.bind(
@@ -11,7 +11,9 @@ if (document.location.search === '?fail') {
   failCallback = chrome.test.succeed;
 }
 
-navigator.webkitGetUserMedia({
- audio: true,
- video: false
-}, successCallback, failCallback);
+navigator.webkitGetUserMedia(
+    {
+      audio: true,
+      video: false,
+    },
+    successCallback, failCallback);

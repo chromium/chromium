@@ -9,7 +9,7 @@
 const pw = chrome.privacy.websites;
 
 const THIRD_PARTY_COOKIES_ALLOWED_INCOGNITO_ERROR_MESSAGE =
-    'Third-party cookies are blocked in incognito and cannot be re-allowed.'
+    'Third-party cookies are blocked in incognito and cannot be re-allowed.';
 
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
@@ -29,7 +29,7 @@ chrome.test.runTests([
                       {
                         value: false,
                         incognitoSpecific: false,
-                        levelOfControl: 'controllable_by_this_extension'
+                        levelOfControl: 'controllable_by_this_extension',
                       },
                       'third-party cookies should be blocked in incognito'));
             }));
@@ -43,9 +43,9 @@ chrome.test.runTests([
                   {
                     value: false,
                     incognitoSpecific: true,
-                    levelOfControl: 'controlled_by_this_extension'
+                    levelOfControl: 'controlled_by_this_extension',
                   },
                   'third-party cookies should be blocked in incognito'));
         });
-  }
+  },
 ]);

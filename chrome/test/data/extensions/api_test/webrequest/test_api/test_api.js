@@ -4,24 +4,33 @@
 
 chrome.test.runTests([
   function addListeners() {
-    chrome.webRequest.onBeforeRequest.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onSendHeaders.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onHeadersReceived.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onBeforeRedirect.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onResponseStarted.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onCompleted.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onErrorOccurred.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
-    chrome.webRequest.onAuthRequired.addListener(
-        function(details) {}, {urls: ['<all_urls>']});
+    chrome.webRequest.onBeforeRequest.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onSendHeaders.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onHeadersReceived.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onBeforeRedirect.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onResponseStarted.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onCompleted.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onErrorOccurred.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
+    chrome.webRequest.onAuthRequired.addListener(function(details) {}, {
+      urls: ['<all_urls>']
+    });
     chrome.test.succeed();
   },
 
@@ -29,7 +38,9 @@ chrome.test.runTests([
   // http://crbug.com/40629352
   function removeListeners() {
     function newCallback(value) {
-      return function(details) { console.log(value); };
+      return function(details) {
+        console.log(value);
+      };
     }
     const cb1 = newCallback(1);
     const cb2 = newCallback(2);
@@ -57,20 +68,19 @@ chrome.test.runTests([
     const goodFilter = {urls: ['http://*.google.com/*']};
     const goodExtraInfo = ['blocking'];
     chrome.webRequest.onBeforeRequest.addListener(
-        function(details) {},
-        goodFilter, goodExtraInfo);
+        function(details) {}, goodFilter, goodExtraInfo);
 
     function isArgumentParseError(error) {
       // Native and JS bindings have slightly different errors surfaced.
       return error.search('Invalid value') >= 0 ||
-             error.search('Error at parameter') >= 0;
+          error.search('Error at parameter') >= 0;
     }
 
     // Try a bad RequestFilter.
     try {
       chrome.webRequest.onBeforeRequest.addListener(
-          function(details) {},
-          {badFilter: 42, urls: ['<all_urls>']}, goodExtraInfo);
+          function(details) {}, {badFilter: 42, urls: ['<all_urls>']},
+          goodExtraInfo);
       chrome.test.fail();
     } catch (e) {
       chrome.test.assertTrue(isArgumentParseError(e.message), e.message);
@@ -79,8 +89,7 @@ chrome.test.runTests([
     // Try a bad ExtraInfoSpec.
     try {
       chrome.webRequest.onBeforeRequest.addListener(
-          function(details) {},
-          goodFilter, ['badExtraInfo']);
+          function(details) {}, goodFilter, ['badExtraInfo']);
       chrome.test.fail();
     } catch (e) {
       chrome.test.assertTrue(isArgumentParseError(e.message), e.message);
@@ -89,12 +98,10 @@ chrome.test.runTests([
     // This extraInfoSpec should only work for onBeforeSendHeaders.
     let headersExtraInfo = ['requestHeaders'];
     chrome.webRequest.onBeforeSendHeaders.addListener(
-        function(details) {},
-        goodFilter, headersExtraInfo);
+        function(details) {}, goodFilter, headersExtraInfo);
     try {
       chrome.webRequest.onBeforeRequest.addListener(
-          function(details) {},
-          goodFilter, headersExtraInfo);
+          function(details) {}, goodFilter, headersExtraInfo);
       chrome.test.fail();
     } catch (e) {
       chrome.test.assertTrue(isArgumentParseError(e.message), e.message);
@@ -103,12 +110,10 @@ chrome.test.runTests([
     // ExtraInfoSpec with "responseHeaders" should work for onCompleted.
     headersExtraInfo = ['responseHeaders'];
     chrome.webRequest.onCompleted.addListener(
-        function(details) {},
-        goodFilter, headersExtraInfo);
+        function(details) {}, goodFilter, headersExtraInfo);
     try {
       chrome.webRequest.onBeforeRequest.addListener(
-          function(details) {},
-          goodFilter, headersExtraInfo);
+          function(details) {}, goodFilter, headersExtraInfo);
       chrome.test.fail();
     } catch (e) {
       chrome.test.assertTrue(isArgumentParseError(e.message), e.message);
@@ -116,12 +121,10 @@ chrome.test.runTests([
 
     // Try a bad URL pattern. The error happens asynchronously. We're just
     // verifying that the browser doesn't crash.
-    const emptyCallback = function (_details) {};
+    const emptyCallback = function(_details) {};
     chrome.webRequest.onBeforeRequest.addListener(
-        emptyCallback,
-        {urls: ['badpattern://*']});
-    chrome.webRequest.onBeforeRequest.removeListener(
-        emptyCallback);
+        emptyCallback, {urls: ['badpattern://*']});
+    chrome.webRequest.onBeforeRequest.removeListener(emptyCallback);
 
     chrome.test.succeed();
   },
@@ -130,9 +133,9 @@ chrome.test.runTests([
   // Regression test for http://crbug.com/40353882
   function badResponseHeaderDoesNotCauseCrash() {
     const headerName = 'X-Header-With-Invalid-Value';
-    const callbackWithBadHeadersResponse = function (details) {
+    const callbackWithBadHeadersResponse = function(details) {
       const responseHeaders = [
-        {name: headerName, value: '\x00'}
+        {name: headerName, value: '\x00'},
       ];
       return {responseHeaders: responseHeaders};
     };
@@ -143,19 +146,21 @@ chrome.test.runTests([
 
     chrome.test.getConfig(function(config) {
       const url = `http://127.0.0.1:${config.testServer.port}/simple.html`;
-      fetch(url).then((response) => {
-        chrome.webRequest.onHeadersReceived.removeListener(
-            callbackWithBadHeadersResponse);
-        chrome.test.assertEq(undefined, response.headers.get(headerName));
-        // TODO(robwu): If possible, check whether an error with the following
-        // message has been logged to the JavaScript console:
-        // "Header 'X-Header-With-Invalid-Value' has an invalid value"
-        chrome.test.succeed();
-      }).catch((e) => {
-        chrome.webRequest.onHeadersReceived.removeListener(
-            callbackWithBadHeadersResponse);
-        chrome.test.fail(e);
-      });
+      fetch(url)
+          .then((response) => {
+            chrome.webRequest.onHeadersReceived.removeListener(
+                callbackWithBadHeadersResponse);
+            chrome.test.assertEq(undefined, response.headers.get(headerName));
+            // TODO(robwu): If possible, check whether an error with the
+            // following message has been logged to the JavaScript console:
+            // "Header 'X-Header-With-Invalid-Value' has an invalid value"
+            chrome.test.succeed();
+          })
+          .catch((e) => {
+            chrome.webRequest.onHeadersReceived.removeListener(
+                callbackWithBadHeadersResponse);
+            chrome.test.fail(e);
+          });
     });
-  }
+  },
 ]);

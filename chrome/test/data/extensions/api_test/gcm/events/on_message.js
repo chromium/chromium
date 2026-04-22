@@ -54,6 +54,6 @@ onload = function() {
         }
       };
       chrome.gcm.onMessage.addListener(eventHandler);
-    }
+    },
   ]);
 };

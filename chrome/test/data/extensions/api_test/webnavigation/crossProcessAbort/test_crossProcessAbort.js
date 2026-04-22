@@ -19,104 +19,145 @@ onload = async function() {
     // is in process and this test expects an error event for the
     // same-site navigation.
     function crossProcessAbort() {
-      expect([
-        { label: 'a-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: initialUrl }},
-        { label: 'a-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: initialUrl }},
-        { label: 'a-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: initialUrl }},
-        { label: 'a-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: initialUrl }},
-        { label: 'b-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: crossSiteUrl }},
-        { label: 'b-onCommitted',
-          event: 'onCommitted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: crossSiteUrl }},
-        { label: 'b-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: crossSiteUrl }},
-        { label: 'b-onCompleted',
-          event: 'onCompleted',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: crossSiteUrl }},
-        { label: 'c-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: sameSiteUrl }},
-        { label: 'c-onErrorOccurred',
-          event: 'onErrorOccurred',
-          details: { error: 'net::ERR_ABORTED',
-                     frameId: 0,
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: sameSiteUrl }}
-       ],
-        [ navigationOrder('a-'),
-          navigationOrder('b-'),
-          [ 'a-onCompleted',
-            'b-onBeforeNavigate',
-            'c-onBeforeNavigate',
-            'c-onErrorOccurred',
-            'b-onCommitted' ]]);
+      expect(
+          [
+            {
+              label: 'a-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: initialUrl
+              }
+            },
+            {
+              label: 'a-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: initialUrl
+              }
+            },
+            {
+              label: 'a-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: initialUrl
+              }
+            },
+            {
+              label: 'a-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: initialUrl
+              }
+            },
+            {
+              label: 'b-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: crossSiteUrl
+              }
+            },
+            {
+              label: 'b-onCommitted',
+              event: 'onCommitted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: crossSiteUrl
+              }
+            },
+            {
+              label: 'b-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: crossSiteUrl
+              }
+            },
+            {
+              label: 'b-onCompleted',
+              event: 'onCompleted',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: crossSiteUrl
+              }
+            },
+            {
+              label: 'c-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: sameSiteUrl
+              }
+            },
+            {
+              label: 'c-onErrorOccurred',
+              event: 'onErrorOccurred',
+              details: {
+                error: 'net::ERR_ABORTED',
+                frameId: 0,
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: sameSiteUrl
+              }
+            },
+          ],
+          [
+            navigationOrder('a-'), navigationOrder('b-'),
+            [
+              'a-onCompleted', 'b-onBeforeNavigate', 'c-onBeforeNavigate',
+              'c-onErrorOccurred', 'b-onCommitted'
+            ]
+          ]);
 
       chrome.tabs.update(
-        tab.id,
-        { url: getURL(`initial.html?${port}/title1.html`) }
+          tab.id,
+          {url: getURL(`initial.html?${port}/title1.html`)},
       );
     },
   ]);

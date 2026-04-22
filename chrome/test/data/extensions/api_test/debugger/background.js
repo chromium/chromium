@@ -7,12 +7,12 @@ const fail = chrome.test.callbackFail;
 
 let tabId;
 let debuggee;
-let protocolVersion = '1.3';
-let protocolPreviousVersion = '1.2';
-let unsupportedMinorProtocolVersion = '1.5';
-let unsupportedMajorProtocolVersion = '100.0';
+const protocolVersion = '1.3';
+const protocolPreviousVersion = '1.2';
+const unsupportedMinorProtocolVersion = '1.5';
+const unsupportedMajorProtocolVersion = '100.0';
 
-let DETACHED_WHILE_HANDLING = 'Detached while handling command.';
+const DETACHED_WHILE_HANDLING = 'Detached while handling command.';
 
 let openTab;
 
@@ -20,25 +20,29 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
   function attachMalformedVersion() {
     chrome.tabs.query({active: true}, function(tabs) {
-      chrome.debugger.attach({tabId: tabs[0].id}, 'malformed-version', fail(
-          'Requested protocol version is not supported: malformed-version.'));
+      chrome.debugger.attach(
+          {tabId: tabs[0].id}, 'malformed-version',
+          fail(
+              'Requested protocol version is not supported: malformed-version.'));
     });
   },
 
   function attachUnsupportedMinorVersion() {
     chrome.tabs.query({active: true}, function(tabs) {
-      chrome.debugger.attach({tabId: tabs[0].id},
-                             unsupportedMinorProtocolVersion,
-          fail('Requested protocol version is not supported: ' +
+      chrome.debugger.attach(
+          {tabId: tabs[0].id}, unsupportedMinorProtocolVersion,
+          fail(
+              'Requested protocol version is not supported: ' +
               unsupportedMinorProtocolVersion + '.'));
     });
   },
 
   function attachUnsupportedVersion() {
     chrome.tabs.query({active: true}, function(tabs) {
-      chrome.debugger.attach({tabId: tabs[0].id},
-                             unsupportedMajorProtocolVersion,
-          fail('Requested protocol version is not supported: ' +
+      chrome.debugger.attach(
+          {tabId: tabs[0].id}, unsupportedMajorProtocolVersion,
+          fail(
+              'Requested protocol version is not supported: ' +
               unsupportedMajorProtocolVersion + '.'));
     });
   },
@@ -61,23 +65,24 @@ chrome.test.getConfig(config => chrome.test.runTests([
   },
 
   function attachAgain() {
-    chrome.debugger.attach(debuggee, protocolVersion,
-        fail('Another debugger is already attached to the tab with id: ' +
+    chrome.debugger.attach(
+        debuggee, protocolVersion,
+        fail(
+            'Another debugger is already attached to the tab with id: ' +
             tabId + '.'));
   },
 
   function sendCommand() {
     function onResponse() {
       if (chrome.runtime.lastError &&
-          chrome.runtime.lastError.message.indexOf('invalidMethod') != -1)
+          chrome.runtime.lastError.message.indexOf('invalidMethod') != -1) {
         chrome.test.succeed();
-      else
+      } else {
         chrome.test.fail();
+      }
     }
-    chrome.debugger.sendCommand(debuggee,
-                               'DOM.invalidMethod',
-                               null,
-                               onResponse);
+    chrome.debugger.sendCommand(
+        debuggee, 'DOM.invalidMethod', null, onResponse);
   },
 
   function detach() {
@@ -85,12 +90,14 @@ chrome.test.getConfig(config => chrome.test.runTests([
   },
 
   function sendCommandAfterDetach() {
-    chrome.debugger.sendCommand(debuggee, 'Foo', null,
+    chrome.debugger.sendCommand(
+        debuggee, 'Foo', null,
         fail('Debugger is not attached to the tab with id: ' + tabId + '.'));
   },
 
   function detachAgain() {
-    chrome.debugger.detach(debuggee,
+    chrome.debugger.detach(
+        debuggee,
         fail('Debugger is not attached to the tab with id: ' + tabId + '.'));
   },
 
@@ -118,8 +125,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
     let tabRemovedReceived = false;
 
     function checkFinish() {
-      if (onDetachReceived && tabRemovedReceived)
+      if (onDetachReceived && tabRemovedReceived) {
         chrome.test.succeed();
+      }
     }
 
     function onDetach(debuggee, reason) {
@@ -144,8 +152,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
         chrome.test.assertTrue(!!target);
         chrome.debugger.onDetach.addListener(onDetach);
         chrome.tabs.onRemoved.addListener(onTabRemoved);
-        chrome.debugger.sendCommand(debuggee, 'Target.closeTarget',
-            { targetId: target.id }, () => chrome.test.assertNoLastError());
+        chrome.debugger.sendCommand(
+            debuggee, 'Target.closeTarget', {targetId: target.id},
+            () => chrome.test.assertNoLastError());
       });
     });
   },
@@ -153,8 +162,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
   async function attachToWebUI() {
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
-    chrome.debugger.attach(debuggee, protocolVersion,
-        fail('Cannot access a chrome:// URL'));
+    chrome.debugger.attach(
+        debuggee, protocolVersion, fail('Cannot access a chrome:// URL'));
     chrome.tabs.remove(tab.id);
   },
 
@@ -176,13 +185,13 @@ chrome.test.getConfig(config => chrome.test.runTests([
         chrome.test.assertTrue(responded);
         chrome.test.assertEq(debuggee.tabId, from.tabId);
         chrome.test.assertEq('target_closed', reason);
-        chrome.tabs.remove(tab.id, pass())
+        chrome.tabs.remove(tab.id, pass());
       }
 
       chrome.test.assertNoLastError();
       chrome.debugger.onDetach.addListener(onDetach);
       chrome.debugger.sendCommand(
-        debuggee, 'Page.navigate', {url: 'chrome://version'}, onResponse);
+          debuggee, 'Page.navigate', {url: 'chrome://version'}, onResponse);
     });
   },
 
@@ -213,25 +222,29 @@ chrome.test.getConfig(config => chrome.test.runTests([
   },
 
   function attachToMissing() {
-    let missingDebuggee = {tabId: -1};
-    chrome.debugger.attach(missingDebuggee, protocolVersion,
+    const missingDebuggee = {tabId: -1};
+    chrome.debugger.attach(
+        missingDebuggee, protocolVersion,
         fail('No tab with given id ' + missingDebuggee.tabId + '.'));
   },
 
   function attachToOwnBackgroundPageWithNoSilentFlag() {
-    let ownExtensionId = chrome.runtime.getURL('').split('/')[2];
+    const ownExtensionId = chrome.runtime.getURL('').split('/')[2];
     debuggee = {extensionId: ownExtensionId};
     chrome.debugger.attach(debuggee, protocolVersion, pass());
   },
 
   function discoverOwnBackgroundPageWithNoSilentFlag() {
     chrome.debugger.getTargets(function(targets) {
-      let target = targets.filter(
-          function(target) { return target.type == 'background_page'})[0];
+      const target = targets.filter(function(target) {
+        return target.type == 'background_page';
+      })[0];
       if (target) {
-        chrome.debugger.attach({targetId: target.id}, protocolVersion, fail(
-            'Another debugger is already attached to the target with id: ' +
-            target.id + '.'));
+        chrome.debugger.attach(
+            {targetId: target.id}, protocolVersion,
+            fail(
+                'Another debugger is already attached to the target with id: ' +
+                target.id + '.'));
       } else {
         chrome.test.succeed();
       }
@@ -245,15 +258,11 @@ chrome.test.getConfig(config => chrome.test.runTests([
   async function createAndDiscoverTab() {
     const tab = await openTab(chrome.runtime.getURL('inspected.html'));
     chrome.debugger.getTargets(function(targets) {
-      let page = targets.filter(
-          function(t) {
-            return t.type == 'page' &&
-                   t.tabId == tab.id &&
-                   t.title == 'Test page';
-          })[0];
+      const page = targets.filter(function(t) {
+        return t.type == 'page' && t.tabId == tab.id && t.title == 'Test page';
+      })[0];
       if (page) {
-        chrome.debugger.attach(
-            {targetId: page.id}, protocolVersion, pass());
+        chrome.debugger.attach({targetId: page.id}, protocolVersion, pass());
       } else {
         chrome.test.fail('Cannot discover a newly created tab');
       }
@@ -261,11 +270,12 @@ chrome.test.getConfig(config => chrome.test.runTests([
   },
 
   function discoverWorker() {
-    let workerPort = new SharedWorker('worker.js').port;
+    const workerPort = new SharedWorker('worker.js').port;
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {
-        let page = targets.filter(
-            function(t) { return t.type == 'worker' })[0];
+        const page = targets.filter(function(t) {
+          return t.type == 'worker';
+        })[0];
         if (page) {
           debuggee = {targetId: page.id};
           chrome.debugger.attach(debuggee, protocolVersion, pass());
@@ -301,7 +311,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     function onAttach() {
       chrome.debugger.sendCommand(debuggee, 'Page.enable');
       chrome.debugger.sendCommand(
-          debuggee, 'Page.navigate', {url:'about:blank'}, onNavigateDone);
+          debuggee, 'Page.navigate', {url: 'about:blank'}, onNavigateDone);
     }
 
     chrome.debugger.attach(debuggee, protocolVersion, onAttach);
@@ -335,8 +345,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
       if (message === 'Network.responseReceived' &&
           params.response.url.endsWith('invalid_char.html')) {
         requestId = params.requestId;
-      } else if (message === 'Network.loadingFinished' &&
-                 params.requestId === requestId) {
+      } else if (
+          message === 'Network.loadingFinished' &&
+          params.requestId === requestId) {
         chrome.debugger.sendCommand(
             debuggeeId, 'Network.getResponseBody',
             {requestId: params.requestId}, function(responseBody) {
@@ -351,18 +362,16 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const tab = await openTab(chrome.runtime.getURL('inspected.html'));
     const debuggee = {tabId: tab.id};
     chrome.debugger.attach(debuggee, protocolVersion, function() {
-      chrome.debugger.sendCommand(
-          debuggee, 'Network.enable', null, function() {
-            chrome.debugger.sendCommand(
-                debuggee, 'Page.enable', null, function() {
-                  // Navigate to a new page after attaching so we don't miss
-                  // any protocol events that we might have missed while
-                  // attaching to the first page.
-                  chrome.debugger.sendCommand(
-                      debuggee, 'Page.navigate',
-                      {url: window.location.origin + '/fetch.html'});
-                });
-          });
+      chrome.debugger.sendCommand(debuggee, 'Network.enable', null, function() {
+        chrome.debugger.sendCommand(debuggee, 'Page.enable', null, function() {
+          // Navigate to a new page after attaching so we don't miss
+          // any protocol events that we might have missed while
+          // attaching to the first page.
+          chrome.debugger.sendCommand(
+              debuggee, 'Page.navigate',
+              {url: window.location.origin + '/fetch.html'});
+        });
+      });
     });
   },
 
@@ -455,13 +464,13 @@ chrome.test.getConfig(config => chrome.test.runTests([
       return;
     }
 
-    let urls = config.customArg.split(';');
-    let mainFrameUrl = urls[0];
-    let oopFrameUrl = urls[1];
+    const urls = config.customArg.split(';');
+    const mainFrameUrl = urls[0];
+    const oopFrameUrl = urls[1];
 
     chrome.tabs.query({url: 'http://*/*' + mainFrameUrl}, function(tabs) {
       chrome.test.assertNoLastError();
-      let debuggee = {tabId: tabs[0].id};
+      const debuggee = {tabId: tabs[0].id};
       let gotTarget = false;
 
       function onEvent(_, method, params) {
@@ -482,7 +491,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
       chrome.debugger.attach(debuggee, protocolVersion, () => {
         chrome.test.assertNoLastError();
         chrome.debugger.onEvent.addListener(onEvent);
-        chrome.debugger.sendCommand(debuggee, 'Target.setAutoAttach',
+        chrome.debugger.sendCommand(
+            debuggee, 'Target.setAutoAttach',
             {autoAttach: true, waitForDebuggerOnStart: false}, finish);
       });
     });
@@ -508,9 +518,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
               params.targetInfo.url.indexOf(oopFrameUrl) !== -1);
 
           chrome.debugger.sendCommand(
-              debuggee,
-              'Target.detachFromTarget', { sessionId: params.sessionId},
-              function(response) {
+              debuggee, 'Target.detachFromTarget',
+              {sessionId: params.sessionId}, function(response) {
                 // Extension should be allowed to detach from
                 // auto-attached targets.
                 chrome.test.assertNoLastError();
@@ -529,10 +538,11 @@ chrome.test.getConfig(config => chrome.test.runTests([
       chrome.debugger.attach(debuggee, protocolVersion, () => {
         chrome.test.assertNoLastError();
         chrome.debugger.onEvent.addListener(onEvent);
-        chrome.debugger.sendCommand(debuggee, 'Target.setAutoAttach',
+        chrome.debugger.sendCommand(
+            debuggee, 'Target.setAutoAttach',
             {autoAttach: true, waitForDebuggerOnStart: false});
       });
     });
-  }
+  },
 
 ]));

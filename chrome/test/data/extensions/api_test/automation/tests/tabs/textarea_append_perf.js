@@ -4,21 +4,20 @@
 
 const allTests = [
   function testTextareaAppend() {
-    const runButton = rootNode.find({ role: 'button'});
+    const runButton = rootNode.find({role: 'button'});
     assertEq('button', runButton.role);
 
-    const doneLink = rootNode.find({ role: 'link'});
+    const doneLink = rootNode.find({role: 'link'});
     assertEq('link', doneLink.role);
 
-    rootNode.addEventListener('childrenChanged', (evt) => {
-    });
+    rootNode.addEventListener('childrenChanged', (evt) => {});
 
     doneLink.addEventListener('focus', () => {
       chrome.test.succeed();
     });
 
     runButton.doDefault();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'textarea_append.html');

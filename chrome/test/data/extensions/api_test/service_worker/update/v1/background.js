@@ -3,26 +3,31 @@
 // found in the LICENSE file.
 
 const serviceWorkerPromise = new Promise(function(resolve, reject) {
-  navigator.serviceWorker.register('sw.js').then(function() {
-    return navigator.serviceWorker.ready;
-  }).then(function(registration) {
-    const sw = registration.active;
-    const channel = new MessageChannel();
-    channel.port1.onmessage = function(e) {
-      if (e.data == 'Pong from version 1') {
-        resolve(e.data);
-      } else {
-        reject(e.data);  // Fail fast.
-      }
-    };
-    sw.postMessage('ping', [channel.port2]);
-  }).catch(function(err) {
-    reject(err);
-  });
+  navigator.serviceWorker.register('sw.js')
+      .then(function() {
+        return navigator.serviceWorker.ready;
+      })
+      .then(function(registration) {
+        const sw = registration.active;
+        const channel = new MessageChannel();
+        channel.port1.onmessage = function(e) {
+          if (e.data == 'Pong from version 1') {
+            resolve(e.data);
+          } else {
+            reject(e.data);  // Fail fast.
+          }
+        };
+        sw.postMessage('ping', [channel.port2]);
+      })
+      .catch(function(err) {
+        reject(err);
+      });
 });
 
-serviceWorkerPromise.then(function(message) {
-  chrome.test.sendMessage(message);
-}).catch(function(err) {
-  chrome.test.sendMessage('FAILURE_V1');
-});
+serviceWorkerPromise
+    .then(function(message) {
+      chrome.test.sendMessage(message);
+    })
+    .catch(function(err) {
+      chrome.test.sendMessage('FAILURE_V1');
+    });

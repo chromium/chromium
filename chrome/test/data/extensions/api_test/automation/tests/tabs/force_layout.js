@@ -4,7 +4,7 @@
 
 const allTests = [
   function testForceLayoutFiresFocus() {
-    const node = rootNode.find({ role: 'button'});
+    const node = rootNode.find({role: 'button'});
     assertEq('button', node.role);
     rootNode.addEventListener('focus', (evt) => {
       if (evt.target.role !== 'button') {
@@ -18,7 +18,7 @@ const allTests = [
       chrome.test.succeed();
     });
     node.focus();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'force_layout.html');

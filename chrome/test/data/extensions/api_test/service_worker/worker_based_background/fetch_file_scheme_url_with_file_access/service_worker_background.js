@@ -10,6 +10,6 @@ chrome.test.getConfig(function(config) {
       const text = await response.text();
       chrome.test.assertEq('Hello!', text);
       chrome.test.succeed();
-    }
+    },
   ]);
 });

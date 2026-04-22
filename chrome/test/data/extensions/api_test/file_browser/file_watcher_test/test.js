@@ -7,7 +7,7 @@
  * The extension adds file watch on set of entries and performs set of file
  * system operations that should trigger onDirectoryChanged events for the
  * watched entries. On file system operations is performed per a test function.
-*/
+ */
 
 /**
  * Helper class to observe the events triggered during a file system operation
@@ -251,7 +251,7 @@ function initTests(callback) {
      * File system for the testing volume.
      * @type {DOMFileSystem}
      */
-    fileSystem: null
+    fileSystem: null,
   };
 
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
@@ -289,17 +289,17 @@ function initTests(callback) {
             {
               name: 'file',
               path: getPath('test_dir/test_file.xul', testParams.isOnDrive),
-              type: 'file'
+              type: 'file',
             },
             {
               name: 'dir',
               path: getPath('test_dir/', testParams.isOnDrive),
-              type: 'dir'
+              type: 'dir',
             },
             {
               name: 'subdir',
               path: getPath('test_dir/subdir', testParams.isOnDrive),
-              type: 'dir'
+              type: 'dir',
             },
           ];
 
@@ -327,8 +327,7 @@ function initTests(callback) {
             const getFunctionAndConvert = function(path, options, callback) {
               getFunction(path, options, function(isolatedEntry) {
                 chrome.fileManagerPrivate.resolveIsolatedEntries(
-                    [isolatedEntry],
-                    function(externalEntries) {
+                    [isolatedEntry], function(externalEntries) {
                       callback(externalEntries[0]);
                     });
               });
@@ -349,7 +348,7 @@ function initTests(callback) {
           getNextEntry();
         });
   });
-};
+}
 
 // Starts the test.
 initTests(function(testParams, errorMessage) {
@@ -361,8 +360,7 @@ initTests(function(testParams, errorMessage) {
   chrome.test.runTests([
     function addFileWatch() {
       chrome.fileManagerPrivate.addFileWatch(
-          testParams.entries.file,
-          chrome.test.callbackPass(function(success) {
+          testParams.entries.file, chrome.test.callbackPass(function(success) {
             chrome.test.assertTrue(success);
           }));
     },
@@ -377,8 +375,7 @@ initTests(function(testParams, errorMessage) {
 
     function addDirWatch() {
       chrome.fileManagerPrivate.addFileWatch(
-          testParams.entries.dir,
-          chrome.test.callbackPass(function(success) {
+          testParams.entries.dir, chrome.test.callbackPass(function(success) {
             chrome.test.assertTrue(success);
           }));
     },
@@ -511,30 +508,28 @@ initTests(function(testParams, errorMessage) {
           getPath('test_dir/subdir', testParams.isOnDrive), {},
           function(entry) {
             entry.removeRecursively(
-                testEventListener.onFileSystemOperation.bind(testEventListener,
-                                                             entry),
-                testEventListener.onError.bind(testEventListener,
-                                               'Failed to remove the dir.'));
+                testEventListener.onFileSystemOperation.bind(
+                    testEventListener, entry),
+                testEventListener.onError.bind(
+                    testEventListener, 'Failed to remove the dir.'));
           },
-          testEventListener.onError.bind(testEventListener,
-                                         'Failed to get the dir.'));
+          testEventListener.onError.bind(
+              testEventListener, 'Failed to get the dir.'));
     },
 
     function removeFileWatch() {
       chrome.fileManagerPrivate.removeFileWatch(
-          testParams.entries.file,
-          chrome.test.callbackPass(function(success) {
+          testParams.entries.file, chrome.test.callbackPass(function(success) {
             chrome.test.assertTrue(success);
           }));
     },
 
     function removeDirWatch() {
       chrome.fileManagerPrivate.removeFileWatch(
-          testParams.entries.dir,
-          chrome.test.callbackPass(function(success) {
+          testParams.entries.dir, chrome.test.callbackPass(function(success) {
             chrome.test.assertTrue(success);
           }));
-    }
+    },
 
     // The watch for subdir entry is intentionally not removed to simulate the
     // case when File Manager does not remove it either (e.g. if it's opened

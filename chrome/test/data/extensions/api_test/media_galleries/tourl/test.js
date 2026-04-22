@@ -31,19 +31,19 @@ chrome.test.getConfig(function(config) {
   const extensionId = extensionUrl.split('/')[2];
 
   const badMountPoint = `filesystem:${extensionUrl}` +
-    `external/invalid-${profilePath}-${extensionId}-${galleryId}` +
-    '/test.jpg';
+      `external/invalid-${profilePath}-${extensionId}-${galleryId}` +
+      '/test.jpg';
 
   const badMountName = `filesystem:${extensionUrl}` +
-    `external/media_galleries-${profilePath}-${galleryId}/test.jpg`;
+      `external/media_galleries-${profilePath}-${galleryId}/test.jpg`;
 
   const goodUrl = `filesystem:${extensionUrl}` +
-    `external/media_galleries-${profilePath}-${extensionId}-` +
-    `${galleryId}/test.jpg`;
+      `external/media_galleries-${profilePath}-${extensionId}-` +
+      `${galleryId}/test.jpg`;
 
   chrome.test.runTests([
     TestImageLoadFactory(badMountPoint, false),
     TestImageLoadFactory(badMountName, false),
     TestImageLoadFactory(goodUrl, true),
   ]);
-})
+});

@@ -63,7 +63,7 @@ const cert1a = new Uint8Array([
   0xd6, 0x60, 0xfc, 0x44, 0x1d, 0x65, 0x8c, 0xb7, 0xd9, 0x60, 0x3b, 0xc7, 0x20,
   0x30, 0xdf, 0x17, 0x07, 0xd1, 0x87, 0xda, 0x2b, 0x7f, 0x84, 0xf3, 0xfc, 0xb0,
   0x31, 0x42, 0x08, 0x17, 0x96, 0xd2, 0x1b, 0xdc, 0x28, 0xae, 0xf8, 0xbd, 0xf9,
-  0x4e, 0x78, 0xc3, 0xe8, 0x80
+  0x4e, 0x78, 0xc3, 0xe8, 0x80,
 ]);
 
 // Based on privateKeyPkcs8User, different from cert1a.
@@ -104,7 +104,7 @@ const cert1b = new Uint8Array([
   0x73, 0x69, 0x1c, 0x5c, 0xaa, 0x26, 0x3e, 0x5f, 0x1d, 0x89, 0x20, 0xc3, 0x90,
   0xa4, 0x67, 0xfa, 0x26, 0x20, 0xd7, 0x1f, 0xae, 0x42, 0x89, 0x30, 0x61, 0x43,
   0x8a, 0x8c, 0xbe, 0xd4, 0x32, 0xf7, 0x96, 0x71, 0x2a, 0xcd, 0xeb, 0x26, 0xf6,
-  0xdb, 0x54, 0x95, 0xca, 0x5a
+  0xdb, 0x54, 0x95, 0xca, 0x5a,
 ]);
 
 // Based on a private key different than privateKeyPkcs8User or
@@ -146,7 +146,7 @@ const cert2 = new Uint8Array([
   0x6e, 0x39, 0x0d, 0xa8, 0xba, 0x10, 0x43, 0x57, 0xdd, 0x4e, 0x4e, 0x52, 0xc6,
   0xbe, 0x07, 0xdb, 0x83, 0x05, 0x97, 0x97, 0xc1, 0x7b, 0xd5, 0x5c, 0x50, 0x64,
   0x0f, 0x96, 0xff, 0x3d, 0x83, 0x37, 0x8f, 0x3a, 0x85, 0x08, 0x62, 0x5c, 0xb1,
-  0x2f, 0x68, 0xb2, 0x4a, 0x4a
+  0x2f, 0x68, 0xb2, 0x4a, 0x4a,
 ]);
 
 // Based on privateKeyPkcs8System, which is stored in the system token.
@@ -187,7 +187,7 @@ const certSystem = new Uint8Array([
   0x77, 0xed, 0xf3, 0x66, 0x2d, 0xd6, 0xa9, 0x46, 0x7d, 0xeb, 0x58, 0xbc, 0x50,
   0xa7, 0xe6, 0xd7, 0x7d, 0xfc, 0xdd, 0x18, 0x20, 0x53, 0xfb, 0x11, 0x3d, 0xfc,
   0x2f, 0xf3, 0x30, 0x60, 0x47, 0x2d, 0x8e, 0xd7, 0xbf, 0x0f, 0x0d, 0x47, 0x99,
-  0xcc, 0x6d, 0xab, 0xb6, 0xd6
+  0xcc, 0x6d, 0xab, 0xb6, 0xd6,
 ]);
 
 // Random data to be used for signing tests.
@@ -200,8 +200,9 @@ const DATA = new Uint8Array([0, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]);
  * callbackPass.
  */
 function runAsyncSequence(funcs) {
-  if (funcs.length == 0)
+  if (funcs.length == 0) {
     return;
+  }
   function go(i) {
     const current = funcs[i];
     console.log(`#${i + 1} of ${funcs.length}`);
@@ -210,21 +211,25 @@ function runAsyncSequence(funcs) {
     } else {
       current(callbackPass(go.bind(undefined, i + 1)));
     }
-  };
+  }
   go(0);
 }
 
 // Some array comparison. Note: not lexicographical!
 function compareArrays(array1, array2) {
-  if (array1.length < array2.length)
+  if (array1.length < array2.length) {
     return -1;
-  if (array1.length > array2.length)
+  }
+  if (array1.length > array2.length) {
     return 1;
+  }
   for (let i = 0; i < array1.length; i++) {
-    if (array1[i] < array2[i])
+    if (array1[i] < array2[i]) {
       return -1;
-    if (array1[i] > array2[i])
+    }
+    if (array1[i] > array2[i]) {
       return 1;
+    }
   }
   return 0;
 }
@@ -244,8 +249,9 @@ function sortCerts(certs) {
  */
 function assertCertsStored(token, expectedCerts, callback) {
   if (!token) {
-    if (callback)
+    if (callback) {
       callback();
+    }
     return;
   }
   chrome.enterprise.platformKeys.getCertificates(
@@ -265,8 +271,9 @@ function assertCertsStored(token, expectedCerts, callback) {
                 `Certs at index ${i} differ`);
           }
         }
-        if (callback)
+        if (callback) {
           callback();
+        }
       }));
 }
 
@@ -280,10 +287,11 @@ function getTokens(callback) {
     let userToken = null;
     let systemToken = null;
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].id == 'user')
+      if (tokens[i].id == 'user') {
         userToken = tokens[i];
-      else if (tokens[i].id == 'system')
+      } else if (tokens[i].id == 'system') {
         systemToken = tokens[i];
+      }
     }
     callback(userToken, systemToken);
   });
@@ -371,7 +379,7 @@ function checkRsaAlgorithmIsCopiedOnRead(key) {
     name: algorithm.name,
     modulusLength: algorithm.modulusLength,
     publicExponent: algorithm.publicExponent,
-    hash: {name: algorithm.hash.name}
+    hash: {name: algorithm.hash.name},
   };
   algorithm.hash.name = null;
   algorithm.hash = null;
@@ -671,7 +679,7 @@ function testHasSubtleCryptoMethods(subtleCrypto) {
 // more information about the parameters specification, please refer to:
 // https://www.w3.org/TR/WebCryptoAPI/#rsassa-pkcs1
 const RSASSA_NAME_ALGORITHM = {
-  name: 'RSASSA-PKCS1-v1_5'
+  name: 'RSASSA-PKCS1-v1_5',
 };
 
 const RSASSA_FULL_ALGORITHM = {
@@ -681,14 +689,14 @@ const RSASSA_FULL_ALGORITHM = {
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: {
     name: 'SHA-1',
-  }
+  },
 };
 
 const RSASSA_HASH_ALGORITHM = {
   name: 'RSASSA-PKCS1-v1_5',
   hash: {
     name: 'SHA-1',
-  }
+  },
 };
 
 const ALL_RSASSA_PARAMS = {
@@ -739,7 +747,7 @@ async function testGenerateRsassaKeyAndSignOtherParams(subtleCrypto) {
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
     hash: {
       name: 'SHA-512',
-    }
+    },
   };
 
   const otherRsassaParams = {
@@ -810,7 +818,7 @@ async function testGenerateEcdsaKeyAndSignAllowedMultipleTimes(subtleCrypto) {
 // https://www.w3.org/TR/WebCryptoAPI/#aes-keygen-params
 const AES_GEN_ALGORITHM = {
   name: 'AES-CBC',
-  length: 256
+  length: 256,
 };
 
 // Tests the generation of AES keys.
@@ -829,7 +837,7 @@ const RSA_OAEP_GEN_ALGORITHM = {
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: {
     name: 'SHA-1',
-  }
+  },
 };
 
 // Tests the generation of RSA-OAEP keys.
@@ -847,7 +855,7 @@ async function testGenerateRsaOaepKeyOtherParams(subtleCrypto) {
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
     hash: {
       name: 'SHA-512',
-    }
+    },
   };
 
   await generateRsaOaepKey(subtleCrypto, algorithm);
@@ -863,7 +871,7 @@ async function testGenerateRsaKeyUnsupportedAlgorithmName(subtleCrypto) {
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
     hash: {
       name: 'SHA-1',
-    }
+    },
   };
 
   try {
@@ -884,7 +892,7 @@ async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
     hash: {
       name: 'SHA-1',
-    }
+    },
   };
 
   try {
@@ -904,7 +912,7 @@ async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
     modulusLength: 1024,
     hash: {
       name: 'SHA-1',
-    }
+    },
   };
 
   try {
@@ -1305,7 +1313,7 @@ function runInUserSessionTests(userToken, systemToken, changesWave1Enabled) {
           // Remove cert1b.
           chrome.enterprise.platformKeys.removeCertificate.bind(
               null, userToken.id, cert1b.buffer),
-          assertCertsStored.bind(null, userToken, [])
+          assertCertsStored.bind(null, userToken, []),
         ]);
       } else {
         runAsyncSequence([
@@ -1332,7 +1340,7 @@ function runInUserSessionTests(userToken, systemToken, changesWave1Enabled) {
           // Remove cert1b.
           chrome.enterprise.platformKeys.removeCertificate.bind(
               null, userToken.id, cert1b.buffer),
-          assertCertsStored.bind(null, userToken, [])
+          assertCertsStored.bind(null, userToken, []),
         ]);
       }
     },
@@ -1356,7 +1364,7 @@ function runInUserSessionTests(userToken, systemToken, changesWave1Enabled) {
       }
       chrome.enterprise.platformKeys.importCertificate(
           systemToken.id, certSystem.buffer, callbackFail('Key not found.'));
-    }
+    },
   ];
 
   chrome.test.runTests(testsIndependentOfKeys.concat(testsNotParameterized));

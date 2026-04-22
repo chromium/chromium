@@ -14,10 +14,10 @@ const minimal_ticket = {
     media_size: {
       width_microns: 210000,
       height_microns: 297000,
-      vendor_id: 'iso_a4_210x297mm'
+      vendor_id: 'iso_a4_210x297mm',
     },
-    collate: {collate: false}
-  }
+    collate: {collate: false},
+  },
 };
 
 // Ticket with margins and scale.
@@ -32,7 +32,7 @@ const ticket_with_margins_and_scale = {
     media_size: {
       width_microns: 210000,
       height_microns: 297000,
-      vendor_id: 'iso_a4_210x297mm'
+      vendor_id: 'iso_a4_210x297mm',
     },
     collate: {collate: false},
     fit_to_page: {type: 'FIT'},
@@ -40,9 +40,9 @@ const ticket_with_margins_and_scale = {
       top_microns: 1003,
       right_microns: 3002,
       bottom_microns: 5008,
-      left_microns: 3050
-    }
-  }
+      left_microns: 3050,
+    },
+  },
 };
 
 function formatPrintJobRequest(printerId, title, arrayBuffer, ticket) {
@@ -53,8 +53,8 @@ function formatPrintJobRequest(printerId, title, arrayBuffer, ticket) {
       ticket: ticket,
       contentType: 'application/pdf',
       document:
-          new Blob([new Uint8Array(arrayBuffer)], {type: 'application/pdf'})
-    }
+          new Blob([new Uint8Array(arrayBuffer)], {type: 'application/pdf'}),
+    },
   };
 }
 
@@ -67,8 +67,8 @@ function submitJob(printerId, title, url, ticket, callback) {
 }
 
 async function submitJobPromise(printerId, title, url, ticket) {
-  let response = await fetch(url);
-  let arrayBuffer = await response.arrayBuffer();
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
   const submitJobRequest =
       formatPrintJobRequest(printerId, title, arrayBuffer, ticket);
   return chrome.printing.submitJob(submitJobRequest);

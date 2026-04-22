@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 let importScriptsGreeting;
-let message = [];
+const message = [];
 
 self.onconnect = async function(e) {
   const port = e.ports[0];

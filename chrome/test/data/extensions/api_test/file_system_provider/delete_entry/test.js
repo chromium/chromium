@@ -14,7 +14,7 @@ const TESTING_A_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'a',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -25,7 +25,7 @@ const TESTING_B_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'b',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -36,7 +36,7 @@ const TESTING_C_FILE = Object.freeze({
   isDirectory: false,
   name: 'c',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -58,10 +58,11 @@ function onDeleteEntryRequested(options, onSuccess, onError) {
   }
 
   if (options.entryPath === `/${TESTING_A_DIRECTORY.name}`) {
-    if (options.recursive)
+    if (options.recursive) {
       onSuccess();
-    else
+    } else {
       onError('INVALID_OPERATION');
+    }
     return;
   }
 
@@ -87,11 +88,9 @@ function setUp(callback) {
 
   testUtil.defaultMetadata[`/${TESTING_A_DIRECTORY.name}`] =
       TESTING_A_DIRECTORY;
-  testUtil.defaultMetadata[
-      `/${TESTING_A_DIRECTORY.name}/${TESTING_B_DIRECTORY.name}`] =
-      TESTING_B_DIRECTORY;
-  testUtil.defaultMetadata[`/${TESTING_C_FILE.name}`] =
-      TESTING_C_FILE;
+  testUtil.defaultMetadata[`/${TESTING_A_DIRECTORY.name}/${
+      TESTING_B_DIRECTORY.name}`] = TESTING_B_DIRECTORY;
+  testUtil.defaultMetadata[`/${TESTING_C_FILE.name}`] = TESTING_C_FILE;
 
   chrome.fileSystemProvider.onDeleteEntryRequested.addListener(
       onDeleteEntryRequested);
@@ -114,7 +113,8 @@ function runTests() {
             entry.remove(chrome.test.callbackPass(), function(error) {
               chrome.test.fail(error.name);
             });
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -128,7 +128,8 @@ function runTests() {
             entry.remove(function() {
               chrome.test.fail('Unexpectedly succeded to remove a directory.');
             }, chrome.test.callbackPass);
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -140,14 +141,14 @@ function runTests() {
             chrome.test.assertEq(TESTING_A_DIRECTORY.name, entry.name);
             chrome.test.assertTrue(entry.isDirectory);
             entry.removeRecursively(
-                chrome.test.callbackPass(),
-                function(error) {
+                chrome.test.callbackPass(), function(error) {
                   chrome.test.fail(error);
                 });
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
-    }
+    },
   ]);
 }
 
@@ -155,7 +156,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

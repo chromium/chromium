@@ -38,8 +38,9 @@ function run() {
    * @param {string} errorMessage The error message to be send.
    */
   function onError(errorMessage) {
-    if (done)
+    if (done) {
       return;
+    }
 
     chrome.test.notifyFail(errorMessage);
     // there should be at most one notifyFail call.
@@ -81,8 +82,7 @@ function run() {
         onError(`Task '${encodedTaskId}' should be default for '${
             entry.fullPath}'`);
       }
-    }
-    else {  // Matched file extension that's not '.tiff'
+    } else {  // Matched file extension that's not '.tiff'
       if (encodedTaskId != 'pkplfbidichfdicaijlchgnapepdginl|app|any') {
         onError(`Got invalid task ${encodedTaskId} for '${entry.fullPath}'`);
       }
@@ -104,8 +104,7 @@ function run() {
    */
   function onGotEntry(isolatedEntry) {
     chrome.fileManagerPrivate.resolveIsolatedEntries(
-        [isolatedEntry],
-        function(externalEntries) {
+        [isolatedEntry], function(externalEntries) {
           resolvedEntries.push(externalEntries[0]);
           if (resolvedEntries.length == TEST_PATHS.length) {
             resolvedEntries.forEach(function(entry) {
@@ -134,14 +133,14 @@ function run() {
 
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
     const volume = volumeMetadataList.find((volume) => {
-                   return volume.volumeType == 'testing'; });
+      return volume.volumeType == 'testing';
+    });
     if (!volume) {
       onError('No volumes available, which could be used for testing.');
       return;
     }
     chrome.fileSystem.requestFileSystem(
-        {volumeId: volume.volumeId},
-        function(fileSystem) {
+        {volumeId: volume.volumeId}, function(fileSystem) {
           if (!fileSystem) {
             onError('Failed to acquire the testing volume.');
             return;

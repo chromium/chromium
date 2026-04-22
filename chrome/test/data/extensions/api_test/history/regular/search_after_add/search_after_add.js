@@ -20,5 +20,5 @@ loadScript.then(async function() {
         });
       });
     });
-  }])
+  }]);
 });

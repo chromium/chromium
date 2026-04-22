@@ -3,21 +3,21 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  chrome.tabs.create({"url": "about:blank"}, function(tab) {
+  chrome.tabs.create({'url': 'about:blank'}, function(tab) {
     chrome.test.runTests([
-        function onReplacedEvent() {
-          var tabId = tab.id;
+      function onReplacedEvent() {
+        const tabId = tab.id;
 
-          var onReplaceListener = function(new_tab_id, old_tab_id) {
-            chrome.test.assertNe(new_tab_id, tabId);
-            chrome.test.assertEq(tabId, old_tab_id);
-            chrome.tabs.onReplaced.removeListener(onReplaceListener);
-            chrome.test.succeed();
-          };
-          chrome.tabs.onReplaced.addListener(onReplaceListener);
+        const onReplaceListener = function(new_tab_id, old_tab_id) {
+          chrome.test.assertNe(new_tab_id, tabId);
+          chrome.test.assertEq(tabId, old_tab_id);
+          chrome.tabs.onReplaced.removeListener(onReplaceListener);
+          chrome.test.succeed();
+        };
+        chrome.tabs.onReplaced.addListener(onReplaceListener);
 
-          chrome.test.notifyPass();
-        }
+        chrome.test.notifyPass();
+      },
     ]);
   });
 });

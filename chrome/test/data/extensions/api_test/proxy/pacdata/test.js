@@ -17,11 +17,11 @@ const PAC_SCRIPT_OBJECT = {
     return 'PROXY blackhole:80';
   return 'DIRECT';
 }`,
-  mandatory: false
+  mandatory: false,
 };
 const CONFIG = {
   mode: 'pac_script',
-  pacScript: PAC_SCRIPT_OBJECT
+  pacScript: PAC_SCRIPT_OBJECT,
 };
 
 chrome.test.runTests([
@@ -31,15 +31,13 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setAutoSettings() {
-    chrome.proxy.settings.set(
-        {value: CONFIG},
-        chrome.test.callbackPass());
+    chrome.proxy.settings.set({value: CONFIG}, chrome.test.callbackPass());
   },
   function verifySettings() {
     chrome.proxy.settings.get(
         {incognito: false},
-        expect({ value: CONFIG,
-                 levelOfControl: 'controlled_by_this_extension' },
-               'invalid proxy settings'));
-  }
+        expect(
+            {value: CONFIG, levelOfControl: 'controlled_by_this_extension'},
+            'invalid proxy settings'));
+  },
 ]);

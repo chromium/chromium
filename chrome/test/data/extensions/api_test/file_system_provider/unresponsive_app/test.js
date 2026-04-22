@@ -34,22 +34,21 @@ function runTests() {
     // Verify that if no window is opened, then the request will let users abort
     // the operation via notification.
     function unresponsiveWithoutUI() {
-      chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
-          chrome.test.callbackFail('Failed to complete configuration.',
-              function() {}));
+      chrome.fileManagerPrivate.configureVolume(
+          testUtil.volumeId,
+          chrome.test.callbackFail(
+              'Failed to complete configuration.', function() {}));
     },
 
     // Verify that if a window is opened, then the request will not invoke
     // a notification.
     function unresponsiveWindow() {
       chrome.app.window.create(
-          'stub.html',
-          {},
-          chrome.test.callbackPass(function(appWindow) {
-            chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
-                chrome.test.callbackPass(function() {}))
+          'stub.html', {}, chrome.test.callbackPass(function(appWindow) {
+            chrome.fileManagerPrivate.configureVolume(
+                testUtil.volumeId, chrome.test.callbackPass(function() {}));
           }));
-    }
+    },
 
   ]);
 }
@@ -58,7 +57,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

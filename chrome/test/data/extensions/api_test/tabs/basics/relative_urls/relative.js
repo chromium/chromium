@@ -4,4 +4,4 @@
 
 window.onload = function() {
   chrome.runtime.sendMessage('relative.js');
-}
+};

@@ -21,5 +21,5 @@ chrome.tabs.onCreated.addListener(tab => {
 });
 
 chrome.test.sendMessage(
-    isInstanceOfServiceWorkerGlobalScope ? 'WORKER_RUNNING'
-                                         : 'NON_WORKER_SCOPE');
+    isInstanceOfServiceWorkerGlobalScope ? 'WORKER_RUNNING' :
+                                           'NON_WORKER_SCOPE');

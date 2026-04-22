@@ -8,11 +8,11 @@
 
 chrome.test.runTests([
   function testOverscan() {
-    var id = "display0";
+    const id = 'display0';
     chrome.system.display.overscanCalibrationStart(id);
     chrome.system.display.overscanCalibrationAdjust(
         id, {left: 1, top: 1, right: -1, bottom: -1});
     chrome.system.display.overscanCalibrationComplete(id);
     chrome.test.notifyPass();
-  }
+  },
 ]);

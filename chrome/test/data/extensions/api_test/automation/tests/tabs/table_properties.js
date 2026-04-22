@@ -13,7 +13,7 @@ const allTests = [
     assertEq('Cell 2', cell2.name);
     assertEq('Header 2', cell2.tableCellColumnHeaders[0].name);
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'table.html');

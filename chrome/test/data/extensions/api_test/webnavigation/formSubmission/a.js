@@ -4,4 +4,4 @@
 
 onload = function() {
   form.submit();
-}
+};

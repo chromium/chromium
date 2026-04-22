@@ -30,7 +30,7 @@ const allTests = [
         chrome.test.succeed();
       });
     });
-  }
+  },
 ];
 
 chrome.test.runTests(allTests);

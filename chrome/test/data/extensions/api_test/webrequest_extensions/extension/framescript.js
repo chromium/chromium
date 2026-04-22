@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // |baseUrl| will be equivalent to 'http://example.com:PORT';
-var baseUrl = location.ancestorOrigins[0];
+const baseUrl = location.ancestorOrigins[0];
 
-var x = new XMLHttpRequest();
+const x = new XMLHttpRequest();
 x.open('GET', baseUrl + '/extensions/test_file.txt?framescript');
 x.onloadend = function() {
   // Sanity check.

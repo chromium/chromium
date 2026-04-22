@@ -9,23 +9,25 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
-  function testSpecialResponseHeadersVisibleForAuth() {
-    const url = getServerURL('auth-basic?set-cookie-if-challenged');
-    const extraHeadersListener = callbackPass(function(details) {
-      checkHeaders(details.responseHeaders, ['set-cookie'], []);
-    });
-    chrome.webRequest.onAuthRequired.addListener(extraHeadersListener,
-        {urls: [url]}, ['responseHeaders', 'extraHeaders']);
+    function testSpecialResponseHeadersVisibleForAuth() {
+      const url = getServerURL('auth-basic?set-cookie-if-challenged');
+      const extraHeadersListener = callbackPass(function(details) {
+        checkHeaders(details.responseHeaders, ['set-cookie'], []);
+      });
+      chrome.webRequest.onAuthRequired.addListener(
+          extraHeadersListener, {urls: [url]},
+          ['responseHeaders', 'extraHeaders']);
 
-    const standardListener = callbackPass(function(details) {
-      checkHeaders(details.responseHeaders, [], ['set-cookie']);
-    });
-    chrome.webRequest.onAuthRequired.addListener(standardListener,
-        {urls: [url]}, ['responseHeaders']);
+      const standardListener = callbackPass(function(details) {
+        checkHeaders(details.responseHeaders, [], ['set-cookie']);
+      });
+      chrome.webRequest.onAuthRequired.addListener(
+          standardListener, {urls: [url]}, ['responseHeaders']);
 
-    navigateAndWait(url, function() {
-      chrome.webRequest.onAuthRequired.removeListener(extraHeadersListener);
-      chrome.webRequest.onAuthRequired.removeListener(standardListener);
-    });
-  }
-])});
+      navigateAndWait(url, function() {
+        chrome.webRequest.onAuthRequired.removeListener(extraHeadersListener);
+        chrome.webRequest.onAuthRequired.removeListener(standardListener);
+      });
+    },
+  ]);
+});

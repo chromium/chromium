@@ -39,7 +39,7 @@ const TESTING_WITH_INVALID_THUMBNAIL_FILE = Object.freeze({
   name: 'invalid-thumbnail.txt',
   size: 4096,
   modificationTime: new Date(2014, 4, 28, 10, 39, 15),
-  thumbnail: 'https://www.foobar.com/evil'
+  thumbnail: 'https://www.foobar.com/evil',
 });
 
 async function main() {
@@ -125,7 +125,7 @@ async function main() {
       chrome.test.assertFalse('thumbnailUrl' in fileProperties[0]);
       chrome.test.assertEq(4096, fileProperties[0].size);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

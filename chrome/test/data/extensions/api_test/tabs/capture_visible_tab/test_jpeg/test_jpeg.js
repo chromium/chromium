@@ -12,7 +12,7 @@ const assertTrue = chrome.test.assertTrue;
 
 const WINDOW_RECT = {
   width: 400,
-  height: 400
+  height: 400,
 };
 
 const TEST_DIR = '/extensions/api_test/tabs/capture_visible_tab/test_jpeg/';
@@ -23,7 +23,7 @@ let blackImageUrl;
 let whiteImageUrl;
 
 const scriptUrl =
-      '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+    '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
 const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(() => {
@@ -172,7 +172,7 @@ loadScript.then(() => {
                                         width: Math.ceil(
                                             rect.width * devicePixelRatio),
                                         height: Math.ceil(
-                                            rect.height * devicePixelRatio)
+                                            rect.height * devicePixelRatio),
                                       },
                                       '255,255,255,255');  // White.
                                 }));
@@ -204,7 +204,7 @@ loadScript.then(() => {
                             testPixelsAreExpectedColor(
                                 imgDataUrl, {
                                   width: Math.ceil(rect.width * scale),
-                                  height: Math.ceil(rect.height * scale)
+                                  height: Math.ceil(rect.height * scale),
                                 },
                                 '255,255,255,255');  // White.
                           }));
@@ -260,7 +260,8 @@ loadScript.then(() => {
                                             'Image height should match window height');
                                       }))
                                       .catch(fail(e => {
-                                        return `Checking image dimensions failed: ${e}`;
+                                        return `Checking image dimensions failed: ${
+                                            e}`;
                                       }));
                                 });
                           }));
@@ -268,6 +269,6 @@ loadScript.then(() => {
               }));
             }));
       },
-    ])
+    ]);
   });
 });

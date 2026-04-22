@@ -6,7 +6,7 @@
 const kTargetExtensionId = 'pkplfbidichfdicaijlchgnapepdginl';
 
 chrome.test.runTests([function testConnectExternal() {
-  var port = chrome.runtime.connect(kTargetExtensionId);
+  const port = chrome.runtime.connect(kTargetExtensionId);
   port.onMessage.addListener(msg => {
     console.log('{worker} initiator extension got message reply: ' + msg);
     chrome.test.assertEq('initiator->target->initiator', msg);

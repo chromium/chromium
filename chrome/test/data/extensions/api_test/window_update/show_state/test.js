@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
-var width = 0;
-var height = 0;
+let width = 0;
+let height = 0;
 
-var deltaWidth = 20;
-var deltaHeight = 30;
+const deltaWidth = 20;
+const deltaHeight = 30;
 
 function checkRestoreAfterFullscreen(theWindow) {
   chrome.test.assertEq('normal', theWindow.state);
@@ -25,8 +25,8 @@ function checkFullscreen(theWindow) {
     chrome.test.assertEq('fullscreen', theWindow.state);
   }
 
-  chrome.windows.update(theWindow.id, {'state': 'normal'},
-      pass(checkRestoreAfterFullscreen));
+  chrome.windows.update(
+      theWindow.id, {'state': 'normal'}, pass(checkRestoreAfterFullscreen));
 }
 
 function checkRestoreWithBounds(theWindow) {
@@ -34,8 +34,8 @@ function checkRestoreWithBounds(theWindow) {
   chrome.test.assertEq(width, theWindow.width);
   chrome.test.assertEq(height, theWindow.height);
 
-  chrome.windows.update(theWindow.id, {'state': 'fullscreen'},
-    pass(checkFullscreen));
+  chrome.windows.update(
+      theWindow.id, {'state': 'fullscreen'}, pass(checkFullscreen));
 }
 
 function checkMaximized(theWindow) {
@@ -46,14 +46,14 @@ function checkMaximized(theWindow) {
     chrome.test.assertEq(height, theWindow.height);
   } else {
     chrome.test.assertEq('maximized', theWindow.state);
-    chrome.test.assertTrue(width < theWindow.width ||
-                           height < theWindow.height);
+    chrome.test.assertTrue(
+        width < theWindow.width || height < theWindow.height);
   }
 
   width += deltaWidth;
   height += deltaHeight;
-  chrome.windows.update(theWindow.id,
-      {'state': 'normal', 'width': width, 'height': height},
+  chrome.windows.update(
+      theWindow.id, {'state': 'normal', 'width': width, 'height': height},
       pass(checkRestoreWithBounds));
 }
 
@@ -62,7 +62,8 @@ function checkRestored(theWindow) {
   chrome.test.assertEq(width, theWindow.width);
   chrome.test.assertEq(height, theWindow.height);
 
-  chrome.windows.update(theWindow.id, {'state': 'maximized'}, pass(checkMaximized));
+  chrome.windows.update(
+      theWindow.id, {'state': 'maximized'}, pass(checkMaximized));
 }
 
 function checkMinimized(theWindow) {
@@ -74,7 +75,8 @@ function minimizeWindow(theWindow) {
   chrome.test.assertEq('normal', theWindow.state);
   width = theWindow.width;
   height = theWindow.height;
-  chrome.windows.update(theWindow.id, {'state': 'minimized'}, pass(checkMinimized));
+  chrome.windows.update(
+      theWindow.id, {'state': 'minimized'}, pass(checkMinimized));
 }
 
 function testWindowState(windowType) {
@@ -83,9 +85,9 @@ function testWindowState(windowType) {
   // Do not use the big size because the maximium panel sizes are based on a
   // factor of the screen resolution and the try bot might be configured with
   // 800x600 resolution.
-  chrome.windows.create({ 'url': 'hello.html', 'type': windowType, 'width': 200,
-                          'height': 200 },
-    pass(minimizeWindow));
+  chrome.windows.create(
+      {'url': 'hello.html', 'type': windowType, 'width': 200, 'height': 200},
+      pass(minimizeWindow));
 }
 
 chrome.test.runTests([
@@ -97,5 +99,5 @@ chrome.test.runTests([
   },
   function changePanelWindowState() {
     testWindowState('panel');
-  }
+  },
 ]);

@@ -9,7 +9,7 @@ chrome.tabs.query({active: true}, function(tabs) {
   chrome.pageAction.onClicked.addListener(function(tab) {
     chrome.pageAction.setPopup({
       tabId: tabs[0].id,
-      popup: 'a_popup.html'
+      popup: 'a_popup.html',
     });
     chrome.test.notifyPass();
   });

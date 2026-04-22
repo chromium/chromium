@@ -19,7 +19,7 @@ const options = {
   title: 'hi',
   message: 'there',
   type: 'basic',
-  buttons: [{title: 'Button'}, {title: 'Button'}]
+  buttons: [{title: 'Button'}, {title: 'Button'}],
 };
 
 chrome.notifications.create('test', options, function() {});

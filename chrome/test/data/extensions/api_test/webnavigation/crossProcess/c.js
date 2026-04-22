@@ -4,13 +4,9 @@
 
 onload = function() {
   setTimeout(function() {
-    const target =
-        'http://127.0.0.1:' +
-        location.search.substr(1) +
+    const target = 'http://127.0.0.1:' + location.search.substr(1) +
         '/extensions/api_test/webnavigation/crossProcess/empty.html';
-    location.href =
-        'http://www.a.com:' +
-        location.search.substr(1) +
+    location.href = 'http://www.a.com:' + location.search.substr(1) +
         `/server-redirect?${target}`;
   }, 0);
 };

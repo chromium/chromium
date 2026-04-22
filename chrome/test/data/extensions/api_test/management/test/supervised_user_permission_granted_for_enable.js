@@ -26,7 +26,7 @@ const tests = [
     Promise.all([onEnabledPromise, setEnabledPromise]).then(() => {
       succeed();
     });
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

@@ -19,54 +19,72 @@ loadScript.then(async function() {
   chrome.test.runTests([
     // Navigates to a page that redirects (on the server side) to a.html.
     function download() {
-      expect([
-        { label: 'a-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: urlStart }},
-        { label: 'a-onCommitted',
-          event: 'onCommitted',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: urlStart }},
-        { label: 'a-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: urlStart }},
-        { label: 'a-onCompleted',
-          event: 'onCompleted',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: urlStart }}],
-      [ navigationOrder('a-') ]);
-      chrome.tabs.update(tab.id, { url: `${urlStart}?${port}` });
+      expect(
+          [
+            {
+              label: 'a-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlStart
+              }
+            },
+            {
+              label: 'a-onCommitted',
+              event: 'onCommitted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: urlStart
+              }
+            },
+            {
+              label: 'a-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlStart
+              }
+            },
+            {
+              label: 'a-onCompleted',
+              event: 'onCompleted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlStart
+              }
+            }
+          ],
+          [navigationOrder('a-')]);
+      chrome.tabs.update(tab.id, {url: `${urlStart}?${port}`});
     },
   ]);
 });

@@ -4,9 +4,9 @@
 
 chrome.test.runTests([
   function openFile() {
-    chrome.fileSystem.chooseEntry({type: 'openWritableFile'},
-        chrome.test.callbackPass(function(entry) {
-      checkEntry(entry, 'open_existing.txt', false, true);
-    }));
-  }
+    chrome.fileSystem.chooseEntry(
+        {type: 'openWritableFile'}, chrome.test.callbackPass(function(entry) {
+          checkEntry(entry, 'open_existing.txt', false, true);
+        }));
+  },
 ]);

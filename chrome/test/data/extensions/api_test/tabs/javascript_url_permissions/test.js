@@ -30,13 +30,11 @@ chrome.test.getConfig(function(config) {
 
         function javaScriptURLShouldSucceed() {
           chrome.tabs.update(
-              secondTabId,
-              {url: javaScriptURL},
-              pass(function(tab) {
-            assertEq(secondTabId, tab.id);
-            assertEq('js-url-success', tab.title);
-          }));
-        }
+              secondTabId, {url: javaScriptURL}, pass(function(tab) {
+                assertEq(secondTabId, tab.id);
+                assertEq('js-url-success', tab.title);
+              }));
+        },
       ]);
     });
   });

@@ -17,8 +17,7 @@ const visibleImageData = ctx.getImageData(0, 0, 21, 21);
 function setIcon(imageData) {
   return new Promise(function(resolve) {
     chrome.browserAction.setIcon({imageData: imageData}, function() {
-      resolve(chrome.runtime.lastError ?
-                  chrome.runtime.lastError.message : '');
+      resolve(chrome.runtime.lastError ? chrome.runtime.lastError.message : '');
     });
   });
 }

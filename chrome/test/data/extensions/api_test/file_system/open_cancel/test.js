@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   function openFile() {
-    chrome.fileSystem.chooseEntry(chrome.test.callbackFail(
-        'User cancelled', function(entry) {}));
-  }
+    chrome.fileSystem.chooseEntry(
+        chrome.test.callbackFail('User cancelled', function(entry) {}));
+  },
 ]);

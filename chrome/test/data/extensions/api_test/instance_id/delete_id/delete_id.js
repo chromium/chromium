@@ -8,7 +8,7 @@ async function deleteIDWithoutCallback() {
     chrome.test.succeed();
   } catch (e) {
     chrome.test.fail(`deleteID Promise rejected with error: ${e}`);
-  };
+  }
 }
 
 function deleteIDWithCallback() {

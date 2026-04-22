@@ -5,7 +5,6 @@
 window.externalCanary = 'Alive';
 
 chrome.test.getConfig(function(config) {
-
   function inlineScriptDoesNotRun() {
     chrome.test.assertEq(window.inlineCanary, undefined);
     chrome.test.succeed();
@@ -20,6 +19,6 @@ chrome.test.getConfig(function(config) {
 
   chrome.test.runTests([
     inlineScriptDoesNotRun,
-    externalScriptDoesRun
+    externalScriptDoesRun,
   ]);
 });

@@ -21,10 +21,11 @@ async function runNotAllowedTest(method, params, expectAllowed) {
       }
       chrome.debugger.detach(debuggee, () => {
         const allowed = message !== NOT_ALLOWED && message !== NOT_FOUND;
-        if (allowed === expectAllowed)
+        if (allowed === expectAllowed) {
           chrome.test.succeed();
-        else
+        } else {
           chrome.test.fail('' + message);
+        }
       });
     }
   });
@@ -32,41 +33,42 @@ async function runNotAllowedTest(method, params, expectAllowed) {
 
 (async () => {
   const config = await new Promise((resolve) => {
-                   chrome.test.getConfig(resolve)
-                 });
+    chrome.test.getConfig(resolve);
+  });
   const fileUrl = new URL(config.testDataDirectory + '/../body1.html').href;
-  const mhtmlFileUrl = new URL(config.testDataDirectory +
-      '/../mhtml-with-subframes.mht').href;
+  const mhtmlFileUrl =
+      new URL(config.testDataDirectory + '/../mhtml-with-subframes.mht').href;
   const expectFileAccess = !!config.customArg;
 
-  ({ openTab } = await import('/_test_resources/test_util/tabs_util.js'));
+  ({openTab} = await import('/_test_resources/test_util/tabs_util.js'));
 
   function testAttachWithFileUrl(url) {
-    chrome.tabs.onUpdated.addListener(function listener(
-      tabId, changeInfo, tab) {
-      if (tab.status == 'complete' && tab.url == url) {
-        chrome.tabs.onUpdated.removeListener(listener);
-        chrome.debugger.attach({tabId: tabId}, '1.1', function() {
-          if (expectFileAccess) {
-            chrome.test.assertNoLastError();
-            chrome.debugger.detach({tabId: tabId}, function() {
-              chrome.test.assertNoLastError();
-              chrome.test.succeed();
+    chrome.tabs.onUpdated.addListener(
+        function listener(tabId, changeInfo, tab) {
+          if (tab.status == 'complete' && tab.url == url) {
+            chrome.tabs.onUpdated.removeListener(listener);
+            chrome.debugger.attach({tabId: tabId}, '1.1', function() {
+              if (expectFileAccess) {
+                chrome.test.assertNoLastError();
+                chrome.debugger.detach({tabId: tabId}, function() {
+                  chrome.test.assertNoLastError();
+                  chrome.test.succeed();
+                });
+              } else {
+                chrome.test.assertLastError('Cannot attach to this target.');
+                chrome.test.succeed();
+              }
             });
-          } else {
-            chrome.test.assertLastError('Cannot attach to this target.');
-            chrome.test.succeed();
           }
         });
-      }
-    });
     chrome.test.openFileUrl(url);
-  };
+  }
 
   chrome.test.runTests([
     function verifyInitialState() {
-      if (config.customArg)
+      if (config.customArg) {
         chrome.test.assertEq('enabled', config.customArg);
+      }
       chrome.extension.isAllowedFileSchemeAccess((allowed) => {
         chrome.test.assertEq(expectFileAccess, allowed);
         chrome.test.succeed();
@@ -96,7 +98,7 @@ async function runNotAllowedTest(method, params, expectAllowed) {
             } else {
               chrome.test.assertLastError(JSON.stringify({
                 code: -32000,
-                message: 'Navigating to local URL is not allowed'
+                message: 'Navigating to local URL is not allowed',
               }));
             }
             chrome.tabs.remove(tabId);
@@ -112,8 +114,8 @@ async function runNotAllowedTest(method, params, expectAllowed) {
           }
 
           chrome.debugger.onDetach.addListener(onDetach);
-          chrome.debugger.sendCommand({tabId: tabId}, 'Page.navigate',
-                                      {url: fileUrl}, onResponse);
+          chrome.debugger.sendCommand(
+              {tabId: tabId}, 'Page.navigate', {url: fileUrl}, onResponse);
         });
       });
     },
@@ -125,19 +127,21 @@ async function runNotAllowedTest(method, params, expectAllowed) {
         const tabId = tab.id;
         chrome.debugger.attach({tabId: tabId}, '1.1', function() {
           chrome.test.assertNoLastError();
-          chrome.debugger.sendCommand({tabId: tabId}, 'Target.createTarget',
-                                      {url: fileUrl}, function() {
-            if (expectFileAccess) {
-              chrome.test.assertNoLastError();
-            } else {
-              chrome.test.assertLastError(JSON.stringify({
-                code: -32000,
-                message: 'Creating a target with a local URL is not allowed'
-              }));
-            }
-            chrome.tabs.remove(tabId);
-            chrome.test.succeed();
-          });
+          chrome.debugger.sendCommand(
+              {tabId: tabId}, 'Target.createTarget', {url: fileUrl},
+              function() {
+                if (expectFileAccess) {
+                  chrome.test.assertNoLastError();
+                } else {
+                  chrome.test.assertLastError(JSON.stringify({
+                    code: -32000,
+                    message:
+                        'Creating a target with a local URL is not allowed',
+                  }));
+                }
+                chrome.tabs.remove(tabId);
+                chrome.test.succeed();
+              });
         });
       });
     },
@@ -145,15 +149,15 @@ async function runNotAllowedTest(method, params, expectAllowed) {
     // https://crbug.com/40091993
     function setDownloadBehavior() {
       // We never allow to write local files.
-      runNotAllowedTest('Browser.setDownloadBehavior', {behavior: 'allow'},
-          false);
+      runNotAllowedTest(
+          'Browser.setDownloadBehavior', {behavior: 'allow'}, false);
     },
 
     // https://crbug.com/40090289
     function setFileInputFiles() {
       // We only allow extensions with explicit file access to read local files.
-      runNotAllowedTest('DOM.setFileInputFiles', {nodeId: 1, files: []},
-          expectFileAccess);
+      runNotAllowedTest(
+          'DOM.setFileInputFiles', {nodeId: 1, files: []}, expectFileAccess);
     },
   ]);
 })();

@@ -6,7 +6,7 @@ const SAME_ORIGIN_CHROME_EXTENSION_URL =
     chrome.runtime.getURL('handler.html?protocol=%s');
 
 function crossOriginLocalhostURLFromPort(port) {
-  return `http://localhost:${port}/extensions/api_test/protocol_handler/`
+  return `http://localhost:${port}/extensions/api_test/protocol_handler/`;
 }
 
 const TITLE = 'register protocol handler title';

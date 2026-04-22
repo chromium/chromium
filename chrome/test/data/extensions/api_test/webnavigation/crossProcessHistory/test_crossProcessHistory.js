@@ -28,7 +28,165 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('e.html')
+                url: getURL('e.html'),
+              },
+            },
+            {
+              label: 'a-onCommitted',
+              event: 'onCommitted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('e.html'),
+              },
+            },
+            {
+              label: 'a-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('e.html'),
+              },
+            },
+            {
+              label: 'a-onCompleted',
+              event: 'onCompleted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('e.html'),
+              },
+            },
+            {
+              label: 'a-onHistoryStateUpdated',
+              event: 'onHistoryStateUpdated',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: getURL('empty.html'),
+              },
+            },
+            {
+              label: 'b-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}2`,
+              },
+            },
+            {
+              label: 'b-onCommitted',
+              event: 'onCommitted',
+              details: {
+                documentId: 2,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: `${urlTest}2`,
+              },
+            },
+            {
+              label: 'b-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                documentId: 2,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}2`,
+              },
+            },
+            {
+              label: 'b-onCompleted',
+              event: 'onCompleted',
+              details: {
+                documentId: 2,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 1,
+                tabId: 0,
+                timeStamp: 0,
+                url: `${urlTest}2`,
+              },
+            },
+          ],
+          [
+            navigationOrder('a-'),
+            [
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'a-onHistoryStateUpdated',
+              'b-onCommitted',
+            ],
+          ]);
+
+      chrome.tabs.update(tab.id, {url: getURL(`e.html?${port}`)});
+    },
+
+    // A page with an iframe that changes its history state using
+    // history.pushState before the iframe is committed.
+    function crossProcessHistoryIFrame() {
+      expect(
+          [
+            {
+              label: 'a-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: getURL('h.html')
               }
             },
             {
@@ -45,7 +203,7 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('e.html')
+                url: getURL('h.html')
               }
             },
             {
@@ -60,7 +218,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('e.html')
+                url: getURL('h.html')
               }
             },
             {
@@ -75,7 +233,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('e.html')
+                url: getURL('empty.html')
               }
             },
             {
@@ -100,13 +258,14 @@ loadScript.then(async function() {
               event: 'onBeforeNavigate',
               details: {
                 documentLifecycle: 'active',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
+                frameId: 1,
+                frameType: 'sub_frame',
+                parentDocumentId: 1,
+                parentFrameId: 0,
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}2`
+                url: `${urlTest}5`
               }
             },
             {
@@ -115,15 +274,16 @@ loadScript.then(async function() {
               details: {
                 documentId: 2,
                 documentLifecycle: 'active',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
+                frameId: 1,
+                frameType: 'sub_frame',
+                parentDocumentId: 1,
+                parentFrameId: 0,
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
                 transitionQualifiers: [],
-                transitionType: 'link',
-                url: `${urlTest}2`
+                transitionType: 'auto_subframe',
+                url: `${urlTest}5`
               }
             },
             {
@@ -132,13 +292,14 @@ loadScript.then(async function() {
               details: {
                 documentId: 2,
                 documentLifecycle: 'active',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
+                frameId: 1,
+                frameType: 'sub_frame',
+                parentDocumentId: 1,
+                parentFrameId: 0,
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}2`
+                url: `${urlTest}5`
               }
             },
             {
@@ -147,141 +308,21 @@ loadScript.then(async function() {
               details: {
                 documentId: 2,
                 documentLifecycle: 'active',
-                frameId: 0,
-                frameType: 'outermost_frame',
-                parentFrameId: -1,
+                frameId: 1,
+                frameType: 'sub_frame',
+                parentDocumentId: 1,
+                parentFrameId: 0,
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}2`
+                url: `${urlTest}5`
               }
             }
           ],
           [
-            navigationOrder('a-'),
-            [
-              'a-onCompleted', 'b-onBeforeNavigate', 'a-onHistoryStateUpdated',
-              'b-onCommitted'
-            ]
+            navigationOrder('a-'), navigationOrder('b-'),
+            ['b-onBeforeNavigate', 'a-onHistoryStateUpdated', 'a-onCompleted']
           ]);
-
-      chrome.tabs.update(tab.id, { url: getURL(`e.html?${port}`) });
-    },
-
-    // A page with an iframe that changes its history state using
-    // history.pushState before the iframe is committed.
-    function crossProcessHistoryIFrame() {
-      expect([
-        { label: 'a-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('h.html') }},
-        { label: 'a-onCommitted',
-          event: 'onCommitted',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('h.html') }},
-        { label: 'a-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('h.html') }},
-        { label: 'a-onCompleted',
-          event: 'onCompleted',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: getURL('empty.html') }},
-        { label: 'a-onHistoryStateUpdated',
-          event: 'onHistoryStateUpdated',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: getURL('empty.html') }},
-        { label: 'b-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { documentLifecycle: 'active',
-                     frameId: 1,
-                     frameType: 'sub_frame',
-                     parentDocumentId: 1,
-                     parentFrameId: 0,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}5` }},
-        { label: 'b-onCommitted',
-          event: 'onCommitted',
-          details: { documentId: 2,
-                     documentLifecycle: 'active',
-                     frameId: 1,
-                     frameType: 'sub_frame',
-                     parentDocumentId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'auto_subframe',
-                     url: `${urlTest}5` }},
-        { label: 'b-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { documentId: 2,
-                     documentLifecycle: 'active',
-                     frameId: 1,
-                     frameType: 'sub_frame',
-                     parentDocumentId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}5` }},
-        { label: 'b-onCompleted',
-          event: 'onCompleted',
-          details: { documentId: 2,
-                     documentLifecycle: 'active',
-                     frameId: 1,
-                     frameType: 'sub_frame',
-                     parentDocumentId: 1,
-                     parentFrameId: 0,
-                     processId: 1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: `${urlTest}5` }}],
-        [ navigationOrder('a-'), navigationOrder('b-'),
-          [ 'b-onBeforeNavigate', 'a-onHistoryStateUpdated',
-            'a-onCompleted'] ]);
 
       chrome.tabs.update(tab.id, {url: getURL(`h.html?${port}`)});
     },
@@ -302,8 +343,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('i.html')
-              }
+                url: getURL('i.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -319,8 +360,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('i.html')
-              }
+                url: getURL('i.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -334,8 +375,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('i.html')
-              }
+                url: getURL('i.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -349,8 +390,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('i.html')
-              }
+                url: getURL('i.html'),
+              },
             },
             {
               label: 'a-onHistoryStateUpdated',
@@ -366,8 +407,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -380,8 +421,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}6`
-              }
+                url: `${urlTest}6`,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -397,8 +438,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: `${urlTest}6`
-              }
+                url: `${urlTest}6`,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -412,8 +453,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}6`
-              }
+                url: `${urlTest}6`,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -427,16 +468,18 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}6`
-              }
-            }
+                url: `${urlTest}6`,
+              },
+            },
           ],
           [
             navigationOrder('a-'),
             [
-              'a-onCompleted', 'b-onBeforeNavigate', 'a-onHistoryStateUpdated',
-              'b-onCommitted'
-            ]
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'a-onHistoryStateUpdated',
+              'b-onCommitted',
+            ],
           ]);
 
       chrome.tabs.update(tab.id, {url: getURL(`i.html?${port}`)});

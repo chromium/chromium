@@ -34,8 +34,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCommitted',
@@ -51,8 +51,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onDOMContentLoaded',
@@ -66,8 +66,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCompleted',
@@ -81,8 +81,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'intermediate-onBeforeNavigate',
@@ -96,8 +96,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlIntermediateIframe
-              }
+                url: urlIntermediateIframe,
+              },
             },
             {
               label: 'intermediate-onCommitted',
@@ -114,8 +114,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: urlIntermediateIframe
-              }
+                url: urlIntermediateIframe,
+              },
             },
             {
               label: 'intermediate-onDOMContentLoaded',
@@ -130,8 +130,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlIntermediateIframe
-              }
+                url: urlIntermediateIframe,
+              },
             },
             {
               label: 'intermediate-onCompleted',
@@ -146,8 +146,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlIntermediateIframe
-              }
+                url: urlIntermediateIframe,
+              },
             },
             {
               label: 'a.test-onBeforeNavigate',
@@ -161,8 +161,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFencedFrame
-              }
+                url: urlFencedFrame,
+              },
             },
             {
               label: 'a.test-onCommitted',
@@ -179,8 +179,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: urlFencedFrame
-              }
+                url: urlFencedFrame,
+              },
             },
             {
               label: 'a.test-onDOMContentLoaded',
@@ -195,8 +195,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFencedFrame
-              }
+                url: urlFencedFrame,
+              },
             },
             {
               label: 'a.test-onCompleted',
@@ -211,9 +211,9 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFencedFrame
-              }
-            }
+                url: urlFencedFrame,
+              },
+            },
           ],
           [
             navigationOrder('main-'),
@@ -262,7 +262,7 @@ loadScript.then(async function() {
                 frameId: 0,
                 frameType: 'outermost_frame',
                 parentFrameId: -1,
-                url: urlMain
+                url: urlMain,
               },
               {
                 errorOccurred: false,
@@ -272,7 +272,7 @@ loadScript.then(async function() {
                 frameType: 'sub_frame',
                 parentDocumentId: 0,
                 parentFrameId: 0,
-                url: urlIntermediateIframe
+                url: urlIntermediateIframe,
               },
               {
                 errorOccurred: false,
@@ -282,8 +282,8 @@ loadScript.then(async function() {
                 frameType: 'fenced_frame',
                 parentDocumentId: 1,
                 parentFrameId: 1,
-                url: urlFencedFrame
-              }
+                url: urlFencedFrame,
+              },
             ],
             details);
         chrome.test.succeed();

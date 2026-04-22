@@ -12,56 +12,61 @@ function assertBindingsPassedWebKitErrorMessage() {
 
 chrome.test.runTests([
   function supportsMediaConstraints() {
-    chrome.tabCapture.capture({
-      video: true,
-      audio: true,
-      videoConstraints: {
-          mandatory: {
-            maxWidth: 1000,
-            minWidth: 300
-          }
-      }
-    }, function(stream) {
-      chrome.test.assertTrue(!!stream);
-      stream.getVideoTracks()[0].stop();
-      stream.getAudioTracks()[0].stop();
-      chrome.test.succeed();
-    });
+    chrome.tabCapture.capture(
+        {
+          video: true,
+          audio: true,
+          videoConstraints: {
+            mandatory: {
+              maxWidth: 1000,
+              minWidth: 300,
+            },
+          },
+        },
+        function(stream) {
+          chrome.test.assertTrue(!!stream);
+          stream.getVideoTracks()[0].stop();
+          stream.getAudioTracks()[0].stop();
+          chrome.test.succeed();
+        });
   },
 
   function rejectsOptionalMediaConstraints() {
-    chrome.tabCapture.capture({
-      video: true,
-      audio: true,
-      videoConstraints: {
-        mandatory: {
+    chrome.tabCapture.capture(
+        {
+          video: true,
+          audio: true,
+          videoConstraints: {
+            mandatory: {},
+            optional: {
+              maxWidth: 1000,
+              minWidth: 300,
+            },
+          },
         },
-        optional: {
-          maxWidth: 1000,
-          minWidth: 300
-        }
-      }
-    }, function(stream) {
-      assertBindingsPassedWebKitErrorMessage();
-      chrome.test.assertTrue(!stream);
-      chrome.test.succeed();
-    });
+        function(stream) {
+          assertBindingsPassedWebKitErrorMessage();
+          chrome.test.assertTrue(!stream);
+          chrome.test.succeed();
+        });
   },
 
   function ignoresInvalidConstraints() {
-    chrome.tabCapture.capture({
-      video: true,
-      audio: true,
-      videoConstraints: {
-        mandatory: {
-          notValid: '123'
-        }
-      }
-    }, function(stream) {
-      chrome.test.assertTrue(!!stream);
-      stream.getVideoTracks()[0].stop();
-      stream.getAudioTracks()[0].stop();
-      chrome.test.succeed();
-    });
-  }
+    chrome.tabCapture.capture(
+        {
+          video: true,
+          audio: true,
+          videoConstraints: {
+            mandatory: {
+              notValid: '123',
+            },
+          },
+        },
+        function(stream) {
+          chrome.test.assertTrue(!!stream);
+          stream.getVideoTracks()[0].stop();
+          stream.getAudioTracks()[0].stop();
+          chrome.test.succeed();
+        });
+  },
 ]);

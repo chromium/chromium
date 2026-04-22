@@ -13,5 +13,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   // Loop infinitely to prevent the acknowledgement from the renderer back to
   // browser process.
-  while (true) {};
+  while (true) {
+  }
 });

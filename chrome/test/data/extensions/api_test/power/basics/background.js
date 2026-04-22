@@ -7,7 +7,7 @@ function testBasics() {
   chrome.power.requestKeepAwake('system');
   chrome.power.releaseKeepAwake();
 
-  chrome.power.requestKeepAwake('display')
+  chrome.power.requestKeepAwake('display');
   chrome.power.releaseKeepAwake();
 
   chrome.test.succeed();

@@ -25,5 +25,5 @@ chrome.test.runTests([
       }
     };
     workerPort.start();
-  }
+  },
 ]);

@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 chrome.webRequest.onBeforeRequest.addListener(
-  function(details) {
-  },
-  {
-    urls: [],
-    types: []
-  },
-  []);
-if (chrome.extension.inIncognitoContext)
-  chrome.test.sendMessage("done_incognito");
-else
-  chrome.test.sendMessage("done");
+    function(details) {}, {
+      urls: [],
+      types: [],
+    },
+    []);
+if (chrome.extension.inIncognitoContext) {
+  chrome.test.sendMessage('done_incognito');
+} else {
+  chrome.test.sendMessage('done');
+}

@@ -7,4 +7,3 @@ window.onmessage = function(e) {
     e.source.postMessage('FROM_EXTENSION_RESOURCE', '*');
   }
 };
-

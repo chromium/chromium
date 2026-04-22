@@ -8,5 +8,5 @@ function run_tests() {
 }
 
 window.addEventListener('load', function() {
-    chrome.test.notifyPass();
+  chrome.test.notifyPass();
 }, false);

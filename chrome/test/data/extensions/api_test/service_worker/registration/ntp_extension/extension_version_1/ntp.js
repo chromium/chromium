@@ -6,7 +6,6 @@ self.currentVersion = 1;
 
 // Obtain the version of the background context.
 async function getCurrentVersionOfBackgroundContext() {
-  const response = await chrome.runtime.sendMessage(
-    'get-current-version');
+  const response = await chrome.runtime.sendMessage('get-current-version');
   return response;
-};
+}

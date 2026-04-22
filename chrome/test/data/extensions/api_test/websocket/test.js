@@ -3,26 +3,26 @@
 // found in the LICENSE file.
 
 function echoTest(port) {
-  var url = "ws://localhost:" + port + "/echo-with-no-extension";
-  var ws = new WebSocket(url);
-  var MESSAGE_A = "message a";
-  var MESSAGE_B = "message b";
+  const url = 'ws://localhost:' + port + '/echo-with-no-extension';
+  const ws = new WebSocket(url);
+  const MESSAGE_A = 'message a';
+  const MESSAGE_B = 'message b';
 
   ws.onopen = function() {
-    chrome.test.log("websocket opened.");
+    chrome.test.log('websocket opened.');
     ws.send(MESSAGE_A);
   };
 
   ws.onclose = function() {
-    chrome.test.log("websocket closed.");
-  }
+    chrome.test.log('websocket closed.');
+  };
 
   ws.onmessage = function(messageEvent) {
-    chrome.test.log("message received: " + messageEvent.data);
+    chrome.test.log('message received: ' + messageEvent.data);
     chrome.test.assertEq(MESSAGE_A, messageEvent.data);
 
     ws.onmessage = function(messageEvent) {
-      chrome.test.log("message received: " + messageEvent.data);
+      chrome.test.log('message received: ' + messageEvent.data);
       chrome.test.assertEq(MESSAGE_B, messageEvent.data);
       ws.close();
 
@@ -37,7 +37,6 @@ chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function runEchoTest() {
       echoTest(config.testWebSocketPort);
-    }
+    },
   ]);
 });
-

@@ -18,33 +18,43 @@ function failOnSuccess() {
   return false;
 }
 
-var service = { uuid: '00001234-0000-1000-8000-00805f9b34fb', isPrimary: true }
+const service = {
+  uuid: '00001234-0000-1000-8000-00805f9b34fb',
+  isPrimary: true
+};
 // Create then remove a service.
 chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
-  if (failOnError(serviceId))
+  if (failOnError(serviceId)) {
     return;
+  }
   chrome.bluetoothLowEnergy.removeService(serviceId, function() {
-    if (failOnError('result'))
+    if (failOnError('result')) {
       return;
+    }
     // Registering a removed service. Should fail.
     chrome.bluetoothLowEnergy.registerService(serviceId, function() {
-      if (failOnSuccess())
+      if (failOnSuccess()) {
         return;
+      }
 
       // Create, register then remove a service.
       chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
-        if (failOnError(serviceId))
+        if (failOnError(serviceId)) {
           return;
+        }
         chrome.bluetoothLowEnergy.registerService(serviceId, function() {
-          if (failOnError('result'))
+          if (failOnError('result')) {
             return;
+          }
           chrome.bluetoothLowEnergy.removeService(serviceId, function() {
-            if (failOnError('result'))
+            if (failOnError('result')) {
               return;
+            }
             // Removing an fake service. Should fail.
             chrome.bluetoothLowEnergy.removeService('fake_id', function() {
-              if (failOnSuccess())
+              if (failOnSuccess()) {
                 return;
+              }
               chrome.test.succeed();
             });
           });

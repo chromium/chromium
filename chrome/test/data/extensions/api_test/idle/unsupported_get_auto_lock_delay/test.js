@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-    function UnsupportedGetAutoLockDelay() {
-        chrome.test.assertTrue(chrome.idle.getAutoLockDelay === undefined);
-        chrome.test.succeed();
-    }
+  function UnsupportedGetAutoLockDelay() {
+    chrome.test.assertTrue(chrome.idle.getAutoLockDelay === undefined);
+    chrome.test.succeed();
+  },
 ]);
-

@@ -8,6 +8,6 @@ self.requestedHostnames = [];
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
   ++self.webRequestCount;
   self.requestedHostnames.push((new URL(details.url)).hostname);
-}, {urls:['<all_urls>']});
+}, {urls: ['<all_urls>']});
 
 chrome.test.sendMessage('ready');

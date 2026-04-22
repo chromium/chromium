@@ -76,13 +76,13 @@ chrome.test.runTests([
   async function accessAlreadyGrantedForDocumentId() {
     const tab = await navigateTo('requested.com');
     const frame =
-        await chrome.webNavigation.getFrame({frameId: 0, tabId: tab.id})
+        await chrome.webNavigation.getFrame({frameId: 0, tabId: tab.id});
 
     const request = {documentId: frame.documentId};
     await chrome.test.assertPromiseRejects(
-      chrome.permissions.addHostAccessRequest(request),
-      `Error: Extension cannot add a host access request for a host it ` +
-          `already has access to.`);
+        chrome.permissions.addHostAccessRequest(request),
+        `Error: Extension cannot add a host access request for a host it ` +
+            `already has access to.`);
 
     chrome.test.succeed();
   },
@@ -99,5 +99,5 @@ chrome.test.runTests([
             `'pattern'.`);
 
     chrome.test.succeed();
-  }
-])
+  },
+]);

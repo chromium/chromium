@@ -9,8 +9,9 @@ const testResults = [];
 let expectedFileSystems;
 
 function checkFinished() {
-  if (testResults.length != galleries.length)
+  if (testResults.length != galleries.length) {
     return;
+  }
   let success = true;
   for (let i = 0; i < testResults.length; i++) {
     if (testResults[i]) {
@@ -27,7 +28,7 @@ function checkFinished() {
 const mediaFileSystemsDirectoryEntryCallback = function(entries) {
   testResults.push(`Shouldn't have been able to get a directory listing.`);
   checkFinished();
-}
+};
 
 const mediaFileSystemsDirectoryErrorCallback = function(err) {
   testResults.push('');
@@ -51,8 +52,9 @@ chrome.test.getConfig(function(config) {
       chrome.test.assertEq(expectedFileSystems, galleries.length);
       for (let i = 0; i < galleries.length; i++) {
         const dirReader = galleries[i].root.createReader();
-        dirReader.readEntries(mediaFileSystemsDirectoryEntryCallback,
-                              mediaFileSystemsDirectoryErrorCallback);
+        dirReader.readEntries(
+            mediaFileSystemsDirectoryEntryCallback,
+            mediaFileSystemsDirectoryErrorCallback);
       }
     },
     function validFileCopyToShouldFail() {
@@ -62,4 +64,4 @@ chrome.test.getConfig(function(config) {
       runCopyToTest(INVALID_WEBP_IMAGE_CASE, false /* expect failure */);
     },
   ]);
-})
+});

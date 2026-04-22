@@ -92,7 +92,7 @@ async function main() {
           !!error, 'Succeeded getting a non-existent directory entry.');
       chrome.test.assertEq('NotFoundError', error.name);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

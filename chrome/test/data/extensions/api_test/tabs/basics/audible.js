@@ -24,20 +24,20 @@ chrome.test.runTests([
   function audibleStartsFalse() {
     console.log('audiblestartsfirst');
 
-    chrome.tabs.get(testTabId, pass(function(tab) {
-      assertEq(false, tab.audible);
-      queryForTab(testTabId, {audible: false}, pass(function(tab) {
-        assertEq(false, tab.audible);
-      }));
-      queryForTab(testTabId, {audible: true}, pass(function(tab) {
-        assertEq(null, tab);
-      }));
-    }));
+    chrome.tabs.get(
+        testTabId, pass(function(tab) {
+          assertEq(false, tab.audible);
+          queryForTab(testTabId, {audible: false}, pass(function(tab) {
+                        assertEq(false, tab.audible);
+                      }));
+          queryForTab(testTabId, {audible: true}, pass(function(tab) {
+                        assertEq(null, tab);
+                      }));
+        }));
   },
 
   function audibleUpdateAttemptShouldFail() {
-    const expectedError =
-        'Error in invocation of tabs.update(' +
+    const expectedError = 'Error in invocation of tabs.update(' +
         'optional integer tabId, object updateProperties, ' +
         'optional function callback): Error at parameter ' +
         `'updateProperties': Unexpected property: 'audible'.`;
@@ -58,17 +58,17 @@ chrome.test.runTests([
   },
 
   function testStaysAudibleAfterChangingWindow() {
-    chrome.windows.create({}, pass(function(window)
-    {
-      chrome.tabs.move(testTabId, {windowId: window.id, index: -1},
-                       pass(function(tab) {
-        assertEq(true, tab.audible);
-      }));
-    }));
+    chrome.windows.create({}, pass(function(window) {
+                            chrome.tabs.move(
+                                testTabId, {windowId: window.id, index: -1},
+                                pass(function(tab) {
+                                  assertEq(true, tab.audible);
+                                }));
+                          }));
   },
 
   function makeNotAudible() {
     onUpdatedExpect('audible', false, null);
     window.sinewave.stop(getOnlyTab());
-  }
+  },
 ]);

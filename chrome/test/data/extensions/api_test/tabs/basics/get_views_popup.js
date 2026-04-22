@@ -10,5 +10,5 @@ chrome.test.runTests([
   function canGetViewsOfPopupWithUrl() {
     const urls = ['a.html'];
     testGetNewWindowView({type: 'popup', url: urls}, urls);
-  }
+  },
 ]);

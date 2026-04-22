@@ -40,20 +40,20 @@ function runTests() {
     // Verify that if no window nor tab is opened, then the request will let
     // users abort the operation via notification.
     function unresponsiveWithoutUI() {
-      chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
-          chrome.test.callbackFail('Failed to complete configuration.',
-              function() {}));
+      chrome.fileManagerPrivate.configureVolume(
+          testUtil.volumeId,
+          chrome.test.callbackFail(
+              'Failed to complete configuration.', function() {}));
     },
 
     // Verify that if a tab is opened, then the request will not invoke
     // a notification.
     function unresponsiveWithTab() {
       chrome.tabs.create(
-          {url: 'stub.html'},
-          chrome.test.callbackPass(function(tab) {
+          {url: 'stub.html'}, chrome.test.callbackPass(function(tab) {
             lastTabId = tab.id;
-            chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
-                chrome.test.callbackPass(function() {}))
+            chrome.fileManagerPrivate.configureVolume(
+                testUtil.volumeId, chrome.test.callbackPass(function() {}));
           }));
     },
 
@@ -62,10 +62,9 @@ function runTests() {
     function unresponsiveWithWindow() {
       chrome.tabs.remove(lastTabId, chrome.test.callbackPass(function() {
         chrome.windows.create(
-            {url: 'stub.html'},
-            chrome.test.callbackPass(function(ignore) {
-              chrome.fileManagerPrivate.configureVolume(testUtil.volumeId,
-                  chrome.test.callbackPass(function() {}))
+            {url: 'stub.html'}, chrome.test.callbackPass(function(ignore) {
+              chrome.fileManagerPrivate.configureVolume(
+                  testUtil.volumeId, chrome.test.callbackPass(function() {}));
             }));
       }));
     },
@@ -76,7 +75,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

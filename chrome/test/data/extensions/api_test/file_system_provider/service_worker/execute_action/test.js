@@ -51,7 +51,7 @@ async function main() {
       chrome.test.assertEq(`/${fileName}`, entryPaths[0]);
       chrome.test.assertEq(testActionId, actionId);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

@@ -4,11 +4,12 @@
 
 function testGenerateAppForLink(url, title, error, func) {
   chrome.test.runWithUserGesture(function() {
-    if (error)
+    if (error) {
       chrome.management.generateAppForLink(
           url, title, callback(function(data) {}, error));
-    else
+    } else {
       chrome.management.generateAppForLink(url, title, callback(func));
+    }
   });
 }
 
@@ -38,7 +39,8 @@ const tests = [
   },
 
   function generateAppForLinkWithShortURL() {
-    const url = 'http://google.com', title = 'testApp';
+    const url = 'http://google.com';
+    const title = 'testApp';
     testGenerateAppForLink(url, title, null, function(data) {
       assertEq('http://google.com/', data.appLaunchUrl);
       assertEq(title, data.name);
@@ -48,15 +50,15 @@ const tests = [
   },
 
   function generateAppForLinkWithLongURL() {
-    const url = 'http://google.com/page/page?aa=bb&cc=dd', title = 'test App 2';
-    testGenerateAppForLink(
-        url, title, null, function(data) {
-          assertEq(url, data.appLaunchUrl);
-          assertEq(title, data.name);
-          // There is no manifest for the test page so no icons are specified.
-          assertEq(0, data.icons.length);
-        });
-  }
+    const url = 'http://google.com/page/page?aa=bb&cc=dd';
+    const title = 'test App 2';
+    testGenerateAppForLink(url, title, null, function(data) {
+      assertEq(url, data.appLaunchUrl);
+      assertEq(title, data.name);
+      // There is no manifest for the test page so no icons are specified.
+      assertEq(0, data.icons.length);
+    });
+  },
 ];
 
 const SCRIPT_URL = '_test_resources/api_test/management/common.js';

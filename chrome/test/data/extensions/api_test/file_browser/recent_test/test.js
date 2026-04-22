@@ -160,6 +160,6 @@ requestAllFileSystems().then(function() {
           chrome.test.callbackPass(entries => {
             chrome.test.assertEq(0, entries.length);
           }));
-    }
+    },
   ]);
 });

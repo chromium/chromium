@@ -18,7 +18,7 @@ const allTests = [
       assertArrayEquals(expectation.node.sentenceEnds, expectation.ends);
     }
     chrome.test.succeed();
-  }
+  },
 ];
 
 function assertArrayEquals(a, b) {
@@ -39,7 +39,7 @@ function getExpections() {
     {starts: [2], ends: [2], text: '. This is the second ', node: node3},
     {starts: [], ends: [], text: 'sentence', node: node4},
     {starts: [], ends: [1], text: '.', node: node5},
-    {starts: [0], ends: [27], text: 'This is the third sentence.', node: node6}
+    {starts: [0], ends: [27], text: 'This is the third sentence.', node: node6},
   ];
 }
 setUpAndRunTabsTests(allTests, 'sentence_boundaries.html');

@@ -10,8 +10,8 @@ const RoleType = chrome.automation.RoleType;
 const allTests = [
   function testLocationInWebView() {
     rootNode.addEventListener(EventType.LOAD_COMPLETE, function() {
-      const outerButton = rootNode.find({ attributes: { name: 'Outer' } });
-      const innerButton = rootNode.find({ attributes: { name: 'Inner' } });
+      const outerButton = rootNode.find({attributes: {name: 'Outer'}});
+      const innerButton = rootNode.find({attributes: {name: 'Inner'}});
       if (outerButton && innerButton) {
         const outerRect = outerButton.location;
         const innerRect = innerButton.location;
@@ -34,10 +34,10 @@ const allTests = [
         'left': 50,
         'top': 150,
         'width': 400,
-        'height': 400
-      }
+        'height': 400,
+      },
     });
-  }
+  },
 ];
 
 chrome.automation.getDesktop(function(rootNodeArg) {

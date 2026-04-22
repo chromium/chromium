@@ -38,7 +38,8 @@ chrome.browserAction.onClicked.addListener(function(windowId) {
 
   try {
     chrome.browserAction.setIcon(setIconParamQueue.shift(), function() {
-      chrome.test.notifyPass();});
+      chrome.test.notifyPass();
+    });
   } catch (error) {
     console.log(error.message);
     chrome.test.notifyFail(error.message);

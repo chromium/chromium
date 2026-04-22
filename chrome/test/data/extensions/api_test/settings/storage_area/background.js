@@ -7,24 +7,27 @@ const storageAreaOnChanged = function() {
   // chrome.storage.
   const localStorageArea = chrome.storage.local;
   chrome.test.listenOnce(localStorageArea.onChanged, function(changes) {
-    chrome.test.assertEq({key:{newValue:'value'}}, changes);
+    chrome.test.assertEq({key: {newValue: 'value'}}, changes);
   });
 
-  chrome.test.listenOnce(chrome.storage.onChanged,
-    function(changes, namespace) {
-      chrome.test.assertEq({key:{newValue:'value'}}, changes);
-      chrome.test.assertEq('local', namespace);
-    }
+  chrome.test.listenOnce(
+      chrome.storage.onChanged,
+      function(changes, namespace) {
+        chrome.test.assertEq({key: {newValue: 'value'}}, changes);
+        chrome.test.assertEq('local', namespace);
+      },
   );
 
   chrome.storage.managed.onChanged.addListener(function(changes, namespace) {
-    chrome.test.notifyFail('managed.onChanged should not be called when local '
-                           + 'storage update');
+    chrome.test.notifyFail(
+        'managed.onChanged should not be called when local ' +
+        'storage update');
   });
 
   chrome.storage.sync.onChanged.addListener(function(changes, namespace) {
-    chrome.test.notifyFail('sync.onChanged should not be called when local ' +
-                           'storage update');
+    chrome.test.notifyFail(
+        'sync.onChanged should not be called when local ' +
+        'storage update');
   });
 
   chrome.storage.session.onChanged.addListener(function(changes, namespace) {

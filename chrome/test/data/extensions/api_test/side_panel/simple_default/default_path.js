@@ -4,4 +4,4 @@
 
 document.body.onload = () => {
   chrome.test.sendMessage('default_path');
-}
+};

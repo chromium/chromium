@@ -21,7 +21,7 @@ loadScript.then(async function() {
               {
                 text: '',
                 startTime: eventTimes.before,
-                endTime: eventTimes.between
+                endTime: eventTimes.between,
               },
               function(historyItems) {
                 assertEq(1, historyItems.length);
@@ -43,7 +43,7 @@ loadScript.then(async function() {
               {
                 text: '',
                 startTime: eventTimes.between,
-                endTime: eventTimes.end
+                endTime: eventTimes.end,
               },
               function(historyItems) {
                 assertEq(1, historyItems.length);
@@ -65,7 +65,7 @@ loadScript.then(async function() {
               {
                 text: '',
                 startTime: eventTimes.between,
-                endTime: eventTimes.between
+                endTime: eventTimes.between,
               },
               function(historyItems) {
                 assertEq(0, historyItems.length);
@@ -84,6 +84,6 @@ loadScript.then(async function() {
           chrome.test.succeed();
         });
       });
-    }
-  ])
+    },
+  ]);
 });

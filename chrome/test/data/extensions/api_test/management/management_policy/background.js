@@ -17,11 +17,13 @@ function findByName(items, name) {
   let item;
   for (let i = 0; i < items.length; i++) {
     item = items[i];
-    if (item.name == name)
+    if (item.name == name) {
       break;
+    }
   }
-  if (name != item.name)
+  if (name != item.name) {
     chrome.test.fail(`Couldn\'t find installed extension ${name}`);
+  }
   return item;
 }
 
@@ -29,8 +31,8 @@ function findByName(items, name) {
 // status.
 function checkEnabled(id, enabled) {
   chrome.management.get(id, callback(function(result) {
-    chrome.test.assertEq(enabled, result.enabled);
-  }));
+                          chrome.test.assertEq(enabled, result.enabled);
+                        }));
 }
 
 const allowedTests = [
@@ -43,10 +45,12 @@ const allowedTests = [
 
       const id = item.id;
       chrome.management.setEnabled(id, false, callback(function() {
-        chrome.management.get(id, callback(function(same_extension) {
-          chrome.test.assertEq(false, same_extension.enabled);
-        }));
-      }));
+                                     chrome.management.get(
+                                         id, callback(function(same_extension) {
+                                           chrome.test.assertEq(
+                                               false, same_extension.enabled);
+                                         }));
+                                   }));
     }));
   },
 
@@ -59,10 +63,12 @@ const allowedTests = [
 
       const id = item.id;
       chrome.management.setEnabled(id, true, callback(function() {
-        chrome.management.get(id, callback(function(same_extension) {
-          chrome.test.assertEq(true, same_extension.enabled);
-        }));
-      }));
+                                     chrome.management.get(
+                                         id, callback(function(same_extension) {
+                                           chrome.test.assertEq(
+                                               true, same_extension.enabled);
+                                         }));
+                                   }));
     }));
   },
 
@@ -75,12 +81,13 @@ const allowedTests = [
       const id = item.id;
       chrome.test.runWithUserGesture(function() {
         chrome.management.uninstall(id, callback(function() {
-          chrome.test.assertNoLastError();
-          // The calling api test will verify that the item was uninstalled.
-        }));
+                                      chrome.test.assertNoLastError();
+                                      // The calling api test will verify that
+                                      // the item was uninstalled.
+                                    }));
       });
     }));
-  }
+  },
 ];
 
 const prohibitedTests = [
@@ -93,8 +100,9 @@ const prohibitedTests = [
 
       const id = item.id;
       const expectedError = EXPECTED_ERROR.replace('*', id);
-      chrome.management.setEnabled(id, false,
-          callback(function() { checkEnabled(id, true); }, expectedError));
+      chrome.management.setEnabled(id, false, callback(function() {
+                                     checkEnabled(id, true);
+                                   }, expectedError));
     }));
   },
 
@@ -107,8 +115,9 @@ const prohibitedTests = [
 
       const id = item.id;
       const expectedError = EXPECTED_ERROR.replace('*', id);
-      chrome.management.setEnabled(id, true,
-          callback(function() { checkEnabled(id, false); }, expectedError));
+      chrome.management.setEnabled(id, true, callback(function() {
+                                     checkEnabled(id, false);
+                                   }, expectedError));
     }));
   },
 
@@ -121,11 +130,12 @@ const prohibitedTests = [
       const id = item.id;
       const expectedError = EXPECTED_ERROR.replace('*', id);
       chrome.test.runWithUserGesture(function() {
-        chrome.management.uninstall(id,
-            callback(function() { checkEnabled(id, true); }, expectedError));
+        chrome.management.uninstall(id, callback(function() {
+                                      checkEnabled(id, true);
+                                    }, expectedError));
       });
     }));
-  }
+  },
 ];
 
 const testSuites = {

@@ -16,7 +16,7 @@
 let testRoundNumber = 0;
 
 // The test pattern cycles as a color fill of red, then green, then blue.
-const colors = [ [ 255, 0, 0 ], [ 0, 255, 0 ], [ 0, 0, 255 ] ];
+const colors = [[255, 0, 0], [0, 255, 0], [0, 0, 255]];
 let curIdx = 0;
 
 // Capture parameters.
@@ -25,11 +25,11 @@ const HEIGHT = 48;
 const FRAME_RATE = 15;
 
 // The stream to playback in the video element.
-let receiveStream = null;
+const receiveStream = null;
 
 // waitForExpectedColors() removes elements from this array as each is observed.
 // When it becomes empty, the test succeeds.
-const expectedColors = [ [ 255, 0, 0 ], [ 0, 255, 0 ], [ 0, 0, 255 ] ];
+const expectedColors = [[255, 0, 0], [0, 255, 0], [0, 0, 255]];
 
 function updateTestPattern() {
   if (!this.canvas) {
@@ -115,7 +115,7 @@ function waitForExpectedColors(colorDeviation) {
     const ctx = this.readbackCanvas.getContext('2d');
     ctx.drawImage(video, 0, 0, WIDTH, HEIGHT);
     const imageData = ctx.getImageData(WIDTH / 2, HEIGHT / 2, 1, 1);
-    const pixel = [ imageData.data[0], imageData.data[1], imageData.data[2] ];
+    const pixel = [imageData.data[0], imageData.data[1], imageData.data[2]];
 
     // Does the pixel match one of the expected colors?
     for (let i = 0; i < expectedColors.length; ++i) {
@@ -123,7 +123,8 @@ function waitForExpectedColors(colorDeviation) {
       if (Math.abs(pixel[0] - curColor[0]) <= colorDeviation &&
           Math.abs(pixel[1] - curColor[1]) <= colorDeviation &&
           Math.abs(pixel[2] - curColor[2]) <= colorDeviation) {
-        console.debug(`${testRoundNumber == 0 ? 'First' : 'Second'} round: ` +
+        console.debug(
+            `${testRoundNumber == 0 ? 'First' : 'Second'} round: ` +
             `Observed expected color RGB(${curColor}) in the video as ` +
             `RGB(${pixel})`);
         expectedColors.splice(i, 1);
@@ -157,8 +158,9 @@ function waitForExpectedColors(colorDeviation) {
       chrome.test.succeed();
     }
   } else {
-    setTimeout(function () { waitForExpectedColors(colorDeviation); },
-               1000 / FRAME_RATE);
+    setTimeout(function() {
+      waitForExpectedColors(colorDeviation);
+    }, 1000 / FRAME_RATE);
   }
 }
 
@@ -180,7 +182,8 @@ chrome.test.runTests([
     renderTestPatternLoop();
 
     chrome.tabCapture.capture(
-        { video: true,
+        {
+          video: true,
           audio: true,
           videoConstraints: {
             mandatory: {
@@ -189,13 +192,13 @@ chrome.test.runTests([
               maxWidth: WIDTH,
               maxHeight: HEIGHT,
               maxFrameRate: FRAME_RATE,
-            }
-          }
+            },
+          },
         },
         function receiveStream(captureStream) {
           chrome.test.assertTrue(!!captureStream);
           receiveStream = captureStream;
           waitForExpectedColors(colorDeviation);
         });
-  }
+  },
 ]);

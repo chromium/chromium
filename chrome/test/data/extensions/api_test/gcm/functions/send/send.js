@@ -9,8 +9,8 @@ function createMessage() {
     timeToLive: 86400,
     data: {
       key1: 'value1',
-      key2: 'value'
-    }
+      key2: 'value',
+    },
   };
 }
 
@@ -26,7 +26,7 @@ function unsuccessfulSend(message) {
     chrome.gcm.send(message, function(messageId) {
       chrome.test.fail(message);
     });
-  } catch(e) {
+  } catch (e) {
     chrome.test.succeed();
   }
 }
@@ -52,37 +52,59 @@ chrome.test.runTests([
     expectSuccessWhen(/* no changes to message here */);
   },
   function successWhenTtlIsZero() {
-    expectSuccessWhen(function(message) { message.timeToLive = 0; });
+    expectSuccessWhen(function(message) {
+      message.timeToLive = 0;
+    });
   },
   function successWhenTtlIsMissing() {
-    expectSuccessWhen(function(message) { delete message.timeToLive; });
+    expectSuccessWhen(function(message) {
+      delete message.timeToLive;
+    });
   },
   function failureWhenTtlIsNegative() {
-    expectFailureWhen(function(message) { message.timeToLive = -1; });
+    expectFailureWhen(function(message) {
+      message.timeToLive = -1;
+    });
   },
   function failureWhenTtlIsTooLarge() {
-    expectFailureWhen(function(message) { message.timeToLive = 86401; });
+    expectFailureWhen(function(message) {
+      message.timeToLive = 86401;
+    });
   },
   function failureWhenMessageIdMissing() {
-    expectFailureWhen(function(message) { delete message.messageId; });
+    expectFailureWhen(function(message) {
+      delete message.messageId;
+    });
   },
   function failureWhenMessageIdIsEmpty() {
-    expectFailureWhen(function(message) { message.messageId = ''; });
+    expectFailureWhen(function(message) {
+      message.messageId = '';
+    });
   },
   function failureWhenDestinationIdMissing() {
-    expectFailureWhen(function(message) { delete message.destinationId; });
+    expectFailureWhen(function(message) {
+      delete message.destinationId;
+    });
   },
   function failureWhenDestinationIdIsEmpty() {
-    expectFailureWhen(function(message) { message.destinationId = ''; });
+    expectFailureWhen(function(message) {
+      message.destinationId = '';
+    });
   },
   function failureWhenDataIsMissing() {
-    expectFailureWhen(function(message) { delete message.data; });
+    expectFailureWhen(function(message) {
+      delete message.data;
+    });
   },
   function failureWhenDataIsEmpty() {
-    expectFailureWhen(function(message) { message.data = {}; });
+    expectFailureWhen(function(message) {
+      message.data = {};
+    });
   },
   function failureWhenDataKeyIsEmpty() {
-    expectFailureWhen(function(message) { message.data[''] = 'value'; });
+    expectFailureWhen(function(message) {
+      message.data[''] = 'value';
+    });
   },
   function successWhenDataKeyHasGoogDotInIt() {
     expectSuccessWhen(function(message) {
@@ -90,7 +112,9 @@ chrome.test.runTests([
     });
   },
   function failureWhenDataKeyIsGoogDot() {
-    expectFailureWhen(function(message) { message.data['goog.'] = 'value'; });
+    expectFailureWhen(function(message) {
+      message.data['goog.'] = 'value';
+    });
   },
   function failureWhenDataKeyIsGoogDotPrefixed() {
     expectFailureWhen(function(message) {
@@ -132,7 +156,8 @@ chrome.test.runTests([
       function generateString(base, len) {
         // Generates a string of size |len| by concatenating |base| multiple
         // times and trimming to |len|.
-        while (base.length < len) base += base;
+        while (base.length < len)
+          base += base;
         return base.substring(0, len);
       }
 
@@ -146,5 +171,5 @@ chrome.test.runTests([
         --entries;
       }
     });
-  }
+  },
 ]);

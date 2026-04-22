@@ -9,7 +9,7 @@ chrome.test.runTests([
     // to the extension's manifest `name` key value.
     const extensionName = chrome.runtime.getManifest().name;
     const invalidTitleError =
-      /Error at parameter 'details': Missing required property 'title'./;
+        /Error at parameter 'details': Missing required property 'title'./;
 
     // Extension has access to Action API.
     chrome.test.assertTrue('action' in chrome);
@@ -26,15 +26,15 @@ chrome.test.runTests([
     chrome.test.assertEq('A', await chrome.action.getTitle({}));
 
     // Invalid titles throw and do not alter the histogram.
-    chrome.test.assertThrows(chrome.action.setTitle, null,
-                                      [{title: null}], invalidTitleError);
-    chrome.test.assertThrows(chrome.action.setTitle, null,
-                                      [{title: undefined}], invalidTitleError);
+    chrome.test.assertThrows(
+        chrome.action.setTitle, null, [{title: null}], invalidTitleError);
+    chrome.test.assertThrows(
+        chrome.action.setTitle, null, [{title: undefined}], invalidTitleError);
     chrome.test.assertEq('A', await chrome.action.getTitle({}));
 
     // Increments 60-byte string bucket.
     const testTitle =
-      'Action Title Histogram Test — Test all the titles every day!'
+        'Action Title Histogram Test — Test all the titles every day!';
     await chrome.action.setTitle({title: testTitle});
     chrome.test.assertEq(testTitle, await chrome.action.getTitle({}));
 
@@ -43,5 +43,5 @@ chrome.test.runTests([
     chrome.test.assertEq(150, (await chrome.action.getTitle({})).length);
 
     chrome.test.succeed();
-  }
+  },
 ]);

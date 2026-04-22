@@ -27,10 +27,9 @@
  */
 function verifyFile(entry, successCallback) {
   chrome.test.assertFalse(!entry.file, 'Entry has no file method.');
-  entry.file(successCallback,
-             function() {
-               chrome.test.fail('Error reading result file.');
-              });
+  entry.file(successCallback, function() {
+    chrome.test.fail('Error reading result file.');
+  });
 }
 
 /**
@@ -43,8 +42,8 @@ function verifyFile(entry, successCallback) {
  *     is successfully verified.
  */
 function verifyDirectory(entry, successCallback) {
-  chrome.test.assertFalse(!entry.createReader,
-                          'Entry has no createReader method.');
+  chrome.test.assertFalse(
+      !entry.createReader, 'Entry has no createReader method.');
   const reader = entry.createReader();
 
   reader.readEntries(successCallback, function(error) {
@@ -60,11 +59,13 @@ function verifyDirectory(entry, successCallback) {
  * @return {function(Entry, successCallback)}
  */
 function getEntryVerifier(type) {
-  if (type == 'file')
+  if (type == 'file') {
     return verifyFile;
+  }
 
-  if (type == 'dir')
+  if (type == 'dir') {
     return verifyDirectory;
+  }
 
   return null;
 }
@@ -73,26 +74,23 @@ chrome.test.runTests([
   // Loads filesystem that contains drive mount point.
   function loadFileSystem() {
     chrome.fileSystem.requestFileSystem(
-      {volumeId: 'drive:drive-user'},
-      function (fileSystem) {
-        chrome.test.assertFalse(!fileSystem, 'Failed to get file system.');
-        fileSystem.root.getDirectory(
-            '/root/test_dir', {create: false},
-            // Also read a non-root directory. This will initiate loading of
-            // the full resource metadata. As of now, 'search' only works
-            // with the resource metadata fully loaded. crbug.com/40965971
-            function(entry) {
-              const reader = entry.createReader();
-              reader.readEntries(
-                  chrome.test.succeed,
-                  function() {
-                    chrome.test.fail('Error reading directory.');
-                  });
-            },
-            function() {
-              chrome.test.fail('Unable to get the testing directory.');
-            });
-      });
+        {volumeId: 'drive:drive-user'}, function(fileSystem) {
+          chrome.test.assertFalse(!fileSystem, 'Failed to get file system.');
+          fileSystem.root.getDirectory(
+              '/root/test_dir', {create: false},
+              // Also read a non-root directory. This will initiate loading of
+              // the full resource metadata. As of now, 'search' only works
+              // with the resource metadata fully loaded. crbug.com/40965971
+              function(entry) {
+                const reader = entry.createReader();
+                reader.readEntries(chrome.test.succeed, function() {
+                  chrome.test.fail('Error reading directory.');
+                });
+              },
+              function() {
+                chrome.test.fail('Unable to get the testing directory.');
+              });
+        });
   },
 
   // Tests chrome.fileManagerPrivate.searchDrive method.
@@ -143,34 +141,33 @@ chrome.test.runTests([
 
     const query = {query: 'test', types: 'ALL', maxResults: 4};
 
-    chrome.fileManagerPrivate.searchDriveMetadata(
-        query,
-        function(entries) {
-          chrome.test.assertFalse(!entries);
-          chrome.test.assertEq(expectedResults.length, entries.length);
+    chrome.fileManagerPrivate.searchDriveMetadata(query, function(entries) {
+      chrome.test.assertFalse(!entries);
+      chrome.test.assertEq(expectedResults.length, entries.length);
 
-          function verifySearchResultAt(resultIndex) {
-            if (resultIndex == expectedResults.length) {
-              chrome.test.succeed();
-              return;
-            }
+      function verifySearchResultAt(resultIndex) {
+        if (resultIndex == expectedResults.length) {
+          chrome.test.succeed();
+          return;
+        }
 
-            chrome.test.assertFalse(!entries[resultIndex]);
-            chrome.test.assertFalse(!entries[resultIndex].entry);
-            chrome.test.assertEq(expectedResults[resultIndex].path,
-                                 entries[resultIndex].entry.fullPath);
+        chrome.test.assertFalse(!entries[resultIndex]);
+        chrome.test.assertFalse(!entries[resultIndex].entry);
+        chrome.test.assertEq(
+            expectedResults[resultIndex].path,
+            entries[resultIndex].entry.fullPath);
 
-            const verifyEntry =
-                getEntryVerifier(expectedResults[resultIndex].type);
-            chrome.test.assertFalse(!verifyEntry);
+        const verifyEntry = getEntryVerifier(expectedResults[resultIndex].type);
+        chrome.test.assertFalse(!verifyEntry);
 
-            // The callback will be called only if the entry is successfully
-            // verified, otherwise the test function will fail.
-            verifyEntry(entries[resultIndex].entry,
-                        verifySearchResultAt.bind(null, resultIndex + 1));
-          }
+        // The callback will be called only if the entry is successfully
+        // verified, otherwise the test function will fail.
+        verifyEntry(
+            entries[resultIndex].entry,
+            verifySearchResultAt.bind(null, resultIndex + 1));
+      }
 
-          verifySearchResultAt(0);
-        });
-  }
+      verifySearchResultAt(0);
+    });
+  },
 ]);

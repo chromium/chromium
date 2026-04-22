@@ -4,8 +4,12 @@
 
 // Make sure that putting interceptors on event filter attributes doesn't
 // break anything.
-Object.defineProperty(Object.prototype, 'windowExposedByDefault',
-                      {enumerable: true, get() { return 'hahaha'; }});
+Object.defineProperty(Object.prototype, 'windowExposedByDefault', {
+  enumerable: true,
+  get() {
+    return 'hahaha';
+  }
+});
 chrome.webNavigation.onBeforeNavigate.addListener(function() {
   chrome.test.notifyPass();
 }, {url: [{hostContains: 'example.com'}]});

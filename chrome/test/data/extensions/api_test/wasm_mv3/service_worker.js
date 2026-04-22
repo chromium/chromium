@@ -5,6 +5,7 @@
 import {runTests} from './test_module.js';
 
 chrome.test.sendMessage('ready', reply => {
-  if (reply === 'go')
+  if (reply === 'go') {
     runTests();
+  }
 });

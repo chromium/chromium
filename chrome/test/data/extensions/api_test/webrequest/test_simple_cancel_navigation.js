@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 // Constants as functions, not to be called until after runTests.
 function getURLHttpWithScript() {
@@ -23,7 +23,7 @@ runTests([
               type: 'main_frame',
               url: getURLHttpWithScript(),
               frameUrl: getURLHttpWithScript(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
             retval: {cancel: true},
           },
@@ -34,15 +34,16 @@ runTests([
               url: getURLHttpWithScript(),
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
               error: 'net::ERR_BLOCKED_BY_CLIENT',
-              fromCache: false
+              fromCache: false,
             },
           },
         ],
-        [  // event order
+        [
+          // event order
           [
             'onBeforeRequest',
             'onErrorOccurred',
-          ]
+          ],
         ],
         {urls: ['<all_urls>']},  // filter
         ['blocking']);

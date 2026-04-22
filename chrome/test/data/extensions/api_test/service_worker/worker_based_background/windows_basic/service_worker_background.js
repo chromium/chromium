@@ -4,12 +4,13 @@
 
 const createWindowUtil = function(urlToLoad, createdCallback) {
   try {
-    chrome.windows.create({ url: urlToLoad, type: 'normal',
-        width: 600, height: 400 }, createdCallback);
+    chrome.windows.create(
+        {url: urlToLoad, type: 'normal', width: 600, height: 400},
+        createdCallback);
   } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 const getAllWindowUtil = function(populateValue, getAllCallback) {
   try {
@@ -17,7 +18,7 @@ const getAllWindowUtil = function(populateValue, getAllCallback) {
   } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 const getWindowUtil = function(windowId, getCallback) {
   try {
@@ -25,7 +26,7 @@ const getWindowUtil = function(windowId, getCallback) {
   } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 chrome.test.runTests([
   // Get the window that was automatically created.
@@ -57,4 +58,4 @@ chrome.test.runTests([
       });
     });
   },
-  ]);
+]);

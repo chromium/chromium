@@ -6,10 +6,10 @@ chrome.test.runTests([
   function saveFile() {
     try {
       chrome.fileSystem.chooseEntry({type: 'invalid'}, function() {});
-       // Should not reach this line since the above call throws.
+      // Should not reach this line since the above call throws.
       chrome.test.fail();
     } catch (ex) {
     }
     chrome.test.succeed();
-  }
+  },
 ]);

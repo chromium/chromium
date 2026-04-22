@@ -17,9 +17,10 @@ function navigateTab(url, callback) {
 let testServerPort;
 const host = 'xyz.com';
 function getServerURL(path) {
-  if (!testServerPort)
+  if (!testServerPort) {
     throw new Error('Called getServerURL outside of runTests.');
-  return `http://${host}:${testServerPort}/${path}`
+  }
+  return `http://${host}:${testServerPort}/${path}`;
 }
 
 // Returns whether |headerName| is present in |headers|.
@@ -96,15 +97,14 @@ function checkCustomResponseHeaders(initialHeadersParam, headers) {
 // Removes all the cookies and optionally checks if |optCurrentCookiesSet|
 // corresponds to the current cookies. Returns a promise.
 function checkAndResetCookies(optCurrentCookiesSet) {
-  const removeCookiesPromise =
-      function(cookieParams) {
+  const removeCookiesPromise = function(cookieParams) {
     return new Promise((resolve, reject) => {
       chrome.cookies.remove(cookieParams, function(details) {
         chrome.test.assertNoLastError();
         resolve();
       });
     });
-  }
+  };
 
   const url = getServerURL('');
 
@@ -112,13 +112,15 @@ function checkAndResetCookies(optCurrentCookiesSet) {
     chrome.cookies.getAll({url: url}, function(cookies) {
       if (optCurrentCookiesSet) {
         chrome.test.assertEq(cookies.length, optCurrentCookiesSet.size);
-        for (let i = 0; i < cookies.length; ++i)
+        for (let i = 0; i < cookies.length; ++i) {
           chrome.test.assertTrue(optCurrentCookiesSet.has(cookies[i].name));
+        }
       }
 
       const promises = [];
-      for (let i = 0; i < cookies.length; ++i)
+      for (let i = 0; i < cookies.length; ++i) {
         promises.push(removeCookiesPromise({url: url, name: cookies[i].name}));
+      }
 
       Promise.all(promises).then(resolve, reject);
     });
@@ -229,7 +231,7 @@ function checkAddWebRequestSetCookie(expectRemoved) {
       chrome.test.assertTrue(onHeadersReceivedSeen);
       chrome.test.assertEq(expectRemoved, onActionIgnoredCalled);
 
-      const expectedCookies = expectRemoved ? [] : ['webRequest']
+      const expectedCookies = expectRemoved ? [] : ['webRequest'];
       checkAndResetCookies(new Set(expectedCookies)).then(chrome.test.succeed);
     });
   });
@@ -251,8 +253,8 @@ const removeCookieRule = {
   condition: {urlFilter: host, resourceTypes: ['main_frame']},
   action: {
     type: 'modifyHeaders',
-    requestHeaders: [{header: 'cookie', operation: 'remove'}]
-  }
+    requestHeaders: [{header: 'cookie', operation: 'remove'}],
+  },
 };
 const removeSetCookieRule = {
   id: 2,
@@ -260,14 +262,14 @@ const removeSetCookieRule = {
   condition: {urlFilter: host, resourceTypes: ['main_frame']},
   action: {
     type: 'modifyHeaders',
-    responseHeaders: [{header: 'set-cookie', operation: 'remove'}]
-  }
+    responseHeaders: [{header: 'set-cookie', operation: 'remove'}],
+  },
 };
 const allowRule = {
   id: 3,
   priority: 1,
   condition: {urlFilter: host, resourceTypes: ['main_frame']},
-  action: {type: 'allow'}
+  action: {type: 'allow'},
 };
 const setCustomRequestHeaderRule = {
   id: 10,
@@ -275,8 +277,8 @@ const setCustomRequestHeaderRule = {
   condition: {urlFilter: host, resourceTypes: ['main_frame']},
   action: {
     type: 'modifyHeaders',
-    requestHeaders: [{header: 'header1', operation: 'set', value: 'value-1'}]
-  }
+    requestHeaders: [{header: 'header1', operation: 'set', value: 'value-1'}],
+  },
 };
 const appendRequestHeadersRule = {
   id: 100,
@@ -284,8 +286,8 @@ const appendRequestHeadersRule = {
   condition: {urlFilter: host, resourceTypes: ['main_frame']},
   action: {
     type: 'modifyHeaders',
-    requestHeaders: [{header: 'cookie', operation: 'append', value: 'dnr=val'}]
-  }
+    requestHeaders: [{header: 'cookie', operation: 'append', value: 'dnr=val'}],
+  },
 };
 
 const tests = [
@@ -390,9 +392,9 @@ const tests = [
           responseHeaders: [
             {header: 'header1', operation: 'append', value: 'rule-20'},
             {header: 'header2', operation: 'append', value: 'rule-20'},
-            {header: 'header3', operation: 'set', value: 'rule-20'}
-          ]
-        }
+            {header: 'header3', operation: 'set', value: 'rule-20'},
+          ],
+        },
       },
       {
         id: 21,
@@ -402,8 +404,8 @@ const tests = [
           type: 'modifyHeaders',
           responseHeaders: [
             {header: 'header3', operation: 'remove'},
-          ]
-        }
+          ],
+        },
       },
       {
         id: 22,
@@ -416,16 +418,16 @@ const tests = [
             {header: 'header2', operation: 'set', value: 'rule-22'},
             {header: 'header3', operation: 'append', value: 'rule-22'},
             {header: 'header4', operation: 'set', value: 'rule-22'},
-          ]
-        }
-      }
+          ],
+        },
+      },
     ];
 
     const expectedResponseHeaders = {
       header1: 'original, rule-20, rule-22',
       header2: 'rule-20',
       header3: 'rule-20, rule-22',
-      header4: 'rule-22'
+      header4: 'rule-22',
     };
 
     chrome.declarativeNetRequest.updateDynamicRules(

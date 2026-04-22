@@ -14,7 +14,8 @@ const rule = {
   conditions: [
     new chrome.declarativeContent.PageStateMatcher(
         {pageUrl: {hostPrefix: 'example'}}),
-  ], actions: [
+  ],
+  actions: [
     new chrome.declarativeContent.ShowAction(),
     new chrome.declarativeContent.SetIcon({imageData: imageData}),
   ],

@@ -10,18 +10,17 @@ const BLOCKED_BY_ENTERPRISE_ERROR =
     'Permissions are blocked by enterprise policy.';
 
 chrome.test.getConfig(function(config) {
-
   chrome.test.runTests([
     function allowedPermission() {
       chrome.permissions.request(
-          {permissions:['bookmarks']},
-          pass(function(granted) { assertTrue(granted); }));
+          {permissions: ['bookmarks']}, pass(function(granted) {
+            assertTrue(granted);
+          }));
     },
 
     function allowedPermission() {
       chrome.permissions.request(
-          {permissions:['management']},
-          fail(BLOCKED_BY_ENTERPRISE_ERROR));
-    }
+          {permissions: ['management']}, fail(BLOCKED_BY_ENTERPRISE_ERROR));
+    },
   ]);
 });

@@ -32,6 +32,6 @@ chrome.test.runTests([
     } catch (e) {
       chrome.test.succeed();
     }
-  }
+  },
 
 ]);

@@ -42,76 +42,78 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 loadScript.then(async function() {
-chrome.test.runTests([
-  async function createTab() {
-    chrome.tabs.create({}, async (tab) => {
-      testTabId = tab.id;
-      // Wait for tab loading complete.
-      await waitForTabLoaded(testTabId);
-      chrome.test.succeed();
-    });
-  },
-
-  function mutedStartsFalse() {
-    chrome.tabs.get(testTabId, pass(function(tab) {
-      assertEq(false, tab.mutedInfo.muted);
-
-      queryForTab(testTabId, {muted: false}, pass(function(tab) {
-        assertEq(false, tab.mutedInfo.muted);
-      }));
-      queryForTab(testTabId, {muted: true} , pass(function(tab) {
-        assertEq(null, tab);
-      }));
-    }));
-  },
-
-  function makeMuted() {
-    const expectedAfterMute = {
-      muted: true,
-      reason: 'extension',
-      extensionId: chrome.runtime.id
-    };
-
-    chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
-      if (tabId != testTabId || !changeInfo.mutedInfo) {
-        return;  // Ignore unrelated events.
-      }
-      assertEq(expectedAfterMute, changeInfo.mutedInfo);
-      chrome.tabs.onUpdated.removeListener(local);
-      chrome.test.succeed();
-    });
-
-    chrome.tabs.update(testTabId, {muted: true});
-  },
-
-  function testStaysMutedAfterChangingWindow() {
-    chrome.windows.create({}, function(window) {
-      // chrome.tabs.onUpdated is not sent on tab movement.
-      chrome.tabs.move(testTabId, {windowId: window.id, index: -1},
-                       function(tab) {
-        assertEq(true, tab.mutedInfo.muted);
+  chrome.test.runTests([
+    async function createTab() {
+      chrome.tabs.create({}, async (tab) => {
+        testTabId = tab.id;
+        // Wait for tab loading complete.
+        await waitForTabLoaded(testTabId);
         chrome.test.succeed();
       });
-    });
-  },
+    },
 
-  function makeNotMuted() {
-    const expectedAfterUnmute = {
-      muted: false,
-      reason: 'extension',
-      extensionId: chrome.runtime.id
-    };
+    function mutedStartsFalse() {
+      chrome.tabs.get(
+          testTabId, pass(function(tab) {
+            assertEq(false, tab.mutedInfo.muted);
 
-    chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
-      if (tabId != testTabId || !changeInfo.mutedInfo) {
-        return;  // Ignore unrelated events.
-      }
-      chrome.tabs.onUpdated.removeListener(local);
-      assertEq(expectedAfterUnmute, changeInfo.mutedInfo);
-      chrome.test.succeed();
-    });
+            queryForTab(testTabId, {muted: false}, pass(function(tab) {
+                          assertEq(false, tab.mutedInfo.muted);
+                        }));
+            queryForTab(testTabId, {muted: true}, pass(function(tab) {
+                          assertEq(null, tab);
+                        }));
+          }));
+    },
 
-    chrome.tabs.update(testTabId, {muted: false});
-  }
+    function makeMuted() {
+      const expectedAfterMute = {
+        muted: true,
+        reason: 'extension',
+        extensionId: chrome.runtime.id,
+      };
 
-])});
+      chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
+        if (tabId != testTabId || !changeInfo.mutedInfo) {
+          return;  // Ignore unrelated events.
+        }
+        assertEq(expectedAfterMute, changeInfo.mutedInfo);
+        chrome.tabs.onUpdated.removeListener(local);
+        chrome.test.succeed();
+      });
+
+      chrome.tabs.update(testTabId, {muted: true});
+    },
+
+    function testStaysMutedAfterChangingWindow() {
+      chrome.windows.create({}, function(window) {
+        // chrome.tabs.onUpdated is not sent on tab movement.
+        chrome.tabs.move(
+            testTabId, {windowId: window.id, index: -1}, function(tab) {
+              assertEq(true, tab.mutedInfo.muted);
+              chrome.test.succeed();
+            });
+      });
+    },
+
+    function makeNotMuted() {
+      const expectedAfterUnmute = {
+        muted: false,
+        reason: 'extension',
+        extensionId: chrome.runtime.id,
+      };
+
+      chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
+        if (tabId != testTabId || !changeInfo.mutedInfo) {
+          return;  // Ignore unrelated events.
+        }
+        chrome.tabs.onUpdated.removeListener(local);
+        assertEq(expectedAfterUnmute, changeInfo.mutedInfo);
+        chrome.test.succeed();
+      });
+
+      chrome.tabs.update(testTabId, {muted: false});
+    },
+
+  ]);
+});

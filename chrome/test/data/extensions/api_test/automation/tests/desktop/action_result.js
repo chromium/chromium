@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let allTests = [function testActionResult() {
+const allTests = [function testActionResult() {
   const firstTextField = rootNode.find({role: RoleType.TEXT_FIELD});
   assertTrue(!!firstTextField);
   firstTextField.scrollBackward(result => {
@@ -11,4 +11,4 @@ let allTests = [function testActionResult() {
   });
 }];
 
-setUpAndRunDesktopTests(allTests)
+setUpAndRunDesktopTests(allTests);

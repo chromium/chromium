@@ -9,7 +9,7 @@ const pn = chrome.privacy.network;
 const ps = chrome.privacy.services;
 
 const PRIVACY_SANDBOX_ERROR_MESSAGE =
-    'Extensions aren’t allowed to enable Privacy Sandbox APIs.'
+    'Extensions aren’t allowed to enable Privacy Sandbox APIs.';
 
 // The collection of preferences to test, split into objects with a "root"
 // (the root object they preferences are exposed on) and a dictionary of
@@ -19,7 +19,7 @@ const preferencesToTest = [
     root: chrome.privacy.network,
     preferences: {
       networkPredictionEnabled: false,
-    }
+    },
   },
   {
     root: chrome.privacy.websites,
@@ -29,7 +29,7 @@ const preferencesToTest = [
       referrersEnabled: false,
       doNotTrackEnabled: false,
       protectedContentEnabled: true,
-    }
+    },
   },
   {
     root: chrome.privacy.services,
@@ -44,7 +44,7 @@ const preferencesToTest = [
       searchSuggestEnabled: false,
       spellingServiceEnabled: false,
       translationServiceEnabled: false,
-    }
+    },
   },
 ];
 
@@ -59,7 +59,7 @@ const privacySandboxPrefsToTestOnlyAllowedToDisable = [{
     fledgeEnabled: true,
     adMeasurementEnabled: true,
     relatedWebsiteSetsEnabled: true,
-  }
+  },
 }];
 
 // Some preferences are only present on certain platforms or are hidden
@@ -74,19 +74,23 @@ function expect(expected, message) {
 
 // Verifies that the preference has the expected default value.
 function expectDefault(prefName, defaultValue) {
-  return expect({
-    value: defaultValue,
-    levelOfControl: 'controllable_by_this_extension'
-  }, `\`${prefName}\` is expected to be the default, which is ${defaultValue}`);
-
+  return expect(
+      {
+        value: defaultValue,
+        levelOfControl: 'controllable_by_this_extension',
+      },
+      `\`${prefName}\` is expected to be the default, which is ${
+          defaultValue}`);
 }
 
 // Verifies that the preference is properly controlled by the extension.
 function expectControlled(prefName, newValue) {
-  return expect({
-    value: newValue,
-    levelOfControl: 'controlled_by_this_extension',
-  }, `\`${prefName}\` is expected to be controlled by this extension.`);
+  return expect(
+      {
+        value: newValue,
+        levelOfControl: 'controlled_by_this_extension',
+      },
+      `\`${prefName}\` is expected to be controlled by this extension.`);
 }
 
 // Tests getting the preference value (which should be uncontrolled and at its
@@ -104,10 +108,10 @@ function prefSetterOppositeOfDefault(prefName, defaultValue) {
   if (possiblyMissingPreferences.has(prefName)) {
     return;
   }
-  this[prefName].set({value: !defaultValue},
-                     chrome.test.callbackPass(function() {
-    this[prefName].get({}, expectControlled(prefName, !defaultValue));
-  }.bind(this)));
+  this[prefName].set(
+      {value: !defaultValue}, chrome.test.callbackPass(function() {
+        this[prefName].get({}, expectControlled(prefName, !defaultValue));
+      }.bind(this)));
 }
 
 // Tests setting a Privacy Sandbox preference value when not allowed to enable
@@ -141,17 +145,20 @@ function privacySandboxPrefSetterToTrueExpectErrorAndControlled(prefName) {
 }
 
 chrome.test.sendMessage('ready', function(message) {
-  if (message != 'run test')
+  if (message != 'run test') {
     return;
+  }
   chrome.test.getConfig(function(config) {
     // Populate the set of missing prefs from config.customArg.
     const customArg = JSON.parse(config.customArg);
-    customArg.forEach(element => { possiblyMissingPreferences.add(element) });
+    customArg.forEach(element => {
+      possiblyMissingPreferences.add(element);
+    });
     chrome.test.runTests([
       function getPreferences() {
-        for (const preferenceSet of
-                 [...preferencesToTest,
-                  ...privacySandboxPrefsToTestOnlyAllowedToDisable]) {
+        for (const preferenceSet
+                 of [...preferencesToTest,
+                     ...privacySandboxPrefsToTestOnlyAllowedToDisable]) {
           for (const key in preferenceSet.preferences) {
             prefGetter.call(
                 preferenceSet.root, key, preferenceSet.preferences[key]);
@@ -207,8 +214,8 @@ chrome.test.sendMessage('ready', function(message) {
             expect(
                 {
                   value: chrome.privacy.IPHandlingPolicy
-                      .DEFAULT_PUBLIC_INTERFACE_ONLY,
-                  levelOfControl: 'controllable_by_this_extension'
+                             .DEFAULT_PUBLIC_INTERFACE_ONLY,
+                  levelOfControl: 'controllable_by_this_extension',
                 },
                 'should receive default_public_interface_only.'));
 
@@ -220,8 +227,8 @@ chrome.test.sendMessage('ready', function(message) {
             expect(
                 {
                   value:
-                    chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP,
-                  levelOfControl: 'controlled_by_this_extension'
+                      chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP,
+                  levelOfControl: 'controlled_by_this_extension',
                 },
                 'should receive disable_non_proxied_udp.'));
       },
@@ -232,34 +239,42 @@ chrome.test.sendMessage('ready', function(message) {
           ps.autofillAddressEnabled.get(
               {},
               expect(
-                  {value: false,
-                   levelOfControl: 'controlled_by_this_extension'},
+                  {
+                    value: false,
+                    levelOfControl: 'controlled_by_this_extension'
+                  },
                   'autofillAddressEnabled should be disabled.'));
 
           ps.autofillCreditCardEnabled.get(
               {},
               expect(
-                  {value: false,
-                   levelOfControl: 'controlled_by_this_extension'},
+                  {
+                    value: false,
+                    levelOfControl: 'controlled_by_this_extension'
+                  },
                   'autofillCreditCardEnabled should be disabled.'));
 
           ps.autofillEnabled.set({value: true}, function() {
             ps.autofillAddressEnabled.get(
                 {},
                 expect(
-                    {value: true,
-                     levelOfControl: 'controlled_by_this_extension'},
+                    {
+                      value: true,
+                      levelOfControl: 'controlled_by_this_extension'
+                    },
                     'autofillAddressEnabled should be enabled.'));
 
             ps.autofillCreditCardEnabled.get(
                 {},
                 expect(
-                    {value: true,
-                     levelOfControl: 'controlled_by_this_extension'},
+                    {
+                      value: true,
+                      levelOfControl: 'controlled_by_this_extension'
+                    },
                     'autofillCreditCardEnabled should be enabled.'));
           });
         });
-      }
-    ])
-  })
+      },
+    ]);
+  });
 });

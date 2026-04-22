@@ -8,25 +8,25 @@
 const pass = chrome.test.callbackPass;
 
 const EXPECTED_EVENTS = [
-  { command: 'line_up' },
-  { command: 'line_down' },
-  { command: 'pan_left' },
-  { command: 'pan_right' },
-  { command: 'top' },
-  { command: 'bottom' },
-  { command: 'routing', displayPosition: 5 },
-  { command: 'standard_key', standardKeyChar: 'A' },
-  { command: 'standard_key', standardKeyChar: '\u00E5' },
-  { command: 'standard_key', standardKeyChar: '\u0100' },
+  {command: 'line_up'},
+  {command: 'line_down'},
+  {command: 'pan_left'},
+  {command: 'pan_right'},
+  {command: 'top'},
+  {command: 'bottom'},
+  {command: 'routing', displayPosition: 5},
+  {command: 'standard_key', standardKeyChar: 'A'},
+  {command: 'standard_key', standardKeyChar: '\u00E5'},
+  {command: 'standard_key', standardKeyChar: '\u0100'},
   // UTF-16 of U+1F639.
-  { command: 'standard_key', standardKeyChar: '\uD83D\uDE39' },
-  { command: 'standard_key', standardKeyCode: 'Backspace' },
-  { command: 'standard_key', standardKeyCode: 'Tab', shiftKey: true },
-  { command: 'standard_key', standardKeyCode: 'F3', altKey: true },
-  { command: 'dots', ctrlKey: true, brailleDots: 0x1 | 0x2}
+  {command: 'standard_key', standardKeyChar: '\uD83D\uDE39'},
+  {command: 'standard_key', standardKeyCode: 'Backspace'},
+  {command: 'standard_key', standardKeyCode: 'Tab', shiftKey: true},
+  {command: 'standard_key', standardKeyCode: 'F3', altKey: true},
+  {command: 'dots', ctrlKey: true, brailleDots: 0x1 | 0x2},
 ];
 for (let i = 0; i < 256; ++i) {
-  EXPECTED_EVENTS.push({ command: 'dots', brailleDots: i });
+  EXPECTED_EVENTS.push({command: 'dots', brailleDots: i});
 }
 
 let eventNumber = 0;
@@ -72,5 +72,5 @@ chrome.test.runTests([
     chrome.brailleDisplayPrivate.onKeyEvent.addListener(eventListener);
     allEventsReceived = chrome.test.callbackAdded();
     waitForDisplay(pass());
-  }
+  },
 ]);

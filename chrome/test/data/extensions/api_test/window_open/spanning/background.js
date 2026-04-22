@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var nextTest = null;
+let nextTest = null;
 openFromNormalShouldOpenInNormal();
 
 function openFromNormalShouldOpenInNormal() {
@@ -28,23 +28,26 @@ function openFromExtensionHostInIncognitoBrowserShouldOpenInNormalBrowser() {
   chrome.windows.getCurrent(function(normalWin) {
     chrome.test.assertFalse(normalWin.incognito);
     // Create an incognito window.
-    chrome.windows.create({
-      incognito: true,
-      focused: true
-    }, function(incognitoWin) {
-      // Remove the normal window. We keep running because of the incognito
-      // window.
-      chrome.windows.remove(normalWin.id, function() {
-        chrome.tabs.query({windowId: incognitoWin.id}, function(tabs) {
-          chrome.test.assertEq(1, tabs.length);
-          chrome.tabs.create(
-              {windowId: incognitoWin.id, url: 'popup.html'}, function(tab) {
-                chrome.test.assertTrue(!!tab);
-                // The rest of the test continues in popup.html.
-              });
+    chrome.windows.create(
+        {
+          incognito: true,
+          focused: true,
+        },
+        function(incognitoWin) {
+          // Remove the normal window. We keep running because of the incognito
+          // window.
+          chrome.windows.remove(normalWin.id, function() {
+            chrome.tabs.query({windowId: incognitoWin.id}, function(tabs) {
+              chrome.test.assertEq(1, tabs.length);
+              chrome.tabs.create(
+                  {windowId: incognitoWin.id, url: 'popup.html'},
+                  function(tab) {
+                    chrome.test.assertTrue(!!tab);
+                    // The rest of the test continues in popup.html.
+                  });
+            });
+          });
         });
-      });
-    });
   });
 }
 

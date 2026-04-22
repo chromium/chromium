@@ -36,7 +36,7 @@ const listeners = {
   onResponseStarted: [],
   onBeforeRedirect: [],
   onCompleted: [],
-  onErrorOccurred: []
+  onErrorOccurred: [],
 };
 // Requests initiated by a user interaction with the browser is a
 // BROWSER_INITIATED action. If the request was instead initiated by the tabs
@@ -44,12 +44,13 @@ const listeners = {
 // WEB_INITIATED.
 const initiators = {
   BROWSER_INITIATED: 2,
-  WEB_INITIATED: 3
+  WEB_INITIATED: 3,
 };
 
 // If true, don't bark on events that were not registered via expect().
 // These events are recorded in capturedUnexpectedData instead of
 // capturedEventData.
+// This is set by subtests, so we can't use `const` here.
 let ignoreUnexpected = false;
 
 // This is a debugging aid to print all received events as well as the
@@ -86,7 +87,7 @@ function runTests(tests) {
     const waitForAboutBlank = function(_, info, tab) {
       if (debug) {
         console.log(`tabs.OnUpdated received in waitForAboutBlank: ${
-          JSON.stringify(info)} ${JSON.stringify(tab)}`);
+            JSON.stringify(info)} ${JSON.stringify(tab)}`);
       }
       if (info.status == 'complete' && tab.url == 'about:blank') {
         chrome.tabs.onUpdated.removeListener(waitForAboutBlank);
@@ -116,7 +117,7 @@ function validateNavigationType(navigationType) {
   if (navigationType == undefined) {
     throw new Error('A navigation type must be defined.');
   }
-  if(Object.values(initiators).indexOf(navigationType) === -1) {
+  if (Object.values(initiators).indexOf(navigationType) === -1) {
     throw new Error('Unknown navigation type.');
   }
 }
@@ -129,7 +130,7 @@ function getDomain(navigationType) {
   if (navigationType == initiators.BROWSER_INITIATED) {
     return undefined;
   } else {
-    return getURL('').slice(0,-1);
+    return getURL('').slice(0, -1);
   }
 }
 
@@ -148,17 +149,18 @@ function getServerDomain(navigationType, optHost, optScheme) {
 // This is because tabs.update can sometimes fail if the tab is in the middle
 // of a navigation (from the previous test), resulting in flakiness.
 function navigateAndWait(url, callback) {
-  const done = chrome.test.listenForever(chrome.tabs.onUpdated,
-      function (_, info, tab) {
-    if (debug) {
-      console.log(`tabs.OnUpdated received in navigateAndWait: ${
-        JSON.stringify(info)} ${JSON.stringify(tab)}`);
-    }
-    if (tab.id == tabId && info.status == 'complete') {
-      if (callback) callback(tab);
-      done();
-    }
-  });
+  const done =
+      chrome.test.listenForever(chrome.tabs.onUpdated, function(_, info, tab) {
+        if (debug) {
+          console.log(`tabs.OnUpdated received in navigateAndWait: ${
+              JSON.stringify(info)} ${JSON.stringify(tab)}`);
+        }
+        if (tab.id == tabId && info.status == 'complete') {
+          if (callback)
+            callback(tab);
+          done();
+        }
+      });
   chrome.test.sendMessage(JSON.stringify({navigate: {tabId: tabId, url: url}}));
 }
 
@@ -166,18 +168,18 @@ function deepCopy(obj) {
   if (obj === null) {
     return null;
   }
-  if (typeof(obj) != 'object') {
+  if (typeof (obj) !== 'object') {
     return obj;
   }
   if (Array.isArray(obj)) {
-    const tmpArray = new Array;
+    const tmpArray = new Array();
     for (let i = 0; i < obj.length; i++) {
       tmpArray.push(deepCopy(obj[i]));
     }
     return tmpArray;
   }
 
-  const tmpObject = {}
+  const tmpObject = {};
   for (const p in obj) {
     tmpObject[p] = deepCopy(obj[p]);
   }
@@ -257,8 +259,8 @@ function checkExpectations() {
     return;
   }
   if (capturedEventData.length > expectedEventData.length) {
-    chrome.test.fail(`Recorded too many events. ${
-        JSON.stringify(capturedEventData)}`);
+    chrome.test.fail(
+        `Recorded too many events. ${JSON.stringify(capturedEventData)}`);
     return;
   }
   // We have ensured that capturedEventData contains exactly the same elements
@@ -266,21 +268,22 @@ function checkExpectations() {
   // Step 1: build positions such that
   //     positions[<event-label>]=<position of this event in capturedEventData>
   let curPos = 0;
-  const positions = {}
-  capturedEventData.forEach(function (event) {
+  const positions = {};
+  capturedEventData.forEach(function(event) {
     chrome.test.assertTrue(event.hasOwnProperty('label'));
     positions[event.label] = curPos;
     curPos++;
   });
   // Step 2: check that elements arrived in correct order
-  expectedEventOrder.forEach(function (order) {
+  expectedEventOrder.forEach(function(order) {
     let previousLabel = undefined;
     order.forEach(function(label) {
       if (previousLabel === undefined) {
         previousLabel = label;
         return;
       }
-      chrome.test.assertTrue(positions[previousLabel] < positions[label],
+      chrome.test.assertTrue(
+          positions[previousLabel] < positions[label],
           `Event ${previousLabel} is supposed to arrive before ${label}.`);
       previousLabel = label;
     });
@@ -314,8 +317,7 @@ function isUnexpectedDetachedRequest(name, details) {
   // Only return true if there is no matching expectation for the given details.
   return !expectedEventData.some(function(exp) {
     let didMatchTabAndFrameId =
-      exp.details.tabId === -1 &&
-      exp.details.frameId === -1;
+        exp.details.tabId === -1 && exp.details.frameId === -1;
 
     // Accept non-matching tabId/frameId for ping/beacon requests because these
     // requests can continue after a frame is removed. And due to a bug, such
@@ -325,11 +327,9 @@ function isUnexpectedDetachedRequest(name, details) {
     // TODO(robwu): Remove this once https://crbug.com/40431900 gets fixed.
     didMatchTabAndFrameId = didMatchTabAndFrameId || details.type === 'ping';
 
-    return name === exp.event &&
-      didMatchTabAndFrameId &&
-      exp.details.method === details.method &&
-      exp.details.url === details.url &&
-      exp.details.type === details.type;
+    return name === exp.event && didMatchTabAndFrameId &&
+        exp.details.method === details.method &&
+        exp.details.url === details.url && exp.details.type === details.type;
   });
 }
 
@@ -348,10 +348,10 @@ function captureEvent(name, details, callback) {
   // Check that the frameId can be used to reliably determine the URL of the
   // frame that caused requests.
   if (name == 'onBeforeRequest') {
-    chrome.test.assertTrue('frameId' in details &&
-                           typeof details.frameId === 'number');
-    chrome.test.assertTrue('tabId' in details &&
-                            typeof details.tabId === 'number');
+    chrome.test.assertTrue(
+        'frameId' in details && typeof details.frameId === 'number');
+    chrome.test.assertTrue(
+        'tabId' in details && typeof details.tabId === 'number');
     const key = `${details.tabId}-${details.frameId}`;
     if (details.type == 'main_frame' || details.type == 'sub_frame' ||
         details.type == 'webtransport') {
@@ -413,14 +413,14 @@ function captureEvent(name, details, callback) {
       chrome.test.assertTrue(rawItem.bytes instanceof ArrayBuffer);
       // Stub out the bytes with an empty array buffer, since the expectations
       // don't hardcode real bytes.
-      rawItem.bytes = new ArrayBuffer;
+      rawItem.bytes = new ArrayBuffer();
     }
   }
 
   // Check if the equivalent event is already captured, and issue a unique
   // |eventCount| to identify each.
   let eventCount = 0;
-  capturedEventData.forEach(function (event) {
+  capturedEventData.forEach(function(event) {
     if (deepEq(event.event, name) && deepEq(event.details, details)) {
       eventCount++;
       // update |details| for the next match.
@@ -430,7 +430,7 @@ function captureEvent(name, details, callback) {
 
   // find |details| in matchingExpectedEventData
   let matchingExpectedEvent = undefined;
-  expectedEventData.forEach(function (exp) {
+  expectedEventData.forEach(function(exp) {
     if (deepEq(exp.event, name) && deepEq(exp.details, details)) {
       if (matchingExpectedEvent) {
         chrome.test.fail(
@@ -442,8 +442,8 @@ function captureEvent(name, details, callback) {
     }
   });
   if (!matchingExpectedEvent && !ignoreUnexpected) {
-    console.log(`Expected events: ${
-        JSON.stringify(expectedEventData, null, 2)}`);
+    console.log(
+        `Expected events: ${JSON.stringify(expectedEventData, null, 2)}`);
     chrome.test.fail(`Received unexpected event '${name}':\n${
         JSON.stringify(details, null, 2)}`);
   }
@@ -452,8 +452,8 @@ function captureEvent(name, details, callback) {
   let retvalFunction;
   if (matchingExpectedEvent) {
     if (debug) {
-      console.log(`Expected event received: ${name}: ${
-        JSON.stringify(details)}`);
+      console.log(
+          `Expected event received: ${name}: ${JSON.stringify(details)}`);
     }
     capturedEventData.push(
         {label: matchingExpectedEvent.label, event: name, details: details});
@@ -468,8 +468,8 @@ function captureEvent(name, details, callback) {
     retvalFunction = matchingExpectedEvent.retvalFunction;
   } else {
     if (debug) {
-      console.log(`NOT Expected event received: ${name}: ${
-        JSON.stringify(details)}`);
+      console.log(
+          `NOT Expected event received: ${name}: ${JSON.stringify(details)}`);
     }
     capturedUnexpectedData.push({event: name, details: details});
   }
@@ -488,7 +488,9 @@ function captureEvent(name, details, callback) {
 // Simple array intersection. We use this to filter extraInfoSpec so
 // that only the allowed specs are sent to each listener.
 function intersect(array1, array2) {
-  return array1.filter(function(x) { return array2.indexOf(x) != -1; });
+  return array1.filter(function(x) {
+    return array2.indexOf(x) != -1;
+  });
 }
 
 function initListeners(filter, extraInfoSpec) {
@@ -551,21 +553,21 @@ function initListeners(filter, extraInfoSpec) {
 
   chrome.webRequest.onHeadersReceived.addListener(
       onHeadersReceived, filter,
-      intersect(extraInfoSpec, ['blocking', 'responseHeaders',
-                                'extraHeaders']));
+      intersect(
+          extraInfoSpec, ['blocking', 'responseHeaders', 'extraHeaders']));
 
   chrome.webRequest.onAuthRequired.addListener(
-      onAuthRequired, filter,
-      intersect(extraInfoSpec, ['asyncBlocking', 'blocking',
-                                'responseHeaders', 'extraHeaders']));
+      onAuthRequired, filter, intersect(extraInfoSpec, [
+        'asyncBlocking', 'blocking', 'responseHeaders', 'extraHeaders'
+      ]));
 
   chrome.webRequest.onResponseStarted.addListener(
       onResponseStarted, filter,
       intersect(extraInfoSpec, ['responseHeaders', 'extraHeaders']));
 
   chrome.webRequest.onBeforeRedirect.addListener(
-      onBeforeRedirect, filter, intersect(extraInfoSpec,
-      ['responseHeaders','extraHeaders']));
+      onBeforeRedirect, filter,
+      intersect(extraInfoSpec, ['responseHeaders', 'extraHeaders']));
 
   chrome.webRequest.onCompleted.addListener(
       onCompleted, filter,
@@ -599,15 +601,17 @@ function resetDeclarativeRules() {
 
 function checkHeaders(headers, requiredNames, disallowedNames) {
   const headerMap = {};
-  for (let i = 0; i < headers.length; i++)
+  for (let i = 0; i < headers.length; i++) {
     headerMap[headers[i].name.toLowerCase()] = headers[i].value;
+  }
 
   for (let i = 0; i < requiredNames.length; i++) {
-    chrome.test.assertTrue(!!headerMap[requiredNames[i]],
-        `Missing header: ${requiredNames[i]}`);
+    chrome.test.assertTrue(
+        !!headerMap[requiredNames[i]], `Missing header: ${requiredNames[i]}`);
   }
   for (let i = 0; i < disallowedNames.length; i++) {
-    chrome.test.assertFalse(!!headerMap[disallowedNames[i]],
+    chrome.test.assertFalse(
+        !!headerMap[disallowedNames[i]],
         `Header should not be present: ${disallowedNames[i]}`);
   }
 }

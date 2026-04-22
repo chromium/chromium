@@ -14,7 +14,7 @@ const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'kitty',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -25,7 +25,7 @@ const TESTING_NEW_FILE = Object.freeze({
   isDirectory: false,
   name: 'puppy',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -57,7 +57,8 @@ function runTests() {
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_NEW_FILE.name, entry.name);
             chrome.test.assertFalse(entry.isDirectory);
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -69,7 +70,8 @@ function runTests() {
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_FILE.name, entry.name);
             chrome.test.assertFalse(entry.isDirectory);
-          }), function(error) {
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -77,13 +79,12 @@ function runTests() {
     // Create a file which exists, exclusively. Should fail.
     function createFileExistsError() {
       testUtil.fileSystem.root.getFile(
-          TESTING_FILE.name, {create: true, exclusive: true},
-          function(entry) {
+          TESTING_FILE.name, {create: true, exclusive: true}, function(entry) {
             chrome.test.fail('Created a file, but should fail.');
           }, chrome.test.callbackPass(function(error) {
             chrome.test.assertEq('InvalidModificationError', error.name);
           }));
-    }
+    },
   ]);
 }
 
@@ -91,7 +92,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

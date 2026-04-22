@@ -16,7 +16,8 @@ let nextProcessId;
 let processIds;
 let initialized = false;
 
-// This is assigned in subtests to output more logs.
+// This is assigned in subtests to output more logs; as such, we can't use
+// a const variable here.
 let debug = false;
 
 // Helper function. Turns a function returning an object in a callback into a
@@ -30,19 +31,21 @@ function promise(fun, ...args) {
 }
 
 function deepCopy(obj) {
-  if (obj === null)
+  if (obj === null) {
     return null;
-  if (typeof(obj) != 'object')
+  }
+  if (typeof (obj) !== 'object') {
     return obj;
+  }
   if (Array.isArray(obj)) {
-    const tmpArray = new Array;
+    const tmpArray = new Array();
     for (let i = 0; i < obj.length; i++) {
       tmpArray.push(deepCopy(obj[i]));
     }
     return tmpArray;
   }
 
-  const tmpObject = {}
+  const tmpObject = {};
   for (const p in obj) {
     tmpObject[p] = deepCopy(obj[p]);
   }
@@ -68,7 +71,7 @@ function expect(data, order) {
   nextTabId = 0;
   tabIds = {};
   nextProcessId = -1;
-  processIds = {}
+  processIds = {};
   initListeners();
 }
 
@@ -77,8 +80,8 @@ function checkExpectations() {
     return;
   }
   if (capturedEventData.length > expectedEventData.length) {
-    chrome.test.fail('Recorded too many events. ' +
-        JSON.stringify(capturedEventData));
+    chrome.test.fail(
+        'Recorded too many events. ' + JSON.stringify(capturedEventData));
   }
   // We have ensured that capturedEventData contains exactly the same elements
   // as expectedEventData. Now we need to verify the ordering.
@@ -86,22 +89,23 @@ function checkExpectations() {
   //     position[<event-label>]=<position of this event in capturedEventData>
   let curPos = 0;
   const positions = {};
-  capturedEventData.forEach(function (event) {
+  capturedEventData.forEach(function(event) {
     chrome.test.assertTrue(event.hasOwnProperty('label'));
     positions[event.label] = curPos;
     curPos++;
   });
   // Step 2: check that elements arrived in correct order
-  expectedEventOrder.forEach(function (order) {
+  expectedEventOrder.forEach(function(order) {
     let previousLabel = undefined;
-    order.forEach(function (label) {
+    order.forEach(function(label) {
       if (previousLabel === undefined) {
         previousLabel = label;
         return;
       }
-      chrome.test.assertTrue(positions[previousLabel] < positions[label],
+      chrome.test.assertTrue(
+          positions[previousLabel] < positions[label],
           `Event ${previousLabel} is supposed to arrive before ` +
-          `${label}.`);
+              `${label}.`);
       previousLabel = label;
     });
   });
@@ -185,13 +189,14 @@ function captureEvent(name, details) {
     details.sourceProcessId = processIds[details.sourceProcessId];
   }
 
-  if (debug)
+  if (debug) {
     console.log('Received event `${name}`:' + JSON.stringify(details));
+  }
 
   // find |details| in expectedEventData
   let found = false;
   let label = undefined;
-  expectedEventData.forEach(function (exp) {
+  expectedEventData.forEach(function(exp) {
     if (exp.event == name) {
       let expDetails;
       let altDetails;
@@ -221,73 +226,66 @@ function captureEvent(name, details) {
     }
   });
   if (!found) {
-    chrome.test.fail(`Received unexpected event '${name}':` +
-        JSON.stringify(details));
+    chrome.test.fail(
+        `Received unexpected event '${name}':` + JSON.stringify(details));
   }
   capturedEventData.push({label: label, event: name, details: details});
   checkExpectations();
 }
 
 function initListeners() {
-  if (initialized)
+  if (initialized) {
     return;
+  }
   initialized = true;
-  chrome.webNavigation.onBeforeNavigate.addListener(
-      function(details) {
+  chrome.webNavigation.onBeforeNavigate.addListener(function(details) {
     captureEvent('onBeforeNavigate', details);
   });
-  chrome.webNavigation.onCommitted.addListener(
-      function(details) {
+  chrome.webNavigation.onCommitted.addListener(function(details) {
     captureEvent('onCommitted', details);
   });
-  chrome.webNavigation.onDOMContentLoaded.addListener(
-      function(details) {
+  chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
     captureEvent('onDOMContentLoaded', details);
   });
-  chrome.webNavigation.onCompleted.addListener(
-      function(details) {
+  chrome.webNavigation.onCompleted.addListener(function(details) {
     captureEvent('onCompleted', details);
   });
-  chrome.webNavigation.onCreatedNavigationTarget.addListener(
-      function(details) {
+  chrome.webNavigation.onCreatedNavigationTarget.addListener(function(details) {
     captureEvent('onCreatedNavigationTarget', details);
   });
-  chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-      function(details) {
+  chrome.webNavigation.onReferenceFragmentUpdated.addListener(function(
+      details) {
     captureEvent('onReferenceFragmentUpdated', details);
   });
-  chrome.webNavigation.onErrorOccurred.addListener(
-      function(details) {
+  chrome.webNavigation.onErrorOccurred.addListener(function(details) {
     captureEvent('onErrorOccurred', details);
   });
-  chrome.webNavigation.onTabReplaced.addListener(
-      function(details) {
+  chrome.webNavigation.onTabReplaced.addListener(function(details) {
     captureEvent('onTabReplaced', details);
   });
-  chrome.webNavigation.onHistoryStateUpdated.addListener(
-      function(details) {
+  chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
     captureEvent('onHistoryStateUpdated', details);
   });
 }
 
 // Returns the usual order of navigation events.
 function navigationOrder(prefix) {
-  return [ `${prefix}onBeforeNavigate`,
-           `${prefix}onCommitted`,
-           `${prefix}onDOMContentLoaded`,
-           `${prefix}onCompleted` ];
+  return [
+    `${prefix}onBeforeNavigate`, `${prefix}onCommitted`,
+    `${prefix}onDOMContentLoaded`, `${prefix}onCompleted`
+  ];
 }
 
 // Returns the constraints expressing that a frame is an iframe of another
 // frame.
 function isIFrameOf(iframe, main_frame) {
-  return [ `${main_frame}onCommitted`,
-           `${iframe}onBeforeNavigate`,
-           `${iframe}onCompleted`,
-           `${main_frame}onCompleted` ];
+  return [
+    `${main_frame}onCommitted`, `${iframe}onBeforeNavigate`,
+    `${iframe}onCompleted`, `${main_frame}onCompleted`
+  ];
 }
 
 // Returns the constraint expressing that a frame was loaded by another.
 function isLoadedBy(target, source) {
-  return [ `${source}onDOMContentLoaded`, `${target}onBeforeNavigate`];
+  return [`${source}onDOMContentLoaded`, `${target}onBeforeNavigate`];
 }

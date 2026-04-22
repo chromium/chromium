@@ -9,11 +9,10 @@ function deleteTokenShouldFail() {
 function deleteTokenWithoutParameters() {
   try {
     chrome.instanceID.deleteToken();
-    chrome.test.fail(
-        'Calling deleteToken without parameters should fail.');
+    chrome.test.fail('Calling deleteToken without parameters should fail.');
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 async function deleteTokenWithoutCallback() {
@@ -27,12 +26,11 @@ async function deleteTokenWithoutCallback() {
   }
 
   try {
-    await chrome.instanceID.deleteToken(
-        {authorizedEntity: '1', scope: 'GCM'});
+    await chrome.instanceID.deleteToken({authorizedEntity: '1', scope: 'GCM'});
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithoutAuthorizedEntity() {
@@ -41,7 +39,7 @@ function deleteTokenWithoutAuthorizedEntity() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithEmptyAuthorizedEntity() {
@@ -51,7 +49,7 @@ function deleteTokenWithEmptyAuthorizedEntity() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithInvalidAuthorizedEntity() {
@@ -61,7 +59,7 @@ function deleteTokenWithInvalidAuthorizedEntity() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithoutScope() {
@@ -71,7 +69,7 @@ function deleteTokenWithoutScope() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithEmptyScope() {
@@ -81,7 +79,7 @@ function deleteTokenWithEmptyScope() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenWithInvalidScope() {
@@ -91,7 +89,7 @@ function deleteTokenWithInvalidScope() {
     deleteTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function deleteTokenBeforeGetToken() {
@@ -122,63 +120,65 @@ function deleteTokenBeforeGetToken() {
 
 function deleteTokenAfterGetToken() {
   chrome.instanceID.getToken(
-    {authorizedEntity: '1', scope: 'GCM'},
-    function(token) {
-      if (chrome.runtime.lastError || !token) {
-        chrome.test.fail(
-            'chrome.runtime.lastError was set or token was empty.');
-        return;
-      }
-      chrome.instanceID.deleteToken(
-        {authorizedEntity: '1', scope: 'GCM'},
-        function() {
-          if (chrome.runtime.lastError) {
-            chrome.test.fail('chrome.runtime.lastError: ' +
-                chrome.runtime.lastError.message);
-            return;
-          }
-
-          chrome.test.succeed();
+      {authorizedEntity: '1', scope: 'GCM'},
+      function(token) {
+        if (chrome.runtime.lastError || !token) {
+          chrome.test.fail(
+              'chrome.runtime.lastError was set or token was empty.');
+          return;
         }
-      );
-    }
+        chrome.instanceID.deleteToken(
+            {authorizedEntity: '1', scope: 'GCM'},
+            function() {
+              if (chrome.runtime.lastError) {
+                chrome.test.fail(
+                    'chrome.runtime.lastError: ' +
+                    chrome.runtime.lastError.message);
+                return;
+              }
+
+              chrome.test.succeed();
+            },
+        );
+      },
   );
 }
 
 let oldToken;
 function getTokenDeleteTokeAndGetToken() {
   chrome.instanceID.getToken(
-    {authorizedEntity: '1', scope: 'GCM'},
-    function(token) {
-      if (chrome.runtime.lastError || !token) {
-        chrome.test.fail(
-            'chrome.runtime.lastError was set or token was empty.');
-        return;
-      }
-      oldToken = token;
-      chrome.instanceID.deleteToken(
-        {authorizedEntity: '1', scope: 'GCM'},
-        function() {
-          if (chrome.runtime.lastError) {
-            chrome.test.fail('chrome.runtime.lastError: ' +
-                chrome.runtime.lastError.message);
-            return;
-          }
-
-          chrome.instanceID.getToken(
+      {authorizedEntity: '1', scope: 'GCM'},
+      function(token) {
+        if (chrome.runtime.lastError || !token) {
+          chrome.test.fail(
+              'chrome.runtime.lastError was set or token was empty.');
+          return;
+        }
+        oldToken = token;
+        chrome.instanceID.deleteToken(
             {authorizedEntity: '1', scope: 'GCM'},
-            function(token) {
-              if (!token || token == oldToken) {
+            function() {
+              if (chrome.runtime.lastError) {
                 chrome.test.fail(
-                    'Different token should be returned after deleteToken.');
+                    'chrome.runtime.lastError: ' +
+                    chrome.runtime.lastError.message);
                 return;
               }
-              chrome.test.succeed();
-            }
-          );
-        }
-      );
-    }
+
+              chrome.instanceID.getToken(
+                  {authorizedEntity: '1', scope: 'GCM'},
+                  function(token) {
+                    if (!token || token == oldToken) {
+                      chrome.test.fail(
+                          'Different token should be returned after deleteToken.');
+                      return;
+                    }
+                    chrome.test.succeed();
+                  },
+              );
+            },
+        );
+      },
   );
 }
 

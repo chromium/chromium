@@ -5,7 +5,7 @@
 // Sends a message when LanguageStatusRequest event is received. The
 // tts_extension_apitest.cc test verifies the params were sent successfully.
 chrome.test.runTests([function testOnLanguageStatusRequestEventEmitted() {
-  var listener = (requestor, lang) => {
+  const listener = (requestor, lang) => {
     chrome.test.sendMessage(`lang:${lang}`);
     chrome.test.sendMessage(
         `requestor.id:${requestor.id}, requestor.source:${requestor.source}`);

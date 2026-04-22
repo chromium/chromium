@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 onload = function() {
-  document.location='b.html';
-}
+  document.location = 'b.html';
+};

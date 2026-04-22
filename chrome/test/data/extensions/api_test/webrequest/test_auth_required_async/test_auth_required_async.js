@@ -7,7 +7,9 @@
 // must use a unique realm, however.
 function getURLAuthRequired(realm, subpath = 'subpath') {
   return getServerURL(
-      `auth-basic/${realm}` + `/${subpath}` + `?realm=${realm}`);
+      `auth-basic/${realm}` +
+      `/${subpath}` +
+      `?realm=${realm}`);
 }
 
 const availableTests = [
@@ -16,78 +18,89 @@ const availableTests = [
     const realm = 'asyncnoaction';
     const url = getURLAuthRequired(realm);
     expect(
-      [  // events
-        { label: 'onBeforeRequest',
-          event: 'onBeforeRequest',
-          details: {
-            url: url,
-            frameUrl: url
-          }
-        },
-        { label: 'onBeforeSendHeaders',
-          event: 'onBeforeSendHeaders',
-          details: {
-            url: url,
-            // Note: no requestHeaders because we don't ask for them.
+        [
+          // events
+          {
+            label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              url: url,
+              frameUrl: url,
+            },
           },
-        },
-        { label: 'onSendHeaders',
-          event: 'onSendHeaders',
-          details: {
-            url: url,
-          }
-        },
-        { label: 'onHeadersReceived',
-          event: 'onHeadersReceived',
-          details: {
-            url: url,
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
-          }
-        },
-        { label: 'onAuthRequired',
-          event: 'onAuthRequired',
-          details: {
-            url: url,
-            isProxy: false,
-            scheme: 'basic',
-            realm: realm,
-            challenger: {host: TEST_SERVER, port: testServerPort},
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
-          }
-        },
-        { label: 'onResponseStarted',
-          event: 'onResponseStarted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 401,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-          }
-        },
-        { label: 'onCompleted',
-          event: 'onCompleted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 401,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-          }
-        },
-      ],
-      [  // event order
-        ['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-         'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-         'onCompleted']
-      ],
-      {urls: ['<all_urls>']}, ['asyncBlocking', 'responseHeaders']);
+          {
+            label: 'onBeforeSendHeaders',
+            event: 'onBeforeSendHeaders',
+            details: {
+              url: url,
+              // Note: no requestHeaders because we don't ask for them.
+            },
+          },
+          {
+            label: 'onSendHeaders',
+            event: 'onSendHeaders',
+            details: {
+              url: url,
+            },
+          },
+          {
+            label: 'onHeadersReceived',
+            event: 'onHeadersReceived',
+            details: {
+              url: url,
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+          },
+          {
+            label: 'onAuthRequired',
+            event: 'onAuthRequired',
+            details: {
+              url: url,
+              isProxy: false,
+              scheme: 'basic',
+              realm: realm,
+              challenger: {host: TEST_SERVER, port: testServerPort},
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+          },
+          {
+            label: 'onResponseStarted',
+            event: 'onResponseStarted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 401,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+            },
+          },
+          {
+            label: 'onCompleted',
+            event: 'onCompleted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 401,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+            },
+          },
+        ],
+        [
+          // event order
+          [
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
+            'onCompleted'
+          ],
+        ],
+        {urls: ['<all_urls>']}, ['asyncBlocking', 'responseHeaders']);
     navigateAndWait(url);
   },
 
@@ -96,82 +109,92 @@ const availableTests = [
     const realm = 'asynccancel';
     const url = getURLAuthRequired(realm);
     expect(
-      [  // events
-        { label: 'onBeforeRequest',
-          event: 'onBeforeRequest',
-          details: {
-            url: url,
-            frameUrl: url
+        [
+          // events
+          {
+            label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              url: url,
+              frameUrl: url,
+            },
+            retval: {},
           },
-          retval: {}
-        },
-        { label: 'onBeforeSendHeaders',
-          event: 'onBeforeSendHeaders',
-          details: {
-            url: url,
-            // Note: no requestHeaders because we don't ask for them.
+          {
+            label: 'onBeforeSendHeaders',
+            event: 'onBeforeSendHeaders',
+            details: {
+              url: url,
+              // Note: no requestHeaders because we don't ask for them.
+            },
+            retval: {},
           },
-          retval: {}
-        },
-        { label: 'onSendHeaders',
-          event: 'onSendHeaders',
-          details: {
-            url: url,
-          }
-        },
-        { label: 'onHeadersReceived',
-          event: 'onHeadersReceived',
-          details: {
-            url: url,
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
-          }
-        },
-        { label: 'onAuthRequired',
-          event: 'onAuthRequired',
-          details: {
-            url: url,
-            isProxy: false,
-            scheme: 'basic',
-            realm: realm,
-            challenger: {host: TEST_SERVER, port: testServerPort},
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
+          {
+            label: 'onSendHeaders',
+            event: 'onSendHeaders',
+            details: {
+              url: url,
+            },
           },
-          retval: {cancel: true}
-        },
-        { label: 'onResponseStarted',
-          event: 'onResponseStarted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 401,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-          }
-        },
-        { label: 'onCompleted',
-          event: 'onCompleted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 401,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-          }
-        },
-      ],
-      [  // event order
-        ['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-         'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-         'onCompleted']
-      ],
-      {urls: ['<all_urls>']},
-      ['responseHeaders', 'asyncBlocking']);
+          {
+            label: 'onHeadersReceived',
+            event: 'onHeadersReceived',
+            details: {
+              url: url,
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+          },
+          {
+            label: 'onAuthRequired',
+            event: 'onAuthRequired',
+            details: {
+              url: url,
+              isProxy: false,
+              scheme: 'basic',
+              realm: realm,
+              challenger: {host: TEST_SERVER, port: testServerPort},
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+            retval: {cancel: true},
+          },
+          {
+            label: 'onResponseStarted',
+            event: 'onResponseStarted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 401,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+            },
+          },
+          {
+            label: 'onCompleted',
+            event: 'onCompleted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 401,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+            },
+          },
+        ],
+        [
+          // event order
+          [
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
+            'onCompleted'
+          ],
+        ],
+        {urls: ['<all_urls>']}, ['responseHeaders', 'asyncBlocking']);
     navigateAndWait(url);
   },
 
@@ -180,82 +203,92 @@ const availableTests = [
     const realm = 'asyncsetauth';
     const url = getURLAuthRequired(realm);
     expect(
-      [  // events
-        { label: 'onBeforeRequest',
-          event: 'onBeforeRequest',
-          details: {
-            url: url,
-            frameUrl: url
+        [
+          // events
+          {
+            label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              url: url,
+              frameUrl: url,
+            },
+            retval: {},
           },
-          retval: {}
-        },
-        { label: 'onBeforeSendHeaders',
-          event: 'onBeforeSendHeaders',
-          details: {
-            url: url,
-            // Note: no requestHeaders because we don't ask for them.
+          {
+            label: 'onBeforeSendHeaders',
+            event: 'onBeforeSendHeaders',
+            details: {
+              url: url,
+              // Note: no requestHeaders because we don't ask for them.
+            },
+            retval: {},
           },
-          retval: {}
-        },
-        { label: 'onSendHeaders',
-          event: 'onSendHeaders',
-          details: {
-            url: url,
-          }
-        },
-        { label: 'onHeadersReceived',
-          event: 'onHeadersReceived',
-          details: {
-            url: url,
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
-          }
-        },
-        { label: 'onAuthRequired',
-          event: 'onAuthRequired',
-          details: {
-            url: url,
-            isProxy: false,
-            scheme: 'basic',
-            realm: realm,
-            challenger: {host: TEST_SERVER, port: testServerPort},
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 401 Unauthorized',
-            statusCode: 401,
+          {
+            label: 'onSendHeaders',
+            event: 'onSendHeaders',
+            details: {
+              url: url,
+            },
           },
-          retval: {authCredentials: {username: 'foo', password: 'secret'}}
-        },
-        { label: 'onResponseStarted',
-          event: 'onResponseStarted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 200,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 200 OK',
-          }
-        },
-        { label: 'onCompleted',
-          event: 'onCompleted',
-          details: {
-            url: url,
-            fromCache: false,
-            statusCode: 200,
-            ip: '127.0.0.1',
-            responseHeadersExist: true,
-            statusLine: 'HTTP/1.1 200 OK',
-          }
-        },
-      ],
-      [  // event order
-        ['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-         'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-         'onCompleted']
-      ],
-      {urls: ['<all_urls>']},
-      ['responseHeaders', 'asyncBlocking']);
+          {
+            label: 'onHeadersReceived',
+            event: 'onHeadersReceived',
+            details: {
+              url: url,
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+          },
+          {
+            label: 'onAuthRequired',
+            event: 'onAuthRequired',
+            details: {
+              url: url,
+              isProxy: false,
+              scheme: 'basic',
+              realm: realm,
+              challenger: {host: TEST_SERVER, port: testServerPort},
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 401 Unauthorized',
+              statusCode: 401,
+            },
+            retval: {authCredentials: {username: 'foo', password: 'secret'}},
+          },
+          {
+            label: 'onResponseStarted',
+            event: 'onResponseStarted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 200,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 200 OK',
+            },
+          },
+          {
+            label: 'onCompleted',
+            event: 'onCompleted',
+            details: {
+              url: url,
+              fromCache: false,
+              statusCode: 200,
+              ip: '127.0.0.1',
+              responseHeadersExist: true,
+              statusLine: 'HTTP/1.1 200 OK',
+            },
+          },
+        ],
+        [
+          // event order
+          [
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
+            'onCompleted'
+          ],
+        ],
+        {urls: ['<all_urls>']}, ['responseHeaders', 'asyncBlocking']);
     navigateAndWait(url);
   },
 ];

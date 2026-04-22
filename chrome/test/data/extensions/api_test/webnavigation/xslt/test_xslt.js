@@ -21,70 +21,92 @@ loadScript.then(async function() {
     // transformation. For this document the extension receives
     // a second onDOMContentLoaded followed by onCompleted.
     function crossProcessIframe() {
-      expect([
-        { label: 'main-onBeforeNavigate',
-          event: 'onBeforeNavigate',
-          details: { documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: -1,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: urlMain }},
-        { label: 'main-onCommitted',
-          event: 'onCommitted',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     transitionQualifiers: [],
-                     transitionType: 'link',
-                     url: urlMain }},
-        { label: 'main-onDOMContentLoaded',
-          event: 'onDOMContentLoaded',
-          details: { documentId: 1,
-                     documentLifecycle: 'active',
-                     frameId: 0,
-                     frameType: 'outermost_frame',
-                     parentFrameId: -1,
-                     processId: 0,
-                     tabId: 0,
-                     timeStamp: 0,
-                     url: urlMain }},
-        { label: 'main-onDOMContentLoaded',
-        event: 'onDOMContentLoaded',
-        details: { documentId: 1,
-                   documentLifecycle: 'active',
-                   frameId: 0,
-                   frameType: 'outermost_frame',
-                   parentFrameId: -1,
-                   processId: 0,
-                   tabId: 0,
-                   timeStamp: 0,
-                   url: urlMain }},
-      { label: 'main-onCompleted',
-        event: 'onCompleted',
-        details: { documentId: 1,
-                   documentLifecycle: 'active',
-                   frameId: 0,
-                   frameType: 'outermost_frame',
-                   parentFrameId: -1,
-                   processId: 0,
-                   tabId: 0,
-                   timeStamp: 0,
-                   url: urlMain }}],
-        [
-          [ 'main-onBeforeNavigate',
-            'main-onCommitted',
-           'main-onDOMContentLoaded'],
-           ['main-onDOMContentLoaded',
-           'main-onCompleted'],
-        ]);
+      expect(
+          [
+            {
+              label: 'main-onBeforeNavigate',
+              event: 'onBeforeNavigate',
+              details: {
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: -1,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlMain
+              }
+            },
+            {
+              label: 'main-onCommitted',
+              event: 'onCommitted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                transitionQualifiers: [],
+                transitionType: 'link',
+                url: urlMain
+              }
+            },
+            {
+              label: 'main-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlMain
+              }
+            },
+            {
+              label: 'main-onDOMContentLoaded',
+              event: 'onDOMContentLoaded',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlMain
+              }
+            },
+            {
+              label: 'main-onCompleted',
+              event: 'onCompleted',
+              details: {
+                documentId: 1,
+                documentLifecycle: 'active',
+                frameId: 0,
+                frameType: 'outermost_frame',
+                parentFrameId: -1,
+                processId: 0,
+                tabId: 0,
+                timeStamp: 0,
+                url: urlMain
+              }
+            }
+          ],
+          [
+            [
+              'main-onBeforeNavigate', 'main-onCommitted',
+              'main-onDOMContentLoaded'
+            ],
+            ['main-onDOMContentLoaded', 'main-onCompleted'],
+          ]);
 
       chrome.tabs.update(tab.id, {url: `${urlMain}?${port}`});
     },

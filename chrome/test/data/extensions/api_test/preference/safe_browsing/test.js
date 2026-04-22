@@ -6,13 +6,13 @@
 // Run with browser_tests --gtest_filter=ExtensionApiTest.SafeBrowsing
 
 function setTrue(callback) {
-  chrome.privacy.services.safeBrowsingEnabled.set({ value: true }, function() {
+  chrome.privacy.services.safeBrowsingEnabled.set({value: true}, function() {
     chrome.test.sendMessage('set to true', callback);
   });
 }
 
 function setFalse(callback) {
-  chrome.privacy.services.safeBrowsingEnabled.set({ value: false }, function() {
+  chrome.privacy.services.safeBrowsingEnabled.set({value: false}, function() {
     chrome.test.sendMessage('set to false', callback);
   });
 }

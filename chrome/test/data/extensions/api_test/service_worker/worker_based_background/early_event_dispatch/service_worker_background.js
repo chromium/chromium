@@ -9,6 +9,6 @@ const isInstanceOfServiceWorkerGlobalScope =
 if (!isInstanceOfServiceWorkerGlobalScope) {
   chrome.test.sendMessage('FAIL');
 } else {
-  chrome.test.onMessage.addListener(args =>
-      chrome.test.sendMessage(args.data == 'hello' ? 'PASS' : 'FAIL'));
+  chrome.test.onMessage.addListener(
+      args => chrome.test.sendMessage(args.data == 'hello' ? 'PASS' : 'FAIL'));
 }

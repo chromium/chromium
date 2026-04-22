@@ -18,6 +18,6 @@ onload = function() {
         }
       }, {serviceType: '_testing._tcp.local'});
       chrome.test.notifyPass();
-    }
+    },
   ]);
 };

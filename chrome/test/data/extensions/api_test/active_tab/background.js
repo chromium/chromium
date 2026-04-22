@@ -37,8 +37,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 const iframeUrl = chrome.runtime.getURL('iframe.html');
-const injectIframe =
-    `let iframe = document.createElement('iframe');\n` +
+const injectIframe = `let iframe = document.createElement('iframe');\n` +
     `iframe.src = '${iframeUrl}';\n` +
     `document.body.appendChild(iframe);\n`;
 
@@ -70,8 +69,9 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 let navigationCount = 0;
 chrome.webNavigation.onCompleted.addListener(function(details) {
-  if (!details.url.endsWith('page.html'))
+  if (!details.url.endsWith('page.html')) {
     return;
+  }
 
   navigationCount++;
   chrome.test.sendMessage(navigationCount.toString());

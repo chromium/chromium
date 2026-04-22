@@ -5,7 +5,7 @@
 chrome.test.runTests([
   function testGetSucceeds() {
     chrome.tabs.create({}, (tab) => {
-      chrome.tabs.group({ tabIds: tab.id }, (groupId) => {
+      chrome.tabs.group({tabIds: tab.id}, (groupId) => {
         chrome.tabGroups.get(groupId, (tabGroup) => {
           chrome.test.assertNoLastError();
           chrome.test.assertNe(0, tabGroup.id);
@@ -36,5 +36,5 @@ chrome.test.runTests([
       chrome.test.assertEq(null, tabGroup);
       chrome.test.succeed();
     });
-  }
+  },
 ]);

@@ -4,10 +4,10 @@
 
 chrome.test.runTests([
   function createIncognitoWindow() {
-    chrome.windows.create({ url: "about:blank", incognito: true },
-                          function(window) {
-      chrome.test.assertEq(window, undefined);
-      chrome.test.notifyPass();
-    });
-  }
+    chrome.windows.create(
+        {url: 'about:blank', incognito: true}, function(window) {
+          chrome.test.assertEq(window, undefined);
+          chrome.test.notifyPass();
+        });
+  },
 ]);

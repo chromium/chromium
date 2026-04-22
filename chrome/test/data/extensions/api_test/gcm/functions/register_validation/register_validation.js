@@ -13,8 +13,9 @@ function generateSenderIds(size) {
 function toArrayDefinitionString(senderIds) {
   let idsString = '[';
   senderIds.forEach(function(element, index) {
-    if (index > 0) idsString += ', ';
-      idsString += `"${element}"`;
+    if (index > 0)
+      idsString += ', ';
+    idsString += `"${element}"`;
   });
   idsString += ']';
   return idsString;
@@ -37,7 +38,7 @@ function registerInvalidParameters(senderIds) {
     });
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 chrome.test.runTests([
@@ -61,5 +62,5 @@ chrome.test.runTests([
   },
   function failureWithTooManySenders() {
     registerInvalidParameters(generateSenderIds(101));
-  }
+  },
 ]);

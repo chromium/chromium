@@ -27,7 +27,7 @@ chrome.test.runTests([
       const fontId = `custom_${genericFamily}`;
       let value = null;
       await new Promise(async resolve => {
-        let listener = details => {
+        const listener = details => {
           value = details;
           fs.onFontChanged.removeListener(listener);
           resolve();
@@ -45,7 +45,7 @@ chrome.test.runTests([
             genericFamily: genericFamily,
             fontId: fontId,
             script: 'Zyyy',
-            levelOfControl: CONTROLLED_BY_THIS_EXTENSION
+            levelOfControl: CONTROLLED_BY_THIS_EXTENSION,
           },
           value);
     }
@@ -70,10 +70,10 @@ chrome.test.runTests([
 
   async function clearGenericFamilies() {
     for (const genericFamily of genericFamilyNames) {
-      const fontId = `default_${genericFamily}`
+      const fontId = `default_${genericFamily}`;
       let value = null;
       await new Promise(async resolve => {
-        let listener = details => {
+        const listener = details => {
           value = details;
           fs.onFontChanged.removeListener(listener);
           resolve();
@@ -91,7 +91,7 @@ chrome.test.runTests([
             script: 'Zyyy',
             genericFamily: genericFamily,
             fontId: fontId,
-            levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION
+            levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION,
           },
           value);
     }

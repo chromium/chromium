@@ -97,22 +97,22 @@ const allTests = [
     // Find disabled buttons.
     assertEq(
         okButton,
-        rootNode.find({role: RoleType.BUTTON,
-            attributes: {restriction: 'disabled'}}));
+        rootNode.find(
+            {role: RoleType.BUTTON, attributes: {restriction: 'disabled'}}));
     assertEq(
         [okButton],
-        rootNode.findAll({role: RoleType.BUTTON,
-            attributes: {restriction: 'disabled'}}));
+        rootNode.findAll(
+            {role: RoleType.BUTTON, attributes: {restriction: 'disabled'}}));
 
     // Find enabled buttons.
     assertEq(
         cancelButton,
-        rootNode.find({role: RoleType.BUTTON,
-            attributes: {restriction: undefined }}));
+        rootNode.find(
+            {role: RoleType.BUTTON, attributes: {restriction: undefined}}));
     assertEq(
         [cancelButton],
-        rootNode.findAll({role: RoleType.BUTTON,
-            attributes: {restriction: undefined }}));
+        rootNode.findAll(
+            {role: RoleType.BUTTON, attributes: {restriction: undefined}}));
     chrome.test.succeed();
   },
 
@@ -133,11 +133,13 @@ const allTests = [
 
     // Find by role and hierarchicalLevel attribute.
     assertEq(
-        h1, rootNode.find(
-                {role: RoleType.HEADING, attributes: {hierarchicalLevel: 1}}));
+        h1,
+        rootNode.find(
+            {role: RoleType.HEADING, attributes: {hierarchicalLevel: 1}}));
     assertEq(
-        [], rootNode.findAll(
-                {role: RoleType.HEADING, attributes: {hierarchicalLevel: 2}}));
+        [],
+        rootNode.findAll(
+            {role: RoleType.HEADING, attributes: {hierarchicalLevel: 2}}));
 
     // Searching for an attribute which no element has fails.
     assertEq(null, rootNode.find({attributes: {charisma: 12}}));
@@ -165,14 +167,14 @@ const allTests = [
         h1.matches({
           role: RoleType.HEADING,
           state: {focusable: true},
-          attributes: {hierarchicalLevel: 1}
+          attributes: {hierarchicalLevel: 1},
         }),
         'h1 should not match focusable: true');
     assertTrue(
         h1.matches({
           role: RoleType.HEADING,
           state: {focusable: false},
-          attributes: {hierarchicalLevel: 1}
+          attributes: {hierarchicalLevel: 1},
         }),
         'h1 should match focusable: false');
 
@@ -187,7 +189,7 @@ const allTests = [
         'p2 should not match name: \'relationship');
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'complex.html');

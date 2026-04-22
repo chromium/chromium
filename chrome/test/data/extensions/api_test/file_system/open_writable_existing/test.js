@@ -4,9 +4,10 @@
 
 chrome.test.runTests([
   function openFile() {
-    chrome.fileSystem.chooseEntry({type: 'openWritableFile'},
+    chrome.fileSystem.chooseEntry(
+        {type: 'openWritableFile'},
         chrome.test.callbackFail(
             'Operation requires fileSystem.write permission',
             function(entry) {}));
-  }
+  },
 ]);

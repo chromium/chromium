@@ -29,7 +29,7 @@ function testWebSocketConnection(url, expectedToConnect) {
   ws.onclose = function(event) {
     chrome.test.log('WebSocket closed.');
     chrome.test.assertEq(expectedToConnect, event.wasClean);
-  }
+  };
 
   ws.onopen = function() {
     chrome.test.log('WebSocket opened.');

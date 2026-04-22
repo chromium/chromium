@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var requests = [];
+const requests = [];
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
   // Show the query string of the request. If this is absent for some
   // reason (probably an error), show the full URL.
   requests.push(new URL(details.url).search || details.url);
 }, {
   types: ['xmlhttprequest'],
-  urls: ['*://*/*']
+  urls: ['*://*/*'],
 });
 
 chrome.test.sendMessage('web_request_status1', echoRequestStatus);

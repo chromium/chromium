@@ -8,20 +8,20 @@ chrome.test.getConfig(function(config) {
   const url =
       `http://a.com:${config.testServer.port}/extensions/test_file.html`;
 
-  chrome.tabs.create({ url: url }, function(tab) {
+  chrome.tabs.create({url: url}, function(tab) {
     const tabId = tab.id;
 
     chrome.test.runTests([
       function javascript_encoded_url() {
         chrome.tabs.update(
-          tabId,
-          {url: javaScriptURL},
-          function(tab) {
-            chrome.test.assertEq('js-url-success', tab.title);
-            chrome.test.succeed();
-          }
+            tabId,
+            {url: javaScriptURL},
+            function(tab) {
+              chrome.test.assertEq('js-url-success', tab.title);
+              chrome.test.succeed();
+            },
         );
-      }
+      },
     ]);
   });
 });

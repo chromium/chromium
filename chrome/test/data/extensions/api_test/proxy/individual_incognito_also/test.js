@@ -14,20 +14,20 @@ chrome.test.runTests([
   },
   function setIndividualProxiesRegular() {
     const httpProxy = {
-      host: '1.1.1.1'
+      host: '1.1.1.1',
     };
     const httpsProxy = {
       scheme: 'socks5',
-      host: '2.2.2.2'
+      host: '2.2.2.2',
     };
     const ftpProxy = {
       host: '3.3.3.3',
-      port: 9000
+      port: 9000,
     };
     const fallbackProxy = {
       scheme: 'socks4',
       host: '4.4.4.4',
-      port: 9090
+      port: 9090,
     };
 
     const rules = {
@@ -37,27 +37,26 @@ chrome.test.runTests([
       fallbackProxy: fallbackProxy,
     };
 
-    const config = { rules: rules, mode: 'fixed_servers' };
+    const config = {rules: rules, mode: 'fixed_servers'};
     chrome.proxy.settings.set(
-        {value: config, scope: 'regular'},
-        chrome.test.callbackPass());
+        {value: config, scope: 'regular'}, chrome.test.callbackPass());
   },
   function setIndividualProxiesIncognito() {
     const httpProxy = {
-      host: '5.5.5.5'
+      host: '5.5.5.5',
     };
     const httpsProxy = {
       scheme: 'socks5',
-      host: '6.6.6.6'
+      host: '6.6.6.6',
     };
     const ftpProxy = {
       host: '7.7.7.7',
-      port: 9000
+      port: 9000,
     };
     const fallbackProxy = {
       scheme: 'socks4',
       host: '8.8.8.8',
-      port: 9090
+      port: 9090,
     };
 
     const rules = {
@@ -67,9 +66,9 @@ chrome.test.runTests([
       fallbackProxy: fallbackProxy,
     };
 
-    const config = { rules: rules, mode: 'fixed_servers' };
+    const config = {rules: rules, mode: 'fixed_servers'};
     chrome.proxy.settings.set(
         {value: config, scope: 'incognito_persistent'},
         chrome.test.callbackPass());
-  }
+  },
 ]);

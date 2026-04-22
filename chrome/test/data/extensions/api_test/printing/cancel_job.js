@@ -6,8 +6,9 @@ chrome.test.getConfig(function(config) {
   // We expect three events: PENDING, IN_PROGRESS and CANCELED as the final
   // one.
   const statuses = [
-    chrome.printing.JobStatus.PENDING, chrome.printing.JobStatus.IN_PROGRESS,
-    chrome.printing.JobStatus.CANCELED
+    chrome.printing.JobStatus.PENDING,
+    chrome.printing.JobStatus.IN_PROGRESS,
+    chrome.printing.JobStatus.CANCELED,
   ];
   let eventCounter = 0;
   chrome.printing.onJobStatusChanged.addListener((jobId, status) => {
@@ -15,8 +16,9 @@ chrome.test.getConfig(function(config) {
     eventCounter++;
     // We don't expect any other events to happen so finish the test as
     // passed.
-    if (eventCounter == statuses.length)
+    if (eventCounter == statuses.length) {
       chrome.test.notifyPass();
+    }
 
     if (status == chrome.printing.JobStatus.IN_PROGRESS) {
       chrome.printing.cancelJob(jobId, () => {});

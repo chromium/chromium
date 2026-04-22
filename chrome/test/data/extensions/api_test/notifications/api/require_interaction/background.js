@@ -11,7 +11,7 @@ const options = {
   title: 'hello',
   message: 'world',
   type: 'basic',
-  requireInteraction: true
+  requireInteraction: true,
 };
 
 chrome.notifications.create('test', options, () => chrome.test.sendMessage(''));

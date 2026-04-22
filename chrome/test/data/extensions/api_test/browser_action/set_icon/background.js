@@ -16,7 +16,7 @@ chrome.tabs.query({active: true}, function(tabs) {
   // When the browser action is clicked, add an icon.
   chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.browserAction.setIcon({
-      imageData: getImageData()
+      imageData: getImageData(),
     });
     chrome.test.notifyPass();
   });

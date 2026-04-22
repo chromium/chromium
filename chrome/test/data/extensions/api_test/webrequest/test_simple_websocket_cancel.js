@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var callbackPass = chrome.test.callbackPass;
+const callbackPass = chrome.test.callbackPass;
 
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab(
@@ -10,7 +10,7 @@ chrome.tabs.getCurrent(function(tab) {
         // Tries to open a WebSocket connection, with a blocking handler that
         // cancels the request. The connection will not be established.
         function handshakeRequestCancelled() {
-          var url = getWSTestURL(testWebSocketPort);
+          const url = getWSTestURL(testWebSocketPort);
           expect(
               [
                 // events
@@ -22,9 +22,9 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'websocket',
                     frameUrl: 'unknown frame URL',
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    documentId: 1
+                    documentId: 1,
                   },
-                  retval: {cancel: true}
+                  retval: {cancel: true},
                 },
                 // Cancelling is considered an error.
                 {
@@ -36,15 +36,16 @@ chrome.tabs.getCurrent(function(tab) {
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
                     error: 'net::ERR_BLOCKED_BY_CLIENT',
-                    documentId: 1
-                  }
+                    documentId: 1,
+                  },
                 },
               ],
-              [  // event order
-                ['onBeforeRequest', 'onErrorOccurred']
+              [
+                // event order
+                ['onBeforeRequest', 'onErrorOccurred'],
               ],
               {urls: ['ws://*/*']},  // filter
-              ['blocking']           // extraInfoSpec
+              ['blocking'],          // extraInfoSpec
           );
           testWebSocketConnection(url, false /* expectedToConnect */);
         },

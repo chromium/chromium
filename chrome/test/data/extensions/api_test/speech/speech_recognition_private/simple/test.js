@@ -8,14 +8,14 @@ chrome.test.runTests([
   // on-device speech recognition is only supported in en-US.
   async function startAndStopTest() {
     await chrome.speechRecognitionPrivate.start(
-      {locale: 'en-US', interimResults: true});
+        {locale: 'en-US', interimResults: true});
     await chrome.speechRecognitionPrivate.stop({});
     chrome.test.succeed();
   },
 
   async function startTwiceTest() {
     await chrome.speechRecognitionPrivate.start(
-      {locale: 'en-US', interimResults: true});
+        {locale: 'en-US', interimResults: true});
     // Calling start() when speech recognition is active should trigger an
     // error.
     await chrome.test.assertPromiseRejects(
@@ -27,8 +27,8 @@ chrome.test.runTests([
 
   async function stopWithoutStart() {
     await chrome.test.assertPromiseRejects(
-      chrome.speechRecognitionPrivate.stop({}),
-      'Error: Speech recognition already stopped');
+        chrome.speechRecognitionPrivate.stop({}),
+        'Error: Speech recognition already stopped');
     chrome.test.succeed();
   },
 ]);

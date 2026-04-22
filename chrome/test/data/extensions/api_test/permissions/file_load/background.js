@@ -21,10 +21,10 @@ const tests = [
     fetch(`${testDir}/empty.html`).then(requestListener).catch(function(err) {
       chrome.test.fail(err.toString());
     });
-  }
+  },
 ];
 
 chrome.test.getConfig(function(config) {
   testDir = `file://${config.customArg}`;
   chrome.test.runTests(tests);
-})
+});

@@ -8,35 +8,31 @@
 const pw = chrome.privacy.websites;
 chrome.test.runTests([
   function getThirdPartyCookiesAllowed() {
-    pw.thirdPartyCookiesAllowed.get({}, chrome.test.callbackPass(
-        function(allowed) {
+    pw.thirdPartyCookiesAllowed.get(
+        {}, chrome.test.callbackPass(function(allowed) {
           chrome.test.assertEq(
-              allowed,
-              {
+              allowed, {
                 value: false,
-                levelOfControl: 'controllable_by_this_extension'
+                levelOfControl: 'controllable_by_this_extension',
               },
               'third-party cookies should be blocked');
         }));
   },
   function setThirdPartyCookiesAllowed() {
-    pw.thirdPartyCookiesAllowed.set(
-        {value: true},
-        chrome.test.callbackPass());
+    pw.thirdPartyCookiesAllowed.set({value: true}, chrome.test.callbackPass());
   },
   function clearThirdPartyCookiesAllowed() {
     pw.thirdPartyCookiesAllowed.clear({}, chrome.test.callbackPass());
   },
   function getThirdPartyCookiesAllowed2() {
-    pw.thirdPartyCookiesAllowed.get({}, chrome.test.callbackPass(
-        function(allowed) {
+    pw.thirdPartyCookiesAllowed.get(
+        {}, chrome.test.callbackPass(function(allowed) {
           chrome.test.assertEq(
-              allowed,
-              {
+              allowed, {
                 value: false,
-                levelOfControl: 'controllable_by_this_extension'
+                levelOfControl: 'controllable_by_this_extension',
               },
               'third-party cookies should be blocked');
         }));
-  }
+  },
 ]);

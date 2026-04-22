@@ -8,7 +8,7 @@
 // - A live (web-extent) web page is loaded (a.html), which tries to opens a
 //   background page.  This fails because allow_js_access is false.
 
-var pagePrefix =
+const pagePrefix =
     'http://a.com:PORT/extensions/api_test/app_background_page/common';
 
 // Dispatch "tunneled" functions from the live web pages to this testing page.
@@ -19,8 +19,8 @@ chrome.runtime.onMessage.addListener(function(request) {
 // At no point should a window be created that contains the background page
 // (bg.html).
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tab.url.match("bg\.html$")) {
-    chrome.test.notifyFail("popup opened instead of background page");
+  if (tab.url.match('bg\.html$')) {
+    chrome.test.notifyFail('popup opened instead of background page');
   }
 });
 
@@ -32,16 +32,15 @@ window.onload = function() {
   // config is requested before onload, then sometimes onload has already
   // fired by the time chrome.test.getConfig()'s callback runs.
   chrome.test.getConfig(function(config) {
-    var aUrl =
-        pagePrefix.replace(/PORT/, config.testServer.port) + '/a.html';
-    chrome.tabs.create({ 'url': aUrl });
+    const aUrl = pagePrefix.replace(/PORT/, config.testServer.port) + '/a.html';
+    chrome.tabs.create({'url': aUrl});
   });
-}
+};
 
 // Background page opened.
 function onBackgroundPageLoaded() {
   // The window.open call in a.html should not succeed.
-  chrome.test.notifyFail("Background page unexpectedly loaded.");
+  chrome.test.notifyFail('Background page unexpectedly loaded.');
 }
 
 function onBackgroundPagePermissionDenied() {
@@ -51,11 +50,11 @@ function onBackgroundPagePermissionDenied() {
 
 // A second background page opened.
 function onBackgroundPageResponded() {
-  chrome.test.notifyFail("onBackgroundPageResponded called unexpectedly");
+  chrome.test.notifyFail('onBackgroundPageResponded called unexpectedly');
 }
 
 // The background counter check found an unexpected value (most likely caused
 // by an unwanted navigation).
 function onCounterError() {
-  chrome.test.notifyFail("checkCounter found an unexpected value");
+  chrome.test.notifyFail('checkCounter found an unexpected value');
 }

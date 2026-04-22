@@ -6,8 +6,8 @@ const protocolVersion = '1.3';
 const DETACHED_WHILE_HANDLING = 'Detached while handling command.';
 
 async function findTarget(url) {
-  const targets = await new Promise(resolve =>
-      chrome.debugger.getTargets(resolve));
+  const targets =
+      await new Promise(resolve => chrome.debugger.getTargets(resolve));
   return targets.find(target => url === target.url);
 }
 
@@ -19,8 +19,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const subframeURL = `http://b.com:${config.testServer.port}/${pagePath}`;
     const tab = await openTab(topURL);
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
 
     const expression = `
       new Promise(resolve => {
@@ -29,23 +29,27 @@ chrome.test.getConfig(config => chrome.test.runTests([
         frame.src = '${subframeURL}';
       })
     `;
-    await new Promise(resolve =>
-      chrome.debugger.sendCommand(debuggee, 'Runtime.evaluate', {
-          expression,
-          awaitPromise: true
-      }, resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Runtime.evaluate', {
+              expression,
+              awaitPromise: true,
+            },
+            resolve));
 
     const subframeTarget = await findTarget(subframeURL);
     const subframeDebuggee = {targetId: subframeTarget.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(subframeDebuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve =>
+            chrome.debugger.attach(subframeDebuggee, protocolVersion, resolve));
 
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(subframeDebuggee, 'Page.navigate', {
-            url: 'blob:chrome://non-existent/'}, resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            subframeDebuggee, 'Page.navigate',
+            {url: 'blob:chrome://non-existent/'}, resolve));
 
     chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
 
     chrome.test.succeed();
-  }
+  },
 ]));

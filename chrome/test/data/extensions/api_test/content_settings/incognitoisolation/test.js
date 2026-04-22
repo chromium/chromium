@@ -45,12 +45,14 @@ chrome.test.runTests([
   },
   function setContentSettings() {
     settings.forEach(function(type) {
-      cs[type].set({
-        primaryPattern: 'http://*.example.com/*',
-        secondaryPattern: 'http://*.example.com/*',
-        setting: givenPermission,
-        scope: 'incognito_session_only'
-      }, chrome.test.callbackPass());
+      cs[type].set(
+          {
+            primaryPattern: 'http://*.example.com/*',
+            secondaryPattern: 'http://*.example.com/*',
+            setting: givenPermission,
+            scope: 'incognito_session_only',
+          },
+          chrome.test.callbackPass());
     });
   },
   function setGlobalContentSettings() {
@@ -60,18 +62,20 @@ chrome.test.runTests([
             primaryPattern: '<all_urls>',
             secondaryPattern: '<all_urls>',
             setting: givenPermission,
-            scope: 'incognito_session_only'
+            scope: 'incognito_session_only',
           },
           chrome.test.callbackPass());
     });
   },
   function getContentSettings() {
     [...settings, ...globalOnlySettings].forEach(function(type) {
-      let message = `Setting for ${type} should be ${givenPermission}`;
-      cs[type].get({
-        primaryUrl: 'http://www.example.com',
-        secondaryUrl: 'http://www.example.com'
-      }, expect({setting:givenPermission}, message));
+      const message = `Setting for ${type} should be ${givenPermission}`;
+      cs[type].get(
+          {
+            primaryUrl: 'http://www.example.com',
+            secondaryUrl: 'http://www.example.com',
+          },
+          expect({setting: givenPermission}, message));
     });
   },
 ]);

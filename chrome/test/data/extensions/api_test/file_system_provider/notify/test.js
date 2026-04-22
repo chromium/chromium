@@ -14,7 +14,7 @@ const TESTING_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'nakameguro',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -88,20 +88,18 @@ function runTests() {
     // Add a watcher, and then notifies that the entry has changed.
     function notifyChanged() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name,
-          {create: false},
+          TESTING_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, fileEntry.name);
-            testUtil.toExternalEntry(fileEntry).then(
-                chrome.test.callbackPass(function(externalEntry) {
+            testUtil.toExternalEntry(fileEntry)
+                .then(chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.addFileWatch(
-                      externalEntry,
-                      chrome.test.callbackPass(function(result) {
+                      externalEntry, chrome.test.callbackPass(function(result) {
                         chrome.test.assertTrue(result);
                         // Verify closure called when an event arrives.
-                        directoryChangedCallback = chrome.test.callbackPass(
-                            function() {
+                        directoryChangedCallback =
+                            chrome.test.callbackPass(function() {
                               chrome.test.assertEq(
                                   1, directoryChangedEvents.length);
                               chrome.test.assertEq(
@@ -134,14 +132,16 @@ function runTests() {
                                 changeType: 'CHANGED',
                                 cloudFileInfo: {
                                   versionTag: 'abc',
-                                }
+                                },
                               }],
-                              tag: TESTING_TAG1
+                              tag: TESTING_TAG1,
                             },
                             chrome.test.callbackPass());
                       }));
-                })).catch(chrome.test.fail);
-          }), function(error) {
+                }))
+                .catch(chrome.test.fail);
+          }),
+          function(error) {
             chrome.test.fail(error.name);
           });
     },
@@ -174,20 +174,21 @@ function runTests() {
     // the tag.
     function notifyEmptyTag() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name,
-          {create: false},
+          TESTING_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, fileEntry.name);
             directoryChangedCallback = function() {
               chrome.test.fail();
             };
             // TODO(mtomasz): NOT_FOUND error should be returned instead.
-            chrome.fileSystemProvider.notify({
-              fileSystemId: testUtil.FILE_SYSTEM_ID,
-              observedPath: fileEntry.fullPath,
-              recursive: false,
-              changeType: 'CHANGED',
-            }, chrome.test.callbackFail('INVALID_OPERATION'));
+            chrome.fileSystemProvider.notify(
+                {
+                  fileSystemId: testUtil.FILE_SYSTEM_ID,
+                  observedPath: fileEntry.fullPath,
+                  recursive: false,
+                  changeType: 'CHANGED',
+                },
+                chrome.test.callbackFail('INVALID_OPERATION'));
           }),
           function(error) {
             chrome.test.fail(error.name);
@@ -198,8 +199,7 @@ function runTests() {
     // watcher is not recursive) should fail.
     function notifyWatchedPathButDifferentModeTag() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name,
-          {create: false},
+          TESTING_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, fileEntry.name);
             directoryChangedCallback = function() {
@@ -222,13 +222,12 @@ function runTests() {
     // watcher being removed.
     function notifyDeleted() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name,
-          {create: false},
+          TESTING_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, fileEntry.name);
             // Verify closure called when an even arrives.
-            testUtil.toExternalEntry(fileEntry).then(
-                chrome.test.callbackPass(function(externalEntry) {
+            testUtil.toExternalEntry(fileEntry)
+                .then(chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   directoryChangedCallback =
                       chrome.test.callbackPass(function() {
@@ -254,10 +253,11 @@ function runTests() {
                         observedPath: fileEntry.fullPath,
                         recursive: false,
                         changeType: 'DELETED',
-                        tag: TESTING_TAG3
+                        tag: TESTING_TAG3,
                       },
                       chrome.test.callbackPass());
-                })).catch(chrome.test.fail);
+                }))
+                .catch(chrome.test.fail);
           }));
     },
 
@@ -265,12 +265,11 @@ function runTests() {
     // error.
     function notifyNotWatched() {
       testUtil.fileSystem.root.getDirectory(
-          TESTING_DIRECTORY.name,
-          {create: false},
+          TESTING_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
             chrome.test.assertEq(TESTING_DIRECTORY.name, fileEntry.name);
-            testUtil.toExternalEntry(fileEntry).then(
-                chrome.test.callbackPass(function(externalEntry) {
+            testUtil.toExternalEntry(fileEntry)
+                .then(chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   directoryChangedCallback = function() {
                     chrome.test.fail();
@@ -282,12 +281,13 @@ function runTests() {
                         observedPath: fileEntry.fullPath,
                         recursive: false,
                         changeType: 'CHANGED',
-                        tag: TESTING_TAG3
+                        tag: TESTING_TAG3,
                       },
                       chrome.test.callbackFail('NOT_FOUND'));
-                })).catch(chrome.test.fail);
-            }));
-    }
+                }))
+                .catch(chrome.test.fail);
+          }));
+    },
   ]);
 }
 
@@ -295,7 +295,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

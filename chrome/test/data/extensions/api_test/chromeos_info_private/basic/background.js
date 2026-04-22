@@ -6,46 +6,46 @@ const pass = chrome.test.callbackPass;
 const fail = chrome.test.callbackFail;
 
 function getTestFunctionFor(keys, fails) {
-  return function generatedTest () {
+  return function generatedTest() {
     // Debug.
     console.warn(`keys: ${keys}; fails: ${fails}`);
 
     chrome.chromeosInfoPrivate.get(
         keys,
         pass(
-          function(values) {
-            for (let i = 0; i < keys.length; ++i) {
-              // Default session type should be normal.
-              if (keys[i] == 'sessionType') {
-                chrome.test.assertEq('normal', values[keys[i]]);
-              }
-              // PlayStoreStatus by default should be not available.
-              if (keys[i] == 'playStoreStatus') {
-                chrome.test.assertEq('not available', values[keys[i]]);
-              }
-              if (keys[i] == 'managedDeviceStatus') {
-                chrome.test.assertEq('not managed', values[keys[i]]);
-              }
-              // Debug
-              if (keys[i] in values) {
-                console.log(`  values["${keys[i]}"] = ${values[keys[i]]}`);
-              } else {
-                console.log(`  ${keys[i]} is missing in values`);
-              }
+            function(values) {
+              for (let i = 0; i < keys.length; ++i) {
+                // Default session type should be normal.
+                if (keys[i] == 'sessionType') {
+                  chrome.test.assertEq('normal', values[keys[i]]);
+                }
+                // PlayStoreStatus by default should be not available.
+                if (keys[i] == 'playStoreStatus') {
+                  chrome.test.assertEq('not available', values[keys[i]]);
+                }
+                if (keys[i] == 'managedDeviceStatus') {
+                  chrome.test.assertEq('not managed', values[keys[i]]);
+                }
+                // Debug
+                if (keys[i] in values) {
+                  console.log(`  values["${keys[i]}"] = ${values[keys[i]]}`);
+                } else {
+                  console.log(`  ${keys[i]} is missing in values`);
+                }
 
-              chrome.test.assertEq(fails.indexOf(keys[i]) == -1,
-                                   keys[i] in values);
-            }
-          }
-        )
+                chrome.test.assertEq(
+                    fails.indexOf(keys[i]) == -1, keys[i] in values);
+              }
+            },
+            ),
     );
-  }
+  };
 }
 
 // Automatically generates tests for the given possible keys. Note, this
 // tests do not check return value, only the fact that it is presented.
 function generateTestsForKeys(keys) {
-  let tests = [];
+  const tests = [];
   // Test with all the keys at one.
   tests.push(getTestFunctionFor(keys, []));
   // Tests with key which hasn't corresponding value.
@@ -60,8 +60,8 @@ function generateTestsForKeys(keys) {
   }
   if (keys.length >= 2) {
     tests.push(getTestFunctionFor([keys[0], keys[1]], []));
-    tests.push(getTestFunctionFor([keys[0], noValueKey, keys[1]],
-                                  [noValueKey]));
+    tests.push(
+        getTestFunctionFor([keys[0], noValueKey, keys[1]], [noValueKey]));
   }
   return tests;
 }
@@ -71,11 +71,10 @@ function timezoneSetTest() {
   chrome.chromeosInfoPrivate.get(
       ['timezone'],
       pass(
-        function(values) {
-          chrome.test.assertEq(values['timezone'],
-                               'Pacific/Kiritimati');
-        }
-      ));
+          function(values) {
+            chrome.test.assertEq(values['timezone'], 'Pacific/Kiritimati');
+          },
+          ));
 }
 
 function prefsTest(prefs) {
@@ -129,19 +128,25 @@ chrome.test.getConfig(function(config) {
         'a11yDockedMagnifierEnabled',
         'sendFunctionKeys',
         'timezone',
-        'supportedTimezones'
+        'supportedTimezones',
       ]);
 
       // Add chrome.chromeosInfoPrivate.set() test.
       tests.push(timezoneSetTest);
       tests.push(() => prefsTest([
-                   'a11yLargeCursorEnabled', 'a11yStickyKeysEnabled',
-                   'a11ySpokenFeedbackEnabled', 'a11yHighContrastEnabled',
-                   'a11yAutoClickEnabled', 'a11yVirtualKeyboardEnabled',
-                   'a11yCaretHighlightEnabled', 'a11yCursorHighlightEnabled',
-                   'a11yFocusHighlightEnabled', 'a11ySelectToSpeakEnabled',
-                   'a11ySwitchAccessEnabled', 'a11yCursorColorEnabled',
-                   'sendFunctionKeys'
+                   'a11yLargeCursorEnabled',
+                   'a11yStickyKeysEnabled',
+                   'a11ySpokenFeedbackEnabled',
+                   'a11yHighContrastEnabled',
+                   'a11yAutoClickEnabled',
+                   'a11yVirtualKeyboardEnabled',
+                   'a11yCaretHighlightEnabled',
+                   'a11yCursorHighlightEnabled',
+                   'a11yFocusHighlightEnabled',
+                   'a11ySelectToSpeakEnabled',
+                   'a11ySwitchAccessEnabled',
+                   'a11yCursorColorEnabled',
+                   'sendFunctionKeys',
                  ]));
       break;
   }

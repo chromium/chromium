@@ -12,7 +12,7 @@ globalThis.registerUserScript = async function() {
   await chrome.userScripts.register([{
     id: 'test_script',
     matches: ['http://127.0.0.1/fetch_from_user_script.html'],
-    js: [{file: 'user_script.js'}]
+    js: [{file: 'user_script.js'}],
   }]);
   chrome.test.sendMessage('user_script_registered');
 };

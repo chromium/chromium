@@ -13,9 +13,9 @@ function updateBrowserAction() {
         chrome.test.assertNoLastError();
         chrome.browserAction.setBadgeText({text: 'badge'}, function() {
           chrome.browserAction.setBadgeBackgroundColor(
-              {color: [255,255,255,255]}, function() {
-            chrome.test.notifyPass();
-          });
+              {color: [255, 255, 255, 255]}, function() {
+                chrome.test.notifyPass();
+              });
         });
       }
     });

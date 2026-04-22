@@ -63,7 +63,7 @@ const tests = [
     const port = chrome.tabs.connect(testTab.id);
     port.postMessage({testDisconnect: true});
     listenOnce(port.onDisconnect, function() {});
-  }
+  },
 ];
 
 chrome.test.getConfig(async (config) => {

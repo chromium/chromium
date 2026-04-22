@@ -15,6 +15,6 @@ chrome.test.getConfig(function(config) {
   chrome.test.log('Creating tab...');
   chrome.tabs.create({
     url: `http://127.0.0.1:${config.testServer.port}/extensions/api_test/` +
-         'service_worker/content_script_fetch/controlled_page/index.html'
+        'service_worker/content_script_fetch/controlled_page/index.html',
   });
 });

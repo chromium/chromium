@@ -41,7 +41,7 @@ const TEST_ERROR_MESSAGE = 'test error message';
 // Completes the request with the given request ID using the fake response in
 // `MAKE_CREDENTIAL_RESPONSE_JSON`.
 export function completeCreateRequest(requestId, optErrorName) {
-  let response = {
+  const response = {
     requestId: requestId,
   };
   if (optErrorName) {
@@ -55,7 +55,7 @@ export function completeCreateRequest(requestId, optErrorName) {
 // Completes the request with the given request ID using the fake response in
 // `GET_ASSERTION_RESPONSE_JSON`.
 export function completeGetRequest(requestId, optErrorName) {
-  let response = {
+  const response = {
     requestId: requestId,
   };
   if (optErrorName) {

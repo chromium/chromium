@@ -4,17 +4,17 @@
 
 chrome.test.runTests([
   function checkNotifications() {
-    navigator.permissions.query({ name: 'notifications' })
-      .then(function (permission) {
-        if (permission.state === 'granted') {
-          chrome.test.succeed();
-        } else {
-          chrome.test.fail();
-        }
-      })
+    navigator.permissions.query({name: 'notifications'})
+        .then(function(permission) {
+          if (permission.state === 'granted') {
+            chrome.test.succeed();
+          } else {
+            chrome.test.fail();
+          }
+        });
   },
   function requestNotifications() {
-    Notification.requestPermission().then(function (permission) {
+    Notification.requestPermission().then(function(permission) {
       if (permission === 'granted') {
         chrome.test.succeed();
       } else {
@@ -23,59 +23,59 @@ chrome.test.runTests([
     });
   },
   function checkGeolocation() {
-    navigator.permissions.query({ name: 'geolocation' })
-      .then(function (permission) {
-        if (permission.state === 'granted') {
-          chrome.test.succeed();
-        } else {
-          chrome.test.fail();
-        }
-      })
+    navigator.permissions.query({name: 'geolocation'})
+        .then(function(permission) {
+          if (permission.state === 'granted') {
+            chrome.test.succeed();
+          } else {
+            chrome.test.fail();
+          }
+        });
   },
   function geolocation_getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(
-      chrome.test.succeed, chrome.test.fail);
+        chrome.test.succeed, chrome.test.fail);
   },
   function geolocation_watchPosition() {
     navigator.geolocation.watchPosition(chrome.test.succeed, chrome.test.fail);
   },
   function checkCamera() {
-    navigator.permissions.query({ name: 'camera' }).then(function (permission) {
+    navigator.permissions.query({name: 'camera'}).then(function(permission) {
       if (permission.state === 'prompt') {
         chrome.test.succeed();
       } else {
         chrome.test.fail();
       }
-    })
+    });
   },
   function requestCamera() {
-    const constraints = { video: true };
+    const constraints = {video: true};
     navigator.mediaDevices.getUserMedia(constraints)
-      .then(function (stream) {
-        chrome.test.succeed();
-      })
-      .catch(function (err) {
-        chrome.test.fail();
-      });
+        .then(function(stream) {
+          chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail();
+        });
   },
   function checkMicrophone() {
-    navigator.permissions.query({ name: 'microphone' })
-      .then(function (permission) {
-        if (permission.state === 'prompt') {
-          chrome.test.succeed();
-        } else {
-          chrome.test.fail();
-        }
-      })
+    navigator.permissions.query({name: 'microphone'})
+        .then(function(permission) {
+          if (permission.state === 'prompt') {
+            chrome.test.succeed();
+          } else {
+            chrome.test.fail();
+          }
+        });
   },
   function requestMicrophone() {
-    const constraints = { audio: true };
+    const constraints = {audio: true};
     navigator.mediaDevices.getUserMedia(constraints)
-      .then(function (stream) {
-        chrome.test.succeed();
-      })
-      .catch(function (err) {
-        chrome.test.fail();
-      });
-  }
+        .then(function(stream) {
+          chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail();
+        });
+  },
 ]);

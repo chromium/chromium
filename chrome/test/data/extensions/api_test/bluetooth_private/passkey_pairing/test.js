@@ -5,14 +5,16 @@
 function testPasskeyPairing() {
   chrome.bluetoothPrivate.onPairing.addListener(function(pairingEvent) {
     chrome.test.assertEq('requestPasskey', pairingEvent.pairing);
-    chrome.bluetoothPrivate.setPairingResponse({
-        device: pairingEvent.device,
-        response: 'confirm',
-        passkey: 900531
-    }, function() {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+    chrome.bluetoothPrivate.setPairingResponse(
+        {
+          device: pairingEvent.device,
+          response: 'confirm',
+          passkey: 900531,
+        },
+        function() {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
   });
 }
 

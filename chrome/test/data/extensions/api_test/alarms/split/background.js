@@ -6,11 +6,15 @@ const inIncognito = chrome.extension.inIncognitoContext;
 const alarmName = inIncognito ? 'incognito' : 'normal';
 let alarmTriggered = false;
 let testEventFired = false;
-const createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
+const createParams = {
+  delayInMinutes: 0.001,
+  periodInMinutes: 60
+};
 
 function checkAndCompleteTest() {
-  if (alarmTriggered && testEventFired)
+  if (alarmTriggered && testEventFired) {
     chrome.test.succeed();
+  }
 }
 
 chrome.alarms.onAlarm.addListener(function(alarm) {

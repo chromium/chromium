@@ -18,5 +18,5 @@ function fileInfoReceived(fileInfo) {
 }
 
 chrome.test.runTests([
-  setupListener
+  setupListener,
 ]);

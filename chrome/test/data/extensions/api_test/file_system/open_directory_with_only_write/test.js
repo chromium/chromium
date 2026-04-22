@@ -4,9 +4,10 @@
 
 chrome.test.runTests([
   function openFile() {
-    chrome.fileSystem.chooseEntry({type: 'openDirectory'},
+    chrome.fileSystem.chooseEntry(
+        {type: 'openDirectory'},
         chrome.test.callbackFail(
             'Operation requires fileSystem.directory permission',
             function(entry) {}));
-  }
+  },
 ]);

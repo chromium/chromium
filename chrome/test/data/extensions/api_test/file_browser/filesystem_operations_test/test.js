@@ -44,8 +44,8 @@ const FILE_CONTENT_AFTER_TRUNCATE_SHORT = 'This';
 const TRUNCATE_LONG_LENGTH = 6;
 const FILE_CONTENT_AFTER_TRUNCATE_LONG = 'This\0\0';
 
-function assertEqAndRunCallback(expectedValue, value, errorMessage,
-                                callback, callbackArg) {
+function assertEqAndRunCallback(
+    expectedValue, value, errorMessage, callback, callbackArg) {
   chrome.test.assertEq(expectedValue, value, errorMessage);
   callback(callbackArg);
 }
@@ -75,8 +75,8 @@ function getDirectory(
   entry.getDirectory(
       getPath(path, isOnDrive), {create: shouldCreate},
       assertEqAndRunCallback.bind(null, expectSuccess, true, message, callback),
-      assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                  callback, null));
+      assertEqAndRunCallback.bind(
+          null, expectSuccess, false, message, callback, null));
 }
 
 // Gets the file entry.
@@ -88,8 +88,8 @@ function getFile(volumeId, entry, path, shouldCreate, expectSuccess, callback) {
   entry.getFile(
       getPath(path, isOnDrive), {create: shouldCreate},
       assertEqAndRunCallback.bind(null, expectSuccess, true, message, callback),
-      assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                  callback, null));
+      assertEqAndRunCallback.bind(
+          null, expectSuccess, false, message, callback, null));
 }
 
 // Reads file entry/path and verifies its content. The read operation
@@ -154,14 +154,13 @@ function abortWriteFile(volumeId, entry, path, callback) {
             aborted = true;
           };
 
-          writer.onwriteend =
-              function() {
+          writer.onwriteend = function() {
             chrome.test.assertTrue(aborted);
             chrome.test.assertFalse(failed);
             callback();
-          }
+          };
 
-              writer.write(new Blob(['xxxxx'], {type: 'text/plain'}));
+          writer.write(new Blob(['xxxxx'], {type: 'text/plain'}));
         },
         function(error) {
           chrome.test.fail(`Error creating writer: ${error.name}`);
@@ -209,14 +208,13 @@ function abortTruncateFile(volumeId, entry, path, callback) {
             aborted = true;
           };
 
-          writer.onwriteend =
-              function() {
+          writer.onwriteend = function() {
             chrome.test.assertTrue(aborted);
             chrome.test.assertFalse(failed);
             callback();
-          }
+          };
 
-              writer.truncate(10);
+          writer.truncate(10);
         },
         function(error) {
           chrome.test.fail(`Error creating writer: ${error.name}`);
@@ -230,11 +228,12 @@ function copyFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
 
   getFile(volumeId, entry, from, false, true, function(sourceEntry) {
     getDirectory(volumeId, entry, to, false, true, function(targetDir) {
-      sourceEntry.copyTo(targetDir, newName,
-          assertEqAndRunCallback.bind(null, expectSuccess, true, message,
-                                      callback),
-          assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                      callback));
+      sourceEntry.copyTo(
+          targetDir, newName,
+          assertEqAndRunCallback.bind(
+              null, expectSuccess, true, message, callback),
+          assertEqAndRunCallback.bind(
+              null, expectSuccess, false, message, callback));
     });
   });
 }
@@ -245,11 +244,12 @@ function moveFile(volumeId, entry, from, to, newName, expectSuccess, callback) {
 
   getFile(volumeId, entry, from, false, true, function(sourceEntry) {
     getDirectory(volumeId, entry, to, false, true, function(targetDir) {
-      sourceEntry.moveTo(targetDir, newName,
-          assertEqAndRunCallback.bind(null, expectSuccess, true, message,
-                                      callback),
-          assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                      callback));
+      sourceEntry.moveTo(
+          targetDir, newName,
+          assertEqAndRunCallback.bind(
+              null, expectSuccess, true, message, callback),
+          assertEqAndRunCallback.bind(
+              null, expectSuccess, false, message, callback));
     });
   });
 }
@@ -260,10 +260,10 @@ function deleteFile(volumeId, entry, path, expectSuccess, callback) {
 
   getFile(volumeId, entry, path, false, true, function(entry) {
     entry.remove(
-        assertEqAndRunCallback.bind(null, expectSuccess, true, message,
-                                    callback),
-        assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                    callback));
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, true, message, callback),
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, false, message, callback));
   });
 }
 
@@ -273,10 +273,10 @@ function deleteDirectory(volumeId, entry, path, expectSuccess, callback) {
 
   getDirectory(volumeId, entry, path, false, true, function(entry) {
     entry.remove(
-        assertEqAndRunCallback.bind(null, expectSuccess, true, message,
-                                    callback),
-        assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                    callback));
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, true, message, callback),
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, false, message, callback));
   });
 }
 
@@ -287,10 +287,10 @@ function deleteDirectoryRecursively(
 
   getDirectory(volumeId, entry, path, false, true, function(entry) {
     entry.removeRecursively(
-        assertEqAndRunCallback.bind(null, expectSuccess, true, message,
-                                    callback),
-        assertEqAndRunCallback.bind(null, expectSuccess, false, message,
-                                    callback));
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, true, message, callback),
+        assertEqAndRunCallback.bind(
+            null, expectSuccess, false, message, callback));
   });
 }
 
@@ -309,7 +309,8 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
   const testsToRun = [];
 
   testsToRun.push(function getDirectoryTest() {
-    getDirectory(volumeId, fileSystem.root, 'test_dir', false, true,
+    getDirectory(
+        volumeId, fileSystem.root, 'test_dir', false, true,
         chrome.test.succeed);
   });
 
@@ -321,13 +322,14 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         chrome.test.succeed);
 
     // Create operation should succeed only for non read-only file systems.
-    getDirectory(volumeId, fileSystem.root, 'new_test_dir', true, !isReadOnly,
-        callback);
+    getDirectory(
+        volumeId, fileSystem.root, 'new_test_dir', true, !isReadOnly, callback);
   });
 
   testsToRun.push(function getFileTest() {
-    getFile(volumeId, fileSystem.root, 'test_dir/test_file.xul', false, true,
-            chrome.test.succeed);
+    getFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.xul', false, true,
+        chrome.test.succeed);
   });
 
   testsToRun.push(function createFileTest() {
@@ -338,13 +340,15 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         !isReadOnly, chrome.test.succeed);
 
     // Create operation should succeed only for non read-only file systems.
-    getFile(volumeId, fileSystem.root, 'test_dir/new_file', true, !isReadOnly,
+    getFile(
+        volumeId, fileSystem.root, 'test_dir/new_file', true, !isReadOnly,
         callback);
   });
 
   testsToRun.push(function readFileTest() {
-    readFileAndExpectContent(volumeId, fileSystem.root,
-        'test_dir/test_file.xul', INITIAL_FILE_CONTENT, chrome.test.succeed);
+    readFileAndExpectContent(
+        volumeId, fileSystem.root, 'test_dir/test_file.xul',
+        INITIAL_FILE_CONTENT, chrome.test.succeed);
   });
 
   testsToRun.push(function writeFileTest() {
@@ -357,8 +361,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         expectedFinalContent, chrome.test.succeed);
 
     // Write should fail only on read-only file system.
-    writeFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
-        WRITE_OFFSET, WRITE_DATA, !isReadOnly, callback);
+    writeFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.tiff', WRITE_OFFSET,
+        WRITE_DATA, !isReadOnly, callback);
   });
 
   testsToRun.push(function truncateFileShortTest() {
@@ -371,7 +376,8 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         expectedFinalContent, chrome.test.succeed);
 
     // Truncate should fail only on read-only file system.
-    truncateFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
+    truncateFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.tiff',
         TRUNCATE_SHORT_LENGTH, !isReadOnly, callback);
   });
 
@@ -385,20 +391,23 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         expectedFinalContent, chrome.test.succeed);
 
     // Truncate should fail only on read-only file system.
-    truncateFile(volumeId, fileSystem.root, 'test_dir/test_file.tiff',
+    truncateFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.tiff',
         TRUNCATE_LONG_LENGTH, !isReadOnly, callback);
   });
 
   // Skip abort tests for read-only file systems.
   if (!isReadOnly) {
     testsToRun.push(function abortWriteTest() {
-      abortWriteFile(volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
-                     chrome.test.succeed);
+      abortWriteFile(
+          volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
+          chrome.test.succeed);
     });
 
     testsToRun.push(function abortTruncateTest() {
-      abortTruncateFile(volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
-                        chrome.test.succeed);
+      abortTruncateFile(
+          volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
+          chrome.test.succeed);
     });
   }
 
@@ -407,14 +416,15 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
     if (isReadOnly) {
       // If the file system is read-only, the target file should not exist after
       // copy operation.
-      verifyTarget = getFile.bind(null, volumeId, fileSystem.root,
-          'test_dir/subdir/copy', false, false, chrome.test.succeed);
+      verifyTarget = getFile.bind(
+          null, volumeId, fileSystem.root, 'test_dir/subdir/copy', false, false,
+          chrome.test.succeed);
     } else {
       // If the file system is not read-only, the target file should be created
       // during copy operation and its content should match the source file.
-      verifyTarget = readFileAndExpectContent.bind(null, volumeId,
-          fileSystem.root, 'test_dir/subdir/copy', INITIAL_FILE_CONTENT,
-          chrome.test.succeed);
+      verifyTarget = readFileAndExpectContent.bind(
+          null, volumeId, fileSystem.root, 'test_dir/subdir/copy',
+          INITIAL_FILE_CONTENT, chrome.test.succeed);
     }
 
     // Verify the source file stil exists and its content hasn't changed.
@@ -423,8 +433,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         INITIAL_FILE_CONTENT, verifyTarget);
 
     // Copy file should fail on read-only file system.
-    copyFile(volumeId, fileSystem.root, 'test_dir/test_file.xul',
-        'test_dir/subdir', 'copy', !isReadOnly, chrome.test.succeed);
+    copyFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.xul', 'test_dir/subdir',
+        'copy', !isReadOnly, chrome.test.succeed);
   });
 
   testsToRun.push(function moveFileTest() {
@@ -432,14 +443,15 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
     if (isReadOnly) {
       // If the file system is read-only, the target file should not be created
       // during move.
-      verifyTarget = getFile.bind(null, volumeId, fileSystem.root,
-          'test_dir/subdir/move', false, false, chrome.test.succeed);
+      verifyTarget = getFile.bind(
+          null, volumeId, fileSystem.root, 'test_dir/subdir/move', false, false,
+          chrome.test.succeed);
     } else {
       // If the file system is read-only, the target file should be created
       // during move and its content should match the source file.
-      verifyTarget = readFileAndExpectContent.bind(null, volumeId,
-          fileSystem.root, 'test_dir/subdir/move', INITIAL_FILE_CONTENT,
-          chrome.test.succeed);
+      verifyTarget = readFileAndExpectContent.bind(
+          null, volumeId, fileSystem.root, 'test_dir/subdir/move',
+          INITIAL_FILE_CONTENT, chrome.test.succeed);
     }
 
     // On read-only file system the source file should still exist. Otherwise
@@ -449,8 +461,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         isReadOnly, verifyTarget);
 
     // Copy file should fail on read-only file system.
-    moveFile(volumeId, fileSystem.root, 'test_dir/test_file.xul',
-        'test_dir/subdir', 'move', !isReadOnly, chrome.test.succeed);
+    moveFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.xul', 'test_dir/subdir',
+        'move', !isReadOnly, chrome.test.succeed);
   });
 
   testsToRun.push(function deleteFileTest() {
@@ -461,8 +474,9 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
         isReadOnly, chrome.test.succeed);
 
     // Delete operation should fail for read-only file systems.
-    deleteFile(volumeId, fileSystem.root, 'test_dir/test_file.xul.foo',
-        !isReadOnly, callback);
+    deleteFile(
+        volumeId, fileSystem.root, 'test_dir/test_file.xul.foo', !isReadOnly,
+        callback);
   });
 
   testsToRun.push(function deleteEmptyDirectoryTest() {
@@ -474,8 +488,8 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
 
     // Deleting empty directory should fail for read-only file systems, and
     // succeed otherwise.
-    deleteDirectory(volumeId, fileSystem.root, 'test_dir/empty_dir',
-        !isReadOnly, callback);
+    deleteDirectory(
+        volumeId, fileSystem.root, 'test_dir/empty_dir', !isReadOnly, callback);
   });
 
   testsToRun.push(function deleteDirectoryTest() {
@@ -499,8 +513,8 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
           chrome.test.succeed);
 
       // Recursive delete dhouls fail only for read-only file system.
-      deleteDirectoryRecursively(volumeId, fileSystem.root, 'test_dir',
-          !isReadOnly, callback);
+      deleteDirectoryRecursively(
+          volumeId, fileSystem.root, 'test_dir', !isReadOnly, callback);
     });
   }
 
@@ -537,7 +551,7 @@ function initTests(callback) {
     chrome.fileSystem.requestFileSystem(
         {
           volumeId: sortedVolumeMetadataList[0].volumeId,
-          writable: !sortedVolumeMetadataList[0].isReadOnly
+          writable: !sortedVolumeMetadataList[0].isReadOnly,
         },
         function(fileSystem) {
           if (!fileSystem) {

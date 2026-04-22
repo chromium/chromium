@@ -20,8 +20,7 @@ function onPermissionLevelChangedListener(permissionLevel) {
   }
 
   if (permissionLevel == currentPermissionLevel) {
-    chrome.test.notifyFail(
-        `Same permission level ${permissionLevel} received`);
+    chrome.test.notifyFail(`Same permission level ${permissionLevel} received`);
     return;
   }
 

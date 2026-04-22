@@ -23,29 +23,35 @@ chrome.test.runTests([
     const genericFamily = 'standard';
     const fontId = 'Verdana';
 
-    fs.setFont({
-      script: script,
-      genericFamily: genericFamily,
-      fontId: fontId
-    }, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+    fs.setFont(
+        {
+          script: script,
+          genericFamily: genericFamily,
+          fontId: fontId,
+        },
+        chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
   },
 
   function setGlobalFontName() {
     const genericFamily = 'sansserif';
     const fontId = 'Tahoma';
 
-    fs.setFont({
-      genericFamily: genericFamily,
-      fontId: fontId
-    }, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+    fs.setFont(
+        {
+          genericFamily: genericFamily,
+          fontId: fontId,
+        },
+        chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
   },
 
   function setDefaultFontSize() {
     const pixelSize = 22;
 
-    fs.setDefaultFontSize({
-      pixelSize: pixelSize
-    }, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+    fs.setDefaultFontSize(
+        {
+          pixelSize: pixelSize,
+        },
+        chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
   },
 
   function getFontList() {
@@ -73,51 +79,59 @@ chrome.test.runTests([
   },
 
   function getPerScriptFontName() {
-    fs.getFont({
-      script: 'Hang',
-      genericFamily: 'standard'
-    }, expect({
-      fontId: 'Tahoma',
-      levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION
-    }));
+    fs.getFont(
+        {
+          script: 'Hang',
+          genericFamily: 'standard',
+        },
+        expect({
+          fontId: 'Tahoma',
+          levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION,
+        }));
   },
 
   function getGlobalFontName() {
-    fs.getFont({
-      genericFamily: 'sansserif'
-    }, expect({
-      fontId: 'Arial',
-      levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION
-    }));
+    fs.getFont(
+        {
+          genericFamily: 'sansserif',
+        },
+        expect({
+          fontId: 'Arial',
+          levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION,
+        }));
   },
 
   function getDefaultFontSize() {
     fs.getDefaultFontSize({}, expect({
-      pixelSize: 16,
-      levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION
-    }));
+                            pixelSize: 16,
+                            levelOfControl: CONTROLLABLE_BY_THIS_EXTENSION,
+                          }));
   },
 
   function clearPerScriptFont() {
     const script = 'Hang';
     const genericFamily = 'standard';
 
-    fs.clearFont({
-      script: script,
-      genericFamily: genericFamily,
-    }, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+    fs.clearFont(
+        {
+          script: script,
+          genericFamily: genericFamily,
+        },
+        chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
   },
 
   function clearGlobalFont() {
     const genericFamily = 'sansserif';
 
-   fs.clearFont({
-      genericFamily: genericFamily,
-   }, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+    fs.clearFont(
+        {
+          genericFamily: genericFamily,
+        },
+        chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
   },
 
   function clearDefaultFontSize() {
-    fs.clearDefaultFontSize({},
-      chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
-  }
+    fs.clearDefaultFontSize(
+        {}, chrome.test.callbackFail(SET_FROM_INCOGNITO_ERROR));
+  },
 ]);

@@ -53,7 +53,7 @@ const verifyCurrentRulesCallback = function() {
     };
 
     // Sort by ID first since assertEq respects order of arrays.
-    rules.sort(comparator)
+    rules.sort(comparator);
     currentRules.sort(comparator);
     chrome.test.assertEq(currentRules, rules);
 
@@ -74,7 +74,7 @@ const testCases = [
   // Ensure that an extension can add up to `regexRuleLimit` number of regex
   // rules.
   function regexRuleLimitReached() {
-    let newRules = [];
+    const newRules = [];
     while (newRules.length < regexRuleLimit) {
       newRules.push(createRegexRuleWithID(nextId++));
     }
@@ -95,7 +95,7 @@ const testCases = [
   // Ensure that an extension can add up to `unsafeRuleLimit` number of "unsafe"
   // rules.
   function unsafeRuleLimitReached() {
-    let newRules = [];
+    const newRules = [];
     while (newRules.length < unsafeRuleLimit) {
       newRules.push(createRedirectRuleWithID(nextId++));
     }
@@ -116,9 +116,10 @@ const testCases = [
   // Ensure we can add up to `ruleLimit` no. of rules.
   function ruleLimitReached() {
     const numRulesToAdd = ruleLimit - currentRules.length;
-    let newRules = [];
-    while (newRules.length < numRulesToAdd)
+    const newRules = [];
+    while (newRules.length < numRulesToAdd) {
       newRules.push(createRuleWithID(nextId++));
+    }
 
     currentRules = newRules.concat(currentRules);
     chrome.test.assertEq(ruleLimit, currentRules.length);

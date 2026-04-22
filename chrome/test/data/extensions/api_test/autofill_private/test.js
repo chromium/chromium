@@ -10,33 +10,33 @@ const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 const EntityPassType = chrome.autofillPrivate.EntityPassType;
 
 // Constants for the tests.
-var FIRST_NAME = 'Firstname';
-var LAST_NAME = 'Lastname';
-var NAME = FIRST_NAME + ' ' + LAST_NAME;
-var ALTERNATIVE_FULL_NAME = 'NameAlternative';
-var ALTERNATIVE_FULL_NAME_SEPARATOR = 'Name Alternative';
-var COMPANY_NAME = 'Company name';
-var ADDRESS_LEVEL1 = 'Address level 1';
-var ADDRESS_LEVEL2 = 'Address level 2';
-var ADDRESS_LEVEL3 = 'Address level 3';
-var POSTAL_CODE = 'Postal code';
-var SORTING_CODE = 'Sorting code';
-var COUNTRY_CODE = 'ES';
-var PHONE = '1 123-123-1234';
-var EMAIL = 'johndoe@gmail.com';
-var CARD_NAME = 'CardName';
-var GUID = 'e4bbe384-ee63-45a4-8df3-713a58fdc181'
-var MASKED_NUMBER = '1111';
-var NUMBER = '4111 1111 1111 1111';
-var EXP_MONTH = '02';
-var EXP_YEAR = '2999';
-var CVC = '987';
-var MASKED_CVC = '•••';
-var NICKNAME = 'nickname';
-var IBAN_VALUE = 'AD1400080001001234567890';
-var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
-var OBFUSCATION_DOT = '\u2022\u2060\u2006\u2060';
-var ENTITY_INSTANCE = {
+const FIRST_NAME = 'Firstname';
+const LAST_NAME = 'Lastname';
+const NAME = FIRST_NAME + ' ' + LAST_NAME;
+const ALTERNATIVE_FULL_NAME = 'NameAlternative';
+const ALTERNATIVE_FULL_NAME_SEPARATOR = 'Name Alternative';
+const COMPANY_NAME = 'Company name';
+const ADDRESS_LEVEL1 = 'Address level 1';
+const ADDRESS_LEVEL2 = 'Address level 2';
+const ADDRESS_LEVEL3 = 'Address level 3';
+const POSTAL_CODE = 'Postal code';
+const SORTING_CODE = 'Sorting code';
+const COUNTRY_CODE = 'ES';
+const PHONE = '1 123-123-1234';
+const EMAIL = 'johndoe@gmail.com';
+const CARD_NAME = 'CardName';
+const GUID = 'e4bbe384-ee63-45a4-8df3-713a58fdc181';
+const MASKED_NUMBER = '1111';
+const NUMBER = '4111 1111 1111 1111';
+const EXP_MONTH = '02';
+const EXP_YEAR = '2999';
+const CVC = '987';
+const MASKED_CVC = '•••';
+const NICKNAME = 'nickname';
+const IBAN_VALUE = 'AD1400080001001234567890';
+const INVALID_IBAN_VALUE = 'AD14000800010012345678900';
+const OBFUSCATION_DOT = '\u2022\u2060\u2006\u2060';
+const ENTITY_INSTANCE = {
   type: {
     typeName: 1,
     typeNameAsString: 'Driver\'s license',
@@ -65,7 +65,7 @@ var ENTITY_INSTANCE = {
         month: '5',
         day: '20',
         year: '2015',
-      }
+      },
     },
   ],
   guid: GUID,
@@ -75,20 +75,20 @@ var ENTITY_INSTANCE = {
   isReadOnly: false,
 };
 
-var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
+const UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
 UPDATED_ENTITY_INSTANCE.attributeInstances[0].value = 'Mark Hanks';
 
-var ENTITY_INSTANCE_WITH_INCOMPLETE_DATE = structuredClone(ENTITY_INSTANCE);
+const ENTITY_INSTANCE_WITH_INCOMPLETE_DATE = structuredClone(ENTITY_INSTANCE);
 ENTITY_INSTANCE_WITH_INCOMPLETE_DATE.attributeInstances[1].value.month = '';
 
-var failOnceCalled = function() {
+const failOnceCalled = function() {
   chrome.test.fail();
 };
 
 function addNewIban(nickname) {
   function filterIbanProperties(ibans) {
     return ibans.map(iban => {
-      var filteredIban = {};
+      const filteredIban = {};
       ['value', 'nickname'].forEach(property => {
         filteredIban[property] = iban[property];
       });
@@ -96,32 +96,32 @@ function addNewIban(nickname) {
     });
   }
 
-  chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
-      ibanList) {
-    chrome.test.assertEq([], ibanList);
+  chrome.autofillPrivate.getIbanList(
+      chrome.test.callbackPass(function(ibanList) {
+        chrome.test.assertEq([], ibanList);
 
-    // Set up the callback that verifies that the IBAN was correctly added.
-    chrome.test.listenOnce(
-        chrome.autofillPrivate.onPersonalDataChanged,
-        chrome.test.callbackPass(function(addressList, cardList, ibanList) {
-          chrome.test.assertEq(
-              [{value: IBAN_VALUE, nickname: nickname}],
-              filterIbanProperties(ibanList));
-        }));
+        // Set up the callback that verifies that the IBAN was correctly added.
+        chrome.test.listenOnce(
+            chrome.autofillPrivate.onPersonalDataChanged,
+            chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+              chrome.test.assertEq(
+                  [{value: IBAN_VALUE, nickname: nickname}],
+                  filterIbanProperties(ibanList));
+            }));
 
-    chrome.autofillPrivate.saveIban({
-      value: IBAN_VALUE,
-      nickname: nickname
-    });
-  }));
-};
+        chrome.autofillPrivate.saveIban({
+          value: IBAN_VALUE,
+          nickname: nickname,
+        });
+      }));
+}
 
 function updateExistingIban(updatedNickname) {
-  var UPDATED_IBAN_VALUE = 'AL35202111090000000001234567';
+  const UPDATED_IBAN_VALUE = 'AL35202111090000000001234567';
 
   function filterIbanProperties(ibans) {
     return ibans.map(iban => {
-      var filteredIban = {};
+      const filteredIban = {};
       ['guid', 'value', 'nickname'].forEach(property => {
         filteredIban[property] = iban[property];
       });
@@ -129,47 +129,47 @@ function updateExistingIban(updatedNickname) {
     });
   }
 
-  chrome.autofillPrivate.getIbanList(chrome.test.callbackPass(function(
-      ibanList) {
-    // The IBAN from the addNewIban function should still be there.
-    chrome.test.assertEq(1, ibanList.length);
-    var ibanGuid = ibanList[0].guid;
+  chrome.autofillPrivate.getIbanList(
+      chrome.test.callbackPass(function(ibanList) {
+        // The IBAN from the addNewIban function should still be there.
+        chrome.test.assertEq(1, ibanList.length);
+        const ibanGuid = ibanList[0].guid;
 
-    // Set up the callback that verifies that the IBAN was correctly
-    // updated.
-    chrome.test.listenOnce(
-        chrome.autofillPrivate.onPersonalDataChanged,
-        chrome.test.callbackPass(function(addressList, cardList, ibanList) {
-          chrome.test.assertEq(
-              [{
-                guid: ibanGuid,
-                value: UPDATED_IBAN_VALUE,
-                nickname: updatedNickname
-              }],
-              filterIbanProperties(ibanList));
-        }));
+        // Set up the callback that verifies that the IBAN was correctly
+        // updated.
+        chrome.test.listenOnce(
+            chrome.autofillPrivate.onPersonalDataChanged,
+            chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+              chrome.test.assertEq(
+                  [{
+                    guid: ibanGuid,
+                    value: UPDATED_IBAN_VALUE,
+                    nickname: updatedNickname,
+                  }],
+                  filterIbanProperties(ibanList));
+            }));
 
-    // Update the IBAN by saving an IBAN with the same guid and using some
-    // different information.
-    chrome.autofillPrivate.saveIban({
-      guid: ibanGuid,
-      value: UPDATED_IBAN_VALUE,
-      nickname: updatedNickname
-    });
-  }));
-};
+        // Update the IBAN by saving an IBAN with the same guid and using some
+        // different information.
+        chrome.autofillPrivate.saveIban({
+          guid: ibanGuid,
+          value: UPDATED_IBAN_VALUE,
+          nickname: updatedNickname,
+        });
+      }));
+}
 
 function updateCreditCardForCvc(updatedCvcValue) {
   // Reset onPersonalDataChanged.
   chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
 
-  var UPDATED_CARD_NAME = 'UpdatedCardName';
-  var UPDATED_EXP_YEAR = '2888';
-  var UPDATED_NICKNAME = 'New nickname';
+  const UPDATED_CARD_NAME = 'UpdatedCardName';
+  const UPDATED_EXP_YEAR = '2888';
+  const UPDATED_NICKNAME = 'New nickname';
 
   function filterCardProperties(cards) {
     return cards.map(cards => {
-      var filteredCards = {};
+      const filteredCards = {};
       ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
        'nickname', 'cvc']
           .forEach(property => {
@@ -183,7 +183,7 @@ function updateCreditCardForCvc(updatedCvcValue) {
       chrome.test.callbackPass(function(cardList) {
         // The card from the addNewCreditCard function should still be there.
         chrome.test.assertEq(1, cardList.length);
-        var cardGuid = cardList[0].guid;
+        const cardGuid = cardList[0].guid;
 
         // Set up the callback that verifies that the card was correctly
         // updated.
@@ -210,10 +210,10 @@ function updateCreditCardForCvc(updatedCvcValue) {
           name: UPDATED_CARD_NAME,
           expirationYear: UPDATED_EXP_YEAR,
           nickname: UPDATED_NICKNAME,
-          cvc: updatedCvcValue
+          cvc: updatedCvcValue,
         });
       }));
-};
+}
 
 function entityInstaceToEntityInstanceWithLabels(entityInstance, sublabel) {
   return ({
@@ -224,7 +224,7 @@ function entityInstaceToEntityInstanceWithLabels(entityInstance, sublabel) {
     storedInWallet: false,
     isReadOnly: entityInstance.isReadOnly,
   });
-};
+}
 
 function assertExpectedLabelsAreCorrect(actualList, expectedList) {
   const sortByGuid = (instances) => {
@@ -238,35 +238,35 @@ function assertExpectedLabelsAreCorrect(actualList, expectedList) {
       return 0;
     });
   };
-  var expectedInstances = expectedList.map(
+  const expectedInstances = expectedList.map(
       (entityWithExpectedLabels) => entityInstaceToEntityInstanceWithLabels(
           entityWithExpectedLabels.entity,
           entityWithExpectedLabels.expectedLabel));
-  chrome.test.assertEq(
-      sortByGuid(expectedInstances), sortByGuid(actualList));
+  chrome.test.assertEq(sortByGuid(expectedInstances), sortByGuid(actualList));
 }
 
-var availableTests = [
+const availableTests = [
   function getCountryList() {
-    var handler = function(countries) {
-      var numSeparators = 0;
-      var countBeforeSeparator = 0;
-      var countAfterSeparator = 0;
+    const handler = function(countries) {
+      let numSeparators = 0;
+      let countBeforeSeparator = 0;
+      let countAfterSeparator = 0;
 
-      var beforeSeparator = true;
+      let beforeSeparator = true;
 
-      chrome.test.assertTrue(countries.length > 1,
-          'Expected more than one country');
+      chrome.test.assertTrue(
+          countries.length > 1, 'Expected more than one country');
 
       countries.forEach(function(country) {
         // Expecting to have both |name| and |countryCode| or neither.
         chrome.test.assertEq(!!country.name, !!country.countryCode);
 
         if (country.name) {
-          if (beforeSeparator)
+          if (beforeSeparator) {
             ++countBeforeSeparator;
-          else
+          } else {
             ++countAfterSeparator;
+          }
         } else {
           beforeSeparator = false;
           ++numSeparators;
@@ -275,7 +275,8 @@ var availableTests = [
 
       chrome.test.assertEq(1, numSeparators);
       chrome.test.assertEq(1, countBeforeSeparator);
-      chrome.test.assertTrue(countAfterSeparator > 1,
+      chrome.test.assertTrue(
+          countAfterSeparator > 1,
           'Expected more than one country after the separator');
 
       chrome.test.succeed();
@@ -286,9 +287,9 @@ var availableTests = [
   },
 
   function getAddressComponents() {
-    var COUNTRY_CODE = 'DE';
+    const COUNTRY_CODE = 'DE';
 
-    var handler = function(components) {
+    const handler = function(components) {
       chrome.test.assertTrue(!!components.components);
       chrome.test.assertTrue(!!components.components[0]);
       chrome.test.assertTrue(!!components.components[0].row);
@@ -297,7 +298,7 @@ var availableTests = [
       chrome.test.assertTrue(!!components.components[0].row[0].fieldName);
       chrome.test.assertTrue(!!components.languageCode);
       chrome.test.succeed();
-    }
+    };
 
     chrome.autofillPrivate.getAddressComponents(COUNTRY_CODE, handler);
   },
@@ -306,103 +307,99 @@ var availableTests = [
     function filterAddressProperties(address) {
       const fieldMap = {};
       address.fields.forEach(entry => {
-        if (!!entry.value) {
+        if (entry.value) {
           fieldMap[entry.type] = entry.value;
         }
       });
       return fieldMap;
     }
 
-    chrome.autofillPrivate.getAddressList(
-        chrome.test.callbackPass(function(addressList) {
-          chrome.test.assertEq([], addressList);
+    chrome.autofillPrivate.getAddressList(chrome.test.callbackPass(function(
+        addressList) {
+      chrome.test.assertEq([], addressList);
 
-          // Setup the callback that verifies that the address was correctly
-          // added.
-          chrome.test.listenOnce(
-              chrome.autofillPrivate.onPersonalDataChanged,
-              chrome.test.callbackPass(function(addressList, cardList) {
-                chrome.test.assertEq(1, addressList.length);
-                const expectedAddress = {
-                  NAME_FULL: NAME,
-                  NAME_FIRST: FIRST_NAME,
-                  NAME_LAST: LAST_NAME,
-                  ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
-                  ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
-                  ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
-                  ADDRESS_HOME_ZIP: POSTAL_CODE,
-                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
-                  ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
-                  PHONE_HOME_WHOLE_NUMBER: PHONE,
-                  EMAIL_ADDRESS: EMAIL,
-                };
-                const actualAddress = filterAddressProperties(addressList[0]);
-                Object.keys(expectedAddress).forEach(key => {
-                  chrome.test.assertEq(
-                      expectedAddress[key], actualAddress[key]);
-                })
-              }));
+      // Setup the callback that verifies that the address was correctly
+      // added.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList) {
+            chrome.test.assertEq(1, addressList.length);
+            const expectedAddress = {
+              NAME_FULL: NAME,
+              NAME_FIRST: FIRST_NAME,
+              NAME_LAST: LAST_NAME,
+              ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+              ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+              ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+              ADDRESS_HOME_ZIP: POSTAL_CODE,
+              ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+              ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+              PHONE_HOME_WHOLE_NUMBER: PHONE,
+              EMAIL_ADDRESS: EMAIL,
+            };
+            const actualAddress = filterAddressProperties(addressList[0]);
+            Object.keys(expectedAddress).forEach(key => {
+              chrome.test.assertEq(expectedAddress[key], actualAddress[key]);
+            });
+          }));
 
-          chrome.autofillPrivate.saveAddress({
-            fields: [
-              {
-                type: chrome.autofillPrivate.FieldType.NAME_FULL,
-                value: NAME
-              },
-              {
-                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_STATE,
-                value: ADDRESS_LEVEL1
-              },
-              {
-                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_CITY,
-                value: ADDRESS_LEVEL2
-              },
-              {
-                type: chrome.autofillPrivate.FieldType
-                          .ADDRESS_HOME_DEPENDENT_LOCALITY,
-                value: ADDRESS_LEVEL3
-              },
-              {
-                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_ZIP,
-                value: POSTAL_CODE
-              },
-              {
-                type: chrome.autofillPrivate.FieldType
-                          .ADDRESS_HOME_SORTING_CODE,
-                value: SORTING_CODE
-              },
-              {
-                type:
-                    chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
-                value: COUNTRY_CODE
-              },
-              {
-                type: chrome.autofillPrivate.FieldType
-                          .PHONE_HOME_WHOLE_NUMBER,
-                value: PHONE
-              },
-              {
-                type: chrome.autofillPrivate.FieldType.EMAIL_ADDRESS,
-                value: EMAIL
-              },
-            ],
-          });
-        }));
+      chrome.autofillPrivate.saveAddress({
+        fields: [
+          {
+            type: chrome.autofillPrivate.FieldType.NAME_FULL,
+            value: NAME,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_STATE,
+            value: ADDRESS_LEVEL1,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_CITY,
+            value: ADDRESS_LEVEL2,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType
+                      .ADDRESS_HOME_DEPENDENT_LOCALITY,
+            value: ADDRESS_LEVEL3,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_ZIP,
+            value: POSTAL_CODE,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_SORTING_CODE,
+            value: SORTING_CODE,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
+            value: COUNTRY_CODE,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER,
+            value: PHONE,
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.EMAIL_ADDRESS,
+            value: EMAIL,
+          },
+        ],
+      });
+    }));
   },
 
   function updateExistingAddress() {
     // The information that will be updated. It should be different than the
     // information in the addNewAddress function.
-    var UPDATED_NAME = 'UpdatedFirst UpdatedLast';
-    var UPDATED_FIRST_NAME = 'UpdatedFirst';
-    var UPDATED_LAST_NAME = 'UpdatedLast';
-    var UPDATED_PHONE = '1 987-987-9876'
+    const UPDATED_NAME = 'UpdatedFirst UpdatedLast';
+    const UPDATED_FIRST_NAME = 'UpdatedFirst';
+    const UPDATED_LAST_NAME = 'UpdatedLast';
+    const UPDATED_PHONE = '1 987-987-9876';
 
     function filterAddressProperties(address) {
       const filteredAddress = {guid: address.guid};
       address.fields.map(entry => {
-        if (!!entry.value) {
-          filteredAddress[entry.type] = entry.value
+        if (entry.value) {
+          filteredAddress[entry.type] = entry.value;
         }
       });
       return filteredAddress;
@@ -412,7 +409,7 @@ var availableTests = [
         addressList) {
       // The address from the addNewAddress function should still be there.
       chrome.test.assertEq(1, addressList.length);
-      var addressGuid = addressList[0].guid;
+      const addressGuid = addressList[0].guid;
 
       // Setup the callback that verifies that the address was correctly
       // updated.
@@ -437,7 +434,7 @@ var availableTests = [
             const actualAddress = filterAddressProperties(addressList[0]);
             Object.keys(expectedAddress).forEach(prop => {
               chrome.test.assertEq(expectedAddress[prop], actualAddress[prop]);
-            })
+            });
           }));
 
       // Update the address by saving an address with the same guid and
@@ -447,11 +444,11 @@ var availableTests = [
         fields: [
           {
             type: chrome.autofillPrivate.FieldType.NAME_FULL,
-            value: UPDATED_NAME
+            value: UPDATED_NAME,
           },
           {
             type: chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER,
-            value: UPDATED_PHONE
+            value: UPDATED_PHONE,
           },
         ],
       });
@@ -469,12 +466,12 @@ var availableTests = [
               {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
-                value: ALTERNATIVE_FULL_NAME
+                value: ALTERNATIVE_FULL_NAME,
               },
               {
                 type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
-                value: "JP"
-              }
+                value: 'JP',
+              },
             ],
           });
           // Alternative name set with a separator. Metric is emitted.
@@ -483,12 +480,12 @@ var availableTests = [
               {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
-                value: ALTERNATIVE_FULL_NAME_SEPARATOR
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR,
               },
               {
                 type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
-                value: "JP"
-              }
+                value: 'JP',
+              },
             ],
           });
         }));
@@ -498,8 +495,8 @@ var availableTests = [
     chrome.autofillPrivate.getAddressList(
         chrome.test.callbackPass(function(addressList) {
           chrome.test.assertEq(2, addressList.length);
-          var addressGuid0 = addressList[0].guid;
-          var addressGuid1 = addressList[1].guid;
+          const addressGuid0 = addressList[0].guid;
+          const addressGuid1 = addressList[1].guid;
 
           // Address updated with the same information.
           // Separator is preserved, but no metric is emitted.
@@ -509,7 +506,7 @@ var availableTests = [
               {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
-                value: ALTERNATIVE_FULL_NAME_SEPARATOR
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR,
               },
             ],
           });
@@ -528,7 +525,7 @@ var availableTests = [
               {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
                 type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
-                value: ALTERNATIVE_FULL_NAME_SEPARATOR
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR,
               },
             ],
           });
@@ -539,7 +536,7 @@ var availableTests = [
   function addNewCreditCard() {
     function filterCardProperties(cards) {
       return cards.map(cards => {
-        var filteredCards = {};
+        const filteredCards = {};
         ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
          'cvc']
             .forEach(property => {
@@ -550,14 +547,14 @@ var availableTests = [
     }
 
     function filterForAddedCard(cards) {
-      return cards.filter(function (card) {
+      return cards.filter(function(card) {
         // Credit cards are considered the same if they have a
         // matching card number, expiration month, and expiration
         // year.
         return card['cardNumber'] == MASKED_NUMBER &&
-        card['expirationMonth'] == EXP_MONTH &&
-        card['expirationYear'] == EXP_YEAR;
-      })
+            card['expirationMonth'] == EXP_MONTH &&
+            card['expirationYear'] == EXP_YEAR;
+      });
     }
 
     chrome.autofillPrivate.getCreditCardList(
@@ -574,7 +571,7 @@ var availableTests = [
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
                       nickname: NICKNAME,
-                      cvc: MASKED_CVC
+                      cvc: MASKED_CVC,
                     }],
                     filterCardProperties(filterForAddedCard(cardList)));
               }));
@@ -585,7 +582,7 @@ var availableTests = [
             expirationMonth: EXP_MONTH,
             expirationYear: EXP_YEAR,
             nickname: NICKNAME,
-            cvc: CVC
+            cvc: CVC,
           });
         }));
   },
@@ -593,7 +590,7 @@ var availableTests = [
   function addNewCreditCardWithoutCvc() {
     function filterCardProperties(cards) {
       return cards.map(cards => {
-        var filteredCards = {};
+        const filteredCards = {};
         ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname',
          'cvc']
             .forEach(property => {
@@ -619,7 +616,7 @@ var availableTests = [
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
                       nickname: undefined,
-                      cvc: undefined
+                      cvc: undefined,
                     }],
                     filterCardProperties(cardList));
               }));
@@ -628,7 +625,7 @@ var availableTests = [
             name: CARD_NAME,
             cardNumber: NUMBER,
             expirationMonth: EXP_MONTH,
-            expirationYear: EXP_YEAR
+            expirationYear: EXP_YEAR,
           });
         }));
   },
@@ -638,7 +635,7 @@ var availableTests = [
         cardList) {
       // The card from the addNewCreditCard function should still be there.
       chrome.test.assertEq(1, cardList.length);
-      var cardGuid = cardList[0].guid;
+      const cardGuid = cardList[0].guid;
 
       // Set up the listener that verifies that onPersonalDataChanged shouldn't
       // be called.
@@ -652,7 +649,7 @@ var availableTests = [
         cardNumber: NUMBER,
         expirationMonth: EXP_MONTH,
         expirationYear: EXP_YEAR,
-        cvc: undefined
+        cvc: undefined,
       });
     }));
   },
@@ -661,13 +658,13 @@ var availableTests = [
     // Reset onPersonalDataChanged.
     chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
 
-    var UPDATED_CARD_NAME = 'UpdatedCardName';
-    var UPDATED_EXP_YEAR = '2888';
-    var UPDATED_NICKNAME = 'New nickname';
+    const UPDATED_CARD_NAME = 'UpdatedCardName';
+    const UPDATED_EXP_YEAR = '2888';
+    const UPDATED_NICKNAME = 'New nickname';
 
     function filterCardProperties(cards) {
       return cards.map(cards => {
-        var filteredCards = {};
+        const filteredCards = {};
         ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
          'nickname', 'cvc']
             .forEach(property => {
@@ -681,7 +678,7 @@ var availableTests = [
         chrome.test.callbackPass(function(cardList) {
           // The card from the addNewCreditCard function should still be there.
           chrome.test.assertEq(1, cardList.length);
-          var cardGuid = cardList[0].guid;
+          const cardGuid = cardList[0].guid;
 
           // Set up the callback that verifies that the card was correctly
           // updated.
@@ -696,7 +693,7 @@ var availableTests = [
                       expirationMonth: EXP_MONTH,
                       expirationYear: UPDATED_EXP_YEAR,
                       nickname: UPDATED_NICKNAME,
-                      cvc: undefined
+                      cvc: undefined,
                     }],
                     filterCardProperties(cardList));
               }));
@@ -707,7 +704,7 @@ var availableTests = [
             guid: cardGuid,
             name: UPDATED_CARD_NAME,
             expirationYear: UPDATED_EXP_YEAR,
-            nickname: UPDATED_NICKNAME
+            nickname: UPDATED_NICKNAME,
           });
         }));
   },
@@ -725,11 +722,11 @@ var availableTests = [
   },
 
   function addNewIbanNoNickname() {
-    addNewIban(/*nickname=*/undefined);
+    addNewIban(/*nickname=*/ undefined);
   },
 
   function addNewIbanWithNickname() {
-    addNewIban(/*nickname=*/'nickname');
+    addNewIban(/*nickname=*/ 'nickname');
   },
 
   function noChangesToExistingIban() {
@@ -737,7 +734,7 @@ var availableTests = [
         ibanList) {
       // The IBAN from the addNewIban function should still be there.
       chrome.test.assertEq(1, ibanList.length);
-      var ibanGuid = ibanList[0].guid;
+      const ibanGuid = ibanList[0].guid;
 
       // Set up the listener that verifies that onPersonalDataChanged shouldn't
       // be called.
@@ -757,11 +754,11 @@ var availableTests = [
   },
 
   function updateExistingIban_NoNickname() {
-    updateExistingIban(/*updatedNickname=*/undefined);
+    updateExistingIban(/*updatedNickname=*/ undefined);
   },
 
   function updateExistingIban_WithNickname() {
-    updateExistingIban(/*updatedNickname=*/'New nickname');
+    updateExistingIban(/*updatedNickname=*/ 'New nickname');
   },
 
   function removeExistingIban() {
@@ -769,7 +766,7 @@ var availableTests = [
         ibanList) {
       // The IBAN from the addNewIban function should still be there.
       chrome.test.assertEq(1, ibanList.length);
-      var ibanGuid = ibanList[0].guid;
+      const ibanGuid = ibanList[0].guid;
 
       // Set up the callback that verifies that the IBAN was correctly
       // updated.
@@ -789,7 +786,7 @@ var availableTests = [
         cardList) {
       // The card from the addNewCreditCard function should still be there.
       chrome.test.assertEq(1, cardList.length);
-      var cardGuid = cardList[0].guid;
+      const cardGuid = cardList[0].guid;
 
       // Set up the callback that verifies that the card was correctly
       // deleted.
@@ -805,20 +802,20 @@ var availableTests = [
   },
 
   function removePaymentsEntity() {
-    var guid;
+    let guid;
 
-    var numCalls = 0;
-    var getCardsHandler = function(creditCardList) {
+    let numCalls = 0;
+    const getCardsHandler = function(creditCardList) {
       numCalls++;
       chrome.test.assertEq(1, numCalls);
-    }
+    };
 
-    var personalDataChangedHandler = function(addressList, creditCardList) {
+    const personalDataChangedHandler = function(addressList, creditCardList) {
       numCalls++;
 
       if (numCalls == 2) {
         chrome.test.assertEq(creditCardList.length, 1);
-        var creditCard = creditCardList[0];
+        const creditCard = creditCardList[0];
         chrome.test.assertEq(creditCard.name, NAME);
 
         guid = creditCard.guid;
@@ -830,7 +827,7 @@ var availableTests = [
         // We should never receive such a call.
         chrome.test.fail();
       }
-    }
+    };
 
     chrome.autofillPrivate.onPersonalDataChanged.addListener(
         personalDataChangedHandler);
@@ -839,17 +836,17 @@ var availableTests = [
   },
 
   function isValidIban() {
-    var handler1 = function(isValidIban) {
+    const handler1 = function(isValidIban) {
       // IBAN_VALUE should be valid, then follow up with invalid value.
       chrome.test.assertTrue(isValidIban);
       chrome.autofillPrivate.isValidIban(INVALID_IBAN_VALUE, handler2);
-    }
+    };
 
     var handler2 = function(isValidIban) {
       // INVALID_IBAN_VALUE is not valid.
       chrome.test.assertFalse(isValidIban);
       chrome.test.succeed();
-    }
+    };
 
     chrome.autofillPrivate.isValidIban(IBAN_VALUE, handler1);
   },
@@ -865,7 +862,7 @@ var availableTests = [
         chrome.test.callbackPass(function(cardList) {
           // The card from the addNewCreditCard function should still be there.
           chrome.test.assertEq(1, cardList.length);
-          var cardGuid = cardList[0].guid;
+          const cardGuid = cardList[0].guid;
 
           // Get the card based on the `cardGuid` with unmasked card number.
           chrome.autofillPrivate.getLocalCard(
@@ -902,13 +899,13 @@ var availableTests = [
   },
 
   function addVirtualCard() {
-    chrome.autofillPrivate.addVirtualCard(/*card_id=*/"a123");
+    chrome.autofillPrivate.addVirtualCard(/*card_id=*/ 'a123');
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
 
   function removeVirtualCard() {
-    chrome.autofillPrivate.removeVirtualCard(/*card_id=*/"a123");
+    chrome.autofillPrivate.removeVirtualCard(/*card_id=*/ 'a123');
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
@@ -944,7 +941,7 @@ var availableTests = [
     //
     // This is because since there is no need to disambiguation, only one label
     // is required.
-    var entityInstancesWithExpectedLabels = [
+    const entityInstancesWithExpectedLabels = [
       {
         entity: {
           type: {
@@ -975,14 +972,14 @@ var availableTests = [
                 month: '5',
                 day: '20',
                 year: '2015',
-              }
+              },
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
           nickname: 'Personal car',
           isReadOnly: false,
         },
-        expectedLabel: 'John Dolan'
+        expectedLabel: 'John Dolan',
       },
       // Now we add 3 passports, their labels should be:
       //
@@ -1023,7 +1020,7 @@ var availableTests = [
                 typeNameAsString: 'Country',
                 dataType: AttributeTypeDataType.COUNTRY,
               },
-              value: 'DE'
+              value: 'DE',
             },
             {
               type: {
@@ -1031,14 +1028,14 @@ var availableTests = [
                 typeNameAsString: 'Number',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: 'RO23512'
-            }
+              value: 'RO23512',
+            },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc182',
           nickname: 'Personal passport 1',
           isReadOnly: false,
         },
-        expectedLabel: 'John Dolan · Germany'
+        expectedLabel: 'John Dolan · Germany',
       },
       {
         entity: {
@@ -1066,7 +1063,7 @@ var availableTests = [
                 typeNameAsString: 'Country',
                 dataType: AttributeTypeDataType.COUNTRY,
               },
-              value: 'IT'
+              value: 'IT',
             },
             {
               type: {
@@ -1074,14 +1071,14 @@ var availableTests = [
                 typeNameAsString: 'Number',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: 'CHT23512'
-            }
+              value: 'CHT23512',
+            },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc183',
           nickname: 'Personal passport 1',
           isReadOnly: false,
         },
-        expectedLabel: 'Sansa · Italy'
+        expectedLabel: 'Sansa · Italy',
       },
       {
         entity: {
@@ -1109,7 +1106,7 @@ var availableTests = [
                 typeNameAsString: 'Country',
                 dataType: AttributeTypeDataType.COUNTRY,
               },
-              value: 'BR'
+              value: 'BR',
             },
             {
               type: {
@@ -1117,14 +1114,14 @@ var availableTests = [
                 typeNameAsString: 'Number',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: 'CHT23512'
-            }
+              value: 'CHT23512',
+            },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc185',
           nickname: 'Personal passport 1',
           isReadOnly: false,
         },
-        expectedLabel: 'John Dolan · Brazil'
+        expectedLabel: 'John Dolan · Brazil',
       },
       // Now we add 2 Vehicles, their labels should be:
       //
@@ -1162,14 +1159,14 @@ var availableTests = [
                 typeNameAsString: 'Model',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: 'Uno'
+              value: 'Uno',
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc187',
           nickname: 'Vehicle 1',
           isReadOnly: false,
         },
-        expectedLabel: 'Uno'
+        expectedLabel: 'Uno',
       },
       {
         entity: {
@@ -1197,14 +1194,14 @@ var availableTests = [
                 typeNameAsString: 'Model',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: 'Linea'
+              value: 'Linea',
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc186',
           nickname: 'Vehicle 2',
           isReadOnly: false,
         },
-        expectedLabel: 'Linea'
+        expectedLabel: 'Linea',
       },
     ];
 
@@ -1237,7 +1234,7 @@ var availableTests = [
     //
     // Passport
     // ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠5678
-    var entityInstancesWithExpectedLabels = [
+    const entityInstancesWithExpectedLabels = [
       {
         entity: {
           type: {
@@ -1256,7 +1253,7 @@ var availableTests = [
                 typeNameAsString: 'Number',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: '1111111234'
+              value: '1111111234',
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc192',
@@ -1266,7 +1263,7 @@ var availableTests = [
         // Obfuscated Number
         // "...1234"
         expectedLabel: OBFUSCATION_DOT + OBFUSCATION_DOT + OBFUSCATION_DOT +
-            OBFUSCATION_DOT + '1234'
+            OBFUSCATION_DOT + '1234',
       },
       {
         entity: {
@@ -1286,7 +1283,7 @@ var availableTests = [
                 typeNameAsString: 'Number',
                 dataType: AttributeTypeDataType.STRING,
               },
-              value: '2222225678'
+              value: '2222225678',
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc193',
@@ -1295,7 +1292,7 @@ var availableTests = [
         },
         // "...5678"
         expectedLabel: OBFUSCATION_DOT + OBFUSCATION_DOT + OBFUSCATION_DOT +
-            OBFUSCATION_DOT + '5678'
+            OBFUSCATION_DOT + '5678',
       },
     ];
 
@@ -1673,9 +1670,8 @@ var availableTests = [
     chrome.test.assertTrue(loadedObfuscated.shouldAuthenticateToView);
 
     await addEntity(nonObfuscatedEntity);
-    const loadedClear =
-        await chrome.autofillPrivate.
-          getEntityInstanceByGuid(nonObfuscatedEntityGuid);
+    const loadedClear = await chrome.autofillPrivate.getEntityInstanceByGuid(
+        nonObfuscatedEntityGuid);
     chrome.test.assertTrue(!!loadedClear);
     chrome.test.assertFalse(loadedClear.shouldAuthenticateToView);
 
@@ -1684,15 +1680,16 @@ var availableTests = [
 ];
 
 /** @const */
-var TESTS_FOR_CONFIG = {
+const TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
   'addAndUpdateAddressWithAlternativeName': [
     'addAddressWithAlternativeNameForSeparatorMetric',
-    'updateExistingAddressWithAlternativeNameForSeparatorMetric'
+    'updateExistingAddressWithAlternativeNameForSeparatorMetric',
   ],
   'addAndUpdateCreditCard': [
-    'addNewCreditCardWithoutCvc', 'noChangesToExistingCreditCard',
-    'updateExistingCreditCard'
+    'addNewCreditCardWithoutCvc',
+    'noChangesToExistingCreditCard',
+    'updateExistingCreditCard',
   ],
   'addAndUpdateCreditCard_AddCvc':
       ['addNewCreditCardWithoutCvc', 'updateExistingCreditCard_CvcUpdated'],
@@ -1754,8 +1751,8 @@ var TESTS_FOR_CONFIG = {
       ['optIntoWalletablePassDetectionExpectingFailure'],
 };
 
-var testConfig = window.location.search.substring(1);
-var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
+const testConfig = window.location.search.substring(1);
+const testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
 chrome.test.runTests(availableTests.filter(function(op) {
   return testsToRun.includes(op.name);
 }));

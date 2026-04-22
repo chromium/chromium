@@ -8,15 +8,15 @@
  * @return {!Promise<chrome.fileManagerPrivate.VolumeMetadata>} Volume metadata.
  */
 async function getVolumeMetadataByType(volumeType) {
-  return new Promise(
-      (resolve,
-       reject) => {chrome.fileManagerPrivate.getVolumeMetadataList(list => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-          return;
-        }
-        resolve(list.find(v => v.volumeType === volumeType));
-      })});
+  return new Promise((resolve, reject) => {
+    chrome.fileManagerPrivate.getVolumeMetadataList(list => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+        return;
+      }
+      resolve(list.find(v => v.volumeType === volumeType));
+    });
+  });
 }
 
 /**

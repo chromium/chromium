@@ -9,33 +9,34 @@ const SCRIPT_URL = '_test_resources/api_test/history/regular/common.js';
 const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
-chrome.test.runTests([
-  function getVisits() {
-    // getVisits callback.
-    function getVisitsTestVerification() {
-      removeItemVisitedListener();
+  chrome.test.runTests([
+    function getVisits() {
+      // getVisits callback.
+      function getVisitsTestVerification() {
+        removeItemVisitedListener();
 
-      // Verify that we received the url.
-      const query = {text: ''};
-      chrome.history.search(query, function(results) {
-        assertEq(1, results.length);
-        assertEq(GOOGLE_URL, results[0].url);
-
-        const id = results[0].id;
-        chrome.history.getVisits({url: GOOGLE_URL}, function(results) {
+        // Verify that we received the url.
+        const query = {text: ''};
+        chrome.history.search(query, function(results) {
           assertEq(1, results.length);
-          assertEq(id, results[0].id);
-          assertTrue(results[0].isLocal);
+          assertEq(GOOGLE_URL, results[0].url);
 
-          // The test has succeeded.
-          chrome.test.succeed();
+          const id = results[0].id;
+          chrome.history.getVisits({url: GOOGLE_URL}, function(results) {
+            assertEq(1, results.length);
+            assertEq(id, results[0].id);
+            assertTrue(results[0].isLocal);
+
+            // The test has succeeded.
+            chrome.test.succeed();
+          });
         });
+      }
+      // getVisits entry point.
+      chrome.history.deleteAll(function() {
+        setItemVisitedListener(getVisitsTestVerification);
+        populateHistory([GOOGLE_URL], function() {});
       });
-    };
-    // getVisits entry point.
-    chrome.history.deleteAll(function() {
-      setItemVisitedListener(getVisitsTestVerification);
-      populateHistory([GOOGLE_URL], function() { });
-    });
-  }
-])});
+    },
+  ]);
+});

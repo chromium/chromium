@@ -8,14 +8,14 @@ let clicked = false;
 function checkNodes(rootNode) {
   // Grab the first button and hold on to it.
   if (!firstButton) {
-     firstButton = findAutomationNode(rootNode, function(n) {
-       return n.name == 'First Button'
-     });
+    firstButton = findAutomationNode(rootNode, function(n) {
+      return n.name == 'First Button';
+    });
   }
 
   // Search for second button.
   const secondButton = findAutomationNode(rootNode, function(n) {
-     return n.name == 'Second Button'
+    return n.name == 'Second Button';
   });
 
   // If we have the first but not the second, click the
@@ -28,8 +28,8 @@ function checkNodes(rootNode) {
   // Still waiting for expected state. If neither button
   // was found yet, keep polling.
   if (!firstButton || firstButton.role || !secondButton) {
-     setTimeout(checkNodes.bind(this, rootNode), 100);
-     return;
+    setTimeout(checkNodes.bind(this, rootNode), 100);
+    return;
   }
 
   // Repetitive check with the above condition, but to make it clear to the

@@ -6,7 +6,8 @@
 // Must be packed to ../enterprise_networking_attributes.crx using the private
 // key ../enterprise_networking_attributes.pem .
 
-let expectedErrorMessage, expectedResult;
+let expectedErrorMessage;
+let expectedResult;
 
 const availableTests = [
   function failure() {

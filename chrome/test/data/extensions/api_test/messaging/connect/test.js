@@ -47,8 +47,7 @@ chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     async function setupTestTab() {
       chrome.test.log('Creating tab...');
-      const {openTab} =
-          await import('/_test_resources/test_util/tabs_util.js');
+      const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
       testTab = await openTab(url);
       chrome.test.succeed();
     },
@@ -100,23 +99,23 @@ chrome.test.getConfig(function(config) {
     // Tests receiving a request from a content script and responding.
     function sendMessageFromTab() {
       const doneListening = listenForever(
-        chrome.runtime.onMessage, function(request, sender, sendResponse) {
-          expectedSender = createExpectedSender(
-              testTab,
-              0,  // Main frame
-              testTab.url, chrome.runtime.id);
-          compareSenders(expectedSender, sender);
-          if (request.step == 1) {
-            // Step 1: Page should send another request for step 2.
-            chrome.test.log('sendMessageFromTab: got step 1');
-            sendResponse({nextStep: true});
-          } else {
-            // Step 2.
-            chrome.test.assertEq(request.step, 2);
-            sendResponse();
-            doneListening();
-          }
-      });
+          chrome.runtime.onMessage, function(request, sender, sendResponse) {
+            expectedSender = createExpectedSender(
+                testTab,
+                0,  // Main frame
+                testTab.url, chrome.runtime.id);
+            compareSenders(expectedSender, sender);
+            if (request.step == 1) {
+              // Step 1: Page should send another request for step 2.
+              chrome.test.log('sendMessageFromTab: got step 1');
+              sendResponse({nextStep: true});
+            } else {
+              // Step 2.
+              chrome.test.assertEq(request.step, 2);
+              sendResponse();
+              doneListening();
+            }
+          });
 
       const port = chrome.tabs.connect(testTab.id);
       port.postMessage({testSendMessageFromTab: true});
@@ -164,90 +163,108 @@ chrome.test.getConfig(function(config) {
     // connect with a positive frameId should trigger onConnect in that specific
     // frame only.
     function sendMessageToFrameInTab() {
-      chrome.webNavigation.getAllFrames({
-        tabId: testTab.id
-      }, function(details) {
-        const frames = details.filter(function(frame) {
-          return /\?testSendMessageFromFrame1$/.test(frame.url);
-        });
-        chrome.test.assertEq(1, frames.length);
-        connectToTabWithFrameId(frames[0].frameId, ['from_1']);
-      });
+      chrome.webNavigation.getAllFrames(
+          {
+            tabId: testTab.id,
+          },
+          function(details) {
+            const frames = details.filter(function(frame) {
+              return /\?testSendMessageFromFrame1$/.test(frame.url);
+            });
+            chrome.test.assertEq(1, frames.length);
+            connectToTabWithFrameId(frames[0].frameId, ['from_1']);
+          });
     },
 
     // sendMessage with an invalid frameId should fail.
     function sendMessageToInvalidFrameInTab() {
-      chrome.tabs.sendMessage(testTab.id, {}, {
-        frameId: 999999999 // Some (hopefully) invalid frameId.
-      }, chrome.test.callbackFail(
-        'Could not establish connection. Receiving end does not exist.'));
+      chrome.tabs.sendMessage(
+          testTab.id, {}, {
+            frameId: 999999999,  // Some (hopefully) invalid frameId.
+          },
+          chrome.test.callbackFail(
+              'Could not establish connection. Receiving end does not exist.'));
     },
 
     // connect with a valid documentId should trigger onConnect in that specific
     // document only.
     function sendMessageToDocumentInTab() {
-      chrome.webNavigation.getAllFrames({
-        tabId: testTab.id
-      }, function(details) {
-        const frames = details.filter(function(frame) {
-          return /\?testSendMessageFromFrame1$/.test(frame.url);
-        });
-        chrome.test.assertEq(1, frames.length);
-        connectToTabWithDocumentId(frames[0].documentId, ['from_1']);
-      });
+      chrome.webNavigation.getAllFrames(
+          {
+            tabId: testTab.id,
+          },
+          function(details) {
+            const frames = details.filter(function(frame) {
+              return /\?testSendMessageFromFrame1$/.test(frame.url);
+            });
+            chrome.test.assertEq(1, frames.length);
+            connectToTabWithDocumentId(frames[0].documentId, ['from_1']);
+          });
     },
 
     // connect with a valid frameId and documentId should trigger onConnect in
     // that specific document only.
     function sendMessageToDocumentInTab() {
-      chrome.webNavigation.getAllFrames({
-        tabId: testTab.id
-      }, function(details) {
-        const frames = details.filter(function(frame) {
-          return /\?testSendMessageFromFrame1$/.test(frame.url);
-        });
-        chrome.test.assertEq(1, frames.length);
-        connectToTabWithOptions({documentId: frames[0].documentId,
-                                 frameId: frames[0].frameId
-                                }, ['from_1']);
-      });
+      chrome.webNavigation.getAllFrames(
+          {
+            tabId: testTab.id,
+          },
+          function(details) {
+            const frames = details.filter(function(frame) {
+              return /\?testSendMessageFromFrame1$/.test(frame.url);
+            });
+            chrome.test.assertEq(1, frames.length);
+            connectToTabWithOptions(
+                {
+                  documentId: frames[0].documentId,
+                  frameId: frames[0].frameId,
+                },
+                ['from_1']);
+          });
     },
 
     // sendMessage with a valid documentId but invalid frameId should fail.
     function sendMessageToInvalidDocumentFrameIdInTab() {
-      chrome.webNavigation.getAllFrames({
-        tabId: testTab.id
-      }, function(details) {
-        const frames = details.filter(function(frame) {
-          return /\?testSendMessageFromFrame1$/.test(frame.url);
-        });
-        chrome.test.assertEq(1, frames.length);
-        chrome.tabs.sendMessage(testTab.id, {}, {
-          documentId: frames[0].documentId,
-          // Some (hopefully) invalid frameId.
-          frameId: 999999999
-        }, chrome.test.callbackFail(
-          'Could not establish connection. Receiving end does not exist.'));
-      });
+      chrome.webNavigation.getAllFrames(
+          {
+            tabId: testTab.id,
+          },
+          function(details) {
+            const frames = details.filter(function(frame) {
+              return /\?testSendMessageFromFrame1$/.test(frame.url);
+            });
+            chrome.test.assertEq(1, frames.length);
+            chrome.tabs.sendMessage(
+                testTab.id, {}, {
+                  documentId: frames[0].documentId,
+                  // Some (hopefully) invalid frameId.
+                  frameId: 999999999,
+                },
+                chrome.test.callbackFail(
+                    'Could not establish connection. Receiving end does not exist.'));
+          });
     },
 
     // sendMessage with an invalid documentId should fail.
     function sendMessageToInvalidDocumentInTab() {
-      chrome.tabs.sendMessage(testTab.id, {}, {
-        documentId: '0123456789ABCDEF' // A truncated documentId.
-      }, chrome.test.callbackFail(
-        'Could not establish connection. Receiving end does not exist.'));
+      chrome.tabs.sendMessage(
+          testTab.id, {}, {
+            documentId: '0123456789ABCDEF',  // A truncated documentId.
+          },
+          chrome.test.callbackFail(
+              'Could not establish connection. Receiving end does not exist.'));
     },
 
     // Tests error handling when sending a request from a content script to an
     // invalid extension.
     function sendMessageFromTabError() {
       listenOnce(
-        chrome.runtime.onMessage,
-        function(request, sender, sendResponse) {
-          if (!request.success)
-            chrome.test.fail();
-        }
+          chrome.runtime.onMessage,
+          function(request, sender, sendResponse) {
+            if (!request.success) {
+              chrome.test.fail();
+            }
+          },
       );
 
       const port = chrome.tabs.connect(testTab.id);
@@ -260,11 +277,12 @@ chrome.test.getConfig(function(config) {
     // content script.
     function connectFromTabError() {
       listenOnce(
-        chrome.runtime.onMessage,
-        function(request, sender, sendResponse) {
-          if (!request.success)
-            chrome.test.fail();
-        }
+          chrome.runtime.onMessage,
+          function(request, sender, sendResponse) {
+            if (!request.success) {
+              chrome.test.fail();
+            }
+          },
       );
 
       const port = chrome.tabs.connect(testTab.id);
@@ -314,29 +332,30 @@ chrome.test.getConfig(function(config) {
         listenOnce(port.onDisconnect, function() {});
         port.postMessage({testConnectChildFrameAndNavigate: true});
       });
-      chrome.tabs.connect(testTab.id)
-        .postMessage({testConnectChildFrameAndNavigateSetup: true});
+      chrome.tabs.connect(testTab.id).postMessage({
+        testConnectChildFrameAndNavigateSetup: true
+      });
     },
 
     // The previous test removed the onConnect listener. Add it back.
     function reloadTabForTest() {
-      const doneListening = listenForever(chrome.tabs.onUpdated,
-        function(tabId, info) {
-          if (tabId === testTab.id && info.status == 'complete') {
-            doneListening();
-          }
-        });
+      const doneListening =
+          listenForever(chrome.tabs.onUpdated, function(tabId, info) {
+            if (tabId === testTab.id && info.status == 'complete') {
+              doneListening();
+            }
+          });
       chrome.tabs.reload(testTab.id);
     },
 
     // Tests that we get the disconnect event when the tab context closes.
     function disconnectOnClose() {
       listenOnce(chrome.runtime.onConnect, function(portFromTab) {
-        listenOnce(portFromTab.onDisconnect, function () {
+        listenOnce(portFromTab.onDisconnect, function() {
           if (config.customArg === 'bfcache') {
             chrome.test.assertLastError(
-              'The page keeping the extension port is moved into ' +
-              'back/forward cache, so the message channel is closed.'
+                'The page keeping the extension port is moved into ' +
+                    'back/forward cache, so the message channel is closed.',
             );
           } else {
             chrome.test.assertNoLastError();
@@ -346,9 +365,9 @@ chrome.test.getConfig(function(config) {
       });
 
       const port = chrome.tabs.connect(testTab.id);
-      port.postMessage({ testDisconnectOnClose: true });
-      listenOnce(port.onDisconnect, function () {
-        testTab = null; // the tab is about:blank now.
+      port.postMessage({testDisconnectOnClose: true});
+      listenOnce(port.onDisconnect, function() {
+        testTab = null;  // the tab is about:blank now.
       });
     },
 
@@ -357,7 +376,7 @@ chrome.test.getConfig(function(config) {
       let error;
       try {
         chrome.extension.sendRequest('hi');
-      } catch(e) {
+      } catch (e) {
         error = e;
       }
       chrome.test.assertNe(undefined, error);
@@ -365,7 +384,7 @@ chrome.test.getConfig(function(config) {
       error = undefined;
       try {
         chrome.extension.onRequest.addListener(function() {});
-      } catch(e) {
+      } catch (e) {
         error = e;
       }
       chrome.test.assertNe(undefined, error);
@@ -379,12 +398,14 @@ chrome.test.getConfig(function(config) {
     // Regression test for http://crbug.com/41169849.
     function sendMessageToCurrentContextFails() {
       const stopFailing = failWhileListening(chrome.runtime.onMessage);
-      chrome.runtime.sendMessage('ping', chrome.test.callbackFail(
-          'Could not establish connection. Receiving end does not exist.',
-          function() {
-            stopFailing();
-          }
-      ));
+      chrome.runtime.sendMessage(
+          'ping',
+          chrome.test.callbackFail(
+              'Could not establish connection. Receiving end does not exist.',
+              function() {
+                stopFailing();
+              },
+              ));
     },
 
     // Like sendMessageToCurrentContextFails, but with the sendMessage call not
@@ -426,7 +447,7 @@ function connectToTabWithOptions(options, expectedMessages) {
   const messages = [];
   let isDone = false;
   port.onMessage.addListener(function(message) {
-    if (isDone) { // Should not get any messages after completing the test.
+    if (isDone) {  // Should not get any messages after completing the test.
       chrome.test.fail(
           `Unexpected message from port to frame ${JSON.stringify(options)}:` +
           ` ${message}`);
@@ -441,34 +462,43 @@ function connectToTabWithOptions(options, expectedMessages) {
     }
   });
   port.onDisconnect.addListener(function() {
-    if (!isDone) // The event should never be triggered when we expect messages.
-    chrome.test.fail('Unexpected disconnect from port to frame ' +
-                     JSON.stringify(options));
+    if (!isDone)  // The event should never be triggered when we expect
+                  // messages.
+    {
+      chrome.test.fail(
+          'Unexpected disconnect from port to frame ' +
+          JSON.stringify(options));
+    }
   });
   port.postMessage({testSendMessageToFrame: true});
-  chrome.test.log('connectToTabWithOptions: port to frame ' +
-                  JSON.stringify(options));
+  chrome.test.log(
+      'connectToTabWithOptions: port to frame ' + JSON.stringify(options));
 }
 
 function connectToTabWithFrameId(frameId, expectedMessages) {
-  connectToTabWithOptions({
-    frameId: frameId
-  }, expectedMessages);
+  connectToTabWithOptions(
+      {
+        frameId: frameId,
+      },
+      expectedMessages);
 }
 
 function connectToTabWithDocumentId(documentId, expectedMessages) {
-  connectToTabWithOptions({
-    documentId: documentId
-  }, expectedMessages);
+  connectToTabWithOptions(
+      {
+        documentId: documentId,
+      },
+      expectedMessages);
 }
 
 // Listens to |event| and returns a callback to run to stop listening. While
 // listening, if |event| is fired, calls chrome.test.fail().
 function failWhileListening(event, doneListening) {
   const failListener = function() {
-    chrome.test.fail('Event listener ran, but it shouldn\'t have. ' +
-                     'It\'s possible that may be triggered flakily, but this ' +
-                     'really is a real failure, not flaky sadness. Promise!');
+    chrome.test.fail(
+        'Event listener ran, but it shouldn\'t have. ' +
+        'It\'s possible that may be triggered flakily, but this ' +
+        'really is a real failure, not flaky sadness. Promise!');
   };
   const release = chrome.test.callbackAdded();
   event.addListener(failListener);
@@ -493,8 +523,9 @@ function constructMessageSenderFromFrameInTab(isSandbox) {
 
         // testSendMessageFromFrame() in page.js adds 2 frames. Wait for
         // messages from each.
-        if (actualSenders.length < 2)
+        if (actualSenders.length < 2) {
           return;
+        }
 
         chrome.webNavigation.getAllFrames(
             {tabId: testTab.id}, function(details) {

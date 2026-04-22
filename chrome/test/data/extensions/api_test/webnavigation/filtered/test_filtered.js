@@ -13,17 +13,17 @@ loadScript.then(async function() {
       let aVisited = false;
       chrome.webNavigation.onCommitted.addListener(function(details) {
         chrome.test.fail();
-      }, { url: [{pathSuffix: 'never-navigated.html'}] });
+      }, {url: [{pathSuffix: 'never-navigated.html'}]});
       chrome.webNavigation.onCommitted.addListener(function(details) {
         chrome.test.assertTrue(details.url == getURL('a.html'));
         aVisited = true;
-      }, { url: [{pathSuffix: 'a.html'}] });
+      }, {url: [{pathSuffix: 'a.html'}]});
       chrome.webNavigation.onCommitted.addListener(function(details) {
         chrome.test.assertTrue(details.url == getURL('b.html'));
         chrome.test.assertTrue(aVisited);
         chrome.test.succeed();
-      }, { url: [{pathSuffix: 'b.html'}] });
-      chrome.tabs.update(tab.id, { url: getURL('a.html') });
-    }
+      }, {url: [{pathSuffix: 'b.html'}]});
+      chrome.tabs.update(tab.id, {url: getURL('a.html')});
+    },
   ]);
 });

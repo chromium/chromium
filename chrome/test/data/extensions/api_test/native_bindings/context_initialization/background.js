@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let i = document.createElement('iframe');
+const i = document.createElement('iframe');
 i.src = chrome.runtime.getURL('iframe.html');
 document.body.appendChild(i);
 // Before the child frame has a chance to load (and thus before the

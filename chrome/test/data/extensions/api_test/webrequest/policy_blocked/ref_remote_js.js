@@ -7,5 +7,6 @@
 // different file which is blank. This lets us make a request with an initiator
 // of example.com and a URL of example2.com.
 const script = document.createElement('script');
-script.src = `http://example2.com:${location.port}` + '/empty.html';
+script.src = `http://example2.com:${location.port}` +
+    '/empty.html';
 document.body.appendChild(script);

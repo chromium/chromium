@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 export async function runTests() {
-
   chrome.test.runTests([
     // Attempts to fetch and instantiate a simple Wasm module.
     async function instantiateFetch() {
@@ -36,6 +35,6 @@ export async function runTests() {
 
       chrome.test.assertTrue(wasmAllowed);
       chrome.test.succeed();
-    }
+    },
   ]);
 }

@@ -5,7 +5,7 @@
 chrome.tabs.query({active: true}, function(tabs) {
   chrome.browserAction.setPopup({
     tabId: tabs[0].id,
-    popup: ''  // No popup.
+    popup: '',  // No popup.
   });
   chrome.test.notifyPass();
 });

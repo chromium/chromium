@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var error;
+let error;
 
 function testReadDescriptorValue() {
   if (error !== undefined) {
@@ -15,9 +15,9 @@ function testReadDescriptorValue() {
   chrome.test.succeed();
 }
 
-var readDescriptorValue = chrome.bluetoothLowEnergy.readDescriptorValue;
+const readDescriptorValue = chrome.bluetoothLowEnergy.readDescriptorValue;
 var descId = 'desc_id0';
-var badDescId = 'desc_id1';
+const badDescId = 'desc_id1';
 
 var descriptor = null;
 
@@ -26,32 +26,33 @@ function earlyError(message) {
   chrome.test.runTests([testReadDescriptorValue]);
 }
 
-var queue = [];
+let queue = [];
 
 function runNext(result) {
-  if (queue.length == 0)
-    chrome.test.fail("No more tests!");
+  if (queue.length == 0) {
+    chrome.test.fail('No more tests!');
+  }
 
   (queue.shift())(result);
 }
 
-var errorAuthenticationFailed = 'Authentication failed';
-var errorCanceled = 'Request canceled';
-var errorFailed = 'Operation failed';
-var errorGattNotSupported = 'Operation not supported by this service';
-var errorHigherSecurity = 'Higher security needed';
-var errorInProgress = 'In progress';
-var errorInsufficientAuthorization = 'Insufficient authorization';
-var errorInvalidLength = 'Invalid attribute value length';
-var errorNotConnected = 'Not connected';
-var errorNotFound = 'Instance not found';
-var errorNotNotifying = 'Not notifying';
-var errorOperationFailed = 'Operation failed';
-var errorPermissionDenied = 'Permission denied';
-var errorTimeout = 'Operation timed out';
-var errorUnsupportedDevice =
+const errorAuthenticationFailed = 'Authentication failed';
+const errorCanceled = 'Request canceled';
+const errorFailed = 'Operation failed';
+const errorGattNotSupported = 'Operation not supported by this service';
+const errorHigherSecurity = 'Higher security needed';
+const errorInProgress = 'In progress';
+const errorInsufficientAuthorization = 'Insufficient authorization';
+const errorInvalidLength = 'Invalid attribute value length';
+const errorNotConnected = 'Not connected';
+const errorNotFound = 'Instance not found';
+const errorNotNotifying = 'Not notifying';
+const errorOperationFailed = 'Operation failed';
+const errorPermissionDenied = 'Permission denied';
+const errorTimeout = 'Operation timed out';
+const errorUnsupportedDevice =
     'This device is not supported on the current platform';
-var errorPlatformNotSupported =
+const errorPlatformNotSupported =
     'This operation is not supported on the current platform';
 
 function makeExpectedErrorCallback(expectedError) {
@@ -61,8 +62,8 @@ function makeExpectedErrorCallback(expectedError) {
         chrome.runtime.lastError.message != expectedError) {
       errorMsg = 'readDescriptorValue expected error \'' + expectedError + '\'';
       if (chrome.runtime.lastError) {
-        errorMsg = errorMsg + ' but got \'' + chrome.runtime.lastError.message +
-            '\'';
+        errorMsg =
+            errorMsg + ' but got \'' + chrome.runtime.lastError.message + '\'';
       }
       earlyError(errorMsg);
       return;
@@ -72,18 +73,20 @@ function makeExpectedErrorCallback(expectedError) {
   };
 }
 
-queue = [function () {
-  // 1. Unknown descriptor instanceId.
-  readDescriptorValue(badDescId, runNext);
-}, function (result) {
-  if (result || !chrome.runtime.lastError) {
-    earlyError('\'badDescId\' did not cause failure');
-    return;
-  }
+queue = [
+  function() {
+    // 1. Unknown descriptor instanceId.
+    readDescriptorValue(badDescId, runNext);
+  },
+  function(result) {
+    if (result || !chrome.runtime.lastError) {
+      earlyError('\'badDescId\' did not cause failure');
+      return;
+    }
 
-  // 2. Known descriptor instanceId, but call failure.
-  readDescriptorValue(descId, runNext);
-},
+    // 2. Known descriptor instanceId, but call failure.
+    readDescriptorValue(descId, runNext);
+  },
   makeExpectedErrorCallback(errorFailed),
   makeExpectedErrorCallback(errorInvalidLength),
   makeExpectedErrorCallback(errorPermissionDenied),
@@ -91,18 +94,18 @@ queue = [function () {
   makeExpectedErrorCallback(errorHigherSecurity),
   makeExpectedErrorCallback(errorGattNotSupported),
   makeExpectedErrorCallback(errorInProgress),
-  function (result) {
-  if (chrome.runtime.lastError) {
-    earlyError(chrome.runtime.lastError.message);
-    return;
+  function(result) {
+    if (chrome.runtime.lastError) {
+      earlyError(chrome.runtime.lastError.message);
+      return;
+    }
+
+    descriptor = result;
+
+    chrome.test.sendMessage('ready', function(message) {
+      chrome.test.runTests([testReadDescriptorValue]);
+    });
   }
-
-  descriptor = result;
-
-  chrome.test.sendMessage('ready', function (message) {
-    chrome.test.runTests([testReadDescriptorValue]);
-  });
-}];
+];
 
 runNext();
-

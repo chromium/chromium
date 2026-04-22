@@ -58,14 +58,11 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata[`/${TESTING_HELLO_DIR.name}`] =
-      TESTING_HELLO_DIR;
-  testUtil.defaultMetadata[
-      `/${TESTING_HELLO_DIR.name}/${TESTING_TIRAMISU_FILE.name}`] =
-      TESTING_TIRAMISU_FILE;
-  testUtil.defaultMetadata[
-      `/${TESTING_HELLO_DIR.name}/${TESTING_CANDIES_DIR.name}`] =
-      TESTING_CANDIES_DIR;
+  testUtil.defaultMetadata[`/${TESTING_HELLO_DIR.name}`] = TESTING_HELLO_DIR;
+  testUtil.defaultMetadata[`/${TESTING_HELLO_DIR.name}/${
+      TESTING_TIRAMISU_FILE.name}`] = TESTING_TIRAMISU_FILE;
+  testUtil.defaultMetadata[`/${TESTING_HELLO_DIR.name}/${
+      TESTING_CANDIES_DIR.name}`] = TESTING_CANDIES_DIR;
 
   chrome.fileSystemProvider.onReadDirectoryRequested.addListener(
       onReadDirectoryRequested);
@@ -104,7 +101,8 @@ function runTests() {
                     } else {
                       readEntriesNext();
                     }
-                  }), function(error) {
+                  }),
+                  function(error) {
                     chrome.test.fail();
                   });
             };
@@ -118,15 +116,12 @@ function runTests() {
     // error.
     function readEntriesError() {
       testUtil.fileSystem.root.getDirectory(
-          'cranberries',
-          {create: false},
-          function(dirEntry) {
+          'cranberries', {create: false}, function(dirEntry) {
             chrome.test.fail();
-          },
-          chrome.test.callbackPass(function(error) {
+          }, chrome.test.callbackPass(function(error) {
             chrome.test.assertEq('NotFoundError', error.name);
           }));
-    }
+    },
   ]);
 }
 
@@ -134,7 +129,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

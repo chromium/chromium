@@ -11,32 +11,32 @@ const FRIEND_EXTENSION_ID = 'pknkgggnfecklokoggaggchhaebkajji';
 const testCases = [];
 testCases.push({
   func: function triggerApiCall() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'api_call', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'api_call', function response() {});
   },
-  expected_activity: ['cookies.set']
+  expected_activity: ['cookies.set'],
 });
 testCases.push({
   func: function triggerSpecialCall() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'special_call', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'special_call', function response() {});
   },
   expected_activity: [
     'runtime.getURL',
-    'extension.getViews'
-  ]
+    'extension.getViews',
+  ],
 });
 testCases.push({
   func: function triggerDouble() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'double', function response() {});
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'double', function response() {});
   },
-  expected_activity: ['omnibox.setDefaultSuggestion']
+  expected_activity: ['omnibox.setDefaultSuggestion'],
 });
 testCases.push({
   func: function triggerAppBindings() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'app_bindings', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'app_bindings', function response() {});
   },
   expected_activity: [
     // These API calls show up differently depending on whether native bindings
@@ -44,53 +44,53 @@ testCases.push({
     /app\.[gG]etDetails/,
     /app\.[gG]etIsInstalled/,
     /app\.(getI|i)nstallState/,
-  ]
+  ],
 });
 testCases.push({
   func: function triggerObjectMethods() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'object_methods', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'object_methods', function response() {});
   },
-  expected_activity: ['storage.clear']
+  expected_activity: ['storage.clear'],
 });
 testCases.push({
   func: function triggerMessageSelf() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'message_self', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'message_self', function response() {});
   },
   expected_activity: [
-    'runtime.sendMessage'
-  ]
+    'runtime.sendMessage',
+  ],
 });
 testCases.push({
   func: function triggerMessageOther() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'message_other', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'message_other', function response() {});
   },
   expected_activity: [
-    'runtime.sendMessage'
-  ]
+    'runtime.sendMessage',
+  ],
 });
 testCases.push({
   func: function triggerConnectOther() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'connect_other', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'connect_other', function response() {});
   },
-  expected_activity: ['runtime.connect']
+  expected_activity: ['runtime.connect'],
 });
 testCases.push({
   func: function triggerBackgroundXHR() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'background_xhr', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'background_xhr', function response() {});
   },
   expected_activity: [
     'blinkRequestResource XMLHttpRequest',
-  ]
+  ],
 });
 testCases.push({
   func: function triggerTabIds() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'tab_ids', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'tab_ids', function response() {});
   },
   expected_activity: [
     'tabs.onUpdated',
@@ -101,13 +101,13 @@ testCases.push({
     'tabs.onUpdated',
     'tabs.onUpdated',
     'tabs.move',
-    'tabs.remove'
-  ]
+    'tabs.remove',
+  ],
 });
 testCases.push({
   func: function triggerTabIdsIncognito() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'tab_ids_incognito', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'tab_ids_incognito', function response() {});
   },
   is_incognito: true,
   expected_activity: [
@@ -121,14 +121,14 @@ testCases.push({
     'tabs.onUpdated',
     'tabs.onUpdated',
     'tabs.move',
-    'tabs.remove'
-  ]
+    'tabs.remove',
+  ],
 });
 
 testCases.push({
   func: function triggerWebRequest() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'webrequest', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'webrequest', function response() {});
   },
   expected_activity: [
     'webRequestInternal.addEventListener',
@@ -142,14 +142,14 @@ testCases.push({
     'tabs.onUpdated',
     'tabs.onUpdated',
     'tabs.onUpdated',
-    'tabs.remove'
+    'tabs.remove',
   ],
 });
 
 testCases.push({
   func: function triggerWebRequestIncognito() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'webrequest_incognito', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'webrequest_incognito', function response() {});
   },
   is_incognito: true,
   expected_activity: [
@@ -165,14 +165,14 @@ testCases.push({
     'tabs.onUpdated',
     'tabs.onUpdated',
     'tabs.onUpdated',
-    'tabs.remove'
+    'tabs.remove',
   ],
 });
 
 testCases.push({
   func: function triggerApiCallsOnTabsUpdated() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'api_tab_updated', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'api_tab_updated', function response() {});
   },
   expected_activity: [
     'tabs.onUpdated',
@@ -181,14 +181,14 @@ testCases.push({
     'tabs.sendMessage',
     'tabs.executeScript',
     'tabs.executeScript',
-    'tabs.remove'
-  ]
+    'tabs.remove',
+  ],
 });
 testCases.push({
   func: function triggerApiCallsOnTabsUpdatedIncognito() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'api_tab_updated_incognito',
-                               function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'api_tab_updated_incognito',
+        function response() {});
   },
   is_incognito: true,
   expected_activity: [
@@ -199,64 +199,65 @@ testCases.push({
     'tabs.sendMessage',
     'tabs.executeScript',
     'tabs.executeScript',
-    'tabs.remove'
-  ]
+    'tabs.remove',
+  ],
 });
 testCases.push({
   func: function triggerFullscreen() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'launch_dom_fullscreen',
-                               function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'launch_dom_fullscreen', function response() {});
   },
   expected_activity: [
     'runtime.getURL',
     'test.getConfig',
-    'Element.webkitRequestFullscreen'
-  ]
+    'Element.webkitRequestFullscreen',
+  ],
 });
 
 const domExpectedActivity = [
-    'tabs.onUpdated',
-    'tabs.onUpdated',
-    'tabs.onUpdated',
-    'tabs.executeScript',
-     // Location access
-    'blinkSetAttribute LocalDOMWindow url',
-    'blinkRequestResource Main resource',
-    'blinkSetAttribute LocalDOMWindow url',
-    'blinkRequestResource Main resource',
-    'blinkSetAttribute LocalDOMWindow url',
-    'blinkRequestResource Main resource',
-    'blinkSetAttribute LocalDOMWindow url',
-    'blinkRequestResource Main resource',
-    // Dom mutations
-    // Navigator access
-    'Window.navigator',
-    'Geolocation.getCurrentPosition',
-    'Geolocation.watchPosition',
-    // Web store access - session storage
-    'Window.sessionStorage',
-    'Storage.setItem',
-    'Storage.getItem',
-    'Storage.removeItem',
-    'Storage.clear',
-    // Web store access - local storage
-    'Window.localStorage',
-    'Storage.setItem',
-    'Storage.getItem',
-    'Storage.removeItem',
-    'Storage.clear',
-    // Canvas access
-    // XHR from content script.
-    'blinkRequestResource XMLHttpRequest',
+  'tabs.onUpdated',
+  'tabs.onUpdated',
+  'tabs.onUpdated',
+  'tabs.executeScript',
+  // Location access
+  'blinkSetAttribute LocalDOMWindow url',
+  'blinkRequestResource Main resource',
+  'blinkSetAttribute LocalDOMWindow url',
+  'blinkRequestResource Main resource',
+  'blinkSetAttribute LocalDOMWindow url',
+  'blinkRequestResource Main resource',
+  'blinkSetAttribute LocalDOMWindow url',
+  'blinkRequestResource Main resource',
+  // Dom mutations
+  // Navigator access
+  'Window.navigator',
+  'Geolocation.getCurrentPosition',
+  'Geolocation.watchPosition',
+  // Web store access - session storage
+  'Window.sessionStorage',
+  'Storage.setItem',
+  'Storage.getItem',
+  'Storage.removeItem',
+  'Storage.clear',
+  // Web store access - local storage
+  'Window.localStorage',
+  'Storage.setItem',
+  'Storage.getItem',
+  'Storage.removeItem',
+  'Storage.clear',
+  // Canvas access
+  // XHR from content script.
+  'blinkRequestResource XMLHttpRequest',
 ];
 
 // add the hook activity
-const hookNames = ['click', 'dblclick', 'drag', 'dragend', 'dragenter',
-             'dragleave', 'dragover', 'dragstart', 'drop', 'input',
-             'keydown', 'keypress', 'keyup', 'mousedown',
-             'mouseenter', 'mouseleave', 'mousemove', 'mouseout',
-             'mouseover', 'mouseup', 'mousewheel'];
+const hookNames = [
+  'click',      'dblclick',  'drag',      'dragend',   'dragenter',
+  'dragleave',  'dragover',  'dragstart', 'drop',      'input',
+  'keydown',    'keypress',  'keyup',     'mousedown', 'mouseenter',
+  'mouseleave', 'mousemove', 'mouseout',  'mouseover', 'mouseup',
+  'mousewheel'
+];
 
 for (let i = 0; i < hookNames.length; i++) {
   domExpectedActivity.push('blinkAddEventListener BODY ' + hookNames[i]);
@@ -269,20 +270,20 @@ domExpectedActivity.push('tabs.remove');
 
 testCases.push({
   func: function triggerDOMChangesOnTabsUpdated() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'dom_tab_updated', function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'dom_tab_updated', function response() {});
   },
-  expected_activity: domExpectedActivity
+  expected_activity: domExpectedActivity,
 });
 
 testCases.push({
   func: function triggerDOMChangesOnTabsUpdatedIncognito() {
-    chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
-                               'dom_tab_updated_incognito',
-                               function response() { });
+    chrome.runtime.sendMessage(
+        FRIEND_EXTENSION_ID, 'dom_tab_updated_incognito',
+        function response() {});
   },
   is_incognito: true,
-  expected_activity: ['windows.create'].concat(domExpectedActivity)
+  expected_activity: ['windows.create'].concat(domExpectedActivity),
 });
 
 testCases.push({
@@ -291,16 +292,14 @@ testCases.push({
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = 'tabs.onUpdated';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(FRIEND_EXTENSION_ID,
-              result['activities'][0]['extensionId']);
-          chrome.test.assertEq('tabs.onUpdated',
-              result['activities'][0]['apiCall']);
-          chrome.test.succeed();
-        });
-  }
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(
+          FRIEND_EXTENSION_ID, result['activities'][0]['extensionId']);
+      chrome.test.assertEq(
+          'tabs.onUpdated', result['activities'][0]['apiCall']);
+      chrome.test.succeed();
+    });
+  },
 });
 
 testCases.push({
@@ -309,14 +308,12 @@ testCases.push({
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.pageUrl = 'http://www.google.com';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(FRIEND_EXTENSION_ID,
-              result['activities'][0]['extensionId']);
-          chrome.test.succeed();
-        });
-  }
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(
+          FRIEND_EXTENSION_ID, result['activities'][0]['extensionId']);
+      chrome.test.succeed();
+    });
+  },
 });
 
 testCases.push({
@@ -325,33 +322,30 @@ testCases.push({
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'dom_access';
     filter.apiCall = 'blinkSetAttribute';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(FRIEND_EXTENSION_ID,
-              result['activities'][0]['extensionId']);
-          chrome.test.assertEq('blinkSetAttribute',
-              result['activities'][0]['apiCall']);
-          chrome.test.assertEq('method',
-              result['activities'][0]['other']['domVerb']);
-          chrome.test.succeed();
-        });
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(
+          FRIEND_EXTENSION_ID, result['activities'][0]['extensionId']);
+      chrome.test.assertEq(
+          'blinkSetAttribute', result['activities'][0]['apiCall']);
+      chrome.test.assertEq(
+          'method', result['activities'][0]['other']['domVerb']);
+      chrome.test.succeed();
+    });
     filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = 'webRequest.onHeadersReceived';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(FRIEND_EXTENSION_ID,
-              result['activities'][0]['extensionId']);
-          chrome.test.assertEq('webRequest.onHeadersReceived',
-              result['activities'][0]['apiCall']);
-          chrome.test.assertEq('{"added_request_headers":true}',
-              result['activities'][0]['other']['webRequest']);
-          chrome.test.succeed();
-        });
-  }
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(
+          FRIEND_EXTENSION_ID, result['activities'][0]['extensionId']);
+      chrome.test.assertEq(
+          'webRequest.onHeadersReceived', result['activities'][0]['apiCall']);
+      chrome.test.assertEq(
+          '{"added_request_headers":true}',
+          result['activities'][0]['other']['webRequest']);
+      chrome.test.succeed();
+    });
+  },
 });
 
 testCases.push({
@@ -363,30 +357,33 @@ testCases.push({
     filter.apiCall = 'tabs.executeScript';
     chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
       chrome.test.assertEq(6, result['activities'].length);
-      for (let i = 0; i < result['activities'].length; i++)
+      for (let i = 0; i < result['activities'].length; i++) {
         activityIds.push(result['activities'][i]['activityId']);
+      }
       chrome.test.assertEq(6, activityIds.length);
       chrome.activityLogPrivate.deleteActivities(['-1', '-2', '-3']);
-      chrome.activityLogPrivate.getExtensionActivities(filter,
-          function(result) {
+      chrome.activityLogPrivate.getExtensionActivities(
+          filter, function(result) {
             chrome.test.assertEq(6, result['activities'].length);
             chrome.activityLogPrivate.deleteActivities([activityIds[0]]);
-            chrome.activityLogPrivate.getExtensionActivities(filter,
-                function(result) {
+            chrome.activityLogPrivate.getExtensionActivities(
+                filter, function(result) {
                   chrome.test.assertEq(5, result['activities'].length);
-                  for (let i = 0; i < result['activities'].length; i++)
-                    chrome.test.assertFalse(activityIds[0] ==
+                  for (let i = 0; i < result['activities'].length; i++) {
+                    chrome.test.assertFalse(
+                        activityIds[0] ==
                         result['activities'][i]['activityId']);
+                  }
                   chrome.activityLogPrivate.deleteActivities(activityIds);
-                  chrome.activityLogPrivate.getExtensionActivities(filter,
-                      function(result) {
+                  chrome.activityLogPrivate.getExtensionActivities(
+                      filter, function(result) {
                         chrome.test.assertEq(0, result['activities'].length);
                         chrome.test.succeed();
                       });
                 });
           });
     });
-  }
+  },
 });
 
 testCases.push({
@@ -400,13 +397,12 @@ testCases.push({
       filter.activityType = 'any';
       filter.pageUrl = 'http://www.google.com';
       chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(0, result['activities'].length);
-          chrome.test.succeed();
-        });
-     });
-  }
+          filter, function(result) {
+            chrome.test.assertEq(0, result['activities'].length);
+            chrome.test.succeed();
+          });
+    });
+  },
 });
 
 testCases.push({
@@ -416,13 +412,11 @@ testCases.push({
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.pageUrl = 'http://';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(0, result['activities'].length);
-          chrome.test.succeed();
-        });
-  }
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(0, result['activities'].length);
+      chrome.test.succeed();
+    });
+  },
 });
 
 testCases.push({
@@ -432,13 +426,11 @@ testCases.push({
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = '';
-    chrome.activityLogPrivate.getExtensionActivities(
-        filter,
-        function(result) {
-          chrome.test.assertEq(0, result['activities'].length);
-          chrome.test.succeed();
-        });
-  }
+    chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
+      chrome.test.assertEq(0, result['activities'].length);
+      chrome.test.succeed();
+    });
+  },
 });
 
 function checkIncognito(url, incognitoExpected) {
@@ -447,8 +439,8 @@ function checkIncognito(url, incognitoExpected) {
     const kIncognitoMarker = '<incognito>';
     const isIncognito =
         (url.substr(0, kIncognitoMarker.length) == kIncognitoMarker);
-    chrome.test.assertEq(incognitoExpected, isIncognito,
-                         'Bad incognito state for URL ' + url);
+    chrome.test.assertEq(
+        incognitoExpected, isIncognito, 'Bad incognito state for URL ' + url);
   }
 }
 
@@ -457,7 +449,7 @@ let testCaseIndx = 0;
 let callIndx = -1;
 const blinkArgs = {
   'blinkRequestResource': 2,
-  'blinkSetAttribute': 3
+  'blinkSetAttribute': 3,
 };
 
 chrome.activityLogPrivate.onExtensionActivity.addListener(
@@ -469,8 +461,9 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
       let apiCall = activity['apiCall'];
       if (apiCall.indexOf('blink') == 0) {
         let args = JSON.parse(activity['args']);
-        if (blinkArgs[apiCall])
+        if (blinkArgs[apiCall]) {
           args = args.splice(0, blinkArgs[apiCall] - 1);
+        }
         apiCall += ' ' + args.join(' ');
       }
       let expectedCall = 'runtime.onMessageExternal';
@@ -479,10 +472,11 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
         expectedCall = testCase.expected_activity[callIndx];
       }
       // Allow either a RegExp or a strict string comparison.
-      if (expectedCall instanceof RegExp)
+      if (expectedCall instanceof RegExp) {
         chrome.test.assertTrue(expectedCall.test(apiCall));
-      else
+      } else {
         chrome.test.assertEq(expectedCall, apiCall);
+      }
 
       // Check that no real URLs are logged in incognito-mode tests.  Ignore
       // the initial call to windows.create opening the tab.
@@ -501,7 +495,7 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
       } else {
         callIndx++;
       }
-    }
+    },
 );
 
 chrome.test.runTests(testCases.map(testCase => testCase.func));

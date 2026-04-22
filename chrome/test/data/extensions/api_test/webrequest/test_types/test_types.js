@@ -69,917 +69,991 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   runTests([
-  function typeStylesheet() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          frameUrl: 'unknown frame URL',
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'stylesheet',
-          url: getStyleURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      {urls: [getStyleURL()]});
+    function typeStylesheet() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                frameUrl: 'unknown frame URL',
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'stylesheet',
+                url: getStyleURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          {urls: [getStyleURL()]});
 
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      const style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.type = 'text/css';
-      style.href = getStyleURL();
-      document.body.appendChild(style);
-    });
-  },
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        const style = document.createElement('link');
+        style.rel = 'stylesheet';
+        style.type = 'text/css';
+        style.href = getStyleURL();
+        document.body.appendChild(style);
+      });
+    },
 
-  function typeScript() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          // Unknown because data:-URLs are invisible to the webRequest API,
-          // and the script is loaded via a data:-URL document in a frame.
-          frameUrl: 'unknown frame URL',
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'script',
-          url: getScriptURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: 'null',
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      getScriptFilter());
+    function typeScript() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                // Unknown because data:-URLs are invisible to the webRequest
+                // API, and the script is loaded via a data:-URL document in a
+                // frame.
+                frameUrl: 'unknown frame URL',
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'script',
+                url: getScriptURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: 'null',
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          getScriptFilter());
 
-    const frame = document.createElement('iframe');
-    frame.src = `data:text/html,<script src='${getScriptURL()}'></script>`;
-    document.body.appendChild(frame);
-  },
-
-  // TODO(crbug.com/40872076): This test fails with an error in the call to
-  // the FontFace constructor:
-  //    SyntaxError: Failed to set 'normal' as a property value.
-  /*
-  function typeFont() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          frameUrl: 'unknown frame URL',
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onErrorOccurred',
-        event: 'onErrorOccurred',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          error: 'net::ERR_CACHE_MISS',
-          fromCache: false,
-        }
-      },
-      { label: 'onBeforeRequest-1',
-        event: 'onBeforeRequest',
-        details: {
-          eventCount: 1,
-          type: 'font',
-          url: getFontURL(),
-          frameUrl: 'unknown frame URL',
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onBeforeSendHeaders-1',
-        event: 'onBeforeSendHeaders',
-        details: {
-          eventCount: 1,
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onSendHeaders-1',
-        event: 'onSendHeaders',
-        details: {
-          eventCount: 1,
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'font',
-          url: getFontURL(),
-          tabId: 1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
-        }
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onErrorOccurred', 'onBeforeRequest-1', 'onBeforeSendHeaders-1',
-        'onSendHeaders-1', 'onHeadersReceived', 'onResponseStarted',
-        'onCompleted']],
-      {urls: [getFontURL()]});
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      new FontFace('allegedly-a-font-family',
-          `url(${getFontURL()})`).load();
-    });
-  },
-  */
-
-  function typeWorker() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          frameUrl: 'unknown frame URL',
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'script',
-          url: getWorkerURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      getScriptFilter());
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      new Worker(getWorkerURL());
-    });
-
-    // TODO(robwu): add tests for ServiceWorker.
-    // (probably same as above, but using -1 because they are not specific to
-    //  any tab. In general we really need a lot more test coverage for the
-    //  interaction between Service workers and extensions.)
-  },
-
-  function typeSharedWorker() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          frameUrl: 'unknown frame URL',
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'script',
-          url: getSharedWorkerURL(),
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      getScriptFilter());
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      new SharedWorker(getSharedWorkerURL(), 'name');
-    });
-  },
-
-  function typePing() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameUrl: 'unknown frame URL',
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameId: 0,
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getPingURL(),
-          frameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      {urls: [getPingURL()]});
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      const a = document.createElement('a');
-      a.ping = getPingURL();
-      a.href = 'javascript:';
-      a.click();
-    });
-  },
-
-  function typeBeacon() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameUrl: 'unknown frame URL',
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameId: 0,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameId: 0,
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getBeaconURL(),
-          frameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      {urls: [getBeaconURL()]});
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      navigator.sendBeacon(getBeaconURL(), 'beacon data');
-    });
-  },
-
-  // TODO(crbug.com/40872076): This test is flaky.
-  /*
-  function sendBeaconInFrameOnUnload() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameUrl: 'unknown frame URL',
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'ping',
-          method: 'POST',
-          url: getSlowURL(),
-          frameId: 0,
-          parentFrameId: -1,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 200 OK',
-          statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1,
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
-      {urls: [getSlowURL()]});
-
-    // Load a page to be sure webRequest listeners are set up.
-    navigateAndWait(getURL('a.html'), function() {
-      let frame = document.createElement('iframe');
+      const frame = document.createElement('iframe');
+      frame.src = `data:text/html,<script src='${getScriptURL()}'></script>`;
       document.body.appendChild(frame);
-      frame.contentWindow.onunload = function() {
-        console.log('Going to send beacon...');
-        const sentBeacon =
-            frame.contentWindow.navigator.sendBeacon(getSlowURL());
-        chrome.test.assertTrue(sentBeacon);
-      };
-      frame.remove();
-    });
-  },
-  */
-  function typeOther_cspreport() {
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameUrl: 'unknown frame URL',
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
+    },
+
+    // TODO(crbug.com/40872076): This test fails with an error in the call to
+    // the FontFace constructor:
+    //    SyntaxError: Failed to set 'normal' as a property value.
+    /*
+    function typeFont() {
+      expect([
+        { label: 'onBeforeRequest',
+          event: 'onBeforeRequest',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            frameUrl: 'unknown frame URL',
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
         },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
+        { label: 'onBeforeSendHeaders',
+          event: 'onBeforeSendHeaders',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
         },
-      },
-      { label: 'onHeadersReceived',
-        event: 'onHeadersReceived',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          statusLine: 'HTTP/1.1 404 Not Found',
-          statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
+        { label: 'onSendHeaders',
+          event: 'onSendHeaders',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
         },
-      },
-      { label: 'onResponseStarted',
-        event: 'onResponseStarted',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 404 Not Found',
-          statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
+        { label: 'onErrorOccurred',
+          event: 'onErrorOccurred',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            error: 'net::ERR_CACHE_MISS',
+            fromCache: false,
+          }
         },
-      },
-      { label: 'onCompleted',
-        event: 'onCompleted',
-        details: {
-          type: 'csp_report',
-          method: 'POST',
-          url: getCSPReportURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: -1,
-          ip: '127.0.0.1',
-          fromCache: false,
-          statusLine: 'HTTP/1.1 404 Not Found',
-          statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED),
-          documentId: 2,
-          parentDocumentId: 1,
-          frameType: 'sub_frame',
+        { label: 'onBeforeRequest-1',
+          event: 'onBeforeRequest',
+          details: {
+            eventCount: 1,
+            type: 'font',
+            url: getFontURL(),
+            frameUrl: 'unknown frame URL',
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
         },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onHeadersReceived', 'onResponseStarted', 'onCompleted']], {
-        urls: ['<all_urls>'], types: ['csp_report']
+        { label: 'onBeforeSendHeaders-1',
+          event: 'onBeforeSendHeaders',
+          details: {
+            eventCount: 1,
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
+        },
+        { label: 'onSendHeaders-1',
+          event: 'onSendHeaders',
+          details: {
+            eventCount: 1,
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
+        },
+        { label: 'onHeadersReceived',
+          event: 'onHeadersReceived',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
+        },
+        { label: 'onResponseStarted',
+          event: 'onResponseStarted',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            ip: '127.0.0.1',
+            fromCache: false,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
+        },
+        { label: 'onCompleted',
+          event: 'onCompleted',
+          details: {
+            type: 'font',
+            url: getFontURL(),
+            tabId: 1,
+            ip: '127.0.0.1',
+            fromCache: false,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED)
+          }
+        }],
+        [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+          'onErrorOccurred', 'onBeforeRequest-1', 'onBeforeSendHeaders-1',
+          'onSendHeaders-1', 'onHeadersReceived', 'onResponseStarted',
+          'onCompleted']],
+        {urls: [getFontURL()]});
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        new FontFace('allegedly-a-font-family',
+            `url(${getFontURL()})`).load();
+      });
+    },
+    */
+
+    function typeWorker() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                frameUrl: 'unknown frame URL',
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'script',
+                url: getWorkerURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          getScriptFilter());
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        new Worker(getWorkerURL());
       });
 
-    const frame = document.createElement('iframe');
-    frame.src =
-      getServerURL('extensions/api_test/webrequest/csp/violation.html');
-    document.body.appendChild(frame);
-  },
+      // TODO(robwu): add tests for ServiceWorker.
+      // (probably same as above, but using -1 because they are not specific to
+      //  any tab. In general we really need a lot more test coverage for the
+      //  interaction between Service workers and extensions.)
+    },
 
-  // Note: The 'websocket' type is tested separately in 'test_websocket.js' and
-  // 'test_websocket_auth.js'.
-])});
+    function typeSharedWorker() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                frameUrl: 'unknown frame URL',
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'script',
+                url: getSharedWorkerURL(),
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          getScriptFilter());
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        new SharedWorker(getSharedWorkerURL(), 'name');
+      });
+    },
+
+    function typePing() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameUrl: 'unknown frame URL',
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameId: 0,
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getPingURL(),
+                frameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          {urls: [getPingURL()]});
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        const a = document.createElement('a');
+        a.ping = getPingURL();
+        a.href = 'javascript:';
+        a.click();
+      });
+    },
+
+    function typeBeacon() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameUrl: 'unknown frame URL',
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameId: 0,
+                tabId: -1,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameId: 0,
+                tabId: -1,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'ping',
+                method: 'POST',
+                url: getBeaconURL(),
+                frameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 200 OK',
+                statusCode: 200,
+                initiator: getDomain(initiators.WEB_INITIATED),
+                documentId: 1,
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          {urls: [getBeaconURL()]});
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        navigator.sendBeacon(getBeaconURL(), 'beacon data');
+      });
+    },
+
+    // TODO(crbug.com/40872076): This test is flaky.
+    /*
+    function sendBeaconInFrameOnUnload() {
+      expect([
+        { label: 'onBeforeRequest',
+          event: 'onBeforeRequest',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameUrl: 'unknown frame URL',
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          }
+        },
+        { label: 'onBeforeSendHeaders',
+          event: 'onBeforeSendHeaders',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          },
+        },
+        { label: 'onSendHeaders',
+          event: 'onSendHeaders',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          },
+        },
+        { label: 'onHeadersReceived',
+          event: 'onHeadersReceived',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          },
+        },
+        { label: 'onResponseStarted',
+          event: 'onResponseStarted',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            ip: '127.0.0.1',
+            fromCache: false,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          },
+        },
+        { label: 'onCompleted',
+          event: 'onCompleted',
+          details: {
+            type: 'ping',
+            method: 'POST',
+            url: getSlowURL(),
+            frameId: 0,
+            parentFrameId: -1,
+            tabId: -1,
+            ip: '127.0.0.1',
+            fromCache: false,
+            statusLine: 'HTTP/1.1 200 OK',
+            statusCode: 200,
+            initiator: getDomain(initiators.WEB_INITIATED),
+            documentId: 1,
+          },
+        }],
+        [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+          'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
+        {urls: [getSlowURL()]});
+
+      // Load a page to be sure webRequest listeners are set up.
+      navigateAndWait(getURL('a.html'), function() {
+        let frame = document.createElement('iframe');
+        document.body.appendChild(frame);
+        frame.contentWindow.onunload = function() {
+          console.log('Going to send beacon...');
+          const sentBeacon =
+              frame.contentWindow.navigator.sendBeacon(getSlowURL());
+          chrome.test.assertTrue(sentBeacon);
+        };
+        frame.remove();
+      });
+    },
+    */
+    function typeOther_cspreport() {
+      expect(
+          [
+            {
+              label: 'onBeforeRequest',
+              event: 'onBeforeRequest',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameUrl: 'unknown frame URL',
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onBeforeSendHeaders',
+              event: 'onBeforeSendHeaders',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onSendHeaders',
+              event: 'onSendHeaders',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onHeadersReceived',
+              event: 'onHeadersReceived',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                statusLine: 'HTTP/1.1 404 Not Found',
+                statusCode: 404,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onResponseStarted',
+              event: 'onResponseStarted',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 404 Not Found',
+                statusCode: 404,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            },
+            {
+              label: 'onCompleted',
+              event: 'onCompleted',
+              details: {
+                type: 'csp_report',
+                method: 'POST',
+                url: getCSPReportURL(),
+                frameId: 1,
+                parentFrameId: 0,
+                tabId: -1,
+                ip: '127.0.0.1',
+                fromCache: false,
+                statusLine: 'HTTP/1.1 404 Not Found',
+                statusCode: 404,
+                initiator: getServerDomain(initiators.WEB_INITIATED),
+                documentId: 2,
+                parentDocumentId: 1,
+                frameType: 'sub_frame',
+              },
+            }
+          ],
+          [[
+            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+          ]],
+          {
+            urls: ['<all_urls>'],
+            types: ['csp_report'],
+          });
+
+      const frame = document.createElement('iframe');
+      frame.src =
+          getServerURL('extensions/api_test/webrequest/csp/violation.html');
+      document.body.appendChild(frame);
+    },
+
+    // Note: The 'websocket' type is tested separately in 'test_websocket.js'
+    // and 'test_websocket_auth.js'.
+  ]);
+});

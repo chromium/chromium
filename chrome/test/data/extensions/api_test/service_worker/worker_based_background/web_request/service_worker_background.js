@@ -14,38 +14,38 @@ chrome.test.runTests([
     });
   },
   function testOnBeforeRequest() {
-    chrome.webRequest.onBeforeRequest.addListener(
-        function localListener(details) {
+    chrome.webRequest.onBeforeRequest
+        .addListener(function localListener(details) {
           chrome.webRequest.onBeforeRequest.removeListener(localListener);
           chrome.test.assertNoLastError();
           chrome.test.succeed();
-        }, { urls: ['<all_urls>']});
+        }, {urls: ['<all_urls>']});
     // Create the tab.
     chrome.tabs.create({url: tabUrl});
   },
   function testOnBeforeSendHeaders() {
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-        function localListener(details) {
+    chrome.webRequest.onBeforeSendHeaders
+        .addListener(function localListener(details) {
           chrome.webRequest.onBeforeSendHeaders.removeListener(localListener);
           chrome.test.assertNoLastError();
           chrome.test.assertEq(tabUrl, details.url);
           chrome.test.succeed();
-        }, { urls: [tabUrl]});
+        }, {urls: [tabUrl]});
     chrome.tabs.create({url: tabUrl});
   },
   function testOnSendHeaders() {
-    chrome.webRequest.onSendHeaders.addListener(
-        function localListener(details) {
+    chrome.webRequest.onSendHeaders
+        .addListener(function localListener(details) {
           chrome.webRequest.onSendHeaders.removeListener(localListener);
           chrome.test.assertNoLastError();
           chrome.test.assertEq(tabUrl, details.url);
           chrome.test.succeed();
-          }, { urls: [tabUrl]});
+        }, {urls: [tabUrl]});
     chrome.tabs.create({url: tabUrl});
   },
   function testOnHeadersReceived() {
-    chrome.webRequest.onHeadersReceived.addListener(
-        function localListener(details) {
+    chrome.webRequest.onHeadersReceived
+        .addListener(function localListener(details) {
           chrome.webRequest.onHeadersReceived.removeListener(localListener);
           chrome.test.assertNoLastError();
           chrome.test.assertEq(tabUrl, details.url);
@@ -54,8 +54,8 @@ chrome.test.runTests([
     chrome.tabs.create({url: tabUrl});
   },
   function testOnResponseStarted() {
-    chrome.webRequest.onResponseStarted.addListener(
-        function localListener(details) {
+    chrome.webRequest.onResponseStarted
+        .addListener(function localListener(details) {
           chrome.webRequest.onResponseStarted.removeListener(localListener);
           chrome.test.assertNoLastError();
           chrome.test.assertEq(tabUrl, details.url);
@@ -64,13 +64,12 @@ chrome.test.runTests([
     chrome.tabs.create({url: tabUrl});
   },
   function testOnCompleted() {
-    chrome.webRequest.onCompleted.addListener(
-        function localListener(details) {
-          chrome.webRequest.onCompleted.removeListener(localListener);
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq(tabUrl, details.url);
-          chrome.test.succeed();
-        }, {urls: [tabUrl]});
+    chrome.webRequest.onCompleted.addListener(function localListener(details) {
+      chrome.webRequest.onCompleted.removeListener(localListener);
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(tabUrl, details.url);
+      chrome.test.succeed();
+    }, {urls: [tabUrl]});
     chrome.tabs.create({url: tabUrl});
   },
 ]);

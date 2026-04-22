@@ -4,4 +4,4 @@
 
 onload = function() {
   window.open('b.html');
-}
+};

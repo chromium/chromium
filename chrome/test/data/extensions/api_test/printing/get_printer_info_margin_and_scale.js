@@ -8,7 +8,7 @@ chrome.test.runTests([() => {
     chrome.test.assertNe(undefined, response.capabilities);
     chrome.test.assertNe(undefined, response.capabilities.printer);
 
-    let fit_to_page = response.capabilities.printer.fit_to_page;
+    const fit_to_page = response.capabilities.printer.fit_to_page;
     chrome.test.assertNe(undefined, fit_to_page);
     chrome.test.assertEq(3, fit_to_page.option.length);
     chrome.test.assertNe(undefined, fit_to_page.option[0]);
@@ -24,7 +24,7 @@ chrome.test.runTests([() => {
     chrome.test.assertEq('AUTO', fit_to_page.option[2].type);
     chrome.test.assertEq(true, fit_to_page.option[2].is_default);
 
-    let margin = response.capabilities.printer.margins;
+    const margin = response.capabilities.printer.margins;
     chrome.test.assertNe(undefined, margin);
     chrome.test.assertEq(2, margin.option.length);
     chrome.test.assertNe(undefined, margin.option[0]);

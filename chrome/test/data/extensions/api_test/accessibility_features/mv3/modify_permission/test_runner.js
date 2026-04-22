@@ -7,7 +7,8 @@
  * @param {string} feature The feature to query.
  */
 function testGetFeatureNotAllowed(feature) {
-  var expectedFailure = 'You do not have permission to access the preference ' +
+  const expectedFailure =
+      'You do not have permission to access the preference ' +
       '\'' + feature + '\'. Be sure to declare in your manifest what ' +
       'permissions you need.';
   chrome.accessibilityFeatures[feature].get(
@@ -21,10 +22,10 @@ function testGetFeatureNotAllowed(feature) {
  * @param {Array<string>} disabledFeatures The list of disabled features.
  */
 function runGetterTest(enabledFeatures, disabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   enabledFeatures.forEach((feature) => {
-    var test = testGetFeatureNotAllowed.bind(null, feature);
+    const test = testGetFeatureNotAllowed.bind(null, feature);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testIsEnabledNotAllowed_' + feature;
@@ -33,7 +34,7 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
   });
 
   disabledFeatures.forEach((feature) => {
-    var test = testGetFeatureNotAllowed.bind(null, feature);
+    const test = testGetFeatureNotAllowed.bind(null, feature);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testIsDisabledNotAllowed_' + feature;
@@ -66,10 +67,10 @@ function testEnableFeature(feature, value) {
  *     are disabled when the test starts.
  */
 function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   initiallyEnabledFeatures.forEach((feature) => {
-    var test = testEnableFeature.bind(null, feature, false);
+    const test = testEnableFeature.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testDisable_' + feature;
@@ -78,7 +79,7 @@ function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
   });
 
   initiallyDisabledFeatures.forEach((feature) => {
-    var test = testEnableFeature.bind(null, feature, true);
+    const test = testEnableFeature.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testEnable_' + feature;
@@ -95,14 +96,17 @@ function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
  *        setterTest: function(Array<string>, Array<string>)}
  * @const
  */
-var TEST_FUNCTIONS = {'getterTest': runGetterTest, 'setterTest': runSetterTest};
+const TEST_FUNCTIONS = {
+  'getterTest': runGetterTest,
+  'setterTest': runSetterTest
+};
 
 /**
  * Entry point for tests. Gets test config and runs the associated test
  * function.
  */
 chrome.test.getConfig((config) => {
-  var testArgs = JSON.parse(config.customArg);
+  const testArgs = JSON.parse(config.customArg);
   if (!testArgs) {
     chrome.test.notifyFail('No test args');
     return;

@@ -62,7 +62,7 @@ async function main() {
       chrome.test.assertTrue(!!error, 'Configuration should have failed.');
       chrome.test.assertEq('Failed to complete configuration.', error.message);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

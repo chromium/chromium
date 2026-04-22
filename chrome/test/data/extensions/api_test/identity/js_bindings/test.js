@@ -25,8 +25,9 @@ const host = `https://${id}.chromiumapp.org`;
 chrome.test.runTests([
 
   function testGenerateRedirectURLWithPath() {
-    if (!checkIsDefined('getRedirectURL'))
+    if (!checkIsDefined('getRedirectURL')) {
       return;
+    }
 
     let url = chrome.identity.getRedirectURL('slashless/path');
     assertEq(`${host}/slashless/path`, url);
@@ -38,8 +39,9 @@ chrome.test.runTests([
   },
 
   function testGenerateRedirectURLNoPath() {
-    if (!checkIsDefined('getRedirectURL'))
+    if (!checkIsDefined('getRedirectURL')) {
       return;
+    }
 
     const url = chrome.identity.getRedirectURL();
     assertEq(`${host}/`, url);
@@ -48,8 +50,9 @@ chrome.test.runTests([
   },
 
   function testGenerateRedirectURLemptyPath() {
-    if (!checkIsDefined('getRedirectURL'))
+    if (!checkIsDefined('getRedirectURL')) {
       return;
+    }
 
     const url = chrome.identity.getRedirectURL('');
     assertEq(`${host}/`, url);

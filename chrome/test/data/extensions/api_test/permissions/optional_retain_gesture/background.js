@@ -24,16 +24,15 @@ chrome.test.getConfig(function(config) {
                     // The user gesture is retained but is consumed outside,
                     // so the following request will fail.
                     chrome.permissions.request(
-                        {permissions: ['bookmarks']},
-                        fail(GESTURE_ERROR));
-                  }
+                        {permissions: ['bookmarks']}, fail(GESTURE_ERROR));
+                  },
               );
 
               // Consume the user gesture
               window.open('', '', '');
-            }
+            },
         );
       });
-    }
+    },
   ]);
 });

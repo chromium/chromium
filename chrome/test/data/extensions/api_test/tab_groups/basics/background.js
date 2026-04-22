@@ -47,5 +47,5 @@ chrome.test.runTests([
       chrome.test.assertEq(results[0], results[1]);
       chrome.test.succeed();
     });
-  }
+  },
 ]);

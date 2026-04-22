@@ -20,5 +20,5 @@ chrome.test.runTests([
     chrome.test.assertEq(
         chrome.runtime.getURL('options.html'), response.senderUrl);
     chrome.test.succeed();
-  }
+  },
 ]);

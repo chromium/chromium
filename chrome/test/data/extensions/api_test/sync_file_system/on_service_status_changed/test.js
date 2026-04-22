@@ -17,5 +17,5 @@ function checkEventReceived(serviceInfo) {
 }
 
 chrome.test.runTests([
-  setupListener
+  setupListener,
 ]);

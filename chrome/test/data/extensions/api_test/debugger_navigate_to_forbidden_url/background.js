@@ -10,19 +10,23 @@ chrome.test.runTests([
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab('about:blank');
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
     chrome.debugger.sendCommand(debuggee, 'Page.crash');
-    await new Promise(resolve =>
-        chrome.debugger.onEvent.addListener((source, method, params) => {
-          if (method === 'Inspector.targetCrashed')
-            resolve();
-        }));
-    const result = await new Promise(resolve =>
-      chrome.debugger.sendCommand(debuggee, 'Page.navigate', {
-          url: 'chrome://version'
-      }, resolve));
+    await new Promise(
+        resolve =>
+            chrome.debugger.onEvent.addListener((source, method, params) => {
+              if (method === 'Inspector.targetCrashed') {
+                resolve();
+              }
+            }));
+    const result = await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Page.navigate', {
+              url: 'chrome://version',
+            },
+            resolve));
     chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
     chrome.test.succeed();
-  }
+  },
 ]);

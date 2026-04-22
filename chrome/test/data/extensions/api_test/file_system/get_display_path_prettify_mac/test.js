@@ -11,12 +11,12 @@ chrome.test.runTests([
       // The on-disk path of this file ends with '/test.localized/gold.txt', so
       // check that getDisplayPath correctly localizes the path by stripping
       // the '.localized' suffix.
-      chrome.fileSystem.getDisplayPath(entry, chrome.test.callbackPass(
-          function(path) {
-        const suffix = '/test/gold.txt';
-        chrome.test.assertEq(suffix,
-            path.substring(path.length - suffix.length));
-      }));
+      chrome.fileSystem.getDisplayPath(
+          entry, chrome.test.callbackPass(function(path) {
+            const suffix = '/test/gold.txt';
+            chrome.test.assertEq(
+                suffix, path.substring(path.length - suffix.length));
+          }));
     }));
-  }
+  },
 ]);

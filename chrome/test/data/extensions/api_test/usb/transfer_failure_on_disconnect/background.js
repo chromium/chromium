@@ -4,30 +4,28 @@
 
 chrome.usb.getDevices({}, devices => {
   if (devices.length !== 1) {
-    console.error("Expected a single device.");
-    chrome.test.sendMessage("failure");
+    console.error('Expected a single device.');
+    chrome.test.sendMessage('failure');
   }
   device = devices[0];
   chrome.usb.openDevice(device, connection => {
     if (connection === undefined) {
-      console.error("Failed to open device.");
-      chrome.test.sendMessage("failure");
+      console.error('Failed to open device.');
+      chrome.test.sendMessage('failure');
       return;
     }
 
-    chrome.usb.bulkTransfer(connection, {
-      direction: "in",
-      endpoint: 1,
-      length: 8 }, result => {
-        if (chrome.runtime.lastError.message == "Device disconnected.") {
-          chrome.test.sendMessage("success");
-          return;
-        }
+    chrome.usb.bulkTransfer(
+        connection, {direction: 'in', endpoint: 1, length: 8}, result => {
+          if (chrome.runtime.lastError.message == 'Device disconnected.') {
+            chrome.test.sendMessage('success');
+            return;
+          }
 
-        console.error("Expected transfer failure.");
-        chrome.test.sendMessage("failure");
-      });
+          console.error('Expected transfer failure.');
+          chrome.test.sendMessage('failure');
+        });
 
-    chrome.test.sendMessage("ready");
+    chrome.test.sendMessage('ready');
   });
 });

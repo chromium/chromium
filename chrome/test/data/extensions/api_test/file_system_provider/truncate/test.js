@@ -62,7 +62,7 @@ function setUp(callback) {
     isDirectory: false,
     name: TESTING_TIRAMISU_FILE_NAME,
     size: 128,
-    modificationTime: new Date(2014, 1, 24, 6, 35, 11)
+    modificationTime: new Date(2014, 1, 24, 6, 35, 11),
   };
 
   chrome.fileSystemProvider.onTruncateRequested.addListener(
@@ -79,20 +79,21 @@ function runTests() {
     // Truncate a file. It should succeed.
     function truncateFileSuccess() {
       testUtil.fileSystem.root.getFile(
-          TESTING_TIRAMISU_FILE_NAME,
-          {create: false, exclusive: true},
+          TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: true},
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.createWriter(
                 chrome.test.callbackPass(function(fileWriter) {
                   fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
                     // Note that onwriteend() is called even if an error
                     // happened.
-                    if (fileWriter.error)
+                    if (fileWriter.error) {
                       return;
+                    }
                     chrome.test.assertEq(
                         64,
-                        testUtil.defaultMetadata[
-                            `/${TESTING_TIRAMISU_FILE_NAME}`].size);
+                        testUtil
+                            .defaultMetadata[`/${TESTING_TIRAMISU_FILE_NAME}`]
+                            .size);
                   });
                   fileWriter.onerror = function(e) {
                     chrome.test.fail(fileWriter.error.name);
@@ -112,14 +113,14 @@ function runTests() {
     // error.
     function truncateBeyondFileError() {
       testUtil.fileSystem.root.getFile(
-          TESTING_TIRAMISU_FILE_NAME,
-          {create: false, exclusive: false},
+          TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false},
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.createWriter(
                 chrome.test.callbackPass(function(fileWriter) {
                   fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
-                    if (fileWriter.error)
+                    if (fileWriter.error) {
                       return;
+                    }
                     chrome.test.fail(
                         'Unexpectedly succeeded to truncate beyond a fiile.');
                   });
@@ -127,8 +128,10 @@ function runTests() {
                     chrome.test.assertEq(
                         'InvalidModificationError', fileWriter.error.name);
                   });
-                  fileWriter.truncate(testUtil.defaultMetadata[
-                      `/${TESTING_TIRAMISU_FILE_NAME}`].size * 2);
+                  fileWriter.truncate(
+                      testUtil.defaultMetadata[`/${TESTING_TIRAMISU_FILE_NAME}`]
+                          .size *
+                      2);
                 }),
                 function(error) {
                   chrome.test.fail();
@@ -137,7 +140,7 @@ function runTests() {
           function(error) {
             chrome.test.fail(error.name);
           });
-    }
+    },
   ]);
 }
 
@@ -145,7 +148,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

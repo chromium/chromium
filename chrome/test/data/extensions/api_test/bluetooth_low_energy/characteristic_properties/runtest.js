@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var error;
+let error;
 
 function testCharacteristicProperties() {
   if (error !== undefined) {
@@ -11,14 +11,14 @@ function testCharacteristicProperties() {
   }
   chrome.test.assertEq(requestCount, characteristics.length);
 
-  for (var i = 0; i < requestCount; i++) {
+  for (let i = 0; i < requestCount; i++) {
     compareProperties(expectedProperties[i], characteristics[i].properties);
   }
 
   chrome.test.succeed();
 }
 
-var charId = 'char_id0';
+const charId = 'char_id0';
 var requestCount = 12;
 var characteristics = [];
 var expectedProperties = [
@@ -33,9 +33,11 @@ var expectedProperties = [
   ['extendedProperties'],
   ['reliableWrite'],
   ['writableAuxiliaries'],
-  ['broadcast', 'read', 'writeWithoutResponse', 'write', 'notify', 'indicate',
-   'authenticatedSignedWrites', 'extendedProperties', 'reliableWrite',
-   'writableAuxiliaries']
+  [
+    'broadcast', 'read', 'writeWithoutResponse', 'write', 'notify', 'indicate',
+    'authenticatedSignedWrites', 'extendedProperties', 'reliableWrite',
+    'writableAuxiliaries'
+  ],
 ];
 
 function compareProperties(a, b) {
@@ -43,14 +45,15 @@ function compareProperties(a, b) {
   a.sort();
   b.sort();
 
-  for (var i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.length; i++) {
     chrome.test.assertEq(a[i], b[i]);
   }
 }
 
 function failOnError() {
-  if (error !== undefined)
+  if (error !== undefined) {
     return true;
+  }
 
   if (chrome.runtime.lastError) {
     error = 'Unexpected error: ' + chrome.runtime.lastError.message;
@@ -59,15 +62,16 @@ function failOnError() {
   return false;
 }
 
-for (var i = 0; i < requestCount; i++) {
-  chrome.bluetoothLowEnergy.getCharacteristic(charId, function (result) {
-    if (failOnError())
+for (let i = 0; i < requestCount; i++) {
+  chrome.bluetoothLowEnergy.getCharacteristic(charId, function(result) {
+    if (failOnError()) {
       return;
+    }
 
     characteristics.push(result);
 
     if (characteristics.length == requestCount) {
-      chrome.test.sendMessage('ready', function (message) {
+      chrome.test.sendMessage('ready', function(message) {
         chrome.test.runTests([testCharacteristicProperties]);
       });
     }

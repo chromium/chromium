@@ -5,7 +5,9 @@
 const appName = 'com.google.chrome.test.echo';
 const EXTENSION_URL = 'chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/';
 
-const sentMessage = {text: 'test-echo'};
+const sentMessage = {
+  text: 'test-echo'
+};
 port = chrome.runtime.connectNative(appName);
 port.onMessage.addListener((message) => {
   chrome.test.assertEq(sentMessage, message.echo);

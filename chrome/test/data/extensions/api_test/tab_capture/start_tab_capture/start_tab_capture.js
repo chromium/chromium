@@ -5,10 +5,11 @@
 chrome.test.runTests([
   function startTabCapture() {
     chrome.tabCapture.capture({audio: false, video: true}, function(stream) {
-      if (stream)
+      if (stream) {
         chrome.test.succeed();
-      else
+      } else {
         chrome.test.fail();
+      }
     });
-  }
+  },
 ]);

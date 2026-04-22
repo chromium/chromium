@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 window.onload = function() {
-  location.href = "b.html";
-}
+  location.href = 'b.html';
+};

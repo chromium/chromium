@@ -9,7 +9,7 @@ const itemToDict = (item) => {
     displayFormat: item.displayFormat,
     textData: !!item.textData,
     imageData: !!item.imageData,
-    timeCopied: !!item.timeCopied
+    timeCopied: !!item.timeCopied,
   };
 };
 
@@ -23,26 +23,26 @@ function checkFullResult(result) {
       'displayFormat': 'file',
       'textData': true,
       'imageData': true,
-      'timeCopied': true
+      'timeCopied': true,
     },
     {
       'displayFormat': 'png',
       'textData': false,
       'imageData': true,
-      'timeCopied': true
+      'timeCopied': true,
     },
     {
       'displayFormat': 'text',
       'textData': true,
       'imageData': false,
-      'timeCopied': true
+      'timeCopied': true,
     },
     {
       'displayFormat': 'html',
       'textData': false,
       'imageData': true,
-      'timeCopied': true
-    }
+      'timeCopied': true,
+    },
   ]);
 }
 

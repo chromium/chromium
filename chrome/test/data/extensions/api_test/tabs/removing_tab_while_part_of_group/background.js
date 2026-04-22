@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab } from '/_test_resources/test_util/tabs_util.js';
+import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // The following test:
 // * Opens two tabs.
@@ -25,28 +25,27 @@ chrome.test.runTests([
 
     chrome.tabs.onUpdated.addListener(
         function listener(tabId, changeInfo, tab) {
-      if (!changeInfo.groupId || changeInfo.groupId != -1) {
-        return;
-      }
+          if (!changeInfo.groupId || changeInfo.groupId != -1) {
+            return;
+          }
 
-      // The event we receive is for tab2, since it is no longer in the tab
-      // group. The removed tab should match `tab2`'s state...
-      chrome.test.assertEq(tab2.id, tabId);
-      chrome.test.assertEq(tab2.id, tab.id);
-      chrome.test.assertEq(tab2.windowId, tab.windowId);
+          // The event we receive is for tab2, since it is no longer in the tab
+          // group. The removed tab should match `tab2`'s state...
+          chrome.test.assertEq(tab2.id, tabId);
+          chrome.test.assertEq(tab2.id, tab.id);
+          chrome.test.assertEq(tab2.windowId, tab.windowId);
 
-      // ...*Except* that the index is now -1. Since the tab was removed, it is
-      // no longer part of a window.
-      chrome.test.assertEq(-1, tab.index);
+          // ...*Except* that the index is now -1. Since the tab was removed, it
+          // is no longer part of a window.
+          chrome.test.assertEq(-1, tab.index);
 
-      // Remove the listener (so we don't enter here again) and resolve the
-      // promise.
-      chrome.tabs.onUpdated.removeListener(listener);
-      resolveTabGroupUpdated();
-    });
+          // Remove the listener (so we don't enter here again) and resolve the
+          // promise.
+          chrome.tabs.onUpdated.removeListener(listener);
+          resolveTabGroupUpdated();
+        });
 
-    chrome.tabs.onRemoved.addListener(
-        function listener(tabId, removeInfo) {
+    chrome.tabs.onRemoved.addListener(function listener(tabId, removeInfo) {
       // `tab2` is the removed tab.
       chrome.test.assertEq(tab2.id, tabId);
       chrome.test.assertEq(tab2.windowId, removeInfo.windowId);
@@ -65,11 +64,10 @@ chrome.test.runTests([
     chrome.test.assertEq(tab1.windowId, tab2.windowId);
 
     // Group them together.
-    await chrome.tabs.group(
-        {
-          createProperties: {windowId: tab1.windowId},
-          tabIds: [tab1.id, tab2.id],
-        });
+    await chrome.tabs.group({
+      createProperties: {windowId: tab1.windowId},
+      tabIds: [tab1.id, tab2.id],
+    });
 
     // Remove the second tab.
     await chrome.tabs.remove(tab2.id);
@@ -77,5 +75,5 @@ chrome.test.runTests([
     // Wait for the events, where most of the verification happens.
     await Promise.all([tabGroupUpdatedPromise, tabRemovedPromise]);
     chrome.test.succeed();
-  }
+  },
 ]);

@@ -7,9 +7,8 @@ onload = function() {
     window.sessionStorage['redirected'] = 1;
     // Required so this results in a history entry being created.
     setTimeout(function() {
-      location.href =
-          "http://b.com:" + location.port +
-          "/extensions/api_test/tabs/backForwardCache/on_updated/b.html";
+      location.href = 'http://b.com:' + location.port +
+          '/extensions/api_test/tabs/backForwardCache/on_updated/b.html';
     }, 0);
   }
 };

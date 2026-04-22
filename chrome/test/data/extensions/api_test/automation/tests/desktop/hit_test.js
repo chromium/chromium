@@ -11,11 +11,12 @@ const allTests = [
       chrome.tabs.create({url: url});
 
       desktop.addEventListener('loadComplete', function(event) {
-        if (didHitTest)
+        if (didHitTest) {
           return;
+        }
         if (event.target.url.indexOf('data:') >= 0) {
-          const button = desktop.find({ attributes: { name: 'Click Me',
-                                                    role: 'button' } });
+          const button =
+              desktop.find({attributes: {name: 'Click Me', role: 'button'}});
           if (button) {
             didHitTest = true;
             button.addEventListener(EventType.CLICKED, function() {

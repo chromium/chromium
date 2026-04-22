@@ -11,7 +11,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function requestNotifications() {
     Notification.requestPermission().then(function(permission) {
@@ -30,7 +30,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function geolocation_getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -46,7 +46,7 @@ chrome.test.runTests([
       } else {
         chrome.test.fail();
       }
-    })
+    });
   },
   function checkMicrophone() {
     navigator.permissions.query({name: 'microphone'})
@@ -56,7 +56,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function requestCameraAndMicrophone() {
     if (navigator.mediaDevices) {

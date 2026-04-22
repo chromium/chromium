@@ -34,5 +34,5 @@ chrome.test.runTests([
   function getWokeUpState() {
     chrome.cecPrivate.queryDisplayCecPowerState(chrome.test.callbackPass(
         state => chrome.test.assertEq(['on', 'on'], state)));
-  }
+  },
 ]);

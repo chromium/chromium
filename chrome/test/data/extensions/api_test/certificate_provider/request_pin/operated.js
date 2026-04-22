@@ -35,12 +35,13 @@ function reportPinRequestBegun(pinRequestId) {
 
 function reportPinRequestEnded(pinRequestId, responseDetails) {
   let dataToSend = `request${pinRequestId}`;
-  if (responseDetails)
+  if (responseDetails) {
     dataToSend += `:success:${responseDetails.userInput}`;
-  else if (chrome.runtime.lastError)
+  } else if (chrome.runtime.lastError) {
     dataToSend += `:error:${chrome.runtime.lastError.message}`;
-  else
+  } else {
     dataToSend += ':empty';
+  }
   chrome.test.sendMessage(dataToSend);
 }
 
@@ -50,10 +51,11 @@ function reportStopPinRequestBegun(pinRequestStopId) {
 
 function reportStopPinRequestEnded(pinRequestStopId) {
   let dataToSend = `stop${pinRequestStopId}`;
-  if (chrome.runtime.lastError)
+  if (chrome.runtime.lastError) {
     dataToSend += `:error:${chrome.runtime.lastError.message}`;
-  else
+  } else {
     dataToSend += ':success';
+  }
   chrome.test.sendMessage(dataToSend);
 }
 
@@ -88,8 +90,9 @@ function processTestCommand(command) {
 
 function fetchTestCommands() {
   chrome.test.sendMessage('GetCommand', command => {
-    if (!command)
+    if (!command) {
       return;
+    }
     processTestCommand(command);
     fetchTestCommands();
   });

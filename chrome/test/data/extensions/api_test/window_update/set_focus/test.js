@@ -17,8 +17,9 @@ chrome.test.runTests([
     const waitForFocus = async (targetId) => {
       // 1. Check if it's already focused (handles immediate OS focus).
       const win = await chrome.windows.get(targetId);
-      if (win.focused)
+      if (win.focused) {
         return;
+      }
 
       // 2. Otherwise, wait for the event.
       return new Promise((resolve) => {

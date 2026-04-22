@@ -2,4 +2,4 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.open("popup.html", "", "width=300,height=300");
+window.open('popup.html', '', 'width=300,height=300');

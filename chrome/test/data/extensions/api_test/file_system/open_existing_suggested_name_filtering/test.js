@@ -8,7 +8,7 @@ chrome.test.runTests([
         {suggestedName: '%.txt'},
         chrome.test.callbackPass(function(entry) {
           checkEntry(entry, '_.txt', false, false);
-        })
+        }),
     );
-  }
+  },
 ]);

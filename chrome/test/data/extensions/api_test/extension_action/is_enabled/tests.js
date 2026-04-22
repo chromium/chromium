@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab } from '/_test_resources/test_util/tabs_util.js';
+import {openTab} from '/_test_resources/test_util/tabs_util.js';
 let tab1Id;
 let tab2Id;
 chrome.test.getConfig(async config => {
@@ -10,11 +10,11 @@ chrome.test.getConfig(async config => {
   chrome.test.runTests([
     // Open two tabs before proceeding to the tests.
     async function setUp() {
-      const tab1 = await openTab(
-        `http://localhost:${port}/extensions/test_file.html`);
+      const tab1 =
+          await openTab(`http://localhost:${port}/extensions/test_file.html`);
       tab1Id = tab1.id;
-      const tab2 = await openTab(
-        `http://localhost:${port}/extensions/test_file.html`);
+      const tab2 =
+          await openTab(`http://localhost:${port}/extensions/test_file.html`);
       tab2Id = tab2.id;
       chrome.test.succeed();
     },
@@ -53,6 +53,6 @@ chrome.test.getConfig(async config => {
       chrome.test.assertFalse(await chrome.action.isEnabled(tab1Id));
       chrome.test.assertTrue(await chrome.action.isEnabled(tab2Id));
       chrome.test.succeed();
-    }
+    },
   ]);
 });

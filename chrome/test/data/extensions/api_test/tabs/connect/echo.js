@@ -27,9 +27,11 @@ chrome.extension.onRequest.addListener(function(request, sender, respond) {
 
 // onMessage accepts commands (not all of which relate to echoing).
 chrome.runtime.onMessage.addListener(function(request, sender, respond) {
-  if (request.open)
+  if (request.open) {
     open(request.open);
-  if (request.send)
+  }
+  if (request.send) {
     chrome.runtime.sendMessage(request.send);
+  }
   respond();
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tests = [
+const tests = [
   function isNotInIncognitoMode() {
     chrome.webstorePrivate.isInIncognitoMode(callbackPass(function(incognito) {
       assertFalse(incognito);

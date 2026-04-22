@@ -157,7 +157,7 @@ async function main() {
           !!error, 'Unexpectedly finished writing, despite aborting.');
       chrome.test.assertEq('AbortError', error.name);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

@@ -18,7 +18,7 @@ const allTests = [
       chrome.test.succeed();
     }, true);
     textField.setValue('success!');
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests);

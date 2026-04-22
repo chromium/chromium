@@ -6,8 +6,9 @@ const assertFalse = chrome.test.assertFalse;
 const assertTrue = chrome.test.assertTrue;
 
 function isAvailable(api) {
-  if (!(api in chrome.runtime))
+  if (!(api in chrome.runtime)) {
     return false;
+  }
 
   try {
     const mightThrowException = chrome.runtime[api];

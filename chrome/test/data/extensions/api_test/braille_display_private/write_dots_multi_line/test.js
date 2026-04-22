@@ -66,5 +66,5 @@ chrome.test.runTests([
       chrome.brailleDisplayPrivate.writeDots(createBuffer(100, 3), 10, 2);
       chrome.brailleDisplayPrivate.getDisplayState(pass());
     }));
-  }
+  },
 ]);

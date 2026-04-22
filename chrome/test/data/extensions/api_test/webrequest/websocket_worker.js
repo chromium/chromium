@@ -27,4 +27,4 @@ self.onmessage = (message) => {
     }
     ws.send(messageData);
   };
-}
+};

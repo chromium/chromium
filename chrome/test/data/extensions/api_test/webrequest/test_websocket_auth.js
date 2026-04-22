@@ -8,7 +8,7 @@ chrome.test.getConfig(function(config) {
         [
           // onAuthRequired is not a blocking function.
           function webSocketAuthRequiredNonBlocking() {
-            var url = getWSTestURL(testWebSocketPort);
+            const url = getWSTestURL(testWebSocketPort);
             expect(
                 [
                   // events
@@ -19,7 +19,7 @@ chrome.test.getConfig(function(config) {
                       url: url,
                       type: 'websocket',
                       frameUrl: 'unknown frame URL',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -28,7 +28,7 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -37,7 +37,7 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -49,8 +49,8 @@ chrome.test.getConfig(function(config) {
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
                       responseHeadersExist: true,
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onAuthRequired',
@@ -65,8 +65,8 @@ chrome.test.getConfig(function(config) {
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
                       responseHeadersExist: true,
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onErrorOccurred',
@@ -77,25 +77,30 @@ chrome.test.getConfig(function(config) {
                       ip: '127.0.0.1',
                       fromCache: false,
                       error: 'net::ERR_FAILED',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                 ],
-                [  // event order
+                [
+                  // event order
                   [
-                    'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                    'onHeadersReceived', 'onAuthRequired', 'onErrorOccurred'
-                  ]
+                    'onBeforeRequest',
+                    'onBeforeSendHeaders',
+                    'onSendHeaders',
+                    'onHeadersReceived',
+                    'onAuthRequired',
+                    'onErrorOccurred',
+                  ],
                 ],
                 {urls: ['<all_urls>']},  // filter
-                ['responseHeaders']      // extraInfoSpec
+                ['responseHeaders'],     // extraInfoSpec
             );
             testWebSocketConnection(url, false /* expectedToConnect*/);
           },
 
           // onAuthRequired is a blocking function but takes no action.
           function webSocketAuthRequiredSyncNoAction() {
-            var url = getWSTestURL(testWebSocketPort);
+            const url = getWSTestURL(testWebSocketPort);
             expect(
                 [
                   // events
@@ -106,8 +111,8 @@ chrome.test.getConfig(function(config) {
                       url: url,
                       type: 'websocket',
                       frameUrl: 'unknown frame URL',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onBeforeSendHeaders',
@@ -115,7 +120,7 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -124,8 +129,8 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onHeadersReceived',
@@ -135,8 +140,8 @@ chrome.test.getConfig(function(config) {
                       type: 'websocket',
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onAuthRequired',
@@ -150,8 +155,8 @@ chrome.test.getConfig(function(config) {
                       challenger: {host: 'localhost', port: testWebSocketPort},
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onErrorOccurred',
@@ -162,15 +167,20 @@ chrome.test.getConfig(function(config) {
                       ip: '127.0.0.1',
                       fromCache: false,
                       error: 'net::ERR_FAILED',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                 ],
-                [  // event order
+                [
+                  // event order
                   [
-                    'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                    'onHeadersReceived', 'onAuthRequired', 'onErrorOccurred'
-                  ]
+                    'onBeforeRequest',
+                    'onBeforeSendHeaders',
+                    'onSendHeaders',
+                    'onHeadersReceived',
+                    'onAuthRequired',
+                    'onErrorOccurred',
+                  ],
                 ],
                 {urls: ['<all_urls>']}, ['blocking']);
             testWebSocketConnection(url, false /* expectedToConnect*/);
@@ -179,7 +189,7 @@ chrome.test.getConfig(function(config) {
           // onAuthRequired is a blocking function that cancels the auth
           // attempt.
           function webSocketAuthRequiredSyncCancelAuth() {
-            var url = getWSTestURL(testWebSocketPort);
+            const url = getWSTestURL(testWebSocketPort);
             expect(
                 [
                   // events
@@ -190,8 +200,8 @@ chrome.test.getConfig(function(config) {
                       url: url,
                       type: 'websocket',
                       frameUrl: 'unknown frame URL',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onBeforeSendHeaders',
@@ -199,7 +209,7 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -208,8 +218,8 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onHeadersReceived',
@@ -219,8 +229,8 @@ chrome.test.getConfig(function(config) {
                       type: 'websocket',
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onAuthRequired',
@@ -234,9 +244,9 @@ chrome.test.getConfig(function(config) {
                       challenger: {host: 'localhost', port: testWebSocketPort},
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
-                    retval: {cancel: true}
+                    retval: {cancel: true},
                   },
                   {
                     label: 'onErrorOccurred',
@@ -247,15 +257,20 @@ chrome.test.getConfig(function(config) {
                       ip: '127.0.0.1',
                       fromCache: false,
                       error: 'net::ERR_FAILED',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                 ],
-                [  // event order
+                [
+                  // event order
                   [
-                    'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                    'onHeadersReceived', 'onAuthRequired', 'onErrorOccurred'
-                  ]
+                    'onBeforeRequest',
+                    'onBeforeSendHeaders',
+                    'onSendHeaders',
+                    'onHeadersReceived',
+                    'onAuthRequired',
+                    'onErrorOccurred',
+                  ],
                 ],
                 {urls: ['<all_urls>']}, ['blocking']);
             testWebSocketConnection(url, false /* expectedToConnect*/);
@@ -264,7 +279,7 @@ chrome.test.getConfig(function(config) {
           // onAuthRequired is a blocking function setting authentication
           // credentials.
           function webSocketAuthRequiredSyncSetAuth() {
-            var url = getWSTestURL(testWebSocketPort);
+            const url = getWSTestURL(testWebSocketPort);
             expect(
                 [
                   // events
@@ -275,8 +290,8 @@ chrome.test.getConfig(function(config) {
                       url: url,
                       type: 'websocket',
                       frameUrl: 'unknown frame URL',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onBeforeSendHeaders',
@@ -284,7 +299,7 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -293,8 +308,8 @@ chrome.test.getConfig(function(config) {
                     details: {
                       url: url,
                       type: 'websocket',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onHeadersReceived',
@@ -304,8 +319,8 @@ chrome.test.getConfig(function(config) {
                       type: 'websocket',
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                   {
                     label: 'onAuthRequired',
@@ -319,12 +334,12 @@ chrome.test.getConfig(function(config) {
                       challenger: {host: 'localhost', port: testWebSocketPort},
                       statusCode: 401,
                       statusLine: 'HTTP/1.0 401 Unauthorized',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                     // Note: The test WebSocket server accepts only these
                     // credentials.
                     retval:
-                        {authCredentials: {username: 'test', password: 'test'}}
+                        {authCredentials: {username: 'test', password: 'test'}},
                   },
                   {
                     label: 'onResponseStarted',
@@ -336,7 +351,7 @@ chrome.test.getConfig(function(config) {
                       fromCache: false,
                       statusCode: 101,
                       statusLine: 'HTTP/1.1 101 Switching Protocols',
-                      initiator: getDomain(initiators.WEB_INITIATED)
+                      initiator: getDomain(initiators.WEB_INITIATED),
                     },
                   },
                   {
@@ -349,16 +364,21 @@ chrome.test.getConfig(function(config) {
                       fromCache: false,
                       statusCode: 101,
                       statusLine: 'HTTP/1.1 101 Switching Protocols',
-                      initiator: getDomain(initiators.WEB_INITIATED)
-                    }
+                      initiator: getDomain(initiators.WEB_INITIATED),
+                    },
                   },
                 ],
-                [  // event order
+                [
+                  // event order
                   [
-                    'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                    'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-                    'onCompleted'
-                  ]
+                    'onBeforeRequest',
+                    'onBeforeSendHeaders',
+                    'onSendHeaders',
+                    'onHeadersReceived',
+                    'onAuthRequired',
+                    'onResponseStarted',
+                    'onCompleted',
+                  ],
                 ],
                 {urls: ['<all_urls>']}, ['blocking']);
             testWebSocketConnection(url, true /* expectedToConnect*/);

@@ -8,27 +8,25 @@
 chrome.test.runTests([
   function testPauseBeforeSpeak() {
     chrome.tts.pause();
-    chrome.tts.speak(
-        'test 1',
-        {
-         'enqueue': true,
-         'onEvent': function(event) {
-           if (event.type == 'end')
-             chrome.test.succeed();
-         }
-        });
+    chrome.tts.speak('test 1', {
+      'enqueue': true,
+      'onEvent': function(event) {
+        if (event.type == 'end') {
+          chrome.test.succeed();
+        }
+      },
+    });
     chrome.tts.resume();
   },
   function testPauseDuringSpeak() {
-    chrome.tts.speak(
-        'test 2',
-        {
-         'onEvent': function(event) {
-           if (event.type == 'end')
-             chrome.test.succeed();
-         }
-        });
+    chrome.tts.speak('test 2', {
+      'onEvent': function(event) {
+        if (event.type == 'end') {
+          chrome.test.succeed();
+        }
+      },
+    });
     chrome.tts.pause();
     chrome.tts.resume();
-  }
+  },
 ]);

@@ -55,14 +55,10 @@ chrome.webNavigation.onDOMContentLoaded.addListener(
 // Different listeners with different filters, same event added twice.
 {
   const singleListener = function() {};
-  chrome.webNavigation.onCompleted.addListener(
-      function() {}, filterPort(80));
-  chrome.webNavigation.onCompleted.addListener(
-      function() {}, filterPort(81));
-  chrome.webNavigation.onCompleted.addListener(
-      function() {}, filterPort(81));
-  chrome.webNavigation.onCompleted.addListener(
-      singleListener, filterPort(82));
+  chrome.webNavigation.onCompleted.addListener(function() {}, filterPort(80));
+  chrome.webNavigation.onCompleted.addListener(function() {}, filterPort(81));
+  chrome.webNavigation.onCompleted.addListener(function() {}, filterPort(81));
+  chrome.webNavigation.onCompleted.addListener(singleListener, filterPort(82));
   chrome.webNavigation.onCompleted.removeListener(singleListener);
 }
 

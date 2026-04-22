@@ -103,15 +103,19 @@ async function setUp() {
 
 // Some array comparison. Note: not lexicographical!
 function compareArrays(array1, array2) {
-  if (array1.length < array2.length)
+  if (array1.length < array2.length) {
     return -1;
-  if (array1.length > array2.length)
+  }
+  if (array1.length > array2.length) {
     return 1;
+  }
   for (let i = 0; i < array1.length; i++) {
-    if (array1[i] < array2[i])
+    if (array1[i] < array2[i]) {
       return -1;
-    if (array1[i] > array2[i])
+    }
+    if (array1[i] > array2[i]) {
       return 1;
+    }
   }
   return 0;
 }
@@ -131,14 +135,13 @@ function assertCertsSelected(details, expectedCerts) {
             expectedCerts.length, actualMatches.length,
             'Number of stored certs not as expected');
         if (expectedCerts.length == actualMatches.length) {
-          let actualCerts = actualMatches.map(
-              match => new Uint8Array(match.certificate));
+          let actualCerts =
+              actualMatches.map(match => new Uint8Array(match.certificate));
           actualCerts = sortCerts(actualCerts);
           expectedCerts = sortCerts(expectedCerts);
           for (let i = 0; i < expectedCerts.length; i++) {
             assertEq(
-                expectedCerts[i], actualCerts[i],
-                `Certs at index ${i} differ`);
+                expectedCerts[i], actualCerts[i], `Certs at index ${i} differ`);
           }
         }
       }));
@@ -150,7 +153,7 @@ function checkRsaAlgorithmIsCopiedOnRead(key) {
     name: algorithm.name,
     modulusLength: algorithm.modulusLength,
     publicExponent: algorithm.publicExponent,
-    hash: {name: algorithm.hash.name}
+    hash: {name: algorithm.hash.name},
   };
   algorithm.hash.name = null;
   algorithm.hash = null;
@@ -188,8 +191,8 @@ function checkPropertyIsReadOnly(object, key) {
   try {
     object[key] = {};
     fail(
-        `Expected the property ${key} `
-        + 'to be read-only and an exception to be thrown');
+        `Expected the property ${key} ` +
+        'to be read-only and an exception to be thrown');
   } catch (error) {
     assertEq(original, object[key]);
   }
@@ -234,33 +237,38 @@ function testStaticMethods() {
   succeed();
 }
 
-const REQUEST_ALL = {certificateTypes: [], certificateAuthorities: []};
+const REQUEST_ALL = {
+  certificateTypes: [],
+  certificateAuthorities: []
+};
 
 // Depends on |DATA|, thus it cannot be created immediately.
 function requestCA1() {
   return {
     certificateTypes: [],
-    certificateAuthorities: [DATA.client_1_issuer_dn.buffer]
+    certificateAuthorities: [DATA.client_1_issuer_dn.buffer],
   };
 }
 
 function testSelectAllCerts() {
   const expectedCerts = [DATA.client_1, DATA.client_3];
-  if (systemTokenEnabled)
+  if (systemTokenEnabled) {
     expectedCerts.push(DATA.client_2);
+  }
   assertCertsSelected(
       {interactive: false, request: REQUEST_ALL}, expectedCerts);
 }
 
 function testSelectWithInputClientCerts() {
   const expectedCerts = [];
-  if (systemTokenEnabled)
+  if (systemTokenEnabled) {
     expectedCerts.push(DATA.client_2);
+  }
   assertCertsSelected(
       {
         interactive: false,
         request: REQUEST_ALL,
-        clientCerts: [DATA.client_2.buffer]
+        clientCerts: [DATA.client_2.buffer],
       },
       expectedCerts);
 }
@@ -292,8 +300,9 @@ function testInteractiveSelectClient1() {
 
 function testInteractiveSelectClient2() {
   const expectedCerts = [];
-  if (systemTokenEnabled)
+  if (systemTokenEnabled) {
     expectedCerts.push(DATA.client_2);
+  }
   assertCertsSelected({interactive: true, request: REQUEST_ALL}, expectedCerts);
 }
 
@@ -309,7 +318,7 @@ function testMatchResultCA1() {
         const expectedAlgorithm = {
           modulusLength: 2048,
           name: 'RSASSA-PKCS1-v1_5',
-          publicExponent: new Uint8Array([0x01, 0x00, 0x01])
+          publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
         };
         const actualAlgorithm = matches[0].keyAlgorithm;
         assertEq(
@@ -321,7 +330,7 @@ function testMatchResultCA1() {
 function testMatchResultECDSA() {
   const requestECDSA = {
     certificateTypes: ['ecdsaSign'],
-    certificateAuthorities: []
+    certificateAuthorities: [],
   };
   assertCertsSelected(
       {interactive: false, request: requestECDSA}, [DATA.client_3]);
@@ -330,7 +339,7 @@ function testMatchResultECDSA() {
 function testMatchResultRSA() {
   const requestRSA = {
     certificateTypes: ['rsaSign'],
-    certificateAuthorities: []
+    certificateAuthorities: [],
   };
   chrome.platformKeys.selectClientCertificates(
       {interactive: false, request: requestRSA},
@@ -338,7 +347,7 @@ function testMatchResultRSA() {
         const expectedAlgorithm = {
           modulusLength: 2048,
           name: 'RSASSA-PKCS1-v1_5',
-          publicExponent: new Uint8Array([0x01, 0x00, 0x01])
+          publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
         };
         const actualAlgorithm = matches[0].keyAlgorithm;
         assertEq(
@@ -350,7 +359,7 @@ function testMatchResultRSA() {
 function verifyMissingAlgorithmError(getKeyFunction, buffer, name) {
   const keyParams = {
     // This is missing the algorithm name.
-    hash: {name: 'SHA-1'}
+    hash: {name: 'SHA-1'},
   };
   try {
     getKeyFunction(buffer, keyParams, function(_error) {
@@ -389,7 +398,7 @@ function verifyRsaKeyPairValidity(publicKey, privateKey) {
     modulusLength: 2048,
     name: 'RSASSA-PKCS1-v1_5',
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-    hash: {name: 'SHA-1'}
+    hash: {name: 'SHA-1'},
   };
   assertEq(expectedAlgorithm, publicKey.algorithm);
   assertEq(expectedAlgorithm, privateKey.algorithm);
@@ -414,17 +423,17 @@ function verifyRsaKeyPairValidity(publicKey, privateKey) {
 
 const RSA_KEY_PARAMS = {
   name: 'RSASSA-PKCS1-V1_5',
-  hash: {name: 'SHA-1'}
+  hash: {name: 'SHA-1'},
 };
 
 const EC_KEY_PARAMS = {
   name: 'ECDSA',
-  namedCurve: 'P-256'
+  namedCurve: 'P-256',
 };
 
 const AES_KEY_PARAMS = {
   name: 'AES-CBC',
-  length: 256
+  length: 256,
 };
 
 async function verifyEcKeyPairValidity(publicKey, privateKey) {
@@ -502,7 +511,7 @@ function testGetRsaKeyPair() {
   const keyParams = {
     // Algorithm names are case-insensitive.
     name: 'RSASSA-Pkcs1-V1_5',
-    hash: {name: 'sha-1'}
+    hash: {name: 'sha-1'},
   };
   chrome.platformKeys.getKeyPair(
       DATA.client_1.buffer, keyParams,
@@ -543,7 +552,7 @@ function testSignNoHash() {
   const keyParams = {
     // Algorithm names are case-insensitive.
     name: 'RSASSA-PKCS1-V1_5',
-    hash: {name: 'NONE'}
+    hash: {name: 'NONE'},
   };
   const signParams = {name: 'RSASSA-PKCS1-v1_5'};
   chrome.platformKeys.getKeyPair(
@@ -573,11 +582,11 @@ function testSignSha1Client1() {
   const keyParams = {
     name: 'RSASSA-PKCS1-v1_5',
     // Hash names are case-insensitive.
-    hash: {name: 'Sha-1'}
+    hash: {name: 'Sha-1'},
   };
   const signParams = {
     // Algorithm names are case-insensitive.
-    name: 'RSASSA-Pkcs1-v1_5'
+    name: 'RSASSA-Pkcs1-v1_5',
   };
   chrome.platformKeys.getKeyPair(
       DATA.client_1.buffer, keyParams,
@@ -597,11 +606,11 @@ function testSignSha1Client2() {
   const keyParams = {
     name: 'RSASSA-PKCS1-v1_5',
     // Hash names are case-insensitive.
-    hash: {name: 'Sha-1'}
+    hash: {name: 'Sha-1'},
   };
   const signParams = {
     // Algorithm names are case-insensitive.
-    name: 'RSASSA-Pkcs1-v1_5'
+    name: 'RSASSA-Pkcs1-v1_5',
   };
   chrome.platformKeys.getKeyPair(
       DATA.client_2.buffer, keyParams,
@@ -675,7 +684,7 @@ function testBackgroundInteractiveSelect() {
 async function testVerifyTrusted() {
   const details = {
     serverCertificateChain: await loadServerCerts(['l1_leaf.der']),
-    hostname: 'l1_leaf'
+    hostname: 'l1_leaf',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -688,7 +697,7 @@ async function testVerifyTrustedChain() {
   const details = {
     serverCertificateChain:
         await loadServerCerts(['l2_leaf.der', 'l1_interm.der']),
-    hostname: 'l2_leaf'
+    hostname: 'l2_leaf',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -702,7 +711,7 @@ async function testVerifyCommonNameInvalid() {
     serverCertificateChain:
         await loadServerCerts(['l2_leaf.der', 'l1_interm.der']),
     // Use any hostname not matching the common name 'l2_leaf' of the cert.
-    hostname: 'abc.example'
+    hostname: 'abc.example',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -714,7 +723,7 @@ async function testVerifyCommonNameInvalid() {
 function testVerifyUntrusted() {
   const details = {
     serverCertificateChain: [DATA.client_1.buffer],
-    hostname: '127.0.0.1'
+    hostname: '127.0.0.1',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -735,7 +744,7 @@ async function testVerifyTrustedOnlyLeafParentFetchEnabled() {
   // caIssuers section with the link to the intermediate.
   const details = {
     serverCertificateChain: await loadServerCerts(['l2_leaf.der']),
-    hostname: 'l2_leaf'
+    hostname: 'l2_leaf',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -749,7 +758,7 @@ async function testVerifyUntrustedParentNotFound() {
   // non existing file.
   const details = {
     serverCertificateChain: await loadServerCerts(['l3_leaf.der']),
-    hostname: 'l3_leaf'
+    hostname: 'l3_leaf',
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -768,21 +777,30 @@ const testSuites = {
       // certificates.
       // TODO(crbug.com/40217298): We should move all interactive tests to
       // a separate test suite.
-      testInteractiveSelectClient1, testInteractiveSelectClient2,
+      testInteractiveSelectClient1,
+      testInteractiveSelectClient2,
       testInteractiveSelectClient3,
 
       // In non-interactive calls all certs must be returned now.
       testSelectAllCerts,
 
-      testSelectWithInputClientCerts, testSelectCA1Certs,
-      testInteractiveSelectNoCerts, testMatchResultCA1, testMatchResultECDSA,
-      testMatchResultRSA, testGetKeyPairMissingAlgorithmName,
-      testGetKeyPairBySpkiMissingAlgorithmName, testGetKeyPairRejectsRSAPSS,
+      testSelectWithInputClientCerts,
+      testSelectCA1Certs,
+      testInteractiveSelectNoCerts,
+      testMatchResultCA1,
+      testMatchResultECDSA,
+      testMatchResultRSA,
+      testGetKeyPairMissingAlgorithmName,
+      testGetKeyPairBySpkiMissingAlgorithmName,
+      testGetKeyPairRejectsRSAPSS,
       testGetRsaKeyPairRejectsOtherAlgorithms,
       testGetEcKeyPairRejectsOtherAlgorithms,
       testGetRsaKeyPairBySpkiRejectsOtherAlgorithms,
-      testGetEcKeyPairBySpkiRejectsOtherAlgorithms, testGetRsaKeyPair,
-      testGetEcKeyPair, testSignNoHash, testSignSha1Client1
+      testGetEcKeyPairBySpkiRejectsOtherAlgorithms,
+      testGetRsaKeyPair,
+      testGetEcKeyPair,
+      testSignNoHash,
+      testSignSha1Client1,
     ];
 
     chrome.test.runTests(tests);
@@ -790,10 +808,13 @@ const testSuites = {
 
   verifyServerCertTests: async function() {
     const tests = [
-      testVerifyTrusted, testVerifyTrustedChain, testVerifyCommonNameInvalid,
-      testVerifyUntrusted, testVerifyAbsentCert,
+      testVerifyTrusted,
+      testVerifyTrustedChain,
+      testVerifyCommonNameInvalid,
+      testVerifyUntrusted,
+      testVerifyAbsentCert,
       testVerifyTrustedOnlyLeafParentFetchEnabled,
-      testVerifyUntrustedParentNotFound
+      testVerifyUntrustedParentNotFound,
     ];
     chrome.test.runTests(tests);
   },
@@ -832,7 +853,7 @@ const testSuites = {
     const tests = [
       // If the profile is managed, the user cannot grant permissions for any
       // certificates.
-      testInteractiveSelectNoCerts
+      testInteractiveSelectNoCerts,
     ];
     chrome.test.runTests(tests);
   },

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var appUrl = 'http://localhost:' + config.testServer.port +
-        '/extensions/api_test/app_process/path1/empty.html';
-  var redirectUrl = 'http://localhost:' + config.testServer.port +
+  const appUrl = 'http://localhost:' + config.testServer.port +
+      '/extensions/api_test/app_process/path1/empty.html';
+  const redirectUrl = 'http://localhost:' + config.testServer.port +
       '/server-redirect?' + appUrl;
   chrome.tabs.create({
-    url: redirectUrl
+    url: redirectUrl,
   });
 });

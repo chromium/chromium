@@ -16,7 +16,7 @@ function testFeatureIsEnabled(featureName, expectedIsEnabled) {
         'Unexpected value for feature ' + featureName);
     chrome.test.succeed();
   });
-};
+}
 
 /**
  * Initializes and runs tests that get feature statuses.
@@ -26,10 +26,10 @@ function testFeatureIsEnabled(featureName, expectedIsEnabled) {
  *     expected to be disabled.
  */
 function runGetterTest(enabledFeatures, disabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   enabledFeatures.forEach((feature) => {
-    var test = testFeatureIsEnabled.bind(null, feature, true);
+    const test = testFeatureIsEnabled.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testIsEnabled_' + feature;
@@ -38,7 +38,7 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
   });
 
   disabledFeatures.forEach((feature) => {
-    var test = testFeatureIsEnabled.bind(null, feature, false);
+    const test = testFeatureIsEnabled.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testIsDisabled_' + feature;
@@ -47,7 +47,7 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
   });
 
   chrome.test.runTests(tests);
-};
+}
 
 /**
  * Tests that the extension is not able to modify a feature value.
@@ -55,7 +55,7 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
  * @param {boolean} value The value the feature should be set to.
  */
 function testSetFeatureNotAllowed(feature, value) {
-  var expectedError = 'You do not have permission to access the preference ' +
+  const expectedError = 'You do not have permission to access the preference ' +
       '\'' + feature + '\'. Be sure to declare in your manifest what ' +
       'permissions you need.';
 
@@ -74,10 +74,10 @@ function testSetFeatureNotAllowed(feature, value) {
  *     disabled at the start of the test.
  */
 function runSetterTest(enabledFeatures, disabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   enabledFeatures.forEach((feature) => {
-    var test = testSetFeatureNotAllowed.bind(null, feature, false);
+    const test = testSetFeatureNotAllowed.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testDisableNotAllowed_' + feature;
@@ -86,7 +86,7 @@ function runSetterTest(enabledFeatures, disabledFeatures) {
   });
 
   disabledFeatures.forEach((feature) => {
-    var test = testSetFeatureNotAllowed.bind(null, feature, true);
+    const test = testSetFeatureNotAllowed.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
     test.generatedName = 'testEnableNotAllowed_' + feature;
@@ -112,7 +112,7 @@ function runSetterTest(enabledFeatures, disabledFeatures) {
  *     For each array type: |name|: the feature name;
  *                          |listener|: {@code onChange} listener.
  */
-var observerTestState = null;
+let observerTestState = null;
 
 /**
  * Initializes and starts the test that observes that {@code onChange} event is
@@ -146,9 +146,11 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
    * @return {number} The feature's index in the list. If not found returns -1.
    */
   function findFeatureIndex(list, featureName) {
-    for (var i = 0; i < list.length; ++i)
-      if (list[i].name == featureName)
+    for (let i = 0; i < list.length; ++i) {
+      if (list[i].name == featureName) {
         return i;
+      }
+    }
     return -1;
   }
 
@@ -159,19 +161,21 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
    * @param {boolean} initiallyEnabled Whether the feature is initially enabled.
    */
   function initTestParamsForFeature(feature, initiallyEnabled) {
-    var list = initiallyEnabled ? observerTestState.toBeDisabled :
-                                  observerTestState.toBeEnabled;
+    const list = initiallyEnabled ? observerTestState.toBeDisabled :
+                                    observerTestState.toBeEnabled;
 
-    var listener = (ev) => {
+    const listener = (ev) => {
       // Fail the test in case the new feature value is not as expected, but
       // before that, do some cleanup.
-      if (initiallyEnabled == ev.value)
+      if (initiallyEnabled == ev.value) {
         clearRemainingListeners();
+      }
       chrome.test.assertEq(!initiallyEnabled, ev.value);
 
-      var index = findFeatureIndex(list, feature);
-      if (index < 0)
+      const index = findFeatureIndex(list, feature);
+      if (index < 0) {
         clearRemaningListeners();
+      }
       chrome.test.assertTrue(index > -1);
 
       chrome.accessibilityFeatures[feature].onChange.removeListener(
@@ -226,7 +230,7 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
  *        observerTest: function(Array<string>, Array<string>)}
  * @const
  */
-var TEST_FUNCTIONS = {
+const TEST_FUNCTIONS = {
   getterTest: runGetterTest,
   setterTest: runSetterTest,
   observerTest: startObserverTest,
@@ -237,7 +241,7 @@ var TEST_FUNCTIONS = {
  * function.
  */
 chrome.test.getConfig((config) => {
-  var testArgs = JSON.parse(config.customArg);
+  const testArgs = JSON.parse(config.customArg);
   if (!testArgs) {
     chrome.test.notifyFail('No test args');
     return;

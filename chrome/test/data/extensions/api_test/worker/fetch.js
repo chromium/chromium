@@ -10,21 +10,19 @@ async function test(url) {
     allowed = false;
   }
   return allowed;
-};
+}
 
 if ('DedicatedWorkerGlobalScope' in self &&
     self instanceof DedicatedWorkerGlobalScope) {
   onmessage = message => {
-    test(message.data)
-      .then(allowed => postMessage(allowed));
+    test(message.data).then(allowed => postMessage(allowed));
   };
 } else if (
     'SharedWorkerGlobalScope' in self &&
     self instanceof SharedWorkerGlobalScope) {
   onconnect = e => {
     e.ports[0].onmessage = message => {
-      test(message.data)
-        .then(allowed => e.ports[0].postMessage(allowed));
-    }
+      test(message.data).then(allowed => e.ports[0].postMessage(allowed));
+    };
   };
 }

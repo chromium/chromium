@@ -7,7 +7,7 @@ chrome.test.runTests([
   // value defaults to enabled being true. Bug fix for crbug.com/40263748.
   async function setAndGetPanelOptionAndEnsureEnabled() {
     await chrome.sidePanel.setOptions({path: 'path.html'});
-    let result = await chrome.sidePanel.getOptions({});
+    const result = await chrome.sidePanel.getOptions({});
     const expected = {path: 'path.html', enabled: true};
     chrome.test.assertEq(expected, result);
     chrome.test.succeed();

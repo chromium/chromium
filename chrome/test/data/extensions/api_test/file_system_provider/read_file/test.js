@@ -22,7 +22,7 @@ const TESTING_TIRAMISU_FILE = Object.freeze({
   isDirectory: false,
   name: 'tiramisu.txt',
   size: TESTING_TEXT.length,
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -34,7 +34,7 @@ const TESTING_BROKEN_TIRAMISU_FILE = Object.freeze({
   isDirectory: false,
   name: 'broken-tiramisu.txt',
   size: TESTING_TEXT.length,
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -47,7 +47,7 @@ const TESTING_VANILLA_FOR_ABORT_FILE = Object.freeze({
   isDirectory: false,
   name: 'vanilla.txt',
   size: TESTING_TEXT.length,
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -93,8 +93,8 @@ function onReadFileRequested(options, onSuccess, onError) {
       textToSendInChunks.forEach((item, index) => {
         // Convert item (string) to an ArrayBuffer.
         onSuccess(
-            /*data=*/new TextEncoder().encode(item).buffer,
-            /*hasMore=*/index < textToSendInChunks.length - 1);
+            /*data=*/ new TextEncoder().encode(item).buffer,
+            /*hasMore=*/ index < textToSendInChunks.length - 1);
       });
     }
 
@@ -111,10 +111,11 @@ function onReadFileRequested(options, onSuccess, onError) {
     onError('INVALID_OPERATION');  // enum ProviderError.
   };
 
-  if (readBreakpointCallback)
+  if (readBreakpointCallback) {
     readBreakpointCallback(filePath, continueRead);
-  else
+  } else {
     continueRead();
+  }
 }
 
 /**
@@ -141,11 +142,12 @@ function onOpenFileRequested(options, onSuccess, onError) {
     }
   };
 
-  if (openBreakpointCallback)
+  if (openBreakpointCallback) {
     openBreakpointCallback(options.filePath, continueOpen);
-  else
+  } else {
     continueOpen();
-};
+  }
+}
 
 /**
  * Sets up the tests. Called once per all test cases. For each test case,
@@ -181,19 +183,22 @@ function setUp() {
  */
 function setUpFileSystem(openedFilesLimit, callback) {
   const options = {};
-  if (openedFilesLimit)
+  if (openedFilesLimit) {
     options.openedFilesLimit = openedFilesLimit;
+  }
   // TODO(mtomasz): Rather than clearing out opened files tests should wait for
   // all files to be closed before unmounting the file system. crbug.com/40551846
   for (const k of Object.keys(testUtil.openedFiles)) {
     delete testUtil.openedFiles[k];
   }
   if (testUtil.fileSystem) {
-    chrome.fileSystemProvider.unmount({
-      fileSystemId: testUtil.FILE_SYSTEM_ID
-    }, chrome.test.callbackPass(function() {
-      testUtil.mountFileSystem(callback, options);
-    }));
+    chrome.fileSystemProvider.unmount(
+        {
+          fileSystemId: testUtil.FILE_SYSTEM_ID,
+        },
+        chrome.test.callbackPass(function() {
+          testUtil.mountFileSystem(callback, options);
+        }));
   } else {
     testUtil.mountFileSystem(callback, options);
   }
@@ -244,13 +249,15 @@ function runTests() {
         readBreakpointCallback = function(filePath, continueCallback) {
           chrome.test.assertEq(`/${TESTING_TIRAMISU_FILE.name}`, filePath);
           // Continue after all reads are initiated.
-          initAllReadsPromise.then(chrome.test.callbackPass(function() {
-            chrome.test.assertTrue(
-                Object.keys(testUtil.openedFiles).length <= 2);
-            continueCallback();
-          })).catch(function(error) {
-            chrome.test.fail(error.rname);
-          });
+          initAllReadsPromise
+              .then(chrome.test.callbackPass(function() {
+                chrome.test.assertTrue(
+                    Object.keys(testUtil.openedFiles).length <= 2);
+                continueCallback();
+              }))
+              .catch(function(error) {
+                chrome.test.fail(error.rname);
+              });
         };
 
         // Initiate reads, but all of them will be stoped on a breakpoint on
@@ -318,7 +325,7 @@ function runTests() {
             function(error) {
               chrome.test.fail(error.name);
             });
-        }));
+      }));
     },
 
     // Abort reading a file with a registered abort handler. Should result in a
@@ -385,11 +392,13 @@ function runTests() {
                     openBreakpointCallback = chrome.test.callbackPass(function(
                         filePath, continueCallback) {
                       fileReader.abort();
-                      setTimeout(chrome.test.callbackPass(function() {
-                        continueCallback();
-                        chrome.test.assertEq(
-                            1, Object.keys(testUtil.openedFiles).length);
-                      }), 0);
+                      setTimeout(
+                          chrome.test.callbackPass(function() {
+                            continueCallback();
+                            chrome.test.assertEq(
+                                1, Object.keys(testUtil.openedFiles).length);
+                          }),
+                          0);
                     });
                     fileReader.readAsText(file);
                   }),
@@ -427,13 +436,15 @@ function runTests() {
                     openBreakpointCallback = chrome.test.callbackPass(function(
                         filePath, continueCallback) {
                       fileReader.abort();
-                      setTimeout(chrome.test.callbackPass(function() {
-                        continueCallback();
-                        chrome.test.assertEq(
-                            1, Object.keys(testUtil.openedFiles).length);
-                      }), 0);
-                      openBreakpointCallback = chrome.test.callbackPass(
-                          function() {
+                      setTimeout(
+                          chrome.test.callbackPass(function() {
+                            continueCallback();
+                            chrome.test.assertEq(
+                                1, Object.keys(testUtil.openedFiles).length);
+                          }),
+                          0);
+                      openBreakpointCallback =
+                          chrome.test.callbackPass(function() {
                             // The next OpenFile request should happen only
                             // after the previous file is closed successfully
                             // due to abort.
@@ -463,7 +474,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp();

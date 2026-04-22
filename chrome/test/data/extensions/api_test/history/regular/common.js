@@ -40,8 +40,8 @@ let itemRemovedCallback = null;
 function itemRemovedListener(removed) {
   if (null != itemRemovedCallback) {
     itemRemovedCallback(removed);
-  };
-};
+  }
+}
 
 function removeItemRemovedListener() {
   chrome.history.onVisited.removeListener(itemRemovedListener);
@@ -64,11 +64,11 @@ const tabsCompleteData = {};
 function tabsCompleteListener(tabId, changeInfo) {
   if (changeInfo && changeInfo.status) {
     tabsCompleteData[tabId] = changeInfo.status;
-  };
+  }
   if (null != tabCompleteCallback) {
     tabCompleteCallback();
-  };
-};
+  }
+}
 
 /**
  * Queries the entire history for items, calling the closure with an argument
@@ -91,8 +91,9 @@ function populateHistory(urls, callback) {
   let numUrlsAdded = 0;
   urls.forEach(function(url) {
     chrome.history.addUrl({url: url}, function() {
-      if (++numUrlsAdded == urls.length)
-        callback()
+      if (++numUrlsAdded == urls.length) {
+        callback();
+      }
     });
   });
 }
@@ -137,7 +138,7 @@ function addUrlsWithTimeline(urls, callback) {
         callback({
           before: firstUrlTime - 100.0,
           between: (firstUrlTime + secondUrlTime) / 2.0,
-          after: secondUrlTime + 100.0
+          after: secondUrlTime + 100.0,
         });
       });
     });

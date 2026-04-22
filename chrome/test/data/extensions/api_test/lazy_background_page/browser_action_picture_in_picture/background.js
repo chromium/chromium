@@ -19,8 +19,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 function loadVideo() {
   chrome.test.getConfig(function(config) {
-    video.src = 'http://localhost:' + config.testServer.port +
-        '/media/bigbuck.webm';
+    video.src =
+        'http://localhost:' + config.testServer.port + '/media/bigbuck.webm';
     video.load();
     video.addEventListener('loadedmetadata', function() {
       chrome.test.sendMessage('video_loaded');
@@ -42,6 +42,7 @@ function enterPictureInPicture() {
 }
 
 function exitPictureInPicture() {
-  document.exitPictureInPicture()
-  .catch(error => { console.log(error.message); });
+  document.exitPictureInPicture().catch(error => {
+    console.log(error.message);
+  });
 }

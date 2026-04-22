@@ -5,21 +5,21 @@
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function fileAccessNotAllowed() {
-      let req = new XMLHttpRequest();
+      const req = new XMLHttpRequest();
 
-      let url = `${config.testDataDirectory}/../test_file.txt`;
+      const url = `${config.testDataDirectory}/../test_file.txt`;
       chrome.test.log(`Requesting url: ${url}`);
       req.open('GET', url, true);
 
       req.onload = function() {
         chrome.test.fail(`Unexpected success for url: ${url}`);
-      }
+      };
       req.onerror = function() {
         chrome.test.assertEq(0, req.status);
         chrome.test.succeed();
-      }
+      };
 
       req.send(null);
-    }
+    },
   ]);
 });

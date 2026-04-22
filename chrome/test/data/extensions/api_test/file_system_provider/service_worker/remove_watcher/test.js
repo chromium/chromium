@@ -85,7 +85,7 @@ async function main() {
       chrome.test.assertEq(0, fsInfos[0].watchers.length);
 
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

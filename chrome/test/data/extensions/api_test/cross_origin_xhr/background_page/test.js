@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-
   function rewriteURL(url) {
     return url.replace(/PORT/, config.testServer.port);
   }
 
   function doReq(domain, expectSuccess) {
-    let req = new XMLHttpRequest();
-    let url = rewriteURL(`${domain}:PORT/extensions/test_file.txt`);
+    const req = new XMLHttpRequest();
+    const url = rewriteURL(`${domain}:PORT/extensions/test_file.txt`);
     let isErrorTriggered = false;
 
     chrome.test.log(`Requesting url: ${url}`);
@@ -19,39 +18,40 @@ chrome.test.getConfig(function(config) {
 
     if (expectSuccess) {
       req.onload = function() {
-        if (/^https?:/i.test(url))
+        if (/^https?:/i.test(url)) {
           chrome.test.assertEq(200, req.status);
+        }
         chrome.test.assertEq('Hello!', req.responseText);
         chrome.test.succeed();
-      }
+      };
       req.onerror = function() {
         isErrorTriggered = true;
         chrome.test.log(`status: ${req.status}`);
         chrome.test.log(`text: ${req.responseText}`);
         chrome.test.fail(`Unexpected error for domain: ${domain}`);
-      }
+      };
     } else {
       req.onload = function() {
         chrome.test.fail(`Unexpected success for domain: ${domain}`);
-      }
+      };
       req.onerror = function() {
         isErrorTriggered = true;
         chrome.test.assertEq(0, req.status);
         chrome.test.succeed();
-      }
+      };
     }
 
     try {
       req.send(null);
     } catch (e) {
       if (/^https?:/i.test(url)) {
-        chrome.test.fail(
-                `req.send() has thrown an error for ${domain}: ${e}`);
+        chrome.test.fail(`req.send() has thrown an error for ${domain}: ${e}`);
       } else if (!isErrorTriggered) {
         // A NetworkError will synchronously be be thrown whenever a
         // FTP request fails. This should be handled by req.onerror.
-        chrome.test.fail(`req.send() has thrown an error without dispatching ` +
-                         `the req.onerror event for ${domain}: ${e}`);
+        chrome.test.fail(
+            `req.send() has thrown an error without dispatching ` +
+            `the req.onerror event for ${domain}: ${e}`);
       }
     }
   }

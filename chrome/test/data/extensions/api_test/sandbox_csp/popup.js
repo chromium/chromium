@@ -4,18 +4,18 @@
 
 chrome.test.runTests([
   function checkExecuteScript() {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
       chrome.tabs.executeScript(
-        tabs[0].id,
-        { code: 'const x = 1;' },
-        () => {
-          const lastError = chrome.runtime.lastError;
-          if (lastError) {
-            chrome.test.fail();
-          } else {
-            chrome.test.succeed();
-          }
-        }
+          tabs[0].id,
+          {code: 'const x = 1;'},
+          () => {
+            const lastError = chrome.runtime.lastError;
+            if (lastError) {
+              chrome.test.fail();
+            } else {
+              chrome.test.succeed();
+            }
+          },
       );
     });
   },

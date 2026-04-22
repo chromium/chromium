@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This is used to distinguish tests for service workers.
-var isServiceWorkerTest = true;
+self.isServiceWorkerTest = true;
 
 async function expectSessionEstablished(url) {
   testWorker('expectSessionEstablished', url);

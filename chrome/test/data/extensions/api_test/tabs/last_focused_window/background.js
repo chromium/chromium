@@ -7,10 +7,10 @@ chrome.test.runTests([
     chrome.windows.create(
         {type: 'popup', url: 'about:blank', focused: true},
         chrome.test.callbackPass(function(win) {
-      chrome.windows.getLastFocused(
-          chrome.test.callbackPass(function(lastFocusedWindowData) {
-        chrome.test.assertTrue(lastFocusedWindowData.id == win.id);
-      }));
-    }));
-  }
+          chrome.windows.getLastFocused(
+              chrome.test.callbackPass(function(lastFocusedWindowData) {
+                chrome.test.assertTrue(lastFocusedWindowData.id == win.id);
+              }));
+        }));
+  },
 ]);

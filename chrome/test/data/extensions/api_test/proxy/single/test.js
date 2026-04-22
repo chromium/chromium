@@ -14,16 +14,14 @@ chrome.test.runTests([
   function setSingleProxy() {
     const oneProxy = {
       host: '127.0.0.1',
-      port: 100
+      port: 100,
     };
 
     const rules = {
-      singleProxy: oneProxy
+      singleProxy: oneProxy,
     };
 
-    const config = { rules: rules, mode: 'fixed_servers' };
-    chrome.proxy.settings.set(
-        {value: config},
-        chrome.test.callbackPass());
-  }
+    const config = {rules: rules, mode: 'fixed_servers'};
+    chrome.proxy.settings.set({value: config}, chrome.test.callbackPass());
+  },
 ]);

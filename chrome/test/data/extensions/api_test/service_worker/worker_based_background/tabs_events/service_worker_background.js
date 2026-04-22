@@ -14,7 +14,7 @@ chrome.test.runTests([
         tabProps.push({id: tabs[0].id, url: tabs[0].url});
         chrome.test.succeed();
       });
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },
@@ -27,13 +27,13 @@ chrome.test.runTests([
       tabProps.push({id: tab.id, url: tab.pendingUrl});
       chrome.tabs.onCreated.removeListener(localListener);
     });
-    chrome.tabs.onUpdated.addListener(function localListener (
-        tabId, changeInfo, tab) {
-      if (changeInfo.status === 'complete') {
-        chrome.tabs.onUpdated.removeListener(localListener);
-        chrome.test.succeed();
-      }
-    });
+    chrome.tabs.onUpdated.addListener(
+        function localListener(tabId, changeInfo, tab) {
+          if (changeInfo.status === 'complete') {
+            chrome.tabs.onUpdated.removeListener(localListener);
+            chrome.test.succeed();
+          }
+        });
     try {
       // Create the tab inactive, so we can activate it later.
       chrome.tabs.create({url: NEW_TAB_URL, active: false});
@@ -45,36 +45,36 @@ chrome.test.runTests([
   function testTabOnUpdatedListener() {
     const newUrl = 'chrome://version/';
     let gotLoading = false;
-    chrome.tabs.onUpdated.addListener(function localListener(
-        tabId, changeInfo, tab) {
-      if (changeInfo.status === 'loading') {
-        chrome.test.assertFalse(gotLoading);
-        gotLoading = true;
-        chrome.test.assertEq(tabProps[1].id, tabId);
-        chrome.test.assertEq(newUrl, changeInfo.url);
-      } else if (changeInfo.status === 'complete') {
-        chrome.test.assertTrue(gotLoading);
-        chrome.tabs.onUpdated.removeListener(localListener);
-        chrome.test.succeed();
-      }
-    });
+    chrome.tabs.onUpdated.addListener(
+        function localListener(tabId, changeInfo, tab) {
+          if (changeInfo.status === 'loading') {
+            chrome.test.assertFalse(gotLoading);
+            gotLoading = true;
+            chrome.test.assertEq(tabProps[1].id, tabId);
+            chrome.test.assertEq(newUrl, changeInfo.url);
+          } else if (changeInfo.status === 'complete') {
+            chrome.test.assertTrue(gotLoading);
+            chrome.tabs.onUpdated.removeListener(localListener);
+            chrome.test.succeed();
+          }
+        });
     try {
       chrome.tabs.update(tabProps[1].id, {url: newUrl});
       tabProps[1].url = newUrl;
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },
   // Check the chrome.tabs.onMoved listener.
   function testTabMove() {
-    const expectedId = tabProps[0].id
-    chrome.test.listenOnce(chrome.tabs.onMoved,
-                           function localListener(tabId, moveInfo) {
-      chrome.test.assertEq(expectedId, tabId);
-    });
+    const expectedId = tabProps[0].id;
+    chrome.test.listenOnce(
+        chrome.tabs.onMoved, function localListener(tabId, moveInfo) {
+          chrome.test.assertEq(expectedId, tabId);
+        });
     try {
       chrome.tabs.move(expectedId, {index: -1});
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },
@@ -89,24 +89,24 @@ chrome.test.runTests([
     try {
       // Make an existing tab active.
       chrome.tabs.update(tabId, {active: true});
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },
   // Check the chrome.tabs.onRemoved listener.
   function testTabRemoved() {
     const tabIdToClose = tabProps[1].id;
-    chrome.tabs.onRemoved.addListener(function localListener(
-        tabId, removeInfo) {
-      chrome.tabs.onRemoved.removeListener(localListener);
-      chrome.test.assertEq(tabIdToClose, tabId);
-      chrome.test.assertFalse(removeInfo.isWindowClosing);
-      chrome.test.succeed();
-    });
+    chrome.tabs.onRemoved.addListener(
+        function localListener(tabId, removeInfo) {
+          chrome.tabs.onRemoved.removeListener(localListener);
+          chrome.test.assertEq(tabIdToClose, tabId);
+          chrome.test.assertFalse(removeInfo.isWindowClosing);
+          chrome.test.succeed();
+        });
     try {
       // Remove the tab.
       chrome.tabs.remove(tabIdToClose);
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },

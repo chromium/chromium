@@ -19,7 +19,7 @@ const tests = [
         });
       });
     });
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

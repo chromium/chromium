@@ -55,7 +55,7 @@ export class Queue {
   size() {
     return this.items_.length;
   }
-};
+}
 
 
 /**
@@ -96,7 +96,7 @@ export async function catchError(promise) {
  * @param {!FileEntry} fileEntry
  * @returns {!Promise<!FileWriter>}
  */
- export async function createWriter(fileEntry) {
+export async function createWriter(fileEntry) {
   return new Promise(
       (resolve, reject) => fileEntry.createWriter(resolve, reject));
 }
@@ -120,7 +120,7 @@ export async function getVolumeInfo(fileSystemId) {
     }
   }
   throw new Error(`volume not found: ${fileSystemId}`);
-};
+}
 
 /**
  * Wrappers for chrome.fileSystemProvider.* are still needed for Closure to
@@ -136,7 +136,7 @@ export async function getAllFsInfos() {
  * @param {!FileEntry|!DirectoryEntry} entry
  * @returns {!Promise<!Metadata>}
  */
- export async function getMetadata(entry) {
+export async function getMetadata(entry) {
   return new Promise((resolve, reject) => entry.getMetadata(resolve, reject));
 }
 
@@ -188,7 +188,7 @@ async function mount(optionsOverride) {
     throw new Error(`filesystem not found for volume: ${volumeInfo.volumeId}`);
   }
   return {fileSystem, volumeInfo};
-};
+}
 
 /**
  * @param {!FileEntry} fileEntry
@@ -273,7 +273,7 @@ export class MountedTestFileSystem {
         (resolve, reject) =>
             this.fileSystem.root.getDirectory(path, options, resolve, reject));
   }
-};
+}
 
 /**
  * Create a mounted test filesystem instance.
@@ -414,7 +414,7 @@ export class ProviderProxy {
     }
     return response;
   }
-};
+}
 
 /**
  * Default provider proxy: sends messages to the same extension (but could still

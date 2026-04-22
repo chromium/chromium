@@ -18,20 +18,20 @@ chrome.test.runTests([
           name: 'Primary Monitor',
           dpiX: 160.0,
           dpiY: 160.0,
-          isPrimary: true
+          isPrimary: true,
         },
         '222': {
           name: 'External Display 1',
           dpiX: 96.0,
           dpiY: 96.0,
-          isPrimary: false
+          isPrimary: false,
         },
         '333': {
           name: 'External Display 2',
           dpiX: 320.0,
           dpiY: 320.0,
-          isPrimary: false
-        }
+          isPrimary: false,
+        },
       };
 
       for (const info of displays) {

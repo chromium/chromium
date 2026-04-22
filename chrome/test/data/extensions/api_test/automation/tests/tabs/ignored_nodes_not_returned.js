@@ -20,7 +20,7 @@ const allTests = [
     assertEq(chrome.automation.RoleType.INLINE_TEXT_BOX, node.firstChild.role);
     assertEq('of a content editable.', node.firstChild.name);
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'ignored_nodes_not_returned.html');

@@ -13,14 +13,12 @@ chrome.test.runTests([
   },
   function setAutoSettings() {
     const pacScriptObject = {
-      url: 'http://wpad/windows.pac'
+      url: 'http://wpad/windows.pac',
     };
     const config = {
       mode: 'pac_script',
-      pacScript: pacScriptObject
+      pacScript: pacScriptObject,
     };
-    chrome.proxy.settings.set(
-        {value: config},
-        chrome.test.callbackPass());
-  }
+    chrome.proxy.settings.set({value: config}, chrome.test.callbackPass());
+  },
 ]);

@@ -13,5 +13,5 @@ chrome.test.runTests([
     chrome.windows.getCurrent(pass(function(win) {
       assertTrue(win.incognito);
     }));
-  }
+  },
 ]);

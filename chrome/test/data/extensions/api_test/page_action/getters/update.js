@@ -8,16 +8,17 @@ chrome.tabs.query({active: true}, function(tabs) {
   const tab = tabs[0];
   chrome.test.runTests([
     function getPopup() {
-      chrome.pageAction.getPopup({tabId: tab.id}, pass(function(result) {
-        chrome.test.assertTrue(
-            /chrome-extension\:\/\/[a-p]{32}\/Popup\.html/.test(result));
-      }));
+      chrome.pageAction.getPopup(
+          {tabId: tab.id}, pass(function(result) {
+            chrome.test.assertTrue(
+                /chrome-extension\:\/\/[a-p]{32}\/Popup\.html/.test(result));
+          }));
     },
 
     function getTitle() {
       chrome.pageAction.getTitle({tabId: tab.id}, pass(function(result) {
-        chrome.test.assertEq('Title', result);
-      }));
-    }
+                                   chrome.test.assertEq('Title', result);
+                                 }));
+    },
   ]);
 });

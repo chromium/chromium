@@ -47,6 +47,6 @@ chrome.test.getConfig(function(config) {
 
       // Send first message that should stop the host.
       port.postMessage({'stopHostTest': true});
-    }
+    },
   ]);
 });

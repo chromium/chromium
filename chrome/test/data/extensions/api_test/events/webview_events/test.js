@@ -9,8 +9,12 @@ chrome.app.runtime.onLaunched.addListener(function() {
   webview.contextMenus.onClicked.addListener(function() {});
   webview.contextMenus.onShow.addListener(function() {});
   webview.contextMenus.create({title: 'a', onclick: function() {}});
-  webview.addEventListener('loadabort', () => { chrome.test.notifyFail(); });
-  webview.addEventListener('loadstop', () => { chrome.test.notifyPass(); });
+  webview.addEventListener('loadabort', () => {
+    chrome.test.notifyFail();
+  });
+  webview.addEventListener('loadstop', () => {
+    chrome.test.notifyPass();
+  });
   webview.request.onMessage.addListener(function() {});
   document.body.appendChild(webview);
 });

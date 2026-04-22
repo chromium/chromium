@@ -43,7 +43,9 @@ const settings = {
 };
 
 // Settings that do not support site-specific exceptions.
-const globalOnlySettings = {autoVerify: 'block'};
+const globalOnlySettings = {
+  autoVerify: 'block'
+};
 
 // List of settings that are expected to return different values than were
 // written, due to deprecation. For example, "fullscreen" is set to "block" but
@@ -55,7 +57,7 @@ const deprecatedSettingsExpectations = {
   mouselock: 'allow',
   // These should be "block", regardless of the setting.
   plugins: 'block',
-  unsandboxedPlugins: 'block'
+  unsandboxedPlugins: 'block',
 };
 
 // List of deprecated APIs. It is expected to return 'block' to get(), and will
@@ -63,9 +65,10 @@ const deprecatedSettingsExpectations = {
 const deprecatedExtensionApis = ['plugins', 'unsandboxedPlugins'];
 
 Object.prototype.forEach = function(f) {
-  for (let k in this) {
-    if (this.hasOwnProperty(k))
+  for (const k in this) {
+    if (this.hasOwnProperty(k)) {
       f(k, this[k]);
+    }
   }
 };
 
@@ -76,10 +79,12 @@ function expect(expected, message) {
 }
 
 function expectFalse(message) {
-  return expect({
-    value: false,
-    levelOfControl: 'controllable_by_this_extension'
-  }, message);
+  return expect(
+      {
+        value: false,
+        levelOfControl: 'controllable_by_this_extension',
+      },
+      message);
 }
 
 chrome.test.runTests([
@@ -91,11 +96,13 @@ chrome.test.runTests([
         // is stable and removed.
         return;
       }
-      cs[type].set({
-        primaryPattern: '<all_urls>',
-        secondaryPattern: '<all_urls>',
-        setting: setting
-      }, chrome.test.callbackPass());
+      cs[type].set(
+          {
+            primaryPattern: '<all_urls>',
+            secondaryPattern: '<all_urls>',
+            setting: setting,
+          },
+          chrome.test.callbackPass());
     });
   },
   function setContentSettings() {
@@ -106,11 +113,13 @@ chrome.test.runTests([
         // is stable and removed.
         return;
       }
-      cs[type].set({
-        primaryPattern: 'http://*.google.com/*',
-        secondaryPattern: 'http://*.google.com/*',
-        setting: setting
-      }, chrome.test.callbackPass());
+      cs[type].set(
+          {
+            primaryPattern: 'http://*.google.com/*',
+            secondaryPattern: 'http://*.google.com/*',
+            setting: setting,
+          },
+          chrome.test.callbackPass());
     });
   },
   function getContentSettings() {
@@ -122,11 +131,13 @@ chrome.test.runTests([
         return;
       }
       setting = deprecatedSettingsExpectations[type] || setting;
-      let message = `Setting for ${type} should be ${setting}`;
-      cs[type].get({
-        primaryUrl: 'http://www.google.com',
-        secondaryUrl: 'http://www.google.com'
-      }, expect({setting:setting}, message));
+      const message = `Setting for ${type} should be ${setting}`;
+      cs[type].get(
+          {
+            primaryUrl: 'http://www.google.com',
+            secondaryUrl: 'http://www.google.com',
+          },
+          expect({setting: setting}, message));
     });
   },
   function setGlobalContentSettings() {
@@ -135,18 +146,18 @@ chrome.test.runTests([
           {
             primaryPattern: '<all_urls>',
             secondaryPattern: '<all_urls>',
-            setting: setting
+            setting: setting,
           },
           chrome.test.callbackPass());
     });
   },
   function getGlobalSettings() {
     globalOnlySettings.forEach(function(type, setting) {
-      let message = `Setting for ${type} should be ${setting}`;
+      const message = `Setting for ${type} should be ${setting}`;
       cs[type].get(
           {
             primaryUrl: 'http://www.google.com',
-            secondaryUrl: 'http://www.google.com'
+            secondaryUrl: 'http://www.google.com',
           },
           expect({setting: setting}, message));
     });
@@ -156,7 +167,7 @@ chrome.test.runTests([
         {
           primaryPattern: 'http://example.com/*',
           secondaryPattern: '<all_urls>',
-          setting: 'allow'
+          setting: 'allow',
         },
         chrome.test.callbackFail(
             'Site-specific settings are not allowed for this type. ' +
@@ -165,30 +176,38 @@ chrome.test.runTests([
         {
           primaryPattern: '<all_urls>',
           secondaryPattern: 'http://example.com/*',
-          setting: 'allow'
+          setting: 'allow',
         },
         chrome.test.callbackFail(
             'Site-specific settings are not allowed for this type. ' +
             'The URL pattern must be \'<all_urls>\'.'));
-    cs.cookies.get({
-      primaryUrl: 'moo'
-    }, chrome.test.callbackFail('The URL "moo" is invalid.'));
-    cs.javascript.set({
-      primaryPattern: 'http://example.com/*',
-      secondaryPattern: 'http://example.com/path',
-      setting: 'block'
-    }, chrome.test.callbackFail('Specific paths are not allowed.'));
-    cs.javascript.set({
-      primaryPattern: 'http://example.com/*',
-      secondaryPattern: 'file:///home/hansmoleman/*',
-      setting: 'allow'
-    }, chrome.test.callbackFail(
-        'Path wildcards in file URL patterns are not allowed.'));
+    cs.cookies.get(
+        {
+          primaryUrl: 'moo',
+        },
+        chrome.test.callbackFail('The URL "moo" is invalid.'));
+    cs.javascript.set(
+        {
+          primaryPattern: 'http://example.com/*',
+          secondaryPattern: 'http://example.com/path',
+          setting: 'block',
+        },
+        chrome.test.callbackFail('Specific paths are not allowed.'));
+    cs.javascript.set(
+        {
+          primaryPattern: 'http://example.com/*',
+          secondaryPattern: 'file:///home/hansmoleman/*',
+          setting: 'allow',
+        },
+        chrome.test.callbackFail(
+            'Path wildcards in file URL patterns are not allowed.'));
     let caught = false;
     try {
-      cs.javascript.set({primaryPattern: '<all_urls>',
-                         secondaryPattern: '<all_urls>',
-                         setting: 'something radically fake'});
+      cs.javascript.set({
+        primaryPattern: '<all_urls>',
+        secondaryPattern: '<all_urls>',
+        setting: 'something radically fake'
+      });
     } catch (e) {
       caught = true;
     }
@@ -197,25 +216,24 @@ chrome.test.runTests([
   function testDeprecatedApi_SetIgnored() {
     deprecatedExtensionApis.forEach(api => {
       cs[api].set(
-        {
-          primaryPattern: 'https://*.google.com:443/*',
-          secondaryPattern: '<all_urls>',
-          setting: 'allow'
-        },
-        () => {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+          {
+            primaryPattern: 'https://*.google.com:443/*',
+            secondaryPattern: '<all_urls>',
+            setting: 'allow',
+          },
+          () => {
+            chrome.test.assertNoLastError();
+            chrome.test.succeed();
+          });
     });
   },
   function testDeprecatedApi_GetBlocked() {
     deprecatedExtensionApis.forEach(api => {
-      cs[api].get(
-          {primaryUrl: 'https://drive.google.com:443/*'}, (value) => {
-            chrome.test.assertNoLastError();
-            chrome.test.assertEq({setting: 'block'}, value);
-            chrome.test.succeed();
-          });
+      cs[api].get({primaryUrl: 'https://drive.google.com:443/*'}, (value) => {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq({setting: 'block'}, value);
+        chrome.test.succeed();
+      });
     });
   },
   function testDeprecatedApi_ClearIgnored() {
@@ -225,5 +243,5 @@ chrome.test.runTests([
         chrome.test.succeed();
       });
     });
-  }
+  },
 ]);

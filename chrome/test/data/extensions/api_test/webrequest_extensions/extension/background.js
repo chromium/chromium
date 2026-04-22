@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var baseUrl = 'http://example.com:' + config.testServer.port;
+  const baseUrl = 'http://example.com:' + config.testServer.port;
 
-  var x = new XMLHttpRequest();
+  const x = new XMLHttpRequest();
   x.open('GET', baseUrl + '/extensions/test_file.txt?extension');
   x.onloadend = function() {
     // Just a sanity check to ensure that the server is running.

@@ -15,20 +15,20 @@ const assertFalse = chrome.test.assertFalse;
 
 chrome.test.runTests([
   function testHaveSwitch() {
-    chrome.commandLinePrivate.hasSwitch(TEST_COMMAND_LINE_SWITCH,
-        pass(function(result) {
-      assertTrue(result);
-    }));
+    chrome.commandLinePrivate.hasSwitch(
+        TEST_COMMAND_LINE_SWITCH, pass(function(result) {
+          assertTrue(result);
+        }));
   },
 
   function testNotHaveSwitch() {
-    chrome.commandLinePrivate.hasSwitch(NONEXISTENT_SWITCH,
-        pass(function(result) {
-      assertFalse(result);
-    }));
+    chrome.commandLinePrivate.hasSwitch(
+        NONEXISTENT_SWITCH, pass(function(result) {
+          assertFalse(result);
+        }));
   },
 
   function testInvalidArgs() {
     chrome.commandLinePrivate.hasSwitch('', fail(EMPTY_SWITCH_NAME));
-  }
+  },
 ]);

@@ -11,8 +11,8 @@ chrome.tabs.query({active: true}, function(tabs) {
   chrome.browserAction.setTitle({tabId: tab.id, title: 'newTitle'});
   chrome.browserAction.setBadgeBackgroundColor({
     tabId: tab.id,
-    color: [0, 0, 0, 0]
+    color: [0, 0, 0, 0],
   });
   chrome.browserAction.setBadgeText({tabId: tab.id, text: 'newText'});
-  chrome.test.notifyPass()
+  chrome.test.notifyPass();
 });

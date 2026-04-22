@@ -7,104 +7,82 @@
 // and failures are detected.
 
 function callbackResult(result) {
-  if (chrome.runtime.lastError)
+  if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  else if (result == false)
+  } else if (result == false) {
     chrome.test.fail('Failed: ' + result);
+  }
 }
 
-var kEmail1 = 'asdf@gmail.com';
-var kEmail2 = 'asdf2@gmail.com';
-var kName1 = kEmail1;
-var kName2 = kEmail2;
+const kEmail1 = 'asdf@gmail.com';
+const kEmail2 = 'asdf2@gmail.com';
+const kName1 = kEmail1;
+const kName2 = kEmail2;
 
-var availableTests = [
+const availableTests = [
   function addUser() {
-    chrome.usersPrivate.addUser(
-        kEmail1,
-        function(result) {
-          callbackResult(result);
+    chrome.usersPrivate.addUser(kEmail1, function(result) {
+      callbackResult(result);
 
-          chrome.usersPrivate.getUsers(function(users) {
-            var foundUser = false;
-            users.forEach(function(user) {
-              if (user.email == kEmail1 && user.name == kName1) {
-                foundUser = true;
-              }
-            });
-            chrome.test.assertTrue(foundUser);
-            chrome.test.succeed();
-          });
+      chrome.usersPrivate.getUsers(function(users) {
+        let foundUser = false;
+        users.forEach(function(user) {
+          if (user.email == kEmail1 && user.name == kName1) {
+            foundUser = true;
+          }
         });
+        chrome.test.assertTrue(foundUser);
+        chrome.test.succeed();
+      });
+    });
   },
 
   function addAndRemoveUsers() {
-    chrome.usersPrivate.addUser(
-        kEmail1,
-        function(result1) {
-          callbackResult(result1);
+    chrome.usersPrivate.addUser(kEmail1, function(result1) {
+      callbackResult(result1);
 
-          chrome.usersPrivate.addUser(
-              kEmail2,
-              function(result2) {
-                callbackResult(result2);
+      chrome.usersPrivate.addUser(kEmail2, function(result2) {
+        callbackResult(result2);
 
-                  chrome.usersPrivate.removeUser(
-                      kEmail1,
-                      function(result3) {
-
-                        chrome.usersPrivate.getUsers(
-                            function(users) {
-                              chrome.test.assertTrue(users.length == 1);
-                              chrome.test.assertEq(kEmail2, users[0].email);
-                              chrome.test.assertEq(kName2, users[0].name);
-                              chrome.test.succeed();
-                            });
-
-                      });
-              });
+        chrome.usersPrivate.removeUser(kEmail1, function(result3) {
+          chrome.usersPrivate.getUsers(function(users) {
+            chrome.test.assertTrue(users.length == 1);
+            chrome.test.assertEq(kEmail2, users[0].email);
+            chrome.test.assertEq(kName2, users[0].name);
+            chrome.test.succeed();
+          });
         });
-
+      });
+    });
   },
 
   function isUserInList() {
-    chrome.usersPrivate.isUserInList(
-      kEmail1,
-      function(result) {
-        chrome.test.assertFalse(result);
+    chrome.usersPrivate.isUserInList(kEmail1, function(result) {
+      chrome.test.assertFalse(result);
 
-        chrome.usersPrivate.addUser(
-          kEmail2,
-          function(result) {
-            callbackResult(result);
+      chrome.usersPrivate.addUser(kEmail2, function(result) {
+        callbackResult(result);
 
-            //Confirm kEmail2 was added to the list of users.
-            chrome.usersPrivate.getUsers(
-              function(users) {
-                chrome.test.assertTrue(users.length == 1);
-                chrome.test.assertEq(kEmail2, users[0].email);
-                chrome.test.assertEq(kName2, users[0].name);
-                chrome.test.succeed();
-              });
+        // Confirm kEmail2 was added to the list of users.
+        chrome.usersPrivate.getUsers(function(users) {
+          chrome.test.assertTrue(users.length == 1);
+          chrome.test.assertEq(kEmail2, users[0].email);
+          chrome.test.assertEq(kName2, users[0].name);
+          chrome.test.succeed();
+        });
 
-            // We never added kEmail1 so this should return false.
-            chrome.usersPrivate.isUserInList(
-              kEmail1,
-              function(result) {
-                chrome.test.assertFalse(result);
+        // We never added kEmail1 so this should return false.
+        chrome.usersPrivate.isUserInList(kEmail1, function(result) {
+          chrome.test.assertFalse(result);
 
-                // We did add kEmail2 so this should return true.
-                chrome.usersPrivate.isUserInList(
-                  kEmail2,
-                  function(user) {
-                    chrome.test.assertTrue(user);
-                    chrome.test.succeed();
-                  });
-              });
+          // We did add kEmail2 so this should return true.
+          chrome.usersPrivate.isUserInList(kEmail2, function(user) {
+            chrome.test.assertTrue(user);
+            chrome.test.succeed();
           });
+        });
       });
-
-
+    });
   },
 
   function isOwner() {
@@ -118,30 +96,29 @@ var availableTests = [
   function getLoginStatus() {
     chrome.test.getConfig(chrome.test.callbackPass(function(config) {
       // Validate the config.
-      chrome.test.assertTrue(config.hasOwnProperty("loginStatus"));
-      chrome.test.assertTrue(config.loginStatus.hasOwnProperty("isLoggedIn"));
+      chrome.test.assertTrue(config.hasOwnProperty('loginStatus'));
+      chrome.test.assertTrue(config.loginStatus.hasOwnProperty('isLoggedIn'));
       chrome.test.assertTrue(
-          config.loginStatus.hasOwnProperty("isScreenLocked"));
+          config.loginStatus.hasOwnProperty('isScreenLocked'));
 
-      chrome.usersPrivate.getLoginStatus(
-          chrome.test.callbackPass(function(status) {
-            chrome.test.assertEq(typeof(status), 'object');
-            chrome.test.assertTrue(status.hasOwnProperty("isLoggedIn"));
-            chrome.test.assertTrue(status.hasOwnProperty("isScreenLocked"));
-            console.log(status.isLoggedIn);
-            console.log(config.loginStatus.isLoggedIn);
-            chrome.test.assertEq(
-                status.isLoggedIn, config.loginStatus.isLoggedIn);
-            console.log(status.isScreenLocked);
-            console.log(config.loginStatus.isScreenLocked);
-            chrome.test.assertEq(
-                status.isScreenLocked, config.loginStatus.isScreenLocked);
-          }));
+      chrome.usersPrivate.getLoginStatus(chrome.test.callbackPass(function(
+          status) {
+        chrome.test.assertEq(typeof (status), 'object');
+        chrome.test.assertTrue(status.hasOwnProperty('isLoggedIn'));
+        chrome.test.assertTrue(status.hasOwnProperty('isScreenLocked'));
+        console.log(status.isLoggedIn);
+        console.log(config.loginStatus.isLoggedIn);
+        chrome.test.assertEq(status.isLoggedIn, config.loginStatus.isLoggedIn);
+        console.log(status.isScreenLocked);
+        console.log(config.loginStatus.isScreenLocked);
+        chrome.test.assertEq(
+            status.isScreenLocked, config.loginStatus.isScreenLocked);
+      }));
     }));
   },
 ];
 
-var testToRun = window.location.search.substring(1);
+const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
   return op.name == testToRun;
 }));

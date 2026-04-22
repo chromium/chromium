@@ -21,15 +21,16 @@ const allTests = [
             rootNode.find({attributes: {name: 'Inner'}, role: 'button'});
         if (innerButton) {
           clearInterval(id);
-          chrome.test.succeed()
+          chrome.test.succeed();
         }
       }, 100);
     });
-  }
+  },
 ];
 
 chrome.test.getConfig(async (config) => {
-  const url = `http://localhost:${config.testServer.port}/fencedframe/fencedframe_outer.html`;
+  const url = `http://localhost:${
+      config.testServer.port}/fencedframe/fencedframe_outer.html`;
 
   testTab = await new Promise(function(resolve, reject) {
     chrome.tabs.create({url: url}, (value) => {

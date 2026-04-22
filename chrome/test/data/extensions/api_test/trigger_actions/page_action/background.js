@@ -5,9 +5,9 @@
 // Show the page action icon for all tabs.
 chrome.tabs.onCreated.addListener(function(tab) {
   chrome.windows.getCurrent(null, function(window) {
-    chrome.tabs.query({windowId:window.id}, function(tabs) {
+    chrome.tabs.query({windowId: window.id}, function(tabs) {
       for (var i = 0, t; t = tabs[i]; i++) {
-       chrome.pageAction.show(t.id);
+        chrome.pageAction.show(t.id);
       }
     });
   });
@@ -16,7 +16,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
 // Turn the background red when the user clicks on the page action.
 chrome.pageAction.onClicked.addListener(function(tab) {
   chrome.tabs.executeScript(
-      null, {code: "document.body.style.backgroundColor='red'"});
+      null, {code: 'document.body.style.backgroundColor=\'red\''});
   chrome.test.notifyPass();
 });
 

@@ -10,8 +10,7 @@ onmessage = function(e) {
   chrome.test.succeed();
 };
 
-const loadIframeContentInSandboxedPage = function(
-    localUrl, remoteUrl) {
+const loadIframeContentInSandboxedPage = function(localUrl, remoteUrl) {
   const sandboxedFrame = document.createElement('iframe');
   sandboxedFrame.src = 'sandboxed.html';
   sandboxedFrame.onload = function() {
@@ -29,9 +28,8 @@ onload = function() {
       function sandboxedFrameTestLocalAndRemote() {
         const remoteUrl = `http://localhost:${config.testServer.port}` +
             `/extensions/api_test/sandboxed_pages_csp/${REMOTE_FILE_NAME}`;
-        loadIframeContentInSandboxedPage(
-            LOCAL_FILE_NAME, remoteUrl);
-      }
+        loadIframeContentInSandboxedPage(LOCAL_FILE_NAME, remoteUrl);
+      },
     ]);
   });
 };

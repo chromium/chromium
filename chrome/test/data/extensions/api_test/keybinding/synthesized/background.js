@@ -12,8 +12,7 @@
 //     --gtest_filter=CommandsApiTest.SynthesizedCommand
 
 // Called when the user clicks on the browser action.
-chrome.action.onClicked.addListener(function () {
-});
+chrome.action.onClicked.addListener(function() {});
 
 chrome.commands.getAll(function(commands) {
   chrome.test.assertEq(2, commands.length);

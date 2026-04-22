@@ -10,11 +10,11 @@
 // - Attempts to call window.open(...., "background") again will not result in
 //   existing background page being closed and a new one being re-opened.
 
-var pagePrefix =
+const pagePrefix =
     'http://a.com:PORT/extensions/api_test/app_background_page/no_js';
-var launchUrl;
-var launchTabId;
-var backgroundPageLoaded = false;
+let launchUrl;
+let launchTabId;
+let backgroundPageLoaded = false;
 
 // Dispatch "tunneled" functions from the live web pages to this testing page.
 chrome.runtime.onMessage.addListener(function(request) {
@@ -24,8 +24,8 @@ chrome.runtime.onMessage.addListener(function(request) {
 // At no point should a window be created that contains the background page
 // (bg.html).
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tab.url.match("bg\.html$")) {
-    chrome.test.notifyFail("popup opened instead of background page");
+  if (tab.url.match('bg\.html$')) {
+    chrome.test.notifyFail('popup opened instead of background page');
   }
 });
 
@@ -40,13 +40,11 @@ window.onload = function() {
   chrome.test.getConfig(function(config) {
     launchUrl =
         pagePrefix.replace(/PORT/, config.testServer.port) + '/launch.html';
-    chrome.tabs.create(
-        {url: launchUrl},
-        function(tab) {
-            launchTabId = tab.id;
-        });
+    chrome.tabs.create({url: launchUrl}, function(tab) {
+      launchTabId = tab.id;
+    });
   });
-}
+};
 
 function onBackgroundWindowNotNull() {
   chrome.test.notifyFail('Unexpected non-null window.open result');
@@ -62,16 +60,12 @@ function onBackgroundPageLoaded() {
 
   // Close the existing page and re-open it, which will try to call
   // window.open(..., "background") again.
-  chrome.tabs.remove(
-      launchTabId,
-      function() {
-        chrome.tabs.create(
-            {url: launchUrl },
-            function(tab) {
-              // We wait for a bit before declaring the test as passed, since
-              // it might take a while for the additional background contents
-              // to be recreated.
-              setTimeout(chrome.test.notifyPass, 2000);
-            });
-      });
+  chrome.tabs.remove(launchTabId, function() {
+    chrome.tabs.create({url: launchUrl}, function(tab) {
+      // We wait for a bit before declaring the test as passed, since
+      // it might take a while for the additional background contents
+      // to be recreated.
+      setTimeout(chrome.test.notifyPass, 2000);
+    });
+  });
 }

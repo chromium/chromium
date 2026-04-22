@@ -16,8 +16,9 @@ function navigateTab(url, callback) {
 
 let testServerPort;
 function getServerURL(host) {
-  if (!testServerPort)
+  if (!testServerPort) {
     throw new Error('Called getServerURL outside of runTests.');
+  }
   return `http://${host}:${testServerPort}/`;
 }
 
@@ -28,13 +29,13 @@ const testData = [
   {
     host: 'dynamic.com',
     rule:
-        {ruleId: 1, rulesetId: chrome.declarativeNetRequest.DYNAMIC_RULESET_ID}
+        {ruleId: 1, rulesetId: chrome.declarativeNetRequest.DYNAMIC_RULESET_ID},
   },
   {
     host: 'session.com',
     rule:
-        {ruleId: 5, rulesetId: chrome.declarativeNetRequest.SESSION_RULESET_ID}
-  }
+        {ruleId: 5, rulesetId: chrome.declarativeNetRequest.SESSION_RULESET_ID},
+  },
 ];
 
 function addDynamicRule() {
@@ -98,7 +99,7 @@ function createTest(index) {
 
             const expectedRuleInfo = {
               rule: testData[index].rule,
-              tabId: tab.id
+              tabId: tab.id,
             };
 
             // Sanity check that the RulesMatchedInfo fields are populated
@@ -109,7 +110,7 @@ function createTest(index) {
           });
     });
   };
-};
+}
 
 chrome.test.getConfig(function(config) {
   testServerPort = config.testServer.port;
@@ -125,7 +126,7 @@ chrome.test.getConfig(function(config) {
 
     // Assign a name to the function so that the extension test framework prints
     // the sub-test name.
-    Object.defineProperty(test, 'name', {value: `test${i}`})
+    Object.defineProperty(test, 'name', {value: `test${i}`});
 
     tests.push(test);
   }

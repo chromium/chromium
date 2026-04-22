@@ -6,11 +6,8 @@ let clipDataChangedCount = 0;
 
 chrome.app.runtime.onLaunched.addListener(function(launchData) {
   console.log('onLaunched');
-  chrome.app.window.create('app_main.html',
-      { width: 500,
-        height: 500 },
-      function(window) {
-  });
+  chrome.app.window.create(
+      'app_main.html', {width: 500, height: 500}, function(window) {});
 });
 
 chrome.clipboard.onClipboardDataChanged.addListener(function() {

@@ -11,13 +11,14 @@ const cs = chrome.contentSettings;
 // by its respective type for exceptions, but not as the default setting.
 const settings = {
   camera: 'allow',
-  microphone: 'allow'
+  microphone: 'allow',
 };
 
 Object.prototype.forEach = function(f) {
-  for (let k in this) {
-    if (this.hasOwnProperty(k))
+  for (const k in this) {
+    if (this.hasOwnProperty(k)) {
       f(k, this[k]);
+    }
   }
 };
 
@@ -28,31 +29,37 @@ function expect(expected, message) {
 }
 
 function expectFalse(message) {
-  return expect({
-    value: false,
-    levelOfControl: 'controllable_by_this_extension'
-  }, message);
+  return expect(
+      {
+        value: false,
+        levelOfControl: 'controllable_by_this_extension',
+      },
+      message);
 }
 
 chrome.test.runTests([
   function setDefaultContentSettings() {
     settings.forEach(function(type, setting) {
-      cs[type].set({
-        primaryPattern: '<all_urls>',
-        secondaryPattern: '<all_urls>',
-        setting: setting
-      },
-      chrome.test.callbackFail(`'${setting}' is not supported as the default ` +
-          `setting of ${type}.`));
+      cs[type].set(
+          {
+            primaryPattern: '<all_urls>',
+            secondaryPattern: '<all_urls>',
+            setting: setting,
+          },
+          chrome.test.callbackFail(
+              `'${setting}' is not supported as the default ` +
+              `setting of ${type}.`));
     });
   },
   function setExceptions() {
     settings.forEach(function(type, setting) {
-      cs[type].set({
-        primaryPattern: 'http://*.google.com/*',
-        secondaryPattern: 'http://*.google.com/*',
-        setting: setting
-      }, chrome.test.callbackPass());
+      cs[type].set(
+          {
+            primaryPattern: 'http://*.google.com/*',
+            secondaryPattern: 'http://*.google.com/*',
+            setting: setting,
+          },
+          chrome.test.callbackPass());
     });
-  }
+  },
 ]);

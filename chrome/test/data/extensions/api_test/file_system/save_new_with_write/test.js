@@ -4,9 +4,9 @@
 
 chrome.test.runTests([
   function saveFile() {
-    chrome.fileSystem.chooseFile({type: 'saveFile'},
-        chrome.test.callbackPass(function(entry) {
-      checkEntry(entry, 'save_new.txt', true, true);
-    }));
-  }
+    chrome.fileSystem.chooseFile(
+        {type: 'saveFile'}, chrome.test.callbackPass(function(entry) {
+          checkEntry(entry, 'save_new.txt', true, true);
+        }));
+  },
 ]);

@@ -7,14 +7,14 @@
 
 function test() {
   // Esure the the proxy configuration is direct.
-  const config = { mode: 'direct' };
+  const config = {mode: 'direct'};
   chrome.proxy.settings.set({value: config}, addListener);
 }
 
 function addListener() {
   // Add a listener for proxy errors. This should not be called, as we are not
   // using a proxy.
-  chrome.proxy.onProxyError.addListener(function (error) {
+  chrome.proxy.onProxyError.addListener(function(error) {
     chrome.test.notifyFail(`onProxyError unexpectedly called with: ${error}`);
   });
 
@@ -43,9 +43,9 @@ function fetchBadUrl(onError) {
 
   const req = new XMLHttpRequest();
   req.open('GET', url, true);
-  req.onload = function () {
+  req.onload = function() {
     chrome.test.notifyFail('XHR is expected to fail');
-  }
+  };
   req.onerror = onError;
   req.send(null);
 }

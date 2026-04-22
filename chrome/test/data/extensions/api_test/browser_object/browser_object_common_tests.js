@@ -47,6 +47,6 @@ export function getBrowserNamespaceTestCases() {
           chrome.runtime.onMessage.hasListener(myTestListener),
           '`browser` and `chrome` objects do not share listeners');
       chrome.test.succeed();
-    }
+    },
   ];
 }

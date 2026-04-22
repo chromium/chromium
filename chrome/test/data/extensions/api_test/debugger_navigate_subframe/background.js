@@ -13,12 +13,13 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const subframeURL = topURL.replace('http://a.com', 'http://b.com');
     const tab = await openTab(topURL);
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
 
     chrome.debugger.sendCommand(debuggee, 'Page.enable', null);
-    const response = await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Page.getFrameTree', resolve));
+    const response = await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Page.getFrameTree', resolve));
     const subframeId = response.frameTree.childFrames[0].frame.id;
     const expression = `
       new Promise(resolve => {
@@ -27,19 +28,23 @@ chrome.test.getConfig(config => chrome.test.runTests([
         frame.src = '${subframeURL}';
       })
     `;
-    await new Promise(resolve =>
-        chrome.debugger.sendCommand(debuggee, 'Runtime.evaluate', {
-            expression,
-            awaitPromise: true
-        }, resolve));
+    await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Runtime.evaluate', {
+              expression,
+              awaitPromise: true,
+            },
+            resolve));
     chrome.test.assertNoLastError();
-    const result = await new Promise(resolve =>
-      chrome.debugger.sendCommand(debuggee, 'Page.navigate', {
-          frameId: subframeId,
-          url: 'devtools://devtools/bundled/inspector.html'
-      }, resolve));
+    const result = await new Promise(
+        resolve => chrome.debugger.sendCommand(
+            debuggee, 'Page.navigate', {
+              frameId: subframeId,
+              url: 'devtools://devtools/bundled/inspector.html',
+            },
+            resolve));
     chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
 
     chrome.test.succeed();
-  }
+  },
 ]));

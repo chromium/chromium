@@ -11,11 +11,11 @@
 //   called once from each of the first and second pages.
 // - The background page closes itself.
 
-var pageA;
-var pageB;
-var backgroundPageResponded = false;
+let pageA;
+let pageB;
+let backgroundPageResponded = false;
 
-var pagePrefix =
+const pagePrefix =
     'http://a.com:PORT/extensions/api_test/app_background_page/common';
 
 // Dispatch "tunneled" functions from the live web pages to this testing page.
@@ -26,8 +26,8 @@ chrome.runtime.onMessage.addListener(function(request) {
 // At no point should a window be created that contains the background page
 // (bg.html).
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tab.url.match("bg\.html$")) {
-    chrome.test.notifyFail("popup opened instead of background page");
+  if (tab.url.match('bg\.html$')) {
+    chrome.test.notifyFail('popup opened instead of background page');
   }
 });
 
@@ -37,21 +37,21 @@ window.onload = function() {
   // config is requested before onload, then sometimes onload has already
   // fired by the time chrome.test.getConfig()'s callback runs.
   chrome.test.getConfig(function(config) {
-    var a_url =
+    const a_url =
         pagePrefix.replace(/PORT/, config.testServer.port) + '/a.html';
-    chrome.tabs.create({ 'url': a_url }, function(tab) {
+    chrome.tabs.create({'url': a_url}, function(tab) {
       pageA = tab;
     });
   });
-}
+};
 
 // Background page opened by pageA.
 function onBackgroundPageLoaded() {
   chrome.tabs.remove(pageA.id, function() {
     chrome.test.getConfig(function(config) {
-      var b_url =
+      const b_url =
           pagePrefix.replace(/PORT/, config.testServer.port) + '/b.html';
-      chrome.tabs.create({ url: b_url }, function(tab) {
+      chrome.tabs.create({url: b_url}, function(tab) {
         pageB = tab;
       });
     });
@@ -66,7 +66,7 @@ function onBackgroundPageResponded() {
 // Background page is closing itself.
 function onBackgroundPageClosing() {
   if (!backgroundPageResponded) {
-    chrome.test.notifyFail("background never responded to pageB");
+    chrome.test.notifyFail('background never responded to pageB');
   } else {
     chrome.test.notifyPass();
   }
@@ -75,5 +75,5 @@ function onBackgroundPageClosing() {
 // The background counter check found an unexpected value (most likely caused
 // by an unwanted navigation.
 function onCounterError() {
-  chrome.test.notifyFail("checkCounter found an unexpected value");
+  chrome.test.notifyFail('checkCounter found an unexpected value');
 }

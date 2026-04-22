@@ -12,7 +12,7 @@ const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'kitty',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 /**
@@ -23,7 +23,7 @@ const TESTING_NEW_FILE = Object.freeze({
   isDirectory: false,
   name: 'puppy',
   size: 0,
-  modificationTime: new Date(2014, 4, 28, 10, 39, 15)
+  modificationTime: new Date(2014, 4, 28, 10, 39, 15),
 });
 
 async function main() {
@@ -66,7 +66,7 @@ async function main() {
       chrome.test.assertTrue(!!error, 'Created a file, but should fail.');
       chrome.test.assertEq('InvalidModificationError', error.name);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

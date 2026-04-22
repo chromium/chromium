@@ -11,47 +11,53 @@ const SetRequestHeader = chrome.declarativeWebRequest.SetRequestHeader;
 
 const inputRule0 = {
   // No 'id', this should be filled by the API.
-  conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}}),
-               new RequestMatcher({url: {hostPrefix: 'test2'}})],
-  actions: [new CancelRequest(),
-            new RedirectRequest({redirectUrl: 'http://foobar.com'})]
+  conditions: [
+    new RequestMatcher({url: {hostPrefix: 'test1'}}),
+    new RequestMatcher({url: {hostPrefix: 'test2'}})
+  ],
+  actions: [
+    new CancelRequest(), new RedirectRequest({redirectUrl: 'http://foobar.com'})
+  ],
   // No 'priority', this should be filled by the API.
-}
+};
 
 const outputRule0 = {
   id: '_0_',
-  conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}}),
-               new RequestMatcher({url: {hostPrefix: 'test2'}})],
-  actions: [new CancelRequest(),
-            new RedirectRequest({redirectUrl: 'http://foobar.com'})],
-  priority: 100
-}
+  conditions: [
+    new RequestMatcher({url: {hostPrefix: 'test1'}}),
+    new RequestMatcher({url: {hostPrefix: 'test2'}})
+  ],
+  actions: [
+    new CancelRequest(), new RedirectRequest({redirectUrl: 'http://foobar.com'})
+  ],
+  priority: 100,
+};
 
 const inputRule1 = {
   id: 'my_rule_id',
   conditions: [],
   actions: [],
-  priority: 10
-}
+  priority: 10,
+};
 
 const outputRule1 = inputRule1;
 
 const inputRule2 = {
   // No 'id', this should be filled by the API.
   conditions: [new RequestMatcher({url: {hostPrefix: 'test3'}})],
-  actions: [new CancelRequest()]
+  actions: [new CancelRequest()],
   // No 'priority', this should be filled by the API.
-}
+};
 
 const outputRule2 = {
   id: '_1_',
   conditions: [new RequestMatcher({url: {hostPrefix: 'test3'}})],
   actions: [new CancelRequest()],
-  priority: 100
-}
+  priority: 100,
+};
 
 const invalidRule0 = {
-  conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}})]
+  conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}})],
   // 'actions' is missing but not optional.
 };
 
@@ -59,11 +65,11 @@ const invalidRule1 = {
   conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}})],
   // 'actions' contains an invalid action (separate test because this validation
   // happens on a different code path).
-  actions: [{key: 'value'}]
+  actions: [{key: 'value'}],
 };
 const invalidRule2 = {
   conditions: [new RequestMatcher({url: {hostPrefix: 'test1'}})],
-  actions: [new SetRequestHeader({name: '\x00', value: 'whatever'})]
+  actions: [new SetRequestHeader({name: '\x00', value: 'whatever'})],
 };
 
 const testEvent = chrome.declarativeWebRequest.onRequest;
@@ -74,7 +80,7 @@ chrome.test.runTests([
     try {
       testEvent.addRules();
       chrome.test.fail();
-    } catch(e) {
+    } catch (e) {
       chrome.test.succeed();
     }
   },
@@ -82,7 +88,7 @@ chrome.test.runTests([
     try {
       testEvent.getRules(1, function() {});
       chrome.test.fail();
-    } catch(e) {
+    } catch (e) {
       chrome.test.succeed();
     }
   },
@@ -90,7 +96,7 @@ chrome.test.runTests([
     try {
       testEvent.removeRules(1, function() {});
       chrome.test.fail();
-    } catch(e) {
+    } catch (e) {
       chrome.test.succeed();
     }
   },
@@ -117,7 +123,7 @@ chrome.test.runTests([
           chrome.test.checkDeepEq([outputRule0, outputRule1], rules) ||
           chrome.test.checkDeepEq([outputRule1, outputRule0], rules));
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules(null, callback);
   },
   // Check that getRules() returns all rules if no filter is passed.
@@ -130,7 +136,7 @@ chrome.test.runTests([
           chrome.test.checkDeepEq([outputRule0, outputRule1], rules) ||
           chrome.test.checkDeepEq([outputRule1, outputRule0], rules));
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules(undefined, callback);
   },
   // Check that getRules() returns no rules if empty filter is passed.
@@ -139,7 +145,7 @@ chrome.test.runTests([
       chrome.test.assertNoLastError();
       chrome.test.assertEq([], rules);
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules([], callback);
   },
   // TODO(devlin): The documentation for event.getRules() states that the
@@ -164,7 +170,7 @@ chrome.test.runTests([
       chrome.test.assertNoLastError();
       chrome.test.assertEq([outputRule1], rules);
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules(['my_rule_id'], callback);
   },
   // Check that we can remove individual rules.
@@ -172,7 +178,7 @@ chrome.test.runTests([
     const callback = function(rules) {
       chrome.test.assertNoLastError();
       chrome.test.succeed();
-    }
+    };
     testEvent.removeRules(['my_rule_id'], callback);
   },
   // Check that after removal, the rules are really gone.
@@ -181,7 +187,7 @@ chrome.test.runTests([
       chrome.test.assertNoLastError();
       chrome.test.assertEq([outputRule0], rules);
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules(null, callback);
   },
   // Check that rules are assigned unique IDs.
@@ -202,7 +208,7 @@ chrome.test.runTests([
     const callback = function() {
       chrome.test.assertNoLastError();
       chrome.test.succeed();
-    }
+    };
     testEvent.removeRules(null, callback);
   },
   // Check that the rules are actually gone.
@@ -211,7 +217,7 @@ chrome.test.runTests([
       chrome.test.assertNoLastError();
       chrome.test.assertEq(0, rules.length);
       chrome.test.succeed();
-    }
+    };
     testEvent.getRules(null, callback);
   },
   // Check that validation is performed.
@@ -222,11 +228,13 @@ chrome.test.runTests([
     try {
       testEvent.addRules([invalidRule0], fail);
       fail();
-    } catch (e) {}
+    } catch (e) {
+    }
     try {
       testEvent.addRules([invalidRule1], fail);
       fail();
-    } catch (e) {}
+    } catch (e) {
+    }
     // None of these rules should have been registered.
     const callback = function(rules) {
       chrome.test.assertNoLastError();
@@ -253,4 +261,4 @@ chrome.test.runTests([
     };
     testEvent.addRules([inputRule0], callback);
   },
-  ]);
+]);

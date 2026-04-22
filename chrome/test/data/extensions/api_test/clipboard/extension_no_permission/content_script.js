@@ -15,16 +15,19 @@ function run() {
   textIn.value = 'foobar';
   textIn.selectionStart = 0;
   textIn.selectionEnd = 'foobar'.length;
-  if (document.execCommand('copy'))
+  if (document.execCommand('copy')) {
     return 'Succeeded to copy';
+  }
 
   const textOut = appendTextarea();
 
   textOut.focus();
-  if (document.execCommand('paste'))
+  if (document.execCommand('paste')) {
     return 'Succeeded to paste';
-  if (textOut.value == 'foobar')
+  }
+  if (textOut.value == 'foobar') {
     return 'Successfully copied/pasted despite execCommand failures';
+  }
 
   return '';
 }

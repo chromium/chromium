@@ -8,8 +8,10 @@ chrome.test.runTests([
       chrome.test.assertEq('writable.txt', entry.name);
       // Test that we cannot get a writable entry when we don't have permission
       // to.
-      chrome.fileSystem.getWritableEntry(entry, chrome.test.callbackFail(
-          'Operation requires fileSystem.write permission', function() {}));
+      chrome.fileSystem.getWritableEntry(
+          entry,
+          chrome.test.callbackFail(
+              'Operation requires fileSystem.write permission', function() {}));
     }));
-  }
+  },
 ]);

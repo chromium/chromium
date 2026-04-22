@@ -17,8 +17,8 @@ const EventType = chrome.automation.EventType;
 const allTests = [
   function testLocationInWebView() {
     rootNode.addEventListener(EventType.LOAD_COMPLETE, function() {
-      const firstButton = rootNode.find({ attributes: { name: 'First' } });
-      const secondButton = rootNode.find({ attributes: { name: 'Second' } });
+      const firstButton = rootNode.find({attributes: {name: 'First'}});
+      const secondButton = rootNode.find({attributes: {name: 'Second'}});
       if (firstButton && secondButton) {
         const firstRect = firstButton.location;
         const secondRect = secondButton.location;
@@ -45,10 +45,10 @@ const allTests = [
         'left': 50,
         'top': 150,
         'width': 800,
-        'height': 800
-      }
+        'height': 800,
+      },
     });
-  }
+  },
 ];
 
 chrome.automation.getDesktop(function(rootNodeArg) {

@@ -8,25 +8,27 @@ const assertEq = chrome.test.assertEq;
 const pass = chrome.test.callbackPass;
 
 const NO_BOOKMARKS_PERMISSION =
-    "You do not have permission to use 'bookmarks.getTree'.";
+    'You do not have permission to use \'bookmarks.getTree\'.';
 
 chrome.test.getConfig(function(config) {
-
   function doReq(domain, callback) {
     let url = `${domain}:PORT/extensions/test_file.txt`;
     url = url.replace(/PORT/, config.testServer.port);
 
     chrome.test.log(`Requesting url: ${url}`);
-    fetch(url).then(function(response) {
-      assertEq(200, response.status);
-      return response.text();
-    }).then(function(text) {
-      assertEq('Hello!', text);
-      callback(true);
-    }).catch(function(error) {
-      chrome.test.log(error.toString());
-      callback(false);
-    });
+    fetch(url)
+        .then(function(response) {
+          assertEq(200, response.status);
+          return response.text();
+        })
+        .then(function(text) {
+          assertEq('Hello!', text);
+          callback(true);
+        })
+        .catch(function(error) {
+          chrome.test.log(error.toString());
+          callback(false);
+        });
   }
 
   chrome.test.runTests([
@@ -40,23 +42,24 @@ chrome.test.getConfig(function(config) {
 
             // Make sure they weren't granted...
             chrome.permissions.contains(
-                {permissions: ['bookmarks'], origins:['http://*.c.com/*']},
-                pass(function(result) { assertFalse(result); }));
+                {permissions: ['bookmarks'], origins: ['http://*.c.com/*']},
+                pass(function(result) {
+                  assertFalse(result);
+                }));
 
             assertEq(undefined, chrome.bookmarks);
             doReq('http://b.c.com/', pass(function(result) {
-              assertFalse(result);
-            }));
-      }));
+                    assertFalse(result);
+                  }));
+          }));
     },
 
     function noPromptForActivePermissions() {
       // We shouldn't prompt if the extension already has the permissions.
       chrome.permissions.request(
-          {permissions: ["management"]},
-          pass(function(granted) {
-        assertTrue(granted);
-      }));
-    }
+          {permissions: ['management']}, pass(function(granted) {
+            assertTrue(granted);
+          }));
+    },
   ]);
 });

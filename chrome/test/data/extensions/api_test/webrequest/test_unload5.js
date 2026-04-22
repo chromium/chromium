@@ -10,71 +10,79 @@ runTests([
   function startXMLHttpRequestAndRemoveFrame() {
     const hostname = 'slow-resourcetype-xhr-immediately-remove-frame';
     const url = getSlowURL(hostname);
-    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname)
+    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname);
     const mainUrl = getPageWithFrame('empty.html', hostname);
 
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          documentId: 2,
-          frameId: 1,
-          frameType: 'sub_frame',
-          parentDocumentId: 1,
-          parentFrameId: 0,
-          frameUrl: 'unknown frame URL',
-          initiator: initiator
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          documentId: 2,
-          frameId: 1,
-          frameType: 'sub_frame',
-          parentDocumentId: 1,
-          parentFrameId: 0,
-          initiator: initiator
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          documentId: 2,
-          frameId: 1,
-          frameType: 'sub_frame',
-          parentDocumentId: 1,
-          parentFrameId: 0,
-          initiator: initiator
-        },
-      },
-      { label: 'onErrorOccurred',
-        event: 'onErrorOccurred',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          documentId: 2,
-          frameId: 1,
-          frameType: 'sub_frame',
-          parentDocumentId: 1,
-          parentFrameId: 0,
-          fromCache: false,
-          error: 'net::ERR_ABORTED',
-          initiator: initiator
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onErrorOccurred']],
-      {
-        urls: ['<all_urls>'],
-        types: ['xmlhttprequest'],
-      });
+    expect(
+        [
+          {
+            label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              documentId: 2,
+              frameId: 1,
+              frameType: 'sub_frame',
+              parentDocumentId: 1,
+              parentFrameId: 0,
+              frameUrl: 'unknown frame URL',
+              initiator: initiator,
+            },
+          },
+          {
+            label: 'onBeforeSendHeaders',
+            event: 'onBeforeSendHeaders',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              documentId: 2,
+              frameId: 1,
+              frameType: 'sub_frame',
+              parentDocumentId: 1,
+              parentFrameId: 0,
+              initiator: initiator,
+            },
+          },
+          {
+            label: 'onSendHeaders',
+            event: 'onSendHeaders',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              documentId: 2,
+              frameId: 1,
+              frameType: 'sub_frame',
+              parentDocumentId: 1,
+              parentFrameId: 0,
+              initiator: initiator,
+            },
+          },
+          {
+            label: 'onErrorOccurred',
+            event: 'onErrorOccurred',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              documentId: 2,
+              frameId: 1,
+              frameType: 'sub_frame',
+              parentDocumentId: 1,
+              parentFrameId: 0,
+              fromCache: false,
+              error: 'net::ERR_ABORTED',
+              initiator: initiator,
+            },
+          }
+        ],
+        [[
+          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+          'onErrorOccurred'
+        ]],
+        {
+          urls: ['<all_urls>'],
+          types: ['xmlhttprequest'],
+        });
 
     navigateAndWait(mainUrl, function() {
       chrome.tabs.executeScript(tabId, {
@@ -84,7 +92,7 @@ runTests([
           x.open('GET', '${url}', true);
           x.send();
           frameElement.remove();
-        }`
+        }`,
       });
     });
   },
@@ -93,77 +101,89 @@ runTests([
   function startXMLHttpRequestAndRemoveTab() {
     const hostname = 'slow-resourcetype-xhr-immediately-remove-tab';
     const url = getSlowURL(hostname);
-    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname)
+    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname);
     const mainUrl = getServerURL('empty.html', hostname);
 
-    expect([
-      { label: 'onBeforeRequest',
-        event: 'onBeforeRequest',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          frameUrl: 'unknown frame URL',
-          tabId: 1,
-          initiator: initiator,
-          documentId: 1
-        }
-      },
-      { label: 'onBeforeSendHeaders',
-        event: 'onBeforeSendHeaders',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          tabId: 1,
-          initiator: initiator,
-          documentId: 1
-        },
-      },
-      { label: 'onSendHeaders',
-        event: 'onSendHeaders',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          tabId: 1,
-          initiator: initiator,
-          documentId: 1
-        },
-      },
-      { label: 'onErrorOccurred',
-        event: 'onErrorOccurred',
-        details: {
-          type: 'xmlhttprequest',
-          url,
-          fromCache: false,
-          error: 'net::ERR_ABORTED',
-          tabId: 1,
-          initiator: initiator,
-          documentId: 1
-        },
-      }],
-      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-        'onErrorOccurred']],
-      {
-        urls: ['<all_urls>'],
-        types: ['xmlhttprequest'],
-      });
+    expect(
+        [
+          {
+            label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              frameUrl: 'unknown frame URL',
+              tabId: 1,
+              initiator: initiator,
+              documentId: 1,
+            },
+          },
+          {
+            label: 'onBeforeSendHeaders',
+            event: 'onBeforeSendHeaders',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              tabId: 1,
+              initiator: initiator,
+              documentId: 1,
+            },
+          },
+          {
+            label: 'onSendHeaders',
+            event: 'onSendHeaders',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              tabId: 1,
+              initiator: initiator,
+              documentId: 1,
+            },
+          },
+          {
+            label: 'onErrorOccurred',
+            event: 'onErrorOccurred',
+            details: {
+              type: 'xmlhttprequest',
+              url,
+              fromCache: false,
+              error: 'net::ERR_ABORTED',
+              tabId: 1,
+              initiator: initiator,
+              documentId: 1,
+            },
+          }
+        ],
+        [[
+          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+          'onErrorOccurred'
+        ]],
+        {
+          urls: ['<all_urls>'],
+          types: ['xmlhttprequest'],
+        });
 
-    var callbackDone = chrome.test.callbackAdded();
+    const callbackDone = chrome.test.callbackAdded();
 
     // Creating a new tab instead of re-using the tab from the test framework
     // because a page can only close itself if it has no navigation history.
-    chrome.tabs.create({
-      url: mainUrl,
-    }, function(tab) {
-      chrome.tabs.executeScript(tab.id, {
-        code: `
+    chrome.tabs.create(
+        {
+          url: mainUrl,
+        },
+        function(tab) {
+          chrome.tabs.executeScript(
+              tab.id, {
+                code: `
           var x = new XMLHttpRequest();
           x.open('GET', '${url}', true);
           x.send();
           window.close();
           // Closing the tab should not be blocked. If it does, then the slow
           // request will eventually complete and cause a test failure.
-        `
-      }, callbackDone);
-    });
+        `,
+              },
+              callbackDone);
+        });
   },
 ]);

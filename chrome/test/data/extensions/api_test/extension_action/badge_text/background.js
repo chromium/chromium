@@ -24,5 +24,5 @@ chrome.test.runTests([
     chrome.test.assertEq(150, (await chrome.action.getBadgeText({})).length);
 
     chrome.test.succeed();
-  }
+  },
 ]);

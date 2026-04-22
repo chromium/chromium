@@ -9,22 +9,23 @@ const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
 const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
-chrome.test.runTests([
-  function setupWindow() {
-    createWindow([pageUrl('a')], {}, pass(function(winId, tabIds) {
-      firstTabId = tabIds[0];
-      chrome.tabs.get(firstTabId, pass(function(tab) {
-        assertTrue(tab.width > 0);
-        assertTrue(tab.height > 0);
-        firstTab = tab;
-      }));
-    }));
-  },
+  chrome.test.runTests([
+    function setupWindow() {
+      createWindow([pageUrl('a')], {}, pass(function(winId, tabIds) {
+                     firstTabId = tabIds[0];
+                     chrome.tabs.get(firstTabId, pass(function(tab) {
+                                       assertTrue(tab.width > 0);
+                                       assertTrue(tab.height > 0);
+                                       firstTab = tab;
+                                     }));
+                   }));
+    },
 
-  function sizeAfterDuplicatingTab() {
-    chrome.tabs.duplicate(firstTabId, pass(function(tab) {
-      assertEq(firstTab.width, tab.width);
-      assertEq(firstTab.height, tab.height);
-    }));
-  }
-])});
+    function sizeAfterDuplicatingTab() {
+      chrome.tabs.duplicate(firstTabId, pass(function(tab) {
+                              assertEq(firstTab.width, tab.width);
+                              assertEq(firstTab.height, tab.height);
+                            }));
+    },
+  ]);
+});

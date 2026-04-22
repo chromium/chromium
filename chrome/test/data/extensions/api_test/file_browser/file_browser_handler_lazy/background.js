@@ -58,10 +58,10 @@ function readAndExpectContent(entry, expectSuccess, expectedContent, callback) {
     assertEqAndRunCallback(expectedContent, reader.result, error, callback);
   };
 
-  entry.file(reader.readAsText.bind(reader),
-             assertEqAndRunCallback.bind(null,
-                 false, expectSuccess, error, callback));
-};
+  entry.file(
+      reader.readAsText.bind(reader),
+      assertEqAndRunCallback.bind(null, false, expectSuccess, error, callback));
+}
 
 /**
  * Attempts to write |content| to the end of the |entry| and verifies that the
@@ -91,7 +91,7 @@ function write(entry, content, expectSuccess, callback) {
       assertEqAndRunCallback.bind(
           null, expectSuccess, false,
           `Getting writer for: '${entry.fullPath}'.`, callback));
-};
+}
 
 /**
  * Runs read test.
@@ -100,8 +100,8 @@ function write(entry, content, expectSuccess, callback) {
  * @params {boolean} expectSuccess Whether the read should succeed.
  */
 function readTest(entry, expectSuccess) {
-  readAndExpectContent(entry, expectSuccess, INITIAL_TEST_FILE_CONTENT,
-                       chrome.test.succeed)
+  readAndExpectContent(
+      entry, expectSuccess, INITIAL_TEST_FILE_CONTENT, chrome.test.succeed);
 }
 
 /**
@@ -114,9 +114,10 @@ function readTest(entry, expectSuccess) {
 function getSiblingTest(entry) {
   const error = `Got file ('${entry.fullPath.concat('.foo')}') for which` +
       'file access was not granted.';
-  entry.filesystem.root.getFile(entry.fullPath.concat('.foo'), {},
-                                function (entry) { chrome.test.fail(error); },
-                                chrome.test.succeed);
+  entry.filesystem.root.getFile(
+      entry.fullPath.concat('.foo'), {}, function(entry) {
+        chrome.test.fail(error);
+      }, chrome.test.succeed);
 }
 
 /**
@@ -130,8 +131,9 @@ function getSiblingTest(entry) {
 function writeTest(entry, expectSuccess) {
   const verifyFileContent = function() {
     let expectedContent = INITIAL_TEST_FILE_CONTENT;
-    if (expectSuccess)
+    if (expectSuccess) {
       expectedContent = expectedContent.concat(TEXT_TO_WRITE);
+    }
 
     readAndExpectContent(entry, true, expectedContent, chrome.test.succeed);
   };
@@ -155,15 +157,15 @@ function executeListener(id, details) {
 
     // Run tests for read-write handler.
     chrome.test.runTests([
-        function readReadWrite() {
-          readTest(entry, true);
-        },
-        function getSilblingReadWrite() {
-          getSiblingTest(entry);
-        },
-        function writeReadWrite() {
-          writeTest(entry, true);
-        },
+      function readReadWrite() {
+        readTest(entry, true);
+      },
+      function getSilblingReadWrite() {
+        getSiblingTest(entry);
+      },
+      function writeReadWrite() {
+        writeTest(entry, true);
+      },
     ]);
   } else if (id != 'ReadOnly') {
     chrome.test.notifyFail(`Unexpected action id: ${id}`);

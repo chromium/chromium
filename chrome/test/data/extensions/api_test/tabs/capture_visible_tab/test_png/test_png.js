@@ -12,7 +12,7 @@ const assertTrue = chrome.test.assertTrue;
 
 const WINDOW_RECT = {
   width: 400,
-  height: 400
+  height: 400,
 };
 
 const TEST_DIR = '/extensions/api_test/tabs/capture_visible_tab/test_png/';
@@ -96,7 +96,7 @@ loadScript.then(() => {
                                                 'Some pixels should not be white.',
                                             totalPixelsChecked:
                                                 totalPixelsChecked,
-                                            numWhitePixels: colorCounts[0]
+                                            numWhitePixels: colorCounts[0],
                                           },
                                           null, 2));
                                 }));
@@ -165,7 +165,7 @@ loadScript.then(() => {
                                             devicePixelRatio),
                                         height: Math.ceil(
                                             captureRect.height *
-                                            devicePixelRatio)
+                                            devicePixelRatio),
                                       },
                                       '255,255,255,255');  // White.
                                 }));
@@ -199,7 +199,7 @@ loadScript.then(() => {
                             testPixelsAreExpectedColor(
                                 imgDataUrl, {
                                   width: Math.ceil(rect.width * scale),
-                                  height: Math.ceil(rect.height * scale)
+                                  height: Math.ceil(rect.height * scale),
                                 },
                                 '255,255,255,255');  // White.
                           }));
@@ -255,7 +255,8 @@ loadScript.then(() => {
                                             'Image height should match window height');
                                       }))
                                       .catch(fail(e => {
-                                        return `Checking image dimensions failed: ${e}`;
+                                        return `Checking image dimensions failed: ${
+                                            e}`;
                                       }));
                                 });
                           }));
@@ -263,6 +264,6 @@ loadScript.then(() => {
               }));
             }));
       },
-    ])
+    ]);
   });
 });

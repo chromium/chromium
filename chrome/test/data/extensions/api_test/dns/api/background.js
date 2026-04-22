@@ -33,6 +33,7 @@ const testNonexistentHostnameResolution = function() {
   chrome.dns.resolve('this.hostname.is.bogus.test', callback);
 };
 
-chrome.test.runTests([testIPLiteralResolution,
-                      testHostnameResolution,
-                      testNonexistentHostnameResolution]);
+chrome.test.runTests([
+  testIPLiteralResolution, testHostnameResolution,
+  testNonexistentHostnameResolution
+]);

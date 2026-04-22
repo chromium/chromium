@@ -23,8 +23,9 @@ function createWindow(tabUrls, winOptions, callback) {
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (let i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++) {
       newTabIds.push(win.tabs[i].id);
+    }
 
     callback(win.id, newTabIds);
   });
@@ -39,20 +40,22 @@ function waitForAllTabs(callback) {
   function waitForTabs() {
     chrome.windows.getAll({populate: true}, function(windows) {
       let ready = true;
-      for (let i in windows) {
-        for (let j in windows[i].tabs) {
+      for (const i in windows) {
+        for (const j in windows[i].tabs) {
           if (windows[i].tabs[j].status != 'complete') {
             ready = false;
             break;
           }
         }
-        if (!ready)
+        if (!ready) {
           break;
+        }
       }
-      if (ready)
+      if (ready) {
         callback();
-      else
+      } else {
         setTimeout(waitForTabs, 30);
+      }
     });
   }
   waitForTabs();
@@ -61,14 +64,16 @@ function waitForAllTabs(callback) {
 // Like chrome.tabs.query, but with the ability to filter by |tabId| as well.
 // Returns the found tab or null
 function queryForTab(tabId, queryInfo, callback) {
-  chrome.tabs.query(queryInfo,
-    pass(function(tabs) {
-      const foundTabs = tabs.filter(function(tab) {
-        return (tab.id == tabId);
-      });
-      if (callback !== null)
-        callback(foundTabs.length ? foundTabs[0] : null);
-    })
+  chrome.tabs.query(
+      queryInfo,
+      pass(function(tabs) {
+        const foundTabs = tabs.filter(function(tab) {
+          return (tab.id == tabId);
+        });
+        if (callback !== null) {
+          callback(foundTabs.length ? foundTabs[0] : null);
+        }
+      }),
   );
 }
 
@@ -79,35 +84,37 @@ function queryForTab(tabId, queryInfo, callback) {
 // except it does not check the query.
 function onUpdatedExpect(queryableAttrib, expected, nonqueryableAttribsDict) {
   const onUpdatedCompleted = chrome.test.listenForever(
-    chrome.tabs.onUpdated,
-    function(tabId, changeInfo, tab) {
-      if (nonqueryableAttribsDict !== null) {
-        const nonqueryableAttribs = Object.keys(nonqueryableAttribsDict);
-        nonqueryableAttribs.forEach(function(nonqueryableAttrib) {
-          if (typeof changeInfo[nonqueryableAttrib] !== 'undefined') {
-            assertEq(nonqueryableAttribsDict[nonqueryableAttrib],
-                     changeInfo[nonqueryableAttrib]);
-            assertEq(nonqueryableAttribsDict[nonqueryableAttrib],
-                     tab[nonqueryableAttrib]);
-          }
-        });
-      }
-      if (changeInfo.hasOwnProperty(queryableAttrib)) {
-        assertEq(expected, changeInfo[queryableAttrib]);
-        assertEq(expected, tab[queryableAttrib]);
-        const queryInfo = {};
-        queryInfo[queryableAttrib] = expected;
-        queryForTab(tabId, queryInfo, pass(function(tab) {
+      chrome.tabs.onUpdated,
+      function(tabId, changeInfo, tab) {
+        if (nonqueryableAttribsDict !== null) {
+          const nonqueryableAttribs = Object.keys(nonqueryableAttribsDict);
+          nonqueryableAttribs.forEach(function(nonqueryableAttrib) {
+            if (typeof changeInfo[nonqueryableAttrib] !== 'undefined') {
+              assertEq(
+                  nonqueryableAttribsDict[nonqueryableAttrib],
+                  changeInfo[nonqueryableAttrib]);
+              assertEq(
+                  nonqueryableAttribsDict[nonqueryableAttrib],
+                  tab[nonqueryableAttrib]);
+            }
+          });
+        }
+        if (changeInfo.hasOwnProperty(queryableAttrib)) {
+          assertEq(expected, changeInfo[queryableAttrib]);
           assertEq(expected, tab[queryableAttrib]);
-          queryInfo[queryableAttrib] = !expected;
-
+          const queryInfo = {};
+          queryInfo[queryableAttrib] = expected;
           queryForTab(tabId, queryInfo, pass(function(tab) {
-            assertEq(null, tab);
-            onUpdatedCompleted();
-          }));
-        }));
-      }
-    }
+                        assertEq(expected, tab[queryableAttrib]);
+                        queryInfo[queryableAttrib] = !expected;
+
+                        queryForTab(tabId, queryInfo, pass(function(tab) {
+                                      assertEq(null, tab);
+                                      onUpdatedCompleted();
+                                    }));
+                      }));
+        }
+      },
   );
 }
 
@@ -120,8 +127,8 @@ function setupWindow(pageNames) {
       const tabIdsTable = {};
       for (let i = 0; i < tabIds.length; i++) {
         tabIdsTable[pageNames[i]] = tabIds[i];
-      };
+      }
       resolve([winId, tabIdsTable]);
     });
   });
-};
+}

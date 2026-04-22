@@ -10,8 +10,7 @@ const testSetStorage = function(storageArea, key, value) {
       chrome.test.assertNoLastError();
       chrome.test.succeed();
     });
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -23,8 +22,7 @@ const testGetStorage = function(storageArea, key, expectedValue) {
       chrome.test.assertEq(expectedValue, result[key]);
       chrome.test.succeed();
     });
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -36,8 +34,7 @@ const testGetStorageBytesInUse = function(storageArea, key) {
       chrome.test.assertNe(0, bytes);
       chrome.test.succeed();
     });
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -52,8 +49,7 @@ const testRemoveStorage = function(storageArea, key) {
         chrome.test.succeed();
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -68,8 +64,7 @@ const testClearStorage = function(storageArea, key) {
         chrome.test.succeed();
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -87,8 +82,7 @@ const testOnStorageChanged = function(storageArea) {
     const options = {};
     options[changedKey] = changedValue;
     storageArea.set(options);
-  }
-  catch (e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
 };
@@ -108,7 +102,7 @@ const namespaces = [
     storageArea: chrome.storage.session,
     key: '_session_key',
     value: 'this is a session value',
-  }
+  },
 ];
 
 const tests = [];
@@ -134,7 +128,7 @@ for (const namespace of namespaces) {
       },
       function testChanges() {
         testOnStorageChanged(namespace.storageArea);
-      })
+      });
 }
 
 chrome.test.runTests(tests);

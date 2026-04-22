@@ -72,7 +72,7 @@ async function main() {
     async function notifySuccessFromServiceWorker() {
       const testTag = 'event-1';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
       chrome.test.assertTrue(await promisifyWithLastError(
           chrome.fileManagerPrivate.addFileWatch, dirEntry));
 
@@ -96,7 +96,7 @@ async function main() {
       // Tag must be different each event.
       const testTag = 'event-2';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
       // Re-using the watcher added in the previous test.
 
       await promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -121,7 +121,7 @@ async function main() {
     async function notifyErrorSameTag() {
       const testTag = 'event-2';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
 
       const error = await catchError(
           promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -142,7 +142,7 @@ async function main() {
     // supports the tag.
     async function notifyErrorEmptyTag() {
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
 
       const error = await catchError(
           promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -163,7 +163,7 @@ async function main() {
     // the tag.
     async function notifyErrorNoTag() {
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
 
       const error = await catchError(
           promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -186,7 +186,7 @@ async function main() {
     async function notifyErrorDifferentModeTag() {
       const testTag = 'event-3';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
 
       const error = await catchError(
           promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -208,7 +208,7 @@ async function main() {
     async function notifyDeleted() {
       const testTag = 'event-4';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
       // Re-using the watcher added in the previous test.
 
       await promisifyWithLastError(chrome.fileSystemProvider.notify, {
@@ -233,7 +233,7 @@ async function main() {
     async function notifyNotWatched() {
       const testTag = 'event-5';
       directoryChangeEvents.clear();
-      let dirEntry = await getTestDirEntry();
+      const dirEntry = await getTestDirEntry();
 
       const error = await catchError(
           promisifyWithLastError(chrome.fileSystemProvider.notify, {

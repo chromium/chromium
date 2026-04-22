@@ -8,15 +8,15 @@
  * @return {!Promise<chrome.fileManagerPrivate.VolumeMetadata>} Volume metadata.
  */
 async function getVolumeMetadataByType(volumeType) {
-  return new Promise(
-      (resolve,
-       reject) => {chrome.fileManagerPrivate.getVolumeMetadataList(list => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-          return;
-        }
-        resolve(list.find(v => v.volumeType === volumeType));
-      })});
+  return new Promise((resolve, reject) => {
+    chrome.fileManagerPrivate.getVolumeMetadataList(list => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+        return;
+      }
+      resolve(list.find(v => v.volumeType === volumeType));
+    });
+  });
 }
 
 /**
@@ -84,7 +84,7 @@ chrome.test.getConfig(config => {
           chrome.fileManagerPrivate.getDlpMetadata(
               [file], chrome.test.callbackPass(dlpMetadata => {
                 chrome.test.assertEq([], dlpMetadata);
-              }))
+              }));
         },
         async function getDlpRestrictionDetails_Disabled() {
           chrome.fileManagerPrivate.getDlpRestrictionDetails(
@@ -99,7 +99,7 @@ chrome.test.getConfig(config => {
               chrome.test.callbackPass(blockedComponents => {
                 chrome.test.assertEq([], blockedComponents);
               }));
-        }
+        },
       ]);
       break;
     case 'error':
@@ -117,17 +117,17 @@ chrome.test.getConfig(config => {
                     [{
                       isDlpRestricted: false,
                       isRestrictedForDestination: false,
-                      sourceUrl: ''
+                      sourceUrl: '',
                     }],
                     dlpMetadata);
-              }))
+              }));
         },
         async function getDlpMetadata_EmptyList() {
           chrome.fileManagerPrivate.getDlpMetadata(
               [], chrome.test.callbackPass(dlpMetadata => {
                 chrome.test.assertEq(0, dlpMetadata.length);
-              }))
-        }
+              }));
+        },
       ]);
       break;
     case 'restriction_details':
@@ -139,16 +139,19 @@ chrome.test.getConfig(config => {
                   [
                     {
                       components: [
-                        'android_files', 'crostini', 'guest_os', 'removable'
+                        'android_files',
+                        'crostini',
+                        'guest_os',
+                        'removable',
                       ],
                       level: 'block',
-                      urls: ['https://external.com']
+                      urls: ['https://external.com'],
                     },
                     {
                       components: ['drive'],
                       level: 'allow',
-                      urls: ['https://internal.com']
-                    }
+                      urls: ['https://internal.com'],
+                    },
                   ],
                   dlpRestrictionDetails);
             }));
@@ -170,67 +173,63 @@ chrome.test.getConfig(config => {
         async function dismissIOTask() {
           // Valid task id - succeeds and notifies FPNM.
           chrome.fileManagerPrivate.dismissIOTask(
-            1,
-            chrome.test.callbackPass());
+              1, chrome.test.callbackPass());
           // Invalid task id - succeeds but won't notify FPNM.
           chrome.fileManagerPrivate.dismissIOTask(
-            -5,
-            chrome.test.callbackFail('Invalid task id'));
+              -5, chrome.test.callbackFail('Invalid task id'));
 
           chrome.test.succeed();
-        }
+        },
       ]);
       break;
-      case 'progressPausedTasks':
-        chrome.test.runTests([
-          async function progressPausedTasks() {
-            // Succeeds and notifies FPNM.
-            chrome.fileManagerPrivate.progressPausedTasks(
+    case 'progressPausedTasks':
+      chrome.test.runTests([
+        async function progressPausedTasks() {
+          // Succeeds and notifies FPNM.
+          chrome.fileManagerPrivate.progressPausedTasks(
               chrome.test.callbackPass());
 
-            chrome.test.succeed();
-          }
-        ]);
-        break;
+          chrome.test.succeed();
+        },
+      ]);
+      break;
     case 'showPolicyDialog':
       chrome.test.runTests([
         async function showPolicyDialog() {
           // Invalid task id throws an error.
           chrome.fileManagerPrivate.showPolicyDialog(
-            -5,
-            chrome.fileManagerPrivate.PolicyDialogType.WARNING,
-            chrome.test.callbackFail('Invalid task id'));
+              -5, chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+              chrome.test.callbackFail('Invalid task id'));
           // Valid calls: succeed and notify FPNM.
           chrome.fileManagerPrivate.showPolicyDialog(
-            1,
-            chrome.fileManagerPrivate.PolicyDialogType.WARNING,
-            chrome.test.callbackPass());
+              1, chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+              chrome.test.callbackPass());
           chrome.fileManagerPrivate.showPolicyDialog(
-            2,
-            chrome.fileManagerPrivate.PolicyDialogType.ERROR,
-            chrome.test.callbackPass());
+              2, chrome.fileManagerPrivate.PolicyDialogType.ERROR,
+              chrome.test.callbackPass());
 
           chrome.test.succeed();
-        }
+        },
       ]);
-    break;
+      break;
     case 'getDialogCaller':
       chrome.test.runTests([
         async function getDialogCaller() {
           chrome.fileManagerPrivate.getDialogCaller(
-            chrome.test.callbackPass(
-              caller => {
-                chrome.test.assertEq({url: 'https://example.com/'},
-                caller)})
-            );
-        }
+              chrome.test.callbackPass(caller => {
+                chrome.test.assertEq({url: 'https://example.com/'}, caller);
+              }),
+          );
+        },
       ]);
       break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {
           const testEntries = await getFileEntries('testing', [
-            'blocked_file.txt', 'unrestricted_file.txt', 'untracked_file.txt'
+            'blocked_file.txt',
+            'unrestricted_file.txt',
+            'untracked_file.txt',
           ]);
           chrome.test.assertEq(3, testEntries.length);
           chrome.fileManagerPrivate.getDlpMetadata(
@@ -240,22 +239,22 @@ chrome.test.getConfig(config => {
                       {
                         isDlpRestricted: true,
                         isRestrictedForDestination: false,
-                        sourceUrl: 'https://example1.com'
+                        sourceUrl: 'https://example1.com',
                       },
                       {
                         isDlpRestricted: false,
                         isRestrictedForDestination: false,
-                        sourceUrl: 'https://example2.com'
+                        sourceUrl: 'https://example2.com',
                       },
                       {
                         isDlpRestricted: false,
                         isRestrictedForDestination: false,
-                        sourceUrl: ''
-                      }
+                        sourceUrl: '',
+                      },
                     ],
                     dlpMetadata);
-              }))
-        }
+              }));
+        },
       ]);
       break;
     default:

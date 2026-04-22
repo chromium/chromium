@@ -15,18 +15,16 @@ chrome.test.runTests([
     for (let i = 0; i < maxMenuItems; ++i) {
       await new Promise((resolve) => {
         chrome.contextMenus.create(
-            {title: `Test item ${i}`,
-             id: `item ${i}`},
-            () => {
+            {title: `Test item ${i}`, id: `item ${i}`}, () => {
               chrome.test.assertNoLastError();
               resolve();
-            })});
+            });
+      });
     }
 
     // Try to create one more over the limit.
     chrome.contextMenus.create(
-        {title: `Test item ${maxMenuItems}`,
-         id: `item ${maxMenuItems}`},
+        {title: `Test item ${maxMenuItems}`, id: `item ${maxMenuItems}`},
         () => {
           chrome.test.assertLastError(
               `An extension can create a maximum of ${maxMenuItems} menu ` +

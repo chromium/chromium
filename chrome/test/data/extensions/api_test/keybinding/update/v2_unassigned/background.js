@@ -8,7 +8,7 @@ chrome.action.onClicked.addListener(function(tab) {
     target: {tabId: tab.id},
     func: () => {
       document.body.bgColor = 'red';
-    }
+    },
   });
 });
 

@@ -4,4 +4,4 @@
 
 onload = function() {
   document.location = 'b.html';
-}
+};

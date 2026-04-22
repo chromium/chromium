@@ -9,8 +9,7 @@ chrome.test.runTests([
   function testUpdateUrlData() {
     // Data string must not be too long.
     try {
-      const data =
-          '01234567890123456789012345678901234567890123456789' +
+      const data = '01234567890123456789012345678901234567890123456789' +
           '01234567890123456789012345678901234567890123456789' +  // 100
           '01234567890123456789012345678901234567890123456789' +
           '01234567890123456789012345678901234567890123456789' +  // 200
@@ -34,7 +33,7 @@ chrome.test.runTests([
       chrome.extension.setUpdateUrlData(data);
       // Should not reach this line since the above call throws.
       chrome.test.fail();
-    } catch(ex) {
+    } catch (ex) {
     }
 
     chrome.extension.setUpdateUrlData('a=1&b=2&foo');
@@ -49,5 +48,5 @@ chrome.test.runTests([
         chrome.test.callbackPass(function(hasAccess) {
           chrome.test.assertFalse(hasAccess);
         }));
-  }
+  },
 ]);

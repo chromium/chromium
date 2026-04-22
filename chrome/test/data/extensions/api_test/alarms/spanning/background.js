@@ -4,7 +4,10 @@
 
 const inIncognito = chrome.extension.inIncognitoContext;
 const alarmName = inIncognito ? 'incognito' : 'normal';
-const createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
+const createParams = {
+  delayInMinutes: 0.001,
+  periodInMinutes: 60
+};
 
 let alarmFired = false;
 let succeedOnAlarm = false;
@@ -21,7 +24,7 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 chrome.test.runTests([
   // Creates an alarm with the name of the context it was created in.
   function createAlarm() {
-    let isWaitingForAlarm = true;
+    const isWaitingForAlarm = true;
     chrome.alarms.create(alarmName, createParams, () => {
       chrome.test.assertNoLastError();
       // The alarm (which was set for an obscenely short amount of time) could

@@ -28,8 +28,8 @@ runTests([
   function simpleLoadHttp() {
     // MPArch assigns an opaque origin as the initiator for embedder-initiated
     // navigations. Opaque initiators serialize to "null".
-    var fencedFrameInitiator = 'null';
-    var fencedFrameNavigationInitiator =
+    const fencedFrameInitiator = 'null';
+    const fencedFrameNavigationInitiator =
         getServerURL('', 'a.test', 'https').slice(0, -1);
 
     expect(
@@ -42,7 +42,7 @@ runTests([
               url: getURLHttpSimpleLoad(),
               frameUrl: getURLHttpSimpleLoad(),
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onBeforeSendHeaders-1',
@@ -51,7 +51,7 @@ runTests([
               url: getURLHttpSimpleLoad(),
               requestHeadersValid: true,
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onSendHeaders-1',
@@ -60,7 +60,7 @@ runTests([
               url: getURLHttpSimpleLoad(),
               requestHeadersValid: true,
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onHeadersReceived-1',
@@ -71,7 +71,7 @@ runTests([
               statusLine: 'HTTP/1.1 200 OK',
               statusCode: 200,
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onResponseStarted-1',
@@ -84,7 +84,7 @@ runTests([
               fromCache: false,
               statusLine: 'HTTP/1.1 200 OK',
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onCompleted-1',
@@ -97,7 +97,7 @@ runTests([
               responseHeadersExist: true,
               statusLine: 'HTTP/1.1 200 OK',
               initiator: getServerDomain(initiators.BROWSER_INITIATED),
-            }
+            },
           },
           {
             label: 'onBeforeRequest-2',
@@ -110,8 +110,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onBeforeSendHeaders-2',
@@ -124,8 +124,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onSendHeaders-2',
@@ -138,8 +138,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onHeadersReceived-2',
@@ -154,8 +154,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onResponseStarted-2',
@@ -172,8 +172,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onCompleted-2',
@@ -190,8 +190,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onBeforeRequest-3',
@@ -204,8 +204,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameNavigationInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onBeforeSendHeaders-3',
@@ -218,8 +218,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameNavigationInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onSendHeaders-3',
@@ -232,8 +232,8 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameNavigationInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
           {
             label: 'onErrorOccurred-3',
@@ -247,19 +247,30 @@ runTests([
               parentFrameId: 0,
               initiator: fencedFrameNavigationInitiator,
               parentDocumentId: 1,
-              frameType: 'fenced_frame'
-            }
+              frameType: 'fenced_frame',
+            },
           },
         ],
-        [  // event order
+        [
+          // event order
           [
-            'onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
-            'onHeadersReceived-1', 'onResponseStarted-1', 'onCompleted-1',
-            'onBeforeRequest-2', 'onBeforeSendHeaders-2', 'onSendHeaders-2',
-            'onHeadersReceived-2', 'onResponseStarted-2', 'onCompleted-2',
-            'onBeforeRequest-3', 'onBeforeSendHeaders-3', 'onSendHeaders-3',
-            'onErrorOccurred-3'
-          ]
+            'onBeforeRequest-1',
+            'onBeforeSendHeaders-1',
+            'onSendHeaders-1',
+            'onHeadersReceived-1',
+            'onResponseStarted-1',
+            'onCompleted-1',
+            'onBeforeRequest-2',
+            'onBeforeSendHeaders-2',
+            'onSendHeaders-2',
+            'onHeadersReceived-2',
+            'onResponseStarted-2',
+            'onCompleted-2',
+            'onBeforeRequest-3',
+            'onBeforeSendHeaders-3',
+            'onSendHeaders-3',
+            'onErrorOccurred-3',
+          ],
         ],
         {urls: ['<all_urls>']},  // filter
         ['requestHeaders', 'responseHeaders']);

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-if (!chrome || !chrome.test)
+if (!chrome || !chrome.test) {
   throw new Error('chrome.test is undefined');
+}
 
 let portNumber;
 
@@ -40,7 +41,7 @@ const tests = [
   },
   function overwriteApi() {
     chrome.test.assertTrue(chrome.hasOwnProperty('history'));
-    let oldHistory = chrome.history;
+    const oldHistory = chrome.history;
     chrome.history = 'foo';
     chrome.test.assertEq('foo', chrome.history);
     delete chrome.history;
@@ -84,16 +85,16 @@ const tests = [
       port.postMessage('background page');
     };
 
-    chrome.runtime.onMessage.addListener(function listener(
-        message, sender, sendResponse) {
-      chrome.test.assertEq('startFlow', message);
-      createPort();
-      sendResponse('started');
-      chrome.runtime.onMessage.removeListener(listener);
-    });
+    chrome.runtime.onMessage.addListener(
+        function listener(message, sender, sendResponse) {
+          chrome.test.assertEq('startFlow', message);
+          createPort();
+          sendResponse('started');
+          chrome.runtime.onMessage.removeListener(listener);
+        });
 
     const url = `http://localhost:${portNumber}` +
-              '/native_bindings/extension/messaging_test.html';
+        '/native_bindings/extension/messaging_test.html';
     chrome.tabs.create({url: url}, function(tab) {
       chrome.test.assertNoLastError();
       chrome.test.assertTrue(!!tab);
@@ -142,18 +143,17 @@ const tests = [
     chrome.test.assertTrue(!!chrome.storage.local.get, 'no get');
     chrome.test.assertTrue(!!chrome.storage.local.onChanged, 'no onChanged');
     // Check some properties.
-    chrome.test.assertTrue(!!chrome.storage.local.QUOTA_BYTES,
-                           'local quota bytes');
-    chrome.test.assertFalse(!!chrome.storage.local.MAX_ITEMS,
-                            'local max items');
+    chrome.test.assertTrue(
+        !!chrome.storage.local.QUOTA_BYTES, 'local quota bytes');
+    chrome.test.assertFalse(
+        !!chrome.storage.local.MAX_ITEMS, 'local max items');
     chrome.test.assertTrue(!!chrome.storage.sync, 'sync');
-    chrome.test.assertTrue(!!chrome.storage.sync.QUOTA_BYTES,
-                           'sync quota bytes');
-    chrome.test.assertTrue(!!chrome.storage.sync.MAX_ITEMS,
-                           'sync max items');
+    chrome.test.assertTrue(
+        !!chrome.storage.sync.QUOTA_BYTES, 'sync quota bytes');
+    chrome.test.assertTrue(!!chrome.storage.sync.MAX_ITEMS, 'sync max items');
     chrome.test.assertTrue(!!chrome.storage.managed, 'managed');
-    chrome.test.assertFalse(!!chrome.storage.managed.QUOTA_BYTES,
-                            'managed quota bytes');
+    chrome.test.assertFalse(
+        !!chrome.storage.managed.QUOTA_BYTES, 'managed quota bytes');
     chrome.storage.local.set({foo: 'bar', nullkey: null}, () => {
       chrome.storage.local.get(['foo', 'nullkey'], (results) => {
         chrome.test.assertTrue(!!results, 'no results');
@@ -227,35 +227,37 @@ const tests = [
       let sawSimple2 = false;
       chrome.webNavigation.onBeforeNavigate.addListener(
           function listener(details) {
-        // We create a bunch of tabs in other tests, which can potentially
-        // show up here. If this becomes too much of a problem, we can isolate
-        // these tests further, but for now, just using a unique url should be
-        // sufficient.
-        if (details.url.indexOf('unique') == -1)
-          return;
-        if (details.url.indexOf('simple.html') != -1)
-          sawSimple1 = true;
-        else if (details.url.indexOf('simple2.html') != -1)
-          sawSimple2 = true;
-        else
-          chrome.test.fail(details.url);
+            // We create a bunch of tabs in other tests, which can potentially
+            // show up here. If this becomes too much of a problem, we can
+            // isolate these tests further, but for now, just using a unique url
+            // should be sufficient.
+            if (details.url.indexOf('unique') == -1) {
+              return;
+            }
+            if (details.url.indexOf('simple.html') != -1) {
+              sawSimple1 = true;
+            } else if (details.url.indexOf('simple2.html') != -1) {
+              sawSimple2 = true;
+            } else {
+              chrome.test.fail(details.url);
+            }
 
-        if (sawSimple1 && sawSimple2) {
-          chrome.webNavigation.onBeforeNavigate.removeListener(listener);
-          resolve();
-        }
-      });
+            if (sawSimple1 && sawSimple2) {
+              chrome.webNavigation.onBeforeNavigate.removeListener(listener);
+              resolve();
+            }
+          });
     });
 
     const filtered = new Promise((resolve, reject) => {
-      chrome.webNavigation.onBeforeNavigate.addListener(
-          function listener(details) {
-        chrome.test.assertNe(-1, details.url.indexOf('unique'));
-        chrome.test.assertTrue(details.url.indexOf('simple2.html') != -1,
-                               details.url);
-        chrome.webNavigation.onBeforeNavigate.removeListener(listener);
-        resolve();
-      }, {url: [{pathContains: 'simple2.html'}]});
+      chrome.webNavigation.onBeforeNavigate
+          .addListener(function listener(details) {
+            chrome.test.assertNe(-1, details.url.indexOf('unique'));
+            chrome.test.assertTrue(
+                details.url.indexOf('simple2.html') != -1, details.url);
+            chrome.webNavigation.onBeforeNavigate.removeListener(listener);
+            resolve();
+          }, {url: [{pathContains: 'simple2.html'}]});
     });
 
     const url1 = `http://unique.com:${portNumber}/native_bindings/simple.html`;
@@ -263,7 +265,9 @@ const tests = [
     chrome.tabs.create({url: url1});
     chrome.tabs.create({url: url2});
 
-    Promise.all([unfiltered, filtered]).then(() => { chrome.test.succeed(); });
+    Promise.all([unfiltered, filtered]).then(() => {
+      chrome.test.succeed();
+    });
   },
   function testContentSettings() {
     chrome.test.assertTrue(!!chrome.contentSettings);

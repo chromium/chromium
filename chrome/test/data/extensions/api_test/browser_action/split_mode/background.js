@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.create({ url: 'about:blank' }, function(newtab) {
-    chrome.windows.get(tab.windowId, { populate: true }, function(window) {
+  chrome.tabs.create({url: 'about:blank'}, function(newtab) {
+    chrome.windows.get(tab.windowId, {populate: true}, function(window) {
       if (!window) {
         chrome.test.notifyFail(
             'Could not get window for the tab (probably due to wrong profile)');
@@ -16,6 +16,6 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   });
 });
 
-let message = chrome.extension.inIncognitoContext ?
-  'incognito ready' : 'regular ready';
+const message =
+    chrome.extension.inIncognitoContext ? 'incognito ready' : 'regular ready';
 chrome.test.sendMessage(message);

@@ -19,6 +19,6 @@ function countItemsInHistory() {
 }
 
 // Return a message to sync test with page load.
-const message = chrome.extension.inIncognitoContext ?
-  'incognito ready' : 'regular ready';
+const message =
+    chrome.extension.inIncognitoContext ? 'incognito ready' : 'regular ready';
 chrome.test.sendMessage(message);

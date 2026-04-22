@@ -21,8 +21,9 @@ const onRuleMatchedDebugCallback = (rule) => {
 
 let testServerPort;
 function getServerURL(host) {
-  if (!testServerPort)
+  if (!testServerPort) {
     throw new Error('Called getServerURL outside of runTests.');
+  }
   return `http://${host}:${testServerPort}/`;
 }
 
@@ -93,12 +94,12 @@ const tests = [
                 parentFrameId: -1,
                 tabId: tab.id,
                 type: 'main_frame',
-                url: url
+                url: url,
               },
               rule: {
                 ruleId: 1,
-                rulesetId: chrome.declarativeNetRequest.DYNAMIC_RULESET_ID
-              }
+                rulesetId: chrome.declarativeNetRequest.DYNAMIC_RULESET_ID,
+              },
             };
             verifyExpectedRuleInfo(expectedRuleInfo);
             chrome.test.succeed();
@@ -121,9 +122,9 @@ const tests = [
           parentFrameId: -1,
           tabId: tab.id,
           type: 'main_frame',
-          url: url
+          url: url,
         },
-        rule: {ruleId: 1, rulesetId: 'rules1'}
+        rule: {ruleId: 1, rulesetId: 'rules1'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
@@ -134,7 +135,7 @@ const tests = [
   // the extension background page) trigger the listener.
   function testBackgroundPageRequest() {
     function listenOnce(target, callback) {
-      let innerCallback = function(info) {
+      const innerCallback = function(info) {
         target.removeListener(innerCallback);
         callback(info);
       };
@@ -194,8 +195,9 @@ const tests = [
       chrome.test.assertEq(3, matchedRules.length);
 
       const expectedMatches = [
-        {ruleId: 2, rulesetId: 'rules1'}, {ruleId: 3, rulesetId: 'rules2'},
-        {ruleId: 1, rulesetId: 'rules1'}
+        {ruleId: 2, rulesetId: 'rules1'},
+        {ruleId: 3, rulesetId: 'rules2'},
+        {ruleId: 1, rulesetId: 'rules1'},
       ];
       for (let i = 0; i < matchedRules.length; ++i) {
         chrome.test.assertEq(
@@ -229,14 +231,14 @@ const tests = [
           method: 'GET',
           type: 'sub_frame',
           tabId: tab.id,
-          url: innerFrameUrl
+          url: innerFrameUrl,
         },
-        rule: {ruleId: 6, rulesetId: 'rules2'}
+        rule: {ruleId: 6, rulesetId: 'rules2'},
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
     });
-  }
+  },
 ];
 
 chrome.test.getConfig(function(config) {

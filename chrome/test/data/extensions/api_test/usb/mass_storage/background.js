@@ -4,26 +4,26 @@
 
 chrome.usb.getDevices({}, devices => {
   if (devices.length !== 1) {
-    console.error("Expected a single device, but got " + devices.length + ".");
-    chrome.test.sendMessage("failure");
+    console.error('Expected a single device, but got ' + devices.length + '.');
+    chrome.test.sendMessage('failure');
     return;
   }
   device = devices[0];
   if (device.vendorId !== 1 || device.productId !== 2) {
-    console.error("Unexpected device was returned by getDevices.");
-    chrome.test.sendMessage("failure");
+    console.error('Unexpected device was returned by getDevices.');
+    chrome.test.sendMessage('failure');
     return;
   }
 
-  chrome.test.sendMessage("ready");
+  chrome.test.sendMessage('ready');
 });
 
 chrome.usb.onDeviceRemoved.addListener((device) => {
   if (device.vendorId !== 1 || device.productId !== 2) {
-    console.error("Unexpected device was removed.");
-    chrome.test.sendMessage("failure");
+    console.error('Unexpected device was removed.');
+    chrome.test.sendMessage('failure');
     return;
   }
 
-  chrome.test.sendMessage("success");
+  chrome.test.sendMessage('success');
 });

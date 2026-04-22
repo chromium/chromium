@@ -28,9 +28,9 @@ chrome.test.runTests([
     // and running the test, there may be an additional change event that
     // comes through. If so, we should ignore it.
     const initialChangeEvent = {
-      'changes-policy': { newValue:'bbb' },
-      'constant-policy': { newValue:'aaa' },
-      'deleted-policy': { newValue:'ccc' }
+      'changes-policy': {newValue: 'bbb'},
+      'constant-policy': {newValue: 'aaa'},
+      'deleted-policy': {newValue: 'ccc'},
     };
 
     // This only enters on PRE_ManagedStorageEvents, when the extension is
@@ -53,11 +53,13 @@ chrome.test.runTests([
           return;
         }
 
-        chrome.test.assertEq({
-          'constant-policy': 'aaa',
-          'changes-policy': 'bbb',
-          'deleted-policy': 'ccc'
-        }, results);
+        chrome.test.assertEq(
+            {
+              'constant-policy': 'aaa',
+              'changes-policy': 'bbb',
+              'deleted-policy': 'ccc',
+            },
+            results);
         initialPoliciesVerified = true;
         // Signal to the browser that the extension had performed the
         // initial load. The browser will change the policy and trigger
@@ -100,21 +102,21 @@ chrome.test.runTests([
         expectedChanges = {
           'changes-policy': {
             oldValue: 'bbb',
-            newValue: 'ddd'
+            newValue: 'ddd',
           },
-          'deleted-policy': { oldValue: 'ccc' },
-          'new-policy': { newValue: 'eee' }
+          'deleted-policy': {oldValue: 'ccc'},
+          'new-policy': {newValue: 'eee'},
         };
       } else {
         expectedChanges = {
-          'changes-policy': { oldValue: 'ddd' },
-          'constant-policy': { oldValue: 'aaa' },
-          'new-policy': { oldValue: 'eee' }
+          'changes-policy': {oldValue: 'ddd'},
+          'constant-policy': {oldValue: 'aaa'},
+          'new-policy': {oldValue: 'eee'},
         };
       }
 
       chrome.test.assertEq(expectedChanges, changes);
       chrome.test.succeed();
     });
-  }
+  },
 ]);

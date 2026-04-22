@@ -10,4 +10,3 @@ chrome.test.runTests([
     runCopyToTest(invalidWEBPImageCase, false /* expect failure */);
   },
 ]);
-

@@ -22,7 +22,7 @@ const TESTING_TOO_LARGE_CHUNK_FILE = Object.freeze({
   isDirectory: false,
   name: 'too-large-chunk.txt',
   size: 2 * 1024 * 1024,  // 2MB
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -34,7 +34,7 @@ const TESTING_INVALID_CALLBACK_FILE = Object.freeze({
   isDirectory: false,
   name: 'invalid-request.txt',
   size: 1 * 1024 * 1024,  // 1MB
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -46,7 +46,7 @@ const TESTING_NEGATIVE_SIZE_FILE = Object.freeze({
   isDirectory: false,
   name: 'negative-size.txt',
   size: -1 * 1024 * 1024,  // -1MB
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -58,7 +58,7 @@ const TESTING_RELATIVE_NAME_FILE = Object.freeze({
   isDirectory: false,
   name: '../../../b.txt',
   size: 1 * 1024 * 1024,  // 1MB
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -151,8 +151,9 @@ function onReadFileRequested(options, onSuccess, onError) {
   }
 
   if (filePath === `/${TESTING_NEGATIVE_SIZE_FILE.name}`) {
-    onSuccess(new ArrayBuffer(-TESTING_NEGATIVE_SIZE_FILE.size * 2),
-              false /* hasMore */);
+    onSuccess(
+        new ArrayBuffer(-TESTING_NEGATIVE_SIZE_FILE.size * 2),
+        false /* hasMore */);
     return;
   }
 
@@ -175,13 +176,13 @@ function setUp(callback) {
       testUtil.onGetMetadataRequestedDefault);
 
   testUtil.defaultMetadata[`/${TESTING_TOO_LARGE_CHUNK_FILE.name}`] =
-    TESTING_TOO_LARGE_CHUNK_FILE;
+      TESTING_TOO_LARGE_CHUNK_FILE;
   testUtil.defaultMetadata[`/${TESTING_INVALID_CALLBACK_FILE.name}`] =
-    TESTING_INVALID_CALLBACK_FILE;
+      TESTING_INVALID_CALLBACK_FILE;
   testUtil.defaultMetadata[`/${TESTING_NEGATIVE_SIZE_FILE.name}`] =
-    TESTING_NEGATIVE_SIZE_FILE;
+      TESTING_NEGATIVE_SIZE_FILE;
   testUtil.defaultMetadata[`/${TESTING_RELATIVE_NAME_FILE.name}`] =
-    TESTING_RELATIVE_NAME_FILE;
+      TESTING_RELATIVE_NAME_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
       onOpenFileRequested);
@@ -202,22 +203,22 @@ function runTests() {
     // and also much more than requested 1 KB of data).
     function returnTooLargeChunk() {
       testUtil.fileSystem.root.getFile(
-          TESTING_TOO_LARGE_CHUNK_FILE.name,
-          {create: false},
+          TESTING_TOO_LARGE_CHUNK_FILE.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
-            fileEntry.file(chrome.test.callbackPass(function(file) {
-              // Read 1 KB of data.
-              const fileSlice = file.slice(0, 1024);
-              const fileReader = new FileReader();
-              fileReader.onload = function(e) {
-                chrome.test.fail('Reading should fail.');
-              };
-              fileReader.onerror = chrome.test.callbackPass();
-              fileReader.readAsText(fileSlice);
-            }),
-            function(error) {
-              chrome.test.fail(error.name);
-            });
+            fileEntry.file(
+                chrome.test.callbackPass(function(file) {
+                  // Read 1 KB of data.
+                  const fileSlice = file.slice(0, 1024);
+                  const fileReader = new FileReader();
+                  fileReader.onload = function(e) {
+                    chrome.test.fail('Reading should fail.');
+                  };
+                  fileReader.onerror = chrome.test.callbackPass();
+                  fileReader.readAsText(fileSlice);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
           }),
           function(error) {
             chrome.test.fail(error.name);
@@ -228,22 +229,22 @@ function runTests() {
     // doesn't cause any harm.
     function invalidCallback() {
       testUtil.fileSystem.root.getFile(
-          TESTING_INVALID_CALLBACK_FILE.name,
-          {create: false},
+          TESTING_INVALID_CALLBACK_FILE.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
-            fileEntry.file(chrome.test.callbackPass(function(file) {
-              // Read 1 KB of data.
-              const fileSlice = file.slice(0, 1024);
-              const fileReader = new FileReader();
-              fileReader.onload = function(e) {
-                chrome.test.fail('Reading should fail.');
-              };
-              fileReader.onerror = chrome.test.callbackPass();
-              fileReader.readAsText(fileSlice);
-            }),
-            function(error) {
-              chrome.test.fail(error.name);
-            });
+            fileEntry.file(
+                chrome.test.callbackPass(function(file) {
+                  // Read 1 KB of data.
+                  const fileSlice = file.slice(0, 1024);
+                  const fileReader = new FileReader();
+                  fileReader.onload = function(e) {
+                    chrome.test.fail('Reading should fail.');
+                  };
+                  fileReader.onerror = chrome.test.callbackPass();
+                  fileReader.readAsText(fileSlice);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
           }),
           function(error) {
             chrome.test.fail(error.name);
@@ -253,25 +254,25 @@ function runTests() {
     // Test that reading from files with negative size is not allowed.
     function negativeSize() {
       testUtil.fileSystem.root.getFile(
-          TESTING_NEGATIVE_SIZE_FILE.name,
-          {create: false},
+          TESTING_NEGATIVE_SIZE_FILE.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
-            fileEntry.file(chrome.test.callbackPass(function(file) {
-              // Read 1 KB of data.
-              const fileSlice = file.slice(0, 1024);
-              const fileReader = new FileReader();
-              fileReader.onload = chrome.test.callbackPass(function(e) {
-                const text = fileReader.result;
-                chrome.test.assertEq(0, text.length);
-              });
-              fileReader.onerror = function(error) {
-                chrome.test.fail(error.name);
-              };
-              fileReader.readAsText(fileSlice);
-            }),
-            function(error) {
-              chrome.test.fail(error.name);
-            });
+            fileEntry.file(
+                chrome.test.callbackPass(function(file) {
+                  // Read 1 KB of data.
+                  const fileSlice = file.slice(0, 1024);
+                  const fileReader = new FileReader();
+                  fileReader.onload = chrome.test.callbackPass(function(e) {
+                    const text = fileReader.result;
+                    chrome.test.assertEq(0, text.length);
+                  });
+                  fileReader.onerror = function(error) {
+                    chrome.test.fail(error.name);
+                  };
+                  fileReader.readAsText(fileSlice);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
           }),
           function(error) {
             chrome.test.fail(error.name);
@@ -283,14 +284,12 @@ function runTests() {
     function relativeName() {
       testUtil.fileSystem.root.getFile(
           TESTING_RELATIVE_NAME_FILE.name,
-          {create: false},
-          function(fileEntry) {
+          {create: false}, function(fileEntry) {
             chrome.test.fail('Opening a file should fail.');
-          },
-          chrome.test.callbackPass(function(error) {
+          }, chrome.test.callbackPass(function(error) {
             chrome.test.assertEq('NotFoundError', error.name);
           }));
-    }
+    },
   ]);
 }
 
@@ -298,7 +297,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

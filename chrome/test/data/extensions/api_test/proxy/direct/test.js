@@ -22,23 +22,24 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function setAutoSettings() {
-    chrome.proxy.settings.set(
-        {value: CONFIG},
-        chrome.test.callbackPass());
+    chrome.proxy.settings.set({value: CONFIG}, chrome.test.callbackPass());
   },
   function verifyRegular() {
     chrome.proxy.settings.get(
         {incognito: false},
-        expect({ value: CONFIG,
-                 levelOfControl: 'controlled_by_this_extension' },
-               'invalid proxy settings'));
+        expect(
+            {value: CONFIG, levelOfControl: 'controlled_by_this_extension'},
+            'invalid proxy settings'));
   },
   function verifyIncognito() {
     chrome.proxy.settings.get(
         {incognito: true},
-        expect({ value: CONFIG,
-                 incognitoSpecific: false,
-                 levelOfControl: 'controlled_by_this_extension' },
-               'invalid proxy settings'));
-  }
+        expect(
+            {
+              value: CONFIG,
+              incognitoSpecific: false,
+              levelOfControl: 'controlled_by_this_extension'
+            },
+            'invalid proxy settings'));
+  },
 ]);

@@ -86,6 +86,6 @@ chrome.test.getConfig(function(config) {
           chrome.runtime.sendNativeMessage(APP_NAME, message),
           'Error: Error when communicating with the native messaging host.');
       chrome.test.succeed();
-    }
+    },
   ]);
 });

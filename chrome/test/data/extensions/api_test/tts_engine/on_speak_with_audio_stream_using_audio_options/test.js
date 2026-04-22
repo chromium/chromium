@@ -5,8 +5,10 @@
 chrome.test.runTests([function testSendAudioData() {
   // Sends a series of audio buffers, and verifies we get events for them.
   const expectedEvents = [
-    {type: 'start', charIndex: 0}, {'type': 'word', 'charIndex': 10},
-    {type: 'word', charIndex: 20}, {type: 'end', charIndex: 39}
+    {type: 'start', charIndex: 0},
+    {'type': 'word', 'charIndex': 10},
+    {type: 'word', charIndex: 20},
+    {type: 'end', charIndex: 39},
   ];
 
   chrome.ttsEngine.onStop.addListener(() => {});

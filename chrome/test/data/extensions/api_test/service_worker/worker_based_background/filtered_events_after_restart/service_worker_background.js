@@ -10,8 +10,12 @@ function getURL(port, filename) {
   return `http://127.0.0.1:${port}${TEST_DIR}${filename}`;
 }
 
-function pass() { chrome.test.sendMessage('PASS_FROM_WORKER'); }
-function fail() { chrome.test.sendMessage('FAIL_FROM_WORKER'); }
+function pass() {
+  chrome.test.sendMessage('PASS_FROM_WORKER');
+}
+function fail() {
+  chrome.test.sendMessage('FAIL_FROM_WORKER');
+}
 
 const seenURLs = [];
 const recordCommitAndVerify = function(committedURL, filename) {
@@ -32,8 +36,7 @@ const recordCommitAndVerify = function(committedURL, filename) {
 
   chrome.test.getConfig(function(config) {
     const port = config.testServer.port;
-    const passed =
-        seenURLs[0].href == getURL(port, 'a.html') &&
+    const passed = seenURLs[0].href == getURL(port, 'a.html') &&
         seenURLs[1].href == getURL(port, 'b.html');
     passed ? pass() : fail();
   });

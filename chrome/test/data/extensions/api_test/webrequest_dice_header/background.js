@@ -7,27 +7,24 @@ self.controlResponseHeaderCount = 0;
 
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
   let diceHeaderFound = false;
-  const headerValue = 'ValueFromExtension'
+  const headerValue = 'ValueFromExtension';
   const diceResponseHeader = 'X-Chrome-ID-Consistency-Response';
   details.responseHeaders.forEach(function(header) {
-    if (header.name == diceResponseHeader){
+    if (header.name == diceResponseHeader) {
       ++self.diceResponseHeaderCount;
       diceHeaderFound = true;
       header.value = headerValue;
-    } else if (header.name == 'X-Control'){
+    } else if (header.name == 'X-Control') {
       ++self.controlResponseHeaderCount;
       header.value = headerValue;
     }
   });
   if (!diceHeaderFound) {
-    details.responseHeaders.push({name: diceResponseHeader,
-                                  value: headerValue});
+    details.responseHeaders.push(
+        {name: diceResponseHeader, value: headerValue});
   }
-  details.responseHeaders.push({name: 'X-New-Header',
-                                value: headerValue});
+  details.responseHeaders.push({name: 'X-New-Header', value: headerValue});
   return {responseHeaders: details.responseHeaders};
-},
-{urls: ['http://*/extensions/dice.html']},
-['blocking', 'responseHeaders']);
+}, {urls: ['http://*/extensions/dice.html']}, ['blocking', 'responseHeaders']);
 
 chrome.test.sendMessage('ready');

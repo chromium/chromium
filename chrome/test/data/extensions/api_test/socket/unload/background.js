@@ -17,5 +17,5 @@ const onCreate = function(socketInfo) {
 chrome.test.runTests([
   function bind() {
     socket.create('tcp', {}, onCreate);
-  }
+  },
 ]);

@@ -29,5 +29,5 @@ chrome.test.runTests([
     chrome.brailleDisplayPrivate.onDisplayStateChanged.addListener(
         eventListener);
     callbackCompleted = chrome.test.callbackAdded();
-  }
+  },
 ]);

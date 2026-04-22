@@ -14,36 +14,40 @@ async function isAndroid() {
 function onPickerResult(audioTrackNum, id, options) {
   chrome.test.assertEq('string', typeof id);
   chrome.test.assertNe('', id);
-  const videoConstraint = { mandatory: { chromeMediaSource: 'desktop',
-                                         chromeMediaSourceId: id } };
+  const videoConstraint = {
+    mandatory: {chromeMediaSource: 'desktop', chromeMediaSourceId: id}
+  };
   const audioConstraint =
-    options.canRequestAudioTrack ? videoConstraint : false;
+      options.canRequestAudioTrack ? videoConstraint : false;
 
-  navigator.mediaDevices.getUserMedia({
-    audio: audioConstraint,
-    video: videoConstraint
-  }).then(
-    function(stream) {
-      if (audioTrackNum != null)
-        chrome.test.assertEq(audioTrackNum, stream.getAudioTracks().length);
-      chrome.test.succeed();
-  }).catch(chrome.test.fail);
+  navigator.mediaDevices
+      .getUserMedia({
+        audio: audioConstraint,
+        video: videoConstraint,
+      })
+      .then(function(stream) {
+        if (audioTrackNum != null) {
+          chrome.test.assertEq(audioTrackNum, stream.getAudioTracks().length);
+        }
+        chrome.test.succeed();
+      })
+      .catch(chrome.test.fail);
 }
 
 // We can support audio for screen share on Windows. For ChromeOS, it depends
 // on whether USE_CRAS is on or not, thus we disable the check here. We cannot
 // support audio on other platforms.
 let expectedAudioTracksForScreenShare = 0;
-if (navigator.appVersion.indexOf('Windows') != -1)
+if (navigator.appVersion.indexOf('Windows') != -1) {
   expectedAudioTracksForScreenShare = 1;
-else if (navigator.appVersion.indexOf('CrOS') != -1)
+} else if (navigator.appVersion.indexOf('CrOS') != -1) {
   expectedAudioTracksForScreenShare = null;
+}
 
 chrome.test.runTests([
   function emptySourceList() {
     chrome.desktopCapture.chooseDesktopMedia(
-        [],
-        chrome.test.callback(function(id) {
+        [], chrome.test.callback(function(id) {
           chrome.test.assertEq('undefined', typeof id);
         }, 'At least one source type must be specified.'));
   },
@@ -51,8 +55,7 @@ chrome.test.runTests([
   // The prompt is canceled.
   function pickerUiCanceled() {
     chrome.desktopCapture.chooseDesktopMedia(
-        ['screen', 'window'],
-        chrome.test.callbackPass(function(id) {
+        ['screen', 'window'], chrome.test.callbackPass(function(id) {
           chrome.test.assertEq('string', typeof id);
           chrome.test.assertTrue(id == '');
         }));
@@ -61,8 +64,7 @@ chrome.test.runTests([
   // A source is chosen.
   function chooseMedia() {
     chrome.desktopCapture.chooseDesktopMedia(
-        ['screen', 'window'],
-        chrome.test.callbackPass(function(id) {
+        ['screen', 'window'], chrome.test.callbackPass(function(id) {
           chrome.test.assertEq('string', typeof id);
           chrome.test.assertNe('', id);
         }));
@@ -82,8 +84,7 @@ chrome.test.runTests([
 
   function tabOnly() {
     chrome.desktopCapture.chooseDesktopMedia(
-        ['tab'],
-        chrome.test.callbackPass(function(id) {}));
+        ['tab'], chrome.test.callbackPass(function(id) {}));
   },
 
   function audioShareNoApproval() {
@@ -119,11 +120,15 @@ chrome.test.runTests([
   // Same as above but attempts to specify invalid source id.
   function chooseMediaAndTryGetStreamWithInvalidId() {
     function onPickerResult(id) {
-      navigator.webkitGetUserMedia({
-        audio: false,
-        video: { mandatory: { chromeMediaSource: 'desktop',
-                              chromeMediaSourceId: id + 'x' } }
-      }, chrome.test.fail, chrome.test.succeed);
+      navigator.webkitGetUserMedia(
+          {
+            audio: false,
+            video: {
+              mandatory:
+                  {chromeMediaSource: 'desktop', chromeMediaSourceId: id + 'x'}
+            },
+          },
+          chrome.test.fail, chrome.test.succeed);
     }
 
     chrome.desktopCapture.chooseDesktopMedia(
@@ -132,8 +137,7 @@ chrome.test.runTests([
 
   function cancelDialog() {
     const requestId = chrome.desktopCapture.chooseDesktopMedia(
-        ['screen', 'window'],
-        chrome.test.fail);
+        ['screen', 'window'], chrome.test.fail);
     chrome.test.assertEq('number', typeof requestId);
     chrome.desktopCapture.cancelChooseDesktopMedia(requestId);
     chrome.test.succeed();
@@ -179,8 +183,7 @@ chrome.test.runTests([
 
     chrome.desktopCapture.chooseDesktopMedia(
         ['screen', 'audio'],
-        onPickerResult.bind(undefined,
-                            expectedAudioTracksForScreenShare));
+        onPickerResult.bind(undefined, expectedAudioTracksForScreenShare));
   },
 
   // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
@@ -211,5 +214,5 @@ chrome.test.runTests([
 
     chrome.desktopCapture.chooseDesktopMedia(
         ['screen', 'audio'], onPickerResult.bind(undefined, 0));
-  }
+  },
 ]);

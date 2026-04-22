@@ -5,10 +5,9 @@
 chrome.test.runTests([
   function testStorageUndefined() {
     try {
-      chrome.test.assertEq('undefined', typeof(chrome.storage));
+      chrome.test.assertEq('undefined', typeof (chrome.storage));
       chrome.test.succeed();
-    }
-    catch (e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },

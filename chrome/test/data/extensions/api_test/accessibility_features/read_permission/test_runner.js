@@ -9,16 +9,14 @@
  * @param {boolean} expectedValue The expected value of the feature.
  */
 function testFeatureIsEnabled(featureName, expectedIsEnabled) {
-  chrome.accessibilityFeatures[featureName].get(
-      {},
-      function(result) {
-        chrome.test.assertTrue(!!result);
-        chrome.test.assertEq(expectedIsEnabled,
-                             result.value,
-                             "Unexpected value for feature " + featureName);
-        chrome.test.succeed();
-      });
-};
+  chrome.accessibilityFeatures[featureName].get({}, function(result) {
+    chrome.test.assertTrue(!!result);
+    chrome.test.assertEq(
+        expectedIsEnabled, result.value,
+        'Unexpected value for feature ' + featureName);
+    chrome.test.succeed();
+  });
+}
 
 /**
  * Initializes and runs tests that get feature statuses.
@@ -28,28 +26,28 @@ function testFeatureIsEnabled(featureName, expectedIsEnabled) {
  *     expected to be disabled.
  */
 function runGetterTest(enabledFeatures, disabledFeatures) {
-  var tests= [];
+  const tests = [];
 
   enabledFeatures.forEach(function(feature) {
-    var test = testFeatureIsEnabled.bind(null, feature, true);
+    const test = testFeatureIsEnabled.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testIsEnabled_" + feature;
+    test.generatedName = 'testIsEnabled_' + feature;
 
     tests.push(test);
   });
 
   disabledFeatures.forEach(function(feature) {
-    var test = testFeatureIsEnabled.bind(null, feature, false);
+    const test = testFeatureIsEnabled.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testIsDisabled_" + feature;
+    test.generatedName = 'testIsDisabled_' + feature;
 
     tests.push(test);
   });
 
   chrome.test.runTests(tests);
-};
+}
 
 /**
  * Tests that the extension is not able to modify a feature value.
@@ -57,13 +55,12 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
  * @param {boolean} value The value the feature should be set to.
  */
 function testSetFeatureNotAllowed(feature, value) {
-  var expectedError = 'You do not have permission to access the preference ' +
+  const expectedError = 'You do not have permission to access the preference ' +
       '\'' + feature + '\'. Be sure to declare in your manifest what ' +
       'permissions you need.';
 
   chrome.accessibilityFeatures[feature].set(
-      {value: value},
-      chrome.test.callbackFail(expectedError));
+      {value: value}, chrome.test.callbackFail(expectedError));
 }
 
 /**
@@ -77,22 +74,22 @@ function testSetFeatureNotAllowed(feature, value) {
  *     disabled at the start of the test.
  */
 function runSetterTest(enabledFeatures, disabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   enabledFeatures.forEach(function(feature) {
-    var test = testSetFeatureNotAllowed.bind(null, feature, false);
+    const test = testSetFeatureNotAllowed.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testDisableNotAllowed_" + feature;
+    test.generatedName = 'testDisableNotAllowed_' + feature;
 
     tests.push(test);
   });
 
   disabledFeatures.forEach(function(feature) {
-    var test = testSetFeatureNotAllowed.bind(null, feature, true);
+    const test = testSetFeatureNotAllowed.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testEnableNotAllowed_" + feature;
+    test.generatedName = 'testEnableNotAllowed_' + feature;
 
     tests.push(test);
   });
@@ -115,7 +112,7 @@ function runSetterTest(enabledFeatures, disabledFeatures) {
  *     For each array type: |name|: the feature name;
  *                          |listener|: {@code onChange} listener.
  */
-var observerTestState = null;
+let observerTestState = null;
 
 /**
  * Initializes and starts the test that observes that {@code onChange} event is
@@ -133,14 +130,15 @@ var observerTestState = null;
  */
 function startObserverTest(initiallyEnabled, initiallyDisabled) {
   if (observerTestState) {
-    chrome.test.notifyFail('Initializing observe features test before the ' +
-                           'previous one finished');
+    chrome.test.notifyFail(
+        'Initializing observe features test before the ' +
+        'previous one finished');
     return;
   }
 
   observerTestState = {
     toBeDisabled: [],
-    toBeEnabled: []
+    toBeEnabled: [],
   };
 
   /**
@@ -151,9 +149,11 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
    * @return {number} The feature's index in the list. If not found returns -1.
    */
   function findFeatureIndex(list, featureName) {
-    for (var i = 0; i < list.length; ++i)
-      if (list[i].name == featureName)
+    for (let i = 0; i < list.length; ++i) {
+      if (list[i].name == featureName) {
         return i;
+      }
+    }
     return -1;
   }
 
@@ -164,19 +164,21 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
    * @param {boolean} initiallyEnabled Whether the feature is initially enabled.
    */
   function initTestParamsForFeature(feature, initiallyEnabled) {
-    var list = initiallyEnabled ? observerTestState.toBeDisabled :
-                                  observerTestState.toBeEnabled;
+    const list = initiallyEnabled ? observerTestState.toBeDisabled :
+                                    observerTestState.toBeEnabled;
 
-    var listener = function(ev) {
+    const listener = function(ev) {
       // Fail the test in case the new feature value is not as expected, but
       // before that, do some cleanup.
-      if (initiallyEnabled == ev.value)
+      if (initiallyEnabled == ev.value) {
         clearRemainingListeners();
+      }
       chrome.test.assertEq(!initiallyEnabled, ev.value);
 
-      var index = findFeatureIndex(list, feature);
-      if (index < 0)
+      const index = findFeatureIndex(list, feature);
+      if (index < 0) {
         clearRemaningListeners();
+      }
       chrome.test.assertTrue(index > -1);
 
       chrome.accessibilityFeatures[feature].onChange.removeListener(
@@ -187,7 +189,7 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
           observerTestState.toBeDisabled.length == 0) {
         chrome.test.succeed();
       }
-    }
+    };
 
     list.push({name: feature, listener: listener});
     chrome.accessibilityFeatures[feature].onChange.addListener(listener);
@@ -231,7 +233,7 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
  *        observerTest: function(Array<string>, Array<string>)}
  * @const
  */
-var TEST_FUNCTIONS = {
+const TEST_FUNCTIONS = {
   getterTest: runGetterTest,
   setterTest: runSetterTest,
   observerTest: startObserverTest,
@@ -243,18 +245,18 @@ var TEST_FUNCTIONS = {
  */
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.test.getConfig(function(config) {
-    var testArgs = JSON.parse(config.customArg);
+    const testArgs = JSON.parse(config.customArg);
     if (!testArgs) {
-      chrome.test.notifyFail("No test args");
+      chrome.test.notifyFail('No test args');
       return;
     }
     if (!testArgs.testName) {
-      chrome.test.notifyFail("No test name");
+      chrome.test.notifyFail('No test name');
       return;
     }
 
     if (!TEST_FUNCTIONS[testArgs.testName]) {
-      chrome.test.notifyFail("Unknown test name");
+      chrome.test.notifyFail('Unknown test name');
       return;
     }
 

@@ -6,5 +6,5 @@ chrome.test.runTests([
   function permissions() {
     chrome.test.assertFalse(!!chrome.fileManagerPrivate);
     chrome.test.succeed();
-  }
+  },
 ]);

@@ -4,8 +4,9 @@
 
 const port = chrome.runtime.connect();
 port.onDisconnect.addListener(function() {
-  chrome.test.fail('onDisconnect should not be triggered because the ' +
-     'background page exists and the tab should have been crashed');
+  chrome.test.fail(
+      'onDisconnect should not be triggered because the ' +
+      'background page exists and the tab should have been crashed');
 });
 
 let ref;

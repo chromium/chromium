@@ -6,13 +6,12 @@
 let testTabId;
 
 chrome.test.getConfig(function(config) {
-
   function rewriteURL(url) {
     return url.replace(/PORT/, config.testServer.port);
   }
 
   function doReq(domain, expectSuccess) {
-    let url = rewriteURL(`${domain}:PORT/extensions/test_file.txt`);
+    const url = rewriteURL(`${domain}:PORT/extensions/test_file.txt`);
 
     chrome.tabs.sendRequest(testTabId, url, function(response) {
       if (response.thrownError) {
@@ -21,8 +20,9 @@ chrome.test.getConfig(function(config) {
       }
       if (expectSuccess) {
         chrome.test.assertEq('load', response.event);
-        if (/^https?:/i.test(url))
+        if (/^https?:/i.test(url)) {
           chrome.test.assertEq(200, response.status);
+        }
         chrome.test.assertEq('Hello!', response.text);
       } else {
         chrome.test.assertEq('error', response.event);
@@ -33,8 +33,8 @@ chrome.test.getConfig(function(config) {
     });
   }
 
-  chrome.tabs.create({
-      url: rewriteURL('http://localhost:PORT/extensions/test_file.html')},
+  chrome.tabs.create(
+      {url: rewriteURL('http://localhost:PORT/extensions/test_file.html')},
       function(tab) {
         testTabId = tab.id;
       });
@@ -52,7 +52,7 @@ chrome.test.getConfig(function(config) {
         // can still make requests to it since it's the page that the content
         // script is injected into.
         doReq('http://localhost', true);
-      }
+      },
     ]);
   });
 });

@@ -3,23 +3,24 @@
 // found in the LICENSE file.
 
 self.addEventListener('fetch', event => {
-  if (!event.request.url.endsWith('extension_page.html'))
+  if (!event.request.url.endsWith('extension_page.html')) {
     return;
+  }
 
   // Strip the CSP header from the request.
   return event.respondWith(
-    fetch(event.request).then(response => {
-      const kCSPHeader = 'content-security-policy';
-      chrome.test.sendMessage(response.headers.get(kCSPHeader));
-      let updatedHeaders = new Headers(response.headers);
-      updatedHeaders.delete(kCSPHeader);
-      let init = {
-        status: response.status,
-        statusText: response.statusText,
-        headers: updatedHeaders
-      };
-      return new Response(response.body, init);
-    })
+      fetch(event.request).then(response => {
+        const kCSPHeader = 'content-security-policy';
+        chrome.test.sendMessage(response.headers.get(kCSPHeader));
+        const updatedHeaders = new Headers(response.headers);
+        updatedHeaders.delete(kCSPHeader);
+        const init = {
+          status: response.status,
+          statusText: response.statusText,
+          headers: updatedHeaders,
+        };
+        return new Response(response.body, init);
+      }),
   );
 });
 

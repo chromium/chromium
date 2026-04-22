@@ -34,7 +34,7 @@ const TESTING_6GB_FILE = Object.freeze({
   isDirectory: false,
   name: '6gb.txt',
   size: 6 * 1024 * 1024 * 1024,
-  modificationTime: new Date(2014, 1, 25, 7, 36, 12)
+  modificationTime: new Date(2014, 1, 25, 7, 36, 12),
 });
 
 /**
@@ -130,8 +130,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata[`/${TESTING_6GB_FILE.name}`] =
-      TESTING_6GB_FILE;
+  testUtil.defaultMetadata[`/${TESTING_6GB_FILE.name}`] = TESTING_6GB_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
       onOpenFileRequested);
@@ -155,32 +154,32 @@ function runTests() {
     // with size greater or equal to 2^53.
     function readBigFileSuccess() {
       testUtil.fileSystem.root.getFile(
-          TESTING_6GB_FILE.name,
-          {create: false},
+          TESTING_6GB_FILE.name, {create: false},
           chrome.test.callbackPass(function(fileEntry) {
-            fileEntry.file(chrome.test.callbackPass(function(file) {
-              // Read 10 bytes from the 5th GB.
-              const fileSlice = file.slice(
-                  TESTING_TEXT_OFFSET,
-                  TESTING_TEXT_OFFSET + TESTING_TEXT.length);
-              const fileReader = new FileReader();
-              fileReader.onload = chrome.test.callbackPass(function(e) {
-                const text = fileReader.result;
-                chrome.test.assertEq(TESTING_TEXT, text);
-              });
-              fileReader.onerror = function(e) {
-                chrome.test.fail(fileReader.error.name);
-              };
-              fileReader.readAsText(fileSlice);
-            }),
-            function(error) {
-              chrome.test.fail(error.name);
-            });
+            fileEntry.file(
+                chrome.test.callbackPass(function(file) {
+                  // Read 10 bytes from the 5th GB.
+                  const fileSlice = file.slice(
+                      TESTING_TEXT_OFFSET,
+                      TESTING_TEXT_OFFSET + TESTING_TEXT.length);
+                  const fileReader = new FileReader();
+                  fileReader.onload = chrome.test.callbackPass(function(e) {
+                    const text = fileReader.result;
+                    chrome.test.assertEq(TESTING_TEXT, text);
+                  });
+                  fileReader.onerror = function(e) {
+                    chrome.test.fail(fileReader.error.name);
+                  };
+                  fileReader.readAsText(fileSlice);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
           }),
           function(error) {
             chrome.test.fail(error.name);
           });
-    }
+    },
   ]);
 }
 
@@ -188,7 +187,7 @@ function runTests() {
 // considered modules.
 (async () => {
   testUtil = await import(
-    '/_test_resources/api_test/file_system_provider/test_util.js');
+      '/_test_resources/api_test/file_system_provider/test_util.js');
 
   // Setup and run all of the test cases.
   setUp(runTests);

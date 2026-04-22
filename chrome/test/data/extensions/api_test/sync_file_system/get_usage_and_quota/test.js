@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 const testStep = [
-  function () {
+  function() {
     chrome.syncFileSystem.requestFileSystem(testStep.shift());
   },
   function(fs) {
@@ -15,9 +15,9 @@ const testStep = [
       chrome.test.assertNe(123456, info.quotaBytes);
       chrome.test.succeed();
     });
-  }
+  },
 ];
 
 chrome.test.runTests([
-  testStep.shift()
+  testStep.shift(),
 ]);

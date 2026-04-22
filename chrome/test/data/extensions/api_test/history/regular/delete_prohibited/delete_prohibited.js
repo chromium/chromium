@@ -22,10 +22,11 @@ function verifyHistory(resultList) {
   let hasGoogle = false;
   let hasPicasa = false;
   for (let i = 0; i < resultList.length; i++) {
-    if (resultList[i].url == GOOGLE_URL)
+    if (resultList[i].url == GOOGLE_URL) {
       hasGoogle = true;
-    else if (resultList[i].url == PICASA_URL)
+    } else if (resultList[i].url == PICASA_URL) {
       hasPicasa = true;
+    }
   }
   return (hasGoogle && hasPicasa);
 }
@@ -40,26 +41,31 @@ function verifyNoDeletion(testFunction) {
   // history results, then run the provided test function. Re-query the history
   // to make sure the test function had no effect.
   const query = {text: ''};
-  chrome.history.addUrl({ url: GOOGLE_URL }, pass(function() {
-    chrome.history.addUrl({ url: PICASA_URL }, pass(function() {
-      chrome.history.search(query, pass(function lambda(resultsBefore) {
-        if (verifyHistory(resultsBefore)) {
-          // Success: proceed with the test.
-          testFunction(fail(PROHIBITED_ERR, function() {
-            chrome.history.search(query, pass(function(resultsAfter) {
-              assertEq(resultsBefore.sort(sortResults),
-                      resultsAfter.sort(sortResults));
-              removeItemRemovedListener();
+  chrome.history.addUrl(
+      {url: GOOGLE_URL}, pass(function() {
+        chrome.history.addUrl(
+            {url: PICASA_URL}, pass(function() {
+              chrome.history.search(
+                  query, pass(function lambda(resultsBefore) {
+                    if (verifyHistory(resultsBefore)) {
+                      // Success: proceed with the test.
+                      testFunction(fail(PROHIBITED_ERR, function() {
+                        chrome.history.search(
+                            query, pass(function(resultsAfter) {
+                              assertEq(
+                                  resultsBefore.sort(sortResults),
+                                  resultsAfter.sort(sortResults));
+                              removeItemRemovedListener();
+                            }));
+                      }));
+                    } else {
+                      chrome.test.fail(
+                          'Added URLs never showed up in the history. ' +
+                          'See http://crbug.com/40302275.');
+                    }
+                  }));
             }));
-          }));
-        } else {
-          chrome.test.fail(
-              'Added URLs never showed up in the history. ' +
-              'See http://crbug.com/40302275.');
-        }
       }));
-    }));
-  }));
 }
 
 const SCRIPT_URL = '_test_resources/api_test/history/regular/common.js';
@@ -83,6 +89,6 @@ loadScript.then(async function() {
 
     function deleteAll() {
       verifyNoDeletion(chrome.history.deleteAll);
-    }
-  ])
+    },
+  ]);
 });

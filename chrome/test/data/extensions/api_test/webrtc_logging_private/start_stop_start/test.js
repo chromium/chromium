@@ -10,13 +10,12 @@ function assertNoLastError(message) {
 }
 
 function executeWindowTest(testBody) {
-  chrome.app.window.create(
-      'appwindow.html', {}, function(appWindow) {
-        assertNoLastError('window.create');
-        appWindow.contentWindow.onload = function() {
-          testBody(appWindow.contentWindow);
-        };
-      });
+  chrome.app.window.create('appwindow.html', {}, function(appWindow) {
+    assertNoLastError('window.create');
+    appWindow.contentWindow.onload = function() {
+      testBody(appWindow.contentWindow);
+    };
+  });
 }
 
 function createWebview(doc, onWebviewLoaded) {
@@ -24,7 +23,7 @@ function createWebview(doc, onWebviewLoaded) {
     e.target.removeEventListener('loadstop', onLoadStop);
     onWebviewLoaded();
   }
-  var webview = doc.createElement('webview');
+  const webview = doc.createElement('webview');
   webview.src = 'data:text/plain, test';
   webview.addEventListener('loadstop', onLoadStop);
   doc.body.appendChild(webview);
@@ -35,13 +34,9 @@ function createWebview(doc, onWebviewLoaded) {
 function testStartStopStart() {
   executeWindowTest(function(win) {
     createWebview(win.document, function() {
-      win.attemptStartStopLogging(
-        function() {  // Do it again.
-          win.attemptStartStopLogging(
-            chrome.test.succeed,
-            chrome.test.fail);
-        },
-        chrome.test.fail);
+      win.attemptStartStopLogging(function() {  // Do it again.
+        win.attemptStartStopLogging(chrome.test.succeed, chrome.test.fail);
+      }, chrome.test.fail);
     });
   });
 }

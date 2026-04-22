@@ -6,11 +6,10 @@
 // extension.
 chrome.test.runTests([
   function geolocation_getCurrentPosition() {
-    navigator.geolocation.getCurrentPosition(chrome.test.succeed,
-                                             chrome.test.fail);
+    navigator.geolocation.getCurrentPosition(
+        chrome.test.succeed, chrome.test.fail);
   },
   function geolocation_watchPosition() {
-    navigator.geolocation.watchPosition(chrome.test.succeed,
-                                        chrome.test.fail);
-  }
+    navigator.geolocation.watchPosition(chrome.test.succeed, chrome.test.fail);
+  },
 ]);

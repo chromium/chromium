@@ -4,7 +4,7 @@
 
 import * as util from '/_test_resources/api_test/web_authentication_proxy/util.js';
 
-let availableTests = [
+const availableTests = [
   async function incognitoAndRegular() {
     chrome.webAuthenticationProxy.onCreateRequest.addListener(
         async (request) => {

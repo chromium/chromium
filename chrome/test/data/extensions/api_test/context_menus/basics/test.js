@@ -9,15 +9,16 @@ let currentId = 1;
 // Add a unique menu ID if this is running in a Service Worker-based
 // extension and the 'id' property doesn't exist.
 function maybeAddId(createProperties) {
-  if (inServiceWorker && typeof createProperties['id'] === 'undefined')
+  if (inServiceWorker && typeof createProperties['id'] === 'undefined') {
     createProperties['id'] = String(currentId++);
+  }
   return createProperties;
 }
 
 const tests = [
   function simple() {
-    chrome.contextMenus.create(maybeAddId({title: '1'}),
-                               chrome.test.callbackPass());
+    chrome.contextMenus.create(
+        maybeAddId({title: '1'}), chrome.test.callbackPass());
   },
 
   function no_properties() {
@@ -37,22 +38,22 @@ const tests = [
 
   function update() {
     let id;
-    id = chrome.contextMenus.create(maybeAddId({title: 'update test'}),
-                                    function() {
-      assertNoLastError();
-      chrome.contextMenus.update(id, {title: 'test2'},
-                                chrome.test.callbackPass());
-    });
+    id = chrome.contextMenus.create(
+        maybeAddId({title: 'update test'}), function() {
+          assertNoLastError();
+          chrome.contextMenus.update(
+              id, {title: 'test2'}, chrome.test.callbackPass());
+        });
 
-    chrome.contextMenus.create({id: 'test3', type: 'checkbox',
-                                title: 'test3'}, function() {
-      assertNoLastError();
-      // Calling update without specifying "type" should not change the menu
-      // item's type to "normal" and therefore setting "checked" should not
-      // fail.
-      chrome.contextMenus.update('test3', {checked: true},
-                                chrome.test.callbackPass());
-    });
+    chrome.contextMenus.create(
+        {id: 'test3', type: 'checkbox', title: 'test3'}, function() {
+          assertNoLastError();
+          // Calling update without specifying "type" should not change the menu
+          // item's type to "normal" and therefore setting "checked" should not
+          // fail.
+          chrome.contextMenus.update(
+              'test3', {checked: true}, chrome.test.callbackPass());
+        });
   },
 
   function removeAll() {
@@ -69,20 +70,20 @@ const tests = [
     let id;
     id = chrome.contextMenus.create(maybeAddId({title: 'parent'}), function() {
       assertNoLastError();
-      chrome.contextMenus.create(maybeAddId({title: 'child', parentId: id}),
-                                function() {
-        assertNoLastError();
-        chrome.test.succeed();
-      });
+      chrome.contextMenus.create(
+          maybeAddId({title: 'child', parentId: id}), function() {
+            assertNoLastError();
+            chrome.test.succeed();
+          });
     });
-  }
+  },
 ];
 
 
 // Add tests for creating menu item with various types and contexts.
 const types = ['checkbox', 'radio', 'separator'];
-const contexts = ['all', 'page', 'selection', 'link', 'editable', 'image',
-                'video', 'audio'];
+const contexts =
+    ['all', 'page', 'selection', 'link', 'editable', 'image', 'video', 'audio'];
 function makeCreateTest(type, contexts) {
   const result = function() {
     let title = type;
@@ -93,16 +94,16 @@ function makeCreateTest(type, contexts) {
 
     chrome.contextMenus.create(properties, chrome.test.callbackPass());
   };
-  result.generatedName = `create_${type}` +
-                         (contexts ? `-${contexts.join(',')}` : '');
+  result.generatedName =
+      `create_${type}` + (contexts ? `-${contexts.join(',')}` : '');
   return result;
 }
 
-for (let i in types) {
+for (const i in types) {
   tests.push(makeCreateTest(types[i]));
 }
-for (let i in contexts) {
-  tests.push(makeCreateTest('normal', [ contexts[i] ]));
+for (const i in contexts) {
+  tests.push(makeCreateTest('normal', [contexts[i]]));
 }
 
 // Add tests for various errors when using promise based calls. Note: since

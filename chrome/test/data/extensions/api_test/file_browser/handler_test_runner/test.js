@@ -61,8 +61,9 @@ function run() {
    * @param {string} errorMessage The error message to be send.
    */
   function onError(errorMessage) {
-    if (done)
+    if (done) {
       return;
+    }
 
     chrome.test.notifyFail(errorMessage);
     // there should be at most one notifyFail call.
@@ -77,8 +78,9 @@ function run() {
    * @param {boolean} success Whether the function succeeded.
    */
   function onExecuteTask(entry, success) {
-    if (!success)
+    if (!success) {
       onError(`Failed to execute task for ${entry.fullPath}`);
+    }
   }
 
   /**
@@ -104,7 +106,7 @@ function run() {
     // Task could be default from an explicit file extension match
     // but if matched on MIME type we need to set the task as default
     chrome.fileManagerPrivate.setDefaultTask(
-      tasks[0].descriptor, [entry], [], function() {
+        tasks[0].descriptor, [entry], [], function() {
           if (chrome.runtime.lastError) {
             const {appId, taskType, actionId} = tasks[0].descriptor;
             onError(`Failed to set a task to default: ${appId}|${taskType}|${
@@ -146,7 +148,8 @@ function run() {
 
     if (foundTasks.length == TEST_PATHS.length) {
       foundTasks.forEach(function(task) {
-        chrome.fileManagerPrivate.executeTask(task.descriptor, [task.entry],
+        chrome.fileManagerPrivate.executeTask(
+            task.descriptor, [task.entry],
             onExecuteTask.bind(null, task.entry));
       });
     }
@@ -163,8 +166,7 @@ function run() {
     // TODO(mtomasz): Remove this hack after migrating chrome.fileManagerPrivate
     // API to isolated context.
     chrome.fileManagerPrivate.resolveIsolatedEntries(
-        [isolatedEntry],
-        function(externalEntries) {
+        [isolatedEntry], function(externalEntries) {
           resolvedEntries.push(externalEntries[0]);
           if (resolvedEntries.length == TEST_PATHS.length) {
             resolvedEntries.forEach(function(entry) {
@@ -208,8 +210,7 @@ function run() {
       return;
     }
     chrome.fileSystem.requestFileSystem(
-        {volumeId: sortedVolumeMetadataList[0].volumeId},
-        function(fileSystem) {
+        {volumeId: sortedVolumeMetadataList[0].volumeId}, function(fileSystem) {
           if (!fileSystem) {
             onError('Failed to acquire the testing volume.');
             return;

@@ -8,10 +8,10 @@ chrome.test.runTests([
       chrome.test.assertEq('writable.txt', entry.name);
       // Test that the file is writable, as we have the fileSystem.write
       // permission.
-      chrome.fileSystem.isWritableEntry(entry, chrome.test.callbackPass(
-          function(isWritable) {
-        chrome.test.assertTrue(isWritable);
-      }));
+      chrome.fileSystem.isWritableEntry(
+          entry, chrome.test.callbackPass(function(isWritable) {
+            chrome.test.assertTrue(isWritable);
+          }));
     }));
-  }
+  },
 ]);

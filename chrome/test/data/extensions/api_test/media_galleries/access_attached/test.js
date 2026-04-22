@@ -39,4 +39,4 @@ chrome.test.getConfig(function(config) {
       chrome.test.fail(`${testResults} vs ${testGalleryName}`);
     },
   ]);
-})
+});

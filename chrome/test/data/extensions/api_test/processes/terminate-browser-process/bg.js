@@ -6,11 +6,12 @@ const fail = chrome.test.callbackFail;
 const pass = chrome.test.callbackPass;
 
 function terminateBrowserProcess() {
-  chrome.processes.getProcessInfo(0, false, pass(function(info) {
-    chrome.test.assertEq('browser', info[0].type);
-    const error = 'Not allowed to terminate process: 0.';
-    chrome.processes.terminate(0, fail(error, function(){}));
-  }));
+  chrome.processes.getProcessInfo(
+      0, false, pass(function(info) {
+        chrome.test.assertEq('browser', info[0].type);
+        const error = 'Not allowed to terminate process: 0.';
+        chrome.processes.terminate(0, fail(error, function() {}));
+      }));
 }
 
 chrome.test.runTests([terminateBrowserProcess]);

@@ -12,9 +12,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const topURL = `http://a.com:${config.testServer.port}/${pagePath}`;
     const tab = await openTab(topURL);
     const debuggee = {tabId: tab.id};
-    await new Promise(resolve =>
-        chrome.debugger.attach(debuggee, protocolVersion, resolve));
+    await new Promise(
+        resolve => chrome.debugger.attach(debuggee, protocolVersion, resolve));
     chrome.test.assertNoLastError();
     chrome.debugger.detach(debuggee, chrome.test.succeed);
-  }
+  },
 ]));

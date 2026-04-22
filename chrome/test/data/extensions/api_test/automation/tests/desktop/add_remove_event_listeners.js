@@ -145,7 +145,7 @@ const allTests = [
     });
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTestsInPage(

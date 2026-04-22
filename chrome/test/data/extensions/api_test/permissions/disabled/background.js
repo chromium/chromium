@@ -8,7 +8,7 @@
 chrome.test.runTests([
   function history() {
     try {
-      const query = { text: '', maxResults: 1 };
+      const query = {text: '', maxResults: 1};
       chrome.history.search(query, function(results) {
         chrome.test.fail();
       });
@@ -21,7 +21,7 @@ chrome.test.runTests([
     try {
       // Use getRecent() instead of get("1") because desktop Android doesn't
       // create the bookmark bar (id "1") by default.
-      chrome.bookmarks.getRecent(1, function (results) {
+      chrome.bookmarks.getRecent(1, function(results) {
         chrome.test.fail();
       });
     } catch (e) {
@@ -51,5 +51,5 @@ chrome.test.runTests([
     } catch (e) {
       chrome.test.succeed();
     }
-  }
+  },
 ]);

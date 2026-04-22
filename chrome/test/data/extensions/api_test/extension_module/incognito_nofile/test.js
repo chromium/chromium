@@ -15,5 +15,5 @@ chrome.test.runTests([
         chrome.test.callbackPass(function(hasAccess) {
           chrome.test.assertFalse(hasAccess);
         }));
-  }
+  },
 ]);

@@ -5,14 +5,16 @@
 function testPincodePairing() {
   chrome.bluetoothPrivate.onPairing.addListener(function(pairingEvent) {
     chrome.test.assertEq('requestPincode', pairingEvent.pairing);
-    chrome.bluetoothPrivate.setPairingResponse({
-        device: pairingEvent.device,
-        response: 'confirm',
-        pincode: 'abbbbbbk'
-    }, function() {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
+    chrome.bluetoothPrivate.setPairingResponse(
+        {
+          device: pairingEvent.device,
+          response: 'confirm',
+          pincode: 'abbbbbbk',
+        },
+        function() {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
   });
 }
 

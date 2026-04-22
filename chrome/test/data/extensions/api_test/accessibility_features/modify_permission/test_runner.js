@@ -7,12 +7,12 @@
  * @param {string} feature The feature to query.
  */
 function testGetFeatureNotAllowed(feature) {
-  var expectedFailure = 'You do not have permission to access the preference ' +
+  const expectedFailure =
+      'You do not have permission to access the preference ' +
       '\'' + feature + '\'. Be sure to declare in your manifest what ' +
       'permissions you need.';
   chrome.accessibilityFeatures[feature].get(
-      {},
-      chrome.test.callbackFail(expectedFailure));
+      {}, chrome.test.callbackFail(expectedFailure));
 }
 
 /**
@@ -22,22 +22,22 @@ function testGetFeatureNotAllowed(feature) {
  * @param {Array<string>} disabledFeatures The list of disabled features.
  */
 function runGetterTest(enabledFeatures, disabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   enabledFeatures.forEach(function(feature) {
-    var test = testGetFeatureNotAllowed.bind(null, feature);
+    const test = testGetFeatureNotAllowed.bind(null, feature);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testIsEnabledNotAllowed_" + feature;
+    test.generatedName = 'testIsEnabledNotAllowed_' + feature;
 
     tests.push(test);
   });
 
   disabledFeatures.forEach(function(feature) {
-    var test = testGetFeatureNotAllowed.bind(null, feature);
+    const test = testGetFeatureNotAllowed.bind(null, feature);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testIsDisabledNotAllowed_" + feature;
+    test.generatedName = 'testIsDisabledNotAllowed_' + feature;
 
     tests.push(test);
   });
@@ -52,8 +52,7 @@ function runGetterTest(enabledFeatures, disabledFeatures) {
  */
 function testEnableFeature(feature, value) {
   chrome.accessibilityFeatures[feature].set(
-      {value: value},
-      chrome.test.callbackPass(function() {}));
+      {value: value}, chrome.test.callbackPass(function() {}));
 }
 
 /**
@@ -68,22 +67,22 @@ function testEnableFeature(feature, value) {
  *     are disabled when the test starts.
  */
 function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
-  var tests = [];
+  const tests = [];
 
   initiallyEnabledFeatures.forEach(function(feature) {
-    var test = testEnableFeature.bind(null, feature, false);
+    const test = testEnableFeature.bind(null, feature, false);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testDisable_" + feature;
+    test.generatedName = 'testDisable_' + feature;
 
     tests.push(test);
   });
 
   initiallyDisabledFeatures.forEach(function(feature) {
-    var test = testEnableFeature.bind(null, feature, true);
+    const test = testEnableFeature.bind(null, feature, true);
     // This is the name that will show up in the apitest framework's logging
     // output for anonymous functions.
-    test.generatedName = "testEnable_" + feature;
+    test.generatedName = 'testEnable_' + feature;
 
     tests.push(test);
   });
@@ -97,9 +96,9 @@ function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
  *        setterTest: function(Array<string>, Array<string>)}
  * @const
  */
-var TEST_FUNCTIONS = {
-  "getterTest": runGetterTest,
-  "setterTest": runSetterTest
+const TEST_FUNCTIONS = {
+  'getterTest': runGetterTest,
+  'setterTest': runSetterTest,
 };
 
 /**
@@ -108,18 +107,18 @@ var TEST_FUNCTIONS = {
  */
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.test.getConfig(function(config) {
-    var testArgs = JSON.parse(config.customArg);
+    const testArgs = JSON.parse(config.customArg);
     if (!testArgs) {
-      chrome.test.notifyFail("No test args");
+      chrome.test.notifyFail('No test args');
       return;
     }
     if (!testArgs.testName) {
-      chrome.test.notifyFail("No test name");
+      chrome.test.notifyFail('No test name');
       return;
     }
 
     if (!TEST_FUNCTIONS[testArgs.testName]) {
-      chrome.test.notifyFail("Unknown test name");
+      chrome.test.notifyFail('Unknown test name');
       return;
     }
 

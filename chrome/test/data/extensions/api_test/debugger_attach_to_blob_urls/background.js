@@ -29,11 +29,11 @@ chrome.test.getConfig(config => chrome.test.runTests([
             resolve();
           }, {once: true});
         });
-      }
+      },
     });
     chrome.debugger.attach(debuggee, protocolVersion, () => {
       chrome.test.assertNoLastError();
       chrome.debugger.detach(debuggee, chrome.test.succeed);
     });
-  }
+  },
 ]));

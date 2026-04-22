@@ -11,8 +11,9 @@ const allTests = [
       chrome.automation.getDesktop(function(rootNode) {
         // Succeed when the button inside the iframe gets a HOVER event.
         rootNode.addEventListener(EventType.HOVER, function(event) {
-          if (event.target.name == 'Inner')
+          if (event.target.name == 'Inner') {
             chrome.test.succeed();
+          }
         });
 
         const id = setInterval(() => {

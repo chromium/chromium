@@ -16,13 +16,15 @@ function listenUntil(event, expected) {
     for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
-        if (expected.length == 0)
+        if (expected.length == 0) {
           done();
+        }
         return;
       }
     }
-    chrome.test.fail(`Unexpected event: ${JSON.stringify(value)}` +
-                     `, incognito: ${inIncognitoContext}`);
+    chrome.test.fail(
+        `Unexpected event: ${JSON.stringify(value)}` +
+        `, incognito: ${inIncognitoContext}`);
   });
 }
 
@@ -31,8 +33,9 @@ function listenUntil(event, expected) {
 // not capture superfluous unexpected events.
 function listenAndFailWhen(event) {
   return chrome.test.listenForever(event, function(value) {
-    chrome.test.fail(`Unexpected event: ${JSON.stringify(value)}` +
-                     `, incognito: ${inIncognitoContext}`);
+    chrome.test.fail(
+        `Unexpected event: ${JSON.stringify(value)}` +
+        `, incognito: ${inIncognitoContext}`);
   });
 }
 
@@ -51,24 +54,24 @@ chrome.test.runTests([
   function changeDefault() {
     const expected = [{
       value: false,
-      levelOfControl: 'controlled_by_this_extension'
+      levelOfControl: 'controlled_by_this_extension',
     }];
 
     if (inIncognitoContext) {
       expected.push({
         value: false,
         incognitoSpecific: false,
-        levelOfControl: 'controlled_by_this_extension'
+        levelOfControl: 'controlled_by_this_extension',
       });
     }
 
     listenUntil(hyperlinkAuditing.onChange, expected);
 
     sendMessage(constructMessage('ready'), pass(function() {
-      if (!inIncognitoContext) {
-        hyperlinkAuditing.set({value: false}, pass());
-      }
-    }));
+                  if (!inIncognitoContext) {
+                    hyperlinkAuditing.set({value: false}, pass());
+                  }
+                }));
   },
 
   // Changing incognito-specific settings should only be visible to the
@@ -79,23 +82,27 @@ chrome.test.runTests([
       sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        value: true,
-        incognitoSpecific: true,
-        levelOfControl: 'controlled_by_this_extension'
-      }]);
+                    value: true,
+                    incognitoSpecific: true,
+                    levelOfControl: 'controlled_by_this_extension',
+                  }]);
     }
 
-    sendMessage(constructMessage('ready'), pass(function() {
-      if (inIncognitoContext) {
-        hyperlinkAuditing.set({
-          value: true,
-          scope: 'incognito_session_only'
-        }, pass(function() {
-          sendMessage(constructMessage('pref set', 'changeIncognitoOnly'),
-                      pass())
+    sendMessage(
+        constructMessage('ready'), pass(function() {
+          if (inIncognitoContext) {
+            hyperlinkAuditing.set(
+                {
+                  value: true,
+                  scope: 'incognito_session_only',
+                },
+                pass(function() {
+                  sendMessage(
+                      constructMessage('pref set', 'changeIncognitoOnly'),
+                      pass());
+                }));
+          }
         }));
-      }
-    }));
   },
 
   // Changing the regular settings when incognito-specific settings are
@@ -103,24 +110,27 @@ chrome.test.runTests([
   function changeDefaultOnly() {
     if (!inIncognitoContext) {
       listenUntil(hyperlinkAuditing.onChange, [{
-        value: true,
-        levelOfControl: 'controlled_by_this_extension'
-      }]);
+                    value: true,
+                    levelOfControl: 'controlled_by_this_extension',
+                  }]);
     } else {
       const done = listenAndFailWhen(hyperlinkAuditing.onChange);
       sendMessage(constructMessage('listening'), done);
     }
 
     sendMessage(constructMessage('ready'), pass(function() {
-      if (!inIncognitoContext) {
-        hyperlinkAuditing.set({
-          value: true
-        }, pass(function() {
-          sendMessage(constructMessage('pref set', 'changeDefaultOnly'),
-                                       pass());
-        }));
-      }
-    }));
+                  if (!inIncognitoContext) {
+                    hyperlinkAuditing.set(
+                        {
+                          value: true,
+                        },
+                        pass(function() {
+                          sendMessage(
+                              constructMessage('pref set', 'changeDefaultOnly'),
+                              pass());
+                        }));
+                  }
+                }));
   },
 
   // Change the incognito setting back to false so that we get an event when
@@ -131,23 +141,27 @@ chrome.test.runTests([
       sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        value: false,
-        incognitoSpecific: true,
-        levelOfControl: 'controlled_by_this_extension'
-      }]);
+                    value: false,
+                    incognitoSpecific: true,
+                    levelOfControl: 'controlled_by_this_extension',
+                  }]);
     }
 
-    sendMessage(constructMessage('ready'), pass(function() {
-      if (inIncognitoContext) {
-        hyperlinkAuditing.set({
-          value: false,
-          scope: 'incognito_session_only'
-        }, pass(function() {
-          sendMessage(constructMessage('pref set', 'changeIncognitoOnlyBack'),
-                      pass())
+    sendMessage(
+        constructMessage('ready'), pass(function() {
+          if (inIncognitoContext) {
+            hyperlinkAuditing.set(
+                {
+                  value: false,
+                  scope: 'incognito_session_only',
+                },
+                pass(function() {
+                  sendMessage(
+                      constructMessage('pref set', 'changeIncognitoOnlyBack'),
+                      pass());
+                }));
+          }
         }));
-      }
-    }));
   },
 
   function clearIncognito() {
@@ -156,43 +170,48 @@ chrome.test.runTests([
       sendMessage(constructMessage('listening'), done);
     } else {
       listenUntil(hyperlinkAuditing.onChange, [{
-        value: true,
-        incognitoSpecific: false,
-        levelOfControl: 'controlled_by_this_extension'
-      }]);
+                    value: true,
+                    incognitoSpecific: false,
+                    levelOfControl: 'controlled_by_this_extension',
+                  }]);
     }
 
-    sendMessage(constructMessage('ready'), pass(function() {
-      if (inIncognitoContext) {
-        hyperlinkAuditing.clear({
-          scope: 'incognito_session_only'
-        }, pass(function() {
-          sendMessage(constructMessage('pref cleared', 'clearIncognito'),
-                      pass())
+    sendMessage(
+        constructMessage('ready'), pass(function() {
+          if (inIncognitoContext) {
+            hyperlinkAuditing.clear(
+                {
+                  scope: 'incognito_session_only',
+                },
+                pass(function() {
+                  sendMessage(
+                      constructMessage('pref cleared', 'clearIncognito'),
+                      pass());
+                }));
+          }
         }));
-      }
-    }));
   },
 
   function clearDefault() {
     const expected = [{
       value: true,
-      levelOfControl: 'controllable_by_this_extension'
+      levelOfControl: 'controllable_by_this_extension',
     }];
 
     if (inIncognitoContext) {
       expected[1] = {
         value: true,
         incognitoSpecific: false,
-        levelOfControl: 'controllable_by_this_extension'
+        levelOfControl: 'controllable_by_this_extension',
       };
     }
 
     listenUntil(hyperlinkAuditing.onChange, expected);
 
     sendMessage(constructMessage('ready'), pass(function() {
-      if (!inIncognitoContext)
-        hyperlinkAuditing.clear({}, pass());
-    }));
-  }
+                  if (!inIncognitoContext) {
+                    hyperlinkAuditing.clear({}, pass());
+                  }
+                }));
+  },
 ]);

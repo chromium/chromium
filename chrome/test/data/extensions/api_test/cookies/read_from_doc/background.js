@@ -6,7 +6,7 @@
 chrome.test.assertEq(document.cookie, '');
 
 // Set some cookies with a few different modifiers.
-let expire = new Date();
+const expire = new Date();
 expire.setDate(expire.getDate() + 1);  // tomorrow
 document.cookie = 'a=1';
 document.cookie = `b=2; path=/; domain=${location.host}`;

@@ -12,7 +12,7 @@ chrome.test.runTests([testEnqueue = async () => {
           chrome.test.assertEq('end', event.type);
           chrome.test.assertEq(2, callbacks);
           callbacks++;
-        }
+        },
       },
       () => {
         chrome.test.assertNoLastError();
@@ -26,7 +26,7 @@ chrome.test.runTests([testEnqueue = async () => {
       chrome.test.assertEq('end', event.type);
       chrome.test.assertEq(3, callbacks);
       chrome.test.succeed();
-    }
+    },
   });
   chrome.test.assertEq(1, callbacks);
   callbacks++;

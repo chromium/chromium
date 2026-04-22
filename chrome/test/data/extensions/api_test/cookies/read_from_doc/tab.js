@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 function readCookie(name) {
-  let nameEQ = `${name}=`;
-  let cookies = document.cookie.split(';');
+  const nameEQ = `${name}=`;
+  const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i++) {
     let c = cookies[i];
     while (c.charAt(0) === ' ') {

@@ -35,12 +35,11 @@ chrome.action.onClicked.addListener(() => {
     // Create an offscreen document and capture the current tab.
     async function createDocumentAndStartCapture() {
       // Create a new offscreen document.
-      await chrome.offscreen.createDocument(
-          {
-              url: 'offscreen.html',
-              reasons: ['USER_MEDIA'],
-              justification: 'testing'
-          });
+      await chrome.offscreen.createDocument({
+        url: 'offscreen.html',
+        reasons: ['USER_MEDIA'],
+        justification: 'testing',
+      });
       // Create a capture stream for the currently-active tab.
       const tabs = await chrome.tabs.query({});
       chrome.test.assertEq(1, tabs.length);
@@ -49,9 +48,8 @@ chrome.action.onClicked.addListener(() => {
           await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
       chrome.test.assertTrue(!!streamId);
       // Tell the offscreen document to start capturing.
-      let response =
-          await chrome.runtime.sendMessage(
-              {command: 'capture', streamId: streamId});
+      let response = await chrome.runtime.sendMessage(
+          {command: 'capture', streamId: streamId});
       chrome.test.assertEq('success', response);
       chrome.test.assertTrue(didCapture);
       chrome.test.assertFalse(didStopCapture);
@@ -73,6 +71,6 @@ chrome.action.onClicked.addListener(() => {
       await captureStopped;
       chrome.test.assertTrue(didStopCapture);
       chrome.test.succeed();
-    }
+    },
   ]);
 });

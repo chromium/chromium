@@ -26,5 +26,5 @@ chrome.test.runTests([
           chrome.test.assertEq('testing:writable', volumeList[4].volumeId);
           chrome.test.assertTrue(volumeList[4].writable);
         }));
-  }
+  },
 ]);

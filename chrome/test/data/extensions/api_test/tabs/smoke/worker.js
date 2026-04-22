@@ -6,7 +6,7 @@ const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
 const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 async function testCreateTab() {
-  const tab = await chrome.tabs.create({ url: 'about:blank' });
+  const tab = await chrome.tabs.create({url: 'about:blank'});
   chrome.test.assertNoLastError();
   // Check that some tab properties are set. The exact values are not
   // important, just ensure they are valid.
@@ -30,7 +30,7 @@ async function testOnUpdated() {
   });
   // Don't use about:blank because on Android it doesn't cause the WebContents
   // to load any web content. The version page is light-weight enough.
-  const tab = await chrome.tabs.create({ url: 'chrome://version' });
+  const tab = await chrome.tabs.create({url: 'chrome://version'});
   // The exact value is not important.
   chrome.test.assertTrue(tab.id != null, 'id not valid');
   // chrome.test.succeed() will be called in the closure above.
@@ -39,19 +39,21 @@ async function testOnUpdated() {
 function testUpdate() {
   let tabId;
   // Create a tab to update.
-  chrome.tabs.create({ url: pageUrl('a') }, pass(function (tab) {
-    tabId = tab.id;
-    // Update the tab URL to "B".
-    chrome.tabs.update(tabId, { url: pageUrl('b') }, pass(function (tab) {
-      waitForAllTabs(pass(function () {
-        chrome.tabs.get(tabId, pass(function (tab) {
-          // Tab navigated to "B".
-          assertEq(pageUrl('b'), tab.url);
-          chrome.test.succeed();
-        }));
-      }));
-    }));
-  }));
+  chrome.tabs.create({url: pageUrl('a')}, pass(function(tab) {
+                       tabId = tab.id;
+                       // Update the tab URL to "B".
+                       chrome.tabs.update(
+                           tabId, {url: pageUrl('b')}, pass(function(tab) {
+                             waitForAllTabs(pass(function() {
+                               chrome.tabs.get(tabId, pass(function(tab) {
+                                                 // Tab navigated to "B".
+                                                 assertEq(
+                                                     pageUrl('b'), tab.url);
+                                                 chrome.test.succeed();
+                                               }));
+                             }));
+                           }));
+                     }));
 }
 
 chrome.test.runTests([testCreateTab, testOnUpdated, testUpdate]);

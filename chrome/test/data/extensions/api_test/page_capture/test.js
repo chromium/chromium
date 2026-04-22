@@ -43,50 +43,50 @@ chrome.test.getConfig(function(config) {
 
   chrome.test.runTests([
     function saveAsMHTML() {
-      chrome.tabs.onUpdated.addListener(function listener(
-          tabId, changeInfo, tab) {
-        if (tab.status == 'complete') {
-          chrome.tabs.onUpdated.removeListener(listener);
-          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
-            verifyPageCapture(data, false);
+      chrome.tabs.onUpdated.addListener(
+          function listener(tabId, changeInfo, tab) {
+            if (tab.status == 'complete') {
+              chrome.tabs.onUpdated.removeListener(listener);
+              chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+                verifyPageCapture(data, false);
+              });
+            }
           });
-        }
-      });
       chrome.tabs.create({url: testUrl});
     },
 
     function saveAsMHTML_FileAccessRequiredForFileUrls() {
       const captureUrl = `${config.testDataDirectory}/`;
-      chrome.tabs.onUpdated.addListener(function listener(
-          tabId, changeInfo, tab) {
-        if (tab.status == 'complete' && tab.url == captureUrl) {
-          chrome.tabs.onUpdated.removeListener(listener);
-          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
-            if (config.customArg == 'ONLY_PAGE_CAPTURE_PERMISSION') {
-              chrome.test.assertLastError(
-                  `Don't have permissions required to capture this page.`);
-              chrome.test.succeed();
-            } else {
-              verifyPageCapture(data, true /* isFile */);
+      chrome.tabs.onUpdated.addListener(
+          function listener(tabId, changeInfo, tab) {
+            if (tab.status == 'complete' && tab.url == captureUrl) {
+              chrome.tabs.onUpdated.removeListener(listener);
+              chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+                if (config.customArg == 'ONLY_PAGE_CAPTURE_PERMISSION') {
+                  chrome.test.assertLastError(
+                      `Don't have permissions required to capture this page.`);
+                  chrome.test.succeed();
+                } else {
+                  verifyPageCapture(data, true /* isFile */);
+                }
+              });
             }
           });
-        }
-      });
       chrome.test.openFileUrl(captureUrl);
     },
 
     function saveAsMHTML_RestrictedUrlReturnsError() {
-      chrome.tabs.onUpdated.addListener(function listener(
-          tabId, changeInfo, tab) {
-        if (tab.status == 'complete') {
-          chrome.tabs.onUpdated.removeListener(listener);
-          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
-            chrome.test.assertLastError(
-                `Don't have permissions required to capture this page.`);
-            chrome.test.succeed();
+      chrome.tabs.onUpdated.addListener(
+          function listener(tabId, changeInfo, tab) {
+            if (tab.status == 'complete') {
+              chrome.tabs.onUpdated.removeListener(listener);
+              chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+                chrome.test.assertLastError(
+                    `Don't have permissions required to capture this page.`);
+                chrome.test.succeed();
+              });
+            }
           });
-        }
-      });
       chrome.tabs.create({url: 'chrome://version'});
     },
   ]);

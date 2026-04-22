@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var deviceAddress = '11:12:13:14:15:16';
-var errorNotConnected = 'Device not connected';
-var errorDisconnectFailed = 'Failed to disconnect device';
+const deviceAddress = '11:12:13:14:15:16';
+const errorNotConnected = 'Device not connected';
+const errorDisconnectFailed = 'Failed to disconnect device';
 
-var btp = chrome.bluetoothPrivate;
+const btp = chrome.bluetoothPrivate;
 
 function testDisconnect() {
   btp.disconnectAll(deviceAddress, function() {
@@ -25,14 +25,17 @@ function testDisconnect() {
 }
 
 function assertFailure(message) {
-  if (!chrome.runtime.lastError)
+  if (!chrome.runtime.lastError) {
     chrome.test.fail('Expected failure but got success.');
+  }
 
-  if (chrome.runtime.lastError.message == message)
+  if (chrome.runtime.lastError.message == message) {
     return;
+  }
 
-  chrome.test.fail('Expected error "' + message + '" but got "' +
-                   chrome.runtime.lastError.message + '" instead.');
+  chrome.test.fail(
+      'Expected error "' + message + '" but got "' +
+      chrome.runtime.lastError.message + '" instead.');
 }
 
 chrome.test.runTests([testDisconnect]);

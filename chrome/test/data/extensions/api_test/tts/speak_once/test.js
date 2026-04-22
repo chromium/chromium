@@ -11,11 +11,8 @@ chrome.test.runTests([
       chrome.test.assertEq(11, event.charIndex);
       chrome.test.succeed();
     }
-    chrome.tts.speak(
-        'hello world',
-        {'onEvent': eventListener},
-        function() {
-          chrome.test.assertNoLastError();
-        });
-  }
+    chrome.tts.speak('hello world', {'onEvent': eventListener}, function() {
+      chrome.test.assertNoLastError();
+    });
+  },
 ]);

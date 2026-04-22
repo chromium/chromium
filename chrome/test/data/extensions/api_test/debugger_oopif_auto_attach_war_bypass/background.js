@@ -23,8 +23,9 @@ chrome.test.getConfig(config => chrome.test.runTests([
 
     chrome.debugger.onEvent.addListener((source, method, params) => {
       const cb = eventCallbacks.get(method);
-      if (!cb)
+      if (!cb) {
         return;
+      }
       eventCallbacks.delete(method);
       cb({source, params});
     });
@@ -53,7 +54,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const {params: attachedParams} = await attachedPromise;
     const childDebuggerSession = {
       ...debuggee,
-      sessionId: attachedParams.sessionId
+      sessionId: attachedParams.sessionId,
     };
 
     const restrictedURL = `chrome-extension://${victimId}/restricted.html`;
@@ -69,5 +70,5 @@ chrome.test.getConfig(config => chrome.test.runTests([
         navigateResult.errorText.includes('ERR_BLOCKED_BY_CLIENT'));
 
     chrome.test.succeed();
-  }
+  },
 ]));

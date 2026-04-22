@@ -6,9 +6,10 @@
 chrome.test.runTests([
   async function testGetDeskTemplateJson() {
     await chrome.test.assertPromiseRejects(
-      chrome.wmDesksPrivate.getDeskTemplateJson(
-      // Get desk template JSON with an invalid UUID.
-        'invalid-uuid'), 'Error: InvalidIdError');
+        chrome.wmDesksPrivate.getDeskTemplateJson(
+            // Get desk template JSON with an invalid UUID.
+            'invalid-uuid'),
+        'Error: InvalidIdError');
     chrome.test.succeed();
   },
 
@@ -21,8 +22,8 @@ chrome.test.runTests([
     // ash-chrome binary,
     await chrome.windows.create();
     const window = await chrome.windows.create();
-    await chrome.wmDesksPrivate.setWindowProperties(window.tabs[0].windowId,
-      { allDesks: true });
+    await chrome.wmDesksPrivate.setWindowProperties(
+        window.tabs[0].windowId, {allDesks: true});
 
     chrome.test.succeed();
   },
@@ -31,8 +32,8 @@ chrome.test.runTests([
   async function testUnsetToAllDeskWindowWithValidID() {
     // Create a new window.
     const window = await chrome.windows.create();
-    await chrome.wmDesksPrivate.setWindowProperties(window.tabs[0].windowId,
-      { allDesks: false });
+    await chrome.wmDesksPrivate.setWindowProperties(
+        window.tabs[0].windowId, {allDesks: false});
     chrome.test.succeed();
   },
 
@@ -40,18 +41,17 @@ chrome.test.runTests([
   async function testSetToAllDeskWindowWithInvalidID() {
     // Launch invalid template Uuid.
     await chrome.test.assertPromiseRejects(
-      chrome.wmDesksPrivate.setWindowProperties(1234, { allDesks: true }),
-      "Error: ResourceNotFoundError");
+        chrome.wmDesksPrivate.setWindowProperties(1234, {allDesks: true}),
+        'Error: ResourceNotFoundError');
     chrome.test.succeed();
-
   },
 
   // Tests UnsetAllDeskWindow with invalid `window_id`.
   async function testUnsetAllDeskWindowWithInvalidID() {
     // Launch invalid template Uuid.
     await chrome.test.assertPromiseRejects(
-      chrome.wmDesksPrivate.setWindowProperties(1234, { allDesks: false }),
-      "Error: ResourceNotFoundError");
+        chrome.wmDesksPrivate.setWindowProperties(1234, {allDesks: false}),
+        'Error: ResourceNotFoundError');
     chrome.test.succeed();
   },
 
@@ -59,5 +59,5 @@ chrome.test.runTests([
     const saved_desks = await chrome.wmDesksPrivate.getSavedDesks();
     chrome.test.assertEq(0, saved_desks.length);
     chrome.test.succeed();
-  }
+  },
 ]);

@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var usb = chrome.usb;
+const usb = chrome.usb;
 
 function getDevices() {
-  usb.getDevices({
-      vendorId: 0,
-      productId: 0
-  }, function(devices) {
-    chrome.test.assertEq(1, devices.length);
-    var device = devices[0];
-    chrome.test.assertEq(0x0100, device.version);
-    chrome.test.assertEq("Test Device", device.productName);
-    chrome.test.assertEq("Test Manufacturer", device.manufacturerName);
-    chrome.test.assertEq("ABC123", device.serialNumber);
-    usb.openDevice(device, function(handle) {
-      chrome.test.assertNoLastError();
-      usb.closeDevice(handle);
-      chrome.test.succeed();
-    });
-  });
+  usb.getDevices(
+      {
+        vendorId: 0,
+        productId: 0,
+      },
+      function(devices) {
+        chrome.test.assertEq(1, devices.length);
+        const device = devices[0];
+        chrome.test.assertEq(0x0100, device.version);
+        chrome.test.assertEq('Test Device', device.productName);
+        chrome.test.assertEq('Test Manufacturer', device.manufacturerName);
+        chrome.test.assertEq('ABC123', device.serialNumber);
+        usb.openDevice(device, function(handle) {
+          chrome.test.assertNoLastError();
+          usb.closeDevice(handle);
+          chrome.test.succeed();
+        });
+      });
 }
 
 function getConfigurations() {
@@ -40,15 +42,19 @@ function getConfigurations() {
 }
 
 function explicitCloseDevice() {
-  usb.findDevices({
-      vendorId: 0,
-      productId: 0
-  }, function(devices) {
-    usb.closeDevice(devices[0]);
-    chrome.test.succeed();
-  });
+  usb.findDevices(
+      {
+        vendorId: 0,
+        productId: 0,
+      },
+      function(devices) {
+        usb.closeDevice(devices[0]);
+        chrome.test.succeed();
+      });
 }
 
 chrome.test.runTests([
-    getDevices, getConfigurations, explicitCloseDevice
+  getDevices,
+  getConfigurations,
+  explicitCloseDevice,
 ]);

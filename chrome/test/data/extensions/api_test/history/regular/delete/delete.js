@@ -190,7 +190,7 @@ loadScript.then(async function() {
 
       setItemRemovedListener(deleteRangeTestStart);
       chrome.history.deleteAll(() => {});
-    }
+    },
 
-  ])
+  ]);
 });

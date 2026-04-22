@@ -9,7 +9,7 @@ async function getCreationTimeWithoutCallback() {
     chrome.test.succeed();
   } catch (e) {
     chrome.test.fail(`getCreationTime Promise rejected with error: ${e}`);
-  };
+  }
 }
 
 function getCreationTimeBeforeGetID() {

@@ -4,7 +4,7 @@
 
 const allTests = [
   function testInput() {
-    const textFields = rootNode.findAll({ role: RoleType.TEXT_FIELD });
+    const textFields = rootNode.findAll({role: RoleType.TEXT_FIELD});
     assertEq(2, textFields.length);
     const input = textFields[0];
     assertTrue(!!input);
@@ -16,7 +16,7 @@ const allTests = [
   },
 
   function testTextarea() {
-    const textFields = rootNode.findAll({ role: RoleType.TEXT_FIELD });
+    const textFields = rootNode.findAll({role: RoleType.TEXT_FIELD});
     assertEq(2, textFields.length);
     const textarea = textFields[1];
     assertTrue(!!textarea);
@@ -27,7 +27,7 @@ const allTests = [
     assertEq(10, lineStarts[1]);
     assertEq(20, lineStarts[2]);
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'line_start_offsets.html');

@@ -22,13 +22,13 @@ let currentSegmentIndex;
 // A set of web Notifications - used to delete them during playback by id.
 let webNotifications = {};
 
-const recorderButtons = [ 'play', 'record', 'pause', 'stop'];
+const recorderButtons = ['play', 'record', 'pause', 'stop'];
 const recorderButtonStates = [
-  { state: STOPPED, enabled: 'play record' },
-  { state: RECORDING, enabled: 'pause stop' },
-  { state: PAUSED_RECORDING, enabled: 'record stop' },
-  { state: PAUSED_PLAYING, enabled: 'play stop' },
-  { state: PLAYING, enabled: 'pause stop' }
+  {state: STOPPED, enabled: 'play record'},
+  {state: RECORDING, enabled: 'pause stop'},
+  {state: PAUSED_RECORDING, enabled: 'record stop'},
+  {state: PAUSED_PLAYING, enabled: 'play stop'},
+  {state: PLAYING, enabled: 'pause stop'},
 ];
 
 // This function forms 2 selector lists - one that includes enabled buttons
@@ -36,8 +36,9 @@ const recorderButtonStates = [
 // corresponding sets of buttons.
 function updateButtonsState() {
   recorderButtonStates.map(function(entry) {
-    if (entry.state != recordingState)
+    if (entry.state != recordingState) {
       return;
+    }
     // Found entry with current recorder state. Now compute the sets
     // of enabled/disabled buttons.
     // Copy a list of all buttons.
@@ -55,12 +56,12 @@ function updateButtonsState() {
       disabled[i] = `#${disabled[i]}`;
     }
     getElements(disabled.join(', ')).forEach(function(element) {
-      element.setAttribute('disabled', 'true')
-    })
+      element.setAttribute('disabled', 'true');
+    });
     getElements(enabled.join(', ')).forEach(function(element) {
-      element.removeAttribute('disabled')
-    })
-  })
+      element.removeAttribute('disabled');
+    });
+  });
 }
 
 
@@ -76,9 +77,10 @@ function updateRecordingStats(context) {
   recordingList.slice(currentSegmentIndex).forEach(function(segment) {
     length += segment.delay || 0;
     segmentCnt++;
-  })
-  updateRecordingStatsDisplay(context + ': ' + (segmentCnt-1) + ' segments, ' +
-                              Math.floor(length/1000) + ' seconds.');
+  });
+  updateRecordingStatsDisplay(
+      context + ': ' + (segmentCnt - 1) + ' segments, ' +
+      Math.floor(length / 1000) + ' seconds.');
 }
 
 function loadRecording() {
@@ -86,7 +88,7 @@ function loadRecording() {
     recordingList = JSON.parse(items['recording'] || '[]');
     setRecordingState(STOPPED);
     updateRecordingStats('Loaded record');
-  })
+  });
 }
 
 function finalizeRecording() {
@@ -95,61 +97,68 @@ function finalizeRecording() {
 }
 
 function setPreviousSegmentDuration() {
-  const now  = new Date().getTime();
-  let delay = now - segmentStart;
+  const now = new Date().getTime();
+  const delay = now - segmentStart;
   segmentStart = now;
   recordingList[recordingList.length - 1].delay = delay;
 }
 
-function cloneOptions(obj){
-  if(obj == null || typeof(obj) != 'object')
+function cloneOptions(obj) {
+  if (obj == null || typeof (obj) !== 'object') {
     return obj;
+  }
 
   const temp = {};
-  for(let key in obj)
+  for (const key in obj) {
     temp[key] = cloneOptions(obj[key]);
+  }
   return temp;
 }
 
 function recordCreate(kind, id, options) {
-  if (recordingState != RECORDING)
+  if (recordingState != RECORDING) {
     return;
+  }
   setPreviousSegmentDuration();
   recordingList.push(
-    { type: 'create', kind: kind, id: id, options: cloneOptions(options) });
+      {type: 'create', kind: kind, id: id, options: cloneOptions(options)});
   updateRecordingStats('Recording');
 }
 
 function recordUpdate(kind, id, options) {
-  if (recordingState != RECORDING)
+  if (recordingState != RECORDING) {
     return;
+  }
   setPreviousSegmentDuration();
   recordingList.push(
-    { type: 'update', kind: kind, id: id, options: cloneOptions(options) });
+      {type: 'update', kind: kind, id: id, options: cloneOptions(options)});
   updateRecordingStats('Recording');
 }
 
 function recordDelete(kind, id) {
-  if (recordingState != RECORDING)
+  if (recordingState != RECORDING) {
     return;
+  }
   setPreviousSegmentDuration();
-  recordingList.push({ type: 'delete', kind: kind, id: id });
+  recordingList.push({type: 'delete', kind: kind, id: id});
   updateRecordingStats('Recording');
 }
 
 function startPlaying() {
-  if (recordingList.length < 2)
+  if (recordingList.length < 2) {
     return false;
+  }
 
   setRecordingState(PLAYING);
 
-  if (playingTimer)
+  if (playingTimer) {
     clearTimeout(playingTimer);
+  }
 
   webNotifications = {};
   currentSegmentIndex = 0;
-  playingTimer = setTimeout(playNextSegment,
-                            recordingList[currentSegmentIndex].delay);
+  playingTimer =
+      setTimeout(playNextSegment, recordingList[currentSegmentIndex].delay);
   updateRecordingStats('Playing');
 }
 
@@ -165,11 +174,11 @@ function playNextSegment() {
     createNotificationForPlay(segment.kind, segment.id, segment.options);
   } else if (segment.type == 'update') {
     updateNotificationForPlay(segment.kind, segment.id, segment.options);
-  } else { // type == 'delete'
+  } else {  // type == 'delete'
     deleteNotificationForPlay(segment.kind, segment.id);
   }
-  playingTimer = setTimeout(playNextSegment,
-                            recordingList[currentSegmentIndex].delay);
+  playingTimer =
+      setTimeout(playNextSegment, recordingList[currentSegmentIndex].delay);
   segmentStart = new Date().getTime();
   updateRecordingStats('Playing');
 }
@@ -188,7 +197,7 @@ function createNotificationForPlay(kind, id, options) {
   if (kind == 'web') {
     webNotifications[id] = createWebNotification(id, options);
   } else {
-    let type = options.type;
+    const type = options.type;
     const priority = options.priority;
     createRichNotification(id, type, priority, options);
   }
@@ -198,7 +207,7 @@ function updateNotificationForPlay(kind, id, options) {
   if (kind == 'web') {
     // TODO: implement update.
   } else {
-    let type = options.type;
+    const type = options.type;
     const priority = options.priority;
     updateRichNotification(id, type, priority, options);
   }
@@ -220,8 +229,9 @@ function pausePlaying() {
 function unpausePlaying() {
   let remainingInSegment =
       recordingList[currentSegmentIndex].delay - pausedDuration;
-  if (remainingInSegment < 0)
+  if (remainingInSegment < 0) {
     remainingInSegment = 0;
+  }
   playingTimer = setTimeout(playNextSegment, remainingInSegment);
   segmentStart = new Date().getTime() - pausedDuration;
 }
@@ -232,7 +242,7 @@ function onRecord() {
     pausedDuration = 0;
     // This item is only needed to keep a duration of the delay between start
     // and first action.
-    recordingList = [ { type:'start' } ];
+    recordingList = [{type: 'start'}];
   } else if (recordingState == PAUSED_RECORDING) {
     segmentStart = new Date().getTime() - pausedDuration;
     pausedDuration = 0;
@@ -277,8 +287,9 @@ function onStop() {
 
 function onPlay() {
   if (recordingState == STOPPED) {
-    if (!startPlaying())
+    if (!startPlaying()) {
       return;
+    }
   } else if (recordingState == PAUSED_PLAYING) {
     unpausePlaying();
   }
@@ -304,15 +315,15 @@ function onDataFetched() {
   createAppWindow(function() {
     // Create notification buttons.
     data.forEach(function(section) {
-      let type = section.notificationType;
+      const type = section.notificationType;
       if (type == 'progress') {
         addProgressControl(section.sectionName);
       }
       (section.notificationOptions || []).forEach(function(options) {
-        addNotificationButton(section.sectionName,
-                              options.title,
-                              options.iconUrl,
-                              function() { createNotification(type, options) });
+        addNotificationButton(
+            section.sectionName, options.title, options.iconUrl, function() {
+              createNotification(type, options);
+            });
       });
     });
     loadRecording();
@@ -327,28 +338,30 @@ function onSettingsChange(settings) {
 
 function scheduleNextProgress(id, priority, options, progress, step, timeout) {
   let newProgress = progress + step;
-  if (newProgress > 100)
+  if (newProgress > 100) {
     newProgress = 100;
-  setTimeout(nextProgress(id, priority, options, newProgress, step, timeout),
-    timeout);
+  }
+  setTimeout(
+      nextProgress(id, priority, options, newProgress, step, timeout), timeout);
 }
 
 function nextProgress(id, priority, options, progress, step, timeout) {
   return (function() {
     options['progress'] = progress;
     updateRichNotification(id, 'progress', priority, options);
-    if (progress >= 100)
+    if (progress >= 100) {
       return;
-    scheduleNextProgress(id, priority, options, progress, step, timeout)
-  })
+    }
+    scheduleNextProgress(id, priority, options, progress, step, timeout);
+  });
 }
 
 function createNotification(type, options) {
   const id = getNextId();
   const priority = Number(settings.priority || 0);
-  if (type == 'web')
+  if (type == 'web') {
     createWebNotification(id, options);
-  else {
+  } else {
     if (type == 'progress') {
       if (getElement('#progress-oneshot').checked) {
         options['progress'] = Number(getElement('#progress').value);
@@ -356,8 +369,9 @@ function createNotification(type, options) {
         const step = Number(getElement('#progress-step').value);
         options['progress'] = step;
         if (options['progress'] < 100) {
-          scheduleNextProgress(id, priority, options, options['progress'], step,
-            Number(getElement('#progress-sec').value) * 1000);
+          scheduleNextProgress(
+              id, priority, options, options['progress'], step,
+              Number(getElement('#progress-sec').value) * 1000);
         }
       }
     }
@@ -372,14 +386,18 @@ function createWebNotification(id, options) {
   const n = new Notification(title, {
     body: message,
     icon: iconUrl,
-    tag: id
+    tag: id,
   });
-  n.onshow = function() { logEvent(`WebNotification #${id}: onshow`); }
-  n.onclick = function() { logEvent(`WebNotification #${id}: onclick`); }
+  n.onshow = function() {
+    logEvent(`WebNotification #${id}: onshow`);
+  };
+  n.onclick = function() {
+    logEvent(`WebNotification #${id}: onclick`);
+  };
   n.onclose = function() {
     logEvent(`WebNotification #${id}: onclose`);
     recordDelete('web', id);
-  }
+  };
   logMethodCall('created', 'Web', id, 'title: "' + title + '"');
   recordCreate('web', id, options);
   return n;
@@ -411,7 +429,7 @@ function updateRichNotification(id, type, priority, options) {
 
 let counter = 0;
 function getNextId() {
-    return String(counter++);
+  return String(counter++);
 }
 
 function addListeners() {
@@ -421,8 +439,9 @@ function addListeners() {
 }
 
 function logMethodCall(method, kind, id, varArgs) {
-  logEvent(`${kind} Notification #${id}: ${method} ` +
-           `(${Array.prototype.slice.call(arguments, 2).join(', ')})`);
+  logEvent(
+      `${kind} Notification #${id}: ${method} ` +
+      `(${Array.prototype.slice.call(arguments, 2).join(', ')})`);
 }
 
 function onClosed(id) {

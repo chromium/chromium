@@ -4,7 +4,7 @@
 
 const allTests = [
   function testHitTest() {
-    const buttons = rootNode.findAll({ role: RoleType.BUTTON });
+    const buttons = rootNode.findAll({role: RoleType.BUTTON});
     const button1 = buttons[0];
     assertEq(button1.name, 'Hit Test 1');
     let x = button1.location.left + button1.location.width / 2;
@@ -12,8 +12,9 @@ const allTests = [
     const button2 = buttons[1];
     assertEq(button2.name, 'Hit Test 2');
     let webArea = button1.parent;
-    while (webArea.role != RoleType.ROOT_WEB_AREA)
+    while (webArea.role != RoleType.ROOT_WEB_AREA) {
       webArea = webArea.parent;
+    }
     button1.addEventListener(EventType.HOVER, function() {
       x = button2.location.left + button2.location.width / 2;
       y = button2.location.top + button2.location.height / 2;
@@ -23,7 +24,7 @@ const allTests = [
       webArea.hitTest(x, y, EventType.CLICKED);
     }, true);
     webArea.hitTest(x, y, EventType.HOVER);
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'hit_test.html');

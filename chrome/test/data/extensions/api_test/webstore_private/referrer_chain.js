@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tests = [
+const tests = [
   function getReferrerChain() {
     chrome.webstorePrivate.getReferrerChain((result) => {
       // |result| contains the base64-encoded referrer data. Since the data
       // contains the (randomly generated) server port, we cannot simply
       // compare it to an expected base64-encoded string.
-      var referrerString = atob(result);
+      const referrerString = atob(result);
       chrome.test.assertTrue(
           referrerString.includes('example.com'),
           'Referrer data should contain example.com');

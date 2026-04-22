@@ -40,8 +40,7 @@ const allTests = [
     state = RemoveUntestedStates(userNameInput.state);
     assertEq({editable: true, focusable: true}, state);
     const cancelButton = contentChildren[2];
-    assertEq('Cancel',
-             cancelButton.name);
+    assertEq('Cancel', cancelButton.name);
     state = RemoveUntestedStates(cancelButton.state);
     assertEq({focusable: true}, state);
     assertEq(undefined, cancelButton.restriction);
@@ -77,7 +76,7 @@ const allTests = [
     assertTrue(rootNode.isRootNode);
     assertFalse(rootNode.firstChild.isRootNode);
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests);

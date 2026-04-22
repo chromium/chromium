@@ -10,11 +10,12 @@ onload = function() {
   // Set a sentinel value in sessionStorage to avoid clicking the button on
   // the second load of the document. Otherwise a second click will dispatch
   // another fragment navigation, which the test would not expect.
-  if (sessionStorage['foo'])
+  if (sessionStorage['foo']) {
     return;
+  }
   sessionStorage['foo'] = true;
 
   setTimeout(function() {
     document.getElementById('btn').click();
   }, 0);
-}
+};

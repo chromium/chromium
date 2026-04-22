@@ -22,9 +22,9 @@ const testStep = [
   function checkConflictResolutionPolicy(policyReturned) {
     chrome.test.assertEq('last_write_win', policyReturned);
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests([
-  testStep.shift()
+  testStep.shift(),
 ]);

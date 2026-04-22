@@ -13,14 +13,16 @@ const StateType = chrome.automation.StateType;
 let rootNode = null;
 
 function findAutomationNode(root, condition) {
-  if (condition(root))
+  if (condition(root)) {
     return root;
+  }
 
   const children = root.children;
   for (let i = 0; i < children.length; i++) {
     const result = findAutomationNode(children[i], condition);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return null;
 }
@@ -29,7 +31,7 @@ function runWithDocument(docString, callback) {
   const url = `data:text/html,<!doctype html>${docString}`;
   const createParams = {
     active: true,
-    url: url
+    url: url,
   };
   createTabAndWaitUntilLoaded(url, function(tab) {
     chrome.automation.getDesktop(desktop => {
@@ -98,7 +100,7 @@ function getUrlFromConfig(path, callback) {
   chrome.test.getConfig(function(config) {
     assertTrue('testServer' in config, 'Expected testServer in config');
     url = `http://a.com:${config.testServer.port}/${path}`;
-    callback(url)
+    callback(url);
   });
 }
 

@@ -9,4 +9,3 @@ chrome.runtime.onMessage.addListener((msg) => {
   }
   chrome.runtime.sendMessage('worker->tab->worker');
 });
-

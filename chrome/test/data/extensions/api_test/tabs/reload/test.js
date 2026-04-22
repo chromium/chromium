@@ -68,13 +68,13 @@ chrome.test.runTests([
 
   function testReload6() {
     withTabOnReload(function(resolve) {
-      chrome.tabs.reload(myTabId, { bypassCache: false }, resolve);
+      chrome.tabs.reload(myTabId, {bypassCache: false}, resolve);
     });
   },
 
   function testReload7() {
     withTabOnReload(function(resolve) {
-      chrome.tabs.reload(myTabId, { bypassCache: true }, resolve);
+      chrome.tabs.reload(myTabId, {bypassCache: true}, resolve);
     });
   },
 ]);

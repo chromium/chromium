@@ -7,50 +7,50 @@ expectedDirectoryEntries = {
   'manifest.json': true,
   window: {
     'test.html': true,
-    'test.js': true
-  }
+    'test.js': true,
+  },
 };
 
 function checkTree(root, expectedEntries) {
   const directoryReader = root.createReader();
   const contents = [];
-  directoryReader.readEntries(chrome.test.callbackPass(
-      function readEntriesCallback(entries) {
-    if (entries.length == 0) {
-      chrome.test.assertEq(Object.keys(expectedEntries).length, 0);
-    } else {
-      for (let i = 0; i < entries.length; i++) {
-        // Ignore files or directories like .svn.
-        if (entries[i].name[0] == '.')
-          continue;
-        chrome.test.assertNe(null, expectedEntries[entries[i].name]);
-        if (entries[i].isDirectory) {
-          chrome.test.assertEq(typeof expectedEntries[entries[i].name],
-                               'object');
-          checkTree(entries[i], expectedEntries[entries[i].name]);
+  directoryReader.readEntries(
+      chrome.test.callbackPass(function readEntriesCallback(entries) {
+        if (entries.length == 0) {
+          chrome.test.assertEq(Object.keys(expectedEntries).length, 0);
         } else {
-          chrome.test.assertEq(expectedEntries[entries[i].name], true);
-          chrome.fileSystem.isWritableEntry(
-              entries[i], chrome.test.callbackPass(function(isWritable) {
-            chrome.test.assertFalse(isWritable);
-          }));
-          chrome.fileSystem.getWritableEntry(
-              entries[i], chrome.test.callbackFail(
-                  'Invalid parameters'));
+          for (let i = 0; i < entries.length; i++) {
+            // Ignore files or directories like .svn.
+            if (entries[i].name[0] == '.') {
+              continue;
+            }
+            chrome.test.assertNe(null, expectedEntries[entries[i].name]);
+            if (entries[i].isDirectory) {
+              chrome.test.assertEq(
+                  typeof expectedEntries[entries[i].name], 'object');
+              checkTree(entries[i], expectedEntries[entries[i].name]);
+            } else {
+              chrome.test.assertEq(expectedEntries[entries[i].name], true);
+              chrome.fileSystem.isWritableEntry(
+                  entries[i], chrome.test.callbackPass(function(isWritable) {
+                    chrome.test.assertFalse(isWritable);
+                  }));
+              chrome.fileSystem.getWritableEntry(
+                  entries[i], chrome.test.callbackFail('Invalid parameters'));
+            }
+            delete expectedEntries[entries[i].name];
+          }
+          directoryReader.readEntries(
+              chrome.test.callbackPass(readEntriesCallback));
         }
-        delete expectedEntries[entries[i].name];
-      }
-      directoryReader.readEntries(chrome.test.callbackPass(
-          readEntriesCallback));
-    }
-  }));
+      }));
 }
 
 chrome.test.runTests([
   function getPackageDirectoryEntry() {
-    chrome.runtime.getPackageDirectoryEntry(chrome.test.callbackPass(
-        function(directoryEntry) {
-      checkTree(directoryEntry, expectedDirectoryEntries);
-    }));
-  }
+    chrome.runtime.getPackageDirectoryEntry(
+        chrome.test.callbackPass(function(directoryEntry) {
+          checkTree(directoryEntry, expectedDirectoryEntries);
+        }));
+  },
 ]);

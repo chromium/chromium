@@ -4,7 +4,8 @@
 
 chrome.test.runTests([
   function saveFile() {
-    chrome.fileSystem.chooseEntry({type: 'saveFile'}, chrome.test.callbackFail(
-        'User cancelled', function(entry) {}));
-  }
+    chrome.fileSystem.chooseEntry(
+        {type: 'saveFile'},
+        chrome.test.callbackFail('User cancelled', function(entry) {}));
+  },
 ]);

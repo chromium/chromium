@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const hostPrefix = chrome.extension.inIncognitoContext ? 'test_split' :
-    'test_normal';
+const hostPrefix =
+    chrome.extension.inIncognitoContext ? 'test_split' : 'test_normal';
 
 const rule = {
   conditions: [
-    new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostPrefix: hostPrefix}})
+    new chrome.declarativeContent.PageStateMatcher(
+        {pageUrl: {hostPrefix: hostPrefix}}),
   ],
   actions: [
-    new chrome.declarativeContent.ShowAction()
-  ]
+    new chrome.declarativeContent.ShowAction(),
+  ],
 };
 
 function sendMessage(message) {

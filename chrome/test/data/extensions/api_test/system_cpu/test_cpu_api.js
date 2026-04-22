@@ -12,10 +12,10 @@ chrome.test.runTests([
         kernel: 1,
         user: 2,
         idle: 3,
-        total: 6
-      }
+        total: 6,
+      },
     }];
-    for(let i = 0; i < 20; ++i) {
+    for (let i = 0; i < 20; ++i) {
       chrome.system.cpu.getInfo(chrome.test.callbackPass(function(result) {
         chrome.test.assertEq(4, result.numOfProcessors);
         chrome.test.assertEq('x86', result.archName);
@@ -25,5 +25,5 @@ chrome.test.runTests([
         chrome.test.assertEq([30.125, 40.0625], result.temperatures);
       }));
     }
-  }
+  },
 ]);

@@ -7,15 +7,17 @@ const expectedCommands = [
   'Search-Shift-Left',
   'Search-Shift-Up',
   'Search-Shift-Right',
-  'Search-Shift-Down'
+  'Search-Shift-Down',
 ];
 
-chrome.commands.onCommand.addListener(function (command) {
-  if (expectedCommands[0] != command)
+chrome.commands.onCommand.addListener(function(command) {
+  if (expectedCommands[0] != command) {
     chrome.test.notifyFail(`Unexpected command: ${command}`);
+  }
   expectedCommands.splice(0, 1);
-  if (expectedCommands.length == 0)
+  if (expectedCommands.length == 0) {
     chrome.test.notifyPass();
+  }
 });
 
 chrome.test.notifyPass();

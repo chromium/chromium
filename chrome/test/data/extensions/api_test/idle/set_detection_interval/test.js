@@ -9,11 +9,11 @@ chrome.test.getConfig(function(config) {
       try {
         chrome.idle.setDetectionInterval(10);
         chrome.test.fail();
-      } catch(e) {
+      } catch (e) {
         chrome.test.assertEq(
             'Error in invocation of idle.setDetectionInterval(integer ' +
-            'intervalInSeconds): Error at parameter \'intervalInSeconds\': ' +
-            'Value must be at least 15.',
+                'intervalInSeconds): Error at parameter \'intervalInSeconds\': ' +
+                'Value must be at least 15.',
             e.message);
         chrome.test.succeed();
       }
@@ -25,4 +25,5 @@ chrome.test.getConfig(function(config) {
       chrome.test.succeed();
     },
 
-])});
+  ]);
+});

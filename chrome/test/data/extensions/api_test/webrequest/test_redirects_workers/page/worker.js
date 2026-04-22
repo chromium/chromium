@@ -8,7 +8,8 @@ function test(subresourceUrl) {
   }
 
   return fetch(subresourceUrl)
-    .then(() => self.location.href,
+      .then(
+          () => self.location.href,
           () => `Error: failed to fetch ${subresourceUrl}`);
 }
 

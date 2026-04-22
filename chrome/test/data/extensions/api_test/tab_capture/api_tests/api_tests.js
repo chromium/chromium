@@ -27,7 +27,7 @@ function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
 const CaptureState = {
   kPending: 'pending',
   kActive: 'active',
-  kStopped: 'stopped'
+  kStopped: 'stopped',
 };
 let gState = CaptureState.kStopped;
 let gShouldCallSucceed = false;
@@ -51,39 +51,43 @@ function succeedOnCaptureStopped() {
 }
 
 function assertIsValidStreamId(streamId) {
-  chrome.test.assertTrue(typeof streamId == 'string');
-  navigator.webkitGetUserMedia({
-    audio: false,
-    video: {
-      mandatory: {
-        chromeMediaSource: 'tab',
-        chromeMediaSourceId: streamId
-      }
-    }
-  }, function(stream) {
-    chrome.test.assertTrue(!!stream);
-    stream.getVideoTracks()[0].stop();
-    succeedOnCaptureStopped();
-  }, function(error) {
-    // Successful stream creation is not guaranteed and may time out because
-    // of resource constraints.  Do not treat this as a failure.
-    // See: crbug.com/393188938
-    if (error.name == 'AbortError' && error.message.indexOf('Timeout') > -1) {
-      chrome.test.succeed()
-    } else {
-      chrome.test.fail(error);
-    }
-  });
-}
-
-function assertGetUserMediaError(streamId) {
-  chrome.test.assertTrue(typeof streamId == 'string');
+  chrome.test.assertTrue(typeof streamId === 'string');
   navigator.webkitGetUserMedia(
       {
         audio: false,
         video: {
-          mandatory: {chromeMediaSource: 'tab', chromeMediaSourceId: streamId}
+          mandatory: {
+            chromeMediaSource: 'tab',
+            chromeMediaSourceId: streamId,
+          },
+        },
+      },
+      function(stream) {
+        chrome.test.assertTrue(!!stream);
+        stream.getVideoTracks()[0].stop();
+        succeedOnCaptureStopped();
+      },
+      function(error) {
+        // Successful stream creation is not guaranteed and may time out because
+        // of resource constraints.  Do not treat this as a failure.
+        // See: crbug.com/393188938
+        if (error.name == 'AbortError' &&
+            error.message.indexOf('Timeout') > -1) {
+          chrome.test.succeed();
+        } else {
+          chrome.test.fail(error);
         }
+      });
+}
+
+function assertGetUserMediaError(streamId) {
+  chrome.test.assertTrue(typeof streamId === 'string');
+  navigator.webkitGetUserMedia(
+      {
+        audio: false,
+        video: {
+          mandatory: {chromeMediaSource: 'tab', chromeMediaSourceId: streamId},
+        },
       },
       function(stream) {
         chrome.test.assertTrue(!!stream);
@@ -248,8 +252,7 @@ const testsToRun = [
       if (changeInfo.status == 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId(
-            {consumerTabId: secondTabId},
-            function(streamId) {
+            {consumerTabId: secondTabId}, function(streamId) {
               chrome.tabs.get(currentTabId, function(tab) {
                 assertGetUserMediaError(streamId);
                 chrome.tabs.remove(secondTabId);
@@ -272,7 +275,7 @@ const testsToRun = [
       if (changeInfo.status == 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId({consumerTabId: tabId}, function(streamId) {
-          chrome.test.assertTrue(typeof streamId == 'undefined');
+          chrome.test.assertTrue(typeof streamId === 'undefined');
           chrome.test.assertLastError(
               'URL scheme for the specified tab is not secure.');
           chrome.test.succeed();

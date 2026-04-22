@@ -6,14 +6,14 @@
 // browser_tests.exe --gtest_filter=ProxySettingsApiTest.ProxyEventsInvalidProxy
 
 const EXPECTED_ERROR = {
-    error: 'net::ERR_PROXY_CONNECTION_FAILED',
-    details: '',
-    fatal: true
+  error: 'net::ERR_PROXY_CONNECTION_FAILED',
+  details: '',
+  fatal: true,
 };
 
 function test() {
   // Install error handler and get the test server config.
-  chrome.proxy.onProxyError.addListener(function (error) {
+  chrome.proxy.onProxyError.addListener(function(error) {
     chrome.test.assertEq(EXPECTED_ERROR, error);
     chrome.test.notifyPass();
   });
@@ -22,9 +22,9 @@ function test() {
   // There may be any number of proxy errors, as systems like safe browsing
   // might start network traffic as well.
   const rules = {
-    singleProxy: { host: 'does.not.exist' }
+    singleProxy: {host: 'does.not.exist'},
   };
-  const config = { rules: rules, mode: 'fixed_servers' };
+  const config = {rules: rules, mode: 'fixed_servers'};
   chrome.proxy.settings.set({value: config}, sendFailingXHR);
 }
 
@@ -35,15 +35,15 @@ function sendFailingXHR() {
 
   const req = new XMLHttpRequest();
   req.open('GET', url, true);
-  req.onload = function () {
+  req.onload = function() {
     chrome.test.notifyFail('proxy settings should not work');
-  }
+  };
   req.onerror = testDone;
   req.send(null);
 }
 
 function testDone() {
- // Do nothing. The test success/failure is decided in the event handler.
+  // Do nothing. The test success/failure is decided in the event handler.
 }
 
 test();

@@ -4,15 +4,15 @@
 
 function assertNoSensitiveFields(tab) {
   ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
-    chrome.test.assertEq(undefined, tab[field],
-                         `Sensitive property ${field} is visible`)
+    chrome.test.assertEq(
+        undefined, tab[field], `Sensitive property ${field} is visible`)
   });
 }
 
 let port;
 
 function testUrl(domain, file) {
-    return `http://${domain}:${port}` +
+  return `http://${domain}:${port}` +
       `/extensions/favicon/${file}`;
 }
 
@@ -37,7 +37,7 @@ chrome.test.getConfig(function(config) {
 
   chrome.test.runTests([
     function testSimpleCreateWithHostPermission() {
-      chrome.tabs.create({url: hasPermissionUrl}, function (tab) {
+      chrome.tabs.create({url: hasPermissionUrl}, function(tab) {
         chrome.test.assertEq(hasPermissionUrl, tab.pendingUrl);
         chrome.test.assertEq(undefined, tab.url);
 
@@ -101,9 +101,9 @@ chrome.test.getConfig(function(config) {
 
     function testOnUpdatedRevealsNoSensitiveFieldsWithNoHostPermission() {
       const getCurrentTabs = function(resolve) {
-        chrome.tabs.query({}, (tabs) => {
-          resolve(tabs);
-        });
+      chrome.tabs.query({}, (tabs) => {
+        resolve(tabs);
+      });
       });
 
       getCurrentTabs.then((existingTabs) => {
@@ -111,7 +111,7 @@ chrome.test.getConfig(function(config) {
         const existingTabIds = existingTabs.map(tab => tab.id);
         chrome.tabs.onUpdated.addListener(function _listener(tabId, info, tab) {
           if (existingTabIds.includes(tabId))
-            return; // Ignore tabs that were already around.
+            return;  // Ignore tabs that were already around.
           assertNoSensitiveFields(info);
           assertNoSensitiveFields(tab);
           neededCallbacks--;
@@ -132,12 +132,12 @@ chrome.test.getConfig(function(config) {
 
     function testQueryRevealsNoSensitiveFieldsWithNoHostPermission() {
       chrome.tabs.create({url: 'chrome://newtab/'}, pass(function(tab) {
-        assertNoSensitiveFields(tab);
-      }));
+                           assertNoSensitiveFields(tab);
+                         }));
       chrome.tabs.query({active: true}, pass(function(tabs) {
-        chrome.test.assertEq(1, tabs.length);
-        assertNoSensitiveFields(tabs[0]);
-      }));
+                          chrome.test.assertEq(1, tabs.length);
+                          assertNoSensitiveFields(tabs[0]);
+                        }));
     }
   ]);
 });

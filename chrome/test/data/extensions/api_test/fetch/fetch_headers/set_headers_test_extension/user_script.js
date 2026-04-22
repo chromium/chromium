@@ -18,7 +18,7 @@
   await fetch(fetchPostAndSetForbiddenHeaderUrl, {
     method: 'POST',
     headers: {'Origin': 'fakescheme://fakehostname'},
-    body: 'hello'
+    body: 'hello',
   });
 
   const headersApiSetForbiddenHeaderUrl =

@@ -44,6 +44,8 @@ function testWrongUrlScheme() {
 }
 
 chrome.test.runTests([
-  testGetPdfThumbnail, testGetPdfThumbnailNeedsUtilitySandbox,
-  testNonExistentFile, testWrongUrlScheme
+  testGetPdfThumbnail,
+  testGetPdfThumbnailNeedsUtilitySandbox,
+  testNonExistentFile,
+  testWrongUrlScheme,
 ]);

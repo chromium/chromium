@@ -19,37 +19,43 @@ chrome.test.runTests([
     cs['camera'].set({
       primaryPattern: '<all_urls>',
       secondaryPattern: '<all_urls>',
-      setting: 'block'
+      setting: 'block',
     });
 
     cs['microphone'].set({
       primaryPattern: '<all_urls>',
       secondaryPattern: '<all_urls>',
-      setting: 'block'
+      setting: 'block',
     });
 
     // Clearing the camera settings should leave the microphone settings
     // unchanged.
     cs['camera'].clear({});
     let microphoneMessage = 'The microphone setting should be "block", but ' +
-      'was reset.';
-    cs['microphone'].get({
-      primaryUrl: 'http://www.example.com',
-      secondaryUrl: 'http://www.example.com'
-    }, expect({setting: 'block'}, microphoneMessage));
+        'was reset.';
+    cs['microphone'].get(
+        {
+          primaryUrl: 'http://www.example.com',
+          secondaryUrl: 'http://www.example.com',
+        },
+        expect({setting: 'block'}, microphoneMessage));
 
-    let cameraMessage = 'The camera setting was reset and should be "ask"';
-    cs['camera'].get({
-      primaryUrl: 'http://www.example.com',
-      secondaryUrl: 'http://www.example.com'
-    }, expect({setting: 'ask'}, cameraMessage));
+    const cameraMessage = 'The camera setting was reset and should be "ask"';
+    cs['camera'].get(
+        {
+          primaryUrl: 'http://www.example.com',
+          secondaryUrl: 'http://www.example.com',
+        },
+        expect({setting: 'ask'}, cameraMessage));
 
     // Clear microphone and ensure that its setting updates properly.
     cs['microphone'].clear({});
     microphoneMessage = 'The microphone setting was reset and should be "ask"';
-    cs['microphone'].get({
-      primaryUrl: 'http://www.example.com',
-      secondaryUrl: 'http://www.example.com'
-    }, expect({setting: 'ask'}, microphoneMessage));
+    cs['microphone'].get(
+        {
+          primaryUrl: 'http://www.example.com',
+          secondaryUrl: 'http://www.example.com',
+        },
+        expect({setting: 'ask'}, microphoneMessage));
   },
 ]);

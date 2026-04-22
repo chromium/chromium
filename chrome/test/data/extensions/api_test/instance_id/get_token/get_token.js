@@ -9,17 +9,16 @@ function getTokenShouldFail() {
 function getTokenWithoutParameters() {
   try {
     chrome.instanceID.getToken();
-    chrome.test.fail(
-        'Calling getToken without parameters should fail.');
+    chrome.test.fail('Calling getToken without parameters should fail.');
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 async function getTokenWithoutCallback() {
   try {
-    const token = await chrome.instanceID.getToken(
-        {authorizedEntity: '1', scope: 'GCM'});
+    const token =
+        await chrome.instanceID.getToken({authorizedEntity: '1', scope: 'GCM'});
     if (!token) {
       chrome.test.fail('Empty token returned.');
       return;
@@ -27,7 +26,7 @@ async function getTokenWithoutCallback() {
     chrome.test.succeed();
   } catch (e) {
     chrome.test.fail(`getToken Promise rejected with error: ${e}`);
-  };
+  }
 }
 
 function getTokenWithoutAuthorizedEntity() {
@@ -36,7 +35,7 @@ function getTokenWithoutAuthorizedEntity() {
     getTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function getTokenWithInvalidAuthorizedEntity() {
@@ -46,7 +45,7 @@ function getTokenWithInvalidAuthorizedEntity() {
     getTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function getTokenWithoutScope() {
@@ -55,66 +54,66 @@ function getTokenWithoutScope() {
     getTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function getTokenWithInvalidScope() {
   try {
     chrome.instanceID.getToken(
-      {authorizedEntity: '1', scope: 1}, getTokenShouldFail);
+        {authorizedEntity: '1', scope: 1}, getTokenShouldFail);
     getTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function getTokenWithInvalidOptionValue() {
   try {
     chrome.instanceID.getToken(
-      {authorizedEntity: '1', scope: 'GCM', options: {foo: 1}},
-      getTokenShouldFail
+        {authorizedEntity: '1', scope: 'GCM', options: {foo: 1}},
+        getTokenShouldFail,
     );
-    getTokenShouldFail()
+    getTokenShouldFail();
   } catch (e) {
     chrome.test.succeed();
-  };
+  }
 }
 
 function getTokenWithoutOptions() {
   chrome.instanceID.getToken(
-    {authorizedEntity: '1', scope: 'GCM'},
-    function(token) {
-      if (chrome.runtime.lastError) {
-        chrome.test.fail(
-            `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
-        return;
-      }
-      if (!token) {
-        chrome.test.fail('Empty token returned.');
-        return;
-      }
+      {authorizedEntity: '1', scope: 'GCM'},
+      function(token) {
+        if (chrome.runtime.lastError) {
+          chrome.test.fail(
+              `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
+          return;
+        }
+        if (!token) {
+          chrome.test.fail('Empty token returned.');
+          return;
+        }
 
-      chrome.test.succeed();
-    }
+        chrome.test.succeed();
+      },
   );
 }
 
 function getTokenWithValidOptions() {
   chrome.instanceID.getToken(
-    {authorizedEntity: '1', scope: 'GCM', options: {foo: '1'}},
-    function(token) {
-      if (chrome.runtime.lastError) {
-        chrome.test.fail(
-            `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
-        return;
-      }
-      if (!token) {
-        chrome.test.fail('Empty token returned.');
-        return;
-      }
+      {authorizedEntity: '1', scope: 'GCM', options: {foo: '1'}},
+      function(token) {
+        if (chrome.runtime.lastError) {
+          chrome.test.fail(
+              `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
+          return;
+        }
+        if (!token) {
+          chrome.test.fail('Empty token returned.');
+          return;
+        }
 
-      chrome.test.succeed();
-    }
+        chrome.test.succeed();
+      },
   );
 }
 

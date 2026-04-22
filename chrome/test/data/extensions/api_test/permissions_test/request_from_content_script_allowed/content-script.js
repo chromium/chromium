@@ -11,7 +11,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function requestNotifications() {
     Notification.requestPermission().then(function(permission) {
@@ -30,7 +30,7 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
+        });
   },
   function geolocation_getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -46,7 +46,7 @@ chrome.test.runTests([
       } else {
         chrome.test.fail();
       }
-    })
+    });
   },
   function requestCamera() {
     if (navigator.mediaDevices) {
@@ -71,6 +71,6 @@ chrome.test.runTests([
           } else {
             chrome.test.fail();
           }
-        })
-  }
+        });
+  },
 ]);

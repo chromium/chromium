@@ -4,12 +4,12 @@
 
 chrome.test.assertTrue(chrome.hasOwnProperty('runtime'));
 
-var iframe = document.createElement('iframe');
+const iframe = document.createElement('iframe');
 iframe.src = 'http://mock.http/';
 iframe.onload = function() {
   chrome.test.assertTrue(chrome.test.getModuleSystem(window) instanceof Object);
-  chrome.test.assertEq(undefined,
-                       chrome.test.getModuleSystem(iframe.contentWindow));
+  chrome.test.assertEq(
+      undefined, chrome.test.getModuleSystem(iframe.contentWindow));
   chrome.test.notifyPass();
 };
 document.body.appendChild(iframe);

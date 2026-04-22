@@ -28,5 +28,5 @@ function run_tests() {
 }
 
 window.addEventListener('load', function() {
-    window.setTimeout(run_tests, 0)
+  window.setTimeout(run_tests, 0);
 }, false);

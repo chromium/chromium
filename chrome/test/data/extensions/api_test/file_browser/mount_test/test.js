@@ -21,7 +21,7 @@ const expectedVolume1 = {
   diskFileSystemType: 'exfat',
   iconSet: {},
   driveLabel: 'drive_label1',
-  hidden: false
+  hidden: false,
 };
 
 const expectedVolume2 = {
@@ -44,7 +44,7 @@ const expectedVolume2 = {
   diskFileSystemType: 'exfat',
   iconSet: {},
   driveLabel: 'drive_label2',
-  hidden: false
+  hidden: false,
 };
 
 const expectedVolume3 = {
@@ -65,7 +65,7 @@ const expectedVolume3 = {
   diskFileSystemType: 'exfat',
   iconSet: {},
   driveLabel: 'drive_label3',
-  hidden: false
+  hidden: false,
 };
 
 const expectedDownloadsVolume = {
@@ -82,7 +82,7 @@ const expectedDownloadsVolume = {
   diskFileSystemType: '',
   iconSet: {},
   driveLabel: '',
-  hidden: false
+  hidden: false,
 };
 
 const expectedArchiveVolume = {
@@ -100,7 +100,7 @@ const expectedArchiveVolume = {
   diskFileSystemType: '',
   iconSet: {},
   driveLabel: '',
-  hidden: false
+  hidden: false,
 };
 
 const expectedProvidedVolume = {
@@ -120,10 +120,10 @@ const expectedProvidedVolume = {
   diskFileSystemType: '',
   iconSet: {
     icon16x16Url: 'chrome://resources/testing-provider-id-16.jpg',
-    icon32x32Url: 'chrome://resources/testing-provider-id-32.jpg'
+    icon32x32Url: 'chrome://resources/testing-provider-id-32.jpg',
   },
   driveLabel: '',
-  hidden: false
+  hidden: false,
 };
 
 const expectedShareCacheVolume = {
@@ -140,19 +140,24 @@ const expectedShareCacheVolume = {
   diskFileSystemType: '',
   iconSet: {},
   driveLabel: '',
-  hidden: true
+  hidden: true,
 };
 
 // List of expected mount points.
 // NOTE: this has to be synced with values in file_manager_private_apitest.cc
 //       and values sorted by volumeId.
 const expectedVolumeList = [
-  expectedArchiveVolume, expectedDownloadsVolume, expectedProvidedVolume,
-  expectedVolume1, expectedVolume2, expectedVolume3, expectedShareCacheVolume
+  expectedArchiveVolume,
+  expectedDownloadsVolume,
+  expectedProvidedVolume,
+  expectedVolume1,
+  expectedVolume2,
+  expectedVolume3,
+  expectedShareCacheVolume,
 ];
 
 function validateObject(received, expected, name) {
-  for (let key in expected) {
+  for (const key in expected) {
     if (expected[key] instanceof RegExp) {
       if (!expected[key].test(received[key])) {
         console.warn(
@@ -161,8 +166,9 @@ function validateObject(received, expected, name) {
         return false;
       }
     } else if (expected[key] instanceof Object) {
-      if (!validateObject(received[key], expected[key], `${name}.${key}`))
+      if (!validateObject(received[key], expected[key], `${name}.${key}`)) {
         return false;
+      }
     } else if (received[key] != expected[key]) {
       console.warn(
           `Expected '${key}' ${name} property to be: ` +
@@ -176,8 +182,9 @@ function validateObject(received, expected, name) {
   if (expectedKeys.length !== receivedKeys.length) {
     const unexpectedKeys = [];
     for (let i = 0; i < receivedKeys.length; i++) {
-      if (!(receivedKeys[i] in expected))
+      if (!(receivedKeys[i] in expected)) {
         unexpectedKeys.push(receivedKeys[i]);
+      }
     }
 
     console.warn(`Unexpected properties found: ${unexpectedKeys}`);
@@ -210,8 +217,7 @@ chrome.test.runTests([
 
   function removeMountArchive() {
     chrome.fileManagerPrivate.removeMount('archive:archive_mount_path', () => {
-      chrome.test.assertEq(
-          chrome.runtime.lastError.message, 'need_password');
+      chrome.test.assertEq(chrome.runtime.lastError.message, 'need_password');
       chrome.test.succeed();
     });
   },
@@ -219,7 +225,8 @@ chrome.test.runTests([
   function getVolumeMetadataList() {
     chrome.fileManagerPrivate.getVolumeMetadataList(
         chrome.test.callbackPass(function(result) {
-          chrome.test.assertEq(expectedVolumeList.length, result.length,
+          chrome.test.assertEq(
+              expectedVolumeList.length, result.length,
               'getMountPoints returned wrong number of mount points.');
           for (let i = 0; i < expectedVolumeList.length; i++) {
             chrome.test.assertTrue(
@@ -227,6 +234,6 @@ chrome.test.runTests([
                     result[i], expectedVolumeList[i], 'volumeMetadata'),
                 `getMountPoints result[${i}] not as expected`);
           }
-    }));
-  }
+        }));
+  },
 ]);

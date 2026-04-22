@@ -9,8 +9,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 // Respond with the version of the background context.
-chrome.runtime.onMessage.addListener(
-  (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message == 'get-current-version') {
     sendResponse(self.currentVersion);
   }

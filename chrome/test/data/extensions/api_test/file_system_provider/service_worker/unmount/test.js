@@ -102,7 +102,7 @@ async function main() {
       chrome.test.assertEq(chrome.runtime.id, e.volumeMetadata.providerId);
       chrome.test.assertEq(secondFileSystemId, e.volumeMetadata.fileSystemId);
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

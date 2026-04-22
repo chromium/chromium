@@ -20,10 +20,12 @@ const allTests = [
   function selectOutsideTextField() {
     const textNode = rootNode.find({role: RoleType.PARAGRAPH}).firstChild;
     assertTrue(!!textNode);
-    chrome.automation.setDocumentSelection({anchorObject: textNode,
-                                            anchorOffset: 0,
-                                            focusObject: textNode,
-                                            focusOffset: 3});
+    chrome.automation.setDocumentSelection({
+      anchorObject: textNode,
+      anchorOffset: 0,
+      focusObject: textNode,
+      focusOffset: 3
+    });
     listenOnce(rootNode, EventType.DOCUMENT_SELECTION_CHANGED, function(evt) {
       assertEq(textNode, rootNode.anchorObject);
       assertEq(0, rootNode.anchorOffset);
@@ -47,14 +49,14 @@ const allTests = [
 
       // Setting selection within the textfield causes a document selection and
       // a textfield selection event.
-      chrome.automation.setDocumentSelection({anchorObject: textField,
-                                              anchorOffset: 1,
-                                              focusObject: textField,
-                                              focusOffset: 3});
-      listenOnce(rootNode, EventType.DOCUMENT_SELECTION_CHANGED,
-                 function(evt) {
-        listenOnce(textField, EventType.TEXT_SELECTION_CHANGED,
-                   function(evt) {
+      chrome.automation.setDocumentSelection({
+        anchorObject: textField,
+        anchorOffset: 1,
+        focusObject: textField,
+        focusOffset: 3
+      });
+      listenOnce(rootNode, EventType.DOCUMENT_SELECTION_CHANGED, function(evt) {
+        listenOnce(textField, EventType.TEXT_SELECTION_CHANGED, function(evt) {
           assertEq(textField, rootNode.anchorObject);
           assertEq(1, rootNode.anchorOffset);
           assertEq(textField, rootNode.focusObject);

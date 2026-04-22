@@ -4,17 +4,17 @@
 
 let seenLoading = false;
 
-chrome.tabs.onUpdated.addListener(function localListener (
-    tabId, changeInfo, tab) {
-  if (changeInfo.status === 'loading') {
-    if (seenLoading == true) {
-      chrome.test.sendMessage('ERROR');
-    } else {
-      seenLoading = true;
-    }
-  } else if (changeInfo.status === 'complete') {
-    chrome.test.sendMessage(seenLoading == true ? 'finished' : 'ERROR');
-  }
-});
+chrome.tabs.onUpdated.addListener(
+    function localListener(tabId, changeInfo, tab) {
+      if (changeInfo.status === 'loading') {
+        if (seenLoading == true) {
+          chrome.test.sendMessage('ERROR');
+        } else {
+          seenLoading = true;
+        }
+      } else if (changeInfo.status === 'complete') {
+        chrome.test.sendMessage(seenLoading == true ? 'finished' : 'ERROR');
+      }
+    });
 
 chrome.test.sendMessage('ready');

@@ -14,7 +14,7 @@ chrome.test.runTests([function testEnqueue() {
           chrome.test.assertEq('end', event.type);
           chrome.test.assertEq(2, callbacks);
           callbacks++;
-        }
+        },
       },
       () => {
         // This happens immediately.
@@ -29,7 +29,7 @@ chrome.test.runTests([function testEnqueue() {
           chrome.test.assertEq('end', event.type);
           chrome.test.assertEq(3, callbacks);
           chrome.test.succeed();
-        }
+        },
       },
       () => {
         // This happens immediately.

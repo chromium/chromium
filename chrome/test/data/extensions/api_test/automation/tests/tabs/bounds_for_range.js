@@ -19,21 +19,21 @@ const allTests = [
 
     // Left-to-right.
     const ltr = getNthListItemInlineTextBox(0);
-    ltr.boundsForRange(
-        0, 4,
-        (firstHalf) => {ltr.boundsForRange(4, ltr.name.length, (secondHalf) => {
-          const bounds = ltr.location;
-          assertEq(bounds.top, firstHalf.top);
-          assertEq(bounds.left, firstHalf.left);
-          assertEq(bounds.height, firstHalf.height);
-          assertEq(bounds.top, secondHalf.top);
-          assertEq(bounds.height, secondHalf.height);
-          assertTrue(secondHalf.left > bounds.left);
-          assertTrue(firstHalf.width < bounds.width);
-          assertTrue(secondHalf.width < bounds.width);
-          assertTrue(
-              Math.abs(bounds.width - firstHalf.width - secondHalf.width) < 3);
-        })});
+    ltr.boundsForRange(0, 4, (firstHalf) => {
+      ltr.boundsForRange(4, ltr.name.length, (secondHalf) => {
+        const bounds = ltr.location;
+        assertEq(bounds.top, firstHalf.top);
+        assertEq(bounds.left, firstHalf.left);
+        assertEq(bounds.height, firstHalf.height);
+        assertEq(bounds.top, secondHalf.top);
+        assertEq(bounds.height, secondHalf.height);
+        assertTrue(secondHalf.left > bounds.left);
+        assertTrue(firstHalf.width < bounds.width);
+        assertTrue(secondHalf.width < bounds.width);
+        assertTrue(
+            Math.abs(bounds.width - firstHalf.width - secondHalf.width) < 3);
+      });
+    });
 
     // Right-to-left.
     const rtl = getNthListItemInlineTextBox(1);
@@ -160,7 +160,7 @@ const allTests = [
         });
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunTabsTests(allTests, 'bounds_for_range.html');

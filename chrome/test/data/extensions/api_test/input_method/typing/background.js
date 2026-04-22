@@ -25,7 +25,7 @@ class TestEnv {
   getContextID() {
     return this.inputContext.contextID;
   }
-};
+}
 
 function waitUntil(predicate) {
   return new Promise((resolve) => {
@@ -45,7 +45,7 @@ function wrapAsync(apiFunction) {
   return (...args) => {
     return new Promise((resolve, reject) => {
       apiFunction(...args, (...result) => {
-        if (!!chrome.runtime.lastError) {
+        if (chrome.runtime.lastError) {
           console.log(chrome.runtime.lastError.message);
           reject(Error(chrome.runtime.lastError));
         } else {
@@ -53,19 +53,18 @@ function wrapAsync(apiFunction) {
         }
       });
     });
-  }
+  };
 }
 
 const asyncInputIme = {
   commitText: wrapAsync(chrome.input.ime.commitText),
   setComposition: wrapAsync(chrome.input.ime.setComposition),
-}
+};
 
 const asyncInputMethodPrivate = {
   setCurrentInputMethod:
       wrapAsync(chrome.inputMethodPrivate.setCurrentInputMethod),
-  setCompositionRange:
-      wrapAsync(chrome.inputMethodPrivate.setCompositionRange)
+  setCompositionRange: wrapAsync(chrome.inputMethodPrivate.setCompositionRange),
 };
 
 chrome.test.runTests([
@@ -79,7 +78,7 @@ chrome.test.runTests([
   async function setCompositionRangeTest() {
     await asyncInputIme.commitText({
       contextID: testEnv.getContextID(),
-      text: 'hello world'
+      text: 'hello world',
     });
 
     await waitUntil(() => testEnv.surroundingText === 'hello world');
@@ -90,9 +89,9 @@ chrome.test.runTests([
       selectionBefore: 5,
       selectionAfter: 0,
       segments: [
-        { start: 0, end: 2, style: 'underline' },
-        { start: 2, end: 5, style: 'underline' }
-      ]
+        {start: 0, end: 2, style: 'underline'},
+        {start: 2, end: 5, style: 'underline'},
+      ],
     });
 
     // Should underline "world".
@@ -101,7 +100,7 @@ chrome.test.runTests([
     await asyncInputIme.setComposition({
       contextID: testEnv.getContextID(),
       text: 'foo',
-      cursor: 0
+      cursor: 0,
     });
 
     // Composition should change to "foo".
@@ -110,7 +109,7 @@ chrome.test.runTests([
     // Should replace composition with "again".
     await asyncInputIme.commitText({
       contextID: testEnv.getContextID(),
-      text: 'again'
+      text: 'again',
     });
 
     await waitUntil(() => testEnv.surroundingText === 'hello again');
@@ -120,7 +119,7 @@ chrome.test.runTests([
     await asyncInputMethodPrivate.setCompositionRange({
       contextID: testEnv.getContextID(),
       selectionBefore: 5,
-      selectionAfter: 0
+      selectionAfter: 0,
     });
 
     // Composition should be "again".
@@ -130,11 +129,11 @@ chrome.test.runTests([
     await asyncInputMethodPrivate.setCompositionRange({
       contextID: testEnv.getContextID(),
       selectionBefore: 2,
-      selectionAfter: 0
+      selectionAfter: 0,
     });
 
     await waitUntil(() => testEnv.compositionBounds.length === 2);
 
     chrome.test.succeed();
-  }
+  },
 ]);

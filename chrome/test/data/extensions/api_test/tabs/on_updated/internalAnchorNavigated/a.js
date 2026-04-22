@@ -5,6 +5,6 @@
 window.onload = function() {
   // Navigate after the onload, so the 'complete' status will fire.
   setTimeout(function() {
-    location.href = "#b";
+    location.href = '#b';
   }, 0);
-}
+};

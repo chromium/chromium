@@ -28,7 +28,6 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq(expectedSerialNumber, serialNumber);
         chrome.test.succeed();
       });
-
     },
     function testDeviceAssetId() {
       chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetId) {
@@ -48,6 +47,6 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq(expectedHostname, hostname);
         chrome.test.succeed();
       });
-    }
+    },
   ]);
 });

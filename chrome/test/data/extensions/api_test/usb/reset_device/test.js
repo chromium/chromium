@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var usb = chrome.usb;
+const usb = chrome.usb;
 
 function resetDevice() {
   usb.findDevices({vendorId: 0, productId: 0}, function(devices) {
     usb.resetDevice(devices[0], function(result) {
       chrome.test.assertEq(result, true);
       // Ensure the device is still open.
-      var transfer = {
-        direction: "out",
+      const transfer = {
+        direction: 'out',
         endpoint: 2,
-        data: new ArrayBuffer(1)
+        data: new ArrayBuffer(1),
       };
       usb.interruptTransfer(devices[0], transfer, function(result) {
         // This is designed to fail.

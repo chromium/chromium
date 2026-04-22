@@ -11,19 +11,20 @@ function checkEntry(entry, expectedName, isNew, shouldBeWritable) {
   chrome.test.assertEq(expectedName, entry.name);
 
   // Test that we are writable (or not), as expected.
-  chrome.fileSystem.isWritableEntry(entry, chrome.test.callbackPass(
-      function(isWritable) {
-    chrome.test.assertEq(isWritable, shouldBeWritable);
-  }));
+  chrome.fileSystem.isWritableEntry(
+      entry, chrome.test.callbackPass(function(isWritable) {
+        chrome.test.assertEq(isWritable, shouldBeWritable);
+      }));
 
   // Test that the file can be read.
   entry.file(chrome.test.callback(function(file) {
     const reader = new FileReader();
     reader.onloadend = chrome.test.callbackPass(function(e) {
-      if (isNew)
+      if (isNew) {
         chrome.test.assertEq(reader.result, '');
-      else
+      } else {
         chrome.test.assertEq(reader.result.indexOf('Can you see me?'), 0);
+      }
       // Test that we can write to the file, or not, depending on
       // |shouldBeWritable|.
       entry.createWriter(function(fileWriter) {
@@ -39,27 +40,30 @@ function checkEntry(entry, expectedName, isNew, shouldBeWritable) {
             if (shouldBeWritable) {
               // Get a new entry and check the data got to disk.
               chrome.fileSystem.chooseEntry(
-                  {type: 'openDirectory'}, chrome.test.callbackPass(
-                      function(directoryEntry) {
-                directoryEntry.getFile(
-                    entry.name, {}, chrome.test.callback(function(readEntry) {
-                  readEntry.file(chrome.test.callback(function(readFile) {
-                    const readReader = new FileReader();
-                    readReader.onloadend = function(e) {
-                      chrome.test.assertEq(readReader.result.indexOf('HoHoHo!'),
-                                           0);
-                      chrome.test.succeed();
-                    };
-                    readReader.onerror = function(e) {
-                      chrome.test.fail('Failed to read file after write.');
-                    };
-                    readReader.readAsText(readFile);
+                  {type: 'openDirectory'},
+                  chrome.test.callbackPass(function(directoryEntry) {
+                    directoryEntry.getFile(
+                        entry.name, {},
+                        chrome.test.callback(function(readEntry) {
+                          readEntry.file(
+                              chrome.test.callback(function(readFile) {
+                                const readReader = new FileReader();
+                                readReader.onloadend = function(e) {
+                                  chrome.test.assertEq(
+                                      readReader.result.indexOf('HoHoHo!'), 0);
+                                  chrome.test.succeed();
+                                };
+                                readReader.onerror = function(e) {
+                                  chrome.test.fail(
+                                      'Failed to read file after write.');
+                                };
+                                readReader.readAsText(readFile);
+                              }));
+                        }));
                   }));
-                }));
-              }));
             } else {
               chrome.test.fail(
-                 'Could write to file that should not be writable.');
+                  'Could write to file that should not be writable.');
             }
           }
         });

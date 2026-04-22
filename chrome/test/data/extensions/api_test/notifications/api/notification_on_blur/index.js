@@ -7,12 +7,12 @@ const redDot = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
     '9TXL0Y4OHwAAAABJRU5ErkJggg==';
 
 const options = {
-        iconUrl: redDot,
-        title: 'hi',
-        message: 'there',
-        type: 'basic',
-        buttons: [{title: 'Button'}, {title: 'Button'}]
-      };
+  iconUrl: redDot,
+  title: 'hi',
+  message: 'there',
+  type: 'basic',
+  buttons: [{title: 'Button'}, {title: 'Button'}],
+};
 
 window.onblur = function() {
   chrome.notifications.create('test', options, function() {

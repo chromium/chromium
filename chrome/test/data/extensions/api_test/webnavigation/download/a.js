@@ -4,10 +4,8 @@
 
 onload = function() {
   const port = location.search.substr(1);
-  const redirect =
-      `http://127.0.0.1:${port}/server-redirect`;
-  const target =
-      `http://127.0.0.1:${port}/not-found`;
+  const redirect = `http://127.0.0.1:${port}/server-redirect`;
+  const target = `http://127.0.0.1:${port}/not-found`;
 
   const link = document.createElement('a');
   link.href = `${redirect}?${target}`;

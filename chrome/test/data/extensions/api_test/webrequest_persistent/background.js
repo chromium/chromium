@@ -8,8 +8,9 @@ let isUsingStorage = false;
 // Waits for any pending load to complete to avoid raciness in the test.
 async function flushStorage() {
   console.assert(!storageComplete);
-  if (!isUsingStorage)
+  if (!isUsingStorage) {
     return;
+  }
   await new Promise((resolve) => {
     storageComplete = resolve;
   });
@@ -19,25 +20,22 @@ async function flushStorage() {
 // Increments a counter storing the number of seen events.
 function beforeRequestListener() {
   isUsingStorage = true;
-  chrome.storage.local.get(
-      {requestCount: 0},
-      (result) => {
-        let currentCount = result.requestCount;
-        chrome.test.assertTrue(typeof currentCount == 'number');
-        chrome.test.assertTrue(currentCount >= 0);
-        ++currentCount;
-        chrome.storage.local.set(
-            {requestCount: currentCount},
-            () => {
-              isUsingStorage = false;
-              if (storageComplete)
-                storageComplete();
-            });
-      });
+  chrome.storage.local.get({requestCount: 0}, (result) => {
+    let currentCount = result.requestCount;
+    chrome.test.assertTrue(typeof currentCount === 'number');
+    chrome.test.assertTrue(currentCount >= 0);
+    ++currentCount;
+    chrome.storage.local.set({requestCount: currentCount}, () => {
+      isUsingStorage = false;
+      if (storageComplete) {
+        storageComplete();
+      }
+    });
+  });
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
     beforeRequestListener,
-    {urls: ["*://example.com/*"], types: ['main_frame']});
+    {urls: ['*://example.com/*'], types: ['main_frame']});
 
 chrome.test.sendMessage('ready');

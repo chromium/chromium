@@ -4,4 +4,4 @@
 
 // Intentional console error.
 console.error('Logged from MV3 service worker');
-chrome.test.notifyPass()
+chrome.test.notifyPass();

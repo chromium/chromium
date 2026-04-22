@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 const NATIVE_APP_NAME = 'com.google.chrome.test.initiator';
-const MESSAGE_TO_SEND = {request: 'foo'};
-const EXPECTED_RESPONSE_MESSAGE = {response: 'bar'};
+const MESSAGE_TO_SEND = {
+  request: 'foo'
+};
+const EXPECTED_RESPONSE_MESSAGE = {
+  response: 'bar'
+};
 
 function assertValidNativeMessageSender(sender) {
   chrome.test.assertEq(undefined, sender.id);
@@ -27,5 +31,5 @@ chrome.test.runTests([
         chrome.test.succeed();
       });
     });
-  }
+  },
 ]);

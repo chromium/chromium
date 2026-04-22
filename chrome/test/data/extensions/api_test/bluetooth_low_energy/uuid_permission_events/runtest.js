@@ -9,6 +9,6 @@ chrome.bluetoothLowEnergy.onServiceChanged.addListener(listener);
 chrome.bluetoothLowEnergy.onCharacteristicValueChanged.addListener(listener);
 chrome.bluetoothLowEnergy.onDescriptorValueChanged.addListener(listener);
 
-chrome.test.sendMessage('ready', function (message) {
+chrome.test.sendMessage('ready', function(message) {
   chrome.test.succeed();
 });

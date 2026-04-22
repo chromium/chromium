@@ -9,7 +9,7 @@ chrome.test.runTests([
         chrome.test.callbackPass(function(entries) {
           chrome.test.assertEq(1, entries.length);
           checkEntry(entries[0], 'open_existing.txt', false, false);
-        })
+        }),
     );
-  }
+  },
 ]);

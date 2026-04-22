@@ -57,7 +57,7 @@ chrome.runtime.onConnect.addListener(function onConnect(port) {
         window.location = 'about:blank';
       });
     } else if (msg.testPortName) {
-      port.postMessage({portName:port.name});
+      port.postMessage({portName: port.name});
     } else if (msg.testSendMessageFromTabError) {
       testSendMessageFromTabError();
     } else if (msg.testConnectFromTabError) {
@@ -72,7 +72,8 @@ function testPostMessageFromTab(origPort) {
   const port = chrome.runtime.connect({name: portName});
   port.postMessage({testPostMessageFromTab: true});
   port.onMessage.addListener(function(msg) {
-    origPort.postMessage({success: (msg.success && (msg.portName == portName))});
+    origPort.postMessage(
+        {success: (msg.success && (msg.portName == portName))});
     console.log(`testPostMessageFromTab sent ${msg.success}`);
     port.disconnect();
   });
@@ -152,7 +153,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       {
         id: chrome.runtime.id,
         url: chrome.runtime.getURL('_generated_background_page.html'),
-        origin: extensionOrigin
+        origin: extensionOrigin,
       },
       sender);
   sendResponse({success: (request.step2 == 1)});

@@ -21,8 +21,8 @@ chrome.test.getConfig(function(config) {
       let message = chrome.i18n.getMessage('simple_message');
       chrome.test.assertEq(message, 'Simple message');
 
-      message = chrome.i18n.getMessage('message_with_placeholders',
-                                       ['Cira', 'John']);
+      message =
+          chrome.i18n.getMessage('message_with_placeholders', ['Cira', 'John']);
       chrome.test.assertEq(message, 'Cira and John work for Google');
 
       message = chrome.i18n.getMessage('message_with_one_placeholder', '19');
@@ -34,8 +34,8 @@ chrome.test.getConfig(function(config) {
       message = chrome.i18n.getMessage(
           'message_with_double_dollar_sign_and_placeholders',
           ['Mitchell', 'Chris']);
-      chrome.test.assertEq(message,
-          'We should really be paying Mitchell and Chris more $$$.');
+      chrome.test.assertEq(
+          message, 'We should really be paying Mitchell and Chris more $$$.');
 
       chrome.test.succeed();
     },
@@ -57,25 +57,28 @@ chrome.test.getConfig(function(config) {
     },
     function detectLanguage() {
       let text = '';
-      chrome.i18n.detectLanguage(text, function (result) {
+      chrome.i18n.detectLanguage(text, function(result) {
         chrome.test.assertEq([], result.languages);
       });
 
       text = 'Αυτό το κείμενο είναι γραμμένο στα ελληνικά';
-      chrome.i18n.detectLanguage(text, function (result) {
-        chrome.test.assertEq([{ language: 'el', percentage: 100 }],
-            result.languages);
+      chrome.i18n.detectLanguage(text, function(result) {
+        chrome.test.assertEq(
+            [{language: 'el', percentage: 100}], result.languages);
       });
 
       text = 'Αυτό το κομμάτι του κειμένου είναι γραμμένο στα ελληνικά \
              ข้อความสั้น Short piece of text in English';
-      chrome.i18n.detectLanguage(text, function (result) {
-        chrome.test.assertEq([{ language: 'el', percentage: 61 },
-            { language: 'th', percentage: 20 },
-            { language: 'en', percentage: 18}], result.languages);
+      chrome.i18n.detectLanguage(text, function(result) {
+        chrome.test.assertEq(
+            [
+              {language: 'el', percentage: 61},
+              {language: 'th', percentage: 20}, {language: 'en', percentage: 18}
+            ],
+            result.languages);
       });
 
       chrome.test.succeed();
-    }
+    },
   ]);
 });

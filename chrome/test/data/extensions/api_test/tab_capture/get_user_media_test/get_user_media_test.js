@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 const onReply = function(id) {
-  chrome.test.runTests([
-    function testGetUserMedia() {
-      navigator.webkitGetUserMedia(
+  chrome.test.runTests([function testGetUserMedia() {
+    navigator.webkitGetUserMedia(
         {
-          video:
-          {
-            mandatory:
-            {
+          video: {
+            mandatory: {
               chromeMediaSource: 'tab',
-              chromeMediaSourceId: id
-            }
+              chromeMediaSourceId: id,
+            },
           },
-          audio: false
-        }, chrome.test.fail, chrome.test.succeed);
+          audio: false,
+        },
+        chrome.test.fail, chrome.test.succeed);
   }]);
 };
 

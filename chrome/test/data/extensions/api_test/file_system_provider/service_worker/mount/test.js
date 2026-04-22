@@ -18,7 +18,7 @@ async function mount({
   fileSystemId,
   displayName,
   writable,
-  supportsNotifyTag
+  supportsNotifyTag,
 }) {
   await promisifyWithLastError(chrome.fileSystemProvider.mount, {
     fileSystemId,
@@ -67,7 +67,7 @@ async function main() {
       await mount({
         fileSystemId: 'file-system-id-3',
         displayName: 'File System Name',
-        openedFilesLimit: 10
+        openedFilesLimit: 10,
       });
 
       chrome.test.succeed();
@@ -79,7 +79,7 @@ async function main() {
       await mount({
         fileSystemId: 'file-system-id-4',
         displayName: 'File System Name',
-        openedFilesLimit: 0
+        openedFilesLimit: 0,
       });
 
       chrome.test.succeed();
@@ -91,7 +91,7 @@ async function main() {
       const e = await catchError(mount({
         fileSystemId: 'file-system-id-5',
         displayName: 'File System Name',
-        openedFilesLimit: -1
+        openedFilesLimit: -1,
       }));
 
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
@@ -189,7 +189,7 @@ async function main() {
       // One over the limit should fail.
       const e = await catchError(mount({
         fileSystemId: 'over-the-limit-fs-id',
-        displayName: 'Over The Limit File System'
+        displayName: 'Over The Limit File System',
       }));
 
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
@@ -221,7 +221,7 @@ async function main() {
 
       await remoteProvider.waitForEvent('onMountRequested');
       chrome.test.succeed();
-    }
+    },
   ]);
 }
 

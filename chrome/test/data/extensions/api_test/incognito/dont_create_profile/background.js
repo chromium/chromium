@@ -9,8 +9,8 @@ chrome.test.runTests([
     });
   },
   function getAllCookieStores() {
-    chrome.cookies.getAllCookieStores(function (stores) {
+    chrome.cookies.getAllCookieStores(function(stores) {
       chrome.test.succeed();
     });
-  }
+  },
 ]);

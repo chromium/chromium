@@ -6,17 +6,17 @@ function updateBrowserAction() {
   chrome.browserAction.setTitle({title: 'Modified'}, function() {
     chrome.browserAction.setIcon({path: 'icon2.png'}, function() {
       chrome.browserAction.setBadgeText({text: 'badge'}, function() {
-        chrome.browserAction.setBadgeBackgroundColor({color: [255,255,255,255]},
-                                                     function() {
-          chrome.test.notifyPass();
-        });
+        chrome.browserAction.setBadgeBackgroundColor(
+            {color: [255, 255, 255, 255]}, function() {
+              chrome.test.notifyPass();
+            });
       });
     });
   });
 }
 
 chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-  switch(isAllowedAccess) {
+  switch (isAllowedAccess) {
     case false:
       chrome.test.sendMessage('incognito not allowed');
       break;

@@ -12,7 +12,7 @@ const createTabUtil = function(urlToLoad, createdCallback) {
   } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 const getTabUtil = function(tabId, getCallback) {
   try {
@@ -22,15 +22,15 @@ const getTabUtil = function(tabId, getCallback) {
   } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 const queryTabUtil = function(queryProps, queryCallback) {
   try {
     chrome.tabs.query(queryProps, queryCallback);
-  } catch(e) {
+  } catch (e) {
     chrome.test.fail(e);
   }
-}
+};
 
 chrome.test.runTests([
   // Get the info for the tab that was automatically created.
@@ -84,7 +84,7 @@ chrome.test.runTests([
   function testTabGetCurrent() {
     try {
       chrome.tabs.getCurrent(function(tab) {
-        chrome.test.assertEq('undefined', typeof(tab));
+        chrome.test.assertEq('undefined', typeof (tab));
         chrome.test.succeed();
       });
     } catch (e) {
@@ -98,7 +98,7 @@ chrome.test.runTests([
         chrome.test.assertEq(tabProps[0].url, tab.url);
         tabProps.push({id: tab.id, url: tab.url});
         chrome.test.succeed();
-      })
+      });
     } catch (e) {
       chrome.test.fail(e);
     }
@@ -124,8 +124,7 @@ chrome.test.runTests([
         for (let j = 0; j < tabProps.length; ++j) {
           // Get the URL of the tab, which may still be pending.
           const tabUrl = tabs[i].pendingUrl || tabs[i].url;
-          if (tabs[i].id === tabProps[j].id &&
-              tabUrl === tabProps[j].url) {
+          if (tabs[i].id === tabProps[j].id && tabUrl === tabProps[j].url) {
             ++countFound;
             break;
           }
@@ -146,7 +145,7 @@ chrome.test.runTests([
       chrome.tabs.remove(tabIds, function() {
         chrome.test.succeed();
       });
-    } catch(e) {
+    } catch (e) {
       chrome.test.fail(e);
     }
   },
@@ -161,16 +160,15 @@ chrome.test.runTests([
   },
   // Reload the remaining tab.
   function testTabReload() {
-    chrome.tabs.onUpdated.addListener(function localListener(tabId,
-                                                             changeInfo,
-                                                             tab) {
-      if (changeInfo.status == 'complete') {
-        chrome.tabs.onUpdated.removeListener(localListener);
-        chrome.test.assertEq(tabProps[0].id, tabId);
-        chrome.test.assertEq(tabProps[0].url, tab.url);
-        chrome.test.succeed();
-      }
-    });
+    chrome.tabs.onUpdated.addListener(
+        function localListener(tabId, changeInfo, tab) {
+          if (changeInfo.status == 'complete') {
+            chrome.tabs.onUpdated.removeListener(localListener);
+            chrome.test.assertEq(tabProps[0].id, tabId);
+            chrome.test.assertEq(tabProps[0].url, tab.url);
+            chrome.test.succeed();
+          }
+        });
     chrome.tabs.reload(tabProps[0].id, {bypassCache: true});
   },
   // Update the remaining tab.

@@ -10,28 +10,26 @@ chrome.test.sendMessage('loaded', function(test) {
       return;
     }
 
-    chrome.printerProvider.onGetUsbPrinterInfoRequested.addListener(
-        function(device, callback) {
-          chrome.test.assertFalse(!!chrome.printerProviderInternal);
-          chrome.test.assertTrue(!!callback);
+    chrome.printerProvider.onGetUsbPrinterInfoRequested.addListener(function(
+        device, callback) {
+      chrome.test.assertFalse(!!chrome.printerProviderInternal);
+      chrome.test.assertTrue(!!callback);
 
-          if (test == 'EMPTY_RESPONSE') {
-            callback();
-          } else {
-            callback({
-              id: `usbDevice-${device.device}`,
-              name: 'Test Printer',
-              description: 'This printer is a USB device.',
-            });
-          }
-
-          chrome.test.assertThrows(
-              callback,
-              [],
-              'Event callback must not be called more than once.');
-
-          chrome.test.succeed();
+      if (test == 'EMPTY_RESPONSE') {
+        callback();
+      } else {
+        callback({
+          id: `usbDevice-${device.device}`,
+          name: 'Test Printer',
+          description: 'This printer is a USB device.',
         });
+      }
+
+      chrome.test.assertThrows(
+          callback, [], 'Event callback must not be called more than once.');
+
+      chrome.test.succeed();
+    });
 
     chrome.test.sendMessage('ready');
   }]);

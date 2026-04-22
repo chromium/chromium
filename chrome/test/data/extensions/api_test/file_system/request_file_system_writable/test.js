@@ -8,8 +8,7 @@ chrome.test.runTests([
     // shoult result in an error.
     chrome.fileSystem.requestFileSystem(
         {volumeId: 'testing:read-only', writable: true},
-        chrome.test.callbackFail('Security error.', function(fs) {
-        }));
+        chrome.test.callbackFail('Security error.', function(fs) {}));
   },
   function writableVolume() {
     chrome.fileSystem.requestFileSystem(
@@ -34,16 +33,17 @@ chrome.test.runTests([
               chrome.test.callbackFail(
                   'Invalid parameters', function(writableRootEntry) {}));
           // Accessing a child directory must fail too.
-          fileSystem.root.getDirectory('child-dir', {create: false},
+          fileSystem.root.getDirectory(
+              'child-dir', {create: false},
               chrome.test.callbackPass(function(childEntry) {
                 chrome.fileSystem.getWritableEntry(
                     fileSystem.root,
                     chrome.test.callbackFail(
-                        'Invalid parameters',
-                        function(writableChildEntry) {}));
-              }), function(error) {
+                        'Invalid parameters', function(writableChildEntry) {}));
+              }),
+              function(error) {
                 chrome.test.fail(error.name);
               });
         }));
-  }
+  },
 ]);

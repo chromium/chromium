@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-    function waitForDisplayChangedEvent() {
-        chrome.test.listenOnce(chrome.system.display.onDisplayChanged,
-            function() {
-                chrome.test.sendMessage("success")
-        });
-    }
+  function waitForDisplayChangedEvent() {
+    chrome.test.listenOnce(chrome.system.display.onDisplayChanged, function() {
+      chrome.test.sendMessage('success');
+    });
+  },
 ]);
 
-chrome.test.sendMessage("ready");
+chrome.test.sendMessage('ready');

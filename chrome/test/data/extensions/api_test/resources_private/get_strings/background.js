@@ -12,5 +12,5 @@ chrome.test.runTests([
           chrome.test.assertTrue('language' in data);
           chrome.test.succeed();
         }));
-  }
+  },
 ]);

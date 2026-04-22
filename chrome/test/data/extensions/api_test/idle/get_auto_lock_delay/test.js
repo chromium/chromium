@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-    function getAutoLockDelay() {
-      chrome.idle.getAutoLockDelay(chrome.test.callbackPass(function (delay) {
-        chrome.test.assertTrue(Number.isInteger(delay) && delay >= 0);
-      }));
-    }
-  ]);
+  function getAutoLockDelay() {
+    chrome.idle.getAutoLockDelay(chrome.test.callbackPass(function(delay) {
+      chrome.test.assertTrue(Number.isInteger(delay) && delay >= 0);
+    }));
+  },
+]);

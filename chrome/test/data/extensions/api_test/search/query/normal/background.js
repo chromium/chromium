@@ -136,31 +136,32 @@ chrome.test.runTests([
 
 function waitForTab(tabIdExpected, expectedHostname) {
   return new Promise((resolve) => {
-    chrome.tabs.onUpdated.addListener(function listener(
-        tabId, changeInfo, tab) {
-      if ((tabIdExpected != -1 && tabId != tabIdExpected) ||
-          changeInfo.status !== 'complete') {
-        return;  // Not our tab or not fully loaded.
-      }
-      // Stop listening to future events to avoid affecting future tests.
-      chrome.tabs.onUpdated.removeListener(listener);
+    chrome.tabs.onUpdated.addListener(
+        function listener(tabId, changeInfo, tab) {
+          if ((tabIdExpected != -1 && tabId != tabIdExpected) ||
+              changeInfo.status !== 'complete') {
+            return;  // Not our tab or not fully loaded.
+          }
+          // Stop listening to future events to avoid affecting future tests.
+          chrome.tabs.onUpdated.removeListener(listener);
 
-      // The tab finished loading. It should have expected hostname.
-      assertEq(expectedHostname, new URL(tab.url).hostname);
-      // Resolve the promise as the tab has navigated to the expected hostname.
-      resolve();
-    });
+          // The tab finished loading. It should have expected hostname.
+          assertEq(expectedHostname, new URL(tab.url).hostname);
+          // Resolve the promise as the tab has navigated to the expected
+          // hostname.
+          resolve();
+        });
   });
 }
 
 function waitForNewTab(tabId) {
   return waitForTab(tabId, 'newtab');
-};
+}
 
 function waitForNavigationToGoogle(tabId) {
   return waitForTab(tabId, 'www.google.com');
-};
+}
 
 function waitForGoogleInAnyTab() {
   return waitForTab(-1, 'www.google.com');
-};
+}

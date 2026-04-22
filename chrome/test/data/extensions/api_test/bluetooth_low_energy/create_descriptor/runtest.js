@@ -18,34 +18,45 @@ function failOnSuccess() {
   return false;
 }
 
-var service = { uuid: '00001234-0000-1000-8000-00805f9b34fb', isPrimary: true };
+const service = {
+  uuid: '00001234-0000-1000-8000-00805f9b34fb',
+  isPrimary: true
+};
 chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
-  if (failOnError(serviceId))
+  if (failOnError(serviceId)) {
     return;
+  }
 
-  var characteristic = { uuid: '00001234-0000-1000-8000-00805f9b34fa',
-    properties: ['read'] };
-  chrome.bluetoothLowEnergy.createCharacteristic(characteristic, serviceId,
-      function(characteristicId) {
-    if (failOnError(characteristicId))
-      return;
-
-    var descriptor = { uuid: '00001234-0000-1000-8000-00805f9b34fc',
-      permissions: ['read'] };
-    // Invalid characteristic ID.
-    chrome.bluetoothLowEnergy.createDescriptor(descriptor,
-        'invalidCharacteristicId', function(descriptorId) {
-      if (failOnSuccess())
-        return;
-
-      // Valid characteristic ID.
-      chrome.bluetoothLowEnergy.createDescriptor(descriptor, characteristicId,
-          function(descriptorId) {
-        if (failOnError(descriptorId))
+  const characteristic = {
+    uuid: '00001234-0000-1000-8000-00805f9b34fa',
+    properties: ['read']
+  };
+  chrome.bluetoothLowEnergy.createCharacteristic(
+      characteristic, serviceId, function(characteristicId) {
+        if (failOnError(characteristicId)) {
           return;
+        }
 
-        chrome.test.succeed();
+        const descriptor = {
+          uuid: '00001234-0000-1000-8000-00805f9b34fc',
+          permissions: ['read']
+        };
+        // Invalid characteristic ID.
+        chrome.bluetoothLowEnergy.createDescriptor(
+            descriptor, 'invalidCharacteristicId', function(descriptorId) {
+              if (failOnSuccess()) {
+                return;
+              }
+
+              // Valid characteristic ID.
+              chrome.bluetoothLowEnergy.createDescriptor(
+                  descriptor, characteristicId, function(descriptorId) {
+                    if (failOnError(descriptorId)) {
+                      return;
+                    }
+
+                    chrome.test.succeed();
+                  });
+            });
       });
-    });
-  });
 });

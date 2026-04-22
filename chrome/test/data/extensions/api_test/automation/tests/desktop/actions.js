@@ -16,7 +16,7 @@ const allTests = [
     addressBar.showContextMenu();
     await new Promise(r => rootNode.addEventListener(EventType.MENU_START, r));
     chrome.test.succeed();
-  }
+  },
 ];
 
 setUpAndRunDesktopTests(allTests);

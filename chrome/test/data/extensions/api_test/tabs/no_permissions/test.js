@@ -4,15 +4,15 @@
 
 function assertNoSensitiveFields(tab) {
   ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
-    chrome.test.assertEq(undefined, tab[field],
-                         `Sensitive property ${field} is visible`)
+    chrome.test.assertEq(
+        undefined, tab[field], `Sensitive property ${field} is visible`);
   });
 }
 
 let port;
 
 function testUrl(domain) {
-    return `http://${domain}:${port}/extensions/test_file.html`;
+  return `http://${domain}:${port}/extensions/test_file.html`;
 }
 
 chrome.test.getConfig(function(config) {
@@ -33,7 +33,7 @@ chrome.test.getConfig(function(config) {
         assertNoSensitiveFields(info);
         assertNoSensitiveFields(tab);
         countDown();
-      }
+      };
 
       chrome.tabs.onUpdated.addListener(onUpdateListener);
       chrome.tabs.create({url: 'chrome://newtab/'}, function(tab) {
@@ -47,11 +47,11 @@ chrome.test.getConfig(function(config) {
 
     function testQuery() {
       chrome.tabs.create({url: 'chrome://newtab/'});
-      chrome.tabs.query({active: true},
-          chrome.test.callbackPass(function(tabs) {
-        chrome.test.assertEq(1, tabs.length);
-        assertNoSensitiveFields(tabs[0]);
-      }));
+      chrome.tabs.query(
+          {active: true}, chrome.test.callbackPass(function(tabs) {
+            chrome.test.assertEq(1, tabs.length);
+            assertNoSensitiveFields(tabs[0]);
+          }));
     },
 
     function testErrorForCodeInjection() {
@@ -62,13 +62,15 @@ chrome.test.getConfig(function(config) {
         return;
       }
       chrome.tabs.create({url: testUrl('a.com')}, function(tab) {
-        chrome.tabs.executeScript(tab.id, {code: ''},
-          // Error message should *not* contain a page URL here because the
-          // manifest file does not contain the tabs permission. Exposing
-          // the URL without tabs permission would be a privacy leak.
-          chrome.test.callbackFail('Cannot access contents of the page. ' +
-              'Extension manifest must request permission to access the ' +
-              'respective host.'));
+        chrome.tabs.executeScript(
+            tab.id, {code: ''},
+            // Error message should *not* contain a page URL here because the
+            // manifest file does not contain the tabs permission. Exposing
+            // the URL without tabs permission would be a privacy leak.
+            chrome.test.callbackFail(
+                'Cannot access contents of the page. ' +
+                'Extension manifest must request permission to access the ' +
+                'respective host.'));
       });
     },
 

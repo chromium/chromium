@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 // Constants as functions, not to be called until after runTests.
 function getURLHttpWithScript() {
@@ -28,7 +28,7 @@ runTests([
               type: 'main_frame',
               url: getURLHttpWithScript(),
               frameUrl: getURLHttpWithScript(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -36,7 +36,7 @@ runTests([
             event: 'onBeforeSendHeaders',
             details: {
               url: getURLHttpWithScript(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
               // Note: no requestHeaders because we don't ask for them.
             },
           },
@@ -45,8 +45,8 @@ runTests([
             event: 'onSendHeaders',
             details: {
               url: getURLHttpWithScript(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
           {
             label: 'onHeadersReceived',
@@ -55,7 +55,7 @@ runTests([
               url: getURLHttpWithScript(),
               statusLine: 'HTTP/1.1 200 OK',
               statusCode: 200,
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -66,7 +66,7 @@ runTests([
               statusLine: 'HTTP/1.1 200 OK',
               statusCode: 200,
               ip: '127.0.0.1',
-              fromCache: false
+              fromCache: false,
             },
           },
           {
@@ -77,7 +77,7 @@ runTests([
               statusLine: 'HTTP/1.1 200 OK',
               statusCode: 200,
               ip: '127.0.0.1',
-              fromCache: false
+              fromCache: false,
             },
           },
           {
@@ -89,9 +89,9 @@ runTests([
               url: getURLScript(),
               frameUrl: getURLHttpWithScript(),
               initiator: getServerDomain(initiators.WEB_INITIATED),
-              documentId: 1
+              documentId: 1,
             },
-            retval: {cancel: true}
+            retval: {cancel: true},
           },
           {
             label: 'onErrorOccurred-script',
@@ -102,11 +102,12 @@ runTests([
               error: 'net::ERR_BLOCKED_BY_CLIENT',
               fromCache: false,
               type: 'script',
-              documentId: 1
+              documentId: 1,
             },
           },
         ],
-        [  // event order
+        [
+          // event order
           [
             'onBeforeRequest',
             'onBeforeSendHeaders',
@@ -116,7 +117,7 @@ runTests([
             'onCompleted',
             'onBeforeRequest-script',
             'onErrorOccurred-script',
-          ]
+          ],
         ],
         {urls: ['<all_urls>']},  // filter
         ['blocking']);

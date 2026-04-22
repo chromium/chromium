@@ -6,15 +6,15 @@
 const VALID_WEBP_IMAGE_CASE = {
   filename: 'valid.webp',
   blobString: 'RIFF0\0\0\0WEBPVP8 $\0\0\0\xB2\x02\0\x9D\x01\x2A' +
-              '\x01\0\x01\0\x2F\x9D\xCE\xE7s\xA8((((\x01\x9CK(\0' +
-              '\x05\xCE\xB3l\0\0\xFE\xD8\x80\0\0'
-}
+      '\x01\0\x01\0\x2F\x9D\xCE\xE7s\xA8((((\x01\x9CK(\0' +
+      '\x05\xCE\xB3l\0\0\xFE\xD8\x80\0\0',
+};
 
 // Write an invalid test image and expect failure.
 const INVALID_WEBP_IMAGE_CASE = {
   filename: 'invalid.webp',
-  blobString: 'abc123'
-}
+  blobString: 'abc123',
+};
 
 function runCopyToTest(testCase, expectSucceed) {
   let galleries;
@@ -24,19 +24,19 @@ function runCopyToTest(testCase, expectSucceed) {
 
   function testGalleries(results) {
     galleries = results;
-    chrome.test.assertTrue(galleries.length > 0,
-                           'Need at least one media gallery to test copyTo');
+    chrome.test.assertTrue(
+        galleries.length > 0, 'Need at least one media gallery to test copyTo');
 
     // Create a temporary file system and an image for copying-into test.
-    window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024,
-                                   temporaryFileSystemCallback,
-                                   chrome.test.fail);
+    window.webkitRequestFileSystem(
+        window.TEMPORARY, 1024 * 1024, temporaryFileSystemCallback,
+        chrome.test.fail);
   }
 
   function temporaryFileSystemCallback(filesystem) {
-    filesystem.root.getFile(testCase.filename, {create:true, exclusive: false},
-                            temporaryImageCallback,
-                            chrome.test.fail);
+    filesystem.root.getFile(
+        testCase.filename, {create: true, exclusive: false},
+        temporaryImageCallback, chrome.test.fail);
   }
 
   function temporaryImageCallback(entry) {
@@ -50,14 +50,14 @@ function runCopyToTest(testCase, expectSucceed) {
     for (let i = 0; i < testCase.blobString.length; i++) {
       blobBytes[i] = testCase.blobString.charCodeAt(i);
     }
-    const blob = new Blob([blobBytes], {type : 'image/webp'});
+    const blob = new Blob([blobBytes], {type: 'image/webp'});
 
     writer.onerror = function(e) {
       chrome.test.fail(`Unable to write test image: ${e.toString()}`);
-    }
+    };
 
-    writer.onwriteend = testCopyTo(testImageFileEntry, galleries[0],
-                                   testCase.filename, expectSucceed);
+    writer.onwriteend = testCopyTo(
+        testImageFileEntry, galleries[0], testCase.filename, expectSucceed);
 
     writer.write(blob);
   }
@@ -81,10 +81,9 @@ function runCopyToTest(testCase, expectSucceed) {
 // The custom callback functions are options.
 // If they are undefined, the default callbacks and checks will be used.
 // If passed in, all 3 function arguments need to be valid.
-function runReadGalleriesTest(expectedGalleryCount, expectSucceed,
-                              customReadDirectoryCallback,
-                              customReadDirectoryErrorCallback,
-                              customGotGalleriesCallback) {
+function runReadGalleriesTest(
+    expectedGalleryCount, expectSucceed, customReadDirectoryCallback,
+    customReadDirectoryErrorCallback, customGotGalleriesCallback) {
   let galleries;
   const readEntriesResults = [];
   let readDirectoryCallback;
@@ -93,16 +92,16 @@ function runReadGalleriesTest(expectedGalleryCount, expectSucceed,
 
   if (customReadDirectoryCallback && customReadDirectoryErrorCallback &&
       customGotGalleriesCallback) {
-    chrome.test.assertEq(typeof(customReadDirectoryCallback), 'function');
-    chrome.test.assertEq(typeof(customReadDirectoryErrorCallback), 'function');
-    chrome.test.assertEq(typeof(customGotGalleriesCallback), 'function');
+    chrome.test.assertEq(typeof (customReadDirectoryCallback), 'function');
+    chrome.test.assertEq(typeof (customReadDirectoryErrorCallback), 'function');
+    chrome.test.assertEq(typeof (customGotGalleriesCallback), 'function');
     readDirectoryCallback = customReadDirectoryCallback;
     readDirectoryErrorCallback = customReadDirectoryErrorCallback;
     gotGalleriesCallback = customGotGalleriesCallback;
   } else {
-    chrome.test.assertTrue(!customReadDirectoryCallback &&
-                           !customReadDirectoryErrorCallback &&
-                           !customGotGalleriesCallback);
+    chrome.test.assertTrue(
+        !customReadDirectoryCallback && !customReadDirectoryErrorCallback &&
+        !customGotGalleriesCallback);
     readDirectoryCallback = defaultReadDirectoryCallback;
     readDirectoryErrorCallback = defaultReadDirectoryErrorCallback;
     gotGalleriesCallback = defaultGotGalleriesCallback;
@@ -111,8 +110,8 @@ function runReadGalleriesTest(expectedGalleryCount, expectSucceed,
 
   function testGalleries(results) {
     gotGalleriesCallback(results);
-    chrome.test.assertEq(expectedGalleryCount, results.length,
-                         'Gallery count mismatch');
+    chrome.test.assertEq(
+        expectedGalleryCount, results.length, 'Gallery count mismatch');
     if (expectedGalleryCount == 0) {
       chrome.test.succeed();
       return;
@@ -147,8 +146,9 @@ function runReadGalleriesTest(expectedGalleryCount, expectSucceed,
   }
 
   function checkReadEntriesFinished() {
-    if (readEntriesResults.length != galleries.length)
+    if (readEntriesResults.length != galleries.length) {
       return;
+    }
     let success = true;
     for (let i = 0; i < readEntriesResults.length; i++) {
       if (readEntriesResults[i]) {
@@ -199,8 +199,8 @@ function verifyDirectoryEntry(directoryEntry, verifyFunction) {
   readEntries();
 }
 
-function verifyJPEG(parentDirectoryEntry, filename, expectedFileLength,
-                    doneCallback) {
+function verifyJPEG(
+    parentDirectoryEntry, filename, expectedFileLength, doneCallback) {
   function verifyFileEntry(fileEntry) {
     fileEntry.file(verifyFile, chrome.test.fail);
   }
@@ -221,6 +221,6 @@ function verifyJPEG(parentDirectoryEntry, filename, expectedFileLength,
     reader.readAsArrayBuffer(file);
   }
 
-  parentDirectoryEntry.getFile(filename, {create: false}, verifyFileEntry,
-                               chrome.test.fail);
+  parentDirectoryEntry.getFile(
+      filename, {create: false}, verifyFileEntry, chrome.test.fail);
 }

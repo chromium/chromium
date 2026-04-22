@@ -7,5 +7,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // may result in closing the port.
   self.onMessageSendResponse = sendResponse;
   chrome.test.succeed();
-  return true; // Response will be send asynchronously. To keep the port open.
+  return true;  // Response will be send asynchronously. To keep the port open.
 });

@@ -10,8 +10,9 @@ let foundGalleryWithEntry = false;
 let expectedFileSystems;
 
 function checkFinished() {
-  if (testResults.length != galleries.length)
+  if (testResults.length != galleries.length) {
     return;
+  }
   let success = true;
   for (let i = 0; i < testResults.length; i++) {
     if (testResults[i]) {
@@ -32,12 +33,12 @@ function checkFinished() {
 const deleteFileCallback = function(file) {
   testResults.push('');
   checkFinished();
-}
+};
 
 const deleteFileFailedCallback = function(err) {
   testResults.push(`Couldn\'t delete file: ${err.name}`);
   checkFinished();
-}
+};
 
 const mediaFileSystemsDirectoryEntryCallback = function(entries) {
   if (entries.length == 0) {
@@ -53,7 +54,7 @@ const mediaFileSystemsDirectoryEntryCallback = function(entries) {
     testResults.push('Found a gallery with more than 1 FileEntry');
   }
   checkFinished();
-}
+};
 
 const mediaFileSystemsDirectoryErrorCallback = function(err) {
   testResults.push(`Couldn\'t read from directory: ${err.name}`);
@@ -82,9 +83,10 @@ chrome.test.getConfig(function(config) {
 
       for (let i = 0; i < galleries.length; i++) {
         const dirReader = galleries[i].root.createReader();
-        dirReader.readEntries(mediaFileSystemsDirectoryEntryCallback,
-                              mediaFileSystemsDirectoryErrorCallback);
+        dirReader.readEntries(
+            mediaFileSystemsDirectoryEntryCallback,
+            mediaFileSystemsDirectoryErrorCallback);
       }
     },
   ]);
-})
+});

@@ -46,8 +46,8 @@ function isStateAdvanced(stateA, stateB) {
 
 function waitForState(worker, state) {
   if (!worker || worker.state == undefined) {
-    return Promise.reject(new Error(
-      'waitForState needs a ServiceWorker object to be passed.'));
+    return Promise.reject(
+        new Error('waitForState needs a ServiceWorker object to be passed.'));
   }
   if (worker.state === state) {
     return Promise.resolve(state);
@@ -55,19 +55,19 @@ function waitForState(worker, state) {
 
   if (isStateAdvanced(worker.state, state)) {
     return Promise.reject(new Error(
-      `Waiting for ${state} but the worker is already ${worker.state}.`));
+        `Waiting for ${state} but the worker is already ${worker.state}.`));
   }
   return new Promise(function(resolve, reject) {
-      worker.addEventListener('statechange', function() {
-          if (worker.state === state) {
-            resolve(state);
-          }
+    worker.addEventListener('statechange', function() {
+      if (worker.state === state) {
+        resolve(state);
+      }
 
-          if (isStateAdvanced(worker.state, state)) {
-            reject(new Error(
-              `The state of the worker becomes ${worker.state} while waiting` +
-                `for ${state}.`));
-          }
-        });
+      if (isStateAdvanced(worker.state, state)) {
+        reject(new Error(
+            `The state of the worker becomes ${worker.state} while waiting` +
+            `for ${state}.`));
+      }
     });
+  });
 }

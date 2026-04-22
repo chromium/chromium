@@ -23,7 +23,8 @@ chrome.extension.onConnect.addListener(function(port) {
       chrome.commands.onCommand.addListener(gotCommand);
       chrome.test.notifyPass();
     } else {
-      chrome.test.notifyFail('Extension expected keystroke, but sent to' +
+      chrome.test.notifyFail(
+          'Extension expected keystroke, but sent to' +
           ' webpage');
     }
   });

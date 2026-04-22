@@ -24,8 +24,8 @@ chrome.webRequest.onCompleted.addListener(function(details) {
   // received for the request. Notify the browser whether the redirect was
   // successful.
   if (details.requestId === redirectedRequestId) {
-    const message = redirectIgnored ? 'redirect_ignored' :
-                                      'redirect_successful';
+    const message =
+        redirectIgnored ? 'redirect_ignored' : 'redirect_successful';
     chrome.test.sendMessage(message);
     redirectIgnored = false;
     redirectedRequestId = null;

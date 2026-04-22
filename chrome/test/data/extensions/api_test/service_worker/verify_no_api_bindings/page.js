@@ -6,14 +6,17 @@ let worker = null;
 const FAILURE_MESSAGE = 'FAILURE';
 
 window.runServiceWorker = function() {
-  navigator.serviceWorker.register('sw.js').then(function() {
-    return navigator.serviceWorker.ready;
-  }).then(function(registration) {
-    worker = registration.active;
-    chrome.test.sendMessage('WORKER STARTED');
-  }).catch(function(err) {
-    chrome.test.sendMessage(FAILURE_MESSAGE);
-  });
+  navigator.serviceWorker.register('sw.js')
+      .then(function() {
+        return navigator.serviceWorker.ready;
+      })
+      .then(function(registration) {
+        worker = registration.active;
+        chrome.test.sendMessage('WORKER STARTED');
+      })
+      .catch(function(err) {
+        chrome.test.sendMessage(FAILURE_MESSAGE);
+      });
 };
 
 window.testSendMessage = function() {

@@ -93,5 +93,5 @@ chrome.test.runTests([
     const result = await chrome.sidePanel.getOptions({tabId: newTabId});
     chrome.test.assertEq(expected, result);
     chrome.test.succeed();
-  }
+  },
 ]);

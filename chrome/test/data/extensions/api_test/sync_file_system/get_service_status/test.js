@@ -3,21 +3,21 @@
 // found in the LICENSE file.
 
 const testSteps = [
-  function () {
+  function() {
     chrome.syncFileSystem.requestFileSystem(
         chrome.test.callbackPass(testSteps.shift()));
   },
-  function () {
+  function() {
     chrome.syncFileSystem.getServiceStatus(
         chrome.test.callbackPass(testSteps.shift()));
   },
-  function (status) {
+  function(status) {
     chrome.test.getConfig(function(config) {
       chrome.test.assertEq('disabled', status);
-    })
-  }
+    });
+  },
 ];
 
 chrome.test.runTests([
-  testSteps.shift()
+  testSteps.shift(),
 ]);

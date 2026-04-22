@@ -5,7 +5,7 @@
 function test() {
   chrome.test.assertNe(null, chrome.runtime);
 
-  var iframe = document.createElement('iframe');
+  const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   iframe.contentWindow.chrome = chrome;
 

@@ -66,5 +66,5 @@ chrome.test.runTests([
           createBuffer(state.textColumnCount - 2, 3), state.textColumnCount, 1);
       chrome.brailleDisplayPrivate.getDisplayState(pass());
     }));
-  }
+  },
 ]);

@@ -25,5 +25,5 @@ chrome.test.getConfig(config => chrome.test.runTests([
         'Error: {"code":-32000,"message":"History cannot be pruned"}');
     await chrome.debugger.detach(debuggee);
     chrome.test.succeed();
-  }
+  },
 ]));

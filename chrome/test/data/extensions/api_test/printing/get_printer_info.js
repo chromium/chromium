@@ -7,7 +7,7 @@ chrome.test.runTests([() => {
     chrome.test.assertNe(undefined, response);
     chrome.test.assertNe(undefined, response.capabilities);
     chrome.test.assertNe(undefined, response.capabilities.printer);
-    let color = response.capabilities.printer.color;
+    const color = response.capabilities.printer.color;
     chrome.test.assertNe(undefined, color);
     chrome.test.assertEq(1, color.option.length);
     chrome.test.assertNe(undefined, color.option[0]);

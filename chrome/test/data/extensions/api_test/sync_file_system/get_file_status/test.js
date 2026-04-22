@@ -8,8 +8,8 @@ const testStep = [
   },
   // Create empty file.
   function(fileSystem) {
-    fileSystem.root.getFile('Test.txt', {create: true}, testStep.shift(),
-        errorHandler);
+    fileSystem.root.getFile(
+        'Test.txt', {create: true}, testStep.shift(), errorHandler);
   },
   // Confirm file is pending as this is the mocked value.
   function(fileEntry) {
@@ -18,7 +18,7 @@ const testStep = [
   function(fileStatus) {
     chrome.test.assertEq('pending', fileStatus);
     chrome.test.succeed();
-  }
+  },
 ];
 
 function errorHandler(e) {
@@ -27,5 +27,5 @@ function errorHandler(e) {
 }
 
 chrome.test.runTests([
-  testStep.shift()
+  testStep.shift(),
 ]);
