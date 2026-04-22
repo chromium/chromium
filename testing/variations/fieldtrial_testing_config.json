@@ -9589,9 +9589,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enableds",
+                    "name": "EnabledGraphiteContextThreadSafe",
+                    "enable_features": [
+                        "EnableDrDc",
+                        "GraphiteContextIsThreadSafe"
+                    ]
+                },
+                {
+                    "name": "EnabledGraphiteContextPerThread",
                     "enable_features": [
                         "EnableDrDc"
+                    ],
+                    "disable_features": [
+                        "GraphiteContextIsThreadSafe"
                     ]
                 }
             ]

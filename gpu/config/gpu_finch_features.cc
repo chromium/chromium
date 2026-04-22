@@ -911,13 +911,7 @@ BASE_FEATURE(kIOSurfaceMultiThreading, base::FEATURE_ENABLED_BY_DEFAULT);
 // GpuMain and CompositorGpuThread. Note: When this feature is disabled,
 // each thread creates its own graphite::context and the context wrapper.
 BASE_FEATURE(kGraphiteContextIsThreadSafe,
-#if BUILDFLAG(IS_MAC)
-             // DrDC needs a thread-safe graphite context to work correctly.
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             // Feature incomplete. DO NOT ENABLE!
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 bool IsGraphiteContextThreadSafe() {
   return base::FeatureList::IsEnabled(features::kGraphiteContextIsThreadSafe);
