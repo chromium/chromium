@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 
 BASE_FEATURE(kFullscreenSigninPromoManagerMigration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFullscreenSigninPromoManagerMigrationEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenSigninPromoManagerMigration);
