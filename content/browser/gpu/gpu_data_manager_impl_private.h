@@ -156,6 +156,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void DisableDomainBlockingFor3DAPIsForTesting();
   void BlocklistWebGLForTesting();
   void SetSkiaGraphiteEnabledForTesting(bool enabled);
+  void SetInitializedForTesting(bool initialized);
 
  private:
   friend class GpuDataManagerImplPrivateTest;

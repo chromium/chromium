@@ -86,6 +86,11 @@ void GpuDataManagerImpl::SetSkiaGraphiteEnabledForTesting(bool enabled) {
   private_->SetSkiaGraphiteEnabledForTesting(enabled);  // IN-TEST
 }
 
+void GpuDataManagerImpl::SetInitializedForTesting(bool initialized) {
+  base::AutoLock auto_lock(lock_);
+  private_->SetInitializedForTesting(initialized);  // IN-TEST
+}
+
 gpu::GPUInfo GpuDataManagerImpl::GetGPUInfo() {
   base::AutoLock auto_lock(lock_);
   return private_->GetGPUInfo();

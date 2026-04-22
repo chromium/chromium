@@ -2955,6 +2955,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/unified_consent",
       "//chrome/browser/unified_consent:browser_tests",
+      "//chrome/browser/updater",
       "//chrome/browser/usb:browser_test_support",
       "//chrome/browser/usb:browser_tests",
       "//chrome/browser/user_agent:browser_tests",
@@ -3344,6 +3345,10 @@ if (!is_android) {
       "//v8",
     ]
 
+    if (is_mac) {
+      deps += [ "//chrome/updater:browser_sources" ]
+    }
+
     if (enable_guest_view) {
       deps += [ "//chrome/browser/guest_view" ]
     }
@@ -3539,6 +3544,7 @@ if (!is_android) {
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/feedback/report_unsafe_site_dialog_browsertest.cc",
+      "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_browsertest.cc",
       "../browser/glic/suggestions/contextual_cueing_service_browsertest.cc",
       "../browser/glic/suggestions/zero_state_suggestions_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
@@ -7657,7 +7663,9 @@ test("unit_tests") {
       "../browser/updater/browser_updater_client_testutils.h",
       "../browser/updater/browser_updater_client_unittest.cc",
     ]
-    deps += [ "//chrome/updater:browser_sources" ]
+    if (is_mac) {
+      deps += [ "//chrome/updater:browser_sources" ]
+    }
   }
 
   if (is_win || is_mac || is_linux) {
@@ -8629,8 +8637,10 @@ test("unit_tests") {
       deps += [
         "//chrome/browser/ui/webui/updater:mojo_bindings",
         "//chrome/enterprise_companion:constants_prod",
-        "//chrome/updater:browser_sources",
       ]
+      if (is_mac) {
+        deps += [ "//chrome/updater:browser_sources" ]
+      }
     }
 
     sources += [
@@ -8671,7 +8681,6 @@ test("unit_tests") {
 
     sources += [
       # Android uses different way of showing feedback page
-      "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/family_info_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/performance_log_source_unittest.cc",
@@ -10182,7 +10191,9 @@ test("unit_tests") {
   }
   if (is_win || is_mac) {
     sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
-    deps += [ "//chrome/updater:browser_sources" ]
+    if (is_mac) {
+      deps += [ "//chrome/updater:browser_sources" ]
+    }
   }
   if (is_win || is_mac || is_chromeos) {
     deps += [ "//chrome/common/notifications:unit_tests" ]

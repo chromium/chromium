@@ -85,6 +85,9 @@ class GpuDataManager {
   // This is only called by chrome feedback tests.
   virtual void SetSkiaGraphiteEnabledForTesting(bool enabled) = 0;
 
+  // This is only called by chrome feedback tests.
+  virtual void SetInitializedForTesting(bool initialized) = 0;
+
  protected:
   virtual ~GpuDataManager() {}
 };

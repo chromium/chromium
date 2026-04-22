@@ -583,6 +583,12 @@ void GpuDataManagerImplPrivate::SetSkiaGraphiteEnabledForTesting(bool enabled) {
       enabled ? gpu::kGpuFeatureStatusEnabled : gpu::kGpuFeatureStatusDisabled;
 }
 
+void GpuDataManagerImplPrivate::SetInitializedForTesting(bool initialized) {
+  gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] =
+      initialized ? gpu::kGpuFeatureStatusEnabled
+                  : gpu::kGpuFeatureStatusUndefined;
+}
+
 gpu::GPUInfo GpuDataManagerImplPrivate::GetGPUInfo() const {
   return gpu_info_;
 }

@@ -91,6 +91,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                             GpuProcessKind kind) override;
   void BlocklistWebGLForTesting() override;
   void SetSkiaGraphiteEnabledForTesting(bool enabled) override;
+  void SetInitializedForTesting(bool initialized) override;
 
   // Start a timer that occasionally reports UMA metrics. This is explicitly
   // started because unit tests may create and use a GpuDataManager but they do

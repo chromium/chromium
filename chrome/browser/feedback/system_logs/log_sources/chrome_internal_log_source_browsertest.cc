@@ -14,9 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -26,7 +27,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
-#include "chrome/browser/updater/browser_updater_client_testutils.h"
+#include "chrome/browser/updater/browser_updater_client_testutils.h"  // nogncheck
 #include "chrome/browser/updater/updater.h"
 #include "chrome/updater/constants.h"       // nogncheck
 #include "chrome/updater/update_service.h"  // nogncheck
@@ -59,35 +60,17 @@ std::unique_ptr<SystemLogsResponse> GetChromeInternalLogs() {
   return response;
 }
 
-class ChromeInternalLogSourceTest : public BrowserWithTestWindowTest {
+class ChromeInternalLogSourceTest : public InProcessBrowserTest {
  public:
   ChromeInternalLogSourceTest() = default;
   ChromeInternalLogSourceTest(const ChromeInternalLogSourceTest&) = delete;
   ChromeInternalLogSourceTest& operator=(const ChromeInternalLogSourceTest&) =
       delete;
   ~ChromeInternalLogSourceTest() override = default;
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS)
-    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
-#endif
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    auth_events_recorder_.reset();
-#endif
-    BrowserWithTestWindowTest::TearDown();
-  }
-
- protected:
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
-#endif
 };
 
-TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest,
+                       VersionTagContainsActualVersion) {
   auto response = GetChromeInternalLogs();
   EXPECT_PRED_FORMAT2(
       testing::IsSubstring,
@@ -96,7 +79,8 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest,
+                       VersionTagContainsExtendedLabel) {
   chrome::ScopedChannelOverride channel_override(
       chrome::ScopedChannelOverride::Channel::kExtendedStable);
 
@@ -107,13 +91,16 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
       chrome::GetVersionString(chrome::WithExtendedStable(true)),
       response->at("CHROME VERSION"));
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#endif
 
-TEST_F(ChromeInternalLogSourceTest, SkiaGraphiteStatusPresentAndValid) {
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest,
+                       SkiaGraphiteStatusPresentAndValid) {
+  content::GpuDataManager::GetInstance()->SetInitializedForTesting(false);
   auto response = GetChromeInternalLogs();
   auto value = response->at("skia_graphite_status");
   EXPECT_EQ(value, "unknown");
 
+  content::GpuDataManager::GetInstance()->SetInitializedForTesting(true);
   content::GpuDataManager::GetInstance()->SetSkiaGraphiteEnabledForTesting(
       true);
   response = GetChromeInternalLogs();
@@ -128,7 +115,7 @@ TEST_F(ChromeInternalLogSourceTest, SkiaGraphiteStatusPresentAndValid) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
   auto response = GetChromeInternalLogs();
   auto value = response->at("cpu_arch");
 #if BUILDFLAG(IS_MAC)
@@ -167,8 +154,8 @@ TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
-  ash::SpacedClient::InitializeFake();
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest,
+                       FreeAndTotalDiskSpacePresent) {
   ash::FakeSpacedClient::Get()->set_free_disk_space(1000);
   ash::FakeSpacedClient::Get()->set_total_disk_space(100000);
 
@@ -181,8 +168,9 @@ TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
   EXPECT_EQ(total_disk_space, "100000");
 }
 
-TEST_F(ChromeInternalLogSourceTest, KnowledgeFactorAuthFailuresPresent) {
-  auth_events_recorder_->OnKnowledgeFactorAuthFailure();
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest,
+                       KnowledgeFactorAuthFailuresPresent) {
+  ash::AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailure();
 
   std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
   auto knowledge_factor_auth_failure_count =
@@ -191,16 +179,17 @@ TEST_F(ChromeInternalLogSourceTest, KnowledgeFactorAuthFailuresPresent) {
   EXPECT_EQ(knowledge_factor_auth_failure_count, "1");
 }
 
-TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
-  auth_events_recorder_->OnAuthenticationSurfaceChange(
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
+  auto* auth_events_recorder = ash::AuthEventsRecorder::Get();
+  auth_events_recorder->OnAuthenticationSurfaceChange(
       ash::AuthEventsRecorder::AuthenticationSurface::kLogin);
-  auth_events_recorder_->OnLockContentsViewUpdate();
-  auth_events_recorder_->OnAuthSubmit();
-  auth_events_recorder_->OnLoginSuccess(ash::SuccessReason::OFFLINE_ONLY,
-                                        /*is_new_user=*/false,
-                                        /*is_login_offline=*/true,
-                                        /*is_ephemeral=*/false);
-  auth_events_recorder_->OnExistingUserLoginScreenExit(
+  auth_events_recorder->OnLockContentsViewUpdate();
+  auth_events_recorder->OnAuthSubmit();
+  auth_events_recorder->OnLoginSuccess(ash::SuccessReason::OFFLINE_ONLY,
+                                       /*is_new_user=*/false,
+                                       /*is_login_offline=*/true,
+                                       /*is_ephemeral=*/false);
+  auth_events_recorder->OnExistingUserLoginScreenExit(
       ash::AuthEventsRecorder::AuthenticationOutcome::kSuccess, 1);
 
   std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
@@ -213,7 +202,7 @@ TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {
+IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {
   base::ScopedClosureRunner service_override =
       updater::OverrideService(updater::UpdateService::Result::kSuccess, {});
   base::RunLoop loop;
