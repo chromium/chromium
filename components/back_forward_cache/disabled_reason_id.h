@@ -50,6 +50,11 @@ enum class DisabledReasonId : uint16_t {
   // Android WebView client sends postMessage on a JavaScriptReplyProxy that's
   // associated with a page in BFCache.
   kPostMessageByWebViewClient = 17,
+  // Extension frame is present. These frames can be synchronously scripted
+  // from other extension contexts (popups and frames in other pages) and thus
+  // share the same agent. Therefore, we can't enforce these not being scripted
+  // while cached.
+  kExtensionFrame = 18,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.

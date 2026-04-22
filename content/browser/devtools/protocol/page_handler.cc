@@ -2238,6 +2238,9 @@ DisableForRenderFrameHostReasonToProtocol(
             kExtensionSentMessageToCachedFrame:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderExtensionSentMessageToCachedFrame;
+        case back_forward_cache::DisabledReasonId::kExtensionFrame:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderExtensionFrame;
         case back_forward_cache::DisabledReasonId::kRequestedByWebViewClient:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               RequestedByWebViewClient;

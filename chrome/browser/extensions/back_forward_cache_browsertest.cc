@@ -27,6 +27,7 @@
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -1061,6 +1062,42 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   // Extension should no longer be able to change title, since the permission
   // should not revive with BFCache navigation to a.com.
   ExpectTitleChangeFail(*extension);
+}
+
+// Verifies that pages with extension subframes are not eligible for
+// bfcache. This is important because all extension contexts can script each
+// other and are thus associated to the same agent, so we can't prevent
+// cached iframes from being scripted.
+// See https://crbug.com/501771345 for details.
+IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
+                       ExtensionFramePreventsBFCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  content::BackForwardCacheDisabledTester tester;
+
+  // 1) Navigate to A.
+  ExtensionTestMessageListener listener("iframe_injected");
+  content::RenderFrameHostWrapper render_frame_host_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* extension_iframe =
+      ChildFrameAt(render_frame_host_a.get(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  // Verify the reason using the tester.
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      extension_iframe->GetProcess()->GetDeprecatedID(),
+      extension_iframe->GetRoutingID(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kExtensionFrame)));
 }
 
 class ExtensionBackForwardCacheWithPrerenderBrowserTest

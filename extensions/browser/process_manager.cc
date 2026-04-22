@@ -21,6 +21,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -242,6 +244,11 @@ void ProcessManager::RegisterRenderFrameHost(
   // extension views are visible. Keepalive count balanced in
   // UnregisterRenderFrame.
   AcquireLazyKeepaliveCountForFrame(render_frame_host);
+
+  content::BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host->GetGlobalId(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kExtensionFrame));
 
   for (auto& observer : observer_list_)
     observer.OnExtensionFrameRegistered(extension->id(), render_frame_host);

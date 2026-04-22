@@ -802,6 +802,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="196621" label="kEmbedder-kExtensionMessaging"/>
   <int value="196622" label="kEmbedder-kExtensionMessagingForOpenPort"/>
   <int value="196623" label="kEmbedder-kExtensionSentMessageToCachedFrame"/>
+  <int value="196624" label="kEmbedder-kRequestedByWebViewClient"/>
+  <int value="196625" label="kEmbedder-kPostMessageByWebViewClient"/>
+  <int value="196626" label="kEmbedder-kExtensionFrame"/>
 </enum>
 
 <enum name="BackgroundColorChangeOrigin">
