@@ -99,6 +99,9 @@ const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input",
 const DeepQuery kRealboxMatch = {"ntp-app", "ntp-searchbox",
                                  "cr-searchbox-dropdown", "cr-searchbox-match",
                                  "#suggestion"};
+const DeepQuery kRealboxMatchRemoveButton = {"ntp-app", "ntp-searchbox",
+                                             "cr-searchbox-dropdown",
+                                             "cr-searchbox-match", "#remove"};
 const DeepQuery kVoiceSearchButton = {"ntp-app", "ntp-searchbox",
                                       "#voiceSearchButton"};
 const DeepQuery kLensSearchButton = {"ntp-app", "ntp-searchbox",
@@ -1240,4 +1243,65 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
       // Ensure google search occurs.
       WaitForGoogleSearch(kNtpElementId,
                           {{"q", "suggestion-2"}, {"source", "chrome.rb"}}));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       RemoveSuggestionViaClick) {
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Seed history results to populate the dropdown
+      SeedSearchboxResult("aimode"),
+      // Click on Realbox to show the dropdown
+      ClickElement(kNtpElementId, kRealboxInput),
+      WaitForElementVisibilityChange(kSearchboxDropdown,
+                                     /*expected_visible=*/true),
+      SendKeyPress(kNtpElementId, ui::VKEY_A),
+      // Wait for the inline autocompleted verbatim match to render.
+      WaitForVerbatimMatch(kNtpElementId, kRealboxMatch, "aimode"),
+      // Wait for the remove button to render and become visible
+      WaitForElementToRender(kNtpElementId, kRealboxMatchRemoveButton),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'aimode'"),
+      // Click the remove button
+      ClickElement(kNtpElementId, kRealboxMatchRemoveButton),
+      // After removing the inline autocomplete match, the input should revert
+      // to "a"
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'a'"));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       RemoveSuggestionViaKeyboard) {
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Seed history result to populate the dropdown
+      SeedSearchboxResult("a"), SeedSearchboxResult("b"),
+      // Click on Realbox to show the dropdown
+      ClickElement(kNtpElementId, kRealboxInput),
+      WaitForElementVisibilityChange(kSearchboxDropdown,
+                                     /*expected_visible=*/true),
+      // Pressing Tab should focus the AIM button.
+      SendKeyPress(kNtpElementId, ui::VKEY_TAB),
+      WaitForJsConditionAt(kNtpElementId, kComposeButton,
+                           "(el) => el && el.matches(':focus')"),
+      // Pressing Tab again should focus the inline autocomplete match.
+      SendKeyPress(kNtpElementId, ui::VKEY_TAB),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'b'"),
+      // Pressing Tab again should focus the remove button.
+      SendKeyPress(kNtpElementId, ui::VKEY_TAB),
+      WaitForJsConditionAt(kNtpElementId, kRealboxMatchRemoveButton,
+                           "(el) => el && el.matches(':focus')"),
+      // Trigger the remove button via ENTER
+      SendKeyPress(kNtpElementId, ui::VKEY_RETURN),
+      // After removing the current match, the next match remove button should
+      // be focused.
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === 'a'"),
+      SendKeyPress(kNtpElementId, ui::VKEY_RETURN),
+      // After all matches are removed, the input should be empty.
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el.value === ''"));
 }
