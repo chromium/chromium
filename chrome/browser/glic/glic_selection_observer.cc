@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
@@ -65,6 +66,49 @@ enum class GlicSelectionAction {
   kMaxValue = kWidgetClicked
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSelectionAction)
+
+void DoUpdateNudgeLabel(
+    base::WeakPtr<content::WebContents> web_contents,
+    std::string text,
+    std::optional<std::string> prompt_suggestion,
+    std::string anchored_message_text,
+    std::optional<GlicNudgeActivity> activity,
+    GlicNudgeController::GlicNudgeActivityCallback invoke_glic) {
+  if (!web_contents) {
+    return;
+  }
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents.get());
+  if (!tab_interface) {
+    return;
+  }
+  auto* bwi = tab_interface->GetBrowserWindowInterface();
+  if (!bwi) {
+    return;
+  }
+  auto* controller = bwi->GetFeatures().glic_nudge_controller();
+  if (!controller) {
+    return;
+  }
+
+  controller->UpdateNudgeLabel(
+      web_contents.get(), std::move(text), std::move(prompt_suggestion),
+      std::move(anchored_message_text), activity, std::move(invoke_glic));
+}
+
+void PostUpdateNudgeLabel(
+    content::WebContents* web_contents,
+    std::string text,
+    std::optional<std::string> prompt_suggestion,
+    std::string anchored_message_text,
+    std::optional<GlicNudgeActivity> activity,
+    GlicNudgeController::GlicNudgeActivityCallback invoke_glic) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DoUpdateNudgeLabel, web_contents->GetWeakPtr(),
+                                std::move(text), std::move(prompt_suggestion),
+                                std::move(anchored_message_text), activity,
+                                std::move(invoke_glic)));
+}
 
 }  // namespace
 
@@ -162,6 +206,11 @@ void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
 
 void GlicSelectionObserver::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
+  if (web_contents()->IsBeingDestroyed()) {
+    ResetPendingSelection();
+    return;
+  }
+
   // If the web contents loses focus, process any pending selection immediately.
   if (selection_debounce_timer_.IsRunning()) {
     selection_debounce_timer_.Stop();
@@ -208,10 +257,7 @@ void GlicSelectionObserver::OnInputEvent(
       // initiating a new drag), we preemptively clear the context here to
       // ensure it is not left hanging.
       if (is_left_click_or_touch) {
-        pending_selection_text_.reset();
-        if (selection_debounce_timer_.IsRunning()) {
-          selection_debounce_timer_.Stop();
-        }
+        ResetPendingSelection();
         if (has_sent_selection_context_) {
           UpdateSelectionState(std::u16string());
         }
@@ -297,17 +343,9 @@ void GlicSelectionObserver::DismissUI(bool keep_nudge) {
   // The nudge lives in the toolbar and doesn't need to be hidden when
   // scrolling.
   if (!keep_nudge) {
-    if (auto* tab_interface =
-            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
-      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
-          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                       /*anchored_message_text=*/std::string(),
-                                       GlicNudgeActivity::kNudgeDismissed,
-                                       base::DoNothing());
-        }
-      }
-    }
+    PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
+                         /*anchored_message_text=*/std::string(),
+                         GlicNudgeActivity::kNudgeDismissed, base::DoNothing());
   }
 }
 
@@ -317,10 +355,14 @@ void GlicSelectionObserver::ProcessPendingSelection() {
   }
 
   std::u16string selected_text = std::move(*pending_selection_text_);
-  pending_selection_text_.reset();
-  selection_debounce_timer_.Stop();
+  ResetPendingSelection();
 
   UpdateSelectionState(selected_text);
+}
+
+void GlicSelectionObserver::ResetPendingSelection() {
+  selection_debounce_timer_.Stop();
+  pending_selection_text_.reset();
 }
 
 // static
@@ -406,14 +448,10 @@ void GlicSelectionObserver::UpdateSelectionState(
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
     }
-    if (bwi) {
-      if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
-        controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                     /*anchored_message_text=*/std::string(),
-                                     GlicNudgeActivity::kNudgeDismissed,
-                                     base::DoNothing());
-      }
-    }
+
+    PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
+                         /*anchored_message_text=*/std::string(),
+                         GlicNudgeActivity::kNudgeDismissed, base::DoNothing());
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
       if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
@@ -500,10 +538,10 @@ void GlicSelectionObserver::ShowSelectionAffordance(
           &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
           selected_text,
           /*is_widget=*/false, web_contents()->GetWeakPtr());
-      controller->UpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
-                                   std::nullopt,
-                                   /*anchored_message_text=*/std::string(),
-                                   std::nullopt, std::move(invoke_glic));
+      PostUpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
+                           std::nullopt,
+                           /*anchored_message_text=*/std::string(),
+                           std::nullopt, std::move(invoke_glic));
     } else {
       // Show selection widget
       // Find the RenderFrameHost that has the selection.
