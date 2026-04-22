@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <vector>
 
@@ -668,15 +669,17 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
       SchedulingPriorityToString(sequence->default_priority_);
 
   if (log_histograms) {
+    base::TimeTicks now = base::TimeTicks::Now();
+
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "GPU.Scheduler.ThreadSuspendedTime",
-        base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
-        base::Microseconds(10), base::Seconds(30), 100);
+        now - thread_state.run_next_task_scheduled, base::Microseconds(10),
+        base::Seconds(30), 100);
     base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat(
             {"GPU.Scheduler.ThreadSuspendedTime.", priority_str, "Priority"}),
-        base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
-        base::Microseconds(10), base::Seconds(30), 100);
+        now - thread_state.run_next_task_scheduled, base::Microseconds(10),
+        base::Seconds(30), 100);
 
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "GPU.Scheduler.TaskDependencyTime",
@@ -688,14 +691,27 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
         sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
         base::Seconds(30), 100);
 
+    // The delay between when the front task was ready to run (no more
+    // dependencies) and now.
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "GPU.Scheduler.TaskSchedulingDelayTime",
-        sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+        now - sequence->tasks_.front().running_ready, base::Microseconds(10),
         base::Seconds(30), 100);
     base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat({"GPU.Scheduler.TaskSchedulingDelayTime.", priority_str,
                       "Priority"}),
-        sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+        now - sequence->tasks_.front().running_ready, base::Microseconds(10),
+        base::Seconds(30), 100);
+
+    // The delay between when the front task was registered and now.
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskTotalDelayTime",
+        now - sequence->tasks_.front().registration, base::Microseconds(10),
+        base::Seconds(30), 100);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        base::StrCat(
+            {"GPU.Scheduler.TaskTotalDelayTime.", priority_str, "Priority"}),
+        now - sequence->tasks_.front().registration, base::Microseconds(10),
         base::Seconds(30), 100);
   }
 
@@ -734,13 +750,22 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
                   perfetto::TerminatingFlow::Global(task_flow_id));
     }
   }
-
   total_blocked_time_ += blocked_time;
 
   // Reset pointers after reacquiring the lock.
   sequence = GetSequence(sequence_id);
   if (sequence) {
     sequence->FinishTask();
+    if (log_histograms) {
+      int percent_concurrent =
+          std::round(sequence->last_task_concurrency_ratio_ * 100);
+      UMA_HISTOGRAM_PERCENTAGE("GPU.Scheduler.PercentConcurrentTaskExecution",
+                               percent_concurrent);
+      base::UmaHistogramPercentage(
+          base::StrCat({"GPU.Scheduler.PercentConcurrentTaskExecution.",
+                        priority_str, "Priority"}),
+          percent_concurrent);
+    }
   }
 }
 

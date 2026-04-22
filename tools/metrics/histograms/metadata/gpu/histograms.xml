@@ -1641,6 +1641,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Scheduler.PercentConcurrentTaskExecution{Priority}"
+    units="%" expires_after="2026-10-10">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <summary>
+    Records the percentage of time each GPU scheduler task spent executing while
+    at least one other task was also executing on another thread.
+  </summary>
+  <token key="Priority">
+    <variant name=""/>
+    <variant name=".HighPriority"/>
+    <variant name=".LowPriority"/>
+    <variant name=".NormalPriority"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.Scheduler.{Stage}{Priority}" units="microseconds"
     expires_after="2026-10-10">
   <owner>vikassoni@chromium.org</owner>
@@ -1671,6 +1687,11 @@ chromium-metrics-reviews@google.com.
                  fence is passed and stops when the tasks starts running. If
                  the schedulers is working properly, for a high priority
                  task, this metric should be minimal"/>
+    <variant name="TaskTotalDelayTime"
+        summary="Records the wall time taken spent by each GPU scheduler task
+                 waiting for it's execution from the time it was registered.
+                 This is a sum of TaskDependencyTime, TaskSchedulingDelayTime
+                 and ThreadSuspendedTime."/>
     <variant name="ThreadSuspendedTime"
         summary="Records the wall time taken between calls to schedule the
                  task run and the actual run of the task. Ideally this should

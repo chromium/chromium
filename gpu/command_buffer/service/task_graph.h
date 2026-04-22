@@ -225,12 +225,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
     base::TimeDelta FrontTaskWaitingDependencyDelta()
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    // The delay between when the front task was ready to run (no more
-    // dependencies) and now. This is used when the task is actually started to
-    // check for low scheduling delays.
-    base::TimeDelta FrontTaskSchedulingDelay()
-        EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
-
     // Removes a waiting sync token fence.
     void RemoveWaitFence(const SyncToken& sync_token,
                          uint32_t order_num,
@@ -363,6 +357,10 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
     // updated by BeginTask() and called by user task callback.
     FenceSyncReleaseDelegate release_delegate_;
 
+    base::TimeTicks current_task_start_time_ GUARDED_BY(&TaskGraph::lock_);
+    base::TimeDelta current_task_concurrent_time_ GUARDED_BY(&TaskGraph::lock_);
+    double last_task_concurrency_ratio_ GUARDED_BY(&TaskGraph::lock_) = 0;
+
     scoped_refptr<RetainingOneShotTimerHolder> validation_timer_;
   };
 
@@ -409,6 +407,9 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
                              ValidateStateMap* validate_states)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  void UpdateConcurrencyMetrics(base::TimeTicks now)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Gets ValidateState for given `sequence`. It does necessary initialization
   // if the object hasn't been created yet, including updating
   // `pending_releases` with release of the currently ongoing task and validated
@@ -421,6 +422,9 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
   mutable base::Lock lock_;
 
   const raw_ptr<SyncPointManager> sync_point_manager_;
+
+  base::TimeTicks last_concurrency_update_time_ GUARDED_BY(lock_);
+  base::flat_set<SequenceId> running_sequences_ GUARDED_BY(lock_);
 
   base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
       GUARDED_BY(lock_);
