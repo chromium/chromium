@@ -23,7 +23,7 @@
 //   sequence<[EnforceRange] unsigned long> strides;
 //   sequence<[EnforceRange] unsigned long> dilations;
 //   MLInputOperandLayout layout = "nchw";
-//   MLRoundingType outputShapeRounding = "floor";
+//   MLRoundingType roundingType = "floor";
 //   sequence<[EnforceRange] unsigned long> outputSizes;
 // };
 //
@@ -381,7 +381,7 @@ const maxPool2dTests = [
     }
   },
   {
-    'name': 'maxPool2d float32 4D tensor options.outputShapeRounding=floor',
+    'name': 'maxPool2d float32 4D tensor options.roundingType=floor',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -415,7 +415,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'floor'
+              'roundingType': 'floor'
             }
           }
         ],
@@ -434,7 +434,7 @@ const maxPool2dTests = [
     }
   },
   {
-    'name': 'maxPool2d float32 4D tensor options.outputShapeRounding=ceil',
+    'name': 'maxPool2d float32 4D tensor options.roundingType=ceil',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -468,7 +468,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'ceil'
+              'roundingType': 'ceil'
             }
           }
         ],
@@ -491,7 +491,7 @@ const maxPool2dTests = [
   },
   {
     'name':
-        'maxPool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=floor',
+        'maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -525,7 +525,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'floor',
+              'roundingType': 'floor',
               'outputSizes': [3, 3]
             }
           }
@@ -549,7 +549,7 @@ const maxPool2dTests = [
   },
   {
     'name':
-        'maxPool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=ceil',
+        'maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -583,7 +583,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'ceil',
+              'roundingType': 'ceil',
               'outputSizes': [2, 2]
             }
           }
@@ -964,7 +964,7 @@ const maxPool2dTests = [
     }
   },
   {
-    'name': 'maxPool2d float16 4D tensor options.outputShapeRounding=floor',
+    'name': 'maxPool2d float16 4D tensor options.roundingType=floor',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -991,7 +991,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'floor'
+              'roundingType': 'floor'
             }
           }
         ],
@@ -1008,7 +1008,7 @@ const maxPool2dTests = [
     }
   },
   {
-    'name': 'maxPool2d float16 4D tensor options.outputShapeRounding=ceil',
+    'name': 'maxPool2d float16 4D tensor options.roundingType=ceil',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -1035,7 +1035,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'ceil'
+              'roundingType': 'ceil'
             }
           }
         ],
@@ -1055,7 +1055,7 @@ const maxPool2dTests = [
   },
   {
     'name':
-        'maxPool2d float16 4D tensor options.outputSizes ignores options.outputShapeRounding=floor',
+        'maxPool2d float16 4D tensor options.outputSizes ignores options.roundingType=floor',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -1082,7 +1082,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'floor',
+              'roundingType': 'floor',
               'outputSizes': [3, 3]
             }
           }
@@ -1103,7 +1103,7 @@ const maxPool2dTests = [
   },
   {
     'name':
-        'maxPool2d float16 4D tensor options.outputSizes ignores options.outputShapeRounding=ceil',
+        'maxPool2d float16 4D tensor options.outputSizes ignores options.roundingType=ceil',
     'graph': {
       'inputs': {
         'maxPool2dInput': {
@@ -1130,7 +1130,7 @@ const maxPool2dTests = [
               'windowDimensions': [3, 3],
               'padding': [1, 0, 0, 1],
               'strides': [2, 2],
-              'outputShapeRounding': 'ceil',
+              'roundingType': 'ceil',
               'outputSizes': [2, 2]
             }
           }

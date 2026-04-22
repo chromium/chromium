@@ -814,9 +814,9 @@ class Node : public GarbageCollected<Node> {
     if (options->hasLayout()) {
       attributes_.push_back(NodeAttribute{"layout", options->layout()});
     }
-    if (options->hasOutputShapeRounding()) {
-      attributes_.push_back(NodeAttribute{"outputShapeRounding",
-                                          options->outputShapeRounding()});
+    if (options->hasRoundingType()) {
+      attributes_.push_back(
+          NodeAttribute{"roundingType", options->roundingType()});
     }
     if (options->hasOutputSizes()) {
       attributes_.push_back(

@@ -214,7 +214,7 @@ struct GemmParams {
 struct Pool2dParams {
   OperandDataType data_type;
   mojom::Pool2d::Kind pool2d_kind;
-  RoundingType output_shape_rounding;
+  RoundingType rounding_type;
   uint32_t batch;
   uint32_t channels;
   uint32_t input_height;
@@ -753,7 +753,7 @@ std::optional<Pool2dDescriptors> SetUpPool2dDescriptors(
   attr.strides = {params.stride_height, params.stride_width};
   attr.dilations = {params.dilation_height, params.dilation_width};
   attr.layout = input_layout;
-  attr.output_shape_rounding = params.output_shape_rounding;
+  attr.rounding_type = params.rounding_type;
 
   ASSIGN_OR_RETURN_NULLOPT(
       auto output_desc,

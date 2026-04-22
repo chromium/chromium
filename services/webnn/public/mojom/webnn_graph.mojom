@@ -467,9 +467,9 @@ struct Reduce {
 // Represents an average or max pooling operation across all the elements with
 // moving window over the input tensor.
 // This struct also contains the attributes of pool2d operator, but the
-// `outputShapeRounding` and `outputSizes` array in MLPool2dOptions are not
-// included because they are used to calculate the output dimensions of pool2d
-// in blink side.
+// `roundingType` and `outputSizes` array in MLPool2dOptions are not included
+// because they are used to calculate the output dimensions of pool2d in blink
+// side.
 struct Pool2d {
   enum Kind {
     kAveragePool2d,
