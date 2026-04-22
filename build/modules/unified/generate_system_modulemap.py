@@ -12,6 +12,8 @@ import os
 import pathlib
 import re
 import shlex
+import shutil
+import sys
 import subprocess
 import tempfile
 from typing import Tuple, List
@@ -23,6 +25,8 @@ _STRIP_PREFIX = re.compile(r'^usr/include/(?:(?:x86_64)-(?:linux|cros)-gnu/)?')
 _CPU_ARG = {
     'x64': 'x86_64',
 }
+_DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
+_DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
 
 
 # Path.absolute() only exists in python 3.11, gmacs still have python3.9
@@ -196,7 +200,8 @@ def calculate_transitive_headers(clang_args: list[str],
                                  sysroot: pathlib.Path,
                                  extra_public_headers: list[str],
                                  target_os: str,
-                                 target_cpu: str) -> List[Header]:
+                                 target_cpu: str,
+                                 debug: bool = False) -> List[Header]:
   """Runs Clang to discover transitive dependencies from the provided headers.
 
   Returns a list of all headers discovered that are part of the sysroot.
@@ -236,7 +241,28 @@ def calculate_transitive_headers(clang_args: list[str],
         str(dep_file),
     ]
 
-    subprocess.run(cmd, check=True)
+    if debug:
+      shutil.copyfile(source_file, _DEBUG_SOURCE)
+      replacements = {
+          str(source_file): _DEBUG_SOURCE,
+          str(dep_file): _DEBUG_SOURCE + ".o.d"
+      }
+      debug_cmd = [replacements.get(arg, arg) for arg in cmd]
+
+      _DEBUG_SCRIPT.write_text(f"""#!/bin/bash
+cd "{os.getcwd()}"
+{shlex.join(debug_cmd)}
+""")
+      _DEBUG_SCRIPT.chmod(0o755)
+      print(f"Saved debug script to {_DEBUG_SCRIPT}")
+      sys.exit(0)
+
+    ps = subprocess.run(cmd, check=False)
+    if ps.returncode != 0:
+      print(
+          f"Suggestion: Run `cd {os.getcwd()} && {shlex.join(sys.argv)} --debug` to debug"
+      )
+      sys.exit(ps.returncode)
 
     dep_content = dep_file.read_text().replace('\\\n', '')
     deps = dep_content.split(': ', 1)[1].split()
@@ -349,6 +375,7 @@ def main(args):
       extra_public_headers=_PUBLIC_SYSROOT_HEADERS,
       target_os=args.os,
       target_cpu=args.cpu,
+      debug=args.debug,
   )
 
   out_str = combine_modulemaps(out=args.output,
@@ -382,4 +409,10 @@ if __name__ == '__main__':
       help='Path to a modulemap to merge. Can be specified multiple times.')
   parser.add_argument('--os', required=True, help="GN's $target_os variable")
   parser.add_argument('--cpu', required=True, help="GN's $target_cpu variable")
+  parser.add_argument(
+      '--debug',
+      action='store_true',
+      help=(
+          f'Instead of compiling, generate a bash script {str(_DEBUG_SCRIPT)} '
+          'that attempts to compile'))
   main(parser.parse_args())
