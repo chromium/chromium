@@ -114,7 +114,19 @@ message PolicyValidationReportEvent {
   // or VALIDATION_RESULT_TYPE_VALUE_ERROR.
   repeated PolicyValueValidationIssue policy_value_validation_issues = 4;
 
-  // next ID: 6
+  // The action that trigger the validation.
+  enum Action {
+    // Action is not provided.
+    UNKNOWN = 0;
+    // Store policy to disk with recently downloaded proto.
+    STORE = 1;
+    // Load policy from disk cache.
+    LOAD = 2;
+  }
+
+  Action action = 6;
+
+  // next ID: 7
 }
 
 // A validation issue from validating a policy value that was contained in
