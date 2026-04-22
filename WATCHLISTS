@@ -153,8 +153,9 @@
                   '|chrome/android/java/src/org/chromium/chrome/browser/searchwidget/'
     },
     'android_side_panel': {
-      'filepath': 'chrome/browser/ui/side_ui/'\
+      'filepath': 'chrome/browser/ui/side_panel/'\
                   '|chrome/browser/ui/side_panel_container/'\
+                  '|chrome/browser/ui/side_ui/'\
                   '|.*SidePanel.*\.java'\
                   '|.*SideUi.*\.java'
     },
