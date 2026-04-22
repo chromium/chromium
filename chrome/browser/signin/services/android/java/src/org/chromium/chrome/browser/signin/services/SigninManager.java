@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Callback;
@@ -14,9 +13,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Android wrapper of the SigninManager which provides access from the Java layer.
@@ -30,17 +26,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public interface SigninManager {
-    /** What type of data to delete when data deletion is requested. */
-    @IntDef({DataWipeOption.WIPE_SYNC_DATA, DataWipeOption.WIPE_ALL_PROFILE_DATA})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface DataWipeOption {
-        /* Delete all syncable data from the profile (history, passwords, form data, as well as */
-        /* cache and cookies. */
-        int WIPE_SYNC_DATA = 0;
-        /* Delete all data from the profile. */
-        int WIPE_ALL_PROFILE_DATA = 1;
-    }
-
     /** A SignInStateObserver is notified when the user signs in to or out of Chrome. */
     interface SignInStateObserver {
         /** Invoked when the user has signed in to Chrome. */
@@ -153,20 +138,6 @@ public interface SigninManager {
     void runAfterOperationInProgress(Runnable runnable);
 
     /**
-     * Revokes sync consent (which disables the sync feature). This method should only be called for
-     * child accounts.
-     *
-     * @param signoutSource describes the event driving disabling sync (e.g. {@link
-     *     SignoutReason.USER_CLICKED_TURN_OFF_SYNC_SETTINGS}).
-     * @param signOutCallback Callback to notify about progress.
-     * @param forceWipeUserData Whether user selected to wipe all device data.
-     */
-    void revokeSyncConsent(
-            @SignoutReason int signoutSource,
-            @Nullable SignOutCallback signOutCallback,
-            boolean forceWipeUserData);
-
-    /**
      * Returns true if sign out can be started now. Sign out can start if there is no sign in/out in
      * progress and there is a signed-in account.
      */
@@ -213,9 +184,8 @@ public interface SigninManager {
      * ensure serialization of wipe operations.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
-     * @param dataWipeOption What kind of data to delete.
      */
-    void wipeSyncUserData(Runnable wipeDataCallback, @DataWipeOption int dataWipeOption);
+    void wipeSyncUserData(Runnable wipeDataCallback);
 
     /** Records that the user has accepted signing into a Managed Account. */
     void setUserAcceptedAccountManagement(boolean acceptedAccountManagement);

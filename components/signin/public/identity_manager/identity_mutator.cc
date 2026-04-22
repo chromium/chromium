@@ -55,14 +55,6 @@ bool JniIdentityMutator::RemovePrimaryAccountButKeepTokens(
       static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
-void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, int32_t source_metric) {
-  PrimaryAccountMutator* primary_account_mutator =
-      identity_mutator_->GetPrimaryAccountMutator();
-  DCHECK(primary_account_mutator);
-  return primary_account_mutator->RevokeSyncConsent(
-      static_cast<signin_metrics::ProfileSignout>(source_metric));
-}
-
 void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& j_account_infos,

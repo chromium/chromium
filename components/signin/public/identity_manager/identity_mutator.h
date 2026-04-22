@@ -54,9 +54,6 @@ class JniIdentityMutator {
   // was successful and false if there was no primary account set.
   bool RemovePrimaryAccountButKeepTokens(JNIEnv* env, int32_t source_metric);
 
-  // Called by java to revoke sync consent for the primary account.
-  void RevokeSyncConsent(JNIEnv* env, int32_t source_metric);
-
   // Called by java to seed the accounts in the token service with system
   // accounts.
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(

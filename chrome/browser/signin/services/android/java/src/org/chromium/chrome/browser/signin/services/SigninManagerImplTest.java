@@ -182,56 +182,6 @@ public class SigninManagerImplTest {
                 });
     }
 
-    // TODO(crbug.com/40820738): add test for revokeSyncConsentFromJavaWithManagedDomain() and
-    // revokeSyncConsentFromJavaWipeData() - this requires making the BookmarkModel mockable in
-    // SigninManagerImpl.
-
-    @Test
-    @MediumTest
-    public void testDataNotWipedOnRevokeSyncConsent() {
-        mSigninTestRule.addAccountThenSigninWithConsentLevelSync(TestAccounts.ACCOUNT1);
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
-        BookmarkId bookmarkId = addBookmark("test", url);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSigninManager.revokeSyncConsent(
-                            SignoutReason.TEST,
-                            mock(SigninManager.SignOutCallback.class),
-                            /* forceWipeUserData= */ false);
-                    mSigninManager.runAfterOperationInProgress(
-                            () -> {
-                                // Disabling sync should only clear the service worker cache when
-                                // the user is neither managed or syncing.
-                                assertNotNull(
-                                        "Bookmark should not have been wiped",
-                                        mBookmarkModel.getBookmarkById(bookmarkId));
-                            });
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testDataNotWipedOnRevokeSyncConsentWithForceWipeData() {
-        mSigninTestRule.addAccountThenSigninWithConsentLevelSync(TestAccounts.ACCOUNT1);
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
-        BookmarkId bookmarkId = addBookmark("test", url);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSigninManager.revokeSyncConsent(
-                            SignoutReason.TEST,
-                            mock(SigninManager.SignOutCallback.class),
-                            /* forceWipeUserData= */ true);
-                    mSigninManager.runAfterOperationInProgress(
-                            () -> {
-                                assertNull(
-                                        "Bookmark should be null after wipe",
-                                        mBookmarkModel.getBookmarkById(bookmarkId));
-                            });
-                });
-    }
-
     @Test
     @MediumTest
     public void testCallbackNotifiedWhenNoOperationIsInProgress() {

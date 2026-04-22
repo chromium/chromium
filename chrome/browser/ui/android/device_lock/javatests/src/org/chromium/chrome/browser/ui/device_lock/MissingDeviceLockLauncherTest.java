@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -217,8 +216,7 @@ public class MissingDeviceLockLauncherTest {
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(true));
-        verify(mSigninManager, times(0))
-                .wipeSyncUserData(any(), eq(DataWipeOption.WIPE_ALL_PROFILE_DATA));
+        verify(mSigninManager, times(0)).wipeSyncUserData(any());
         verify(mPasswordStoreBridge, never()).clearAllPasswords();
         verify(mPersonalDataManager, never()).deleteAllLocalCreditCards();
         assertTrue(
@@ -252,8 +250,7 @@ public class MissingDeviceLockLauncherTest {
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(false));
-        verify(mSigninManager, times(0))
-                .wipeSyncUserData(any(), eq(DataWipeOption.WIPE_ALL_PROFILE_DATA));
+        verify(mSigninManager, times(0)).wipeSyncUserData(any());
         verify(mPasswordStoreBridge, times(1)).clearAllPasswords();
         verify(mPersonalDataManager, times(1)).deleteAllLocalCreditCards();
         assertTrue(
@@ -278,7 +275,7 @@ public class MissingDeviceLockLauncherTest {
                             return null;
                         })
                 .when(mSigninManager)
-                .wipeSyncUserData(any(), anyInt());
+                .wipeSyncUserData(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -287,8 +284,7 @@ public class MissingDeviceLockLauncherTest {
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(0)).signOut(anyInt(), any(), anyBoolean());
-        verify(mSigninManager, times(1))
-                .wipeSyncUserData(any(), eq(DataWipeOption.WIPE_ALL_PROFILE_DATA));
+        verify(mSigninManager, times(1)).wipeSyncUserData(any());
         verify(mPasswordStoreBridge, never()).clearAllPasswords();
         verify(mPersonalDataManager, never()).deleteAllLocalCreditCards();
         assertTrue(
@@ -315,8 +311,7 @@ public class MissingDeviceLockLauncherTest {
                 });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, never()).signOut(anyInt(), any(), anyBoolean());
-        verify(mSigninManager, never())
-                .wipeSyncUserData(any(), eq(DataWipeOption.WIPE_ALL_PROFILE_DATA));
+        verify(mSigninManager, never()).wipeSyncUserData(any());
         verify(mPasswordStoreBridge, times(1)).clearAllPasswords();
         verify(mPersonalDataManager, times(1)).deleteAllLocalCreditCards();
         assertTrue(

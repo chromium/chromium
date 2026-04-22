@@ -457,40 +457,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         }
     }
 
-    /** Initialize SignOutState, and call identity mutator to revoke the sync consent. */
-    @Override
-    public void revokeSyncConsent(
-            @SignoutReason int signoutSource,
-            @Nullable SignOutCallback signOutCallback,
-            boolean forceWipeUserData) {
-        // Only one signOut at a time!
-        assert mSignOutState == null;
-        // User must be syncing.
-        assert mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
-
-        // Grab the management domain before nativeSignOut() potentially clears it.
-        String managementDomain = getManagementDomain();
-
-        // We wipe sync data only, as wiping the profile data would also trigger sign-out.
-        mSignOutState =
-                new SignOutState(
-                        signOutCallback,
-                        (forceWipeUserData || managementDomain != null)
-                                ? SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY
-                                : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
-        Log.i(
-                TAG,
-                "Revoking sync consent, dataWipeAction: %d",
-                (forceWipeUserData || managementDomain != null)
-                        ? SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY
-                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
-
-        mIdentityMutator.revokeSyncConsent(signoutSource);
-
-        notifySignOutAllowedChanged();
-        disableSyncAndWipeData(this::finishSignOut);
-    }
-
     /**
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
@@ -636,35 +602,20 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      * Wipes the user's bookmarks and sync data.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
-     * @param dataWipeOption What kind of data to delete.
      */
     @Override
-    public void wipeSyncUserData(Runnable wipeDataCallback, @DataWipeOption int dataWipeOption) {
+    public void wipeSyncUserData(Runnable wipeDataCallback) {
         assert !mWipeUserDataInProgress;
         mWipeUserDataInProgress = true;
 
-        switch (dataWipeOption) {
-            case DataWipeOption.WIPE_SYNC_DATA:
-                SigninManagerImplJni.get()
-                        .wipeSyncUserData(
-                                mNativeSigninManagerAndroid,
-                                () -> {
-                                    mWipeUserDataInProgress = false;
-                                    wipeDataCallback.run();
-                                    notifyCallbacksWaitingForOperation();
-                                });
-                break;
-            case DataWipeOption.WIPE_ALL_PROFILE_DATA:
-                SigninManagerImplJni.get()
-                        .wipeProfileData(
-                                mNativeSigninManagerAndroid,
-                                () -> {
-                                    mWipeUserDataInProgress = false;
-                                    wipeDataCallback.run();
-                                    notifyCallbacksWaitingForOperation();
-                                });
-                break;
-        }
+        SigninManagerImplJni.get()
+                .wipeProfileData(
+                        mNativeSigninManagerAndroid,
+                        () -> {
+                            mWipeUserDataInProgress = false;
+                            wipeDataCallback.run();
+                            notifyCallbacksWaitingForOperation();
+                        });
     }
 
     @Override
@@ -712,11 +663,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                         .wipeGoogleServiceWorkerCaches(
                                 mNativeSigninManagerAndroid, wipeDataCallback);
                 break;
-            case SignOutState.DataWipeAction.WIPE_SYNC_DATA_ONLY:
-                wipeSyncUserData(wipeDataCallback, DataWipeOption.WIPE_SYNC_DATA);
-                break;
             case SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA:
-                wipeSyncUserData(wipeDataCallback, DataWipeOption.WIPE_ALL_PROFILE_DATA);
+                wipeSyncUserData(wipeDataCallback);
                 break;
         }
     }
@@ -767,16 +715,11 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      * cleared atomically, and all final fields to be set upon initialization.
      */
     private static class SignOutState {
-        @IntDef({
-            DataWipeAction.WIPE_SIGNIN_DATA_ONLY,
-            DataWipeAction.WIPE_SYNC_DATA_ONLY,
-            DataWipeAction.WIPE_ALL_PROFILE_DATA
-        })
+        @IntDef({DataWipeAction.WIPE_SIGNIN_DATA_ONLY, DataWipeAction.WIPE_ALL_PROFILE_DATA})
         @Retention(RetentionPolicy.SOURCE)
         public @interface DataWipeAction {
             int WIPE_SIGNIN_DATA_ONLY = 0;
-            int WIPE_SYNC_DATA_ONLY = 1;
-            int WIPE_ALL_PROFILE_DATA = 2;
+            int WIPE_ALL_PROFILE_DATA = 1;
         }
 
         final @Nullable SignOutCallback mSignOutCallback;
@@ -813,10 +756,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 @JniType("base::RepeatingClosure") Runnable callback);
 
         void wipeGoogleServiceWorkerCaches(
-                long nativeSigninManagerAndroid,
-                @JniType("base::RepeatingClosure") Runnable callback);
-
-        void wipeSyncUserData(
                 long nativeSigninManagerAndroid,
                 @JniType("base::RepeatingClosure") Runnable callback);
 

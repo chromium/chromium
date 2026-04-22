@@ -70,11 +70,6 @@ public class IdentityMutator {
                 .removePrimaryAccountButKeepTokens(mNativeIdentityMutator, sourceMetric);
     }
 
-    /** Revokes sync consent for the primary account. */
-    public void revokeSyncConsent(@SignoutReason int sourceMetric) {
-        IdentityMutatorJni.get().revokeSyncConsent(mNativeIdentityMutator, sourceMetric);
-    }
-
     /**
      * Seeds and reloads the given `accounts`. If `primaryAccountId` is not null then it must exist
      * in the given `accounts`.
@@ -100,8 +95,6 @@ public class IdentityMutator {
 
         boolean removePrimaryAccountButKeepTokens(
                 long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
-
-        void revokeSyncConsent(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
         void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 long nativeJniIdentityMutator,

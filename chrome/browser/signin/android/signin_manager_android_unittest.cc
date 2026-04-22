@@ -187,14 +187,6 @@ TEST_F(SigninManagerAndroidTest, DeleteBookmarksWhenWipingAllData) {
   EXPECT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
 }
 
-// Tests that wiping sync data also deletes bookmarks.
-TEST_F(SigninManagerAndroidTest, DeleteBookmarksWhenWipingSyncData) {
-  bookmarks::BookmarkModel* bookmark_model = AddTestBookmarks();
-  ASSERT_GE(bookmark_model->bookmark_bar_node()->children().size(), 0u);
-  WipeData(ClearedTypes::kSyncData);
-  EXPECT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
-}
-
 // Tests that wiping Google service worker caches does not delete bookmarks.
 TEST_F(SigninManagerAndroidTest, DontDeleteBookmarksWhenDeletingSWCaches) {
   bookmarks::BookmarkModel* bookmark_model = AddTestBookmarks();

@@ -88,20 +88,6 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
             std::move(google_tld_filter), this);
         break;
       }
-      case ClearedTypes::kSyncData: {
-        // TODO(crbug.com/469453727): determine if DATA_TYPE_READING_LIST should
-        // be added here.
-        chrome_browsing_data_remover::DataType removed_types =
-            content::BrowsingDataRemover::DATA_TYPE_CACHE |
-            chrome_browsing_data_remover::DATA_TYPE_FORM_DATA |
-            chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
-            chrome_browsing_data_remover::DATA_TYPE_HISTORY |
-            chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS;
-        remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
-                                 chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
-                                 this);
-        break;
-      }
       case ClearedTypes::kAllData: {
         chrome_browsing_data_remover::DataType removed_types =
             chrome_browsing_data_remover::ALL_DATA_TYPES;
@@ -299,12 +285,6 @@ void SigninManagerAndroid::WipeGoogleServiceWorkerCaches(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {
   WipeData(profile_, ClearedTypes::kGoogleServiceWorkerCaches, callback);
-}
-
-void SigninManagerAndroid::WipeSyncUserData(
-    JNIEnv* env,
-    const base::RepeatingClosure& callback) {
-  WipeData(profile_, ClearedTypes::kSyncData, callback);
 }
 
 // static

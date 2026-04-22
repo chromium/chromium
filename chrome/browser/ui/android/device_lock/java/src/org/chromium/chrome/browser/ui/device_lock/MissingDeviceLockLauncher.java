@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -136,8 +135,7 @@ public class MissingDeviceLockLauncher {
                                 wipeAllData);
                     } else {
                         if (wipeAllData) {
-                            signinManager.wipeSyncUserData(
-                                    wipeDataCallback, DataWipeOption.WIPE_ALL_PROFILE_DATA);
+                            signinManager.wipeSyncUserData(wipeDataCallback);
                         } else {
                             deletePasswordsAndCreditCards();
                             wipeDataCallback.run();
