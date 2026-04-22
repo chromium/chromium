@@ -18,8 +18,4 @@ declare_args() {
 
   # This enables building TFLite's NNAPI delegate, currently experimental.
   build_tflite_with_nnapi = false
-
-  # This enables building TFLite's GPU delegate with OpenCL, currently
-  # experimental.
-  build_tflite_with_opencl = false
 }

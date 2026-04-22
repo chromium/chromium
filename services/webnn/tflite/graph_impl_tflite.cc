@@ -52,10 +52,6 @@
 #include "third_party/tflite/src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
 #endif
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_OPENCL)
-#include "third_party/tflite/src/tensorflow/lite/delegates/gpu/delegate.h"
-#endif
-
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
@@ -434,13 +430,6 @@ class GraphImplTflite::ComputeResources {
                               }),
             mojom::Device::kGpu);
       }
-
-#elif BUILDFLAG(BUILD_TFLITE_WITH_OPENCL)
-      TfLiteDelegate* delegate = TfLiteGpuDelegateV2Create(nullptr);
-      builder.AddDelegate(delegate);
-      delegates_.emplace_back(
-          TfLiteDelegatePtr(delegate, TfLiteGpuDelegateV2Delete),
-          mojom::Device::kGpu);
 #endif
     }
 
