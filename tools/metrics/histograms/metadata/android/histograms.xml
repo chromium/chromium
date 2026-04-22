@@ -9520,6 +9520,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Window.OcclusionExperimental.TotalOccludedMegapixels"
+    units="MP" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the sum total pixel area of all occluded windows in megapixels. If
+    there are 3 separate 1000x1000 pixel windows that are occluded, the value of
+    this metric would be 3. Sampled periodically every 5 minutes. No
+    accumulation is performed, only the instanntaneous value at every 5 minute
+    interval is reported.
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.TimeToAcquireWindowBounds" units="ms"
     expires_after="2026-08-23">
   <owner>chominskib@google.com</owner>

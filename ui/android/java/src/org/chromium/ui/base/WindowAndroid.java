@@ -139,6 +139,10 @@ public class WindowAndroid
                             Math.round(megapixelSeconds));
                     sAccumulatedPixelMilliseconds = 0;
 
+                    RecordHistogram.recordCount1000Histogram(
+                            "Android.Window.OcclusionExperimental.TotalOccludedMegapixels",
+                            Math.round(sTotalOccludedPixels / 1_000_000f));
+
                     ThreadUtils.postOnUiThreadDelayed(this, PERIODIC_METRIC_DELAY_MS);
                 }
             };
