@@ -17,7 +17,16 @@ chrome.test.runTests([async function testCreateTargetToUntrustedWebUIUrl() {
           resolve));
   chrome.test.assertLastError(JSON.stringify({
     code: -32000,
-    message: 'Refusing to create a target with the specified URL'
+    message: 'Navigating to a URL with a privileged scheme is not allowed'
+  }));
+
+  await new Promise(
+      resolve => chrome.debugger.sendCommand(
+          debuggee, 'Target.createTarget',
+          {url: 'devtools://devtools/bundled/inspector.html'}, resolve));
+  chrome.test.assertLastError(JSON.stringify({
+    code: -32000,
+    message: 'Navigating to a URL with a privileged scheme is not allowed'
   }));
 
   chrome.test.succeed();
