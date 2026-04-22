@@ -748,6 +748,12 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, true);
 
+        // Clear the suggestions list so that we do not detect "unchanged suggestions" in the next
+        // step. When suggestions are unchanged, we won't rebuild the list, and the events below
+        // will not trigger.
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(null, null), true);
+        clearInvocations(mAutocompleteDelegate);
+
         defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
                         .setDisplayText("Suggestion1")

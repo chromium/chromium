@@ -402,7 +402,10 @@ class AutocompleteMediator
     /** Kicks off a zero-suggest request. */
     void startZeroSuggest() {
         if (!isInInputSession()) return;
-        if (shouldSuppressZeroSuggest()) return;
+        if (shouldSuppressZeroSuggest()) {
+            clearSuggestions();
+            return;
+        }
 
         if (OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
             // Serve suggestions anticipating higher latency from the server?
@@ -1091,7 +1094,6 @@ class AutocompleteMediator
         stopAutocomplete(false);
 
         if (isInZeroPrefixContext) {
-            clearSuggestions();
             startZeroSuggest();
         } else {
             boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();

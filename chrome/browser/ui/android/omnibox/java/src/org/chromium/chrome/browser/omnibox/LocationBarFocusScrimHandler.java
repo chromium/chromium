@@ -25,7 +25,7 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Handles showing and hiding a scrim when url bar focus changes. */
 @NullMarked
-public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
+public class LocationBarFocusScrimHandler {
     /** The params used to control how the scrim behaves when shown for the omnibox. */
     private final PropertyModel mScrimModel;
 
@@ -84,8 +84,8 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
     }
 
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
+    /** Compute and apply property updates needed for accurate visual representation of scrim. */
+    public void updateScrimVisualState() {
         if (ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
                 && mLocationBarDataProvider
                         .getNewTabPageDelegate()
@@ -110,33 +110,23 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mScrimModel.set(
                 ScrimProperties.BOTTOM_MARGIN,
                 mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));
-
-        if (hasFocus && !showScrimAfterAnimationCompletes()) {
-            mScrimManager.showScrim(mScrimModel);
-            mScrimShown = true;
-        } else if (!hasFocus && mScrimShown) {
-            mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
-            mScrimShown = false;
-        }
     }
 
-    @Override
-    public void onUrlAnimationFinished(boolean hasFocus) {
-        if (hasFocus && showScrimAfterAnimationCompletes()) {
+    /** Controls the visibility of scrim overlay. */
+    public void setVisibility(boolean shouldShow) {
+        if (shouldShow == mScrimShown) return;
+
+        if (shouldShow) {
             mScrimManager.showScrim(mScrimModel);
-            mScrimShown = true;
+        } else {
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
         }
+
+        mScrimShown = shouldShow;
     }
 
     public void destroy() {
         mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
-    }
-
-    /**
-     * @return Whether the scrim should wait to be shown until after the omnibox is done animating.
-     */
-    private boolean showScrimAfterAnimationCompletes() {
-        return mLocationBarDataProvider.getNewTabPageDelegate().isLocationBarShown();
     }
 
     PropertyModel getScrimModelForTesting() {

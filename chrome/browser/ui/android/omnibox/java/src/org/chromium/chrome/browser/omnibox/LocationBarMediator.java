@@ -325,7 +325,6 @@ class LocationBarMediator
         }
         AppBannerManager.addObserver(this);
         mScrimHandler = scrimHandler;
-        if (mScrimHandler != null) addUrlFocusChangeListener(mScrimHandler);
 
         mBookmarkButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
@@ -419,9 +418,6 @@ class LocationBarMediator
         mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
-        if (mScrimHandler != null) {
-            removeUrlFocusChangeListener(mScrimHandler);
-        }
         mUrlFocusChangeListeners.clear();
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);
@@ -588,7 +584,7 @@ class LocationBarMediator
         // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
         // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
         // clear such focus if it exists.
-        if (mContext.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+        if (OmniboxFeatures.isDesktopMode()) {
             if (onNtp) {
                 showUrlBarCursorWithoutFocusAnimations();
             } else {
@@ -737,11 +733,17 @@ class LocationBarMediator
 
     /* package */ void onSuggestionsChanged(
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
-        if (mAutocompleteCoordinator == null) return;
-        // TODO (https://crbug.com/40158679): Refactor the LBM/LBC relationship such that LBM
-        // doesn't
-        // need to communicate with other coordinators like this.
-        String userText = mUrlCoordinator.getTextWithoutAutocomplete();
+        if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
+
+        String userText = mCurrentInput.getUserText();
+        if (mScrimHandler != null) {
+            // Respond to events of user reverting back to suppressed state by pressing <Esc> key.
+            // This only matters in scenarios where a physical keyboard is connected.
+            // See handleEscPress below.
+            mScrimHandler.setVisibility(
+                    !mCurrentInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+        }
+
         mStatusCoordinator.onDefaultMatchClassified(
                 (mCurrentInput != null && !mCurrentInput.isConventionalRequestType())
                         ||
@@ -1141,10 +1143,21 @@ class LocationBarMediator
         // To avoid the async gap between now and on activate, null out here as well.
         setAttachmentModelList(null);
 
+        // Acquire AutocompleteInput now, in case the `activate()` call below runs synchronously.
+        // This guarantees that any calls to onSuggestionsChanged() will see the correct
+        // mCurrentInput instance.
+        mCurrentInput = session.getAutocompleteInput();
+
         session.activate(
                 mProfileSupplier,
                 () -> {
-                    if (mAutocompleteCoordinator == null) return;
+                    if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
+                    if (mScrimHandler != null) {
+                        mScrimHandler.updateScrimVisualState();
+                        mScrimHandler.setVisibility(
+                                !mCurrentInput
+                                        .shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+                    }
                     mAutocompleteCoordinator.beginInput(session);
                     mFuseboxCoordinator.beginInput(session);
                     // Trigger animation now that we have an up-to-date value for the fusebox state.
@@ -1152,7 +1165,6 @@ class LocationBarMediator
                     setAttachmentModelList(session.getFuseboxAttachmentModelList());
                 });
 
-        mCurrentInput = session.getAutocompleteInput();
         mCurrentInput
                 .getRequestTypeSupplier()
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
@@ -1196,6 +1208,7 @@ class LocationBarMediator
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
+        if (mScrimHandler != null) mScrimHandler.setVisibility(false);
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         mStatusCoordinator.setSiteSearchDataSupplier(null);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);

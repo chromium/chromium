@@ -191,6 +191,7 @@ public class LocationBarMediatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private AddToHomescreenCoordinator mAddToHomescreenCoordinator;
     @Mock private PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
+    @Mock private LocationBarFocusScrimHandler mScrimHandler;
 
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -207,7 +208,6 @@ public class LocationBarMediatorTest {
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
-    @Mock private LocationBarFocusScrimHandler mScrimHandler;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -436,6 +436,7 @@ public class LocationBarMediatorTest {
         doReturn(PreloadPagesState.NO_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
                 .getState(eq(mProfile));
+        mMediator.beginInput(new AutocompleteInput().setUserText("text"));
         mMediator.onSuggestionsChanged(
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText("text")
@@ -484,6 +485,10 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnSuggestionsChanged_nullMatch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.beginInput(new AutocompleteInput().setUserText("text"));
+
         doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
 
@@ -2371,6 +2376,46 @@ public class LocationBarMediatorTest {
         org.mockito.Mockito.clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
+    }
+
+    @Test
+    public void testOnSuggestionsChanged_triggersScrimVisibility() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.beginInput(new AutocompleteInput());
+
+        // Show scrim in all contexts if there are any suggestions to show.
+        mMediator.onSuggestionsChanged(null, true);
+        verify(mScrimHandler).setVisibility(true);
+        clearInvocations(mScrimHandler);
+
+        // Show scrim on mobile devices even if there are no suggestions to show.
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        mMediator.onSuggestionsChanged(null, false);
+        verify(mScrimHandler).setVisibility(true);
+        clearInvocations(mScrimHandler);
+
+        // On desktop, we show no suggestions in select cases, e.g. on the NTP where the omnibox is
+        // prefocused. We don't want to show the scrim in that scenario either.
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        mMediator.beginInput(
+                new AutocompleteInput().setSuppressAutomaticSuggestionsUntilUserStartsTyping(true));
+        verify(mScrimHandler).setVisibility(false);
+        clearInvocations(mScrimHandler);
+        mMediator.onSuggestionsChanged(null, false);
+        verify(mScrimHandler).setVisibility(false);
+        clearInvocations(mScrimHandler);
+    }
+
+    @Test
+    public void testBeginInput_triggersScrimUpdate() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        mMediator.beginInput(new AutocompleteInput().setUserText("test"));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mScrimHandler).updateScrimVisualState();
     }
 
     private FuseboxSessionState getSession() {

@@ -86,42 +86,26 @@ public class LocationBarFocusScrimHandlerUnitTest {
     }
 
     @Test
-    public void testScrimShown_thenHidden() {
-        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
-        mScrimHandler.onUrlFocusChange(true);
-        assertEquals(
-                BOTTOM_CHIN_HEIGHT,
-                mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
-
+    public void testSetVisibility_shownThenHidden() {
+        mScrimHandler.setVisibility(true);
         verify(mScrimManager).showScrim(any());
 
-        mScrimHandler.onUrlFocusChange(false);
+        mScrimHandler.setVisibility(false);
         verify(mScrimManager).hideScrim(any(), eq(true));
 
         // A second de-focus shouldn't trigger another hide.
-        mScrimHandler.onUrlFocusChange(false);
+        mScrimHandler.setVisibility(false);
         verify(mScrimManager, times(1)).hideScrim(any(), eq(true));
     }
 
     @Test
-    public void testScrimShown_afterAnimation() {
-        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doReturn(true).when(mNewTabPageDelegate).isLocationBarShown();
-        mScrimHandler.onUrlFocusChange(true);
-
-        verify(mScrimManager, never()).showScrim(any());
-
-        mScrimHandler.onUrlAnimationFinished(true);
-        verify(mScrimManager).showScrim(any());
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    public void testScrimNotShown_omniboxAutofocusOnIncognitoNtp() {
+    public void testUpdateScrimVisualState_omniboxAutofocusOnIncognitoNtp() {
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(true).when(mNewTabPageDelegate).isIncognitoNewTabPageCurrentlyVisible();
-        mScrimHandler.onUrlFocusChange(true);
+        mScrimHandler.updateScrimVisualState();
+
+        // updateScrimVisualState should not show the scrim, it only updates the model.
         verify(mScrimManager, never()).showScrim(any());
     }
 
@@ -139,13 +123,21 @@ public class LocationBarFocusScrimHandlerUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     @Config(qualifiers = "sw800dp")
-    public void testTransparentScrim() {
-        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
-        mScrimHandler.onUrlFocusChange(true);
-        verify(mScrimManager).showScrim(mScrimModelCaptor.capture());
+    public void testUpdateScrimVisualState_transparentScrim() {
+        mScrimHandler.updateScrimVisualState();
         assertEquals(
                 Color.TRANSPARENT,
-                (int) mScrimModelCaptor.getValue().get(ScrimProperties.BACKGROUND_COLOR));
+                (int)
+                        mScrimHandler
+                                .getScrimModelForTesting()
+                                .get(ScrimProperties.BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testUpdateScrimVisualState_setsBottomMargin() {
+        mScrimHandler.updateScrimVisualState();
+        assertEquals(
+                BOTTOM_CHIN_HEIGHT,
+                (int) mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
     }
 }

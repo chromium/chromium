@@ -91,6 +91,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -232,6 +233,7 @@ public class ToolbarTest {
         ToolbarManager toolbarManager = mActivity.getToolbarManager();
         ScrimManager scrimManager = mActivity.getRootUiCoordinatorForTesting().getScrimManager();
         scrimManager.disableAnimationForTesting(true);
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
 
         assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(
