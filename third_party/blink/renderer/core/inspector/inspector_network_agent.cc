@@ -2403,6 +2403,12 @@ protocol::Response InspectorNetworkAgent::enable(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorNetworkAgent::configureDurableMessages(
+    std::optional<int> max_total_buffer_size,
+    std::optional<int> max_resource_buffer_size) {
+  return protocol::Response::Success();
+}
+
 void InspectorNetworkAgent::Enable() {
   if (!GetFrontend())
     return;

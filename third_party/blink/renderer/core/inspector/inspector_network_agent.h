@@ -283,6 +283,9 @@ class CORE_EXPORT InspectorNetworkAgent final
       std::optional<int> max_post_data_size,
       std::optional<bool> report_direct_socket_traffic,
       std::optional<bool> enable_durable_messages) override;
+  protocol::Response configureDurableMessages(
+      std::optional<int> max_total_buffer_size,
+      std::optional<int> max_resource_buffer_size) override;
   protocol::Response disable() override;
   protocol::Response setExtraHTTPHeaders(
       std::unique_ptr<protocol::Network::Headers>) override;

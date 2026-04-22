@@ -120,8 +120,7 @@
                             "enableDeviceBoundSessions",
                             "deleteDeviceBoundSession",
                             "fetchSchemefulSite",
-                            "setCookieControls",
-                            "configureDurableMessages"
+                            "setCookieControls"
                           ],
                 "async": ["getResponseBody", "getRequestPostData"]
             },
