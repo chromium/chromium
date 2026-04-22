@@ -3871,12 +3871,14 @@
       status: "experimental",
     },
     {
+      // Killswitch M149.
       name: "MergeFixedLayers",
-      status: "experimental",
+      status: "stable",
     },
     {
+      // Killswitch M149.
       name: "MergeStickyLayers",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MessagePortCloseEvent",
