@@ -94,8 +94,8 @@ _PLURALS_PATTERN = re.compile(
 
 # Repeatedly matched against the <items> capture in _PLURALS_PATTERN,
 # to match "<quantity>{<value>}".
-_PLURALS_ITEM_PATTERN = re.compile(r'(?P<quantity>\S+?)\s*'
-                                        r'\{(?P<value>.*?)\}')
+_PLURALS_ITEM_PATTERN = re.compile(r'(?P<quantity>[=\w]+?)\s*'
+                                   r'\{(?P<value>.*?)\}')
 _PLURALS_QUANTITY_MAP = {
   '=0': 'zero',
   'zero': 'zero',

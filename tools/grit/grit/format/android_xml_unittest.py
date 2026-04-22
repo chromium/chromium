@@ -49,8 +49,7 @@ a sledge hammer.
           </message>
           <message name="IDS_PLURALS" desc="A string using the ICU plural format">
             {NUM_THINGS, plural,
-            =1 {Maybe I'll get one laser.}
-            other {Maybe I'll get # lasers.}}
+            =1 {Maybe I'll get one laser.}other{Maybe I'll get # lasers.}}
           </message>
           <message name="IDS_PLURALS_NO_SPACE" desc="A string using the ICU plural format with no space">
             {NUM_MISSISSIPPIS, plural,
