@@ -153,4 +153,43 @@ TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
   EXPECT_EQ(autofill_data_str, expected_autofill_data_str);
 }
 
+TEST_F(FeedbackUtilTest, ZipStringTraversal) {
+  // Create a temp directory, and target a file within it:
+  base::ScopedTempDir root_dir;
+  ASSERT_TRUE(root_dir.CreateUniqueTempDir());
+  base::FilePath sensitive_file =
+      root_dir.GetPath().AppendASCII("sensitive.txt");
+
+  // Construct a traversal back to that file in a platform-dependent way:
+  std::string sensitive_path_str = sensitive_file.AsUTF8Unsafe();
+#if BUILDFLAG(IS_WIN)
+  // Remove "C:" if present
+  if (sensitive_path_str.size() >= 2 && sensitive_path_str[1] == ':') {
+    sensitive_path_str = sensitive_path_str.substr(2);
+  }
+  // Remove leading backslash
+  if (!sensitive_path_str.empty() && sensitive_path_str[0] == '\\') {
+    sensitive_path_str = sensitive_path_str.substr(1);
+  }
+  base::FilePath traversal(
+      FILE_PATH_LITERAL("..\\..\\..\\..\\..\\..\\..\\..\\"));
+#else
+  // Remove leading slash
+  if (!sensitive_path_str.empty() && sensitive_path_str[0] == '/') {
+    sensitive_path_str = sensitive_path_str.substr(1);
+  }
+  base::FilePath traversal(FILE_PATH_LITERAL("../../../../../../../../"));
+#endif
+
+  base::FilePath malicious_filename =
+      traversal.Append(base::FilePath::FromUTF8Unsafe(sensitive_path_str));
+
+  // Call ZipString.
+  std::optional<std::string> result =
+      feedback_util::ZipString(malicious_filename, "maliciousness");
+
+  EXPECT_FALSE(result.has_value());
+  EXPECT_FALSE(base::PathExists(sensitive_file));
+}
+
 }  // namespace feedback_util
