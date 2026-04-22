@@ -24,10 +24,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::NavigationThrottle;
 
@@ -54,8 +57,6 @@ class MockBrowserClient : public content::ContentBrowserClient {
   }
 };
 
-}  // namespace
-
 class ExtensionNavigationThrottleUnitTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -77,9 +78,14 @@ class ExtensionNavigationThrottleUnitTest
             .Set("name", "ext")
             .Set("description", "something")
             .Set("version", "0.1")
-            .Set("manifest_version", 2)
+            .Set("manifest_version", 3)
             .Set("web_accessible_resources",
-                 base::ListValue().Append(kAccessible).Append(kAccessibleDir));
+                 base::ListValue().Append(
+                     base::DictValue()
+                         .Set("resources", base::ListValue()
+                                               .Append(kAccessible)
+                                               .Append(kAccessibleDir))
+                         .Set("matches", base::ListValue().Append("*://*/*"))));
     extension_ = ExtensionBuilder()
                      .SetManifest(std::move(manifest))
                      .SetID(crx_file::id_util::GenerateId("foo"))
@@ -272,4 +278,5 @@ TEST_F(ExtensionNavigationThrottleUnitTest, DisabledExtensionMainFrame) {
                 NavigationThrottle::BLOCK_REQUEST);
 }
 
+}  // namespace
 }  // namespace extensions
