@@ -96,8 +96,6 @@ public class AdaptiveToolbarButtonController
     private final Callback<Integer> mMenuClickListener;
     private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
     private int mScreenWidthDp;
-    private final View.OnLayoutChangeListener mLayoutChangeListener;
-    private final View mToolbarContainer;
 
     private @AdaptiveToolbarButtonVariant int mSessionButtonVariant =
             AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -110,10 +108,6 @@ public class AdaptiveToolbarButtonController
      * @param context used in {@link SettingsNavigation}
      * @param lifecycleDispatcher notifies about native initialization
      * @param profileSupplier Allows access to the {@link Profile} for the current session.
-     * @param menuCoordinator Coordinator for the adaptive button action menu.
-     * @param toolbarBehavior The {@link AdaptiveToolbarBehavior} for the adaptive button.
-     * @param androidPermissionDelegate Delegate for checking and requesting permissions.
-     * @param toolbarContainer The {@link View} containing the toolbar.
      */
     // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
     // instead.
@@ -124,26 +118,8 @@ public class AdaptiveToolbarButtonController
             MonotonicObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
             AdaptiveToolbarBehavior toolbarBehavior,
-            AndroidPermissionDelegate androidPermissionDelegate,
-            View toolbarContainer) {
+            AndroidPermissionDelegate androidPermissionDelegate) {
         mContext = context;
-        mToolbarContainer = toolbarContainer;
-        // TODO(crbug.com/505096015): Use tablet's width consumer system for tablet toolbar layout.
-        mLayoutChangeListener =
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    int width = right - left;
-                    if (width == 0) return;
-                    int widthDp =
-                            (int) (width / mContext.getResources().getDisplayMetrics().density);
-                    if (mScreenWidthDp != widthDp) {
-                        boolean wasOldWideEnough = isScreenWideEnoughForButton();
-                        mScreenWidthDp = widthDp;
-                        if (wasOldWideEnough != isScreenWideEnoughForButton()) {
-                            notifyObservers(/* canShowHint= */ true);
-                        }
-                    }
-                };
-        mToolbarContainer.addOnLayoutChangeListener(mLayoutChangeListener);
         mMenuClickListener =
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
@@ -241,7 +217,6 @@ public class AdaptiveToolbarButtonController
         mObservers.clear();
         mCallbackController.destroy();
         ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-        mToolbarContainer.removeOnLayoutChangeListener(mLayoutChangeListener);
         mLifecycleDispatcher.unregister(this);
 
         Iterator<Map.Entry<Integer, ButtonDataProvider>> it =
@@ -469,7 +444,7 @@ public class AdaptiveToolbarButtonController
         mScreenWidthDp = newConfig.screenWidthDp;
 
         if (wasOldScreenWideEnoughForButton != isScreenWideEnoughForButton()) {
-            notifyObservers(/* canShowHint= */ true);
+            notifyObservers(mButtonData.canShow());
         }
     }
 

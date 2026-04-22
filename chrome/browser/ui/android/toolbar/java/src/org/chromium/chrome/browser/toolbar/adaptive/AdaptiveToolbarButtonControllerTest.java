@@ -20,11 +20,9 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnLongClickListener;
-import android.view.Window;
 
 import androidx.test.filters.SmallTest;
 
@@ -87,7 +85,6 @@ public class AdaptiveToolbarButtonControllerTest {
     private ButtonDataImpl mButtonData;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private AdaptiveToolbarBehavior mToolbarBehavior;
-    private View.OnLayoutChangeListener mLayoutChangeListener;
 
     @Before
     public void setUp() {
@@ -277,8 +274,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mProfileSupplier,
                         menuCoordinator,
                         mToolbarBehavior,
-                        mAndroidPermissionDelegate,
-                        mock(View.class));
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         mProfileSupplier.set(mProfile);
@@ -330,8 +326,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mProfileSupplier,
                         menuCoordinator,
                         mToolbarBehavior,
-                        mAndroidPermissionDelegate,
-                        mock(View.class));
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
@@ -381,8 +376,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mProfileSupplier,
                         menuCoordinator,
                         mToolbarBehavior,
-                        mAndroidPermissionDelegate,
-                        mock(View.class));
+                        mAndroidPermissionDelegate);
 
         // Register a mock provider with shouldSuppressCpa = true
         ButtonDataProvider mockGlicProvider = mock(ButtonDataProvider.class);
@@ -518,45 +512,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         adaptiveToolbarButtonController.onConfigurationChanged(mConfiguration);
 
-        verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testButtonVisibilityChangeOnLayoutChange() {
-        // Screen too narrow, button shouldn't appear.
-        mConfiguration.screenWidthDp = 320;
-        mButtonData.setCanShow(true);
-        mButtonData.setEnabled(true);
-        when(mVoiceToolbarButtonController.get(any())).thenReturn(mButtonData);
-        doReturn(true).when(mActivityLifecycleDispatcher).isNativeInitializationFinished();
-
-        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
-        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
-                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.VOICE)));
-
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-
-        ButtonDataObserver observer = mock(ButtonDataObserver.class);
-        adaptiveToolbarButtonController.addObserver(observer);
-        mProfileSupplier.set(mProfile);
-
-        verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
-                mVoiceToolbarButtonController,
-                adaptiveToolbarButtonController.getSingleProviderForTesting());
-
-        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
-
-        // New screen configuration is wider, button should be visible.
-        mConfiguration.screenWidthDp = 450;
-
-        Assert.assertNotNull("LayoutChangeListener should be registered", mLayoutChangeListener);
-        mLayoutChangeListener.onLayoutChange(null, 0, 0, 450, 0, 0, 0, 320, 0);
-
-        verify(observer, times(2)).buttonDataChanged(true);
+        verify(observer).buttonDataChanged(false);
         Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
     }
 
@@ -585,25 +541,8 @@ public class AdaptiveToolbarButtonControllerTest {
     private AdaptiveToolbarButtonController buildController() {
         Activity mockActivity = mock(Activity.class);
         Resources mockResources = mock(Resources.class);
-        Window mockWindow = mock(Window.class);
-        View mockDecorView = mock(View.class);
-        View mockToolbarView = mock(View.class);
-
         doReturn(mockResources).when(mockActivity).getResources();
         doReturn(mConfiguration).when(mockResources).getConfiguration();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        displayMetrics.density = 1.0f;
-        doReturn(displayMetrics).when(mockResources).getDisplayMetrics();
-        doReturn(mockWindow).when(mockActivity).getWindow();
-        doReturn(mockDecorView).when(mockWindow).getDecorView();
-
-        doAnswer(
-                        invocation -> {
-                            mLayoutChangeListener = invocation.getArgument(0);
-                            return null;
-                        })
-                .when(mockToolbarView)
-                .addOnLayoutChangeListener(any());
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController(
@@ -612,8 +551,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
                         mToolbarBehavior,
-                        mAndroidPermissionDelegate,
-                        mockToolbarView);
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
