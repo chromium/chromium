@@ -46,6 +46,8 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom_ts__generator" ]
 

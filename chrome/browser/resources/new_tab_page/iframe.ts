@@ -46,7 +46,7 @@ export class IframeElement extends CrLitElement {
   accessor src: string = '';
 
   // Sends message to iframe.
-  postMessage(message: any) {
+  postMessage(message: unknown) {
     assert(this.shadowRoot);
     WindowProxy.getInstance().postMessage(
         strictQuery(this.shadowRoot, '#iframe', HTMLIFrameElement), message,

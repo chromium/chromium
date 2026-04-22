@@ -622,13 +622,10 @@ template("build_webui") {
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
         "//chrome/browser/resources/bluetooth_internals",
-        "//chrome/browser/resources/contextual_tasks",
         "//chrome/browser/resources/glic",
         "//chrome/browser/resources/history",
         "//chrome/browser/resources/lens/shared",
-        "//chrome/browser/resources/new_tab_page",
         "//chrome/browser/resources/new_tab_page/untrusted",
-        "//chrome/browser/resources/omnibox_popup",
         "//chrome/browser/resources/pdf",
         "//chrome/browser/resources/print_preview",
         "//chrome/browser/resources/settings",
@@ -642,6 +639,11 @@ template("build_webui") {
         "//ui/webui/resources/cr_elements",
         "//ui/webui/resources/js",
       ]
+
+      if (is_android) {
+        no_explicit_any_exceptions +=
+            [ "//chrome/browser/resources/contextual_tasks" ]
+      }
 
       if (!is_ash_webui && filter_include([ get_label_info(":lint_ts", "dir") ],
                                           no_explicit_any_exceptions) == []) {

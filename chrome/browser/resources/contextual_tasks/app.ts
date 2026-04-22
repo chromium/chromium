@@ -1063,7 +1063,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (isFullWebView(this.$.threadFrame)) {
       this.$.threadFrame.request.onBeforeRequest.addListener(
           this.onBeforeRequest, {
-            types: ['main_frame'] as any,
+            types: ['main_frame' as chrome.webRequest.ResourceType],
             urls: ['<all_urls>'],
           },
           ['blocking']);

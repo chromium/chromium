@@ -45,11 +45,10 @@ function announceElementAriaLabel(element: HTMLElement) {
     // Note: ariaNotify is more efficient and appears to work more reliably, but
     // support is not guaranteed in all browsers. Fall back on a11y announcer if
     // the ariaNotify function is unavailable.
-    const ariaNotify = (element as any).ariaNotify;
-    if (ariaNotify) {
-      ariaNotify.call(element, message);
+    if (element.ariaNotify) {
+      element.ariaNotify(message);
     } else {
-      getA11yAnnouncer(element)?.announce(message);
+      getA11yAnnouncer(element).announce(message);
     }
   }
 }

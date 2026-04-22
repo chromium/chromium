@@ -16,6 +16,10 @@ interface DocumentOrShadowRoot {
 
 interface HTMLElement {
   scrollIntoViewIfNeeded(): void;
+
+  // Not implemented on CrOS as of this writing.
+  //https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaNotify
+  ariaNotify?(message: string): void;
 }
 
 interface HTMLDialogElement {

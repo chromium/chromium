@@ -54,7 +54,8 @@ export class WindowProxy {
   }
 
   /** Posts |message| on the content window of |iframe| at |targetOrigin|. */
-  postMessage(iframe: HTMLIFrameElement, message: any, targetOrigin: string) {
+  postMessage(
+      iframe: HTMLIFrameElement, message: unknown, targetOrigin: string) {
     iframe.contentWindow!.postMessage(message, targetOrigin);
   }
 
