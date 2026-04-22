@@ -25,6 +25,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -145,13 +146,17 @@ std::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
     return {};
   }
   gfx::RectF computed_bounds = FilterPrimitiveSubregion();
-  // This and the filter region check is a workaround for crbug.com/512453.
-  if (computed_bounds.IsEmpty()) {
-    return {};
-  }
-  gfx::RectF filter_region = GetFilter()->FilterRegion();
-  if (!filter_region.IsEmpty()) {
-    computed_bounds.Intersect(filter_region);
+  if (RuntimeEnabledFeatures::SvgFilterUserSpaceViewportForSvgEnabled()) {
+    computed_bounds.Intersect(GetFilter()->FilterRegion());
+  } else {
+    // This and the filter region check is a workaround for crbug.com/512453.
+    if (computed_bounds.IsEmpty()) {
+      return {};
+    }
+    gfx::RectF filter_region = GetFilter()->FilterRegion();
+    if (!filter_region.IsEmpty()) {
+      computed_bounds.Intersect(filter_region);
+    }
   }
   return gfx::RectFToSkRect(
       GetFilter()->MapLocalRectToAbsoluteRect(computed_bounds));

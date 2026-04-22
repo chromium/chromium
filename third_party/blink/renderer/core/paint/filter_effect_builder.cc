@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 
 #include <algorithm>
+
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -547,7 +549,11 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     previous_effect = result->GetSourceGraphic();
   SVGFilterBuilder builder(previous_effect, node_map, fill_flags_,
                            stroke_flags_);
-  builder.BuildGraph(result, *filter_element, reference_box_);
+  builder.BuildGraph(
+      result, *filter_element, reference_box_,
+      RuntimeEnabledFeatures::SvgFilterUserSpaceViewportForSvgEnabled()
+          ? unzoomed_viewport
+          : std::nullopt);
   result->SetLastEffect(builder.LastEffect());
   return result;
 }

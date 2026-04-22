@@ -161,9 +161,11 @@ InterpolationSpace SVGFilterBuilder::ResolveInterpolationSpace(
              : kInterpolationSpaceSRGB;
 }
 
-void SVGFilterBuilder::BuildGraph(Filter* filter,
-                                  SVGFilterElement& filter_element,
-                                  const gfx::RectF& reference_box) {
+void SVGFilterBuilder::BuildGraph(
+    Filter* filter,
+    SVGFilterElement& filter_element,
+    const gfx::RectF& reference_box,
+    const std::optional<gfx::SizeF>& override_viewport) {
   EColorInterpolation filter_color_interpolation =
       ColorInterpolationForElement(filter_element, EColorInterpolation::kAuto);
   SVGUnitTypes::SVGUnitType primitive_units =
@@ -182,8 +184,8 @@ void SVGFilterBuilder::BuildGraph(Filter* filter,
     if (node_map_)
       node_map_->AddPrimitive(effect_element, effect);
 
-    effect_element.SetStandardAttributes(effect, primitive_units,
-                                         reference_box);
+    effect_element.SetStandardAttributes(effect, primitive_units, reference_box,
+                                         override_viewport);
     EColorInterpolation color_interpolation = ColorInterpolationForElement(
         effect_element, filter_color_interpolation);
     effect->SetOperatingInterpolationSpace(

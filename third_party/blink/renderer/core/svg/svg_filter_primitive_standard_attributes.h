@@ -21,9 +21,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FILTER_PRIMITIVE_STANDARD_ATTRIBUTES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FILTER_PRIMITIVE_STANDARD_ATTRIBUTES_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace gfx {
 class RectF;
@@ -42,9 +45,11 @@ class SVGFilterPrimitiveStandardAttributes : public SVGElement {
   // instantiated, and b) we don't generate corresponding V8T.h or V8T.cpp.
   // The subclasses must write DEFINE_WRAPPERTYPEINFO().
  public:
-  void SetStandardAttributes(FilterEffect*,
-                             SVGUnitTypes::SVGUnitType,
-                             const gfx::RectF& reference_box) const;
+  void SetStandardAttributes(
+      FilterEffect*,
+      SVGUnitTypes::SVGUnitType,
+      const gfx::RectF& reference_box,
+      const std::optional<gfx::SizeF>& override_viewport) const;
 
   virtual FilterEffect* Build(SVGFilterBuilder*, Filter*) = 0;
   // Returns true, if the new value is different from the old one.

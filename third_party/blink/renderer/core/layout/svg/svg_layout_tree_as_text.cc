@@ -474,7 +474,8 @@ void WriteSVGResourceContainer(StringBuilder& ts,
                                                       Filter::kBoundingBox);
     SVGFilterBuilder builder(dummy_filter->GetSourceGraphic());
     builder.BuildGraph(dummy_filter,
-                       To<SVGFilterElement>(*filter->GetElement()), dummy_rect);
+                       To<SVGFilterElement>(*filter->GetElement()), dummy_rect,
+                       std::nullopt);
     if (FilterEffect* last_effect = builder.LastEffect())
       last_effect->ExternalRepresentation(ts, indent + 1);
   } else if (resource->ResourceType() == kClipperResourceType) {

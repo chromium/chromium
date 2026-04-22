@@ -5623,6 +5623,10 @@
       status: "stable",
     },
     {
+      name: "SvgFilterUserSpaceViewportForSvg",
+      status: "stable",
+    },
+    {
       name: "SvgIgnoreNegativeEllipseRadii",
       status: "stable",
     },

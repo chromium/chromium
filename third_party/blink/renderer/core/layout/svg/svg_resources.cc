@@ -372,7 +372,7 @@ void SVGElementResourceClient::UpdateFilterData(
     return;
   const ComputedStyle& style = object.StyleRef();
   FilterEffectBuilder builder(
-      reference_box, std::nullopt, 1,
+      reference_box, SVGViewportResolver(object).ResolveViewport(), 1,
       style.VisitedDependentColor(GetCSSPropertyColor()),
       style.UsedColorScheme());
   builder.SetShorthandScale(1 / style.EffectiveZoom());

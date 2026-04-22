@@ -143,13 +143,14 @@ static gfx::RectF DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
 void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
     FilterEffect* filter_effect,
     SVGUnitTypes::SVGUnitType primitive_units,
-    const gfx::RectF& reference_box) const {
+    const gfx::RectF& reference_box,
+    const std::optional<gfx::SizeF>& override_viewport) const {
   DCHECK(filter_effect);
 
   gfx::RectF subregion = DefaultFilterPrimitiveSubregion(filter_effect);
   gfx::RectF primitive_boundaries =
-      LayoutSVGResourceContainer::ResolveRectangle(*this, primitive_units,
-                                                   reference_box);
+      LayoutSVGResourceContainer::ResolveRectangle(
+          *this, primitive_units, reference_box, override_viewport);
 
   if (x()->IsSpecified())
     subregion.set_x(primitive_boundaries.x());
