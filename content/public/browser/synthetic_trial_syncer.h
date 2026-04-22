@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -86,6 +87,10 @@ class CONTENT_EXPORT SyntheticTrialSyncer
   // base::flat_map for the map.
   base::flat_map<int, mojo::Remote<mojom::SyntheticTrialConfiguration>>
       child_process_unique_id_to_mojo_connections_;
+
+  base::ScopedMultiSourceObservation<RenderProcessHost,
+                                     RenderProcessHostObserver>
+      host_observation_{this};
 };
 
 }  // namespace content

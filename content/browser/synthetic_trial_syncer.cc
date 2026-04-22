@@ -130,7 +130,9 @@ void SyntheticTrialSyncer::BrowserChildProcessHostDisconnected(
 }
 
 void SyntheticTrialSyncer::OnRenderProcessHostCreated(RenderProcessHost* host) {
-  host->AddObserver(this);
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
 }
 
 void SyntheticTrialSyncer::RenderProcessReady(RenderProcessHost* host) {
@@ -164,17 +166,13 @@ void SyntheticTrialSyncer::RenderProcessExited(
     const ChildProcessTerminationInfo& info) {
   child_process_unique_id_to_mojo_connections_.erase(host->GetDeprecatedID());
 
-  // To ensure this is removed from the observer list, call RemoveObserver()
-  // again.
-  host->RemoveObserver(this);
+  host_observation_.RemoveObservation(host);
 }
 
 void SyntheticTrialSyncer::RenderProcessHostDestroyed(RenderProcessHost* host) {
   child_process_unique_id_to_mojo_connections_.erase(host->GetDeprecatedID());
 
-  // To ensure this is removed from the observer list, call RemoveObserver()
-  // again.
-  host->RemoveObserver(this);
+  host_observation_.RemoveObservation(host);
 }
 
 }  // namespace content
