@@ -390,9 +390,37 @@ by a child template that "extends" this file.
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO(crbug.com/40557607): Limit these to supported MIME types. -->
-                <data android:mimeType="image/*" />
-                <data android:mimeType="video/*" />
+                <!-- TODO(crbug.com/501213257): Find a way to unify the declaration of codecs between here and the media stack -->
+                {% if enable_jxl_decoder == "true" %}
+                <data android:mimeType="image/jxl" />
+                {% endif %}
+                {% if enable_av1_decoder == "true" %}
+                <data android:mimeType="image/avif" />
+                {% endif %}
+                <data android:mimeType="image/webp" />
+                <data android:mimeType="image/apng" />
+                <data android:mimeType="image/svg+xml" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/png" />
+                <data android:mimeType="image/gif" />
+                <data android:mimeType="image/x-icon" />
+                <data android:mimeType="image/bmp" />
+                <data android:mimeType="image/x-xbitmap" />
+                <data android:mimeType="image/vnd.microsoft.icon" />
+                <data android:mimeType="image/pjpeg" />
+                <data android:mimeType="image/jpg" />
+                <data android:mimeType="image/x-png" />
+
+                <data android:mimeType="video/webm" />
+                <data android:mimeType="video/ogg" />
+                <data android:mimeType="video/mp4" />
+                <data android:mimeType="video/matroska" />
+                <data android:mimeType="video/x-matroska" />
+                {% if use_proprietary_codecs == "true" %}
+                <data android:mimeType="video/x-m4v" />
+                <data android:mimeType="video/3gpp" />
+                {% endif %}
+
                 <data android:scheme="file" />
                 <data android:scheme="content" />
             </intent-filter>
@@ -430,8 +458,24 @@ by a child template that "extends" this file.
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- TODO(crbug.com/40557607): Limit these to supported MIME types. -->
-                <data android:mimeType="audio/*" />
+                <!-- TODO(crbug.com/501213257): Find a way to unify the declaration of codecs between here and the media stack -->
+                <data android:mimeType="audio/wav" />
+                <data android:mimeType="audio/x-wav" />
+                <data android:mimeType="audio/webm" />
+                <data android:mimeType="audio/ogg" />
+                <data android:mimeType="audio/flac" />
+                <data android:mimeType="audio/mpeg" />
+                <data android:mimeType="audio/mp3" />
+                <data android:mimeType="audio/x-mp3" />
+                <data android:mimeType="audio/mp4" />
+                <data android:mimeType="audio/matroska" />
+                <data android:mimeType="audio/x-matroska" />
+                <data android:mimeType="application/ogg" />
+                {% if use_proprietary_codecs == "true" %}
+                <data android:mimeType="audio/aac" />
+                <data android:mimeType="audio/x-m4a" />
+                {% endif %}
+
                 <data android:scheme="file" />
                 <data android:scheme="content" />
             </intent-filter>

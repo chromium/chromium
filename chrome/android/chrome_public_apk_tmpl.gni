@@ -17,6 +17,8 @@ import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//media/media_options.gni")
+import("//third_party/blink/renderer/config.gni")
 import("channel.gni")
 
 declare_args() {
@@ -41,6 +43,9 @@ default_chrome_public_jinja_variables = [
   "enable_arcore=$enable_arcore",
   "is_desktop_android=$is_desktop_android",
   "enable_screen_capture=$enable_screen_capture",
+  "use_proprietary_codecs=$proprietary_codecs",
+  "enable_av1_decoder=$enable_av1_decoder",
+  "enable_jxl_decoder=$enable_jxl_decoder",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 

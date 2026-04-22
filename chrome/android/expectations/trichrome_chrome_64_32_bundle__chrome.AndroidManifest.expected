@@ -302,8 +302,28 @@
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="image/*"/>
-        <data android:mimeType="video/*"/>
+        <data android:mimeType="image/apng"/>
+        <data android:mimeType="image/avif"/>
+        <data android:mimeType="image/bmp"/>
+        <data android:mimeType="image/gif"/>
+        <data android:mimeType="image/jpeg"/>
+        <data android:mimeType="image/jpg"/>
+        <data android:mimeType="image/jxl"/>
+        <data android:mimeType="image/pjpeg"/>
+        <data android:mimeType="image/png"/>
+        <data android:mimeType="image/svg+xml"/>
+        <data android:mimeType="image/vnd.microsoft.icon"/>
+        <data android:mimeType="image/webp"/>
+        <data android:mimeType="image/x-icon"/>
+        <data android:mimeType="image/x-png"/>
+        <data android:mimeType="image/x-xbitmap"/>
+        <data android:mimeType="video/3gpp"/>
+        <data android:mimeType="video/matroska"/>
+        <data android:mimeType="video/mp4"/>
+        <data android:mimeType="video/ogg"/>
+        <data android:mimeType="video/webm"/>
+        <data android:mimeType="video/x-m4v"/>
+        <data android:mimeType="video/x-matroska"/>
         <data android:scheme="content"/>
         <data android:scheme="file"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
@@ -667,7 +687,20 @@
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="audio/*"/>
+        <data android:mimeType="application/ogg"/>
+        <data android:mimeType="audio/aac"/>
+        <data android:mimeType="audio/flac"/>
+        <data android:mimeType="audio/matroska"/>
+        <data android:mimeType="audio/mp3"/>
+        <data android:mimeType="audio/mp4"/>
+        <data android:mimeType="audio/mpeg"/>
+        <data android:mimeType="audio/ogg"/>
+        <data android:mimeType="audio/wav"/>
+        <data android:mimeType="audio/webm"/>
+        <data android:mimeType="audio/x-m4a"/>
+        <data android:mimeType="audio/x-matroska"/>
+        <data android:mimeType="audio/x-mp3"/>
+        <data android:mimeType="audio/x-wav"/>
         <data android:scheme="content"/>
         <data android:scheme="file"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
