@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -115,6 +116,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         private Canvas mCanvas;
         private Bitmap mMultiThumbnailBitmap;
         private @Nullable String mText;
+        private final Path mPath = new Path();
 
         private final List<Rect> mFaviconRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
         private final List<RectF> mThumbnailRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
@@ -469,12 +471,18 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         }
 
         private void drawActingOverlay(int index) {
+            RectF rect = mThumbnailRects.get(index);
+            mCanvas.save();
+            mPath.reset();
+            mPath.addRoundRect(rect, mRadius, mRadius, Path.Direction.CW);
+            mCanvas.clipPath(mPath);
             mActingOverlayDrawable.setBounds(
-                    Math.round(mThumbnailRects.get(index).left),
-                    Math.round(mThumbnailRects.get(index).top),
-                    Math.round(mThumbnailRects.get(index).right),
-                    Math.round(mThumbnailRects.get(index).bottom));
+                    Math.round(rect.left),
+                    Math.round(rect.top),
+                    Math.round(rect.right),
+                    Math.round(rect.bottom));
             mActingOverlayDrawable.draw(mCanvas);
+            mCanvas.restore();
         }
 
         private void drawFavicon(
