@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
@@ -179,6 +180,15 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     PLOG(ERROR) << "Failed to get peer PID";
     OnError();
     return;
+  }
+  if (options_.include_peer_process_info) {
+    info->process = base::Process::OpenWithAccess(
+        info->pid, PROCESS_QUERY_LIMITED_INFORMATION);
+    if (!info->process.IsValid()) {
+      PLOG(ERROR) << "Failed to open peer process " << info->pid;
+      OnError();
+      return;
+    }
   }
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(pending_named_pipe_handle_)));

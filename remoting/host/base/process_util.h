@@ -6,6 +6,7 @@
 #define REMOTING_HOST_BASE_PROCESS_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 
 namespace remoting {
@@ -14,6 +15,9 @@ namespace remoting {
 // original path will still be returned even if the binary has been deleted from
 // the storage.
 base::FilePath GetProcessImagePath(base::ProcessId pid);
+
+// Same as above but using an existing process handle.
+base::FilePath GetProcessImagePath(const base::Process& process);
 
 }  // namespace remoting
 

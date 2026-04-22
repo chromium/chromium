@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "build/buildflag.h"
 
@@ -31,6 +32,10 @@ struct ConnectionInfo {
   audit_token_t audit_token{};
 #elif BUILDFLAG(IS_LINUX)
   ucred credentials{};
+#elif BUILDFLAG(IS_WIN)
+  // The process of the peer. Only valid if `include_peer_process_info` is true
+  // in EndpointOptions.
+  base::Process process;
 #endif
 };
 
