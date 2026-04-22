@@ -244,6 +244,7 @@ suite('ComposeboxDragAndDrop', () => {
       'composeboxContextDragAndDropEnabled': true,
       'composeboxFileMaxCount': 4,
       'composeboxFileMaxSize': 10000000,
+      'lensSendRawFileMediaTypesEnabled': false,
     });
   });
 
@@ -372,7 +373,10 @@ suite('ComposeboxDragAndDrop', () => {
         new File(['foo'], 'malware.exe', {type: 'application/x-msdownload'});
     await dispatchDragAndDropEvent(composeboxElement, [testFile]);
 
-    assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+    const expectedCallCount =
+        loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled') ? 1 : 0;
+    assertEquals(
+        expectedCallCount, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
   });
 
   test('does not accept multiple files if only one allowed', async () => {

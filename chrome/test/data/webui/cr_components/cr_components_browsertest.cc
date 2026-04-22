@@ -7,6 +7,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
+#include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"
 
 typedef WebUIMochaBrowserTest CrComponentsTest;
@@ -270,8 +271,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsPreloadingTest, Preloading) {
 class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsComposeboxTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        lens::features::kLensSendRawFileMediaTypes);
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualEntrypointButton) {

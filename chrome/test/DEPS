@@ -56,6 +56,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/leveldb_proto/public",
+  "+components/lens",
   "+components/live_caption",
   "+components/manta",
   "+components/memory_system",
