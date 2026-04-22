@@ -31,6 +31,7 @@ ActorUiContentsContainerController::ActorUiContentsContainerController(
     : contents_container_view_(contents_container_view),
       overlay_(actor_overlay_web_view),
       window_controller_(window_controller) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActorUi));
   CHECK(contents_container_view_);
   CHECK(window_controller_);
   if (features::kGlicActorUiHandoffButton.Get()) {

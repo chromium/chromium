@@ -306,7 +306,8 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
-  if (!features::kGlicActorUiToast.Get()) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUi) ||
+      !features::kGlicActorUiToast.Get()) {
     return;
   }
 

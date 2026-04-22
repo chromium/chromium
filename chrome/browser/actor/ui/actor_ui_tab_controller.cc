@@ -48,6 +48,7 @@ ActorUiTabController::ActorUiTabController(
           base::BindRepeating(&ActorUiTabController::UpdateScrimBackground,
                               base::Unretained(this))),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActorUi));
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_keyed_service_);
 }
