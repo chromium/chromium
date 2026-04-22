@@ -784,6 +784,12 @@ PLATFORM_INFO = {
         'platform_os': 'mac',
         'is_fyi': False
     },
+    'mac-m4-pro-perf': {
+        'description': 'MacBook Pro M4 ARM',
+        'num_shards': 15,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
     'mac-m5-pro-perf': {
         'description': 'Mac M5 PRO ARM',
         'num_shards': 2,

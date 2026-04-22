@@ -306,4 +306,9 @@ TARGET_DEVICES = {
         'rendering.desktop.notracing': 20,
         'motionmark1.3.crossbench': 20,
     },
+    'mac-m4-pro-perf': {
+        'jetstream3.crossbench': 10,
+        'speedometer3.crossbench': 10,
+        'motionmark1.3.crossbench': 5,
+    },
 }
