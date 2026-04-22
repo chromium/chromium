@@ -22768,27 +22768,6 @@
             ]
         }
     ],
-    "TextSelectionTopCue": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260420",
-                    "params": {
-                        "use_widget": "false"
-                    },
-                    "enable_features": [
-                        "GlicSelectionPrompt"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadPoolForegroundBlockingTimeouts": [
         {
             "platforms": [
