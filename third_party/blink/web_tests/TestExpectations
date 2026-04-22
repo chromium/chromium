@@ -4933,10 +4933,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-containe
 crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-008.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-009.html [ Failure ]
 
-crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
-crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
-crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-011.tentative.html [ Failure ]
-
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Pass Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
