@@ -98,8 +98,16 @@ constexpr base::TimeDelta kBusyLoopAggressiveTime = base::Milliseconds(500);
 // When scrolling and the main thread is not expected to be blocking, decrease
 // its thread priority, so as not to contend with the actually display critical
 // threads.
+//
+// Android only, as it's been evaluated in the field only on this platform.
+// TODO(crbug.com/503682317): Evaluate on desktop as well.
 BASE_FEATURE(kLowerPriorityForCompositorGestures,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 // On devices with at least 3 CPU clusters, only selectively allow the renderer

@@ -15214,22 +15214,6 @@
             ]
         }
     ],
-    "LowerPriorityForCompositorGestures": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LowerPriorityForCompositorGestures"
-                    ]
-                }
-            ]
-        }
-    ],
     "MHTML_Improvements": [
         {
             "platforms": [
