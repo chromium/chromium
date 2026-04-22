@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-class IOSCloudBinaryUploadService;
+class BinaryUploadService;
 
 class IOSCloudBinaryUploadServiceFactory
     : public ProfileKeyedServiceFactoryIOS {
@@ -20,7 +20,7 @@ class IOSCloudBinaryUploadServiceFactory
 
   // Returns the IOSCloudBinaryUploadService for `profile`, creating it if it is
   // not yet created.
-  static IOSCloudBinaryUploadService* GetForProfile(ProfileIOS* profile);
+  static BinaryUploadService* GetForProfile(ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<IOSCloudBinaryUploadServiceFactory>;

@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/components/enterprise/analysis/features.h",
   # keep-sorted end
 ]

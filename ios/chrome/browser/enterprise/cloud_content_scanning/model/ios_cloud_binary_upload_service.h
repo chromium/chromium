@@ -7,7 +7,8 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_cancel_requests.h"
-#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.h"
+#import "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 
 class ProfileIOS;
 
@@ -15,22 +16,27 @@ namespace enterprise_connectors {
 
 // This class encapsulates the process of uploading a file for deep scanning,
 // and asynchronously retrieving a verdict.
-//
-// TODO(crbug.com/482050525): Implement this class.
-class IOSCloudBinaryUploadService : public BinaryUploadService {
+class IOSCloudBinaryUploadService
+    : public CloudBinaryUploadServiceBase::Delegate {
  public:
   explicit IOSCloudBinaryUploadService(ProfileIOS* profile);
   ~IOSCloudBinaryUploadService() override;
 
-  // BinaryUploadService overrides:
-  void MaybeUploadForDeepScanning(
-      std::unique_ptr<BinaryUploadRequest> request) override;
-  void MaybeAcknowledge(std::unique_ptr<BinaryUploadAck> ack) override;
-  void MaybeCancelRequests(
-      std::unique_ptr<BinaryUploadCancelRequests> cancel) override;
-  base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
-
  private:
+  // CloudBinaryUploadServiceBase::Delegate overrides:
+  void MaybeGetAccessToken(BinaryUploadRequest* request,
+                           base::OnceCallback<void(const std::string&)>
+                               access_token_callback) override;
+  BinaryUploadRequest::BrowserPolicyConnectorGetter
+  BrowserPolicyConnectorGetter() override;
+  bool IsAdvancedProtection() override;
+  bool IsEnhancedProtection() override;
+
+  const raw_ptr<ProfileIOS> profile_;
+
+  // Used to obtain an access token to attach to requests.
+  std::unique_ptr<safe_browsing::SafeBrowsingTokenFetcher> token_fetcher_;
+
   base::WeakPtrFactory<IOSCloudBinaryUploadService> weakptr_factory_;
 };
 
