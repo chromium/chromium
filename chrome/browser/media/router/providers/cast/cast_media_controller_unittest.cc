@@ -411,6 +411,29 @@ TEST_F(CastMediaControllerTest, IgnoreInvalidImage) {
   VerifyAndClearExpectations();
 }
 
+TEST_F(CastMediaControllerTest, IgnoreInsecureImages) {
+  mojom::MediaStatusPtr expected_status = CreateSampleMediaStatus();
+  expected_status->images.emplace_back(
+      std::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
+  expected_status->images.emplace_back(
+      std::in_place, GURL("http://localhost/2.png"), gfx::Size(123, 456));
+  expected_status->images.emplace_back(
+      std::in_place, GURL("data:image/png;base64,iVBORw0KGgo"),
+      gfx::Size(123, 456));
+
+  base::DictValue status_value = CreateMediaStatus(*expected_status);
+
+  EXPECT_CALL(*status_observer_, OnMediaStatusUpdated(_))
+      .WillOnce([&](const mojom::MediaStatusPtr& status) {
+        ASSERT_EQ(2u, status->images.size());
+        EXPECT_EQ("https://example.com/1.png",
+                  status->images.at(0)->url.spec());
+        EXPECT_EQ("http://localhost/2.png", status->images.at(1)->url.spec());
+      });
+  SetMediaStatus(std::move(status_value));
+  VerifyAndClearExpectations();
+}
+
 TEST_F(CastMediaControllerTest, UpdateVolumeStatus) {
   auto session = CreateSampleSession();
   const float session_volume =
