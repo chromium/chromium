@@ -295,6 +295,23 @@ public class CronetAdaptiveRequestContextTest {
         assertEquals(null, computeStreamNetworkHandles(url));
     }
 
+    @Test
+    @SmallTest
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME,
+                        value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void getUriIfAdaptive_allEnabled_returnsUri() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        String url = "https://random-host.com/random-path";
+        URI expectedUri = URI.create(url);
+        assertEquals(expectedUri, mContext.getUriIfAdaptive(url));
+    }
+
     private CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles computeStreamNetworkHandles(
             String url) {
         return mContext.computeStreamNetworkHandles(

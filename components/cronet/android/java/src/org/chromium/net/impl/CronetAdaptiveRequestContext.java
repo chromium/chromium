@@ -47,6 +47,12 @@ class CronetAdaptiveRequestContext {
     // Name of the flag that controls whether Cronet adaptive network selection is enabled.
     public static final String ENABLE_ADAPTIVE_NETWORK_NAME = "Cronet_enable_adaptive_network";
 
+    // Name of the flag that controls whether adaptive network is enabled for all hosts and paths.
+    // FAST_IDEMPOTENT_PATHS_FLAG_NAME still needs to be configured for that behavior to trigger.
+    @VisibleForTesting
+    public static final String ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME =
+            "Cronet_enable_adaptive_network_for_all";
+
     // Name of the flag that controls which network paths are eligible for fast idempotent
     // selection. These paths must also be specified in the ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME
     // flag, otherwise this will have no effect.
@@ -82,6 +88,7 @@ class CronetAdaptiveRequestContext {
     private final Set<String> mFastIdempotentPaths;
     private final long mReadyFailoverMs;
     private final boolean mEnableAdaptiveNetwork;
+    private final boolean mEnableAdaptiveNetworkForAll;
 
     /** Information about a fallback network for a given host. */
     private static class FallbackInfo {
@@ -162,6 +169,13 @@ class CronetAdaptiveRequestContext {
             mEnableAdaptiveNetwork = flags.get(ENABLE_ADAPTIVE_NETWORK_NAME).getBoolValue();
         } else {
             mEnableAdaptiveNetwork = false;
+        }
+
+        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME)) {
+            mEnableAdaptiveNetworkForAll =
+                    flags.get(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME).getBoolValue();
+        } else {
+            mEnableAdaptiveNetworkForAll = false;
         }
 
         mFastIdempotentPaths = new HashSet<>();
@@ -281,6 +295,9 @@ class CronetAdaptiveRequestContext {
     URI getUriIfAdaptive(String url) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetAdaptiveRequestContext#getUriIfAdaptive")) {
+            if (mEnableAdaptiveNetworkForAll) {
+                return URI.create(url);
+            }
             for (String host : mAdaptiveNetworkHosts) {
                 if (!host.isEmpty() && url.startsWith(host)) {
                     URI parsedUri = URI.create(url);
