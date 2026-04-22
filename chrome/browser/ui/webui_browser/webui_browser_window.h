@@ -133,11 +133,6 @@ class WebUIBrowserWindow : public BrowserWindow,
       content::WebContents* contents,
       const GURL& url,
       bool show_back_button) override;
-  send_tab_to_self::SendTabToSelfBubbleView*
-  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) override;
-  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfPromoBubble(
-      content::WebContents* contents,
-      bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void ToggleMultitaskMenu() override;
 #endif  // BUILDFLAG(IS_CHROMEOS)

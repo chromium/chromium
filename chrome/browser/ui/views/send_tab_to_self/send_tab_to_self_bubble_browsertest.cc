@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -81,17 +82,17 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
         std::make_unique<TestSendTabToSelfBubbleController>(web_contents));
 
     if (name == "ShowDeviceList") {
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->ShowSendTabToSelfDevicePickerBubble(web_contents);
+      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser())
+          ->ShowDevicePickerBubble(web_contents);
     } else if (name == "ShowSigninPromo") {
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->ShowSendTabToSelfPromoBubble(web_contents,
-                                         /*show_signin_button=*/true);
+      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser())
+          ->ShowPromoBubble(web_contents,
+                            /*show_signin_button=*/true);
     } else {
       DCHECK_EQ(name, "ShowNoTargetDevicePromo");
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->ShowSendTabToSelfPromoBubble(web_contents,
-                                         /*show_signin_button=*/false);
+      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser())
+          ->ShowPromoBubble(web_contents,
+                            /*show_signin_button=*/false);
     }
   }
 };

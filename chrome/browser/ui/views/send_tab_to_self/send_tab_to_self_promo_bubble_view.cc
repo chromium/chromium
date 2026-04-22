@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/layout/box_layout.h"
@@ -123,5 +124,8 @@ void SendTabToSelfPromoBubbleView::OnBackButtonClicked() {
   }
   CloseBubble();
 }
+
+BEGIN_METADATA(SendTabToSelfPromoBubbleView)
+END_METADATA
 
 }  // namespace send_tab_to_self

@@ -37,10 +37,6 @@ namespace qrcode_generator {
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
-namespace send_tab_to_self {
-class SendTabToSelfBubbleView;
-}  // namespace send_tab_to_self
-
 // WARNING WARNING WARNING WARNING
 // Do not use this class. See docs/chrome_browser_design_principles.md for
 // details.  Either write a browser test which provides both a "class Browser"
@@ -171,11 +167,6 @@ class TestBrowserWindow : public BrowserWindow,
       const std::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
-  send_tab_to_self::SendTabToSelfBubbleView*
-  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) override;
-  send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfPromoBubble(
-      content::WebContents* contents,
-      bool show_signin_button) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void ToggleMultitaskMenu() override;
 #endif  // BUILDFLAG(IS_CHROMEOS)

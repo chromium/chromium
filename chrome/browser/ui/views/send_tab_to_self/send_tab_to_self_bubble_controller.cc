@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -84,23 +85,22 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       GetEntryPointDisplayReason();
   DCHECK(reason);
-  BrowserWindow* browser_window =
-      browser->GetBrowserForMigrationOnly()->window();
+  auto* window_controller =
+      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser);
   switch (*reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       send_tab_to_self_bubble_view_ =
-          browser_window->ShowSendTabToSelfDevicePickerBubble(
-              &GetWebContents());
+          window_controller->ShowDevicePickerBubble(&GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
       send_tab_to_self_bubble_view_ =
-          browser_window->ShowSendTabToSelfPromoBubble(
-              &GetWebContents(), /*show_signin_button=*/true);
+          window_controller->ShowPromoBubble(&GetWebContents(),
+                                             /*show_signin_button=*/true);
       break;
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
       send_tab_to_self_bubble_view_ =
-          browser_window->ShowSendTabToSelfPromoBubble(
-              &GetWebContents(), /*show_signin_button=*/false);
+          window_controller->ShowPromoBubble(&GetWebContents(),
+                                             /*show_signin_button=*/false);
       break;
   }
 

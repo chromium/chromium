@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -27,6 +28,8 @@ class SendTabToSelfBubbleController;
 // view will contain text explaining they can use the feature by signing in on
 // another device.
 class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView {
+  METADATA_HEADER(SendTabToSelfPromoBubbleView, SendTabToSelfBubbleView)
+
  public:
   // Bubble will be anchored to `anchor`.
   SendTabToSelfPromoBubbleView(views::BubbleAnchor anchor,

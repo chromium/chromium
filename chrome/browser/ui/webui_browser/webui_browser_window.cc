@@ -867,20 +867,6 @@ WebUIBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
   return nullptr;
 }
 
-send_tab_to_self::SendTabToSelfBubbleView*
-WebUIBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
-    content::WebContents* contents) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
-send_tab_to_self::SendTabToSelfBubbleView*
-WebUIBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
-                                                 bool show_signin_button) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void WebUIBrowserWindow::ToggleMultitaskMenu() {
   NOTIMPLEMENTED_LOG_ONCE();

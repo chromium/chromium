@@ -3187,35 +3187,6 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
   return bubble;
 }
 
-send_tab_to_self::SendTabToSelfBubbleView*
-BrowserView::ShowSendTabToSelfDevicePickerBubble(
-    content::WebContents* web_contents) {
-  auto anchor =
-      toolbar_button_provider()->GetBubbleAnchor(kActionSendTabToSelf);
-  auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
-      anchor, web_contents);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  // This is always triggered due to a user gesture, c.f. this method's
-  // documentation in the interface.
-  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble;
-}
-
-send_tab_to_self::SendTabToSelfBubbleView*
-BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
-                                          bool show_signin_button) {
-  auto anchor =
-      toolbar_button_provider()->GetBubbleAnchor(kActionSendTabToSelf);
-  auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
-      anchor, web_contents, show_signin_button);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  // This is always triggered due to a user gesture, c.f. method documentation.
-  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void BrowserView::ToggleMultitaskMenu() {
   auto* frame_view = static_cast<BrowserFrameViewChromeOS*>(GetFrameView());

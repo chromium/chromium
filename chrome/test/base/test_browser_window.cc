@@ -344,17 +344,6 @@ TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
                                              bool show_back_button) {
   return nullptr;
 }
-send_tab_to_self::SendTabToSelfBubbleView*
-TestBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
-    content::WebContents* contents) {
-  return nullptr;
-}
-
-send_tab_to_self::SendTabToSelfBubbleView*
-TestBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
-                                                bool show_signin_button) {
-  return nullptr;
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 void TestBrowserWindow::ToggleMultitaskMenu() {

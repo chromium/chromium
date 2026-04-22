@@ -64,10 +64,6 @@ namespace qrcode_generator {
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
-namespace send_tab_to_self {
-class SendTabToSelfBubbleView;
-}  // namespace send_tab_to_self
-
 namespace signin_metrics {
 enum class AccessPoint;
 }
@@ -395,17 +391,6 @@ class BrowserWindow : public ui::BaseWindow {
   ShowQRCodeGeneratorBubble(content::WebContents* contents,
                             const GURL& url,
                             bool show_back_button) = 0;
-
-  // Shows the "send tab to self" device picker bubble. This must only be called
-  // as a direct result of user action.
-  virtual send_tab_to_self::SendTabToSelfBubbleView*
-  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) = 0;
-
-  // Shows the "send tab to self" promo bubble. This must only be called as a
-  // direct result of user action.
-  virtual send_tab_to_self::SendTabToSelfBubbleView*
-  ShowSendTabToSelfPromoBubble(content::WebContents* contents,
-                               bool show_signin_button) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Toggles the multitask menu on the browser frame size button.

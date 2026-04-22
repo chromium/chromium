@@ -12,9 +12,14 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
+class SendTabToSelfBubbleView;
 
 class SendTabToSelfToolbarBubbleController {
  public:
@@ -28,6 +33,16 @@ class SendTabToSelfToolbarBubbleController {
 
   void ShowBubble(const SendTabToSelfEntry& entry, views::BubbleAnchor anchor);
   void HideBubble();
+
+  // Shows the "send tab to self" device picker bubble. This must only be called
+  // as a direct result of user action.
+  SendTabToSelfBubbleView* ShowDevicePickerBubble(
+      content::WebContents* web_contents);
+
+  // Shows the "send tab to self" promo bubble. This must only be called as a
+  // direct result of user action.
+  SendTabToSelfBubbleView* ShowPromoBubble(content::WebContents* web_contents,
+                                           bool show_signin_button);
 
   bool IsBubbleShowing() const;
 
