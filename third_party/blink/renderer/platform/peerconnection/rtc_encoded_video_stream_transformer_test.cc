@@ -288,4 +288,41 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
           CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }
 
+TEST_P(RTCEncodedVideoStreamTransformerTest, WorkerOutlivesDelegate) {
+  if (!GetParam()) {
+    return;
+  }
+
+  MockTransformerCallbackHolder lifecycle_callback_holder;
+  scoped_refptr<base::SingleThreadTaskRunner> main_runner =
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting();
+  auto* mock_metronome = new NiceMock<MockMetronome>();
+  // Using AnyInvocable as that's what the libwebrtc Metronome
+  // interface requires.
+  absl::AnyInvocable<void() &&> metronome_callback;
+  EXPECT_CALL(*mock_metronome, RequestCallOnNextTick)
+      .WillOnce([&](absl::AnyInvocable<void() &&> c) {
+        metronome_callback = std::move(c);
+      });
+
+  auto transformer = std::make_unique<RTCEncodedVideoStreamTransformer>(
+      main_runner, absl::WrapUnique(mock_metronome));
+  transformer->SetTransformerCallback(CrossThreadBindRepeating(
+      &MockTransformerCallbackHolder::OnEncodedFrame,
+      CrossThreadUnretained(&lifecycle_callback_holder)));
+
+  // Send a frame to schedule a tick.
+  transformer->Delegate()->Transform(CreateMockFrame());
+  ASSERT_TRUE(metronome_callback);
+
+  // Destroy the transformer. This should call Disconnect() on the delegate's
+  // worker.
+  transformer.reset();
+
+  // Now fire the metronome tick. It should NOT crash and should NOT call
+  // the callback (since the transformer is gone).
+  EXPECT_CALL(lifecycle_callback_holder, OnEncodedFrame).Times(0);
+  std::move(metronome_callback)();
+}
+
 }  // namespace blink
