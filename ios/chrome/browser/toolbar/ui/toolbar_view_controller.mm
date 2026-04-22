@@ -35,6 +35,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 namespace {
 
@@ -84,6 +85,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   // Page load progress bar on the edge of the toolbar.
   ToolbarProgressBar* _progressBar;
+
+  // Separator line for the toolbar. Visible when the toolbar has the omnibox
+  // or when the tab group indicator is visible.
+  UIView* _separator;
 
   // Closure to cancel hiding the progress bar when a new page load starts.
   base::CancelableOnceClosure _hideProgressBarClosure;
@@ -169,6 +174,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.delegate = self;
+  // ToolbarViewController will show its own _separator, when needed.
+  _tabGroupIndicatorView.showSeparator = NO;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_tabGroupIndicatorView];
 
@@ -524,6 +531,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 - (void)tabGroupIndicatorViewVisibilityUpdated:(BOOL)visible {
   _tabGroupIndicatorView.hidden = !visible;
+  _separator.hidden = !(visible || [self hasOmnibox]);
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
@@ -538,7 +546,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     _tabGroupIndicatorActiveToolbarConstraint.active = NO;
     _tabGroupIndicatorInactiveToolbarConstraint.active = YES;
   }
-  _tabGroupIndicatorView.showSeparator = !_visible;
 
   BOOL canShowTabStrip = CanShowTabStrip(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
@@ -646,6 +653,11 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
   _progressBar = [self createProgressBar];
 
+  _separator = [[UIView alloc] init];
+  _separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+  _separator.translatesAutoresizingMaskIntoConstraints = NO;
+  _separator.hidden = YES;
+
   _backButton = [self.buttonFactory makeBackButton];
   _backButton.menu = _backButtonMenu;
   [_backButton addTarget:self
@@ -720,6 +732,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   [self.view addSubview:_trailingStackView];
   [self.view addSubview:_progressBar];
+  [self.view addSubview:_separator];
 
   NSLayoutConstraint* progressBarEdgeConstraint =
       _topPosition ? [_progressBar.bottomAnchor
@@ -734,6 +747,22 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
         constraintEqualToAnchor:self.view.trailingAnchor],
     [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
     progressBarEdgeConstraint
+  ]];
+
+  NSLayoutConstraint* separatorEdgeConstraint =
+      _topPosition
+          ? [_separator.bottomAnchor
+                constraintEqualToAnchor:self.view.bottomAnchor]
+          : [_separator.topAnchor constraintEqualToAnchor:self.view.topAnchor];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_separator.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [_separator.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_separator.heightAnchor
+        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                      kToolbarSeparatorHeight)],
+    separatorEdgeConstraint
   ]];
 
   _locationBarHeightConstraint = [_locationBarContainer.heightAnchor
@@ -938,11 +967,17 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
+// Returns whether the toolbar has the omnibox.
+- (BOOL)hasOmnibox {
+  return !_locationBarContainer.isHidden && _locationBarContainer.alpha != 0.0;
+}
+
 // Updates the visibility of the toolbar elements.
 - (void)updateToolbarElementsVisibility {
   _leadingStackView.hidden = !_visible;
   _locationBarContainer.hidden = !_visible;
   _trailingStackView.hidden = !_visible;
+  _separator.hidden = !(!_tabGroupIndicatorView.hidden || [self hasOmnibox]);
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
@@ -950,10 +985,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 - (void)updateProgressBarVisibility {
   CHECK(_progressBar);
 
-  BOOL hasOmnibox =
-      !_locationBarContainer.isHidden && _locationBarContainer.alpha != 0.0;
-
-  if (!hasOmnibox) {
+  if (![self hasOmnibox]) {
     _progressBar.hidden = YES;
     return;
   }
