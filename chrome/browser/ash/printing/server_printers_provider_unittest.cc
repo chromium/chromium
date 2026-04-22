@@ -33,20 +33,6 @@ using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 
-class TestingProfileWithURLLoaderFactory : public TestingProfile {
- public:
-  explicit TestingProfileWithURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : url_loader_factory_(url_loader_factory) {}
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
-      override {
-    return url_loader_factory_;
-  }
-
- private:
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-};
-
 PrintServer PrintServer1() {
   GURL url("http://192.168.1.5/printer");
   PrintServer print_server("id1", url, "LexaPrint");
@@ -97,8 +83,10 @@ auto PrinterMatcher(Printer printer) {
 class ServerPrintersProviderTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    test_profile_ = std::make_unique<TestingProfileWithURLLoaderFactory>(
-        test_url_loader_factory_.GetSafeWeakWrapper());
+    test_profile_ = TestingProfile::Builder()
+                        .SetSharedURLLoaderFactory(
+                            test_url_loader_factory_.GetSafeWeakWrapper())
+                        .Build();
     ASSERT_TRUE(test_server_.Start());
     server_printers_provider_ =
         ServerPrintersProvider::Create(test_profile_.get());
@@ -106,6 +94,8 @@ class ServerPrintersProviderTest : public ::testing::Test {
 
   void TearDown() override {
     PrintServersProviderFactory::Get()->ShutdownForTesting();
+    server_printers_provider_.reset();
+    test_profile_.reset();
   }
 
   std::string CreateResponse(const std::string& name,
@@ -136,7 +126,7 @@ class ServerPrintersProviderTest : public ::testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  std::unique_ptr<TestingProfileWithURLLoaderFactory> test_profile_;
+  std::unique_ptr<TestingProfile> test_profile_;
 
   net::test_server::EmbeddedTestServer test_server_;
 

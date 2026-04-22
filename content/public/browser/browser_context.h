@@ -61,6 +61,10 @@ namespace net {
 class HttpNoVarySearchData;
 }  // namespace net
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace storage {
 class BlobStorageContext;
 class SpecialStoragePolicy;
@@ -204,6 +208,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       base::OnceClosure done);
 
   StoragePartition* GetDefaultStoragePartition();
+
+  // Returns the main URLLoaderFactory.
+  virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Starts a prefetch network request for the given `url`.
   // `embedder_histogram_suffix` is used for generating internal histogram names

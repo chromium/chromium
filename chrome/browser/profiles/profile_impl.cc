@@ -1293,11 +1293,6 @@ const policy::ProfilePolicyConnector* ProfileImpl::GetProfilePolicyConnector()
   return profile_policy_connector_.get();
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-ProfileImpl::GetURLLoaderFactory() {
-  return GetDefaultStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
-}
-
 content::BrowserPluginGuestManager* ProfileImpl::GetGuestManager() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   return guest_view::GuestViewManager::FromBrowserContext(this);

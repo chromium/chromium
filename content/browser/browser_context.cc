@@ -194,6 +194,11 @@ StoragePartition* BrowserContext::GetDefaultStoragePartition() {
   return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+BrowserContext::GetURLLoaderFactory() {
+  return GetDefaultStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
+}
+
 std::unique_ptr<content::PrefetchHandle>
 BrowserContext::StartBrowserPrefetchRequest(
     const GURL& url,

@@ -432,11 +432,6 @@ policy::CloudPolicyManager* OffTheRecordProfileImpl::GetCloudPolicyManager() {
   return GetOriginalProfile()->GetCloudPolicyManager();
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-OffTheRecordProfileImpl::GetURLLoaderFactory() {
-  return GetDefaultStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
-}
-
 content::BrowserPluginGuestManager* OffTheRecordProfileImpl::GetGuestManager() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   return guest_view::GuestViewManager::FromBrowserContext(this);
