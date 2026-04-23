@@ -16774,6 +16774,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "compact_fusebox ": "true"
+                    },
                     "enable_features": [
                         "ComposeboxUsesChromeComposeClient",
                         "OmniboxMultilineEditField",
