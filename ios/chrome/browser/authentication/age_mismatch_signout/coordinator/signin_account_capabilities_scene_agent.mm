@@ -49,6 +49,7 @@
 
 @interface SigninAccountCapabilitiesSceneAgent () <
     AgeMismatchSignoutCoordinatorDelegate,
+    ExternalPrivacyContextUIProvider,
     IdentityManagerObserverBridgeDelegate,
     ProfileStateObserver,
     SystemIdentityManagerObserving,
@@ -61,6 +62,11 @@
 
   // The set of Gaia IDs for which the external privacy context has been built.
   absl::flat_hash_set<GaiaId, GaiaId::Hash> _handledIdentities;
+
+  // UI blocker used when building external privacy contexts. This needs to be
+  // reseted in -[SceneStateObserver sceneStateDidDisableUI:] if it still
+  // exists.
+  std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
 
   std::unique_ptr<SystemIdentityManagerObserverBridge>
       _systemIdentityManagerObserver;
@@ -80,10 +86,6 @@
   // Tracks if External Privacy Contexts are currently being built
   // asynchronously.
   BOOL _areExternalPrivacyContextsBeingBuilt;
-
-  // The UI blocker needs to be reseted in -[SceneStateObserver
-  // sceneStateDidDisableUI:] if it still exists.
-  std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -93,6 +95,9 @@
     _systemIdentityManagerObserver =
         std::make_unique<SystemIdentityManagerObserverBridge>(
             GetApplicationContext()->GetSystemIdentityManager(), self);
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->RegisterExternalPrivacyContextProvider(self);
   }
   return self;
 }
@@ -122,10 +127,14 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  [self notifyProviderReadyIfUIAvailable];
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->UnregisterExternalPrivacyContextProvider(self);
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
@@ -138,6 +147,7 @@
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
+  [self notifyProviderReadyIfUIAvailable];
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
@@ -156,6 +166,7 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
   }
+  [self notifyProviderReadyIfUIAvailable];
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
@@ -189,6 +200,7 @@
 #pragma mark - UIBlockerManagerObserver
 
 - (void)currentUIBlockerRemoved {
+  [self notifyProviderReadyIfUIAvailable];
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
@@ -204,7 +216,7 @@
 - (void)ageMismatchSignoutCoordinatorWantsToSignIn:
     (AgeMismatchSignoutCoordinator*)coordinator {
   CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator,
-           base::NotFatalUntil::M153);
+           base::NotFatalUntil::M155);
   // The coordinator should not be stopped while the delegate method is called,
   // to avoid reentry issues.
   __weak __typeof(self) weakSelf = self;
@@ -217,7 +229,35 @@
           weakSelf));
 }
 
+#pragma mark - ExternalPrivacyContextUIProvider
+
+- (UIViewController*)viewControllerForExternalPrivacyContext {
+  if ([self isUIAvailableToShowIOSPrompt]) {
+    return [_sceneUIProvider activeViewController];
+  }
+  return nil;
+}
+
+- (void)blockUIForExternalPrivacyContextBuild {
+  CHECK([self isUIAvailableToShowIOSPrompt]);
+  CHECK(!_applicationUIBlocker);
+  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
+      self.sceneState, UIBlockerExtent::kApplication);
+}
+
+- (void)unblockUIOnExternalPrivacyContextBuilt {
+  _applicationUIBlocker.reset();
+}
+
 #pragma mark - Private
+
+- (void)notifyProviderReadyIfUIAvailable {
+  if ([self isUIAvailableToShowIOSPrompt]) {
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->ExternalPrivacyContextProviderReady(self);
+  }
+}
 
 // Stops `_ageMismatchSignoutCoordinator` and start the sign-in commands.
 - (void)closeAgeMismatchSignoutCoordinatorAndSignin {
@@ -411,6 +451,10 @@
   }
 
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+    return NO;
+  }
+
+  if (_isAgeMismatchSignoutInProgress || _ageMismatchSignoutCoordinator) {
     return NO;
   }
 

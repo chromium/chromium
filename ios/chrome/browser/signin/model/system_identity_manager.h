@@ -29,6 +29,24 @@ class GaiaId;
 @protocol SystemIdentityInteractionManager;
 class SystemIdentityManagerObserver;
 
+// Provider for building external privacy contexts, which requires a
+// UIViewController (e.g. to present system UI).
+@protocol ExternalPrivacyContextUIProvider <NSObject>
+
+// Returns the view controller to use for presenting UI during External Privacy
+// Context building.
+- (UIViewController*)viewControllerForExternalPrivacyContext;
+
+// Notifies the provider that an External Privacy Context build is requested.
+// The provider should block the UI during the build.
+- (void)blockUIForExternalPrivacyContextBuild;
+
+// Notifies the provider that the External Privacy Context build is done.
+// The provider should unblock the UI.
+- (void)unblockUIOnExternalPrivacyContextBuilt;
+
+@end
+
 // SystemIdentityManager is Chrome's interface to the iOS shared authentication
 // library: It provides access to accounts on the device and information about
 // them, independent of whether or not the user is signed in to Chrome, and
@@ -111,6 +129,7 @@ class SystemIdentityManager {
 
   // Callback invoked when the `BuildExternalPrivacyContext()` operation
   // completes.
+  // TODO(crbug.com/502142565): Make private.
   using BuildExternalPrivacyContextCallback =
       base::OnceCallback<void(NSError*)>;
 
@@ -258,10 +277,26 @@ class SystemIdentityManager {
   //                     be presented to gather user consent.
   // * `callback` is executed after the privacy context is built and any
   //              associated system UI is dismissed.
+  // TODO(crbug.com/502142565): Remove; use
+  // RegisterExternalPrivacyContextProvider instead.
   virtual void BuildExternalPrivacyContext(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
       BuildExternalPrivacyContextCallback callback) = 0;
+
+  // Registers the provider for building external privacy context.
+  virtual void RegisterExternalPrivacyContextProvider(
+      id<ExternalPrivacyContextUIProvider> provider);
+
+  // Unregisters the provider for building external privacy context.
+  virtual void UnregisterExternalPrivacyContextProvider(
+      id<ExternalPrivacyContextUIProvider> provider);
+
+  // Called when a provider is ready for capabilities fetching.
+  // The `provider` must have been previously registered via
+  // `RegisterExternalPrivacyContextProvider`.
+  virtual void ExternalPrivacyContextProviderReady(
+      id<ExternalPrivacyContextUIProvider> provider);
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation

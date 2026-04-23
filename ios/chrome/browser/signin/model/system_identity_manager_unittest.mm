@@ -39,6 +39,18 @@ class TestSystemIdentityManager : public SystemIdentityManager {
     NOTREACHED();
   }
   void DismissDialogs() final {}
+  void RegisterExternalPrivacyContextProvider(
+      id<ExternalPrivacyContextUIProvider> provider) final {
+    NOTREACHED();
+  }
+  void UnregisterExternalPrivacyContextProvider(
+      id<ExternalPrivacyContextUIProvider> provider) final {
+    NOTREACHED();
+  }
+  void ExternalPrivacyContextProviderReady(
+      id<ExternalPrivacyContextUIProvider> provider) final {
+    NOTREACHED();
+  }
   id<SystemIdentityInteractionManager> CreateInteractionManager() final {
     NOTREACHED();
   }

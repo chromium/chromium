@@ -491,6 +491,24 @@ void FakeSystemIdentityManager::BuildExternalPrivacyContext(
   }
 }
 
+void FakeSystemIdentityManager::RegisterExternalPrivacyContextProvider(
+    id<ExternalPrivacyContextUIProvider> provider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do nothing.
+}
+
+void FakeSystemIdentityManager::UnregisterExternalPrivacyContextProvider(
+    id<ExternalPrivacyContextUIProvider> provider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do nothing.
+}
+
+void FakeSystemIdentityManager::ExternalPrivacyContextProviderReady(
+    id<ExternalPrivacyContextUIProvider> provider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do nothing.
+}
+
 void FakeSystemIdentityManager::SetBuildExternalPrivacyContextCallback(
     OnBuildExternalPrivacyContextCallback callback) {
   on_build_external_privacy_context_callback_ = std::move(callback);
