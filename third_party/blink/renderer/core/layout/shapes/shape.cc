@@ -368,8 +368,6 @@ std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
 
   CHECK_EQ(image_logical_rect.size().Area64() * 4, pixel_data.size());
 
-  const int image_inline_size = image_logical_rect.width();
-  const int image_inline_start = image_logical_rect.x();
   const int image_block_start = image_logical_rect.y();
   const int image_block_end = image_logical_rect.bottom();
   const int margin_box_block_size = margin_logical_rect.height();
@@ -380,28 +378,39 @@ std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   const int max_buffer_y =
       std::min({content_block_size, image_block_end, margin_block_end});
 
-  std::unique_ptr<RasterShapeIntervals> intervals =
-      std::make_unique<RasterShapeIntervals>(margin_box_block_size,
-                                             -margin_block_start);
+  auto intervals = std::make_unique<RasterShapeIntervals>(margin_box_block_size,
+                                                          -margin_block_start);
 
   LogicalPixelScanner scanner(pixel_data, image_physical_size, writing_mode);
   for (int y = image_block_start; y < min_buffer_y; ++y) {
     scanner.NextLine();
   }
   for (int y = min_buffer_y; y < max_buffer_y; ++y, scanner.NextLine()) {
-    int start_x = -1;
-    for (int x = 0; x < image_inline_size; ++x, scanner.Next()) {
-      uint8_t alpha = scanner.GetAlpha();
-      bool alpha_above_threshold = alpha > alpha_pixel_threshold;
-      if (start_x == -1 && alpha_above_threshold) {
-        start_x = x;
-      } else if (start_x != -1 &&
-                 (!alpha_above_threshold || x == image_inline_size - 1)) {
-        int end_x = alpha_above_threshold ? x + 1 : x;
-        intervals->IntervalAt(y).Unite(IntShapeInterval(
-            start_x + image_inline_start, end_x + image_inline_start));
-        start_x = -1;
+    int start_x = std::numeric_limits<int>::max();
+    int end_x = std::numeric_limits<int>::min();
+    bool is_inside_shape = false;
+    for (int x = image_logical_rect.x(); x < image_logical_rect.right();
+         ++x, scanner.Next()) {
+      const bool alpha_above_threshold =
+          scanner.GetAlpha() > alpha_pixel_threshold;
+      // We're interested in transitions.
+      if (alpha_above_threshold != is_inside_shape) {
+        if (!is_inside_shape) {
+          // A run started. It may not be the first.
+          start_x = std::min(x, start_x);
+        } else {
+          // A run ended. Always greater than any previous end.
+          end_x = x;
+        }
       }
+      is_inside_shape = alpha_above_threshold;
+    }
+    // Ensure the interval is closed at the edge of the image.
+    if (is_inside_shape) {
+      end_x = image_logical_rect.right();
+    }
+    if (start_x < end_x) {
+      intervals->IntervalAt(y) = IntShapeInterval(start_x, end_x);
     }
   }
   return intervals;
