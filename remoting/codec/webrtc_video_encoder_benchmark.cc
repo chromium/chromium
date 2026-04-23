@@ -2,25 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <deque>
 #include <iostream>
 #include <memory>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "base/time/time.h"
+#include "remoting/codec/webrtc_video_encoder_av1.h"
+#include "remoting/codec/webrtc_video_encoder_vpx.h"
+#include "remoting/test/frame_generator/differ_frame_generator.h"
+#include "remoting/test/frame_generator/file_frame_generator.h"
+#include "remoting/test/frame_generator/headless_frame_generator.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 namespace remoting {
 
 namespace {
 
-#define BENCHMARK_LOG() LAZY_STREAM(LOG_STREAM(INFO), LOG_IS_ON(INFO))
+constexpr base::TimeDelta kDefaultDuration = base::Seconds(10);
+constexpr int kDefaultBitrateKbps = 5000;
 
 enum class Codec {
   kAv1,
@@ -43,11 +57,11 @@ struct EncoderParams {
   Profile profile = Profile::k0;
   ColorSpace color_space = ColorSpace::kI420;
   bool use_active_map = false;
-  int bitrate_kbps = 5000;
+  int bitrate_kbps = kDefaultBitrateKbps;
 };
 
 struct RuntimeParams {
-  int duration_s = 10;
+  base::TimeDelta duration = kDefaultDuration;
   double fps = 30.0;
   int max_frames = 100;
   base::FilePath frame_dir;
@@ -58,6 +72,24 @@ struct RuntimeParams {
   webrtc::DesktopSize size;
   std::string scenario;
 };
+
+std::unique_ptr<WebrtcVideoEncoder> CreateEncoder(const EncoderParams& params) {
+  std::unique_ptr<WebrtcVideoEncoder> encoder;
+  if (params.codec == Codec::kAv1) {
+    encoder = std::make_unique<WebrtcVideoEncoderAV1>();
+  } else if (params.codec == Codec::kVp8) {
+    encoder = WebrtcVideoEncoderVpx::CreateForVP8();
+  } else if (params.codec == Codec::kVp9) {
+    encoder = WebrtcVideoEncoderVpx::CreateForVP9();
+  }
+
+  if (encoder) {
+    encoder->SetLosslessColor(params.profile == Profile::k1);
+    encoder->SetUseActiveMap(params.use_active_map);
+  }
+
+  return encoder;
+}
 
 std::string CodecToString(Codec codec) {
   switch (codec) {
@@ -72,27 +104,277 @@ std::string CodecToString(Codec codec) {
 
 class EncoderBenchmark {
  public:
-  EncoderBenchmark() = default;
-  ~EncoderBenchmark() = default;
+  EncoderBenchmark() {
+    capture_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    encode_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  }
+
+  ~EncoderBenchmark() {
+    // Flush both runners to ensure no use-after-free.
+    base::RunLoop capture_loop;
+    capture_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                           capture_loop.QuitClosure());
+    capture_loop.Run();
+
+    base::RunLoop encode_loop;
+    encode_task_runner_->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::DestroyEncoderOnEncodeThread,
+                       base::Unretained(this)),
+        encode_loop.QuitClosure());
+    encode_loop.Run();
+  }
 
   void Run(const EncoderParams& encoder_params,
            const RuntimeParams& runtime_params) {
-    BENCHMARK_LOG() << "EncoderBenchmark::Run not implemented yet.";
-    BENCHMARK_LOG() << "Codec: " << CodecToString(encoder_params.codec);
-    BENCHMARK_LOG() << "Profile: "
-                    << (encoder_params.profile == Profile::k1 ? "1" : "0");
-    BENCHMARK_LOG() << "Color Space: "
-                    << (encoder_params.color_space == ColorSpace::kI444 ? "I444"
-                                                                       : "I420");
-    BENCHMARK_LOG() << "Use Active Map: "
-                    << (encoder_params.use_active_map ? "enabled" : "disabled");
-    BENCHMARK_LOG() << "Frame count: " << runtime_params.frame_count;
-    BENCHMARK_LOG() << "FPS: " << runtime_params.fps;
-    BENCHMARK_LOG() << "Bitrate: " << encoder_params.bitrate_kbps << " kbps";
-    BENCHMARK_LOG() << "Size: " << runtime_params.size.width() << "x"
-                    << runtime_params.size.height();
-    BENCHMARK_LOG() << "Scenario: " << runtime_params.scenario;
+    encoder_params_ = encoder_params;
+    runtime_params_ = runtime_params;
+    frames_encoded_ = 0;
+    total_pixels_ = 0;
+    updated_pixels_ = 0;
+    total_encode_time_ = base::TimeDelta();
+
+    std::unique_ptr<FrameGenerator> generator;
+    if (!runtime_params_.frame_dir.empty()) {
+      generator = std::make_unique<FileFrameGenerator>(
+          runtime_params_.frame_dir, runtime_params_.size);
+    } else {
+      auto headless = std::make_unique<HeadlessFrameGenerator>(
+          runtime_params_.scenario, runtime_params_.size,
+          runtime_params_.frame_count, runtime_params_.fps);
+      if (!runtime_params_.chrome_path.empty()) {
+        headless->SetChromePath(runtime_params_.chrome_path);
+      }
+      if (headless->Initialize()) {
+        generator = std::move(headless);
+      } else {
+        LOG(ERROR) << "Failed to initialize headless frame generator.";
+        return;
+      }
+    }
+
+    // Wrap with differ to pre-calculate updated regions.
+    generator = std::make_unique<DifferFrameGenerator>(std::move(generator));
+
+    std::cout << "Pre-loading up to " << runtime_params_.frame_count
+              << " frames..." << std::endl;
+    preloaded_frames_.clear();
+    for (int i = 0; i < runtime_params_.frame_count; ++i) {
+      auto frame = generator->GenerateFrame();
+      if (!frame) {
+        break;
+      }
+      preloaded_frames_.push_back(std::move(frame));
+    }
+
+    if (preloaded_frames_.empty()) {
+      LOG(ERROR) << "No frames generated.";
+      return;
+    }
+
+    frames_to_encode_ = preloaded_frames_.size();
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+
+    encode_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::InitializeEncoderOnEncodeThread,
+                       base::Unretained(this)));
+
+    // Ensure encoder is initialized.
+    base::RunLoop init_loop;
+    encode_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                          init_loop.QuitClosure());
+    init_loop.Run();
+
+    if (!encoder_initialized_) {
+      LOG(ERROR) << "Failed to initialize encoder for codec: "
+                 << CodecToString(encoder_params_.codec);
+      return;
+    }
+
+    std::cout << "Starting benchmark..." << std::endl;
+    start_time_ = base::TimeTicks::Now();
+
+    capture_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::CaptureNextFrameOnCaptureThread,
+                       base::Unretained(this)));
+
+    run_loop.Run();
+    end_time_ = base::TimeTicks::Now();
+
+    PrintResults();
   }
+
+ private:
+  void InitializeEncoderOnEncodeThread() {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    encoder_ = CreateEncoder(encoder_params_);
+    encoder_initialized_ = (encoder_ != nullptr);
+  }
+
+  void DestroyEncoderOnEncodeThread() {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    encoder_.reset();
+    encoder_initialized_ = false;
+  }
+
+  void CaptureNextFrameOnCaptureThread() {
+    DCHECK(capture_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(!preloaded_frames_.empty());
+
+    std::unique_ptr<webrtc::DesktopFrame> frame =
+        std::move(preloaded_frames_.front());
+    preloaded_frames_.pop_front();
+
+    WebrtcVideoEncoder::FrameParams params;
+    params.bitrate_kbps = encoder_params_.bitrate_kbps;
+    params.duration = base::Hertz(runtime_params_.fps);
+    params.key_frame = (frames_encoded_ == 0);
+    params.clear_active_map = true;
+
+    // Stats are tracked on capture thread.
+    // Use int64_t to prevent overflow for large dimensions.
+    total_pixels_ += static_cast<int64_t>(frame->size().width()) *
+                     static_cast<int64_t>(frame->size().height());
+    for (webrtc::DesktopRegion::Iterator r(frame->updated_region());
+         !r.IsAtEnd(); r.Advance()) {
+      updated_pixels_ += static_cast<int64_t>(r.rect().width()) *
+                         static_cast<int64_t>(r.rect().height());
+    }
+
+    encode_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::EncodeFrameOnEncodeThread,
+                       base::Unretained(this), std::move(frame), params));
+  }
+
+  void EncodeFrameOnEncodeThread(
+      std::unique_ptr<webrtc::DesktopFrame> frame,
+      const WebrtcVideoEncoder::FrameParams& params) {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    if (!encoder_) {
+      LOG(ERROR) << "Encoder was not initialized.";
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&EncoderBenchmark::OnFrameEncodedCompleteOnMainThread,
+                         base::Unretained(this)));
+      return;
+    }
+    encoder_->Encode(
+        std::move(frame), params,
+        base::BindOnce(&EncoderBenchmark::OnFrameEncodedOnEncodeThread,
+                       base::Unretained(this), base::TimeTicks::Now()));
+  }
+
+  void OnFrameEncodedOnEncodeThread(
+      base::TimeTicks start_time,
+      WebrtcVideoEncoder::EncodeResult result,
+      std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame) {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    if (result == WebrtcVideoEncoder::EncodeResult::SUCCEEDED && frame) {
+      total_encode_time_ += base::TimeTicks::Now() - start_time;
+    } else {
+      LOG(ERROR) << "Encoder failed to encode frame.";
+    }
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::OnFrameEncodedCompleteOnMainThread,
+                       base::Unretained(this)));
+  }
+
+  void OnFrameEncodedCompleteOnMainThread() {
+    DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+    frames_encoded_++;
+    if (frames_encoded_ >= frames_to_encode_) {
+      quit_closure_.Run();
+    } else {
+      capture_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&EncoderBenchmark::CaptureNextFrameOnCaptureThread,
+                         base::Unretained(this)));
+    }
+  }
+
+  void PrintResults() {
+    std::cout << "--------------------------------------------------"
+              << std::endl;
+    std::cout << "RESULTS (" << CodecToString(encoder_params_.codec) << ", "
+              << runtime_params_.size.width() << "x"
+              << runtime_params_.size.height() << ", "
+              << (runtime_params_.scenario.empty() ? "custom"
+                                                   : runtime_params_.scenario)
+              << ", " << runtime_params_.fps << " FPS)" << std::endl;
+    std::cout << "Profile: "
+              << (encoder_params_.profile == Profile::k1 ? "1" : "0") << " ("
+              << (encoder_params_.color_space == ColorSpace::kI444 ? "I444"
+                                                                  : "I420")
+              << ")" << std::endl;
+    std::cout << "Active Map: "
+              << (encoder_params_.use_active_map ? "enabled" : "disabled")
+              << std::endl;
+    std::cout << "--------------------------------------------------"
+              << std::endl;
+    std::cout << "Encoded " << frames_encoded_ << " frames." << std::endl;
+
+    double total_time_ms = (end_time_ - start_time_).InMillisecondsF();
+    if (frames_encoded_ > 0 && total_time_ms > 0) {
+      std::cout << "Total wall-clock time: " << total_time_ms << " ms"
+                << std::endl;
+      std::cout << "Average wall-clock FPS: "
+                << (frames_encoded_ * 1000.0) / total_time_ms << std::endl;
+
+      double total_encode_time_ms = total_encode_time_.InMillisecondsF();
+      std::cout << "Total encoder-only time: " << total_encode_time_ms << " ms"
+                << std::endl;
+      std::cout << "Average encoder-only time per frame: "
+                << total_encode_time_ms / frames_encoded_ << " ms" << std::endl;
+      if (total_encode_time_ms > 0) {
+        std::cout << "Average encoder FPS: "
+                  << (frames_encoded_ * 1000.0) / total_encode_time_ms
+                  << std::endl;
+      } else {
+        std::cout << "Average encoder FPS: N/A (zero encode time)" << std::endl;
+      }
+    } else {
+      std::cout << "Average FPS: N/A (too few frames or zero time duration)"
+                << std::endl;
+    }
+
+    if (total_pixels_ > 0) {
+      std::cout << "Average updated area: "
+                << (updated_pixels_ * 100.0) / total_pixels_ << "%"
+                << std::endl;
+    }
+    std::cout << "--------------------------------------------------"
+              << std::endl;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  std::unique_ptr<WebrtcVideoEncoder> encoder_;
+  bool encoder_initialized_ = false;
+
+  EncoderParams encoder_params_;
+  RuntimeParams runtime_params_;
+
+  int frames_to_encode_ = 0;
+  int frames_encoded_ = 0;
+  int64_t total_pixels_ = 0;
+  int64_t updated_pixels_ = 0;
+  base::TimeDelta total_encode_time_;
+  std::deque<std::unique_ptr<webrtc::DesktopFrame>> preloaded_frames_;
+  base::RepeatingClosure quit_closure_;
+  base::TimeTicks start_time_;
+  base::TimeTicks end_time_;
 };
 
 void PrintHelp(const char* executable_name) {
@@ -166,7 +448,7 @@ bool ParseCommandLine(const base::CommandLine* cmd_line,
     }
   }
 
-  encoder_params.bitrate_kbps = 5000;
+  encoder_params.bitrate_kbps = kDefaultBitrateKbps;
   if (cmd_line->HasSwitch("bitrate")) {
     if (!base::StringToInt(cmd_line->GetSwitchValueASCII("bitrate"),
                            &encoder_params.bitrate_kbps)) {
@@ -176,14 +458,16 @@ bool ParseCommandLine(const base::CommandLine* cmd_line,
     }
   }
 
-  runtime_params.duration_s = 10;
+  runtime_params.duration = kDefaultDuration;
   if (cmd_line->HasSwitch("duration")) {
+    int duration_value;
     if (!base::StringToInt(cmd_line->GetSwitchValueASCII("duration"),
-                           &runtime_params.duration_s)) {
+                           &duration_value)) {
       LOG(ERROR) << "Invalid duration: "
                  << cmd_line->GetSwitchValueASCII("duration");
       return false;
     }
+    runtime_params.duration = base::Seconds(duration_value);
   }
 
   runtime_params.fps = 30.0;
@@ -291,7 +575,7 @@ int main(int argc, char** argv) {
   }
 
   base_runtime_params.frame_count = static_cast<int>(
-      base_runtime_params.duration_s * base_runtime_params.fps);
+      base_runtime_params.duration.InSecondsF() * base_runtime_params.fps);
   if (base_runtime_params.frame_count > base_runtime_params.max_frames) {
     LOG(WARNING) << "Capping frame count at " << base_runtime_params.max_frames
                  << " to save memory. (4K frames are ~33MB each). Use "
