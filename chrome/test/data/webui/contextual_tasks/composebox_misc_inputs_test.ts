@@ -437,6 +437,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'ContextualTasks.VoiceSearch.State',
             /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
         'Voice transcription success metric count is wrong: helloworld2');
+    await new Promise(resolve => requestAnimationFrame(resolve));
     assertEquals(
         composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is submitted via submitQuery_()');
