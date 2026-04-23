@@ -646,7 +646,14 @@ class LockTrySpinTest : public testing::Test {
   MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
-TEST_F(LockTrySpinTest, TrySpinAvoidsSyscall) {
+// TODO(crbug.com/505503579): Flaky on Mac and iOS.
+#if BUILDFLAG(IS_APPLE)
+#define MAYBE_TrySpinAvoidsSyscall DISABLED_TrySpinAvoidsSyscall
+#else
+#define MAYBE_TrySpinAvoidsSyscall TrySpinAvoidsSyscall
+#endif  // BUILDFLAG(IS_APPLE)
+
+TEST_F(LockTrySpinTest, MAYBE_TrySpinAvoidsSyscall) {
   // Set the try-spin count to an absurdly large value to ensure that the
   // thread never waits for the lock in the kernel.
   internal::LockImpl::SetTrySpinCount(std::numeric_limits<int>::max());
