@@ -447,6 +447,46 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongFormat) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value* credentials = FindValueWithKey(request, "credentials");
+  ASSERT_TRUE(IsNonEmptyList(credentials));
+  credentials->GetList().front().GetDict().Set("format", "invalid_format");
+
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
+            InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongDocType) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value* credentials = FindValueWithKey(request, "credentials");
+  ASSERT_TRUE(IsNonEmptyList(credentials));
+  base::Value* meta = FindValueWithKey(credentials->GetList().front(), "meta");
+  ASSERT_TRUE(meta && meta->is_dict());
+  meta->GetDict().Set("doctype_value", "invalid_doctype");
+
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
+            InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_WrongNamespace) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value* credentials = FindValueWithKey(request, "credentials");
+  ASSERT_TRUE(IsNonEmptyList(credentials));
+  base::Value* claims =
+      FindValueWithKey(credentials->GetList().front(), "claims");
+  ASSERT_TRUE(IsNonEmptyList(claims));
+  base::Value* paths = FindValueWithKey(claims->GetList().front(), "path");
+  ASSERT_TRUE(IsNonEmptyList(paths));
+  paths->GetList().front() = base::Value("invalid_namespace");
+
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
+            InterstitialType::kLowRisk);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyAgeBirthYear) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   ASSERT_TRUE(SetDCQLPathItem(request, "age_birth_year"));
