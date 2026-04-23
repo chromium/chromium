@@ -187,10 +187,7 @@ android_resources("autofill_java_resources") {
 # //clank/components/autofill:java_resources target defines branded icons with
 # the same file names.
 android_resources("autofill_unbranded_browser_resources") {
-  sources = [
-    "browser/internal/java/res/drawable/google_wallet_24dp.xml",
-    "browser/internal/java/res/drawable/spark.xml",
-  ]
+  sources = [ "browser/internal/java/res/drawable/google_wallet_24dp.xml" ]
 }
 
 # This target is only used by the Chrome browser and not included into the
