@@ -54,8 +54,8 @@ AccountAppsAvailabilityFactory::BuildServiceInstanceForBrowserContext(
   if (!IsAccountManagerAvailable(profile))
     return nullptr;
 
-  return std::make_unique<AccountAppsAvailability>(
-      AccountManagerFactory::Get()->GetAccountManagerFacade(
+  return AccountAppsAvailability::Create(
+      AccountManagerFactory::Get()->GetAccountManager(
           profile->GetPath().value()),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }

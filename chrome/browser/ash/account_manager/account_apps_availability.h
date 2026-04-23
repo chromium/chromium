@@ -5,16 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_APPS_AVAILABILITY_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_APPS_AVAILABILITY_H_
 
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -27,7 +33,7 @@ namespace ash {
 // exists (if `IsAccountManagerAvailable(profile)` is `true`).
 class AccountAppsAvailability
     : public KeyedService,
-      public account_manager::AccountManagerFacade::Observer,
+      public account_manager::AccountManager::Observer,
       public signin::IdentityManager::Observer {
  public:
   static const char kNumAccountsInArcMetricName[];
@@ -57,16 +63,17 @@ class AccountAppsAvailability
 
   // The parameters are not owned pointers, and should outlive this class
   // instance.
-  AccountAppsAvailability(
-      account_manager::AccountManagerFacade* account_manager_facade,
+  static std::unique_ptr<AccountAppsAvailability> Create(
+      account_manager::AccountManager* account_manager,
       signin::IdentityManager* identity_manager,
       PrefService* prefs);
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   ~AccountAppsAvailability() override;
 
   AccountAppsAvailability(const AccountAppsAvailability&) = delete;
   AccountAppsAvailability& operator=(const AccountAppsAvailability&) = delete;
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Registers an observer.
   void AddObserver(Observer* observer);
@@ -90,6 +97,10 @@ class AccountAppsAvailability
   bool IsInitialized() const;
 
  private:
+  AccountAppsAvailability(account_manager::AccountManager* account_manager,
+                          signin::IdentityManager* identity_manager,
+                          PrefService* prefs);
+
   // `KeyedService`:
   void Shutdown() override;
 
@@ -97,11 +108,9 @@ class AccountAppsAvailability
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-  // `AccountManagerFacade::Observer`:
-  void OnAccountUpserted(const account_manager::Account& account) override;
+  // `AccountManager::Observer`:
+  void OnTokenUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
-  void OnAuthErrorChanged(const account_manager::AccountKey& account,
-                          const GoogleServiceAuthError& error) override;
 
   // Initialize the prefs: add all Gaia accounts from Account Manager with
   // is_available_in_arc=true.
@@ -129,13 +138,17 @@ class AccountAppsAvailability
   void NotifyObservers(const account_manager::Account& account,
                        bool is_available_in_arc);
 
+  // `is_initialized_` indicates whether the initial list of accounts has
+  // been fully fetched and parsed into prefs. It is possible for the service
+  // to be created but not yet initialized if the AccountManager itself is
+  // still loading.
   bool is_initialized_ = false;
 
   // Callbacks waiting on class initialization.
   std::vector<base::OnceClosure> initialization_callbacks_;
 
   // Non-owning pointers:
-  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<PrefService> prefs_;
 
@@ -148,11 +161,11 @@ class AccountAppsAvailability
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  // An observer for `AccountManagerFacade`. Automatically deregisters when
+  // An observer for `AccountManager`. Automatically deregisters when
   // `this` is destructed.
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation_{this};
+  base::ScopedObservation<account_manager::AccountManager,
+                          account_manager::AccountManager::Observer>
+      account_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

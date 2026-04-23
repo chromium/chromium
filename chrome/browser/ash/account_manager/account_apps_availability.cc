@@ -7,13 +7,15 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -177,6 +179,41 @@ void UpdateAccountInPrefs(PrefService* prefs,
 }  // namespace
 
 // static
+std::unique_ptr<AccountAppsAvailability> AccountAppsAvailability::Create(
+    account_manager::AccountManager* account_manager,
+    signin::IdentityManager* identity_manager,
+    PrefService* prefs) {
+  auto account_apps_availability = base::WrapUnique(
+      new AccountAppsAvailability(account_manager, identity_manager, prefs));
+
+  // The setup below calls AccountManager::GetAccounts(). If AccountManager is
+  // already initialized, GetAccounts() may run its callback synchronously.
+  // This must happen only after AccountAppsAvailability is fully constructed;
+  // otherwise the callback could re-enter this object before construction has
+  // finished.
+
+  base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+      callback;
+  if (IsPrefInitialized(prefs)) {
+    account_apps_availability->is_initialized_ = true;
+    // The metric is recorded once per session.
+    callback =
+        base::BindOnce(&AccountAppsAvailability::ReportMetrics,
+                       account_apps_availability->weak_factory_.GetWeakPtr());
+  } else {
+    callback =
+        base::BindOnce(&AccountAppsAvailability::InitAccountsAvailableInArcPref,
+                       account_apps_availability->weak_factory_.GetWeakPtr());
+  }
+
+  // Note: If AccountManager is already initialized, `callback` will be
+  // executed synchronously on the current stack frame.
+  account_manager->GetAccounts(std::move(callback));
+
+  return account_apps_availability;
+}
+
+// static
 const char AccountAppsAvailability::kNumAccountsInArcMetricName[] =
     "Arc.Auth.NumAccounts";
 
@@ -185,30 +222,17 @@ const char AccountAppsAvailability::kPercentAccountsInArcMetricName[] =
     "Arc.Auth.PercentAccounts";
 
 AccountAppsAvailability::AccountAppsAvailability(
-    account_manager::AccountManagerFacade* account_manager_facade,
+    account_manager::AccountManager* account_manager,
     signin::IdentityManager* identity_manager,
     PrefService* prefs)
-    : account_manager_facade_(account_manager_facade),
+    : account_manager_(account_manager),
       identity_manager_(identity_manager),
       prefs_(prefs) {
-  DCHECK(account_manager_facade_);
+  DCHECK(account_manager_);
   DCHECK(identity_manager_);
   DCHECK(prefs_);
-
-  account_manager_facade_observation_.Observe(account_manager_facade_.get());
+  account_manager_observation_.Observe(account_manager_.get());
   identity_manager_observation_.Observe(identity_manager_.get());
-
-  if (IsPrefInitialized(prefs_)) {
-    is_initialized_ = true;
-    // The metric is recorded once per session.
-    account_manager_facade_->GetAccounts(base::BindOnce(
-        &AccountAppsAvailability::ReportMetrics, weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  account_manager_facade_->GetAccounts(
-      base::BindOnce(&AccountAppsAvailability::InitAccountsAvailableInArcPref,
-                     weak_factory_.GetWeakPtr()));
 }
 
 AccountAppsAvailability::~AccountAppsAvailability() = default;
@@ -277,14 +301,14 @@ void AccountAppsAvailability::GetAccountsAvailableInArc(
     return;
   }
 
-  account_manager_facade_->GetAccounts(
+  account_manager_->GetAccounts(
       base::BindOnce(&CompleteGetAccountsAvailableInArc,
                      GetGaiaIdsAvailableInArc(prefs_), std::move(callback)));
 }
 
 void AccountAppsAvailability::Shutdown() {
   identity_manager_observation_.Reset();
-  account_manager_facade_observation_.Reset();
+  account_manager_observation_.Reset();
 }
 
 void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
@@ -316,14 +340,14 @@ void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
                      /*is_available_in_arc=*/true));
 }
 
-void AccountAppsAvailability::OnAccountUpserted(
+void AccountAppsAvailability::OnTokenUpserted(
     const account_manager::Account& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsInitialized())
     return;
 
   // Initialize the prefs list:
-  account_manager_facade_->GetAccounts(
+  account_manager_->GetAccounts(
       base::BindOnce(&AccountAppsAvailability::InitAccountsAvailableInArcPref,
                      weak_factory_.GetWeakPtr()));
 }
@@ -352,12 +376,6 @@ void AccountAppsAvailability::OnAccountRemoved(
   NotifyObservers(account, /*is_available_in_arc=*/false);
 }
 
-void AccountAppsAvailability::OnAuthErrorChanged(
-    const account_manager::AccountKey& account,
-    const GoogleServiceAuthError& error) {
-  // Nothing to do.
-}
-
 bool AccountAppsAvailability::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_initialized_;
@@ -371,7 +389,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     return;
 
   // If there are no accounts in Account Manager at the moment,
-  // `OnAccountUpserted` will be called when the primary account is added.
+  // `OnTokenUpserted` will be called when the primary account is added.
   if (accounts.size() == 0)
     return;
 
@@ -425,8 +443,8 @@ void AccountAppsAvailability::FindAccountByGaiaId(
     const GaiaId& gaia_id,
     base::OnceCallback<void(const std::optional<account_manager::Account>&)>
         callback) {
-  account_manager_facade_->GetAccounts(base::BindOnce(
-      &CompleteFindAccountByGaiaId, gaia_id, std::move(callback)));
+  account_manager_->GetAccounts(base::BindOnce(&CompleteFindAccountByGaiaId,
+                                               gaia_id, std::move(callback)));
 }
 
 void AccountAppsAvailability::MaybeNotifyObservers(

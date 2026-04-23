@@ -946,8 +946,15 @@ IN_PROC_BROWSER_TEST_F(
   OnArcInitialStart();
   EXPECT_EQ(initial_num_account_upserted_calls,
             auth_instance().num_account_upserted_calls());
-  EXPECT_EQ(initial_num_set_accounts_calls,
+
+  // AccountAppsAvailability fetches accounts from the initialized
+  // AccountManager synchronously. This immediately triggers a SetAccounts
+  // call, hence the +1.
+  EXPECT_EQ(initial_num_set_accounts_calls + 1,
             auth_instance().num_set_accounts_calls());
+  // The primary account is intentionally filtered out during this initial
+  // push, resulting in an empty list being sent.
+  EXPECT_EQ(0u, auth_instance().last_set_accounts_list()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
