@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -89,7 +89,7 @@ std::optional<SmbShareInfo> DictToShare(const base::DictValue& dict) {
 // static
 void SmbPersistedShareRegistry::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kNetworkFileSharesSavedShares);
+  registry->RegisterListPref(ash::prefs::kNetworkFileSharesSavedShares);
 }
 
 SmbPersistedShareRegistry::SmbPersistedShareRegistry(Profile* profile)
@@ -97,7 +97,7 @@ SmbPersistedShareRegistry::SmbPersistedShareRegistry(Profile* profile)
 
 void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
   ScopedListPrefUpdate pref(profile_->GetPrefs(),
-                            prefs::kNetworkFileSharesSavedShares);
+                            ash::prefs::kNetworkFileSharesSavedShares);
 
   base::ListValue& share_list = pref.Get();
   for (base::Value& item : share_list) {
@@ -114,7 +114,7 @@ void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
 
 void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
   ScopedListPrefUpdate pref(profile_->GetPrefs(),
-                            prefs::kNetworkFileSharesSavedShares);
+                            ash::prefs::kNetworkFileSharesSavedShares);
 
   base::ListValue& list_update = pref.Get();
   for (auto it = list_update.begin(); it != list_update.end(); ++it) {
@@ -128,7 +128,7 @@ void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
 std::optional<SmbShareInfo> SmbPersistedShareRegistry::Get(
     const SmbUrl& share_url) const {
   const base::Value& pref =
-      profile_->GetPrefs()->GetValue(prefs::kNetworkFileSharesSavedShares);
+      profile_->GetPrefs()->GetValue(ash::prefs::kNetworkFileSharesSavedShares);
 
   for (const base::Value& entry : pref.GetList()) {
     if (GetStringValue(entry.GetDict(), kShareUrlKey) == share_url.ToString()) {
@@ -140,7 +140,7 @@ std::optional<SmbShareInfo> SmbPersistedShareRegistry::Get(
 
 std::vector<SmbShareInfo> SmbPersistedShareRegistry::GetAll() const {
   const base::Value& pref =
-      profile_->GetPrefs()->GetValue(prefs::kNetworkFileSharesSavedShares);
+      profile_->GetPrefs()->GetValue(ash::prefs::kNetworkFileSharesSavedShares);
 
   std::vector<SmbShareInfo> shares;
   for (const auto& entry : pref.GetList()) {

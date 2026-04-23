@@ -3130,10 +3130,34 @@ inline constexpr char kLocalUserFilesAllowed[] =
 inline constexpr char kLocalUserFilesMigrationDestination[] =
     "filebrowser.local_user_files_migration_destination";
 
+// URL path string of the most recently used SMB NetworkFileShare path.
+inline constexpr char kMostRecentlyUsedNetworkFileShareURL[] =
+    "network_file_shares.most_recently_used_url";
+
+// Boolean pref indicating whether the NetBios Name Query Request Protocol is
+// used for discovering shares on the user's network by the Network File
+// Shares for Chrome OS feature.
+inline constexpr char kNetBiosShareDiscoveryEnabled[] =
+    "network_file_shares.netbios_discovery.enabled";
+
 // Boolean pref indicating whether a user is allowed to use the Network File
 // Shares for Chrome OS feature.
 inline constexpr char kNetworkFileSharesAllowed[] =
     "network_file_shares.allowed";
+
+// List of preconfigured network file shares.
+inline constexpr char kNetworkFileSharesPreconfiguredShares[] =
+    "network_file_shares.preconfigured_shares";
+
+// List of network files shares added by the user.
+inline constexpr char kNetworkFileSharesSavedShares[] =
+    "network_file_shares.saved_shares";
+
+// Boolean pref indicating whether the NTLM authentication protocol should be
+// enabled when mounting an SMB share with a user credential by the Network File
+// Shares for Chrome OS feature.
+inline constexpr char kNTLMShareAuthenticationEnabled[] =
+    "network_file_shares.ntlm_share_authentication.enabled";
 
 // Whether we should always move office files to Google Drive without prompting
 // the user first.

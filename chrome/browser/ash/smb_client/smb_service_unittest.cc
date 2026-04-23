@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/smb_client/smb_service.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/smb_client/smb_service_test_base.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -215,7 +215,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
   auto parsed_shares = base::JSONReader::Read(
       kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
-  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+  profile()->GetPrefs()->Set(ash::prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);
 
   CreateService(profile());
@@ -265,7 +265,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountInvalidPreconfigured) {
   auto parsed_shares = base::JSONReader::Read(
       kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
-  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+  profile()->GetPrefs()->Set(ash::prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);
 
   CreateService(profile());
@@ -484,7 +484,7 @@ TEST_F(SmbServiceWithSmbfsTest, IsAnySmbShareConfigured) {
   auto parsed_shares = base::JSONReader::Read(
       kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
-  profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+  profile()->GetPrefs()->Set(ash::prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);
 
   CreateService(profile());

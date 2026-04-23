@@ -602,11 +602,6 @@ inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 inline constexpr char kManagedSessionUseFullLoginWarning[] =
     "managed_session.use_full_warning";
 
-// Boolean pref indicating whether the NetBios Name Query Request Protocol is
-// used for discovering shares on the user's network by the Network File
-// Shares for Chrome OS feature.
-inline constexpr char kNetBiosShareDiscoveryEnabled[] =
-    "network_file_shares.netbios_discovery.enabled";
 
 // Last time the kChildScreenTimeMilliseconds was saved.
 inline constexpr char kLastChildScreenTimeSaved[] =
@@ -621,23 +616,9 @@ inline constexpr char kLastChildScreenTimeReset[] =
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =
     "times_left_to_show_release_notes_suggestion_chip";
 
-// Boolean pref indicating whether the NTLM authentication protocol should be
-// enabled when mounting an SMB share with a user credential by the Network File
-// Shares for Chrome OS feature.
-inline constexpr char kNTLMShareAuthenticationEnabled[] =
-    "network_file_shares.ntlm_share_authentication.enabled";
 
-// List of preconfigured network file shares.
-inline constexpr char kNetworkFileSharesPreconfiguredShares[] =
-    "network_file_shares.preconfigured_shares";
 
-// URL path string of the most recently used SMB NetworkFileShare path.
-inline constexpr char kMostRecentlyUsedNetworkFileShareURL[] =
-    "network_file_shares.most_recently_used_url";
 
-// List of network files shares added by the user.
-inline constexpr char kNetworkFileSharesSavedShares[] =
-    "network_file_shares.saved_shares";
 
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =

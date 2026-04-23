@@ -1512,7 +1512,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kPowerSmartDimEnabled,
     base::Value::Type::BOOLEAN },
   { key::kNetBiosShareDiscoveryEnabled,
-    prefs::kNetBiosShareDiscoveryEnabled,
+    ash::prefs::kNetBiosShareDiscoveryEnabled,
     base::Value::Type::BOOLEAN },
   { key::kCrostiniAllowed,
     crostini::prefs::kUserCrostiniAllowedByPolicy,
@@ -1536,7 +1536,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     crostini::prefs::kCrostiniPortForwardingAllowedByPolicy,
     base::Value::Type::BOOLEAN },
   { key::kNTLMShareAuthenticationEnabled,
-    prefs::kNTLMShareAuthenticationEnabled,
+    ash::prefs::kNTLMShareAuthenticationEnabled,
     base::Value::Type::BOOLEAN },
   { key::kPrintingSendUsernameAndFilenameEnabled,
     ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
@@ -3275,7 +3275,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       ash::prefs::kPrintJobHistoryExpirationPeriod, -1, INT_MAX, true));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kNetworkFileSharesPreconfiguredShares,
-      prefs::kNetworkFileSharesPreconfiguredShares, chrome_schema,
+      ash::prefs::kNetworkFileSharesPreconfiguredShares, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));

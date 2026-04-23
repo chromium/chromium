@@ -327,7 +327,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #if BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[ash::prefs::kNetworkFileSharesAllowed] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kMostRecentlyUsedNetworkFileShareURL] =
+  (*s_allowlist)[ash::prefs::kMostRecentlyUsedNetworkFileShareURL] =
       settings_api::PrefType::kString;
   (*s_allowlist)[drive::prefs::kDriveFsBulkPinningEnabled] =
       settings_api::PrefType::kBoolean;
