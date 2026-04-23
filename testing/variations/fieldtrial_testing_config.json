@@ -13792,22 +13792,6 @@
             ]
         }
     ],
-    "IOSTabGroupEntryPoints": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabRecallNewTabGroupButton",
-                        "TabSwitcherOverflowMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabResumptionShopCard": [
         {
             "platforms": [

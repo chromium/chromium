@@ -5891,11 +5891,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ios-tab-group-entry-point-tab-recall",
-    "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "ios-tab-group-entry-point-tab-switcher",
     "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 150

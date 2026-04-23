@@ -525,12 +525,7 @@ CGFloat CompactButtonHorizontalPadding() {
 
   BOOL useCompactLayout = [self shouldUseCompactLayout];
   BOOL hideToolbar;
-  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-    hideToolbar = self.mode == TabGridMode::kSearch;
-  } else {
-    hideToolbar = self.mode == TabGridMode::kSearch ||
-                  (!useCompactLayout && (self.page == TabGridPageTabGroups));
-  }
+  hideToolbar = self.mode == TabGridMode::kSearch;
 
   if (IsChromeNextIaEnabled() &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -564,10 +559,7 @@ CGFloat CompactButtonHorizontalPadding() {
   if (useCompactLayout) {
     if (self.page == TabGridPageTabGroups) {
       _doneButton.hidden = NO;
-
-      if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-        _smallNewTabButton.hidden = NO;
-      }
+      _smallNewTabButton.hidden = NO;
     } else if (self.isInTabGroupView) {
       _smallNewTabButton.hidden = NO;
     } else {

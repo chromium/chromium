@@ -53,11 +53,9 @@ UIButtonConfigurationUpdateHandler ConfigurationUpdateHandler() {
         config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
         break;
       case TabGridPageTabGroups:
-        if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-          config.background.backgroundColor = newTabButton.buttonColor;
-          config.cornerStyle = UIButtonConfigurationCornerStyleFixed;
-          config.background.cornerRadius = kSquareCornerRadius;
-        }
+        config.background.backgroundColor = newTabButton.buttonColor;
+        config.cornerStyle = UIButtonConfigurationCornerStyleFixed;
+        config.background.cornerRadius = kSquareCornerRadius;
         break;
     }
 
@@ -168,15 +166,14 @@ UIButtonConfigurationUpdateHandler ConfigurationUpdateHandler() {
       }
       break;
     case TabGridPageTabGroups:
-      if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-        self.accessibilityLabel =
-            l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
+      self.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
 
-        if (!@available(iOS 18, *)) {
-          _imageContainer.image =
-              SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
-        }
+      if (!@available(iOS 18, *)) {
+        _imageContainer.image =
+            SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
       }
+
       break;
   }
   _page = page;

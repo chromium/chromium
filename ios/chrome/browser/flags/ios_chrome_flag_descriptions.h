@@ -1075,9 +1075,6 @@ extern const char kTabGroupIndicatorDescription[];
 extern const char kTabGroupSyncName[];
 extern const char kTabGroupSyncDescription[];
 
-extern const char kTabRecallNewTabGroupButtonName[];
-extern const char kTabRecallNewTabGroupButtonDescription[];
-
 extern const char kTabResumptionImagesName[];
 extern const char kTabResumptionImagesDescription[];
 

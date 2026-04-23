@@ -369,11 +369,7 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_FALSE(toolbars_mutator.configuration.addToButton);
 
   EXPECT_FALSE(toolbars_mutator.configuration.closeAllButton);
-  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-    EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
-  } else {
-    EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
-  }
+  EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
   EXPECT_FALSE(toolbars_mutator.configuration.undoButton);
@@ -424,11 +420,7 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_FALSE(toolbars_mutator.configuration.addToButton);
 
   EXPECT_FALSE(toolbars_mutator.configuration.closeAllButton);
-  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-    EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
-  } else {
-    EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
-  }
+  EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
   EXPECT_FALSE(toolbars_mutator.configuration.undoButton);

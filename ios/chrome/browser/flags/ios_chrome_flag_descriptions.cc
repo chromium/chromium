@@ -1764,12 +1764,6 @@ const char kTabGroupSyncDescription[] =
     "When enabled, tab groups are synced between syncing devices. Requires "
     "#tab-groups-on-ipad to also be enabled on iPad.";
 
-const char kTabRecallNewTabGroupButtonName[] =
-    "Enable the New Tab Group Button on the Tab Group recall surface.";
-const char kTabRecallNewTabGroupButtonDescription[] =
-    "When enabled, a New Tab Group Button will appear on the Tab Group recall "
-    "surface.";
-
 const char kTabResumptionImagesName[] = "Enable Tab Resumption images";
 const char kTabResumptionImagesDescription[] =
     "When enabled, a relevant image is displayed in Tab resumption items.";

@@ -324,13 +324,9 @@ NSString* CreationText(base::Time creation_date) {
 
 - (void)newTabButtonTapped:(id)sender {
   CHECK(!IsChromeNextIaEnabled());
-  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-    // Start the tab group creation.
-    [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
-    base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
-  } else {
-    NOTREACHED() << "Should not be called in Tab Groups.";
-  }
+  // Start the tab group creation.
+  [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
 }
 
 - (void)selectAllButtonTapped:(id)sender {
@@ -569,9 +565,7 @@ NSString* CreationText(base::Time creation_date) {
   toolbarsConfiguration.doneButton =
       _regularWebStateList && !_regularWebStateList->empty();
 
-  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
-    toolbarsConfiguration.newTabButton = YES;
-  }
+  toolbarsConfiguration.newTabButton = YES;
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }

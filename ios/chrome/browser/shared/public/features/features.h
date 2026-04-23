@@ -120,10 +120,6 @@ BASE_DECLARE_FEATURE(kTabGroupInOverflowMenu);
 // When enabled, a Tab Group button will appear in the Tab Icon context menu.
 BASE_DECLARE_FEATURE(kTabGroupInTabIconContextMenu);
 
-// When enabled, a "New Tab Button" will be added to the Tab Group recall
-// surface.
-BASE_DECLARE_FEATURE(kTabRecallNewTabGroupButton);
-
 // When enabled, an overflow menu will replace the edit menu on the GTS.
 BASE_DECLARE_FEATURE(kTabSwitcherOverflowMenu);
 
