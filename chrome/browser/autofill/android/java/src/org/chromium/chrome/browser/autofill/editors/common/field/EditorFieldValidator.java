@@ -87,7 +87,7 @@ public class EditorFieldValidator {
             fieldModel.set(ERROR_MESSAGE, mInitialErrorMessage);
             return;
         }
-        if (fieldModel.get(IS_REQUIRED) && mRequiredErrorMessage != null) {
+        if (fieldModel.get(IS_REQUIRED) && !TextUtils.isEmpty(mRequiredErrorMessage)) {
             String value = fieldModel.get(VALUE);
             if (TextUtils.isEmpty(value) || TextUtils.getTrimmedLength(value) == 0) {
                 fieldModel.set(ERROR_MESSAGE, mRequiredErrorMessage);

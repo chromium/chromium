@@ -353,21 +353,55 @@ class EntityEditorMediator {
     }
 
     private void maybeAddRequiredFieldsNoticeItem(ListModel<EditorItem> editorFields) {
+        List<EditorItem> requiredFields = new ArrayList<>();
         for (EditorItem editorItem : editorFields) {
             if (editorItem.model.get(IS_REQUIRED)) {
-                editorFields.add(getRequiredFieldsNoticeItem());
-                break;
+                requiredFields.add(editorItem);
             }
+        }
+        String notice = getRequiredFieldsNotice(requiredFields);
+        if (!TextUtils.isEmpty(notice)) {
+            editorFields.add(getRequiredFieldsNoticeItem(notice));
         }
     }
 
-    private EditorItem getRequiredFieldsNoticeItem() {
+    private String getRequiredFieldsNotice(List<EditorItem> requiredFields) {
+        switch (requiredFields.size()) {
+            case 0:
+                return "";
+            case 1:
+                final String noticeText1 =
+                        mContext.getString(
+                                R.string
+                                        .autofill_ai_entity_editor_single_required_field_error_message);
+                return noticeText1.replace("$1", requiredFields.get(0).model.get(LABEL));
+            case 2:
+                final String noticeText2 =
+                        mContext.getString(
+                                R.string
+                                        .autofill_ai_entity_editor_two_required_fields_error_message);
+                return noticeText2
+                        .replace("$1", requiredFields.get(0).model.get(LABEL))
+                        .replace("$2", requiredFields.get(1).model.get(LABEL));
+            case 3:
+                final String noticeText3 =
+                        mContext.getString(
+                                R.string
+                                        .autofill_ai_entity_editor_three_required_fields_error_message);
+                return noticeText3
+                        .replace("$1", requiredFields.get(0).model.get(LABEL))
+                        .replace("$2", requiredFields.get(1).model.get(LABEL))
+                        .replace("$3", requiredFields.get(2).model.get(LABEL));
+            default:
+                return "";
+        }
+    }
+
+    private EditorItem getRequiredFieldsNoticeItem(String noticeText) {
         return new EditorItem(
                 NOTICE,
                 new PropertyModel.Builder(NOTICE_ALL_KEYS)
-                        .with(
-                                NOTICE_TEXT,
-                                mContext.getString(R.string.payments_required_field_message))
+                        .with(NOTICE_TEXT, noticeText)
                         .with(SHOW_BACKGROUND, false)
                         // Required fields are indicated by an asterisk (*) and
                         // announced separately by screen readers. Don't announce

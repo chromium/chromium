@@ -1444,6 +1444,15 @@
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_REQUIRED_FIELD_ERROR_MESSAGE" desc="An error message that appears beneath the required field in the entity editor if it was left blank by the user and the user tapped the 'Done' button." formatter_data="android_java">
       Enter <ph name="FIELD">$1<ex>Passport number</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_SINGLE_REQUIRED_FIELD_ERROR_MESSAGE" desc="An error message that appears beneath the list of fields in the entity editor if a single required field was left blank by the user and the user tapped the 'Done' button." formatter_data="android_java">
+      <ph name="FIELD_1">$1<ex>Passport number</ex></ph> is required
+    </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_TWO_REQUIRED_FIELDS_ERROR_MESSAGE" desc="An error message that appears beneath the list of fields in the entity editor if any of the two required fields was left blank by the user and the user tapped the 'Done' button." formatter_data="android_java">
+      <ph name="FIELD_1">$1<ex>Passport number</ex></ph> or <ph name="FIELD_2">$2<ex>Passport number</ex></ph> is required
+    </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_THREE_REQUIRED_FIELDS_ERROR_MESSAGE" desc="An error message that appears beneath the list of fields in the entity editor if any of the three required fields were left blank by the user and the user tapped the 'Done' button." formatter_data="android_java">
+      <ph name="FIELD_1">$1<ex>Passport number</ex></ph>, <ph name="FIELD_2">$2<ex>Passport number</ex></ph> or <ph name="FIELD_3">$3<ex>Passport number</ex></ph> is required
+    </message>
   </if>
 
   <!-- FFR Dialog -->
