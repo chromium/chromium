@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_PAGE_CONTEXT_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_PAGE_CONTEXT_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -81,6 +82,8 @@ struct PageContext {
     std::u16string name_attribute;
     std::string form_control_type;
     std::u16string value;
+    uint64_t form_signature = 0;
+    uint32_t field_signature = 0;
 
     bool operator==(const FormField& other) const;
   };

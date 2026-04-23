@@ -36,11 +36,13 @@ using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
 
-MATCHER_P4(MatchesFormField,
+MATCHER_P6(MatchesFormField,
            id_attribute,
            name_attribute,
            form_control_type,
            value,
+           form_signature,
+           field_signature,
            "") {
   return testing::ExplainMatchResult(
              Field("id_attribute", &PageContext::FormField::id_attribute,
@@ -57,7 +59,15 @@ MATCHER_P4(MatchesFormField,
              arg, result_listener) &&
          testing::ExplainMatchResult(
              Field("value", &PageContext::FormField::value, value), arg,
-             result_listener);
+             result_listener) &&
+         testing::ExplainMatchResult(
+             Field("form_signature", &PageContext::FormField::form_signature,
+                   form_signature),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Field("field_signature", &PageContext::FormField::field_signature,
+                   field_signature),
+             arg, result_listener);
 }
 
 MATCHER_P(MatchesPageContext, fields_matcher, "") {
@@ -280,7 +290,11 @@ TEST(SendTabToSelfEntry, MarkAsOpened) {
 
 TEST(SendTabToSelfEntry, PageContextRoundTrip) {
   PageContext context;
-  context.form_field_info.fields.push_back(MakeFormField(u"id1", u"value1"));
+  PageContext::FormField field = MakeFormField(u"id1", u"value1");
+  field.form_signature = 12345;
+  field.field_signature = 6789;
+
+  context.form_field_info.fields.push_back(std::move(field));
 
   const SendTabToSelfEntry entry("1", GURL("http://example.com"), "title",
                                  base::Time::FromTimeT(10), "device", "device2",
@@ -288,13 +302,15 @@ TEST(SendTabToSelfEntry, PageContextRoundTrip) {
 
   const SendTabToSelfLocal local_proto = entry.AsLocalProto();
 
+  std::unique_ptr<SendTabToSelfEntry> restored = SendTabToSelfEntry::FromProto(
+      local_proto.specifics(), base::Time::FromTimeT(10));
+
   EXPECT_THAT(
-      SendTabToSelfEntry::FromProto(local_proto.specifics(),
-                                    base::Time::FromTimeT(10)),
+      restored,
       Pointee(MatchesEntry(
           _, _, _, _, _,
-          MatchesPageContext(
-              ElementsAre(MatchesFormField(u"id1", _, _, u"value1"))),
+          MatchesPageContext(ElementsAre(
+              MatchesFormField(u"id1", _, _, u"value1", 12345u, 6789u))),
           MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
 }
 

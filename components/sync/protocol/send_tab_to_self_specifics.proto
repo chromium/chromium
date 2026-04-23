@@ -97,6 +97,17 @@ message FormField {
   reserved 3;
   optional string form_control_type = 4;
   optional string value = 5;
+  // FormSignature is computed as the big-endian representation of the first 8
+  // bytes of the SHA-1 digest of the concatenated string:
+  // scheme://host&form_name&field_name_1&field_name_2...
+  // Sequences of 5+ consecutive digits are stripped from names to support
+  // dynamic IDs. Forms without action URLs fallback to the source page URL.
+  optional uint64 form_signature = 6;
+  // FieldSignature is computed as the big-endian representation of the first 4
+  // bytes of the SHA-1 digest of the concatenated string:
+  // field_name&field_control_type
+  optional uint32 field_signature = 7;
+  // TODO(crbug.com/485145029): Add regression tests for signature fields.
 }
 
 message ScrollPosition {
