@@ -12,6 +12,10 @@ namespace content {
 class NavigationHandle;
 }
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}
+
 class ReadAnythingSidePanelWebView
     : public SidePanelWebUIViewT<ReadAnythingUntrustedUI> {
   using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
@@ -40,6 +44,8 @@ class ReadAnythingSidePanelWebView
           navigation_handle_callback) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   base::WeakPtr<ReadAnythingSidePanelWebView> GetWeakPtr();
 

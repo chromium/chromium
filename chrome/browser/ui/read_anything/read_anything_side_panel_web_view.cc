@@ -6,16 +6,19 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
     SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
@@ -74,6 +77,25 @@ bool ReadAnythingSidePanelWebView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return false;
+}
+
+bool ReadAnythingSidePanelWebView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.windows_key_code == ui::VKEY_ESCAPE) {
+    ReadAnythingSidePanelController* controller =
+        ReadAnythingSidePanelControllerGlue::FromWebContents(web_contents())
+            ->controller();
+    if (controller && controller->tab() &&
+        controller->tab()->GetBrowserWindowInterface()) {
+      controller->tab()
+          ->GetBrowserWindowInterface()
+          ->GetExclusiveAccessManager()
+          ->HandleUserKeyEvent(event);
+      return true;
+    }
+  }
+  return SidePanelWebUIViewT::HandleKeyboardEvent(source, event);
 }
 
 base::WeakPtr<ReadAnythingSidePanelWebView>
