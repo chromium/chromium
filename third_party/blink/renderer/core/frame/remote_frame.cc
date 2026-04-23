@@ -281,8 +281,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   params->user_gesture = request.HasUserGesture();
   params->triggering_event_info = mojom::blink::TriggeringEventInfo::kUnknown;
   params->blob_url_token = frame_request.GetBlobURLToken();
-  params->href_translate =
-      String(frame_request.HrefTranslate().Latin1().c_str());
+  params->href_translate = String(frame_request.HrefTranslate().Latin1());
   params->initiator_navigation_state_keep_alive_handle =
       std::move(initiator_navigation_state_keep_alive_handle);
   params->initiator_frame_token =

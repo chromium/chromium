@@ -290,11 +290,8 @@ void FillLiveRegionProperties(AXObject& ax_object,
     return;
   }
 
-  const String& live =
-      node_data
-          .GetStringAttribute(
-              ax::mojom::blink::StringAttribute::kContainerLiveStatus)
-          .c_str();
+  const String live(node_data.GetStringAttribute(
+      ax::mojom::blink::StringAttribute::kContainerLiveStatus));
   properties.emplace_back(CreateProperty(
       AXPropertyNameEnum::Live, CreateValue(live, AXValueTypeEnum::Token)));
 
@@ -303,11 +300,8 @@ void FillLiveRegionProperties(AXObject& ax_object,
   properties.emplace_back(
       CreateProperty(AXPropertyNameEnum::Atomic, CreateBooleanValue(atomic)));
 
-  const String& relevant =
-      node_data
-          .GetStringAttribute(
-              ax::mojom::blink::StringAttribute::kContainerLiveRelevant)
-          .c_str();
+  const String relevant(node_data.GetStringAttribute(
+      ax::mojom::blink::StringAttribute::kContainerLiveRelevant));
   properties.emplace_back(
       CreateProperty(AXPropertyNameEnum::Relevant,
                      CreateValue(relevant, AXValueTypeEnum::TokenList)));
@@ -352,14 +346,12 @@ void FillGlobalStates(AXObject& ax_object,
     default:
       // TODO(aboxhall): expose invalid: <nothing> and source: aria-invalid as
       // invalid value
-      properties.emplace_back(CreateProperty(
-          AXPropertyNameEnum::Invalid,
-          CreateValue(
-              node_data
-                  .GetStringAttribute(ax::mojom::blink::StringAttribute::
-                                          kAriaInvalidValueDeprecated)
-                  .c_str(),
-              AXValueTypeEnum::String)));
+      properties.emplace_back(
+          CreateProperty(AXPropertyNameEnum::Invalid,
+                         CreateValue(String(node_data.GetStringAttribute(
+                                         ax::mojom::blink::StringAttribute::
+                                             kAriaInvalidValueDeprecated)),
+                                     AXValueTypeEnum::String)));
       break;
   }
 
@@ -425,10 +417,8 @@ void FillWidgetProperties(AXObject& ax_object,
                           const ui::AXNodeData& node_data,
                           protocol::Array<AXProperty>& properties) {
   ax::mojom::blink::Role role = node_data.role;
-  const String& autocomplete =
-      node_data
-          .GetStringAttribute(ax::mojom::blink::StringAttribute::kAutoComplete)
-          .c_str();
+  const String autocomplete(node_data.GetStringAttribute(
+      ax::mojom::blink::StringAttribute::kAutoComplete));
   if (!autocomplete.empty()) {
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Autocomplete,
@@ -492,12 +482,10 @@ void FillWidgetProperties(AXObject& ax_object,
         AXPropertyNameEnum::Valuemax,
         CreateValue(node_data.GetFloatAttribute(
             ax::mojom::blink::FloatAttribute::kMaxValueForRange))));
-    properties.emplace_back(CreateProperty(
-        AXPropertyNameEnum::Valuetext,
-        CreateValue(
-            node_data
-                .GetStringAttribute(ax::mojom::blink::StringAttribute::kValue)
-                .c_str())));
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Valuetext,
+                       CreateValue(String(node_data.GetStringAttribute(
+                           ax::mojom::blink::StringAttribute::kValue)))));
   }
 }
 
@@ -660,9 +648,9 @@ void FillSparseAttributes(AXObject& ax_object,
   if (node_data.HasStringAttribute(ax::mojom::blink::StringAttribute::kUrl)) {
     const auto url =
         node_data.GetStringAttribute(ax::mojom::blink::StringAttribute::kUrl);
-    properties.emplace_back(CreateProperty(
-        AXPropertyNameEnum::Url,
-        CreateValue(String(url.c_str()), AXValueTypeEnum::String)));
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Url,
+                       CreateValue(String(url), AXValueTypeEnum::String)));
   }
 
   if (node_data.HasStringAttribute(
@@ -671,17 +659,16 @@ void FillSparseAttributes(AXObject& ax_object,
         ax::mojom::blink::StringAttribute::kKeyShortcuts);
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Keyshortcuts,
-        CreateValue(String(key_shortcuts.c_str()), AXValueTypeEnum::String)));
+        CreateValue(String(key_shortcuts), AXValueTypeEnum::String)));
   }
 
   if (node_data.HasStringAttribute(
           ax::mojom::blink::StringAttribute::kRoleDescription)) {
     const auto role_description = node_data.GetStringAttribute(
         ax::mojom::blink::StringAttribute::kRoleDescription);
-    properties.emplace_back(
-        CreateProperty(AXPropertyNameEnum::Roledescription,
-                       CreateValue(String(role_description.c_str()),
-                                   AXValueTypeEnum::String)));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Roledescription,
+        CreateValue(String(role_description), AXValueTypeEnum::String)));
   }
 
   if (node_data.HasIntListAttribute(

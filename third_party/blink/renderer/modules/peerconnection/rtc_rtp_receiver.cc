@@ -308,7 +308,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
           sdp_fmtp_line += parameter.first + "=" + parameter.second;
         }
       }
-      codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
+      codec->setSdpFmtpLine(String(sdp_fmtp_line));
     }
     codecs.push_back(codec);
   }

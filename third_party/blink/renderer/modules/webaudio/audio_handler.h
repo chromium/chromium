@@ -62,8 +62,7 @@ class AudioHandlerUmaReporter {
         total_process_duration_.InSecondsF() / total_render_time;
     // Report as a percentage (e.g., 0.5 ratio -> 50%).
     int percentage_to_report = static_cast<int>(average_ratio * 100.0);
-    base::UmaHistogramExactLinear(metric_name_.c_str(), percentage_to_report,
-                                  101);
+    base::UmaHistogramExactLinear(metric_name_, percentage_to_report, 101);
   }
 
   static constexpr int kReportingInterval = 1000;

@@ -932,9 +932,8 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
   const String& reduced_accept_language = GetReducedAcceptLanguage();
   if (!reduced_accept_language.empty() &&
       request.HttpHeaderField(http_names::kAcceptLanguage).empty()) {
-    request.SetHttpHeaderField(
-        http_names::kAcceptLanguage,
-        AtomicString(reduced_accept_language.Ascii().c_str()));
+    request.SetHttpHeaderField(http_names::kAcceptLanguage,
+                               AtomicString(reduced_accept_language));
   }
 }
 

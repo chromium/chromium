@@ -88,8 +88,7 @@ EncoderBase<Traits>::~EncoderBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramSparse(UNSAFE_TODO(
       String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName())
-          .Ascii()
-          .c_str(),
+          .Ascii(),
       static_cast<int>(logger_->status_code())));
 }
 

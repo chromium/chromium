@@ -1810,7 +1810,7 @@ void XRSession::MaybeRequestFrame() {
        << ", page_configured_properly=" << page_configured_properly
        << ", page_wants_frame=" << page_wants_frame
        << ", frames_throttled=" << frames_throttled_;
-    xr_->AddWebXrInternalsMessage(ss.str().c_str());
+    xr_->AddWebXrInternalsMessage(String(ss.str()));
   }
 }
 

@@ -155,7 +155,7 @@ void CheckShapeResultRange(const ShapeResult* result,
     SkString family_name;
     typeface->getFamilyName(&family_name);
     log.Append(", primary=");
-    log.Append(family_name.c_str());
+    log.Append(base::as_byte_span(family_name));
   }
 
   // Log the text to shape.

@@ -120,15 +120,13 @@ TracedValueJSON::~TracedValueJSON() = default;
 String TracedValueJSON::ToJSON() const {
   return String(
       static_cast<base::trace_event::TracedValueJSON*>(traced_value_.get())
-          ->ToJSON()
-          .c_str());
+          ->ToJSON());
 }
 
 String TracedValueJSON::ToFormattedJSON() const {
   return String(
       static_cast<base::trace_event::TracedValueJSON*>(traced_value_.get())
-          ->ToFormattedJSON()
-          .c_str());
+          ->ToFormattedJSON());
 }
 
 }  // namespace blink

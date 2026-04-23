@@ -8421,8 +8421,7 @@ const String AXObject::InternalRoleName(ax::mojom::blink::Role role) {
   // For example, kStaticText becomes StaticText.
   // Many conversions, but this isn't used in performance-sensitive code.
   std::string role_name_std = role_name.str().substr(1, std::string::npos);
-  String role_name_wtf_string = role_name_std.c_str();
-  return role_name_wtf_string;
+  return String(role_name_std);
 }
 
 // static

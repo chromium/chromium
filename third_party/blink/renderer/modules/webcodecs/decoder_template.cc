@@ -101,8 +101,7 @@ DecoderTemplate<Traits>::~DecoderTemplate() {
   base::UmaHistogramSparse(
       UNSAFE_TODO(
           String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName()))
-          .Ascii()
-          .c_str(),
+          .Ascii(),
       static_cast<int>(logger_->status_code()));
 }
 

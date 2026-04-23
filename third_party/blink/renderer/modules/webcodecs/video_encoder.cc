@@ -814,7 +814,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
         << "Configured " << self->active_config_->ToString();
 
     if (!status.is_ok()) {
-      std::string error_message;
+      const char* error_message;
       switch (status.code()) {
         case media::EncoderStatus::Codes::kEncoderUnsupportedProfile:
           error_message = "Unsupported codec profile.";
@@ -831,7 +831,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       }
 
       self->ReportError(
-          error_message.c_str(), std::move(status),
+          error_message, std::move(status),
           /*is_error_message_from_software_codec=*/!is_platform_encoder);
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.VideoEncoder.Codec",

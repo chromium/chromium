@@ -1398,7 +1398,7 @@ std::unique_ptr<protocol::Page::OriginTrialToken> CreateOriginTrialToken(
       .setIsThirdParty(blink_trial_token.is_third_party())
       .setMatchSubDomains(blink_trial_token.match_subdomains())
       .setExpiryTime(blink_trial_token.expiry_time().InSecondsFSinceUnixEpoch())
-      .setTrialName(blink_trial_token.feature_name().c_str())
+      .setTrialName(String(blink_trial_token.feature_name()))
       .setUsageRestriction(CreateOriginTrialUsageRestriction(
           blink_trial_token.usage_restriction()))
       .build();

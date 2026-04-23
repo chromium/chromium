@@ -657,7 +657,7 @@ void AuditsIssue::ReportMixedContentIssue(
     const String& devtools_id) {
   auto affected_frame =
       protocol::Audits::AffectedFrame::create()
-          .setFrameId(frame->GetDevToolsFrameToken().ToString().c_str())
+          .setFrameId(String(frame->GetDevToolsFrameToken().ToString()))
           .build();
 
   auto mixedContentDetails =
@@ -1116,7 +1116,7 @@ AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
     std::unique_ptr<protocol::Audits::AffectedFrame> affected_frame =
         protocol::Audits::AffectedFrame::create()
             .setFrameId(
-                frame_ancestor->GetDevToolsFrameToken().ToString().c_str())
+                String(frame_ancestor->GetDevToolsFrameToken().ToString()))
             .build();
     cspDetails->setFrameAncestor(std::move(affected_frame));
   }

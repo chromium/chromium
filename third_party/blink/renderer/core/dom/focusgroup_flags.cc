@@ -103,7 +103,7 @@ String ValidBehaviorTokenListString(ExecutionContext* context) {
     DCHECK_NE(behavior_mapping.token, String());
     assembled.append(behavior_mapping.token);
   }
-  return String(assembled.c_str());
+  return String(assembled);
 }
 
 String ValidTokenListString(ExecutionContext* context) {
@@ -127,7 +127,7 @@ String ValidTokenListString(ExecutionContext* context) {
     assembled.append(", ");
   }
   assembled.append("nowrap");
-  return String(assembled.c_str());
+  return String(assembled);
 }
 
 // Returns the corresponding flag for a recognized token, or kNone if invalid.

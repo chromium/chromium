@@ -725,8 +725,8 @@ void LocalDOMWindow::ReportDocumentPolicyViolation(
     return;
 
   // Construct the document policy violation report.
-  const String& feature_name =
-      GetDocumentPolicyFeatureInfoMap().at(feature).feature_name.c_str();
+  String feature_name(
+      GetDocumentPolicyFeatureInfoMap().at(feature).feature_name);
   bool is_report_only = disposition == mojom::blink::PolicyDisposition::kReport;
   const String& disp_str = is_report_only ? "report" : "enforce";
   const DocumentPolicy* relevant_document_policy =

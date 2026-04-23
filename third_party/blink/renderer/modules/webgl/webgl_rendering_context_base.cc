@@ -737,12 +737,10 @@ static String ExtractWebGLContextCreationError(
                           builder);
   FormatWebGLStatusString(
       "Reset notification strategy",
-      String::Format("0x%04x", info.reset_notification_strategy).Utf8().c_str(),
-      builder);
-  FormatWebGLStatusString("ErrorMessage", info.error_message.Utf8().c_str(),
-                          builder);
+      String::Format("0x%04x", info.reset_notification_strategy), builder);
+  FormatWebGLStatusString("ErrorMessage", info.error_message, builder);
   builder.Append('.');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
@@ -1384,7 +1382,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   String disabled_webgl_extensions(GetDrawingBuffer()
                                        ->ContextProvider()
                                        ->GetGpuFeatureInfo()
-                                       .disabled_webgl_extensions.c_str());
+                                       .disabled_webgl_extensions);
   Vector<String> disabled_extension_list =
       disabled_webgl_extensions.SplitSkippingEmpty(' ');
   for (const auto& entry : disabled_extension_list) {
@@ -2673,15 +2671,12 @@ bool WebGLRenderingContextBase::ValidateBufferDataBufferSize(
     const char* function_name,
     int64_t size) {
   if (size < 0) {
-    String error_msg = "data size is invalid";
-    SynthesizeGLError(GL_INVALID_VALUE, function_name,
-                      error_msg.Ascii().c_str());
+    SynthesizeGLError(GL_INVALID_VALUE, function_name, "data size is invalid");
     return false;
   }
   if (static_cast<size_t>(size) > kMaximumSupportedArrayBufferSize) {
-    String error_msg = "data size exceeds the maximum supported size";
     SynthesizeGLError(GL_INVALID_VALUE, function_name,
-                      error_msg.Ascii().c_str());
+                      "data size exceeds the maximum supported size");
     return false;
   }
   return true;

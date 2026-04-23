@@ -124,7 +124,7 @@ void IpcNetworkManager::OnNetworkListChanged(
     // If the adapter type is unknown, try to guess it using WebRTC's string
     // matching rules.
     if (adapter_type == webrtc::ADAPTER_TYPE_UNKNOWN) {
-      adapter_type = webrtc::GetAdapterTypeFromName(it->name.c_str());
+      adapter_type = webrtc::GetAdapterTypeFromName(it->name);
     }
     webrtc::AdapterType underlying_adapter_type = webrtc::ADAPTER_TYPE_UNKNOWN;
     if (it->mac_address.has_value() && IsVpnMacAddress(*it->mac_address)) {

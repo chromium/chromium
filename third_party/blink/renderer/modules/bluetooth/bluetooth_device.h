@@ -91,7 +91,7 @@ class BluetoothDevice final
       const WatchAdvertisementsOptions*,
       ExceptionState&);
   ScriptPromise<IDLUndefined> forget(ScriptState*, ExceptionState&);
-  String id() { return device_->id.DeviceIdInBase64().c_str(); }
+  String id() { return String(device_->id.DeviceIdInBase64()); }
   String name() { return device_->name; }
   BluetoothRemoteGATTServer* gatt() { return gatt_.Get(); }
   bool watchingAdvertisements() { return client_receiver_.is_bound(); }

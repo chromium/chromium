@@ -243,7 +243,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     builder.AppendRange(uma_key_vector, ".");
     String uma_handle = builder.ReleaseString();
     base::UmaHistogramEnumeration(
-        uma_handle.Ascii().c_str(),
+        uma_handle.Ascii(),
         VideoTrackRecorder::CodecHistogramFromCodec(profile.codec));
 
     if (!can_support) {

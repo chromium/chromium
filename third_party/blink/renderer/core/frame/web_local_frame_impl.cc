@@ -3357,13 +3357,13 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     not_restored_reasons =
         mojom::blink::BackForwardCacheNotRestoredReasons::New();
     if (reasons_to_copy->id) {
-      not_restored_reasons->id = reasons_to_copy->id.value().c_str();
+      not_restored_reasons->id = String(reasons_to_copy->id.value());
     }
     if (reasons_to_copy->name) {
-      not_restored_reasons->name = reasons_to_copy->name.value().c_str();
+      not_restored_reasons->name = String(reasons_to_copy->name.value());
     }
     if (reasons_to_copy->src) {
-      not_restored_reasons->src = reasons_to_copy->src.value().c_str();
+      not_restored_reasons->src = String(reasons_to_copy->src.value());
     }
     for (const auto& reason_to_copy : reasons_to_copy->reasons) {
       mojom::blink::BFCacheBlockingDetailedReasonPtr reason =

@@ -606,7 +606,7 @@ void SetRtpCodec(RTCRtpCodec& codec, const webrtc::RtpCodec& webrtc_codec) {
         sdp_fmtp_line += parameter.first + "=" + parameter.second;
       }
     }
-    codec.setSdpFmtpLine(sdp_fmtp_line.c_str());
+    codec.setSdpFmtpLine(String(sdp_fmtp_line));
   }
 }
 
@@ -786,7 +786,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
       }
       if (webrtc_encoding.scalability_mode) {
         encoding->setScalabilityMode(
-            webrtc_encoding.scalability_mode.value().c_str());
+            String(webrtc_encoding.scalability_mode.value()));
       }
     } else if (kind_ == "audio") {
       encoding->setAdaptivePtime(webrtc_encoding.adaptive_ptime);
@@ -1052,7 +1052,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
           sdp_fmtp_line += parameter.first + "=" + parameter.second;
         }
       }
-      codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
+      codec->setSdpFmtpLine(String(sdp_fmtp_line));
     }
     codecs.push_back(codec);
   }

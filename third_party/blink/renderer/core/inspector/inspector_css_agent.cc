@@ -2460,7 +2460,7 @@ protocol::Response InspectorCSSAgent::resolveValues(
   }
 
   const AtomicString temp_custom_property_name(
-      ("--" + base::UnguessableToken::Create().ToString()).c_str());
+      String("--" + base::UnguessableToken::Create().ToString()));
   std::optional<AutoRegistration> auto_registration;
   CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
   PropertyRegistration* property_registration =

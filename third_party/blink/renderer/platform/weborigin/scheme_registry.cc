@@ -73,13 +73,13 @@ class URLSchemesRegistry final {
         fetch_api_schemes({"http", "https"}),
         allowed_in_referrer_schemes({"http", "https"}) {
     for (auto& scheme : url::GetCorsEnabledSchemes())
-      cors_enabled_schemes.insert(scheme.c_str());
+      cors_enabled_schemes.insert(String(scheme));
     for (auto& scheme : url::GetCSPBypassingSchemes()) {
       content_security_policy_bypassing_schemes.insert(
-          scheme.c_str(), SchemeRegistry::kPolicyAreaAll);
+          String(scheme), SchemeRegistry::kPolicyAreaAll);
     }
     for (auto& scheme : url::GetEmptyDocumentSchemes())
-      empty_document_schemes.insert(scheme.c_str());
+      empty_document_schemes.insert(String(scheme));
   }
   ~URLSchemesRegistry() = default;
 

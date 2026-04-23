@@ -283,9 +283,9 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     value->setDocumentURL(InspectorDOMAgent::DocumentURLString(document));
     value->setBaseURL(InspectorDOMAgent::DocumentBaseURLString(document));
     if (document->ContentLanguage())
-      value->setContentLanguage(document->ContentLanguage().Utf8().c_str());
+      value->setContentLanguage(document->ContentLanguage());
     if (document->EncodingName())
-      value->setDocumentEncoding(document->EncodingName().Utf8().c_str());
+      value->setDocumentEncoding(document->EncodingName());
     value->setFrameId(IdentifiersFactory::FrameId(document->GetFrame()));
     if (document->View() && document->View()->LayoutViewport()) {
       auto offset = document->View()->LayoutViewport()->GetScrollOffset();

@@ -18,7 +18,7 @@ constexpr char kMediaStreamTraceCategory[] = "mediastream";
 ScopedMediaStreamTracer::ScopedMediaStreamTracer(const String& event_name)
     : event_name_(event_name) {
   TRACE_EVENT_BEGIN(kMediaStreamTraceCategory,
-                    perfetto::DynamicString(event_name_.Utf8().c_str()),
+                    perfetto::DynamicString(event_name_.Utf8()),
                     perfetto::Track::FromPointer(this));
 }
 

@@ -181,9 +181,8 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SegmentedBuffer* buffer) {
   static const size_t kMaxDecompressedSize =
       kMaxDecompressedSizeMb * 1024 * 1024;
   if (buffer->size() > kMaxDecompressedSize) {
-    String error_message =
-        String::Format("Web font size more than %zuMB", kMaxDecompressedSizeMb);
-    SetErrorString(error_message.Utf8().c_str());
+    SetErrorString(String::Format("Web font size more than %zuMB",
+                                  kMaxDecompressedSizeMb));
     return nullptr;
   }
 

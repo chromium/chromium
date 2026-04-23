@@ -11,10 +11,10 @@ InternalCookie* CookieMojomToInternalCookie(
     const network::mojom::blink::CookieWithAccessResultPtr& cookie,
     v8::Isolate* isolate) {
   InternalCookie* result = InternalCookie::Create(isolate);
-  result->setName(cookie->cookie.Name().c_str());
-  result->setValue(cookie->cookie.Value().c_str());
-  result->setPath(cookie->cookie.Path().c_str());
-  result->setDomain(cookie->cookie.Domain().c_str());
+  result->setName(String(cookie->cookie.Name()));
+  result->setValue(String(cookie->cookie.Value()));
+  result->setPath(String(cookie->cookie.Path()));
+  result->setDomain(String(cookie->cookie.Domain()));
   result->setSecure(cookie->cookie.SecureAttribute());
   result->setHttpOnly(cookie->cookie.IsHttpOnly());
   if (!cookie->cookie.ExpiryDate().is_null()) {
