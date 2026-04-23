@@ -860,6 +860,64 @@ public class AwPrefetchTest extends AwParameterizedTest {
         testPrefetchHasExpectedXRequestedWithHeader();
     }
 
+    /**
+     * Tests that the HTTP headers sent by OMT PrePrefetch exactly match the headers sent by a
+     * normal UI-thread Prefetch.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrePrefetchMatchesNormalPrefetchHeaders() throws Throwable {
+        String prefetchUrlPath = BASIC_PREFETCH_RELATIVE_PATH + "?type=prefetch";
+        String prefetchUrl = getUrl(prefetchUrlPath);
+
+        // 1. Normal Prefetch on UI thread.
+        TestAwPrefetchCallback prefetchCallback =
+                startPrefetchingAndWait(prefetchUrl, getAwPrefetchParameters());
+        prefetchCallback.mOnStatusUpdatedHelper.waitForNext();
+        HashMap<String, String> prefetchHeaders =
+                mTestServer.getRequestHeadersForUrl(prefetchUrlPath);
+
+        // 2. PrePrefetch on worker thread.
+        String prePrefetchUrlPath = BASIC_PREFETCH_RELATIVE_PATH + "?type=preprefetch";
+        String prePrefetchUrl = getUrl(prePrefetchUrlPath);
+
+        TestAwPrefetchCallback prePrefetchCallback = new TestAwPrefetchCallback();
+        CountDownLatch startLatch = new CountDownLatch(1);
+        AwPrefetchManager prefetchManager =
+                mActivityTestRule.getAwBrowserContext().getPrefetchManager();
+
+        prefetchManager.startPrefetchRequestAsync(
+                SystemClock.uptimeMillis(),
+                prePrefetchUrl,
+                getAwPrefetchParameters(),
+                prePrefetchCallback,
+                Runnable::run,
+                prefetchKey -> {
+                    prePrefetchCallback.setPrefetchKey(prefetchKey);
+                    startLatch.countDown();
+                });
+        Assert.assertTrue(
+                "startPrefetchRequestAsync timed out", startLatch.await(5, TimeUnit.SECONDS));
+        prePrefetchCallback.mOnStatusUpdatedHelper.waitForNext();
+
+        HashMap<String, String> prePrefetchHeaders =
+                mTestServer.getRequestHeadersForUrl(prePrefetchUrlPath);
+
+        // Verify that both normal Prefetch headers and PrePrefetch headers are equivalent.
+        Assert.assertEquals(
+                "Key sets do not match", prefetchHeaders.keySet(), prePrefetchHeaders.keySet());
+        for (String key : prefetchHeaders.keySet()) {
+            String prefetchVal = prefetchHeaders.get(key);
+            String prePrefetchVal = prePrefetchHeaders.get(key);
+            Assert.assertEquals("Header mismatch for " + key, prefetchVal, prePrefetchVal);
+        }
+    }
+
     private String getUrl(final String relativePath) {
         return mTestServer.getURLWithHostName("a.test", relativePath);
     }
