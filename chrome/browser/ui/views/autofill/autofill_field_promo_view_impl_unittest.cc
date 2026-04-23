@@ -60,7 +60,7 @@ class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
     // Create the first tab so that `web_contents()` exists.
-    AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+    AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   }
 
   void TearDown() override {

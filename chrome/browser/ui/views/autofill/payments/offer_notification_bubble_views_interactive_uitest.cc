@@ -114,7 +114,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubbleForCardLinkedOfferAndVerify() {
-    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
+    NavigateTo(chrome::ChromeUINewTabPageURLAsGURL());
     // Set the initial origin that the bubble will be displayed on.
     SetUpCardLinkedOfferDataWithDomains(
         {GetUrl("www.merchantsite1.test", "/"),
@@ -127,7 +127,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubbleForGPayPromoCodeOfferAndVerify() {
-    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
+    NavigateTo(chrome::ChromeUINewTabPageURLAsGURL());
     // Set the initial origin that the bubble will be displayed on.
     SetUpGPayPromoCodeOfferDataWithDomains(
         {GetUrl("www.merchantsite1.test", "/"),
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(
         {test_case.url_navigated_to.spec(), ", bubble should be=",
          test_case.bubble_should_be_visible ? "visible" : "invisible"}));
     ClearNotificationActiveDomainsForTesting();
-    NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
+    NavigateTo(chrome::ChromeUINewTabPageURLAsGURL());
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
