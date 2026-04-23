@@ -5,7 +5,7 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, MoveTabsToNewWindow) {
   EXPECT_FALSE(delegate->CanMoveTabsToWindow({0, 1}));
 
   // Precondition: there's currently one browser with two tabs.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, MoveTabsToNewWindow) {
 
   // Now there are two browsers, each with one tab and the new browser is
   // active.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(active_browser->tab_strip_model()->count(), 1);
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   EXPECT_FALSE(delegate->CanMoveTabsToWindow({0, 1, 2}));
 
   // Precondition: there's currently one browser with three tabs.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url3);
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   // Now there are two browsers, with one or two tabs and the new browser is
   // active.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->GetTabStripModel()->count(), 1);
   EXPECT_EQ(active_browser->GetTabStripModel()->count(), 2);
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   // Precondition: there's currently one browser with three tabs in two
   // groups.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url3);
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   // Precondition: there's currently one browser with three tabs in two
   // groups.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url3);

@@ -5,7 +5,7 @@
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 
@@ -48,7 +48,8 @@ bool ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
 
 void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     MaybeCheckTotalBrowserCount(size_t expected_browser_count) const {
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), expected_browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            expected_browser_count);
 }
 
 void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::

@@ -17,7 +17,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -135,7 +135,7 @@ bool DownloadTestBase::CheckTestDir() {
 
 bool DownloadTestBase::InitialSetup() {
   // Sanity check default values for window and tab count.
-  int window_count = chrome::GetTotalBrowserCount();
+  int window_count = GlobalBrowserCollection::GetInstance()->GetSize();
   EXPECT_EQ(1, window_count);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -436,7 +436,7 @@ void DownloadTestBase::GetDownloads(
 
 // static
 void DownloadTestBase::ExpectWindowCountAfterDownload(size_t expected) {
-  EXPECT_EQ(expected, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 void DownloadTestBase::EnableFileChooser(bool enable) {

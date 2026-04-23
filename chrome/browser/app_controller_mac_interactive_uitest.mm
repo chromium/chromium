@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
@@ -54,7 +55,7 @@ using AppControllerInteractiveUITest = InteractiveBrowserTest;
 
 // Regression test for https://crbug.com/1236073
 IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   Profile* profile = browser()->profile();
 
   AppController* app_controller = AppController.sharedController;
@@ -76,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
   // Close browser and wait for the profile to be deleted.
   CloseBrowserSynchronously(browser());
   waiter.Wait();
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Create a new profile and activate it.
   Profile& profile2 = profiles::testing::CreateProfileSync(
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   SendOpenUrlToAppController(simple);
 
   Profile* profile = browser()->profile();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // Load profile's History Service backend so it will be assigned to the
   // HistoryMenuBridge, or else this test will fail flaky.
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   // Check that there are exactly 2 browsers (regular and incognito).
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   BrowserWindowInterface* inc_browser = chrome::FindLastActive();
   EXPECT_TRUE(inc_browser->GetProfile()->IsIncognitoProfile());
@@ -143,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 // Regression test for https://crbug.com/1371923
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
                        WhileIncognitoBrowserIsOpened_NewWindow) {
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // Close the current browser.
   Profile* profile = browser()->profile();
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(incognito_browser, chrome::FindLastActive());
 
   // Simulate click on "New Window".
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Check that a new non-incognito browser is opened.
   Browser* new_browser = browser_created_observer.Wait();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());
 }
@@ -197,8 +198,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest,
 
           // Close the browser so Picker is the only thing (minimized).
           Do([this]() { browser()->GetWindow()->Close(); }),
-          WaitForHide(kBrowserViewElementId),
-          Do([]() { EXPECT_EQ(0u, chrome::GetTotalBrowserCount()); }),
+          WaitForHide(kBrowserViewElementId), Do([]() {
+            EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+          }),
 
           // Simulate Reopen.
           // This should call ProfilePicker::Show() which unminimizes and
@@ -219,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest,
             EXPECT_TRUE(widget->IsActive());
 
             // No browser should be opened.
-            EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+            EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
           }))));
 }
 
@@ -241,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchInteractiveUITest,
   Profile* otr_profile = browser()->profile();
   EXPECT_EQ(otr_profile,
             otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   AppController* app_controller = AppController.sharedController;
 
   // The last profile is the incognito profile.

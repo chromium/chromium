@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -13,7 +14,7 @@
 using BrowserFinderTest = BrowserWithTestWindowTest;
 
 TEST_F(BrowserFinderTest, ScheduledForDeletion) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(browser(), ProfileBrowserCollection::GetForProfile(profile())
                            ->GetLastActiveBrowser()
                            ->GetBrowserForMigrationOnly());
@@ -28,7 +29,7 @@ TEST_F(BrowserFinderTest, ScheduledForDeletion) {
   // included in browser counts.
   browser->OnWindowClosing();
   EXPECT_TRUE(browser->is_delete_scheduled());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(nullptr, ProfileBrowserCollection::GetForProfile(profile())
                          ->GetLastActiveBrowser());
 }

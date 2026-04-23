@@ -5,7 +5,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -171,8 +171,9 @@ class MultiContentsViewTabDragEntrypointsUiTest
   // Waits for two browser windows to exist, then runs a callback.
   DragStep WaitForDetachedWindow() {
     return base::BindOnce([](base::OnceClosure callback) {
-      Poll(base::BindRepeating(
-               []() { return chrome::GetTotalBrowserCount() == 2u; }),
+      Poll(base::BindRepeating([]() {
+             return GlobalBrowserCollection::GetInstance()->GetSize() == 2u;
+           }),
            std::move(callback));
     });
   }

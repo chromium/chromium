@@ -96,7 +96,6 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -1455,7 +1454,7 @@ class ExtensionWindowCreateIwaTest
 IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
   auto url_info = InstallAndTrustBundle();
 
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 0ul);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 0ul);
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ExtensionWindowCreateIwaTest").Build();
@@ -1468,7 +1467,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
     EXPECT_TRUE(result) << function->GetError();
 
     // A single browser for the IWA should now be open.
-    ASSERT_EQ(chrome::GetTotalBrowserCount(), 1ul);
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1ul);
     BrowserWindowInterface* iwa_browser =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     ASSERT_TRUE(iwa_browser);
@@ -1492,7 +1491,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
   } else {
     EXPECT_FALSE(result);
     // No browser should have opened.
-    EXPECT_EQ(chrome::GetTotalBrowserCount(), 0ul);
+    EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 0ul);
   }
 }
 

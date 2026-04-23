@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -115,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   // There should be one normal and one incognito window now.
   Relaunch(new_command_line);
   ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->profile()));
 }
 
@@ -128,14 +129,14 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   // Create an incognito window.
   chrome::NewIncognitoWindow(profile);
 
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(1u, GetTabbedBrowserCount(profile));
 
   // Close the first window.
   CloseBrowserSynchronously(browser());
 
   // There should only be the incognito window open now.
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(0u, GetTabbedBrowserCount(profile));
 
   // Run with just an URL specified, no --incognito switch.
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ui_test_utils::WaitForBrowserToOpen();
 
   // There should be one normal and one incognito window now.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(1u, GetTabbedBrowserCount(profile));
 }
 
@@ -161,12 +162,14 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileDir) {
   // Pass the other profile path on the command line.
   base::CommandLine other_command_line = GetCommandLineForRelaunch();
   other_command_line.AppendSwitchPath(switches::kProfileDirectory, kProfileDir);
-  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  size_t original_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   Relaunch(other_command_line);
   Browser* other_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(other_browser);
   EXPECT_EQ(other_browser->profile(), other_profile);
-  EXPECT_EQ(original_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(original_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
@@ -194,17 +197,20 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   run_loop.Run();
 
   // Normal email.
-  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  size_t original_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail1));
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(new_browser->profile(), profile1);
-  EXPECT_EQ(original_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(original_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   // Non-ASCII email.
   Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail2));
   new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(new_browser->profile(), profile2);
-  EXPECT_EQ(original_browser_count + 2, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(original_browser_count + 2,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

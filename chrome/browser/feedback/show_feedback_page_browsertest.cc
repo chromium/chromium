@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -73,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       ->InstallSystemAppsForTesting();
 
   base::HistogramTester histogram_tester;
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   const GURL page_url = chrome::GetTargetTabUrl(
       browser(), browser()->tab_strip_model()->active_index());
   const GURL expected_url(base::StrCat(
@@ -94,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   navigation_observer.Wait();
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   const GURL visible_url = chrome::FindLastActive()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()

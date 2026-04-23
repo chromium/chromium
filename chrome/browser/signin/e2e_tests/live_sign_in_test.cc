@@ -25,7 +25,7 @@
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // Click "This wasn't me" on the email confirmation dialog and wait for a new
   // browser and profile created.
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
       SigninEmailConfirmationDialog::CREATE_NEW_USER));
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
   EXPECT_NE(browser()->profile(), new_browser->profile());
 
   // Confirm sync in the new browser window.
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // Click "This was me" on the email confirmation dialog, confirm sync and wait
   // for a primary account to be set.
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
 
   // Check no profile was created.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // Check accounts in cookies.
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // Click "Cancel" on the email confirmation dialog.
   EXPECT_TRUE(login_ui_test_utils::CompleteSigninEmailConfirmationDialog(
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
 
   // Check no profile was created.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // The account is still signed in, but not syncing.
   EXPECT_FALSE(
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
   // Check there is only one profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
 
   // Open the profile picker.
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(

@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -180,10 +180,10 @@ IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,
                        PostProfileInitInvocation) {
   EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
   if (GetParam().should_show_profile_picker) {
-    EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_TRUE(ProfilePicker::IsOpen());
   } else {
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_NE(base::FilePath::FromASCII(kOtherProfileDirPath),
               browser()->profile()->GetPath().BaseName());
     EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,
   }
   CreateBrowserForProfileDir(base::FilePath::FromASCII(kOtherProfileDirPath));
 
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

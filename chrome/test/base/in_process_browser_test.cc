@@ -890,7 +890,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   // Handle deferred activation. Only wait if a browser exists but hasn't become
   // "active" yet.
-  if (!browser_ && chrome::GetTotalBrowserCount() > 0) {
+  if (!browser_ && GlobalBrowserCollection::GetInstance()->GetSize() > 0) {
     auto browsers = GetAllBrowserWindowInterfaces();
     BrowserWindowInterface* normal_window_interface = nullptr;
     Browser* normal_browser = nullptr;
@@ -983,7 +983,7 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
 }
 
 void InProcessBrowserTest::QuitBrowsers() {
-  if (chrome::GetTotalBrowserCount() == 0) {
+  if (GlobalBrowserCollection::GetInstance()->GetSize() == 0) {
     browser_shutdown::NotifyAppTerminating();
 
     // Post OnAppExiting call as a task because the code path CHECKs a RunLoop

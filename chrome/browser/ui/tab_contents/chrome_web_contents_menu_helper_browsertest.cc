@@ -10,7 +10,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 
   // Make sure we have 1 window to start with.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://foo/1"),
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, false);
 
   // Make sure we have 1 window to start with.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://foo/1"),

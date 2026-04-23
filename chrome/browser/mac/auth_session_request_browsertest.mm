@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -147,7 +147,8 @@ using AuthSessionBrowserTest = InProcessBrowserTest;
 
 // Tests that an OS request to cancel an auth session works.
 IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   MockASWebAuthenticationSessionRequest* session_request =
       [[MockASWebAuthenticationSessionRequest alloc]
@@ -165,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
   // Expect a browser window to be opened.
 
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Ask the app controller to stop handling our session request.
 
@@ -175,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
   // Expect the browser window to close.
 
   observer.Wait();
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect there to have been the user cancellation callback.
 
@@ -189,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
 
 // Tests that a user request to cancel an auth session works.
 IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   MockASWebAuthenticationSessionRequest* session_request =
       [[MockASWebAuthenticationSessionRequest alloc]
@@ -207,7 +211,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
   // Expect a browser window to be opened.
 
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Simulate the user closing the window.
 
@@ -217,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
   // Expect the browser window to close.
 
   observer.Wait();
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect there to have been the user cancellation callback.
 
@@ -231,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
 
 // Tests that the session works even if the profile is not already loaded.
 IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotLoaded) {
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   // Clear the last profile. It will be set by default since NSApp in browser
   // tests can activate.
@@ -262,13 +269,15 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotLoaded) {
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_TRUE(
       g_browser_process->profile_manager()->GetProfileByPath(kProfilePath));
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(browser->GetProfile()->GetPath(), kProfilePath);
 }
 
 // Tests that the profile picker is shown instead if the profile is unavailable.
 IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotAvailable) {
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   // Use the guest profile, but mark it as disallowed.
   SetGuestProfileAsLastProfile();
@@ -296,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotAvailable) {
   // session was cancelled.
   run_loop.Run();
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(nil, session_request.callbackURL);
   ASSERT_NE(nil, session_request.cancellationError);
   EXPECT_EQ(ASWebAuthenticationSessionErrorDomain,
@@ -307,7 +317,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotAvailable) {
 
 // Tests that a successful auth session works via direct navigation.
 IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   MockASWebAuthenticationSessionRequest* session_request =
       [[MockASWebAuthenticationSessionRequest alloc]
@@ -325,7 +336,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
   // Expect a browser window to be opened.
 
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Simulate the user successfully logging in with a non-redirected load of
   // a URL with the expected scheme.
@@ -339,7 +351,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
   // Expect the browser window to close.
 
   observer.Wait();
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect there to have been the success callback.
 
@@ -370,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessEventualRedirect) {
       base::BindRepeating(RedirectionRequestHandler, success_url));
   ASSERT_TRUE(embedded_test_server.Start());
 
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   MockASWebAuthenticationSessionRequest* session_request =
       [[MockASWebAuthenticationSessionRequest alloc]
@@ -388,7 +402,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessEventualRedirect) {
   // Expect a browser window to be opened.
 
   BrowserWindowInterface* browser = ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Simulate the user successfully logging in with a redirected load of a URL
   // with the expected scheme.
@@ -401,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessEventualRedirect) {
   // Expect the browser window to close.
 
   observer.Wait();
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect there to have been the success callback.
 
@@ -420,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessInitialRedirect) {
       base::BindRepeating(RedirectionRequestHandler, success_url));
   ASSERT_TRUE(embedded_test_server.Start());
 
-  size_t start_browser_count = chrome::GetTotalBrowserCount();
+  size_t start_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   GURL url = embedded_test_server.GetURL("/something");
   MockASWebAuthenticationSessionRequest* session_request =
@@ -440,12 +457,14 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessInitialRedirect) {
 
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::BrowserDestroyedObserver observer(browser);
-  EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect the browser window to close.
 
   observer.Wait();
-  EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(start_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Expect there to have been the success callback.
 

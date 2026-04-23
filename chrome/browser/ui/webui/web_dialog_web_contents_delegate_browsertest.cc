@@ -8,7 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/common/url_constants.h"
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DoNothingMethodsTest) {
   test_web_contents_delegate_->UpdateTargetURL(nullptr, GURL());
   test_web_contents_delegate_->SetContentsBounds(nullptr, gfx::Rect());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, OpenURLFromTabTest) {
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, OpenURLFromTabTest) {
       /*navigation_handle_callback=*/{});
   // This should create a new foreground tab in the existing browser.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest,
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest,
       false, nullptr);
   // This should create a new foreground tab in the existing browser.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
       nullptr, nullptr, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       blink::mojom::WindowFeatures(), false, nullptr);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 }  // namespace

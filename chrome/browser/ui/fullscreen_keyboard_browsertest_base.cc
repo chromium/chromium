@@ -13,9 +13,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -92,7 +92,7 @@ int FullscreenKeyboardBrowserTestBase::GetTabCount() const {
 }
 
 size_t FullscreenKeyboardBrowserTestBase::GetBrowserCount() const {
-  return chrome::GetTotalBrowserCount();
+  return GlobalBrowserCollection::GetInstance()->GetSize();
 }
 
 BrowserWindowInterface* FullscreenKeyboardBrowserTestBase::GetActiveBrowser()

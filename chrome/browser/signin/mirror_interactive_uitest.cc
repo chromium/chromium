@@ -17,10 +17,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -118,14 +118,14 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
 // domain - an incognito tab should be opened.
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
   base::HistogramTester histogram_tester;
-  size_t browser_count = chrome::GetTotalBrowserCount();
+  size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
                 url::Origin::Create(GURL("https://google.com")));
 
   // Incognito window should have been displayed, the browser count goes up.
-  EXPECT_GT(chrome::GetTotalBrowserCount(), browser_count);
+  EXPECT_GT(GlobalBrowserCollection::GetInstance()->GetSize(), browser_count);
 
   // No waiting happens here - BrowserCreatedObserver is used to obtain a
   // pointer to the newly added browser.
@@ -141,14 +141,14 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
                        IncognitoFromEmptyInitiatorIgnored) {
   base::HistogramTester histogram_tester;
-  size_t browser_count = chrome::GetTotalBrowserCount();
+  size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
                 std::nullopt);
 
   // Incognito window should not have been displayed, the browser count
   // stays the same.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), browser_count);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
@@ -160,14 +160,14 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
                        IncognitoFromGoogleapisInitiatorIgnored) {
   base::HistogramTester histogram_tester;
-  size_t browser_count = chrome::GetTotalBrowserCount();
+  size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
                 url::Origin::Create(GURL("https://storage.googleapis.com")));
 
   // Incognito window should not have been displayed, the browser count
   // stays the same.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), browser_count);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
@@ -178,14 +178,14 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
                        IncognitoFromNonGoogleInitiatorIgnored) {
   base::HistogramTester histogram_tester;
-  size_t browser_count = chrome::GetTotalBrowserCount();
+  size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
                 url::Origin::Create(GURL("https://example.com")));
 
   // Incognito window should not have been displayed, the browser count
   // stays the same.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), browser_count);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundResponseIgnored) {
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(browser()->window()->IsActive());
 
-  size_t browser_count = chrome::GetTotalBrowserCount();
+  size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
   GURL url = GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}});
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_FROM_API);
   params.initiator_origin = url::Origin::Create(GURL("https://google.com"));
@@ -211,5 +211,5 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundResponseIgnored) {
 
   // Incognito window should not have been displayed, the browser count stays
   // the same.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), browser_count);
 }

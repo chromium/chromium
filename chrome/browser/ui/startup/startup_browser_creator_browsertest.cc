@@ -2182,11 +2182,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   EXPECT_TRUE(browser_added_check_passed_);
   // Now close the original (and last alive) tabbed browser window
   // note: there is still an app open
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const normal_browser =
       GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).front();
   CloseBrowserSynchronously(normal_browser);
-  ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Now hit the codepath that would get hit if someone opened chrome
   // from a desktop shortcut or similar.
@@ -2200,7 +2200,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 
   // We expect a browser to open, but we should NOT get a duplicate app.
   // Note at this point, the profile IsRestarted() is still true.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(
       1u, GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).size());
   EXPECT_EQ(1u,
@@ -2461,7 +2461,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
   if (IsGuest()) {
     // The profile picker opens. There is no browser, the URL is not loaded.
     profiles::testing::WaitForPickerWidgetCreated();
-    EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   } else {
     // The last used profile is reopened and the URL is loaded.
     Browser* browser = ui_test_utils::WaitForBrowserToOpen();
@@ -2472,7 +2472,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
         tab_strip->GetWebContentsAt(tab_strip->count() - 1)->GetVisibleURL(),
         GetTestURL());
     EXPECT_FALSE(ProfilePicker::IsOpen());
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_EQ(last_profile, profile);
   }
 }
@@ -2533,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile1));
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
@@ -2602,7 +2602,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // At this point, nothing is open except the basic browser.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Trigger the restore via StartupBrowserCreator.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -2613,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
                 /*restore_tabbed_browser=*/true);
 
   // We should get two windows from profile1.
-  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
 
@@ -2631,7 +2631,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   BrowserWindowInterface* new_browser = nullptr;
 
   // 2x profile1, 1x default profile here.
-  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   new_browser = FindOneOtherBrowserForProfile(&profile1, nullptr);
@@ -3574,10 +3574,10 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
   // browser test's instead of the new process.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
 
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   auto [browser, infobar_manager] = LaunchBrowserAndGetCreatedInfoBarManager();
   EXPECT_TRUE(browser);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_TRUE(infobar_manager);
   EXPECT_TRUE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
 
@@ -3585,11 +3585,11 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
   // there.
   CloseBrowserSynchronously(browser);
 
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   auto [browser2, infobar_manager2] =
       LaunchBrowserAndGetCreatedInfoBarManager();
   EXPECT_TRUE(browser2);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_TRUE(infobar_manager2);
   EXPECT_EQ(flag_type_.is_global_infobar,
             HasInfoBar(infobar_manager2, flag_type_.infobar_identifier));
@@ -3848,9 +3848,9 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, DISABLED_TestSetup) {
   // Check the browser window.
   if (setup_param.expected_to_show ||
       setup_param.switch_name == switches::kNoStartupWindow) {
-    EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   } else {
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   }
 
   // No Guest profile was created.
@@ -3979,7 +3979,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerProfileEmailTest, TestSetup) {
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // Check the browser window.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // No Guest profile was created.
   for (const Profile* profile :
@@ -4040,7 +4040,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerUnknownProfileEmail,
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Check the browser window.
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // No Guest profile was created.
   for (const Profile* profile :
@@ -4108,7 +4108,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Check the browser window.
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // No Guest profile was created.
   for (const Profile* profile :
@@ -4140,7 +4140,7 @@ IN_PROC_BROWSER_TEST_F(GuestStartupBrowserCreatorPickerTest,
 IN_PROC_BROWSER_TEST_F(GuestStartupBrowserCreatorPickerTest,
                        SkipsPickerWithGuest) {
   // The picker is skipped which means a browser window is opened on startup.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(browser()->profile()->IsGuestSession());
 }
 
@@ -4161,7 +4161,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
                        ShowPickerWhenAlreadyLaunched) {
   // Preprequisite: The picker is shown on the first start-up
   profiles::testing::WaitForPickerWidgetCreated();
-  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the picker.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
@@ -4182,7 +4182,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
 
   // The picker is shown again if no profile was previously opened.
   profiles::testing::WaitForPickerWidgetCreated();
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 class SearchQueryStartupBrowserCreatorPickerTest
@@ -4209,7 +4209,7 @@ IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
                        SkipsPickerWithCommandLineSearchQuery) {
   // A browser window is shown on start-up because the command line contains a
   // search query.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Check the return value of `GetStartupProfilePath()` explicitly.
   base::FilePath current_dir = base::FilePath();
@@ -4271,7 +4271,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerInfobarTest,
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerInfobarTest,
                        ShowsEnableAutomationInfobar) {
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // We deliberately set the flag on the process command line instead of on the
   // command_line passed to the StartupBrowserCreator, because these flags are
@@ -4365,7 +4365,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserCreatorIwaCommandLineInstallProfilePickerErrorTest,
     DoesNotInstallIwaIfProfilePickerOpens) {
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   // The `EXPECT_CALL` call in `SetUp()` will check that an error message about
   // the IWA not being installable is logged.
 }
@@ -4386,7 +4386,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest,
                        OpenUrlsInNextProfileCreated) {
   ASSERT_TRUE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
   ASSERT_TRUE(ProfilePicker::IsOpen());
-  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

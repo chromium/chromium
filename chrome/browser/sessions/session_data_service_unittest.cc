@@ -14,7 +14,7 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -89,33 +89,33 @@ TEST_F(SessionDataServiceTest, StartCleanup) {
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   auto new_browser = CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   new_browser.reset();
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   Mock::VerifyAndClearExpectations(deleter());
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
   release_browser();
-  EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
   Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosedWithOtherProfileOpen) {
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   auto* new_profile = profile_manager()->CreateTestingProfile("second_profile");
   auto new_browser = CreateBrowser(new_profile, Browser::TYPE_NORMAL, false);
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
   release_browser();
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   Mock::VerifyAndClearExpectations(deleter());
 }
 

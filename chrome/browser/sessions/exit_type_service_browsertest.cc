@@ -16,9 +16,9 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/common/chrome_constants.h"
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_PRE_CrashCrashNewBrowser) {
 // As the user didn't ack the crash, last session exit type should still be
 // crashed.
 IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_CrashCrashNewBrowser) {
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(ExitType::kCrashed, GetLastSessionExitType());
   EXPECT_FALSE(IsSessionServiceSavingEnabled());
   // As the crashed bubble is still open, creating a tab in the existing
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_CrashCrashNewBrowser) {
 IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, CrashCrashNewBrowser) {
   ASSERT_EQ(ExitType::kClean, GetLastSessionExitType());
   EXPECT_TRUE(IsSessionServiceSavingEnabled());
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 // Creates two browsers navigating to a couple of urls and sets it so on next
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, RestoreFromCrashBubble) {
   const bool restores_to_initial_browser = true;
 #endif
   ASSERT_EQ(2u + (restores_to_initial_browser ? 0u : 1u),
-            chrome::GetTotalBrowserCount());
+            GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const browser1 = FindBrowserWithUrl(GetUrl1());
   BrowserWindowInterface* const browser2 = FindBrowserWithUrl(GetUrl2());
 

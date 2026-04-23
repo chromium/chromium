@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -167,7 +168,7 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
     return;
   }
 
-  if (chrome::GetTotalBrowserCount() > 1) {
+  if (GlobalBrowserCollection::GetInstance()->GetSize() > 1) {
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [](BrowserWindowInterface* browser) {
           CloseBrowserSynchronously(browser);

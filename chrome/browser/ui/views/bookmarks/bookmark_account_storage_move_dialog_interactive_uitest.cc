@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(
       original_profile->GetPrimaryOTRProfile(/*create_if_needed*/ true);
   Browser* otr_browser = CreateBrowser(otr_profile);
   CloseBrowserSynchronously(browser());
-  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // A new browser should open on the Original Profile with the bookmarks
   // manager tab opened.
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(new_browser->profile(), original_profile);
   bookmarks_manager_observer.WaitForNavigationFinished();
   // No other browser was opened.
-  ASSERT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
   // Makes sure the context is the new browser. Otherwise the button cannot be
   // found. No prior context should be set in this test.

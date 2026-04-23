@@ -17,9 +17,9 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
 
   std::unique_ptr<AvatarMenu> menu = CreateAvatarMenu(&storage);
   menu->RebuildMenu();
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const browser_profile1 =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_EQ(path_profile1, browser_profile1->GetProfile()->GetPath());
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
   // Open a browser window for the first profile.
   menu->SwitchToProfile(
       menu->GetIndexOfItemWithProfilePathForTesting(path_profile1), false);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(path_profile1, GetLastActiveBrowserWindowInterfaceWithAnyProfile()
                                ->GetProfile()
                                ->GetPath());
@@ -93,12 +93,12 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
       menu->GetIndexOfItemWithProfilePathForTesting(path_profile2), false);
   BrowserWindowInterface* const browser_profile2 =
       browser_created_observer.Wait();
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Switch to the first profile without opening a new window.
   menu->SwitchToProfile(
       menu->GetIndexOfItemWithProfilePathForTesting(path_profile1), false);
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(path_profile1, browser_profile1->GetProfile()->GetPath());
   EXPECT_EQ(path_profile2, browser_profile2->GetProfile()->GetPath());
 }

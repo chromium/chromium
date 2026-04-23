@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -548,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       "window.open('/title1.html', 'new_window', "
       "'location=yes,height=570,width=520,scrollbars=yes,status=yes')"));
   navigation_observer.Wait();
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
@@ -590,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       "window.open('/title1.html', 'new_window', "
       "'location=yes,height=570,width=520,scrollbars=yes,status=yes')"));
   navigation_observer.Wait();
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
@@ -637,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       "'new_window', 'location=yes,height=570,width=520,scrollbars=yes,"
       "status=yes')"));
   navigation_observer.Wait();
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
@@ -681,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       "status=yes'); "
       "w.location = '/title1.html'"));
   navigation_observer.Wait();
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   BrowserWindowInterface* created_browser = chrome::FindLastActive();
 

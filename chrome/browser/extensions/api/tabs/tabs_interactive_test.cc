@@ -20,8 +20,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
 
   // Now, verify the browsers. There should be exactly two browser windows (the
   // original and the one created by the extension).
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_NE(new_browser, browser());
 
   // The new browser should have a tab pointed to `url2`; we use this mostly as
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
 
   // Additional Verification.
   // We should have the original browser and the new one
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Check Z-Order.
   // Under the hood, the original browser was temporarily pinned to the front by

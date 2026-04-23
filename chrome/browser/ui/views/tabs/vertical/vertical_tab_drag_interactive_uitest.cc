@@ -12,7 +12,6 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -107,7 +106,8 @@ base::RepeatingCallback<PinnedURLs()> GetPinnedTabOrder(TabStripModel* model) {
 }
 
 base::RepeatingCallback<size_t()> GetBrowserCount() {
-  return base::BindRepeating([]() { return chrome::GetTotalBrowserCount(); });
+  return base::BindRepeating(
+      []() { return GlobalBrowserCollection::GetInstance()->GetSize(); });
 }
 
 base::RepeatingCallback<bool()> GetDragActive() {

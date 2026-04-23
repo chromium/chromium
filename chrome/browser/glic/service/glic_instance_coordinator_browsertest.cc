@@ -37,6 +37,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -1434,7 +1435,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWithNewTabCreatesNewWindow) {
-  size_t browser_count_before = chrome::GetTotalBrowserCount();
+  size_t browser_count_before =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   base::test::TestFuture<void> success_future;
   GlicInvokeOptions options(glic::Target(glic::NewTab{}),
@@ -1446,7 +1448,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(success_future.Wait());
 
   // Verify a new browser window was created.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count_before + 1);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            browser_count_before + 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

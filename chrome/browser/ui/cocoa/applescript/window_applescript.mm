@@ -16,12 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
@@ -301,7 +301,9 @@
 
 - (void)setOrderedIndex:(NSNumber*)anIndex {
   int index = anIndex.intValue - 1;
-  if (index < 0 || index >= static_cast<int>(chrome::GetTotalBrowserCount())) {
+  if (index < 0 ||
+      index >=
+          static_cast<int>(GlobalBrowserCollection::GetInstance()->GetSize())) {
     AppleScript::SetError(AppleScript::Error::kWrongIndex);
     return;
   }
