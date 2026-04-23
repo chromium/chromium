@@ -14,33 +14,25 @@ found in the LICENSE file.
     android:layout_height="match_parent">
 
     <!-- Tab Bottom Sheet Content: Appears when BottomSheet is expanded -->
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/expanded_content_group"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:visibility="visible">
-
-        <!-- Toolbar Container -->
-        <FrameLayout
-            android:id="@+id/toolbar_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <!-- Web UI Container -->
         <org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer
             android:id="@+id/web_ui_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/tab_bottom_sheet_web_ui_top_margin"
-            android:layout_weight="1" />
+            android:layout_height="match_parent" />
 
         <!-- Fusebox Container -->
         <FrameLayout
             android:id="@+id/fusebox_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
 
     <!-- Actor Control View: Appears when BottomSheet is collapsed -->
     <!-- The content includes the actor control view and the drag handle bar frame. -->

@@ -173,10 +173,6 @@ public class CoBrowseViews {
         }
     }
 
-    int getToolbarHeight() {
-        return 0;
-    }
-
     int getThinWebViewHeight() {
         if (mWebUi != null) {
             return mWebUi.getWebUiView().getHeight();
