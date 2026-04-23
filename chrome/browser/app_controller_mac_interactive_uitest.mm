@@ -47,13 +47,13 @@ void SendOpenUrlToAppController(const GURL& url) {
 
 // Note: These tests interact with SharedController which requires the browser's
 // focus. In browser_tests other tests that are running in parallel cause
-// flakiness to test test. See: https://crbug.com/1469960
+// flakiness to test test. See: https://crbug.com/40925562
 
 // -------------------AppControllerInteractiveUITest-------------------
 
 using AppControllerInteractiveUITest = InteractiveBrowserTest;
 
-// Regression test for https://crbug.com/1236073
+// Regression test for https://crbug.com/40192595
 IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   Profile* profile = browser()->profile();
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 }
 
 // Tests opening a new window from dock menu while incognito browser is opened.
-// Regression test for https://crbug.com/1371923
+// Regression test for https://crbug.com/40241549
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
                        WhileIncognitoBrowserIsOpened_NewWindow) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -236,7 +236,7 @@ class AppControllerIncognitoSwitchInteractiveUITest
   }
 };
 
-// Regression test for https://crbug.com/1248661
+// Regression test for https://crbug.com/40057229
 IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchInteractiveUITest,
                        ObserveProfileDestruction) {
   // Chrome is launched in incognito.

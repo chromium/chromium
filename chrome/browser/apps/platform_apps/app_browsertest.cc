@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
   ASSERT_FALSE(menu->HasCommandWithId(IDC_CONTENT_CONTEXT_UNDO));
 }
 
-// Flaky on Mac10.13 Tests (dbg). See https://crbug.com/1155013
+// Flaky on Mac10.13 Tests (dbg). See https://crbug.com/40735184
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AppWithContextMenuTextField DISABLED_AppWithContextMenuTextField
 #else
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
   ASSERT_TRUE(onclicked_listener.WaitUntilSatisfied());
 }
 
-// https://crbug.com/1155013
+// https://crbug.com/40735184
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_DisallowNavigation) {
   TabsAddedObserver observer(browser(), 1);
 
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PlatformAppDevToolsBrowserTest, ReOpenedWithURL) {
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ConstrainedWindowRequest DISABLED_ConstrainedWindowRequest
 #else
-// TODO(sail): Enable this on other platforms once http://crbug.com/95455 is
+// TODO(sail): Enable this on other platforms once http://crbug.com/41453867 is
 // fixed.
 #define MAYBE_ConstrainedWindowRequest DISABLED_ConstrainedWindowRequest
 #endif

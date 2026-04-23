@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
 }
 
 // Close the source tab during the interception and check that the NTP is opened
-// in the new profile (regression test for https://crbug.com/1153321).
+// in the new profile (regression test for https://crbug.com/40159041).
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   // Setup profile for interception.
   AccountInfo primary_account_info =

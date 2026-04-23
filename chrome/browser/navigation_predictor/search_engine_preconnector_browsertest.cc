@@ -201,7 +201,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool()));
 
-// Test routinely flakes on the Mac10.11 Tests bot (https://crbug.com/1141028).
+// Test routinely flakes on the Mac10.11 Tests bot (https://crbug.com/40726926).
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
                        DISABLED_PreconnectSearch) {
   // Put the fake search URL to be preconnected in foreground.

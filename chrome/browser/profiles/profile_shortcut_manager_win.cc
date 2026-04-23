@@ -175,7 +175,7 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
     // On Win 11, SHCNE_ASSOCCHANGED doesn't update the taskbar icons, so find
     // the affected shortcuts and tell Windows they've changed.
-    // TODO:(crbug.com/1287111) Find all affected shortcuts, e.g., desktop, and
+    // TODO:(crbug.com/40816037) Find all affected shortcuts, e.g., desktop, and
     // remove the SHCNE_ASSOCCHANGED notification, to avoid flashing the
     // desktop (and taskbar on Win 10). Remove Win 11 version check.
     if (base::win::GetVersion() >= base::win::Version::WIN11) {

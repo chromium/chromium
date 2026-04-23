@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
   // Deterministic regression test for flaky failures seen in
-  // https://crbug.com/1326526. This induces a DNS resolution while in secure
+  // https://crbug.com/40840601. This induces a DNS resolution while in secure
   // mode with zero DoH server templates to use.
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

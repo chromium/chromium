@@ -535,7 +535,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
   }
 }
 
-// Regression test for crash. https://crbug.com/1335266
+// Regression test for crash. https://crbug.com/40846976
 TEST_F(WebAppIconFactoryTest, ApplyBackgroundAndMask_NullImage) {
   gfx::ImageSkia image = apps::ApplyBackgroundAndMask(gfx::ImageSkia());
   DCHECK(image.isNull());

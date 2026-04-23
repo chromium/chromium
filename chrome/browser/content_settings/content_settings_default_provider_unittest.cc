@@ -181,7 +181,7 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 }
 
 // Tests that fullscreen, obsolete NFC (with the old semantics, see
-// crbug.com/1275576), and obsolete content settings (plugins, mouselock,
+// crbug.com/40808369), and obsolete content settings (plugins, mouselock,
 // installed web app metadata) are cleared.
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   static const char kNfcPrefPath[] =

@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       window_controller()->GetChildWebContents()));
 }
 
-// Regression test for https://crbug.com/1296780 - opening a picture-in-picture
+// Regression test for https://crbug.com/40214901 - opening a picture-in-picture
 // window twice in a row should work, closing the old window before opening the
 // new one.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Explicitly navigating to about:blank should close the pip window.
-// Regression test for https://crbug.com/1413919.
+// Regression test for https://crbug.com/40062959.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CloseOnPictureInPictureNavigatedToAboutBlank) {
   LoadTabAndEnterPictureInPicture(browser());
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Explicitly navigating to the empty string should close the pip window.
-// Regression test for https://crbug.com/1413919.
+// Regression test for https://crbug.com/40062959.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CloseOnPictureInPictureNavigatedToEmptyString) {
   LoadTabAndEnterPictureInPicture(browser());

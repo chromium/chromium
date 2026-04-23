@@ -1098,7 +1098,7 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
   EXPECT_FALSE(has_metric(entries, 1, "MouseDownNotTakenMs"));
 
   // Pointer down event followed by a pointer out event without any pointer over
-  // event should not cause a crash (crbug/1423336).
+  // event should not cause a crash (crbug.com/40897447).
   ReportAnchorElementPointerDown(
       predictor_service.get(), anchor_id_0,
       /*navigation_start_to_pointer_down=*/base::Milliseconds(10));

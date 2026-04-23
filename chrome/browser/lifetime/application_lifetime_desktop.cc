@@ -190,8 +190,9 @@ void SessionEnding() {
 
   // EndSession is invoked once per frame. Only do something the first time.
   static bool already_ended = false;
-  // We may get called in the middle of shutdown, e.g. https://crbug.com/70852
-  // and https://crbug.com/1187418.  In this case, do nothing.
+  // We may get called in the middle of shutdown, e.g.
+  // https://crbug.com/41311326 and https://crbug.com/40754301.  In this case,
+  // do nothing.
   if (already_ended || !g_browser_process) {
     return;
   }

@@ -794,7 +794,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // will then get disconnected later). Resetting the Remote is a no-op for the
   // initial creation of the network service, but for restarts this guarantees
   // that GetURLLoaderFactory() works as expected.
-  // (See crbug.com/1131803 for a motivating example and investigation.)
+  // (See crbug.com/40721586 for a motivating example and investigation.)
   url_loader_factory_.reset();
 
   // Disable QUIC globally, if needed.

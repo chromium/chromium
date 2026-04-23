@@ -1540,7 +1540,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestDisplayNoneWebviewLoad) {
 #define MAYBE_Shim_TestDisplayNoneWebviewRemoveChild \
   Shim_TestDisplayNoneWebviewRemoveChild
 #endif
-// Flaky on most desktop platforms: https://crbug.com/1115106.
+// Flaky on most desktop platforms: https://crbug.com/40144203.
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        MAYBE_Shim_TestDisplayNoneWebviewRemoveChild) {
   TestHelper("testDisplayNoneWebviewRemoveChild",
@@ -1627,7 +1627,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestAddAndRemoveContentScripts) {
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                        Shim_TestAddContentScriptsWithNewWindowAPI) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  GTEST_SKIP() << "Flaky on Linux and Mac; http://crbug.com/1182801";
+  GTEST_SKIP() << "Flaky on Linux and Mac; http://crbug.com/40751663";
 #else
   TestHelper("testAddContentScriptsWithNewWindowAPI", "web_view/shim",
              NEEDS_TEST_SERVER);
@@ -1883,7 +1883,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoDeadlock) {
   TestHelper("testNewWindowNoDeadlock", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
-// This is a regression test for crbug.com/1309302. It launches an app
+// This is a regression test for crbug.com/40219415. It launches an app
 // with two iframes and a webview within each of the iframes. The
 // purpose of the test is to ensure that webRequest subevent names are
 // unique across all webviews within the app.
@@ -1986,7 +1986,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
 // Ensure that when one <webview> makes a window.open() call that references
 // another <webview> by name, the opener is updated without a crash. Regression
-// test for https://crbug.com/1013553.
+// test for https://crbug.com/40652731.
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   TestHelper("testNewWindowAndUpdateOpener", "web_view/newwindow",
              NEEDS_TEST_SERVER);
@@ -2011,7 +2011,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   EXPECT_EQ(true, content::EvalJs(guest1, "window.opener == null"));
 
   // Create a subframe in the second guest.  This is needed because the crash
-  // in crbug.com/1013553 only happened when trying to incorrectly create
+  // in crbug.com/40652731 only happened when trying to incorrectly create
   // proxies for a subframe.
   EXPECT_TRUE(content::ExecJs(
       guest2, "document.body.appendChild(document.createElement('iframe'));"));
@@ -2401,7 +2401,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowInterstitialForSSLError) {
 // SSL interstitial, and then the "Back to safety" button is activated on the
 // interstitial, the guest doesn't crash trying to load the NTP (the usual
 // known-safe page used to navigate back from such interstitials when there's
-// no other page in history to go to).  See https://crbug.com/1444221.
+// no other page in history to go to).  See https://crbug.com/40911751.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
   SSLTestHelper();
 
@@ -2620,7 +2620,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSafeBrowsingTest,
 
 // Tests that loading an HTTPS page in a guest <webview> with HTTPS-First Mode
 // enabled doesn't crash nor shows error page.
-// Regression test for crbug.com/1233889
+// Regression test for crbug.com/40781148
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                                true);
@@ -3064,7 +3064,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
 }
 
 // Before site isolation was supported in webviews, this was a regression
-// test for https://crbug.com/1243711 which verified that we handle having
+// test for https://crbug.com/40195542 which verified that we handle having
 // two webviews in the same BrowsingInstance with conflicting COOP values.
 // Now that site isolation is supported, this simply tests that a COOP page
 // can load normally.
@@ -3101,7 +3101,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
 // This test creates a situation where we have two unattached webviews which
 // have an opener relationship, and ensures that we can shutdown safely. See
-// https://crbug.com/1450397.
+// https://crbug.com/40065124.
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, DestroyOpenerBeforeAttachment) {
   // This test doesn't work with MPArch based <webview>s as they can't navigate
   // before attachment is complete. The scenario this test attempts to repro is
@@ -4705,8 +4705,8 @@ IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
 // This considers the case where a guest view is in use that has been
 // inadvertently broken by misuse of WebContentsDelegates. This has seemingly
 // happened multiple times for various dialogs and signin flows (see
-// https://crbug.com/1076696 and https://crbug.com/1306988 ), so let's test that
-// if we are in this situation, we at least don't crash.
+// https://crbug.com/40128796 and https://crbug.com/40828127 ), so let's test
+// that if we are in this situation, we at least don't crash.
 IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
                        CertificateSelectorForGuestMisconfigured) {
   // TODO(crbug.com/40202416): This test doesn't apply for MPArch and
@@ -5097,7 +5097,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestRemoveBeforeAttach) {
 // Tests that the embedder can create a blob URL and navigate a WebView to it.
 // See https://crbug.com/41278508.
 // Also tests that the embedder can't navigate to a blob URL created by a
-// WebView. See https://crbug.com/1106890.
+// WebView. See https://crbug.com/40052878.
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestBlobURL) {
   TestHelper("testBlobURL", "web_view/shim", NEEDS_TEST_SERVER);
 }
@@ -5229,7 +5229,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 }
 
 // Tests that webviews cannot embed accessible resources in iframes.
-// https://crbug.com/1430991.
+// https://crbug.com/40263329.
 IN_PROC_BROWSER_TEST_P(WebViewTest, CannotIframeWebviewAccessibleResource) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -5489,7 +5489,7 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
 // focus when requested by accessibility. Previously the root
 // BrowserAccessibilityManager would not be updated due to how we were updating
 // the AXTreeData.
-// The test was disabled. See crbug.com/1141313.
+// The test was disabled. See crbug.com/40727093.
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
                        DISABLED_FocusAccessibilityNestedFrame) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
@@ -6287,7 +6287,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenAndCloseDevTools) {
 
 // Tests that random extensions cannot inject content scripts into a platform
 // app's own webview, but the owner platform app can. Regression test for
-// crbug.com/1205675.
+// crbug.com/40764743.
 IN_PROC_BROWSER_TEST_P(WebViewTest, NoExtensionScriptsInjectedInWebview) {
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
 
@@ -6313,7 +6313,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoExtensionScriptsInjectedInWebview) {
       << "' message was not receieved";
 }
 
-// Regression test for https://crbug.com/1014385
+// Regression test for https://crbug.com/40653142
 // We load an extension whose background page attempts to declare variables with
 // names that are the same as guest view types. The declarations should not be
 // syntax errors.
@@ -6370,7 +6370,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Verify that Local Network Access has the correct understanding of guests.
 // The loopback/local/public classification should not be affected by being
-// within a guest. See https://crbug.com/1167698 for details.
+// within a guest. See https://crbug.com/40164713 for details.
 //
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
@@ -6400,7 +6400,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWebViewTest, ClassificationInGuest) {
 
 // Verify that navigating a <webview> subframe to a disallowed extension
 // resource (where the extension ID doesn't match the <webview> owner) doesn't
-// result in a renderer kill.  See https://crbug.com/1204094.
+// result in a renderer kill.  See https://crbug.com/40763869.
 IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -6477,7 +6477,7 @@ class PopupWaiter : public content::WebContentsObserver {
 // precise timing requirements that need to be controlled by the browser such
 // that we shutdown while the new window is pending.
 //
-// Regression test for https://crbug.com/1442516
+// Regression test for https://crbug.com/40064365
 IN_PROC_BROWSER_TEST_P(WebViewTest, ShutdownWithUnshownPopup) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -6680,7 +6680,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebstoreWebViewTest::DescribeParams);
 
 // Ensure that an attempt to load Chrome Web Store in a <webview> is blocked
-// and does not result in a renderer kill.  See https://crbug.com/1197674.
+// and does not result in a renderer kill.  See https://crbug.com/40177026.
 IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest = GetGuestRenderFrameHost();
@@ -6924,7 +6924,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageIsolation) {
 // Ensure that the browser doesn't crash when a subframe in a <webview> is
 // navigated to an unknown scheme.  This used to be the case due to a mismatch
 // between the error page's SiteInstance and the origin to commit as calculated
-// in NavigationRequest.  See https://crbug.com/1366450.
+// in NavigationRequest.  See https://crbug.com/40239745.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageInSubframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

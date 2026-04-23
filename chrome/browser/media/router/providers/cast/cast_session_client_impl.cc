@@ -197,7 +197,7 @@ void CastSessionClientImpl::HandleParsedClientMessage(
 
   // NOTE(jrw): This step isn't part of the Cast protocol per se, but it's
   // required for backward compatibility.  There is one known case
-  // (crbug.com/1129217) where not doing it breaks the Cast SDK.
+  // (crbug.com/40149302) where not doing it breaks the Cast SDK.
   RemoveNullFields(*result);
 
   std::unique_ptr<CastInternalMessage> cast_message =

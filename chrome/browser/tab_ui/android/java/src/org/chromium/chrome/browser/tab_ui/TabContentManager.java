@@ -173,7 +173,7 @@ public class TabContentManager {
             thumbnailScale = 1.f / deviceDensity;
         } else {
             // For phones, reduce the amount of memory usage by capturing a lower-res thumbnail for
-            // devices with resolution higher than HDPI (crbug.com/357740).
+            // devices with resolution higher than HDPI (crbug.com/40358244).
             if (deviceDensity > 1.5f) {
                 thumbnailScale = 1.5f / deviceDensity;
             }

@@ -120,7 +120,7 @@ public class ChromeFileProvider extends FileProvider {
 
         // Workaround for a bad assumption that particular MediaStore columns exist by certain third
         // party applications.
-        // http://crbug.com/467423.
+        // http://crbug.com/40409640.
         Cursor source = super.query(fileUri, projection, selection, selectionArgs, sortOrder);
 
         String[] columnNames = source.getColumnNames();

@@ -1494,7 +1494,7 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
   if (!lcpp_stat) {
     return;
   }
-  // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/1518996)
+  // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/41491978)
   // Preconnect to LCPP predicted LCP origins in all platforms including those
   // without optimization guide.
   if (base::FeatureList::IsEnabled(

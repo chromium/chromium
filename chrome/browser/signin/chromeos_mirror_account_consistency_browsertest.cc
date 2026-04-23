@@ -121,9 +121,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   supervised_user::EnableParentalControls(*profile->GetPrefs());
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 
-  // TODO(http://crbug.com/1134144): This test seems to test supervised profiles
-  // instead of child accounts (but the EnableParentalControls call closely
-  // simulates child account). With the current implementation,
+  // TODO(http://crbug.com/40151308): This test seems to test supervised
+  // profiles instead of child accounts (but the EnableParentalControls call
+  // closely simulates child account). With the current implementation,
   // X-Chrome-Connected header gets a supervised=true argument only for child
   // profiles. Verify if these tests needs to be updated to use child accounts
   // or whether supervised profiles need to be supported as well.

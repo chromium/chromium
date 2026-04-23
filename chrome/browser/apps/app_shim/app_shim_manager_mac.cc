@@ -405,8 +405,8 @@ bool AppShimManager::AppState::ShouldDeleteAppState() const {
   // the Quit menu, which will terminate the app (and the browser will be
   // notified of the closed mojo pipe). The app is closed automatically when
   // it has been uninstalled for all profiles.
-  // https://crbug.com/1080729 for new behavior.
-  // https://crbug.com/1139254,1132223 for closing when profiles close.
+  // https://crbug.com/40130206 for new behavior.
+  // https://crbug.com/40725912,1132223 for closing when profiles close.
   if (IsMultiProfile() &&
       base::FeatureList::IsEnabled(features::kAppShimNewCloseBehavior)) {
     // This might get called late enough during shutdown for ProfileManager to
@@ -1307,7 +1307,7 @@ void AppShimManager::LoadProfileAndApp_OnProfileLoaded(
   // Run |registry_ready_callback| when the WebAppProvider is ready (be that
   // now, or after a callback). Failing to do so will result in apps not
   // launching.
-  // https://crbug.com/1094419.
+  // https://crbug.com/40135412.
   auto registry_ready_callback = base::BindOnce(
       &AppShimManager::LoadProfileAndApp_OnProfileAppRegistryReady,
       weak_factory_.GetWeakPtr(), profile_path, app_id, std::move(callback));

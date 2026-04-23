@@ -191,7 +191,7 @@ class ConditionalFocusInteractiveUiTest : public WebRtcTestBase {
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> capturing_tab_ = nullptr;
 };
 
-// Flaky on Win bots and on linux release bots http://crbug.com/1264744
+// Flaky on Win bots and on linux release bots http://crbug.com/40203510
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
   DISABLED_CapturedTabFocusedIfNoExplicitCallToFocus
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
-// Flaky on Win bots and on linux release bots http://crbug.com/1264744
+// Flaky on Win bots and on linux release bots http://crbug.com/40203510
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
   DISABLED_CapturedTabFocusedIfExplicitlyCallingFocus

@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, RecordEngagement) {
   ExpectScores(1, 1);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1020131.
+// Flaky tests on CrOS: http://crbug.com/40656329.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordEngagement_AudioOnly DISABLED_RecordEngagement_AudioOnly
 #else
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_NotTime_AudioOnly \
   DISABLED_DoNotRecordEngagement_NotTime_AudioOnly
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_TabMuted_AudioOnly \
   DISABLED_DoNotRecordEngagement_TabMuted_AudioOnly
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_PlaybackStopped_AudioOnly \
   DISABLED_DoNotRecordEngagement_PlaybackStopped_AudioOnly
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 1);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordEngagement_NotVisible_AudioOnly \
   DISABLED_RecordEngagement_NotVisible_AudioOnly
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, RecordVisitOnBrowserClose) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
-// Flaky timeout. https://crbug.com/1014229
+// Flaky timeout. https://crbug.com/40653059
 #define MAYBE_RecordSingleVisitOnSameOrigin \
   DISABLED_RecordSingleVisitOnSameOrigin
 #else
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Flaky: https://crbug.com/1115238
+// Flaky: https://crbug.com/40144269
 #define MAYBE_RecordVisitOnNewOrigin DISABLED_RecordVisitOnNewOrigin
 #else
 #define MAYBE_RecordVisitOnNewOrigin RecordVisitOnNewOrigin
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordEngagement_SilentAudioTrack_AudioOnly \
   DISABLED_DoNotRecordEngagement_SilentAudioTrack_AudioOnly
@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 1);
 }
 
-// Flaky tests on CrOS: http://crbug.com/1019671.
+// Flaky tests on CrOS: http://crbug.com/40656092.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MultipleElements DISABLED_MultipleElements
 #else
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1222896
+// https://crbug.com/40187393
 #define MAYBE_SessionNewTabNavigateSameURL DISABLED_SessionNewTabNavigateSameURL
 #else
 #define MAYBE_SessionNewTabNavigateSameURL SessionNewTabNavigateSameURL
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1222896
+// https://crbug.com/40187393
 #define MAYBE_SessionNewTabSameURL DISABLED_SessionNewTabSameURL
 #else
 #define MAYBE_SessionNewTabSameURL SessionNewTabSameURL
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_SessionNewTabSameURL) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1222896
+// https://crbug.com/40187393
 #define MAYBE_SessionNewTabSameOrigin DISABLED_SessionNewTabSameOrigin
 #else
 #define MAYBE_SessionNewTabSameOrigin SessionNewTabSameOrigin
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreloadBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/1222896
+// https://crbug.com/40187393
 #define MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed \
   DISABLED_SessionNewTabNavigateSameURLWithOpener_Typed
 #else

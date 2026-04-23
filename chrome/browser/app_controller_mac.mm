@@ -338,7 +338,7 @@ void FocusWindowSetOnCurrentSpace(NSSet<NSWindow*>* windows) {
   // haphazardly.
   //
   // Also consider both visible and hidden windows; this call races
-  // with the system unhiding the application. http://crbug.com/368238
+  // with the system unhiding the application. http://crbug.com/41104339
   //
   // NOTE: If this is called in the
   // -applicationShouldHandleReopen:hasVisibleWindows: hook when
@@ -930,7 +930,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   // TODO(viettrungluu): Remove Apple Event handlers here? (It's safe to leave
   // them in, but I'm not sure about UX; we'd also want to disable other things
-  // though.) http://crbug.com/40861
+  // though.) http://crbug.com/40381772
 
   // Check for active apps. If quitting is prevented, only close browsers and
   // sessions.
@@ -971,7 +971,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     browser_shutdown::SetTryingToQuit(false);
     [[ConfirmQuitPanelController sharedController] cancel];
     // TODO(viettrungluu): Were we to remove Apple Event handlers above, we
-    // would have to reinstall them here. http://crbug.com/40861
+    // would have to reinstall them here. http://crbug.com/40381772
   }
 }
 
@@ -2106,7 +2106,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     // visible, and restore its original hidden state after resetting the
     // submenu. This works around an apparent AppKit bug where setting a
     // *different* NSMenu submenu on a *hidden* menu item forces the item to
-    // become visible. See https://crbug.com/497813 for more details.
+    // become visible. See https://crbug.com/40421657 for more details.
     bookmarkItem.hidden = NO;
     _bookmarkMenuBridge = nullptr;
   } else if (_bookmarkMenuBridge && !_isShuttingDown) {
@@ -2416,7 +2416,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       // started.
       [GetPendingWebAuthRequests() removeObjectForKey:key];
 
-      // Take care of the undocumented requirement (https://crbug.com/1400714)
+      // Take care of the undocumented requirement (https://crbug.com/40250389)
       // that -[ASWebAuthenticationSessionRequest cancelWithError:] be called
       // for authentication sessions canceled by the OS.
       NSError* error = [NSError
@@ -2504,7 +2504,7 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
   launch.OpenURLsInBrowser(browser->GetBrowserForMigrationOnly(),
                            chrome::startup::IsProcessStartup::kNo, urls);
 
-  // This NTP check should be replaced once https://crbug.com/624410 is fixed.
+  // This NTP check should be replaced once https://crbug.com/41261582 is fixed.
   if (startupIndex != TabStripModel::kNoTab &&
       (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
        startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {

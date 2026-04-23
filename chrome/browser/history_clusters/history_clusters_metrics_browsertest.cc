@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
-// Flaky on Win, Linux and Mac. http://crbug.com/1282122
+// Flaky on Win, Linux and Mac. http://crbug.com/40812648
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationNoInteraction \
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
                                       1);
 }
 
-// Disabled on Windows, ChromeOS, and Linux due to flakes: crbug.com/1263465.
-// Disabled on Mac due to flakes: crbug.com/1288805.
+// Disabled on Windows, ChromeOS, and Linux due to flakes: crbug.com/40800225.
+// Disabled on Mac due to flakes: crbug.com/40817130.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationWithToggleToBasic \

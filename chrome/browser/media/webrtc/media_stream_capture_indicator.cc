@@ -300,7 +300,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     if (started_) {
       // Ignore possibly-compromised renderers that might call
       // MediaStreamDispatcherHost::OnStreamStarted() more than once.
-      // See: https://crbug.com/1155426
+      // See: https://crbug.com/40054066
       return 0;
     }
     started_ = true;

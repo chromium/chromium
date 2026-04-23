@@ -348,7 +348,7 @@ void CastMirroringServiceHost::CreateAudioStream(
     }
     const base::UnguessableToken group_id = contents->GetAudioGroupId();
 
-    // Fix for regression: https://crbug.com/1111026
+    // Fix for regression: https://crbug.com/40708932
     //
     // Muting of the browser tab's local audio output starts when the first
     // WebContents loopback capture stream is requested. The mute is held so

@@ -329,7 +329,7 @@ TEST_P(ProfileDestroyerTest, RenderProcessAddedAfterDestroyRequested) {
 }
 
 // Regression test for:
-// https://crbug.com/1337388#c11
+// https://crbug.com/40059994#c11
 TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
   CreateOriginalProfile();
   CreateOTRProfile();
@@ -347,7 +347,7 @@ TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
   EXPECT_FALSE(OtrProfile(0));
 }
 
-// Regression for: https://crbug.com/1357476
+// Regression for: https://crbug.com/40236665
 // When two OTR profile are associated with the same original profile,
 // requesting the destruction of one, was incorrectly causing the
 // ProfileDestroyer to wait for the destruction of the RenderProcessHost of the

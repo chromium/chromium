@@ -225,7 +225,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 }
 
 // Test for regression in which the PrefProvider modified the user pref store
-// of the OTR unintentionally: http://crbug.com/74466.
+// of the OTR unintentionally: http://crbug.com/41332768.
 TEST_F(PrefProviderTest, Incognito) {
   PersistentPrefStore* user_prefs = new TestingPrefStore();
   OverlayUserPrefStore* otr_user_prefs = new OverlayUserPrefStore(user_prefs);

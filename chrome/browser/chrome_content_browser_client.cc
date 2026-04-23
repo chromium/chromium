@@ -1156,7 +1156,7 @@ void LaunchURL(
   // - 'allow-top-navigation-by-user-navigation' + user-activation
   // - 'allow-popups'
   //
-  // See https://crbug.com/1148777
+  // See https://crbug.com/40053861
   if (!is_primary_main_frame) {
     using SandboxFlags = network::mojom::WebSandboxFlags;
     auto allow = [&](SandboxFlags flag) {

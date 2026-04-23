@@ -237,7 +237,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
 
   if (!activity_manager_) {
     // This should never happen, but it looks like maybe it does.  See
-    // crbug.com/1114067.
+    // crbug.com/40710607.
     NOTREACHED();
   }
   activity_manager_->JoinSession(*cast_source, presentation_id, origin,

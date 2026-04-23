@@ -370,7 +370,7 @@ if (enable_vr) {
       "//ui/accessibility:ax_enums_mojo",
       "//ui/gfx:test_support",
 
-      # TODO(mthiesse, crbug.com/769373): Remove dependency on device/vr:fakes.
+      # TODO(mthiesse, crbug.com/41346944): Remove dependency on device/vr:fakes.
       "//device/vr:vr_fakes",
 
       # TODO(cjgrant): Figure out why including //ui/android:ui_java here

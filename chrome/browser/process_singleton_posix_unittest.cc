@@ -268,7 +268,7 @@ class ProcessSingletonPosixTest : public testing::Test {
 
 // Test if the socket file and symbol link created by ProcessSingletonPosix
 // are valid.
-// If this test flakes, use http://crbug.com/74554.
+// If this test flakes, use http://crbug.com/41333511.
 TEST_F(ProcessSingletonPosixTest, CheckSocketFile) {
   CreateProcessSingletonOnThread();
   VerifyFiles();

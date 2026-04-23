@@ -2728,7 +2728,7 @@ class LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest
 };
 
 // Test that prefetches to local resources are blocked.
-// Disabled for being flaky. crbug.com/1116599
+// Disabled for being flaky. crbug.com/40144804
 IN_PROC_BROWSER_TEST_P(
     LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest,
     DISABLED_PrepareForPageLoadWithPredictionForPrefetch) {

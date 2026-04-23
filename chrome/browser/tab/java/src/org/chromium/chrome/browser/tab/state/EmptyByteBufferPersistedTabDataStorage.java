@@ -14,9 +14,9 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * Mock implementation of {@link PersistedTabDataStorage} for tests. Specifically
- * this implementation mocks a non-null Bytebuffer with limit 0 simulating what
- * we saw in crbug.com/1287632.
+ * Mock implementation of {@link PersistedTabDataStorage} for tests. Specifically this
+ * implementation mocks a non-null Bytebuffer with limit 0 simulating what we saw in
+ * crbug.com/40816362.
  */
 @NullMarked
 public class EmptyByteBufferPersistedTabDataStorage implements PersistedTabDataStorage {

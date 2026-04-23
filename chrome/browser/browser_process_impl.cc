@@ -684,7 +684,7 @@ void BrowserProcessImpl::StartTearDown() {
   sessions::SessionIdGenerator::GetInstance()->Shutdown();
 
   // Resetting the status tray will result in calls to
-  // |g_browser_process->local_state()|. See crbug.com/1187418
+  // |g_browser_process->local_state()|. See crbug.com/40754301
   status_tray_.reset();
 
   local_state_->CommitPendingWrite();
@@ -853,7 +853,8 @@ void BrowserProcessImpl::EndSession() {
     // writing the updated prefs to disk, so schedule a Local State write now.
     //
     // Do not schedule a write on ChromeOS because writing to disk multiple
-    // times during shutdown was causing shutdown problems. See crbug/302578.
+    // times during shutdown was causing shutdown problems. See
+    // crbug.com/41062061.
     local_state_->CommitPendingWrite(base::OnceClosure(),
                                      rundown_counter->GetRundownClosure());
 #endif
@@ -1084,7 +1085,8 @@ bool BrowserProcessImpl::IsShuttingDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO (crbug.com/41222012): Fix the tests that make the check of
   // |tearing_down_| necessary here.
-  // TODO (crbug/1155597): Maybe use browser_shutdown::HasShutdownStarted here.
+  // TODO (crbug.com/40160014): Maybe use browser_shutdown::HasShutdownStarted
+  // here.
   return shutting_down_ || tearing_down_;
 }
 

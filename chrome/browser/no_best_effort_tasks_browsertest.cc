@@ -274,7 +274,7 @@ class NoBestEffortTasksTestWithQuota : public NoBestEffortTasksTest {
 };
 
 // Verify that cache_storage finishes without running BEST_EFFORT tasks.
-// Regression test for https://crbug.com/1006546.
+// Regression test for https://crbug.com/40099913.
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, CacheStorage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* const web_contents =
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, CacheStorage) {
 }
 
 // Verify that quota estimate() finishes without running BEST_EFFORT tasks.
-// Regression test for https://crbug.com/1006546.
+// Regression test for https://crbug.com/40099913.
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, QuotaEstimate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* const web_contents =

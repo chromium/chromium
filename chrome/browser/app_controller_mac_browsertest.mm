@@ -376,7 +376,7 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
 
 // Test that for a guest last profile, commandDispatch should open UserManager
 // if guest mode is disabled. Note that this test might be flaky under ASAN
-// due to https://crbug.com/674475. Please disable this test under ASAN
+// due to https://crbug.com/40498250. Please disable this test under ASAN
 // as the tests below if that happened.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        OpenGuestProfileOnlyIfGuestModeIsEnabled) {
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 }
 
 // "About Chrome" does not unlock the profile (regression test for
-// https://crbug.com/1226844).
+// https://crbug.com/40188984).
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        AboutPanelDoesNotUnlockProfile) {
   signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
@@ -683,7 +683,7 @@ class AppControllerReplaceNTPBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that when a GURL is opened after startup, it replaces the NTP.
-// Flaky. See crbug.com/1234765.
+// Flaky. See crbug.com/40781670.
 IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
                        DISABLED_ReplaceNTPAfterStartup) {
   // Depending on network connectivity, the NTP URL can either be
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
 
 // Tests that, even if an incognito browser is the last active browser, a GURL
 // is opened in a regular (non-incognito) browser.
-// Regression test for https://crbug.com/757253, https://crbug.com/1444747
+// Regression test for https://crbug.com/40536115, https://crbug.com/40912038
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure the AppController is the NSApp delegate.
@@ -1186,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                 profile1, ServiceAccessType::EXPLICIT_ACCESS));
 }
 
-// Disabled because of flakiness. See crbug.com/1278031.
+// Disabled because of flakiness. See crbug.com/40809975.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        DISABLED_ReloadingDestroyedProfileDoesNotCrash) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1290,7 +1290,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 }
 
 // Tests opening a new window from a browser command while incognito is forced.
-// Regression test for https://crbug.com/1206726
+// Regression test for https://crbug.com/40181046
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        ForcedIncognito_NewWindow) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);

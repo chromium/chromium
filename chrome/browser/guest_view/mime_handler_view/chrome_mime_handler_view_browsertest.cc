@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
 // potential race between the cross-origin renderer initiated navigation and
 // the navigation to "about:blank" started from the browser.
 //
-// Disabled on all platforms due to flakiness: https://crbug.com/1182355.
+// Disabled on all platforms due to flakiness: https://crbug.com/40751404.
 IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
                        DISABLED_NavigationRaceFromEmbedder) {
   const std::string kTestName = "test_navigation_race_embedder";

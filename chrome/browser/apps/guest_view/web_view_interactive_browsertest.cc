@@ -563,7 +563,7 @@ class WebViewPointerLockInteractiveTest : public WebViewInteractiveTest {};
 // with WebViewInteractiveTest (see crbug.com/40454567).
 class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 
-// Timeouts flakily: crbug.com/1003345
+// Timeouts flakily: crbug.com/40098536
 #if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PointerLock PointerLock
@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
 
 // Flaky timeouts on Linux. https://crbug.com/40514419
 // Flaky timeouts on Win. https://crbug.com/40577991
-// Flaky timeouts on Mac. https://crbug.com/1520415
+// Flaky timeouts on Mac. https://crbug.com/41493388
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_KeyboardFocusSimple) {
   TestHelper("testKeyboardFocusSimple", "web_view/focus", NO_TEST_SERVER);
 
@@ -1483,8 +1483,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
 
 // Ensure that destroying a <webview> with a pending mouse lock request doesn't
 // leave a stale mouse lock widget pointer in the embedder WebContents. See
-// https://crbug.com/1346245.
-// Flaky: crbug.com/1424552
+// https://crbug.com/40060350.
+// Flaky: crbug.com/40260478
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        DISABLED_DestroyGuestWithPendingPointerLock) {
   LoadAndLaunchPlatformApp("web_view/pointer_lock_pending",
@@ -1655,7 +1655,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 #endif
 
 // Check that when a focused <webview> navigates cross-process, the focus
-// is preserved in the new page. See https://crbug.com/1358210.
+// is preserved in the new page. See https://crbug.com/40236897.
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        FocusPreservedAfterCrossProcessNavigation) {
   // Load and show a platform app with a <webview> on a data: URL.

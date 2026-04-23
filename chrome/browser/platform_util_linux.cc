@@ -78,7 +78,7 @@ void OnLaunchOptionsCreated(const std::string& command,
 
   // In Google Chrome, we do not let GNOME's bug-buddy intercept our crashes.
   // However, we do not want this environment variable to propagate to external
-  // applications. See http://crbug.com/24120
+  // applications. See http://crbug.com/41012584
   char* disable_gnome_bug_buddy = getenv("GNOME_DISABLE_CRASH_DIALOG");
   if (disable_gnome_bug_buddy &&
       disable_gnome_bug_buddy == std::string("SET_BY_GOOGLE_CHROME")) {

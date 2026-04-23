@@ -54,7 +54,7 @@ namespace {
 // Calling -[NSEvent description] is rather slow to build up the event
 // description. The description is stored in a crash key to aid debugging, so
 // this helper function constructs a shorter, but still useful, description.
-// See <https://crbug.com/770405>.
+// See <https://crbug.com/40542574>.
 std::string DescriptionForNSEvent(NSEvent* event) {
   std::string desc = base::StringPrintf(
       "NSEvent type=%ld modifierFlags=0x%lx locationInWindow=(%g,%g)",
@@ -64,7 +64,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp: {
       // Some NSEvents return a string with NUL in event.characters, see
-      // <https://crbug.com/826908>. To make matters worse, in rare cases,
+      // <https://crbug.com/41379586>. To make matters worse, in rare cases,
       // NSEvent.characters or NSEvent.charactersIgnoringModifiers can throw an
       // NSException complaining that "TSMProcessRawKeyCode failed". Since we're
       // trying to gather a crash key here, if that exception happens, just
@@ -403,7 +403,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 - (void)sendEvent:(NSEvent*)event {
   TRACE_EVENT0("toplevel", "BrowserCrApplication::sendEvent");
 
-  // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
+  // TODO(bokan): Tracing added temporarily to diagnose crbug.com/40113768.
   TRACE_EVENT_INSTANT1("toplevel", "KeyWindow", TRACE_EVENT_SCOPE_THREAD,
                        "KeyWin", [[NSApp keyWindow] windowNumber]);
 

@@ -150,7 +150,7 @@ public class PartnerDisableIncognitoModeUnitTest {
     @Test
     @SmallTest
     @Feature({"ParentalControls"})
-    @DisabledTest(message = "https://crbug.com/1446093")
+    @DisabledTest(message = "https://crbug.com/40268444")
     public void testParentalControlsProviderDelayed() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);

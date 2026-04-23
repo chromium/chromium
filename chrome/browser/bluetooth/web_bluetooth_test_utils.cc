@@ -178,14 +178,14 @@ bool FakeBluetoothGattCharacteristic::IsNotifying() const {
 
 // Do not call the readValue callback until midway through the completion
 // of the startNotification callback registration.
-// https://crbug.com/1153426
+// https://crbug.com/40159093
 void FakeBluetoothGattCharacteristic::DeferReadUntilNotificationStart() {
   defer_read_until_notification_start_ = true;
 }
 
 // Possibly trigger value characteristicvaluechanged events on the page
 // during the setup of startNotifications.
-// https://crbug.com/1153426.
+// https://crbug.com/40159093.
 void FakeBluetoothGattCharacteristic::
     EmitChangeNotificationAtNotificationStart() {
   emit_value_change_at_notification_start_ = true;

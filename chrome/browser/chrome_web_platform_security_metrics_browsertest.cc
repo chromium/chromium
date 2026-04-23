@@ -2813,13 +2813,13 @@ IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
   CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
 
   // This should throw a `SecurityError` according to the spec, but does not due
-  // to https://crbug.com/1257611.
+  // to https://crbug.com/40796466.
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
     window.frames[0].contentDocument;
   )"));
 
   // We would like to count such accesses for the purposes of estimating the
-  // impact of fixing https://crbug.com/1257611, but it does not seem to be as
+  // impact of fixing https://crbug.com/40796466, but it does not seem to be as
   // easy as for other document classes. The enclosing document does not seem to
   // count as a "plugin document".
   CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);

@@ -163,7 +163,7 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
   if (!extension->is_hosted_app())
     return false;
 
-  // https://crbug.com/1086824
+  // https://crbug.com/40694497
   return extension->id() == extension_misc::kYoutubeAppId ||
          extension->id() == extension_misc::kGoogleDriveAppId ||
          extension->id() == extension_misc::kGmailAppId;

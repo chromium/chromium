@@ -18,4 +18,4 @@ Predictor](https://docs.google.com/document/d/1LmzYYxgMVa8aMOKbAf2LzmQM-I_mn6D55
   - A factory to create LCPCriticalPathPredictorKeyedService instances.
     Instances are created per profile.
 
-Implementation is on-going. See http://crbug.com/1419756 for details.
+Implementation is on-going. See https://crbug.com/40063266 for details.

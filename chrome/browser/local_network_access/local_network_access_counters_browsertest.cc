@@ -160,7 +160,7 @@ class LocalNetworkAccessCountersBrowserTest
 // This test verifies that no feature is counted for the initial navigation from
 // a new tab to a page served by localhost.
 //
-// Regression test for https://crbug.com/1134601.
+// Regression test for https://crbug.com/40151532.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForInitialNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
 
 // This test verifies that resources proxied through a proxy on localhost can
 // be fetched from documents in the public IP address space.
-// Regression test for https://crbug.com/1253239.
+// Regression test for https://crbug.com/40199099.
 // TODO(crbug.com/465260276): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DISABLED_ProxiedResourcesAllowed) {
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(
 //
 // In this case, 0.0.0.0 can be used to access localhost on MacOS and Linux
 // and bypass Local Network Access checks, so that we would like to forbid
-// fetches to 0.0.0.0. See more: https://crbug.com/1300021
+// fetches to 0.0.0.0. See more: https://crbug.com/40058874
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FetchNullIpAddressForNavigation \
   DISABLED_FetchNullIpAddressForNavigation

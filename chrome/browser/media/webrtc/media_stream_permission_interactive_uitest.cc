@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestDenyingUserMedia) {
   GetUserMediaAndDeny(tab_contents);
 }
 
-// Disabled: https://crbug.com/1263442
+// Disabled: https://crbug.com/40800207
 #if defined(THREAD_SANITIZER)
 #define MAYBE_TestDismissingRequest DISABLED_TestDismissingRequest
 #else

@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_OriginFlagDisabled) {
             GetOriginListText(contents, kFlagName));
 }
 
-// Flaky. http://crbug.com/1010678
+// Flaky. http://crbug.com/40651256
 IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_OriginFlagDisabled) {
   // Even though the feature is disabled, the switch is set directly via command
   // line.
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_OriginFlagEnabled) {
             GetOriginListText(contents, kFlagName));
 }
 
-// Flaky. http://crbug.com/1010678
+// Flaky. http://crbug.com/40651256
 IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_OriginFlagEnabled) {
 #if !BUILDFLAG(IS_CHROMEOS)
   // On non-ChromeOS, the command line is modified after restart.
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_ExpiredFlagDoesntApply) {
   ToggleEnableDropdown(contents, kExpiredFlagName, true);
 }
 
-// Flaky everywhere: https://crbug.com/1024028
+// Flaky everywhere: https://crbug.com/40107269
 IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_ExpiredFlagDoesntApply) {
   NavigateToFlagsPage();
   content::WebContents* contents =
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_ExpiredFlagDoesntApply) {
 }
 #endif
 
-// Regression test for https://crbug.com/1101828:
+// Regression test for https://crbug.com/40703779:
 // Test that simply setting a flag (without the backing feature) is sufficient
 // to consider a flag unexpired. This test checks that by using a flag with the
 // expected unexpire name, but wired to a dummy switch rather than the usual
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, FormRestore) {
   // change event for it. This simulates what happens during form restoration in
   // Blink, when navigating back and then forward to the flags page. This test
   // ensures that that does not crash the browser.
-  // See https://crbug.com/1038638 for more details.
+  // See https://crbug.com/40666411 for more details.
   EXPECT_TRUE(content::ExecJs(
       contents,
       base::StringPrintf(

@@ -214,7 +214,7 @@ public class BrandingControllerUnitTest {
 
     @Test
     public void testDestroy() {
-        // Inspired by https://crbug.com/1362437. Make sure callback are canceled once the branding
+        // Inspired by https://crbug.com/40864262. Make sure callback are canceled once the branding
         // controller is destroyed.
         new BrandingCheckTester()
                 .newBrandingController()

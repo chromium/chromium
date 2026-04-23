@@ -1199,7 +1199,7 @@ void CastActivityManager::HandleMissingSinkOnJoin(
 void CastActivityManager::HandleMissingSessionIdOnJoin(
     mojom::MediaRouteProvider::JoinRouteCallback callback) {
   // This should never happen, but it looks like maybe it does.  See
-  // crbug.com/1114067.
+  // crbug.com/40710607.
   NOTREACHED();
 }
 

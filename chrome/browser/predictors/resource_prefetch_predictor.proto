@@ -22,7 +22,7 @@ message RedirectStat {
   //
   // Note that the |url| field contains only the origin portion of the full URL.
   // The full URL is not available, because in some cases the path and query may
-  // be sanitized away - see https://crbug.com/973885.
+  // be sanitized away - see https://crbug.com/40095391.
   optional string url = 1;
   optional uint32 number_of_hits = 2;
   optional uint32 number_of_misses = 3;

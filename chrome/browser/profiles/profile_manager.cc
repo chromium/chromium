@@ -201,7 +201,7 @@ class ProfileDestructionObserver : public base::SupportsUserData::Data {
 };
 
 // There may be multiple profile creations happening, but only one stack trace
-// is recorded (the most recent one). See https://crbug.com/1472849
+// is recorded (the most recent one). See https://crbug.com/40069557
 void SetCrashKeysForAsyncProfileCreation(Profile* profile,
                                          bool creation_complete) {
   static crash_reporter::CrashKeyString<1024> async_profile_creation_trace_key(
@@ -1837,7 +1837,7 @@ Profile* ProfileManager::CreateAndInitializeProfile(
 
     // Load the profile synchronously while it's being loaded asynchronously.
     // Try recovering from this and avoid crashing.
-    // See https://crbug.com/1472849
+    // See https://crbug.com/40069557
     base::debug::DumpWithoutCrashing();
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     // Use a weak pointer, in case the profile is deleted by a task executed by
@@ -2200,7 +2200,7 @@ void ProfileManager::OnProfileDestructionComplete(
 void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
 #if !BUILDFLAG(IS_ANDROID)
   // The profile may incorrectly become "active" during its destruction, caused
-  // by the UI teardown. See https://crbug.com/1073451
+  // by the UI teardown. See https://crbug.com/40686320
   if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath())) {
     return;
   }

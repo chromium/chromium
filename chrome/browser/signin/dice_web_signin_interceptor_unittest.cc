@@ -315,7 +315,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   }
 
   // Force local machine to be unmanaged, so that variations in try bots and
-  // developer machines don't affect the tests. See https://crbug.com/1445255.
+  // developer machines don't affect the tests. See https://crbug.com/40268091.
   policy::ScopedManagementServiceOverrideForTesting platform_browser_mgmt_ = {
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::NONE};
@@ -1355,7 +1355,7 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
   EXPECT_EQ(interceptor()->is_interception_in_progress(), true);
 }
 
-// Regression test for https://crbug.com/1309647
+// Regression test for https://crbug.com/40829908
 TEST_F(DiceWebSigninInterceptorTest,
        DeclineCreationRepeatedlyWithPolicyFetcher) {
   base::HistogramTester histogram_tester;

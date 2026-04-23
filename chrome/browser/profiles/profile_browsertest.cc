@@ -198,7 +198,7 @@ void SpinThreads() {
   // Give threads a chance to do their stuff before shutting down (i.e.
   // deleting scoped temp dir etc).
   // Should not be necessary anymore once Profile deletion is fixed
-  // (see crbug.com/88586).
+  // (see crbug.com/40594327).
   content::RunAllPendingInMessageLoop();
 
   // This prevents HistoryBackend from accessing its databases after the
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Regression test for https://crbug.com/1136214 - verification that
+// Regression test for https://crbug.com/40724085 - verification that
 // ExtensionURLLoaderFactory won't hit a use-after-free bug when used after
 // a Profile has been torn down already.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     EXPECT_FALSE(profile_manager->IsValidProfile(incognito_profile));
   }
 
-  // Verify that the factory doesn't crash (https://crbug.com/1136214), but
+  // Verify that the factory doesn't crash (https://crbug.com/40724085), but
   // instead SimpleURLLoaderImpl::OnMojoDisconnect reports net::ERR_FAILED.
   {
     SimpleURLLoaderHelper simple_loader_helper2(
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
   EXPECT_TRUE(waiter2.destroyed());
 }
 
-// Regression test for: https://crbug.com/1357476
+// Regression test for: https://crbug.com/40236665
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   // Create 3 OTR profiles. The first is the "primary" OTR profile. It is used
   // to create a RenderProcessHost depending on it, holding it alive.
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   EXPECT_FALSE(waiter[2].destroyed());
   // The `waiter` are not observing the real destruction of the Profile. Make
   // sure no crash are happening during the real destruction of the Profile.
-  // This is needed to reproduce: https://crbug.com/1357476
+  // This is needed to reproduce: https://crbug.com/40236665
   base::RunLoop loop;
   profile_task_runner->PostDelayedTask(FROM_HERE, loop.QuitClosure(),
                                        base::Milliseconds(2100));

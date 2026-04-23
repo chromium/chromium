@@ -2905,7 +2905,7 @@ TEST_F(HostContentSettingsMapTest, Increments3pcSettingsMetrics) {
   t.ExpectUniqueSample(base_histogram + ".DomainWildcardAllowThirdParty", 1, 1);
 }
 
-// Regression test for https://crbug.com/1497777.
+// Regression test for https://crbug.com/40075934.
 TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
   TestingProfile profile;
   GURL host("https://example.com/");

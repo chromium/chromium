@@ -106,7 +106,7 @@ AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
 
 AvatarMenu::~AvatarMenu() {
   // Note that |profile_storage_| may be destroyed before |this|.
-  // https://crbug.com/1008947
+  // https://crbug.com/40050259
   if (profile_storage_) {
     profile_storage_->RemoveObserver(this);
   }

@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
       << message_;
 }
 
-// Fails on Ozone/X11.  https://crbug.com/1109112
+// Fails on Ozone/X11.  https://crbug.com/40707825
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_AlphaEnabledHasPermissions DISABLED_AlphaEnabledHasPermissions
 #else

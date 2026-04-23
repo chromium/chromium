@@ -119,7 +119,7 @@ BASE_FEATURE(kMuteNotificationSnoozeAction, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNetworkAnnotationMonitoring, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag is used for enabling New Tab Page triggered prerendering. See
-// crbug.com/1462832 for more details of New Tab Page triggered prerendering.
+// crbug.com/40275094 for more details of New Tab Page triggered prerendering.
 BASE_FEATURE(kNewTabPageTriggerForPrerender2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag is used for enabling New Tab Page triggered prefetch. See
@@ -166,7 +166,7 @@ BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
 // this case, it makes sense to extend the scope of sandbox flags, to block
 // malvertising.
 //
-// Implementation bug: https://crbug.com/1253379
+// Implementation bug: https://crbug.com/40057420
 // I2S: https://groups.google.com/a/chromium.org/g/blink-dev/c/-t-f7I6VvOI
 //
 // Enabled in M103. Flag to be removed in M106

@@ -276,7 +276,7 @@ public class DropdownFieldView implements FieldView {
     }
 
     private void requestFocusAndHideKeyboard() {
-        // Clear 'focused' bit because dropdown is not focusable. (crbug.com/1474419)
+        // Clear 'focused' bit because dropdown is not focusable. (crbug.com/40279312)
         mFieldModel.set(FOCUSED, false);
 
         KeyboardVisibilityDelegate.getInstance().hideKeyboard(mDropdown);

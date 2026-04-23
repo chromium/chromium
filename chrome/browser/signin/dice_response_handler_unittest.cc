@@ -1347,7 +1347,7 @@ TEST_F(DiceResponseHandlerTest, Timeout) {
 }
 
 // Checks that there is no crash if the DiceResponseHandler is deleted before
-// the timeout expires. Tests the scenario from https://crbug.com/1290214
+// the timeout expires. Tests the scenario from https://crbug.com/40058574
 TEST_F(DiceResponseHandlerTest, DeleteBeforeTimeout) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(

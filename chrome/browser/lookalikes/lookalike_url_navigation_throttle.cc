@@ -474,7 +474,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     return NavigationThrottle::PROCEED;
   }
   // IMPORTANT: Do not modify first_is_lookalike or last_is_lookalike beyond
-  // this line. See crbug.com/1138138 for an example bug.
+  // this line. See crbug.com/40725190 for an example bug.
 
   // source_id corresponds to last_url, even when first_url is what triggered.
   // UKM records first_is_lookalike/triggered_by_initial_url to disambiguate.

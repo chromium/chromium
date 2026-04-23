@@ -1758,7 +1758,7 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
       main_rfh(), url::Origin::Create(url)));
 }
 
-// Regression test for crbug.com/1421174.
+// Regression test for crbug.com/40896115.
 TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(

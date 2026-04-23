@@ -655,7 +655,7 @@ class AutofillAccessibilityTest : public AutofillTest {
 };
 
 // Test that autofill available state is correctly set on accessibility node.
-// Test is flaky: https://crbug.com/1239099
+// Test is flaky: https://crbug.com/40784571
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
                        DISABLED_TestAutofillSuggestionAvailability) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
 // Test that autocomplete available string attribute is correctly set on
 // accessibility node. Test autocomplete in this file since it uses the same
 // infrastructure as autofill.
-// Test is flaky: http://crbug.com/1239099
+// Test is flaky: http://crbug.com/40784571
 IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
                        DISABLED_TestAutocompleteState) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);

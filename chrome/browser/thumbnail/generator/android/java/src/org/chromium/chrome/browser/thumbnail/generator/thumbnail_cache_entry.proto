@@ -11,7 +11,7 @@ package org.chromium.chrome.browser.thumbnail.generator;
 
 option java_package = "org.chromium.chrome.browser.thumbnail.generator";
 
-// TODO(jkrcal): Remove when protobuf 4.0 is out, https://crbug.com/800281.
+// TODO(jkrcal): Remove when protobuf 4.0 is out, https://crbug.com/40557343.
 option optimize_for = LITE_RUNTIME;
 
 message ContentId {

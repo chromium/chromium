@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Tab}s don't have id collision.
  *
  * <p>TODO(dfalcantara): Tab ID generation prior to M45 is haphazard and dependent on which Activity
- * is started first. Unify the ways the maximum Tab ID is set (crbug.com/502384).
+ * is started first. Unify the ways the maximum Tab ID is set (crbug.com/40423643).
  */
 @NullMarked
 public class TabIdManager {
@@ -48,12 +48,12 @@ public class TabIdManager {
     }
 
     /**
-     * Ensures the counter is at least as high as the specified value.  The counter should always
-     * point to an unused ID (which will be handed out next time a request comes in).  Exposed so
+     * Ensures the counter is at least as high as the specified value. The counter should always
+     * point to an unused ID (which will be handed out next time a request comes in). Exposed so
      * that anything externally loading tabs and ids can set enforce new tabs start at the correct
-     * id.
-     * TODO(dfalcantara): Reduce the visibility of this method once all TabModels are united in how
-     *                    the IDs are assigned (crbug.com/502384).
+     * id. TODO(dfalcantara): Reduce the visibility of this method once all TabModels are united in
+     * how the IDs are assigned (crbug.com/40423643).
+     *
      * @param id The minimum id we should hand out to the next new tab.
      */
     public final void incrementIdCounterTo(int id) {

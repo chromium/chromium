@@ -674,7 +674,7 @@ INSTANTIATE_TEST_SUITE_P(
           "_");
     });
 
-// Flaky on Win bots http://crbug.com/1264805
+// Flaky on Win bots http://crbug.com/40800993
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenShareFromEmbedded DISABLED_ScreenShareFromEmbedded
 #else
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
   }
 }
 
-// Flaky on Mac, Windows, and ChromeOS bots, https://crbug.com/1371309
+// Flaky on Mac, Windows, and ChromeOS bots, https://crbug.com/40241323
 // Also some flakes on Linux ASAN/MSAN builds.
 #if BUILDFLAG(IS_LINUX) && \
     !(defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))

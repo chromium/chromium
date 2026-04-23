@@ -262,7 +262,7 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
       SYNC_STATUS_NETWORK_ERROR);
 }
 
-// Disabled due to flakiness: crbug.com/1222929
+// Disabled due to flakiness: crbug.com/40774357
 TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
   // Notify REMOTE_SERVICE_DISABLED and callback with
   // SYNC_STATUS_FAILED.  This should let the InitializeApp fail.
@@ -272,7 +272,7 @@ TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
       SYNC_STATUS_FAILED);
 }
 
-// Disabled due to flakiness: crbug.com/1345010
+// Disabled due to flakiness: crbug.com/40853276
 TEST_F(SyncFileSystemServiceTest, DISABLED_SimpleLocalSyncFlow) {
   InitializeApp();
 

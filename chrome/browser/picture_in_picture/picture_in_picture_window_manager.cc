@@ -590,7 +590,7 @@ bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
     BUILDFLAG(IS_CHROMEOS)
   // Only allow document PiP to be opened if the URL is of a type that we know
   // how to display in the title bar.  Otherwise, the title bar might be
-  // misleading in certain scenarios.  See https://crbug.com/1460025 .
+  // misleading in certain scenarios.  See https://crbug.com/40066780 .
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (url.SchemeIs(extensions::kExtensionScheme)) {
     return true;

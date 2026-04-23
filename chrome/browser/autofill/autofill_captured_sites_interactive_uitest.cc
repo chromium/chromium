@@ -336,7 +336,7 @@ class AutofillCapturedSitesInteractiveTest
                         profile_controller_->credit_card());
     // Disable the Password Manager to prevent password bubbles from occurring.
     // The password bubbles could overlap with the Autofill popups, in which
-    // case the Autofill popup would not be shown (crbug.com/1223898).
+    // case the Autofill popup would not be shown (crbug.com/40187831).
     browser()->profile()->GetPrefs()->SetBoolean(
         password_manager::prefs::kCredentialsEnableService, false);
     return true;
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
 
 // This test is called with a dynamic list and will be empty during the Password
 // run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
-// crbug/1192206
+// crbug.com/40174793
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     AutofillCapturedSitesInteractiveTest);
 INSTANTIATE_TEST_SUITE_P(
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesRefresh, Recipe) {
 
 // This test is called with a dynamic list and will be empty during the Password
 // run instance, so adding GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST a la
-// crbug/1192206
+// crbug.com/40174793
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AutofillCapturedSitesRefresh);
 INSTANTIATE_TEST_SUITE_P(
     All,

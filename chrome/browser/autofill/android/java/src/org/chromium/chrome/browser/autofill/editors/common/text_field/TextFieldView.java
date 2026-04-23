@@ -51,7 +51,7 @@ public class TextFieldView extends FrameLayout implements FieldView {
 
     private @Nullable Runnable mDoneRunnable;
 
-    @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
+    @SuppressWarnings("WrongConstant") // https://crbug.com/40666488
     private final OnEditorActionListener mEditorActionListener =
             (view, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_DONE && mDoneRunnable != null) {

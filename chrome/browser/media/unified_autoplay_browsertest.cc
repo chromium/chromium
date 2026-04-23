@@ -493,7 +493,7 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky. See https://crbug.com/1101524.
+// Flaky. See https://crbug.com/40703621.
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, DISABLED_Allow) {
   GURL main_url(
       embedded_test_server()->GetURL("example.com", kFramedTestPagePath));
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Allow_Wildcard) {
   EXPECT_TRUE(AutoplayAllowed(main_frame()));
 }
 
-// Flaky. See https://crbug.com/1106521.
+// Flaky. See https://crbug.com/40706381.
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, DISABLED_Block) {
   GURL main_url(
       embedded_test_server()->GetURL("example.com", kFramedTestPagePath));
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Block_Wildcard) {
   EXPECT_FALSE(AutoplayAllowed(main_frame()));
 }
 
-// Flaky. See https://crbug.com/1101524.
+// Flaky. See https://crbug.com/40703621.
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest,
                        DISABLED_DefaultAllow) {
   GURL main_url(

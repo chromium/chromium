@@ -50,7 +50,7 @@ const auto mac_loose_comparator = cc::FuzzyPixelComparator()
 // some configuration on the bot. In addition, this bot does not get run on CQ+1
 // so having a separate golden file to rebaseline is not good enough. This fuzzy
 // comparator accounts for this and still make sure that the output is sane.
-// TODO(http://crbug.com/1443584): Remove this fuzzy matcher when
+// TODO(http://crbug.com/40064433): Remove this fuzzy matcher when
 // ChromeRefresh2023 is enabled by default, and replace it with a standard
 // cc::AlphaDiscardingExactPixelComparator.
 const auto fuzzy_comparator = cc::FuzzyPixelComparator()

@@ -64,7 +64,7 @@ content::WebContents* RepostFormWarningTest::TryReload() {
   return web_contents;
 }
 
-// If becomes flaky, disable on Windows and use http://crbug.com/47228
+// If becomes flaky, disable on Windows and use http://crbug.com/40411916
 IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestDoubleReload) {
   // Try to reload it twice, checking for repost.
   content::WebContents* web_contents = TryReload();
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestDoubleReload) {
   EXPECT_FALSE(web_contents_modal_dialog_manager->IsDialogActive());
 }
 
-// If becomes flaky, disable on Windows and use http://crbug.com/47228
+// If becomes flaky, disable on Windows and use http://crbug.com/40411916
 IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
   // Try to reload it, checking for repost.
   content::WebContents* web_contents = TryReload();

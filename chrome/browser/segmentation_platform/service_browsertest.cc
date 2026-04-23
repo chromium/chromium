@@ -304,7 +304,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
   base::WeakPtrFactory<SegmentationPlatformTest> weak_ptr_factory_{this};
 };
 
-// https://crbug.com/1257820 -- Tests using "PRE_" don't work on Android.
+// https://crbug.com/40200835 -- Tests using "PRE_" don't work on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PRE_CachedClassificationModel \
   DISABLED_PRE_CachedClassificationModel
@@ -592,8 +592,8 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
 // incognito mode. This disables the segmentation platform data collection.
 // TODO(ssid): Fix this test for CrOS by waiting for signin profile to be
 // deleted at startup before adding metrics.
-// https://crbug.com/1467530 -- Flaky on Mac
-// https://crbug.com/1257820 -- Tests using "PRE_" don't work on Android.
+// https://crbug.com/40276817 -- Flaky on Mac
+// https://crbug.com/40200835 -- Tests using "PRE_" don't work on Android.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_PRE_RunUkmBasedModel DISABLED_PRE_RunUkmBasedModel
 #define MAYBE_RunUkmBasedModel DISABLED_RunUkmBasedModel

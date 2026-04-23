@@ -250,7 +250,7 @@ class ProfileManagerBrowserTestBase : public InProcessBrowserTest {
  protected:
   void SetUp() override {
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
-    // See crbug.com/1073451.
+    // See crbug.com/40686320.
 #if BUILDFLAG(IS_WIN)
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   EXPECT_EQ(new_last_used_path, last_used->GetPath());
 }
 
-// Test is flaky. https://crbug.com/1206184
+// Test is flaky. https://crbug.com/40180805
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DeleteAllProfiles DISABLED_DeleteAllProfiles
 #else
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, AddMultipleProfiles) {
   // Verifies that the browser doesn't crash when it is restarted.
 }
 
-// Regression test for https://crbug.com/1472849
+// Regression test for https://crbug.com/40069557
 IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTestBase,
                        ConcurrentCreationAsyncAndSync) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();

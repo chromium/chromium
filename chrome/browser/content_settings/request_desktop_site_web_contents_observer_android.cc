@@ -102,7 +102,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
 
   // Override UA for renderer initiated navigation only. UA override for browser
   // initiated navigation is handled on Java side. This is to workaround known
-  // issues crbug.com/1265751 and crbug.com/1261939.
+  // issues crbug.com/40801643 and crbug.com/40799177.
   if (navigation_handle->IsRendererInitiated()) {
     navigation_handle->SetIsOverridingUserAgent(desktop_mode);
   }

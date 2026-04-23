@@ -804,7 +804,7 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
 
   if (!render_frame_host) {
     // It is possible for `render_frame_host` to be nullptr here due to a race
-    // (crbug.com/1057981).
+    // (crbug.com/40677727).
     SubscribeEndWithError(
         std::move(callback),
         blink::mojom::PushRegistrationStatus::RENDERER_SHUTDOWN);

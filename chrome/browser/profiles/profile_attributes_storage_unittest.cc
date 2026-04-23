@@ -679,7 +679,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
 
 // Checks that ProfileAttributesStorage doesn't crash when
 // ProfileAttributesEntry initialization modifies an attributes entry.
-// This is a regression test for https://crbug.com/1180497.
+// This is a regression test for https://crbug.com/40169970.
 TEST_F(ProfileAttributesStorageTest, ModifyEntryWhileInitializing) {
   DisableObserver();  // This test doesn't test observers.
   base::FilePath profile_path = GetProfilePath("test");

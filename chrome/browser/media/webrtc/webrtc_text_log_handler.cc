@@ -343,7 +343,7 @@ void WebRtcTextLogHandler::ReleaseLog(
   DCHECK(meta_data_);
 
   // Checking log_buffer_ here due to seeing some crashes out in the wild.
-  // See crbug/699960 for more details.
+  // See crbug.com/41306472 for more details.
   // TODO(crbug.com/41368009): Remove if condition.
   if (log_buffer_) {
     log_buffer_->SetComplete();
@@ -568,8 +568,8 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure
   // fallbacks. On Linux for example, we fallback on ALSA if PulseAudio fails to
-  // initialize. TODO(http://crbug/843202): access AudioManager name via Audio
-  // service interface.
+  // initialize. TODO(http://crbug.com/41389102): access AudioManager name via
+  // Audio service interface.
   media::AudioManager* audio_manager = media::AudioManager::Get();
   LogToCircularBuffer(base::StringPrintf(
       "Audio manager: %s",

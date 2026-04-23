@@ -51,7 +51,7 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * <p>WARNING: This class should not be used for any other purpose. It is not a general-purpose
  * encryption class. Moreover, the encryption scheme it implements is not cryptographically sound
- * and needs to be migrated to another one. See https://crbug.com/1440828.
+ * and needs to be migrated to another one. See https://crbug.com/40266284.
  *
  * <p>NOTE: The new encryption key for tab state storage is cryptographically sound. However, it is
  * only used in C++ for the new tab state storage system and its presence here is entirely to

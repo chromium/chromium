@@ -398,7 +398,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     ASSERT_TRUE(controller->done());
   }
 
-  // Regression check for crbug.com/1184872: The first autocomplete result
+  // Regression check for crbug.com/40171835: The first autocomplete result
   // should be the same as the typed text, without a scheme.
   void CheckPopupText(const std::string& text) {
     ASSERT_TRUE(GetLocationBar()->GetOmniboxController()->IsPopupOpen());
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   TypeUrlAndExpectSuccessfulUpgrade(kSiteWithGoodHttps, /*ctrl_enter=*/true);
 }
 
-// Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
+// Regression test for crbug.com/40763267: Paste a hostname in the omnibox and
 // press enter. This should default to HTTPS and the upgrade should succeed.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
                        PasteUrlWithoutASchemeAndHitEnter_GoodHttps) {
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded, 1);
 }
 
-// Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
+// Regression test for crbug.com/40763267: Paste a hostname in the omnibox and
 // press enter. This should hit a bad HTTPS URL and fallback to HTTP, never
 // showing an interstitial.
 // TODO(crbug.com/375004882): Disabled as the test no longer works correctly
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_P(
   histograms.ExpectBucketCount(kNetErrorHistogram,
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 
-  // Regression test for crbug.com/1182760: This time type the hostname of the
+  // Regression test for crbug.com/40170929: This time type the hostname of the
   // redirect target (site-with-bad-https.com). This should attempt an HTTPS
   // load, encounter an SSL error and fall back to HTTP.
   const std::string url_without_scheme = GetURLWithoutScheme(target_url);
@@ -1344,4 +1344,4 @@ IN_PROC_BROWSER_TEST_P(
 // - Various types of navigation states such as downloads, external protocols
 // etc.
 // - Non-cert errors such as HTTP 4XX or 5XX.
-// - Test cases for crbug.com/1161620.
+// - Test cases for crbug.com/40162528.

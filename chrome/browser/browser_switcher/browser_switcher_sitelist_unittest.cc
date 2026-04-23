@@ -375,7 +375,7 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectPort) {
   EXPECT_FALSE(ShouldSwitch(GURL("http://test.com/something:3000")));
 }
 
-// crbug.com/1209124
+// crbug.com/40766398
 TEST_P(BrowserSwitcherSitelistTest, ShouldRedirectHostnamePrefix) {
   // A hostname rule (no "/") can match at the beginning of the hostname, not
   // just at the end.

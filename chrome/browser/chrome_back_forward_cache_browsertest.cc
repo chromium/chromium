@@ -450,7 +450,7 @@ class MetricsChromeBackForwardCacheBrowserTest
   }
 };
 
-// Flaky https://crbug.com/1224780
+// Flaky https://crbug.com/40188113
 IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
                        DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());

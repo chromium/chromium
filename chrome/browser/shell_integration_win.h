@@ -87,7 +87,7 @@ void CreateOrUpdateShortcuts(
     CreateOrUpdateShortcutsResultCallback callback);
 
 // Migrates existing chrome taskbar pins by tagging them with correct app id.
-// see http://crbug.com/28104. Migrates taskbar pins via a task and runs
+// see http://crbug.com/40330895. Migrates taskbar pins via a task and runs
 // |completion_callback| on the calling sequence when done.
 void MigrateTaskbarPins(base::OnceClosure completion_callback);
 

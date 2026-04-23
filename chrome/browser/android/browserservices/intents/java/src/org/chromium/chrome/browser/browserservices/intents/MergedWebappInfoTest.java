@@ -36,8 +36,8 @@ public class MergedWebappInfoTest {
         intentOld.putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, false);
         WebappInfo oldInfo = createWebappInfo(intentOld);
 
-        // Test for issue https://crbug.com/1341149. Make sure we don't get a valid Merged object if
-        // provider is null.
+        // Test for issue https://crbug.com/40850868. Make sure we don't get a valid Merged object
+        // if provider is null.
         Assert.assertEquals(null, MergedWebappInfo.create(oldInfo, /* provider= */ null));
         Assert.assertEquals(null, MergedWebappInfo.create(null, /* provider= */ null));
     }

@@ -258,7 +258,7 @@ class UnloadTest : public InProcessBrowserTest {
 // Then two async crosssite requests to ensure
 // we don't get confused and think we're closing the tab.
 //
-// This test is flaky on the valgrind UI bots. http://crbug.com/39057
+// This test is flaky on the valgrind UI bots. http://crbug.com/41118307
 IN_PROC_BROWSER_TEST_F(UnloadTest, CrossSiteInfiniteUnloadAsync) {
   // Tests makes no sense in single-process mode since the renderer is hung.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -287,8 +287,8 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, CrossSiteInfiniteUnloadSync) {
 // Navigate to a page with an infinite beforeunload handler.
 // Then two two async crosssite requests to ensure
 // we don't get confused and think we're closing the tab.
-// This test is flaky on the valgrind UI bots. http://crbug.com/39057 and
-// http://crbug.com/86469
+// This test is flaky on the valgrind UI bots. http://crbug.com/41118307 and
+// http://crbug.com/41402213
 IN_PROC_BROWSER_TEST_F(UnloadTest, CrossSiteInfiniteBeforeUnloadAsync) {
   // Tests makes no sense in single-process mode since the renderer is hung.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseNoUnloadListeners) {
 }
 
 // Tests closing the browser on a page with an unload listener registered.
-// Test marked as flaky in http://crbug.com/51698
+// Test marked as flaky in http://crbug.com/41192324
 IN_PROC_BROWSER_TEST_F(UnloadTest, DISABLED_BrowserCloseUnload) {
   LoadUrlAndQuitBrowser(UNLOAD_HTML, "unload");
 }
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserTerminateBeforeUnload) {
 
 // Tests closing the browser and clicking OK in the beforeunload confirm dialog
 // if an inner frame has the focus.
-// If this flakes, use http://crbug.com/32615 and http://crbug.com/45675
+// If this flakes, use http://crbug.com/40343878 and http://crbug.com/41156488
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithInnerFocusedFrame) {
   NavigateToDataURL(INNER_FRAME_WITH_FOCUS_HTML, "innerframewithfocus");
   PrepareForDialog(browser());
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseInfiniteUnload) {
 
 // Tests closing the browser on a page with an unload listener registered where
 // the unload handler has an infinite loop followed by an alert.
-// If this flakes, use http://crbug.com/86469
+// If this flakes, use http://crbug.com/41402213
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseInfiniteUnloadAlert) {
   // Tests makes no sense in single-process mode since the renderer is hung.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseInfiniteUnloadAlert) {
 
 // Tests closing the browser with a beforeunload handler that hangs then
 // pops up an alert.
-// If this flakes, use http://crbug.com/78803 and http://crbug.com/86469.
+// If this flakes, use http://crbug.com/40551350 and http://crbug.com/41402213.
 IN_PROC_BROWSER_TEST_F(UnloadTest,
                        DISABLED_BrowserCloseInfiniteBeforeUnloadAlert) {
   // Tests makes no sense in single-process mode since the renderer is hung.
@@ -613,8 +613,8 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseTwoSecondBeforeUnloadAlert) {
 // Tests that if there's a renderer process with two tabs, one of which has an
 // unload handler, and the other doesn't, the tab that doesn't have an unload
 // handler can be closed.
-// If this flakes, see http://crbug.com/45162, http://crbug.com/45281 and
-// http://crbug.com/86769.
+// If this flakes, see http://crbug.com/41153664, http://crbug.com/40403007 and
+// http://crbug.com/41403973.
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseTabWhenOtherTabHasListener) {
   NavigateToDataURL(CLOSE_TAB_WHEN_OTHER_TAB_HAS_LISTENER, "only_one_unload");
 
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithCrossSiteIframe) {
 }
 
 // Tests that a same-site iframe runs its beforeunload handler when closing the
-// browser.  See https://crbug.com/1010456.
+// browser.  See https://crbug.com/40651135.
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithSameSiteIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

@@ -1300,7 +1300,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #if defined(ARCH_CPU_X86_64)
   // The use of Rosetta to run the x64 version of Chromium on Arm is neither
   // tested nor maintained, and there are reports of it crashing in weird ways
-  // (e.g. https://crbug.com/1305353). Warn the user if this is the case, as
+  // (e.g. https://crbug.com/40827020). Warn the user if this is the case, as
   // it's almost certainly accidental on their part.
   if (base::mac::GetCPUType() == base::mac::CPUType::kTranslatedIntel) {
     LOG(ERROR) << "The use of Rosetta to run the x64 version of Chromium on "
@@ -1319,7 +1319,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   // any callbacks, I just want to initialize the mechanism.)
 
   // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-  // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+  // Removal of its use is tracked in https://crbug.com/40233280 but deprecation
   // warnings are disabled in the meanwhile.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -1619,7 +1619,7 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
       profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
-// On ChromeOS results in a crash. https://crbug.com/1151558
+// On ChromeOS results in a crash. https://crbug.com/40158352
 #if !BUILDFLAG(IS_CHROMEOS)
   language::LanguageUsageMetrics::RecordPageLanguages(
       *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
@@ -1870,7 +1870,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // Autoload any profiles which are running background apps.
-  // TODO(rlp): Do this on a separate thread. See http://crbug.com/99075.
+  // TODO(rlp): Do this on a separate thread. See http://crbug.com/41474467.
   browser_process_->profile_manager()->AutoloadProfiles();
 #endif
 

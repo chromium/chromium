@@ -111,8 +111,8 @@ std::wstring GetRegistryPathForTestProfile() {
     profile_dir = profile_dir.DirName();
   }
   // Try to detect regressions when |DIR_USER_DATA| test location changes, which
-  // could cause this test to become flaky. See http://crbug/1091409 for more
-  // details.
+  // could cause this test to become flaky. See http://crbug.com/40134176 for
+  // more details.
   DCHECK(profile_dir.BaseName().value().find_first_of(L"0123456789") !=
          std::string::npos);
 
@@ -1294,7 +1294,7 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestDefaultSearch, SearchProtected);
 
 // Verifies that we handle a protected Dict preference being changed to an
-// unexpected type (int). See https://crbug.com/1512724.
+// unexpected type (int). See https://crbug.com/41485301.
 class PrefHashBrowserTestExtensionDictTypeChanged
     : public PrefHashBrowserTestBase {
  public:

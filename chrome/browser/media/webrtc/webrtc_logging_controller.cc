@@ -585,7 +585,7 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
     }
 
     // Do not fire callback if it is null. Nesting null callbacks is not
-    // allowed, as it can lead to crashes. See https://crbug.com/1071475
+    // allowed, as it can lead to crashes. See https://crbug.com/40685126
     if (!callback.is_null()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), false, "",

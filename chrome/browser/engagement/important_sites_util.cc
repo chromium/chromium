@@ -281,8 +281,8 @@ void PopulateInfoMapWithBookmarks(
               score, blink::mojom::EngagementLevel::LOW);
         });
     // TODO(dmurph): Simplify this (and probably much more) once
-    // SiteEngagementService::GetAllDetails lands (crbug/703848), as that will
-    // allow us to remove most of these lookups and merging of signals.
+    // SiteEngagementService::GetAllDetails lands (crbug.com/41308686), as that
+    // will allow us to remove most of these lookups and merging of signals.
     std::sort(
         result_bookmarks.begin(), result_bookmarks.end(),
         [&engagement_map](const UrlAndTitle& a, const UrlAndTitle& b) {

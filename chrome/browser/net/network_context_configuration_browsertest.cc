@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   MakeLongLivedRequestThatHangsUntilShutdown();
 }
 
-// Disabled due to flakiness. See crbug.com/1189031.
+// Disabled due to flakiness. See crbug.com/40755205.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_UserAgentAndLanguagePrefs DISABLED_UserAgentAndLanguagePrefs
 #else
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_FALSE(GetCookies(embedded_test_server()->base_url()).empty());
 }
 
-// Disabled due to flakiness. See https://crbug.com/1273903.
+// Disabled due to flakiness. See https://crbug.com/40807215.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        DISABLED_CookiesEnabled) {
   if (IsRestartStateWithInProcessNetworkService())
@@ -1531,7 +1531,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       }));
 }
 
-// Disabled due to flakiness. See https://crbug.com/1126755.
+// Disabled due to flakiness. See https://crbug.com/40718681.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PRE_ThirdPartyCookiesBlocked DISABLED_PRE_ThirdPartyCookiesBlocked
 #define MAYBE_ThirdPartyCookiesBlocked DISABLED_ThirdPartyCookiesBlocked
@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 }
 
-// Disabled due to flakiness. See https://crbug.com/1126755.
+// Disabled due to flakiness. See https://crbug.com/40718681.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        MAYBE_ThirdPartyCookiesBlocked) {
   if (IsRestartStateWithInProcessNetworkService())

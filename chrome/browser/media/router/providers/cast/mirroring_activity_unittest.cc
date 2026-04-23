@@ -490,7 +490,7 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
 
 // Site-initiated mirroring activities must be able to send messages to the
 // client, which may be expecting to receive Cast protocol messages.
-// See crbug.com/1078481 for context.
+// See crbug.com/40689354 for context.
 TEST_F(MirroringActivityTest, SendMessageToClient) {
   MakeActivity();
 

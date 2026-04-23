@@ -318,7 +318,7 @@ TEST_F(ModuleInspectorTest, MojoConnectionError) {
 // ModuleInspector is asynchronously waiting on the inspection result retrieved
 // from the cache, StartInspectingModule() is not erroneously re-invoked from
 // the connection error handler.
-// Regression test for https://crbug.com/1213241.
+// Regression test for https://crbug.com/40768643.
 TEST_F(ModuleInspectorTest, WaitingOnCacheConnectionError) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());

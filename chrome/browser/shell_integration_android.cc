@@ -6,7 +6,7 @@
 
 namespace shell_integration {
 
-// TODO: crbug/115375 to track implementation for following methods.
+// TODO: crbug.com/40159203 to track implementation for following methods.
 bool SetAsDefaultBrowser() {
   return false;
 }

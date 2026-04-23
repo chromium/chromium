@@ -1646,7 +1646,7 @@
   {
     "name": "chrome-wide-echo-cancellation",
     "owners": [ "olka@chromium.org", "saza@chromium.org", "fhernqvist@chromium.org" ],
-    // TODO(http://crbug.com/1372451): remove when we have a proper solution.
+    // TODO(http://crbug.com/40871060): remove when we have a proper solution.
     "expiry_milestone": 150
   },
   {
@@ -7295,7 +7295,7 @@
       "cros-ui-foundations@google.com"
     ],
     // This flag is used by users to improve the accessibility of scroll bars
-    // and should not be allowed to expire until https://crbug.com/801671 is
+    // and should not be allowed to expire until https://crbug.com/40090179 is
     // resolved.
     "expiry_milestone": -1
   },
@@ -7660,7 +7660,7 @@
       "//content/browser/preloading/prerender/OWNERS"
     ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to
-    // customize switches. See https://crbug.com/1494471.
+    // customize switches. See https://crbug.com/40286226.
     "expiry_milestone": -1
   },
   {

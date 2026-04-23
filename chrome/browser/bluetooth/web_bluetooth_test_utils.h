@@ -90,12 +90,12 @@ class FakeBluetoothGattCharacteristic
 
   // Do not call the readValue callback until midway through the completion
   // of the startNotification callback registration.
-  // https://crbug.com/1153426
+  // https://crbug.com/40159093
   void DeferReadUntilNotificationStart();
 
   // Possibly trigger value characteristicvaluechanged events on the page
   // during the setup of startNotifications.
-  // https://crbug.com/1153426.
+  // https://crbug.com/40159093.
   void EmitChangeNotificationAtNotificationStart();
 
  private:

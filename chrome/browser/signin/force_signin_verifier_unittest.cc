@@ -456,7 +456,7 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithFinishedRequest) {
   EXPECT_EQ(nullptr, verifier.access_token_fetcher());
 }
 
-// Regression test for https://crbug.com/1259864
+// Regression test for https://crbug.com/40057601
 TEST(ForceSigninVerifierTest, DeleteWithPendingRequestShouldNotCrash) {
   base::test::TaskEnvironment scoped_task_env;
   signin::IdentityTestEnvironment identity_test_env;

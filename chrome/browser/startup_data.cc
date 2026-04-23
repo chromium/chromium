@@ -184,7 +184,7 @@ void StartupData::PreProfilePrefServiceInit() {
 
   const base::FilePath& path = key_->GetPath();
   if (!base::PathExists(path)) {
-    // TODO(rogerta): http://crbug/160553 - Bad things happen if we can't
+    // TODO(rogerta): http://crbug.com/40293891 - Bad things happen if we can't
     // write to the profile directory.  We should eventually be able to run in
     // this situation.
     if (!base::CreateDirectory(path)) {

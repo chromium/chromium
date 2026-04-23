@@ -274,7 +274,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If this is a GuestView (e.g., Chrome Apps <webview>) then HTTPS-First Mode
-  // should not apply. See crbug.com/1233889 for more details.
+  // should not apply. See crbug.com/40781148 for more details.
   if (guest_view::GuestViewBase::IsGuest(frame_tree_node_id_)) {
     std::move(callback).Run({});
     return;
@@ -436,7 +436,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   //
   // It's possible for the WebContents to be destroyed during the
   // asynchronous HSTS query call, before this callback is run. If it no longer
-  // exists, don't upgrade and return. (See crbug.com/1499515.)
+  // exists, don't upgrade and return. (See crbug.com/40076177.)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents) {
@@ -725,7 +725,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // upgrades, so ignore the load here as well. Also explicitly ignore non-main
   // frame loads because we don't want to trigger a fallback navigation in
   // non-main frames.
-  // This is a fix for crbug.com/1441276.
+  // This is a fix for crbug.com/40909795.
   if (!interstitial_state_ || !request.is_outermost_main_frame) {
     return false;
   }

@@ -56,7 +56,7 @@ void SpellCheckPanelBrowserTestHelper::BindSpellCheckPanelHost(
 
   // BindSpellCheckPanelHost() is sometimes invoked as a side-effect of
   // calling spellcheck::SpellCheckMockPanelHost::SpellingPanelVisible(),
-  // which does not call RunUntilBind(). See crbug.com/1032617 .
+  // which does not call RunUntilBind(). See crbug.com/40662948 .
   if (quit_on_bind_closure_) {
     std::move(quit_on_bind_closure_).Run();
   }

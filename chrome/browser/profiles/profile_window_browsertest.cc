@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
 }
 
 // |OpenDevToolsWindowSync| is slow on Linux Debug and can result in flacky test
-// failure. See (crbug.com/1186994).
+// failure. See (crbug.com/40172724).
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_DevToolsWindowsNotCounted DISABLED_DevToolsWindowsNotCounted
 #else
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
-// Regression test for https://crbug.com/1433283
+// Regression test for https://crbug.com/40903397
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OpenTwoBrowserWindowsForProfile) {
   Profile* profile = browser()->profile();

@@ -44,7 +44,7 @@ LCPCriticalPathPredictorHost::~LCPCriticalPathPredictorHost() = default;
 
 LcpCriticalPathPredictorPageLoadMetricsObserver* LCPCriticalPathPredictorHost::
     GetLcpCriticalPathPredictorPageLoadMetricsObserver() const {
-  // Due to an unresolved bug (crbug.com/1335845), GetForPage can return
+  // Due to an unresolved bug (crbug.com/40847334), GetForPage can return
   // nullptr.
   if (auto* page_data =
           LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(

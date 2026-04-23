@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
 
 // Test that cookies that are considered "blocked" are excluded only due to the
 // content settings blocking (i.e. not for other reasons like domain or path not
-// matching). See https://crbug.com/1104451.
+// matching). See https://crbug.com/40139687.
 IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
                        BlockedCookiesOnlyExcludedDueToBlocking) {
   // This test only runs in HTTP mode, not with the full parameterized test
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest,
 
 #endif  // !CHROME_OS
 
-// Regression test for http://crbug.com/63649.
+// Regression test for http://crbug.com/40480136.
 IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectLoopCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

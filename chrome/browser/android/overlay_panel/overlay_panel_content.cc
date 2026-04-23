@@ -81,7 +81,7 @@ void OverlayPanelContent::DestroyWebContents(JNIEnv* env) {
   // At the time this is called we may be deeply nested in a callback from
   // WebContents. WebContents does not support being deleted from a callback
   // (crashes). To avoid this problem DeleteSoon() is used. See
-  // https://crbug.com/1262098.
+  // https://crbug.com/40799275.
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, web_contents_.release());
   // |web_contents_delegate_| may already be NULL at this point.

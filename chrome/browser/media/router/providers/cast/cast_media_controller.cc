@@ -140,7 +140,7 @@ void CastMediaController::NextTrack() {
     return;
   }
   // We do not use |kQueueNext| because not all receiver apps support it.
-  // See crbug.com/1078601.
+  // See crbug.com/40689430.
   activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
       CreateMediaRequest(V2MessageType::kQueueUpdate)
           .SetByDottedPath("message.jump", kQueueNextJumpValue)));
@@ -151,7 +151,7 @@ void CastMediaController::PreviousTrack() {
     return;
   }
   // We do not use |kQueuePrev| because not all receiver apps support it.
-  // See crbug.com/1078601.
+  // See crbug.com/40689430.
   activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
       CreateMediaRequest(V2MessageType::kQueueUpdate)
           .SetByDottedPath("message.jump", kQueuePrevJumpValue)));

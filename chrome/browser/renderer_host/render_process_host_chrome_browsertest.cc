@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTestWithCommandLine,
 }
 
 // Ensure that DevTools opened to debug DevTools is launched in a separate
-// process when --process-per-tab is set. See crbug.com/69873.
+// process when --process-per-tab is set. See crbug.com/41305755.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
                        DevToolsOnSelfInOwnProcessPPT) {
   base::CommandLine& parsed_command_line =
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
 }
 
 // Ensure that DevTools opened to debug DevTools is launched in a separate
-// process. See crbug.com/69873.
+// process. See crbug.com/41305755.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
                        DevToolsOnSelfInOwnProcess) {
   int tab_count = 1;

@@ -141,7 +141,7 @@ class LiveSignInTestFullSync : public LiveSignInTestBase {
 };
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Sings in an account through the settings page and checks that the account is
 // added to Chrome. Sync should be disabled because the test doesn't pass
 // through the Sync confirmation dialog.
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_SimpleSignInFlow) {
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Signs in an account through the settings page and enables Sync. Checks that
 // Sync is enabled.
 // Then, signs out on the web and checks that the account is removed from
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_WebSignOut) {
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Sings in two accounts on the web and checks that cookies and refresh tokens
 // are added to Chrome. Sync should be disabled.
 // Then, signs out on the web and checks that accounts are removed from Chrome.
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Signs in an account through the settings page and enables Sync. Checks that
 // Sync is enabled. Signs in a second account on the web.
 // Then, turns Sync off from the settings page and checks that both accounts are
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSync) {
 
 // In "Sync paused" state, when the primary account is invalid, turns off sync
 // from settings. Checks that the account is removed from Chrome.
-// Regression test for https://crbug.com/1114646
+// Regression test for https://crbug.com/40710922
 IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSyncWhenPaused) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSyncWhenPaused) {
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Signs in an account on the web. Goes to the Chrome settings to enable Sync
 // but cancels the sync confirmation dialog. Checks that the account is still
 // signed in on the web but Sync is disabled.
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Starts the sign in flow from the settings page, enters credentials on the
 // login page but cancels the Sync confirmation dialog. Checks that Sync is
 // disabled but the account is still signed in to Chrome.
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CancelSync) {
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
 // on "This wasn't me" in the email confirmation dialog. Checks that the new
 // profile is created. Checks that Sync to account 2 is enabled in the new
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
 // on "This was me" in the email confirmation dialog. Checks that Sync to
 // account 2 is enabled in the current profile.
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/1025335.
+// See crbug.com/40107825.
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
 // on "Cancel" in the email confirmation dialog. Checks that the account is left
 // signed in without syncing.

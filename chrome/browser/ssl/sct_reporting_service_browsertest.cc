@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
 }
 
 // Test that report count isn't incremented when retrying a single audit report.
-// Regression test for crbug.com/1348313.
+// Regression test for crbug.com/40855225.
 IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
                        HashdanceReportCountNotIncrementedOnRetry) {
   base::HistogramTester histograms;

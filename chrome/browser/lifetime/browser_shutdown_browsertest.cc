@@ -41,7 +41,7 @@ class BrowserShutdownBrowserTest : public InProcessBrowserTest {
 // ChromeOS has the different shutdown flow on user initiated exit process.
 // See the comment for chrome::AttemptUserExit() function declaration.
 #if !BUILDFLAG(IS_CHROMEOS)
-// Mac browser shutdown is flaky: https://crbug.com/1259913
+// Mac browser shutdown is flaky: https://crbug.com/40201651
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ClosingShutdownHistograms DISABLED_ClosingShutdownHistograms
 #else
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time2", 1);
 }
 
-// Flakes on Mac12.0: https://crbug.com/1259913
+// Flakes on Mac12.0: https://crbug.com/40201651
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TwoBrowsersClosingShutdownHistograms \
   DISABLED_TwoBrowsersClosingShutdownHistograms

@@ -335,7 +335,7 @@ TEST_F(PushMessagingServiceTest, RecordsRevocationAndSourceUiWithReporterTest) {
                                 static_cast<int>(source_ui), 1);
 }
 
-// Fails too often on Linux TSAN builder: http://crbug.com/1211350.
+// Fails too often on Linux TSAN builder: http://crbug.com/40767573.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_PayloadEncryptionTest DISABLED_PayloadEncryptionTest
 #else
@@ -496,7 +496,7 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
   EXPECT_EQ(p256dh, push_messaging::NormalizeSenderInfo(p256dh));
 }
 
-// Fails too often on Linux TSAN builder: http://crbug.com/1211350.
+// Fails too often on Linux TSAN builder: http://crbug.com/40767573.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_RemoveExpiredSubscriptions DISABLED_RemoveExpiredSubscriptions
 #else

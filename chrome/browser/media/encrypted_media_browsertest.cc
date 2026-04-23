@@ -141,7 +141,7 @@ using ukm::builders::Media_WebMediaPlayerState;
 // Base class for encrypted media tests.
 class EncryptedMediaTestBase : public MediaBrowserTest {
  public:
-  // Occasionally these tests are timing out (see crbug.com/1444672).
+  // Occasionally these tests are timing out (see crbug.com/40911995).
   // Overriding the setup/run/teardown methods so that the failures will log
   // when these happen to see if we can get a better understanding of what
   // causes the timeout.

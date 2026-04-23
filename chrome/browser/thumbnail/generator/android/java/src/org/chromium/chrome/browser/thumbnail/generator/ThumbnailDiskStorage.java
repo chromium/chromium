@@ -305,12 +305,13 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     /**
      * Adds thumbnail to disk as most recent. Thumbnail with an existing content ID in cache will be
      * replaced by the newly added. Invoked on background thread.
+     *
+     * <p>TODO(angelashao): Use a DB to store thumbnail-related data. (crbug.com/41334944)
+     *
      * @param contentId Content ID for the thumbnail to cache to disk.
      * @param bitmap The thumbnail to cache.
      * @param iconSizePx Requested size (maximum required dimension (pixel) of the smaller side) of
-     * the thumbnail.
-     *
-     * TODO(angelashao): Use a DB to store thumbnail-related data. (crbug.com/747555)
+     *     the thumbnail.
      */
     @VisibleForTesting
     void addToDisk(String contentId, Bitmap bitmap, int iconSizePx) {

@@ -494,7 +494,7 @@ TEST_P(PrefetchManagerTest, Stop) {
               UnorderedElementsAreArray({test_server.GetURL(path2)}));
 }
 
-// Flaky on Mac/Linux/CrOS/Android/Windows. http://crbug.com/1239235
+// Flaky on Mac/Linux/CrOS/Android/Windows. http://crbug.com/40784662
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_StopAndStart DISABLED_StopAndStart

@@ -364,9 +364,9 @@ std::unique_ptr<Profile> Profile::CreateProfile(const base::FilePath& path,
       if (base::PathExists(path)) {
         creation_time = GetCreationTimeForPath(path);
       } else {
-        // TODO(rogerta): http://crbug/160553 - Bad things happen if we can't
-        // write to the profile directory.  We should eventually be able to run
-        // in this situation.
+        // TODO(rogerta): http://crbug.com/40293891 - Bad things happen if we
+        // can't write to the profile directory.  We should eventually be able
+        // to run in this situation.
         if (!base::CreateDirectory(path)) {
           return nullptr;
         }

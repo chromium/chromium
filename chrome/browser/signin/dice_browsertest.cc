@@ -1108,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice_SignedOut) {
 
 // Tests that turning off Dice via preferences works when signed in.
 //
-// Regression test for crbug/1254325
+// Regression test for crbug.com/40794285
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice_SignedIn) {
   ASSERT_NO_FATAL_FAILURE(SetupSignedInAccounts());
 
@@ -1252,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
 
 // Tests that the account is signed in if the ENABLE_SYNC response is received
 // before the refresh token, and the Sync/history sync opt-in is offered.
-// https://crbug.com/1082858
+// https://crbug.com/40692152
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
@@ -1345,7 +1345,7 @@ class DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos
 
 // Verifies that Chrome doesn't crash on browser window close when the sync
 // confirmation dialog is waiting for its size.
-// Regression test for https://crbug.com/1304055.
+// Regression test for https://crbug.com/40826319.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
                        CloseBrowserWhileInitializingSyncConfirmation) {
   content::TestNavigationObserver sync_confirmation_url_observer(
@@ -1973,7 +1973,7 @@ class DiceManageAccountBrowserTest : public DiceBrowserTest {
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
-    // See crbug.com/1073451.
+    // See crbug.com/40686320.
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif
     DiceBrowserTest::SetUp();

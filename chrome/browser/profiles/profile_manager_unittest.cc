@@ -791,7 +791,7 @@ TEST_P(ProfileManagerTest, CreateProfilesAsync) {
   content::RunAllTasksUntilIdle();
 }
 
-// Regression test for https://crbug.com/1472849
+// Regression test for https://crbug.com/40069557
 TEST_P(ProfileManagerTest, ConcurrentCreationAsyncAndSync) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 

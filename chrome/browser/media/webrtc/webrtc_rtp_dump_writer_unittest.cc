@@ -292,7 +292,7 @@ TEST_F(WebRtcRtpDumpWriterTest, WriteAndFlushSmallSizeDump) {
   VerifyDumps(1, 1);
 }
 
-// Flaky test disabled on Windows (https://crbug.com/1044271).
+// Flaky test disabled on Windows (https://crbug.com/40669633).
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_WriteOverMaxLimit DISABLED_WriteOverMaxLimit
 #else

@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // GSSAPI is currently incompatible with the network service sandbox
-// (crbug.com/1474362). It isn't known until the browser is already started
+// (crbug.com/40070096). It isn't known until the browser is already started
 // whether GSSAPI is desired, so if Chrome detects that GSSAPI is desired after
 // the network service has already started sandboxed, the network
 // service must be restarted so the sandbox can be removed.

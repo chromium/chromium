@@ -606,7 +606,7 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
 
 // Tests the Typically Secure User heuristic to ensure that it respects the
 // finch flag. See TypicallySecureUserPref for more details.
-// Regression test for crbug.com/1475747.
+// Regression test for crbug.com/40070502.
 TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
        TypicallySecureUser_DisabledByDefault) {
   base::test::ScopedFeatureList feature_list;

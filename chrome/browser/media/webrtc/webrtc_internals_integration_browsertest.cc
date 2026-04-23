@@ -58,7 +58,7 @@ class WebRTCInternalsIntegrationBrowserTest : public WebRtcTestBase {
   base::ScopedTempDir local_logs_dir_;
 };
 
-// Sheriff 2022-04-18: disabling due to flakiness: crbug/1317072
+// Sheriff 2022-04-18: disabling due to flakiness: crbug.com/40834454
 IN_PROC_BROWSER_TEST_F(WebRTCInternalsIntegrationBrowserTest,
                        DISABLED_IntegrationWithWebRtcEventLogger) {
   ASSERT_TRUE(embedded_test_server()->Start());

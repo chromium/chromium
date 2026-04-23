@@ -36,7 +36,7 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
 
   // Sanitize the DeletionInfo of empty/invalid urls before passing to java.
   // Fix for empty java strings being passed to the content capture service
-  // (crbug.com/1136486).
+  // (crbug.com/40724244).
   static history::DeletionInfo SanitizeDeletionInfo(
       const history::DeletionInfo& deletion_info);
 

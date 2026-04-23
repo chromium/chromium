@@ -20,7 +20,7 @@ class SelectPopupBrowsertest : public InProcessBrowserTest {
 };
 
 // <select> popups should not be created for background tabs.
-// http://crbug.com/1521345
+// http://crbug.com/41494315
 IN_PROC_BROWSER_TEST_F(SelectPopupBrowsertest, SelectPopupHiddenTab) {
   // Open a tab with a select element
   content::RenderFrameHost* first_rfh = ui_test_utils::NavigateToURL(

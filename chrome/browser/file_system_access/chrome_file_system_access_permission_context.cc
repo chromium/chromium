@@ -2332,7 +2332,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   // If attempting to save a file with a dangerous extension, prompt the user
   // to make them confirm they actually want to save the file.
   if (handle_type == HandleType::kFile && user_action == UserAction::kSave) {
-    // See https://crbug.com/1320877#c4 for justification for why we show the
+    // See https://crbug.com/40059513#c4 for justification for why we show the
     // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
     auto danger_level = GetFileTypeDangerLevel(
         path_info.path, origin, Profile::FromBrowserContext(profile_));

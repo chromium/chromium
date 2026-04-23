@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
 }
 
 // "Edit" does not unlock the profile (regression test for
-// https://crbug.com/1324958).
+// https://crbug.com/40839569).
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NotLoaded) {
   EXPECT_FALSE(menu()->GetActiveProfileIndex().has_value());
 }
 
-// Regression test for https://crbug.com/1382509
+// Regression test for https://crbug.com/40245654
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   // Keep the browser process running while browsers are closed.
   Profile* profile = browser()->profile();

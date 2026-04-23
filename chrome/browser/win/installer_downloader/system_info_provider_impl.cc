@@ -26,7 +26,7 @@ bool SystemInfoProviderImpl::IsOsEligible() {
   // the binary lacks a supported‑OS manifest. The file version of kernel32.dll
   // is not subject to those version‑lies, so it gives us the true OS build
   // number and prevents spoofing.
-  // See crbug.com/1404448.
+  // See crbug.com/40886044.
   return base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11;
 }
 

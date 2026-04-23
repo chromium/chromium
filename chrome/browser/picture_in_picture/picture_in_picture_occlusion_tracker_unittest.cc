@@ -247,7 +247,7 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-// Regression test for https://crbug.com/1509371.
+// Regression test for https://crbug.com/41481979.
 TEST_F(PictureInPictureOcclusionTrackerTest, ObserveTwiceDoesNotCrash) {
   MockPictureInPictureOcclusionObserver observer;
   ScopedPictureInPictureOcclusionObservation observation(&observer);

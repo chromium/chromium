@@ -154,13 +154,14 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     /**
      * Watches a slice view to get notified when the first time it has the visible area on screen
      * not less than the given threshold.
+     *
      * @param contentKey The content key of the view to watch for.
      * @param viewedThreshold The threshold of the percentage of the visible area on screen.
      * @param callback The callback to get notified.
      */
     public void watchForFirstVisible(
             @Nullable String contentKey, float viewedThreshold, Runnable callback) {
-        if (mWatchedSliceMap == null) { // avoid crbug.com/1416344
+        if (mWatchedSliceMap == null) { // avoid crbug.com/40893468
             return;
         }
         ArrayList<VisibilityObserver> watchers = mWatchedSliceMap.get(contentKey);
@@ -173,11 +174,12 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
 
     /**
      * Stops watching a slice view for first-time visible.
+     *
      * @param contentKey The content key of the view to stop watching for.
      * @param callback The callback to stop from getting the notification.
      */
     public void stopWatchingForFirstVisible(String contentKey, Runnable callback) {
-        if (mWatchedSliceMap == null) { // avoid crbug.com/1416344
+        if (mWatchedSliceMap == null) { // avoid crbug.com/40893468
             return;
         }
         ArrayList<VisibilityObserver> watchers = mWatchedSliceMap.get(contentKey);

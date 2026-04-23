@@ -353,7 +353,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
 }
 
 // Check that a Dice header can still be processed in a reused tab.
-// Regression test for https://crbug.com/1471277
+// Regression test for https://crbug.com/40069069
 TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
   // Complete a first signin flow.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =

@@ -188,7 +188,7 @@ TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
       main_frame_url, main_rfh());
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
-  // TOOO(https://crbug.com/1467792): Consider refactoring this to rely on
+  // TOOO(https://crbug.com/40276923): Consider refactoring this to rely on
   // loading events in NavigationSimulator.
   navigation->SetKeepLoading(true);
   ukm::SourceId ukm_source_id;
@@ -228,7 +228,7 @@ TEST_P(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   navigation->SetKeepLoading(true);
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
-  // TOOO(https://crbug.com/1467792): Consider refactoring this to rely on
+  // TOOO(https://crbug.com/40276923): Consider refactoring this to rely on
   // loading events in NavigationSimulator.
   ukm::SourceId ukm_source_id;
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, url, _))

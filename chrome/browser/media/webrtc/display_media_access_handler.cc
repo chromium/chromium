@@ -222,7 +222,7 @@ void DisplayMediaAccessHandler::HandleRequest(
 #if BUILDFLAG(IS_MAC)
   // Do not allow picker UI to be shown on a page that isn't in the foreground
   // in Mac, because the UI implementation in Mac pops a window over any content
-  // which might be confusing for the users. See https://crbug.com/1407733 for
+  // which might be confusing for the users. See https://crbug.com/40888016 for
   // details.
   //
   // If the page isn't in the foreground, but the page has a document

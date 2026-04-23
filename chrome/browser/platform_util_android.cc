@@ -29,7 +29,7 @@ bool g_shell_operations_allowed = true;
 
 }  // namespace internal
 
-// TODO: crbug/115682 to track implementation of the following methods.
+// TODO: crbug.com/40736101 to track implementation of the following methods.
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   // Skip opening the folder in some browser tests.

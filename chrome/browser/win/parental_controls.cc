@@ -68,7 +68,7 @@ class WinParentalControlsValue {
     // Note that this CHECK replaced a previous base::ScopedBlockingCall, which
     // was incorrect because there were no guarantees that
     // InitializeWinParentalControls() would finish executing asynchronously
-    // before the value was needed. See https://crbug.com/1411815#c7.
+    // before the value was needed. See https://crbug.com/40890509#c7.
     if (!g_has_called_initialize_win_parental_controls_) {
       // This uses CHECK_IS_TEST() to skip verifying that
       // InitializeWinParentalControls() got called in tests because updating

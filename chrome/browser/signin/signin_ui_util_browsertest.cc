@@ -991,7 +991,7 @@ class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that `ShowExtensionSigninPrompt()` doesn't crash when it cannot create
-// a new browser. Regression test for https://crbug.com/1273370.
+// a new browser. Regression test for https://crbug.com/40806926.
 IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
                        ShowExtensionSigninPrompt_NoBrowser) {
   Profile* new_profile = CreateProfile();

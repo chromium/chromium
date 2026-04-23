@@ -216,7 +216,7 @@ NavigationPredictor::NavigationPredictor(
   // When using content::Page::IsPrimary, bfcache can cause returning a false in
   // the back/forward navigation. So, DCHECK only checks if current page is
   // prerendering until deciding how to handle bfcache navigations. See also
-  // https://crbug.com/1239310.
+  // https://crbug.com/40193806.
   DCHECK(!IsPrerendering(render_frame_host));
 
   navigation_start_ = NowTicks();

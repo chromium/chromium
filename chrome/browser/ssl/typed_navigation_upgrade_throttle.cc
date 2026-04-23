@@ -209,7 +209,7 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
   params.url = http_url_;
 
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  // According to crbug.com/1058303, web_contents could be null but we don't
+  // According to crbug.com/40677892, web_contents could be null but we don't
   // want to speculatively handle that case here, so just DCHECK for now.
   DCHECK(web_contents);
 

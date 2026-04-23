@@ -1219,7 +1219,7 @@ class ControlledFrameServiceWorkerTest
 
 // This test ensures that loading an extension Service Worker does not cause a
 // crash, and that Controlled Frame is not allowed in the Service Worker
-// context. For more details, see https://crbug.com/1462384.
+// context. For more details, see https://crbug.com/40274909.
 // This test is the same as ServiceWorkerBasedBackgroundTest.Basic.
 IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, PRE_Basic) {
   ExtensionTestMessageListener newtab_listener("CREATED");

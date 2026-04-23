@@ -235,7 +235,7 @@ class KeyboardAccessoryViewBinder {
             // other cards or IBANs (if they exist) to be seen. Their max width is set to 85% of
             // the window width.
             // The chip size is limited by truncating the card/IBAN label.
-            // TODO (crbug.com/1376691): Check if it's alright to instead show a fixed portion of
+            // TODO (crbug.com/40243300): Check if it's alright to instead show a fixed portion of
             // the following chip. This might give a more consistent user experience and allow wider
             // windows to show more information in a chip before truncating.
             if (containsIbanInfo(item.getSuggestion())

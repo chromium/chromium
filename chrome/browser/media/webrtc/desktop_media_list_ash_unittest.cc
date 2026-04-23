@@ -93,7 +93,7 @@ TEST_F(DesktopMediaListAshTest, WindowOnly) {
     loop2.Run();
   }
   // Tests that a floated window shows up on the list. Regression test for
-  // crbug.com/1462516.
+  // crbug.com/40066933.
   {
     base::RunLoop loop1;
     base::RunLoop loop2;

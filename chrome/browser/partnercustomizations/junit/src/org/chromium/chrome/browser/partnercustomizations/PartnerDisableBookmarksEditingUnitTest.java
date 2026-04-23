@@ -150,7 +150,7 @@ public class PartnerDisableBookmarksEditingUnitTest {
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
-    @DisabledTest(message = "Flaky due to ConcurrentModificationException, crbug.com/1446093")
+    @DisabledTest(message = "Flaky due to ConcurrentModificationException, crbug.com/40268444")
     public void testBookmarksEditingProviderDelayed() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);

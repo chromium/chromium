@@ -10,7 +10,7 @@ namespace ui {
 
 // Configures the ozone platform so it would return an error early at the stage
 // of initialisation.  In such event, the browser should gracefully exit.
-// See https://crbug.com/1280138.
+// See https://crbug.com/40811268.
 class OzonePlatformTest : public InProcessBrowserTest {
  public:
   OzonePlatformTest() {

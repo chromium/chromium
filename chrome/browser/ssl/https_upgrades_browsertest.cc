@@ -1768,7 +1768,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-// Regression test for crbug.com/1441276. Sequence of events:
+// Regression test for crbug.com/40909795. Sequence of events:
 // 1. Loads http://example.com. This gets upgraded to https://example.com.
 // 2. https://example.com has an iframe for https://nonexistentsite.com. It
 //    navigates away immediately to http://example.com.
@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // page instead of the HTTPS-First Mode interstitial. If the network conditions
 // change such that the network error no longer triggers, reloading the tab
 // should continue the upgraded navigation, which will fail and trigger fallback
-// to HTTP. (Regression test for crbug.com/1277211.)
+// to HTTP. (Regression test for crbug.com/40809438.)
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        ExemptNetErrorOnUpgrade_ShouldNotFallback) {
   // This test is only interesting when HTTPS-First Mode is enabled.
@@ -1970,7 +1970,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
 // Test that if one site redirects to a non-existent site, that we show the
 // regular net error page instead of the HTTPS-First Mode interstitial.
-// (Regression test for crbug.com/1277211.)
+// (Regression test for crbug.com/40809438.)
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        RedirectToNonexistentSite_ShouldNotInterstitial) {
   // This test is only interesting when HTTPS-First Mode is enabled.
@@ -2022,7 +2022,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // page and instead just fallback to HTTP and the HTTPS-First Mode interstitial.
 // Otherwise, the user can be stuck on the net error page when the HTTP version
 // of the host would have resolved, such as for corp single-label hostnames.
-// (Regression test for crbug.com/1451040.)
+// (Regression test for crbug.com/40915602.)
 IN_PROC_BROWSER_TEST_P(
     HttpsUpgradesBrowserTest,
     ExemptNetErrorOnUpgrade_NonUniqueHostname_ShouldFallback) {
@@ -2545,7 +2545,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
-// Regression test for crbug.com/1233207.
+// Regression test for crbug.com/40780767.
 // Tests the case where the HTTP version of a site redirects to HTTPS, but the
 // HTTPS version of the site has a cert error. If the user initially navigates
 // to the HTTP URL, then HTTPS-First Mode should upgrade the navigation to HTTPS
@@ -2710,7 +2710,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Rarely, an open connection with the bad cert might be reused for the next
   // navigation, which is supposed to show an interstitial. Close open
   // connections to ensure a fresh connection (and certificate validation) for
-  // the next navigation. See https://crbug.com/1150592. A deeper fix for this
+  // the next navigation. See https://crbug.com/40732511. A deeper fix for this
   // issue would be to unify certificate bypass logic which is currently split
   // between the net stack and content layer; see https://crbug.com/40418163.
   // See also: SSLUITest.BadCertFollowedByGoodCert.
@@ -2985,7 +2985,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
                                   NavigationRequestSecurityLevel::kSecure, 1);
 }
 
-// Regression test for crbug.com/1272781. Previously, performing back/forward
+// Regression test for crbug.com/40806549. Previously, performing back/forward
 // navigations around the HTTPS-First Mode interstitial could cause history
 // entries to dropped.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
@@ -3386,7 +3386,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
 }
 
-// Regression test for crbug.com/1431026. Triggers a navigation where HTTPS
+// Regression test for crbug.com/40902071. Triggers a navigation where HTTPS
 // upgrades applied multiple times across redirects to different sites.
 // Should not crash when DCHECKS are enabled.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {

@@ -519,7 +519,7 @@ void MediaDrmOriginIdManager::PreProvisionIfNecessary() {
     return;
 
   // Checking if per-application provisioning is supported is known to be
-  // expensive (see crbug.com/1366106). Calling it on a low priority thread
+  // expensive (see crbug.com/40866724). Calling it on a low priority thread
   // to avoid slowing down the main thread, and then resuming pre-provisioning
   // back on this thread (as access to the PrefService must be done on the
   // UI thread).
@@ -602,7 +602,7 @@ void MediaDrmOriginIdManager::StartProvisioningAsync(bool run_in_background) {
   // scroll jank, especially when pre-provisioning is happening (as the origin
   // IDs aren't needed for the current page, so it can run at low priority).
   // However, if a user needs a provisioned origin ID immediately, then run at
-  // higher priority. See crbug.com/1366106 for details.
+  // higher priority. See crbug.com/40866724 for details.
   const base::TaskPriority priority = run_in_background
                                           ? base::TaskPriority::BEST_EFFORT
                                           : base::TaskPriority::USER_VISIBLE;

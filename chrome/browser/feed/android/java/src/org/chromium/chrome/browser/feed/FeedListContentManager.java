@@ -138,7 +138,7 @@ public class FeedListContentManager implements ListContentManager {
             // If there's already a parent, we have already enclosed this view previously.
             // This can happen if a native view is added, removed, and added again.
             // In this case, it is important to make a new view because the RecyclerView
-            // may still have a reference to the old one. See crbug.com/1131975.
+            // may still have a reference to the old one. See crbug.com/40721693.
             UiUtils.removeViewFromParent(mNativeView);
 
             FrameLayout enclosingLayout = new FrameLayout(parent.getContext());

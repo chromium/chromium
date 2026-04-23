@@ -55,7 +55,7 @@ source_set("app_service") {
 
   # TODO(crbug.com/40251079): Remove circular dependencies. Possibly flip
   # dependency direction so AppService doesn't depend on extensions
-  # (crbug.com/1402146).
+  # (crbug.com/40251080).
   allow_circular_includes_from = []
 
   if (enable_extensions) {

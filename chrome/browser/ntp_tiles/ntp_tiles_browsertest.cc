@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, ServerRedirect) {
 
 // Tests usage of MostVisitedSites mimicking Chrome Home, where an observer is
 // installed early and once and navigations follow afterwards.
-// Flaky on several platforms: https://crbug.com/1487047.
+// Flaky on several platforms: https://crbug.com/40933946.
 IN_PROC_BROWSER_TEST_F(NTPTilesTest, DISABLED_NavigateAfterSettingObserver) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL page_url = embedded_test_server()->GetURL("/simple.html");

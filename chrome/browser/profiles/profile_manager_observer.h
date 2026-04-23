@@ -27,7 +27,7 @@ class ProfileManagerObserver : public base::CheckedObserver {
 
   // Called when the user deletes a profile and all associated data should be
   // erased. Note that the Profile object will not be destroyed until Chrome
-  // shuts down. See https://crbug.com/88586
+  // shuts down. See https://crbug.com/40594327
   virtual void OnProfileMarkedForPermanentDeletion(Profile* profile) {}
 
   // Called when the profile manager is destroying. As the `ProfileManager` is

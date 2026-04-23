@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
 // Tests that CSP reports are delivered properly whether configured with the
 // v0 Report-To header or the v1 Reporting-Endpoints header. This is a Non-
 // isolated test, so will run with NIK-based report isolation disabled. This is
-// a regression test for https://crbug.com/1258112.
+// a regression test for https://crbug.com/40200931.
 IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
                        TestReportingHeadersProcessed) {
   // Navigate to reporting-enabled page.
