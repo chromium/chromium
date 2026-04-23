@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
@@ -38,8 +39,19 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/converting_audio_fifo.h"
 
 namespace media {
+// On macOS 14, CATap does not handle sample rate mismatches, making internal
+// resampling necessary. This issue is resolved in macOS 15+.
+BASE_FEATURE(kMacCatapSonomaInternalResampling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If this feature is enabled, the internal resampler is used instead of the
+// CoreAudio resampler. This is useful for debugging and testing purposes.
+BASE_FEATURE(kMacCatapForceInternalResampling,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Acts as a thread-safe bridge between the CoreAudio IOProc and the
 // CatapAudioInputStreamSource. If teardown fails, this object is intentionally
 // leaked to give the orphaned OS thread a valid memory address to read.
@@ -147,6 +159,16 @@ BASE_FEATURE(kMacCatapCaptureAllDevices, base::FEATURE_DISABLED_BY_DEFAULT);
 // configured to be sterero.
 BASE_FEATURE(kMacCatapForceMonoCaptureOfMonoDevices,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Returns true if the default device should use internal resampling.
+// On macOS 14, CATap does not handle sample rate mismatches, making internal
+// resampling necessary. This issue is resolved in macOS 15+.
+bool ShouldDefaultDeviceUseInternalResampling() {
+  return (base::mac::MacOSVersion() >= 14'00'00 &&
+          base::mac::MacOSVersion() < 15'00'00 &&
+          base::FeatureList::IsEnabled(kMacCatapSonomaInternalResampling)) ||
+         base::FeatureList::IsEnabled(kMacCatapForceInternalResampling);
+}
 
 API_AVAILABLE(macos(14.2))
 OSStatus DeviceIoProc(AudioDeviceID,
@@ -437,6 +459,20 @@ bool operator==(const AudioObjectPropertyAddress& x,
          x.mElement == y.mElement;
 }
 
+int GetVirtualFormatSampleRate(CatapApi* catap_api, AudioDeviceID device_id) {
+  AudioStreamBasicDescription stream_format;
+  UInt32 property_size = sizeof(AudioStreamBasicDescription);
+  OSStatus status = catap_api->AudioObjectGetPropertyData(
+      device_id, &kVirtualFormatAddress, 0, nullptr, &property_size,
+      &stream_format);
+
+  if (status != noErr) {
+    return 0;
+  }
+
+  return stream_format.mSampleRate;
+}
+
 }  // namespace
 
 // Helper class to manage CoreAudio property listeners.
@@ -492,6 +528,11 @@ class PropertyListenerHelper {
       catap_api_->AudioObjectAddPropertyListenerBlock(
           kAudioObjectSystemObject, &kDefaultOutputDevicePropertyAddress,
           dispatch_get_main_queue(), property_listener_block_);
+      if (ShouldDefaultDeviceUseInternalResampling()) {
+        catap_api_->AudioObjectAddPropertyListenerBlock(
+            *capture_audio_device_id_, &kSampleRateAddress,
+            dispatch_get_main_queue(), property_listener_block_);
+      }
     }
 
     catap_api_->AudioObjectAddPropertyListenerBlock(
@@ -521,6 +562,12 @@ class PropertyListenerHelper {
         property_listener_block_);
 
     if (capture_audio_device_id_.has_value()) {
+      if (ShouldDefaultDeviceUseInternalResampling()) {
+        catap_api_->AudioObjectRemovePropertyListenerBlock(
+            *capture_audio_device_id_, &kSampleRateAddress,
+            dispatch_get_main_queue(), property_listener_block_);
+      }
+
       catap_api_->AudioObjectRemovePropertyListenerBlock(
           kAudioObjectSystemObject, &kDefaultOutputDevicePropertyAddress,
           dispatch_get_main_queue(), property_listener_block_);
@@ -565,9 +612,14 @@ CatapAudioInputStreamSource::Config::Config(
       frames_per_buffer(params.frames_per_buffer()),
       target_device(std::move(target_device)),
       aggregate_device_sample_rate(aggregate_device_sample_rate),
-      // TODO(crbug.com/481295177): Set this to the correct value once
-      // resampling is implemented.
-      aggregate_frames_per_buffer(frames_per_buffer),
+      // Note: Integer truncation is acceptable here because it only sets the
+      // nominal input buffer size requested from the OS, not the total audio
+      // captured. The underlying ConvertingAudioFifo queues these buffers
+      // continuously and handles the exact fractional math under the hood.
+      aggregate_frames_per_buffer(
+          aggregate_device_sample_rate != sample_rate
+              ? frames_per_buffer * aggregate_device_sample_rate / sample_rate
+              : frames_per_buffer),
       mute_local_device(MuteLocalPlaybackLoopback(device_id)),
       exclude_chrome(ExcludeChromeLoopback(device_id)),
       capture_application(GetCaptureApplication(device_id)) {}
@@ -597,6 +649,25 @@ std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
   return s.str();
 }
 
+API_AVAILABLE(macos(14.2))
+std::unique_ptr<ConvertingAudioFifo> MaybeCreateConvertingAudioFifo(
+    const CatapAudioInputStreamSource::Config& config) {
+  if (config.aggregate_device_sample_rate != config.sample_rate) {
+    AudioParameters input_params(
+        AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        ChannelLayoutConfig::Guess(config.catap_channels),
+        config.aggregate_device_sample_rate,
+        config.aggregate_frames_per_buffer);
+    AudioParameters output_params(
+        AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        ChannelLayoutConfig::Guess(config.output_channels), config.sample_rate,
+        config.frames_per_buffer);
+    return std::make_unique<ConvertingAudioFifo>(input_params, output_params,
+                                                 /*use_input_bus_pool=*/true);
+  }
+  return nullptr;
+}
+
 CatapAudioInputStreamSource::CatapAudioInputStreamSource(
     const raw_ptr<CatapApi> catap_api,
     Config config,
@@ -607,29 +678,30 @@ CatapAudioInputStreamSource::CatapAudioInputStreamSource(
       input_buffer_duration_(AudioTimestampHelper::FramesToTime(
           config_.aggregate_frames_per_buffer,
           config_.aggregate_device_sample_rate)),
+      output_buffer_duration_(
+          AudioTimestampHelper::FramesToTime(config_.frames_per_buffer,
+                                             config_.sample_rate)),
       glitch_helper_(config_.sample_rate,
                      AudioGlitchInfo::Direction::kLoopback),
       audio_bus_(config_.catap_channels == 1
                      ? AudioBus::CreateWrapper(config_.output_channels)
                      : AudioBus::Create(config_.output_channels,
                                         config_.frames_per_buffer)),
+      converting_audio_fifo_(MaybeCreateConvertingAudioFifo(config_)),
       sink_(nullptr),
       log_callback_(std::move(log_callback)),
       audio_property_change_callback_(audio_property_change_callback) {
   CHECK(!log_callback_.is_null());
   CHECK(catap_api_);
 
-  // TODO(crbug.com/481295177): Support internal resampling using
-  // ConvertingAudioFifo.
-  CHECK_EQ(config_.aggregate_device_sample_rate, config_.sample_rate);
-
   // Only mono and stereo audio is supported.
   CHECK(config_.output_channels == 1 || config_.output_channels == 2);
   CHECK(config_.catap_channels == 1 ||
         config_.catap_channels == config_.output_channels);
 
-  SendLogMessage("%s({config=[%s]})", __func__,
-                 config_.AsHumanReadableString().c_str());
+  SendLogMessage("%s({config=[%s], converting_audio_fifo_=%s})", __func__,
+                 config_.AsHumanReadableString().c_str(),
+                 converting_audio_fifo_ ? "true" : "false");
 }
 
 CatapAudioInputStreamSource::~CatapAudioInputStreamSource() {
@@ -1042,27 +1114,52 @@ void CatapAudioInputStreamSource::OnCatapSample(
     }
     return;
   }
-
   glitch_helper_.OnFramesReceived(*input_time, frames);
 
-  if (config_.catap_channels == 1) {
-    // If the captured signal is mono, we may need to upmix it. This loop copies
-    // a reference to the single mono channel to all output channels. For
-    // example, if outputting to stereo, both left and right channels will get
-    // the same mono data.
-    audio_bus_->set_frames(frames);
-    for (int i = 0; i < config_.output_channels; ++i) {
-      audio_bus_->SetChannelData(i, data);
+  if (converting_audio_fifo_) {
+    // The next output buffer will begin with leftover, unprocessed frames
+    // currently sitting in the FIFO. We subtract their duration from the
+    // current input's capture time to anchor our output timestamp to the
+    // exact moment that oldest sample was captured. This continuous anchoring
+    // to the advancing hardware clock ensures strictly monotonic output
+    // timestamps, safely handling any upstream time glitches.
+    base::TimeTicks output_capture_time =
+        capture_time - converting_audio_fifo_->GetBufferedInputDuration();
+
+    std::unique_ptr<AudioBus> input_bus =
+        converting_audio_fifo_->GetInputAudioBus();
+    input_bus->FromInterleaved<Float32SampleTypeTraits>(data);
+    converting_audio_fifo_->Push(std::move(input_bus));
+
+    while (converting_audio_fifo_->HasOutput()) {
+      const AudioBus* output_bus = converting_audio_fifo_->PeekOutput();
+
+      sink_->OnData(output_bus, output_capture_time, kMaxVolume,
+                    glitch_helper_.ConsumeGlitchInfo());
+      converting_audio_fifo_->PopOutput();
+      // Advance the timestamp for the next block (if any).
+      output_capture_time += output_buffer_duration_;
     }
   } else {
-    // If not mono, we only support stereo.
-    CHECK_EQ(config_.catap_channels, 2);
-    // The captured signal is already stereo, so we can de-interleave it
-    // directly into the audio bus.
-    audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data);
+    if (config_.catap_channels == 1) {
+      // If the captured signal is mono, we may need to upmix it. This loop
+      // copies a reference to the single mono channel to all output channels.
+      // For example, if outputting to stereo, both left and right channels will
+      // get the same mono data.
+      audio_bus_->set_frames(frames);
+      for (int i = 0; i < config_.output_channels; ++i) {
+        audio_bus_->SetChannelData(i, data);
+      }
+    } else {
+      // If not mono, we only support stereo.
+      CHECK_EQ(config_.catap_channels, 2);
+      // The captured signal is already stereo, so we can de-interleave it
+      // directly into the audio bus.
+      audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data);
+    }
+    sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
+                  glitch_helper_.ConsumeGlitchInfo());
   }
-  sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
-                glitch_helper_.ConsumeGlitchInfo());
 
   // Stores the time of the next expected audio callback. This is used as a
   // fallback if the host doesn't provide a timestamp.
@@ -1310,6 +1407,23 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
           return;
         }
       }
+      if (config_.target_device.has_value() &&
+          ShouldDefaultDeviceUseInternalResampling()) {
+        // Check if the sample rate of the output device has changed.
+        int device_sample_rate = GetVirtualFormatSampleRate(
+            catap_api_.get(), config_.target_device->id);
+        if (device_sample_rate != 0 &&
+            device_sample_rate != config_.aggregate_device_sample_rate) {
+          SendLogMessage("%s => Sample rate of default device changed. New "
+                         "sample rate: %d",
+                         __func__, device_sample_rate);
+          // The callback may delete `this`.
+          audio_property_change_callback_->OnSampleRateChange();
+          if (!weak_this) {
+            return;
+          }
+        }
+      }
     } else if (property_address == kAudioProcessListAddress) {
       // We only listen on `kAudioProcessListAddress` changes if we capture
       // application audio, i.e., we have a
@@ -1420,6 +1534,14 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
       SendLogMessage("%s => Error getting Id/UID for default output device",
                      __func__);
       return AudioInputStream::OpenOutcome::kFailed;
+    }
+
+    if (ShouldDefaultDeviceUseInternalResampling()) {
+      int device_sample_rate =
+          GetVirtualFormatSampleRate(catap_api_.get(), default_device_ids->id);
+      if (device_sample_rate != 0) {
+        aggregate_sample_rate = device_sample_rate;
+      }
     }
 
     // The microphone input from Bluetooth headsets using the headset profile

@@ -262,6 +262,7 @@ class FakeCatapApi : public CatapApi {
       AudioStreamBasicDescription* stream_format =
           reinterpret_cast<AudioStreamBasicDescription*>(outData);
       stream_format->mChannelsPerFrame = number_of_device_channels;
+      stream_format->mSampleRate = device_sample_rate;
       *ioDataSize = sizeof(AudioStreamBasicDescription);
       return noErr;
     }
@@ -373,6 +374,8 @@ class FakeCatapApi : public CatapApi {
   // format of the default output device. Can be overriden to simulate a mono
   // device.
   int number_of_device_channels = kNumberOfChannelsStereo;
+  int device_sample_rate = kLoopbackSampleRate;
+
   // Used to simulate the list of process audio device IDs that belong to
   // different processes.
   std::vector<AudioDeviceID> process_audio_devices;
@@ -481,10 +484,17 @@ class CatapAudioInputStreamTest : public testing::Test {
                 kAggregateDeviceId);
       EXPECT_EQ(fake_catap_api()->set_sample_rate_count, 1);
       EXPECT_FLOAT_EQ(fake_catap_api()->last_set_sample_rate.value(),
-                      kLoopbackSampleRate);
+                      fake_catap_api()->device_sample_rate);
       EXPECT_EQ(fake_catap_api()->set_frames_per_buffer_count, 1);
+      int expected_frames = kCatapLoopbackDefaultFramesPerBuffer;
+      if (fake_catap_api()->device_sample_rate != kLoopbackSampleRate) {
+        expected_frames = kCatapLoopbackDefaultFramesPerBuffer *
+                          fake_catap_api()->device_sample_rate /
+                          kLoopbackSampleRate;
+      }
       EXPECT_FLOAT_EQ(fake_catap_api()->last_set_frames_per_buffer.value(),
-                      kCatapLoopbackDefaultFramesPerBuffer);
+                      expected_frames);
+
       EXPECT_EQ(fake_catap_api()->set_tap_description_count, 1);
   }
 
@@ -1448,6 +1458,127 @@ TEST_F(CatapAudioInputStreamTest, SurvivesLateCallbackIfDestroyFails) {
                                  output_data, output_time, proxy_client_data);
 
     EXPECT_EQ(status, noErr);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, InternalResamplingEnabled) {
+  if (@available(macOS 14.2, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kMacCatapForceInternalResampling);
+
+    CreateStream();
+    fake_catap_api()->device_sample_rate = 44100;
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    CheckSuccessfulOpen();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, InternalResamplingOutputCorrectness) {
+  if (@available(macOS 14.2, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kMacCatapForceInternalResampling);
+
+    CreateStream();
+    fake_catap_api()->device_sample_rate = 44100;
+
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    CheckSuccessfulOpen();
+
+    stream_->Start(&fake_callback_);
+
+    const int device_frames = 882;  // 20 ms @ 44.1 kHz.
+    const uint32_t data_byte_size =
+        device_frames * sizeof(Float32) * kNumberOfChannelsStereo;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    AudioBuffer& input_buffer = input_data.mBuffers[0];
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
+    input_buffer.mDataByteSize = data_byte_size;
+    input_buffer.mData = data_buffer.data();
+
+    AudioTimeStamp input_time;
+    input_time.mFlags = kAudioTimeStampHostTimeValid;
+    input_time.mHostTime = mach_absolute_time();
+
+    const AudioTimeStamp* in_now = nullptr;
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    for (int i = 0; i < 3; ++i) {
+      fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                   output_data, output_time,
+                                   fake_catap_api()->client_data);
+      input_time.mHostTime += 1000000;
+    }
+
+    EXPECT_GE(fake_callback_.on_data_call_count(), 1);
+    EXPECT_EQ(fake_callback_.last_number_of_frames(),
+              kCatapLoopbackDefaultFramesPerBuffer);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, InternalResamplingTimestampGlitch) {
+  if (@available(macOS 14.2, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kMacCatapForceInternalResampling);
+
+    CreateStream();
+    fake_catap_api()->device_sample_rate = 44100;
+
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    CheckSuccessfulOpen();
+
+    stream_->Start(&fake_callback_);
+
+    const int device_frames = 882;  // 20 ms @ 44.1 kHz.
+    const uint32_t data_byte_size =
+        device_frames * sizeof(Float32) * kNumberOfChannelsStereo;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    AudioBuffer& input_buffer = input_data.mBuffers[0];
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
+    input_buffer.mDataByteSize = data_byte_size;
+    input_buffer.mData = data_buffer.data();
+
+    AudioTimeStamp input_time;
+    input_time.mFlags = kAudioTimeStampHostTimeValid;
+    input_time.mHostTime = mach_absolute_time();
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+    const AudioTimeStamp* in_now = nullptr;
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
+
+    // Account for frames in the input buffer if no output was produced.
+    base::TimeDelta buffered_duration =
+        fake_callback_.on_data_call_count() == 0
+            ? base::Seconds(static_cast<double>(device_frames) /
+                            fake_catap_api()->device_sample_rate)
+            : base::Milliseconds(0);
+
+    // Simulate a second captured frame with a host timestamp that exhibits
+    // a significant glitch compared to the expected continuous timestamp.
+    input_time.mHostTime += 50000000;
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time,
+                                 fake_catap_api()->client_data);
+
+    // The output capture time should follow the input time, accounting for the
+    // frames in the input buffer.
+    base::TimeTicks expected_capture_time =
+        base::TimeTicks::FromMachAbsoluteTime(input_time.mHostTime) -
+        buffered_duration;
+
+    EXPECT_EQ(fake_callback_.last_capture_time(), expected_capture_time);
+
+    stream_->Stop();
   }
 }
 

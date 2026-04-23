@@ -50,10 +50,17 @@ ConvertingAudioFifo::ConvertingAudioFifo(
     input_pool_ = std::make_unique<AudioBusPoolImpl>(
         input_params_, kPreallocated, kInputMaxSize);
   }
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-ConvertingAudioFifo::~ConvertingAudioFifo() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+ConvertingAudioFifo::~ConvertingAudioFifo() NO_THREAD_SAFETY_ANALYSIS {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(construction_sequence_checker_);
+  // NO_THREAD_SAFETY_ANALYSIS: The destruction sequence (validated by
+  // `construction_sequence_checker_`) may differ from the processing sequence
+  // (guarded by `sequence_checker_`). The caller is responsible for
+  // ensuring that no more data is pushed into the FIFO and all processing has
+  // stopped before destruction.
   converter_->RemoveInput(this);
 }
 

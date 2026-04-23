@@ -123,6 +123,10 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   std::unique_ptr<AudioBusPool> input_pool_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Supports construction on one sequence and usage on another.
+  // `construction_sequence_checker_` validates the construction sequence, and
+  // `sequence_checker_` validates the processing sequence.
+  SEQUENCE_CHECKER(construction_sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

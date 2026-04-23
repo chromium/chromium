@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,8 +30,10 @@ namespace media {
 
 class CatapApi;
 class CatapIoProcProxy;
-
+class ConvertingAudioFifo;
 class PropertyListenerHelper;
+
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapForceInternalResampling);
 
 struct MEDIA_EXPORT AudioDeviceIdentity {
   AudioDeviceIdentity();
@@ -210,11 +213,21 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   // Duration of a single input buffer, used to calculate expected timestamps.
   const base::TimeDelta input_buffer_duration_;
 
+  // Duration of a single output buffer, used to calculate expected timestamps.
+  const base::TimeDelta output_buffer_duration_;
+
   // Used to detect and report glitches.
   GlitchHelper glitch_helper_;
 
   // Audio bus used to pass audio samples to sink_.
   const std::unique_ptr<AudioBus> audio_bus_;
+
+  // Converts input audio to match the output parameters if the sample rates
+  // don't match and the internal resampler is enabled. In macOS 15+, resampling
+  // is handled by the OS, so this will only be used on older versions of macOS
+  // or if the internal resampler is force-enabled. After creation in the
+  // constructor, it is only accessed from the OS audio capture thread.
+  const std::unique_ptr<ConvertingAudioFifo> converting_audio_fifo_;
 
   // Receives the processed audio data and errors. sink_ is set in the call to
   // Start() and must not be modified until Stop() is called where the audio
