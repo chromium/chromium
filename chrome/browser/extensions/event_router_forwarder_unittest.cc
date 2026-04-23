@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/thread_test_helper.h"
 #include "build/build_config.h"
@@ -18,10 +19,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -56,8 +60,6 @@ static void BroadcastEventToRenderers(
                                           dispatch_to_off_the_record_profiles);
 }
 
-}  // namespace
-
 class EventRouterForwarderTest : public testing::Test {
  protected:
   EventRouterForwarderTest()
@@ -81,8 +83,8 @@ class EventRouterForwarderTest : public testing::Test {
 };
 
 TEST_F(EventRouterForwarderTest, BroadcastRendererUI) {
-  scoped_refptr<MockEventRouterForwarder> event_router(
-      new MockEventRouterForwarder);
+  scoped_refptr<MockEventRouterForwarder> event_router =
+      base::MakeRefCounted<MockEventRouterForwarder>();
   GURL url;
   EXPECT_CALL(*event_router,
               CallEventRouter(profile1_.get(), kHistogramValue, kEventName));
@@ -93,8 +95,8 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererUI) {
 }
 
 TEST_F(EventRouterForwarderTest, BroadcastRendererUIIncognito) {
-  scoped_refptr<MockEventRouterForwarder> event_router(
-      new MockEventRouterForwarder);
+  scoped_refptr<MockEventRouterForwarder> event_router =
+      base::MakeRefCounted<MockEventRouterForwarder>();
   using ::testing::_;
   GURL url;
   Profile* incognito =
@@ -110,8 +112,8 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererUIIncognito) {
 
 TEST_F(EventRouterForwarderTest,
        BroadcastRendererUIIncognitoWithDispatchToOffTheRecordProfiles) {
-  scoped_refptr<MockEventRouterForwarder> event_router(
-      new MockEventRouterForwarder);
+  scoped_refptr<MockEventRouterForwarder> event_router =
+      base::MakeRefCounted<MockEventRouterForwarder>();
   using ::testing::_;
   GURL url;
   Profile* incognito1 =
@@ -132,8 +134,8 @@ TEST_F(EventRouterForwarderTest,
 // to the UI thread. Repeating this for all public functions of
 // EventRouterForwarder would not increase coverage.
 TEST_F(EventRouterForwarderTest, BroadcastRendererIO) {
-  scoped_refptr<MockEventRouterForwarder> event_router(
-      new MockEventRouterForwarder);
+  scoped_refptr<MockEventRouterForwarder> event_router =
+      base::MakeRefCounted<MockEventRouterForwarder>();
   GURL url;
   EXPECT_CALL(*event_router,
               CallEventRouter(profile1_.get(), kHistogramValue, kEventName));
@@ -152,4 +154,5 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererIO) {
   base::RunLoop().RunUntilIdle();
 }
 
+}  // namespace
 }  // namespace extensions
