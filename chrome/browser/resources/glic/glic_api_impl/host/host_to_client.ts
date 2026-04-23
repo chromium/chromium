@@ -185,6 +185,10 @@ export class WebClientImpl implements WebClientInterface {
     this.host.updateSenderActive();
   }
 
+  notifyIsInvoking(isInvoking: boolean): void {
+    this.host.setIsInvoking(isInvoking);
+  }
+
   notifyManualResizeChanged(resizing: boolean): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyManualResizeChanged', {resizing});

@@ -180,6 +180,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   sender: GatedSender;
   private enableApiActivationGating = true;
   panelIsActive = false;
+  private isInvoking = false;
   private handler: WebClientHandlerRemote;
   private webClientErrorTimer: OneShotTimer;
   private webClientState =
@@ -266,7 +267,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   shouldGateRequests(): boolean {
+    if (this.isInvoking) {
+      return false;
+    }
     return !this.panelIsActive && this.enableApiActivationGating;
+  }
+
+  setIsInvoking(isInvoking: boolean) {
+    this.isInvoking = isInvoking;
+    this.updateSenderActive();
   }
 
   waitingOnPanelWillOpen() {

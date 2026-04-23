@@ -114,6 +114,18 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
   base::OnceClosure done_callback_;
 };
 
+// Task that notifies the host of invoking state.
+class NotifyIsInvokingTask : public GlicInvokeTask {
+ public:
+  NotifyIsInvokingTask(Host* host, bool is_invoking);
+  ~NotifyIsInvokingTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+ private:
+  raw_ptr<Host> host_;
+  bool is_invoking_;
+};
+
 // Task that waits for the layout to stabilize after showing the panel.
 class StabilizationTask : public GlicInvokeTask,
                           public content::WebContentsObserver {

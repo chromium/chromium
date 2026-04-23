@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {CaptureRegionErrorReason, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, InvokeOptions, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -191,6 +191,8 @@ class ApiTests extends ApiTestFixtureBase {
     await this.closePanelAndWaitUntilInactive();
     this.assertCreateTabFails(location.href);
   }
+
+
 
   async testOpenGlicSettingsPage() {
     assertDefined(this.host.openGlicSettingsPage);
@@ -2964,6 +2966,50 @@ class InitiallyNotResizableTest extends ApiTestFixtureBase {
   }
 }
 
+class WebClientWithInvoke extends WebClient {
+  invokePromise = Promise.withResolvers<InvokeOptions>();
+  async invoke(options: InvokeOptions): Promise<void> {
+    this.invokePromise.resolve(options);
+  }
+}
+
+class ApiTestWithInvoke extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new WebClientWithInvoke();
+  }
+
+  async testInvoke() {
+    const options =
+        await (this.client as WebClientWithInvoke).invokePromise.promise;
+    assertEquals(options.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
+  }
+}
+
+class WebClientForCreateTabInInvoke extends WebClient {
+  createTabResult = Promise.withResolvers<TabData>();
+  async invoke(_options: InvokeOptions): Promise<void> {
+    try {
+      const url = location.href + '#invoking';
+      const data = await this.host!.createTab!(url, {openInBackground: false});
+      this.createTabResult.resolve(data);
+    } catch (e) {
+      this.createTabResult.reject(e as Error);
+    }
+  }
+}
+
+class ApiTestCreateTabInInvoke extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new WebClientForCreateTabInInvoke();
+  }
+
+  async testCreateTabSucceedsIfInvoking() {
+    const data = await (this.client as WebClientForCreateTabInInvoke)
+                     .createTabResult.promise;
+    assertEquals(data.url, location.href + '#invoking');
+  }
+}
+
 // All test fixtures. We look up tests by name, and the fixture name is ignored.
 // Therefore all tests must have unique names.
 const TEST_FIXTURES = [
@@ -2973,6 +3019,8 @@ const TEST_FIXTURES = [
   InitiallyNotResizableTest,
   ApiTestWithoutOpen,
   ApiTestFailsToInitialize,
+  ApiTestWithInvoke,
+  ApiTestCreateTabInInvoke,
 ];
 
 testMain(TEST_FIXTURES);

@@ -1185,6 +1185,25 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabSucceedsIfInvoking) {
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
+  GetGlicInstanceImpl()->host().NotifyIsInvoking(true);
+  auto options = mojom::InvokeOptions::New();
+  options->invocation_source = mojom::InvocationSource::kTopChromeButton;
+  GetGlicInstanceImpl()->host().GetPrimaryWebClient()->Invoke(
+      std::move(options), base::DoNothing());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvoke) {
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
+  auto options = mojom::InvokeOptions::New();
+  options->invocation_source = mojom::InvocationSource::kTopChromeButton;
+  GetGlicInstanceImpl()->host().GetPrimaryWebClient()->Invoke(
+      std::move(options), base::DoNothing());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 

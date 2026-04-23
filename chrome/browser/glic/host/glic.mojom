@@ -13,8 +13,8 @@ import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "mojo/public/mojom/base/version.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -1798,7 +1798,7 @@ struct ExperimentalTriggeringUpdate {
 interface ExperimentalTriggeringUpdatesHandler {
   // Called when a new update is available.
   OnUpdate(ExperimentalTriggeringUpdate? update,
-      SubscriberObservationType observation);
+           SubscriberObservationType observation);
 };
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.
@@ -1820,6 +1820,9 @@ interface WebClient {
   // inactive if it's attached to a browser window, and that browser window is
   // not the active window.
   NotifyPanelActiveChange(bool panel_active);
+
+  // Informs the client whether the browser is currently invoking Glic.
+  NotifyIsInvoking(bool is_invoking);
 
   // Informs the client that whether the panel can be attached right now.
   NotifyPanelCanAttachChange(bool can_attach);

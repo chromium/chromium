@@ -116,6 +116,16 @@ void WaitForClientConnectedTask::WebClientConnected() {
   }
 }
 
+NotifyIsInvokingTask::NotifyIsInvokingTask(Host* host, bool is_invoking)
+    : host_(host), is_invoking_(is_invoking) {}
+
+NotifyIsInvokingTask::~NotifyIsInvokingTask() = default;
+
+void NotifyIsInvokingTask::Start(base::OnceClosure done_callback) {
+  host_->NotifyIsInvoking(is_invoking_);
+  std::move(done_callback).Run();
+}
+
 StabilizationTask::StabilizationTask(content::WebContents* web_contents) {
   Observe(web_contents);
 }

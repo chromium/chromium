@@ -165,6 +165,9 @@ void GlicInvokeHandler::Invoke() {
       std::make_unique<ShowInstanceTask>(&*instance_, show_options));
   tasks.push_back(
       std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
+  // TODO(b/505086089): Handle client disconnects.
+  tasks.push_back(
+      std::make_unique<NotifyIsInvokingTask>(&instance_->host(), true));
 
   if (options_.wait_for_panel_open) {
     tasks.push_back(std::make_unique<StabilizationTask>(tab_->GetContents()));
@@ -216,6 +219,7 @@ void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
 
 void GlicInvokeHandler::OnSuccess() {
   timeout_timer_.Stop();
+  instance_->host().NotifyIsInvoking(false);
 
   if (options_.on_success) {
     std::move(options_.on_success).Run();
@@ -227,6 +231,7 @@ void GlicInvokeHandler::OnSuccess() {
 
 void GlicInvokeHandler::OnError(GlicInvokeError error) {
   timeout_timer_.Stop();
+  instance_->host().NotifyIsInvoking(false);
 
   if (options_.on_error) {
     std::move(options_.on_error).Run(error);

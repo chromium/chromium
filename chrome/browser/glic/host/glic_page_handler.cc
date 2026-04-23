@@ -2004,6 +2004,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         std::move(handler), std::move(success_status_callback));
   }
 
+  void NotifyIsInvoking(bool is_invoking) override {
+    if (web_client_) {
+      web_client_->NotifyIsInvoking(is_invoking);
+    }
+  }
+
   // SkillsService::Observer implementation.
   void OnSkillUpdated(std::string_view skill_id,
                       skills::SkillsService::UpdateSource update_source,
