@@ -659,8 +659,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   } else {
     // TODO(crbug.com/404133029): Avoid using g_browser_process.
     wizard_controller_ = std::make_unique<WizardController>(
-        &local_state_.get(), &application_locale_storage_.get(),
-        g_browser_process->shared_url_loader_factory(),
+        &local_state_.get(), g_browser_process->metrics_service(),
+        &application_locale_storage_.get(), shared_url_loader_factory_.get(),
+        &browser_policy_connector_ash_.get(),
         g_browser_process->platform_part()->component_manager_ash(),
         GetWizardContext());
     NotifyWizardCreated();
@@ -731,8 +732,9 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
   if (!wizard_controller_) {
     // TODO(crbug.com/404133029): Avoid using g_browser_process.
     wizard_controller_ = std::make_unique<WizardController>(
-        &local_state_.get(), &application_locale_storage_.get(),
-        g_browser_process->shared_url_loader_factory(),
+        &local_state_.get(), g_browser_process->metrics_service(),
+        &application_locale_storage_.get(), shared_url_loader_factory_.get(),
+        &browser_policy_connector_ash_.get(),
         g_browser_process->platform_part()->component_manager_ash(),
         GetWizardContext());
     NotifyWizardCreated();

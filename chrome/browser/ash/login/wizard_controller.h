@@ -98,8 +98,13 @@ class ApplicationLocaleStorage;
 class PrefService;
 struct AccessibilityStatusEventDetails;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace policy {
 class AutoEnrollmentController;
+class BrowserPolicyConnectorAsh;
 }  // namespace policy
 
 namespace ash {
@@ -127,12 +132,17 @@ class WizardController : public OobeUI::Observer {
 
   // `local_state` must be non-null and must be valid while the main RunLoop is
   // running.
-  // `application_locale_storage` must be non-null and must outlive `this`.
+  // `metrics_service` may be null in unit tests, but must outlive `this` if
+  // it's non-null.
+  // `application_locale_storage` and `browser_policy_connector_ash` must be
+  // non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   WizardController(
       PrefService* local_state,
+      ::metrics::MetricsService* metrics_service,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
       WizardContext* wizard_context);
@@ -643,9 +653,12 @@ class WizardController : public OobeUI::Observer {
       fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState state);
 
   const raw_ref<PrefService> local_state_;
+  const raw_ptr<::metrics::MetricsService> metrics_service_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
   // Shared factory for outgoing network requests.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
 
