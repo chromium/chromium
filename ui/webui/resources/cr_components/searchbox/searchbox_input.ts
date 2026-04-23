@@ -17,6 +17,14 @@ import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
 
+// Register --placeholder-opacity as type <number> so that we can animate it.
+CSS.registerProperty({
+  name: '--placeholder-opacity',
+  syntax: '<number>',
+  initialValue: '1',
+  inherits: true,
+});
+
 const MULTILINE_INPUT_HEIGHT_THRESHOLD = 48;
 
 export interface Input {

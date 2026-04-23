@@ -177,6 +177,7 @@ suite('NewTabPageRealboxNextTest', () => {
       reportMetrics: true,
       searchboxCyclingPlaceholders: false,
       searchboxDefaultIcon: 'search.svg',
+      searchboxLensSearch: true,
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
     });

@@ -7,7 +7,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import type {AppElement, SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AppElement, NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, CustomizeButtonsProxy, NewTabPageProxy, SearchboxBrowserProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
@@ -105,7 +105,7 @@ suite('NewTabPageAppFocusTest', () => {
     const scrim = getScrim();
     assertTrue(!!scrim);
     assertTrue(scrim.hidden);
-    const searchbox = $$<SearchboxElement>(app, '#searchbox');
+    const searchbox = $$<NtpSearchboxElement>(app, '#searchbox');
     assertTrue(!!searchbox);
     await microtasksFinished();
     assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');

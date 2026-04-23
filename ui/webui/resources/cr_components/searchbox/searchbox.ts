@@ -22,15 +22,6 @@ import type {SearchboxInputElement} from './searchbox_input.js';
 import type {SearchboxMixinInterface} from './searchbox_mixin.js';
 import {SearchboxMixin} from './searchbox_mixin.js';
 
-// Register --placeholder-opacity as type <number> so that we can animate it.
-CSS.registerProperty({
-  name: '--placeholder-opacity',
-  syntax: '<number>',
-  initialValue: '1',
-  inherits: true,
-});
-
-
 export interface SearchboxElement {
   $: {
     input: SearchboxInputElement,
