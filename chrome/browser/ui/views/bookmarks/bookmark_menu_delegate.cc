@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -21,11 +22,13 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
@@ -40,6 +43,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -605,12 +609,49 @@ bool BookmarkMenuDelegate::ShowContextMenu(
   const BookmarkFolderOrURL folder_or_url = menu_id_to_node->second;
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
       folder_or_url.GetUnderlyingNodes(GetBookmarkMergedSurfaceService());
+  const bool close_on_remove = ShouldCloseOnRemove(folder_or_url);
+
+  std::vector<int64_t> node_ids;
+  node_ids.reserve(nodes.size());
+  for (const BookmarkNode* node : nodes) {
+    node_ids.push_back(node->id());
+  }
+  auto parent_folder =
+      BookmarkContextMenuController::GetParentForNewNodes(nodes);
+  BookmarkUIOperationsHelperMergedSurfaces(GetBookmarkMergedSurfaceService(),
+                                           parent_folder.get())
+      .CanPasteFromClipboard(
+          base::BindOnce(&BookmarkMenuDelegate::RunContextMenuAt,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(node_ids), p,
+                         source_type, close_on_remove));
+  return true;
+}
+
+void BookmarkMenuDelegate::RunContextMenuAt(
+    std::vector<int64_t> node_ids,
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type,
+    bool close_on_remove,
+    bool can_paste) {
+  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes;
+  for (int64_t node_id : node_ids) {
+    const BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+    if (node) {
+      nodes.push_back(node);
+    }
+  }
+  if (nodes.empty()) {
+    return;
+  }
+
+  bookmark_context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, location_, nodes,
-      ShouldCloseOnRemove(folder_or_url));
+      parent_, browser_, profile_, location_, nodes, close_on_remove,
+      can_paste);
   bookmark_context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(p, source_type);
-  return true;
 }
 
 bool BookmarkMenuDelegate::CanDrag(MenuItemView* menu) {

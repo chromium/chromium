@@ -160,7 +160,8 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     Profile* profile,
     BookmarkLaunchLocation opened_from,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection)
+        selection,
+    bool can_paste)
     : parent_window_(parent_window),
       delegate_(delegate),
       browser_(browser),
@@ -169,7 +170,8 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       selection_(selection),
       bookmark_service_(
           BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)),
-      new_nodes_parent_(GetParentForNewNodes(selection)) {
+      new_nodes_parent_(GetParentForNewNodes(selection)),
+      can_paste_(can_paste) {
   DCHECK(profile_);
   DCHECK(bookmark_service_->loaded());
   CheckSelectionIsValid(selection);
@@ -592,20 +594,6 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
   return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-}
-
-void BookmarkContextMenuController::UpdateCanPaste(base::OnceClosure callback) {
-  BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
-                                           new_nodes_parent_.get())
-      .CanPasteFromClipboard(base::BindOnce(
-          [](base::WeakPtr<BookmarkContextMenuController> self,
-             base::OnceClosure callback, bool can_paste) {
-            if (self) {
-              self->can_paste_ = can_paste;
-            }
-            std::move(callback).Run();
-          },
-          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {

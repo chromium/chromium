@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -1072,8 +1073,14 @@ class BookmarkBarTest : public BookmarkBarTestBase {
 
     bookmark_bar()->ShowContextMenuForViewImpl(
         view, point, ui::mojom::MenuSourceType::kMouse);
-    EXPECT_EQ(views::InkDropState::ACTIVATED,
-              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
+    if (views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState() !=
+        views::InkDropState::ACTIVATED) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return views::InkDrop::Get(view)
+                   ->GetInkDrop()
+                   ->GetTargetInkDropState() == views::InkDropState::ACTIVATED;
+      }));
+    }
 
     bookmark_bar()->OnContextMenuClosed();
 #if BUILDFLAG(IS_MAC)
