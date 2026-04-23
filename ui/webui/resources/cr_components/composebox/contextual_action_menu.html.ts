@@ -25,7 +25,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox' : 'menuitem'}"
               aria-checked="${this.enableMultiTabSelection_ && this.disabledTabIds.has(tab.tabId)}"
               title="${tab.title}" data-index="${index}"
-              aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}, ${
+              aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
                   tab.title}"
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
@@ -86,6 +86,8 @@ export function getHtml(this: ContextualActionMenuElement) {
       return html`
       <button class="dropdown-item" data-mode="${mode}"
           role="menuitem"
+          aria-label="${this.showContextMenuHeaders_ && this.getToolHeader_() ?
+              `${this.getToolHeader_()}: ` : ''}${this.getToolLabel_(mode)}"
           @click="${this.onToolClick_}"
           ?disabled="${this.isToolDisabled_(mode)}">
         ${this.getIconForToolMode_(mode) ? html`
@@ -110,6 +112,8 @@ export function getHtml(this: ContextualActionMenuElement) {
       <button class="dropdown-item"
           role="menuitemradio"
           aria-checked="${this.isModelActive_(mode)}"
+          aria-label="${this.showContextMenuHeaders_ && this.getModelHeader_() ?
+              `${this.getModelHeader_()}: ` : ''}${this.getModelLabel_(mode)}"
           data-model="${mode}"
           @click="${this.onModelClick_}"
           ?disabled="${this.isModelDisabled_(mode)}">
