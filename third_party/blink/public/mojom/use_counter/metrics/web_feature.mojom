@@ -5192,6 +5192,9 @@ enum WebFeature {
   kFocusWithoutUserActivationBlocked = 5875,
   kFocusWithoutUserActivationPolicySet = 5876,
   kCacheHintAttributeOnScript = 5877,
+  kElementInternalsWithBehaviors = 5878,
+  kHTMLSubmitButtonBehaviorUsage = 5879,
+  kElementInternalsBehaviorsAccess = 5880,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

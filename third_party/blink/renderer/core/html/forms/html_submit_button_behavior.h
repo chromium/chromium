@@ -13,7 +13,6 @@
 namespace blink {
 
 class ExceptionState;
-class ExecutionContext;
 class HTMLFormElement;
 class LabelsNodeList;
 
@@ -24,7 +23,7 @@ class CORE_EXPORT HTMLSubmitButtonBehavior final : public ElementBehavior {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLSubmitButtonBehavior* Create(ExecutionContext*);
+  static HTMLSubmitButtonBehavior* Create();
 
   HTMLSubmitButtonBehavior();
   ~HTMLSubmitButtonBehavior() override;

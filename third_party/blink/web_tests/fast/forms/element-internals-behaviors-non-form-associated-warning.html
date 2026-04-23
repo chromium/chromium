@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:ansollan@microsoft.com">
+<link rel="help" href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md">
+<title>Console warning for non-form-associated element with HTMLSubmitButtonBehavior</title>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+}
+</script>
+<script>
+// A non-form-associated custom element with HTMLSubmitButtonBehavior
+// should produce a console warning.
+customElements.define('non-form-associated', class extends HTMLElement {
+  constructor() {
+    super();
+    this.attachInternals({
+      behaviors: [new HTMLSubmitButtonBehavior()]
+    });
+  }
+});
+
+// A form-associated custom element with HTMLSubmitButtonBehavior
+// should not produce a console warning.
+customElements.define('form-associated', class extends HTMLElement {
+  static formAssociated = true;
+  constructor() {
+    super();
+    this.attachInternals({
+      behaviors: [new HTMLSubmitButtonBehavior()]
+    });
+  }
+});
+
+document.createElement('non-form-associated');
+document.createElement('form-associated');
+</script>
+
+<p>This test verifies that a console warning is emitted when
+HTMLSubmitButtonBehavior is attached to a custom element that does not
+declare static formAssociated = true. Only the non-form-associated
+element should produce a warning.</p>

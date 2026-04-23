@@ -39,6 +39,6 @@ interface ElementInternals {
 
   // Platform-provided behaviors.
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md
-  [RuntimeEnabled=ElementInternalsBehaviors] readonly attribute FrozenArray<ElementBehavior> behaviors;
+  [RuntimeEnabled=ElementInternalsBehaviors, MeasureAs=ElementInternalsBehaviorsAccess] readonly attribute FrozenArray<ElementBehavior> behaviors;
 };
 

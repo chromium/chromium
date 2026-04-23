@@ -4091,6 +4091,16 @@ ElementInternals* HTMLElement::attachInternals(
     if (exception_state.HadException()) {
       return nullptr;
     }
+
+    if (internals.FindBehavior<HTMLSubmitButtonBehavior>() &&
+        !IsFormAssociatedCustomElement()) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "An HTMLSubmitButtonBehavior was attached to a custom element that "
+          "does not declare 'static formAssociated = true'. Form submission "
+          "will not work without form association."));
+    }
   }
 
   return &internals;

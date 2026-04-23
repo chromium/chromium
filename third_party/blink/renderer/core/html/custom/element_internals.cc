@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_validity_state_flags.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -410,6 +412,7 @@ const FrozenArray<Element>* ElementInternals::GetElementArrayAttribute(
 
 const FrozenArray<ElementBehavior>& ElementInternals::behaviors() const {
   DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+
   if (!behaviors_) {
     DEFINE_STATIC_LOCAL(Persistent<FrozenArray<ElementBehavior>>, empty,
                         (MakeGarbageCollected<FrozenArray<ElementBehavior>>()));
@@ -422,6 +425,8 @@ void ElementInternals::SetBehaviors(
     HeapVector<Member<ElementBehavior>> behaviors,
     ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+  UseCounter::Count(Target().GetDocument(),
+                    WebFeature::kElementInternalsWithBehaviors);
 
   HashSet<String> seen_names;
   for (ElementBehavior* behavior : behaviors) {

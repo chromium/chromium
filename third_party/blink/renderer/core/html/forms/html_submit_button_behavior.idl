@@ -10,7 +10,7 @@
   RuntimeEnabled=ElementInternalsBehaviors
 ]
 interface HTMLSubmitButtonBehavior : ElementBehavior {
-  [CallWith=ExecutionContext] constructor();
+  [MeasureAs=HTMLSubmitButtonBehaviorUsage] constructor();
 
   attribute boolean disabled;
   [RaisesException] readonly attribute HTMLFormElement? form;

@@ -6517,6 +6517,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5875" label="FocusWithoutUserActivationBlocked"/>
   <int value="5876" label="FocusWithoutUserActivationPolicySet"/>
   <int value="5877" label="CacheHintAttributeOnScript"/>
+  <int value="5878" label="ElementInternalsWithBehaviors"/>
+  <int value="5879" label="HTMLSubmitButtonBehaviorUsage"/>
+  <int value="5880" label="ElementInternalsBehaviorsAccess"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

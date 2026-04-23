@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
@@ -14,8 +13,7 @@
 
 namespace blink {
 
-HTMLSubmitButtonBehavior* HTMLSubmitButtonBehavior::Create(
-    ExecutionContext* execution_context) {
+HTMLSubmitButtonBehavior* HTMLSubmitButtonBehavior::Create() {
   return MakeGarbageCollected<HTMLSubmitButtonBehavior>();
 }
 

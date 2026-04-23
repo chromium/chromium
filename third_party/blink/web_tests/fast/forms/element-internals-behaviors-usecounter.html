@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<link rel="author" href="mailto:ansollan@microsoft.com">
+<title>UseCounters for ElementInternals behaviors</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+const UseCounter = Object.freeze({
+  kElementInternalsWithBehaviors: 5878,
+  kHTMLSubmitButtonBehaviorUsage: 5879,
+  kElementInternalsBehaviorsAccess: 5880,
+});
+
+function clearAllCounters() {
+  for (const counter of Object.values(UseCounter)) {
+    internals.clearUseCounter(document, counter);
+  }
+}
+
+customElements.define('test-element', class extends HTMLElement {
+  static formAssociated = true;
+});
+
+test((t) => {
+  t.add_cleanup(clearAllCounters);
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_false(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+}, 'UseCounters are not counted initially');
+
+test((t) => {
+  t.add_cleanup(clearAllCounters);
+  const el = document.createElement('test-element');
+  el.attachInternals();
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_false(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+}, 'attachInternals() without behaviors does not count kElementInternalsWithBehaviors');
+
+test((t) => {
+  t.add_cleanup(clearAllCounters);
+
+  const behavior = new HTMLSubmitButtonBehavior();
+  assert_true(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+
+  const el = document.createElement('test-element');
+  el.attachInternals({ behaviors: [behavior] });
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_true(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+}, 'HTMLSubmitButtonBehavior constructor counts kHTMLSubmitButtonBehaviorUsage and attachInternals with behaviors counts kElementInternalsWithBehaviors');
+
+test((t) => {
+  t.add_cleanup(clearAllCounters);
+
+  const el = document.createElement('test-element');
+  const ei = el.attachInternals({ behaviors: [new HTMLSubmitButtonBehavior()] });
+
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_true(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+  ei.behaviors;
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_true(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+}, 'Accessing internals.behaviors counts kElementInternalsBehaviorsAccess');
+
+test((t) => {
+  t.add_cleanup(clearAllCounters);
+
+  const el = document.createElement('test-element');
+  const ei = el.attachInternals({ behaviors: [] });
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_false(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_false(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+
+  ei.behaviors;
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsWithBehaviors));
+  assert_false(internals.isUseCounted(document, UseCounter.kHTMLSubmitButtonBehaviorUsage));
+  assert_true(internals.isUseCounted(document, UseCounter.kElementInternalsBehaviorsAccess));
+}, 'attachInternals with empty behaviors counts kElementInternalsWithBehaviors and accessing internals.behaviors counts kElementInternalsBehaviorsAccess');
+</script>

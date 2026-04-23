@@ -1,0 +1,2 @@
+CONSOLE WARNING: An HTMLSubmitButtonBehavior was attached to a custom element that does not declare 'static formAssociated = true'. Form submission will not work without form association.
+This test verifies that a console warning is emitted when HTMLSubmitButtonBehavior is attached to a custom element that does not declare static formAssociated = true. Only the non-form-associated element should produce a warning.
