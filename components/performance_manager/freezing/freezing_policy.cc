@@ -725,8 +725,13 @@ void FreezingPolicy::OnPageLifecycleStateChanged(const PageNode* page_node) {
   if (page_node->GetLifecycleState() != PageNode::LifecycleState::kFrozen) {
     for (content::BrowsingInstanceId id : GetBrowsingInstances(page_node)) {
       auto it = browsing_instance_states_.find(id);
-      CHECK(it != browsing_instance_states_.end());
-      it->second.per_origin_pmf_after_freezing.clear();
+      // OnPageLifecycleStateChanged may run before a newly-added node triggers
+      // OnFrameNodeAdded or after a destroyed node triggers
+      // OnBeforeFrameNodeRemoved. If it's the only node in the BrowsingInstance
+      // there will be no state to clear.
+      if (it != browsing_instance_states_.end()) {
+        it->second.per_origin_pmf_after_freezing.clear();
+      }
     }
   }
 }

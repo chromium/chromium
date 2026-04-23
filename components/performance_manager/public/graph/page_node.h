@@ -322,7 +322,9 @@ class PageNodeObserver : public base::CheckedObserver {
   // Invoked when the UkmSourceId property changes.
   virtual void OnUkmSourceIdChanged(const PageNode* page_node) {}
 
-  // Invoked when the PageLifecycleState property changes.
+  // Invoked when the PageLifecycleState property changes. Note that if the
+  // property changes because a frame is added or removed from the page, this
+  // may be invoked before OnFrameNodeAdded or after OnBeforeFrameNodeRemoved.
   virtual void OnPageLifecycleStateChanged(const PageNode* page_node) {}
 
   // Invoked when the IsHoldingWebLock property changes.
