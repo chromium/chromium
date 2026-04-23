@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
@@ -323,6 +324,7 @@ public class CronetAdaptiveRequestContextTest {
                         value = true)
             })
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "crbug.com/505681641")
     public void reportFallbackUsed_toasts() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
