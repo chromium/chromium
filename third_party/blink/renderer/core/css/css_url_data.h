@@ -41,8 +41,6 @@ class TextEncoding;
 
 // Stores URL request modifiers parsed from CSS url() functions.
 // https://drafts.csswg.org/css-values-5/#request-url-modifiers
-//
-// TODO(crbug.com/435625756): @import does not yet apply these modifiers.
 struct CORE_EXPORT CSSUrlRequestModifiers {
   CrossOriginAttributeValue cross_origin = kCrossOriginAttributeNotSet;
   String integrity;

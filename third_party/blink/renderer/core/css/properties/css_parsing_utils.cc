@@ -1790,6 +1790,8 @@ const CSSUrlData* CollectUrlData(const StringView& url,
       modifiers);
 }
 
+}  // namespace
+
 // Parses URL request modifiers inside a url() function block, after the URL
 // string has been consumed. Returns true on success, false on parse error.
 // On failure, |modifiers| is left unchanged.
@@ -1886,8 +1888,6 @@ bool ConsumeUrlRequestModifiers(CSSParserTokenStream& stream,
   modifiers = std::move(result);
   return true;
 }
-
-}  // namespace
 
 // Returns a token whose token.Value() will contain the URL,
 // or the empty string if there are fetch restrictions,

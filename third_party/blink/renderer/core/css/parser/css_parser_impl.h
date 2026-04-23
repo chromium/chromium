@@ -29,6 +29,7 @@ class CSSLazyParsingState;
 class CSSParserContext;
 class CSSParserObserver;
 class CSSParserTokenStream;
+struct CSSUrlRequestModifiers;
 class StyleRule;
 class StyleRuleViewTransition;
 class StyleRuleBase;
@@ -295,7 +296,8 @@ class CORE_EXPORT CSSParserImpl {
                                              CSSParserTokenStream& stream);
   StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
   StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
-                                     CSSParserTokenStream&);
+                                     CSSParserTokenStream&,
+                                     const CSSUrlRequestModifiers&);
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
   StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream& stream,
                                    CSSNestingType,

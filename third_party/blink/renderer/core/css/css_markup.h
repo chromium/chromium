@@ -32,6 +32,8 @@
 
 namespace blink {
 
+struct CSSUrlRequestModifiers;
+
 CORE_EXPORT bool IsCSSTokenizerIdentifier(const StringView&);
 CORE_EXPORT bool IsCSSTokenizerIdentSequence(const StringView&);
 // Common serializing methods. See:
@@ -41,7 +43,7 @@ void SerializeIdentifier(const String& identifier,
                          bool skip_start_checks = false);
 void SerializeString(const String&, StringBuilder& append_to);
 String SerializeString(const String&);
-String SerializeURI(const String&);
+String SerializeURI(const String&, const CSSUrlRequestModifiers&);
 CORE_EXPORT String SerializeFontFamily(const AtomicString&);
 
 }  // namespace blink

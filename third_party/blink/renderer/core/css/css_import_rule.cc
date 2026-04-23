@@ -52,7 +52,8 @@ MediaList* CSSImportRule::media() {
 String CSSImportRule::cssText() const {
   StringBuilder result;
   result.Append("@import ");
-  result.Append(SerializeURI(import_rule_->Href()));
+  result.Append(
+      SerializeURI(import_rule_->Href(), import_rule_->GetModifiers()));
 
   if (import_rule_->IsLayered()) {
     result.Append(" layer");

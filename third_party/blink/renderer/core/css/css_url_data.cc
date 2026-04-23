@@ -205,17 +205,7 @@ bool CSSUrlData::IsLocal(const Document& document) const {
 }
 
 String CSSUrlData::CssText() const {
-  if (modifiers_.IsEmpty()) {
-    return SerializeURI(relative_url_);
-  }
-  // When modifiers are present, we need to use the quoted url("...") form
-  // so that modifiers can follow the string.
-  StringBuilder result;
-  result.Append("url(");
-  SerializeString(relative_url_, result);
-  modifiers_.AppendCssText(result);
-  result.Append(')');
-  return result.ReleaseString();
+  return SerializeURI(relative_url_, modifiers_);
 }
 
 bool CSSUrlData::operator==(const CSSUrlData& other) const {

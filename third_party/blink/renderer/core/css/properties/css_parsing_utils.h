@@ -40,6 +40,7 @@ class CSSParserTokenStream;
 class CSSPropertyValue;
 class CSSShadowValue;
 class CSSStringValue;
+struct CSSUrlRequestModifiers;
 class CSSURLPatternValue;
 class CSSValue;
 class CSSValueList;
@@ -226,6 +227,7 @@ cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
+bool ConsumeUrlRequestModifiers(CSSParserTokenStream&, CSSUrlRequestModifiers&);
 CORE_EXPORT CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream&,
                                                   const CSSParserContext&);
 

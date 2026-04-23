@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/css_markup.h"
 
+#include "third_party/blink/renderer/core/css/css_url_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -209,8 +210,16 @@ String SerializeString(const String& string) {
   return builder.ReleaseString();
 }
 
-String SerializeURI(const String& string) {
-  return StrCat({"url(", SerializeString(string), ")"});
+String SerializeURI(const String& url,
+                    const CSSUrlRequestModifiers& modifiers) {
+  StringBuilder builder;
+  builder.Append("url(");
+  SerializeString(url, builder);
+  if (!modifiers.IsEmpty()) {
+    modifiers.AppendCssText(builder);
+  }
+  builder.Append(')');
+  return builder.ReleaseString();
 }
 
 String SerializeFontFamily(const AtomicString& string) {
