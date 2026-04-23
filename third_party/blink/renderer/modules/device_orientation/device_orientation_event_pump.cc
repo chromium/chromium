@@ -96,13 +96,15 @@ void DeviceOrientationEventPump::SendStartMessage(LocalFrame& frame) {
   }
 
   if (absolute_) {
-    absolute_orientation_sensor_->Start(sensor_provider_.get());
+    absolute_orientation_sensor_->Start(sensor_provider_.get(),
+                                        /*user_gesture=*/false);
   } else {
     // Start() is asynchronous. Therefore IsConnected() can not be checked right
     // away to determine if we should attempt to fall back to
     // absolute_orientation_sensor_.
     attempted_to_fall_back_to_absolute_orientation_sensor_ = false;
-    relative_orientation_sensor_->Start(sensor_provider_.get());
+    relative_orientation_sensor_->Start(sensor_provider_.get(),
+                                        /*user_gesture=*/false);
   }
 }
 
@@ -143,7 +145,8 @@ void DeviceOrientationEventPump::DidStartIfPossible() {
     // If relative_orientation_sensor_ was requested but was not able to connect
     // then fall back to using absolute_orientation_sensor_.
     attempted_to_fall_back_to_absolute_orientation_sensor_ = true;
-    absolute_orientation_sensor_->Start(sensor_provider_.get());
+    absolute_orientation_sensor_->Start(sensor_provider_.get(),
+                                        /*user_gesture=*/false);
     if (state() == PumpState::kStopped) {
       // If SendStopMessage() was called before the OnSensorCreated() callback
       // registered that relative_orientation_sensor_ was not able to connect

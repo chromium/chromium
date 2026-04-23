@@ -28,6 +28,14 @@ namespace {
 // grants blink::PermissionType::SENSORS requests.
 class TestPermissionManager : public MockPermissionManager {
  public:
+  PermissionResult GetPermissionResultForCurrentDocument(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status) override {
+    return PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                            PermissionStatusSource::UNSPECIFIED);
+  }
+
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
@@ -136,12 +144,12 @@ TEST_F(WebContentsSensorProviderProxyTest,
 
   base::RunLoop run_loop;
   provider.set_disconnect_handler(run_loop.QuitClosure());
-  provider->GetSensor(device::mojom::SensorType::ACCELEROMETER,
-                      base::BindOnce([](device::mojom::SensorCreationResult,
-                                        device::mojom::SensorInitParamsPtr) {
-                        ADD_FAILURE()
-                            << "Reached GetSensor() callback unexpectedly";
-                      }));
+  provider->GetSensor(
+      device::mojom::SensorType::ACCELEROMETER, /*user_gesture=*/true,
+      base::BindOnce([](device::mojom::SensorCreationResult,
+                        device::mojom::SensorInitParamsPtr) {
+        ADD_FAILURE() << "Reached GetSensor() callback unexpectedly";
+      }));
   run_loop.Run();
 }
 

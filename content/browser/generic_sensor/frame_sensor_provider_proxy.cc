@@ -66,6 +66,7 @@ void FrameSensorProviderProxy::OnMojoConnectionError() {
 }
 
 void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
+                                         bool user_gesture,
                                          GetSensorCallback callback) {
   const bool passes_permissions_policy_check = std::ranges::all_of(
       SensorTypeToPermissionsPolicyFeatures(type),
@@ -81,26 +82,20 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
 
   auto* permission_controller =
       render_frame_host().GetBrowserContext()->GetPermissionController();
-  auto permission_descriptor = content::PermissionDescriptorUtil::
-      CreatePermissionDescriptorForPermissionType(
-          blink::PermissionType::SENSORS);
 
-  // TODO(crbug.com/489005547): This triggers permission prompts also when a
-  // website registers an event handler for `deviceorientation` et al. events,
-  // however, only when `kSensorsAllowAskBlockPermissionModel` is enabled,
-  // because otherwise the permission is never in the `ask` state.
-  permission_controller->RequestPermissionFromCurrentDocument(
-      &render_frame_host(),
-      PermissionRequestDescription(std::move(permission_descriptor)),
-      base::BindOnce(&FrameSensorProviderProxy::OnPermissionRequestCompleted,
-                     weak_factory_.GetWeakPtr(), type, std::move(callback)));
-}
+  bool has_valid_gesture =
+      user_gesture && render_frame_host().HasTransientUserActivation();
 
-void FrameSensorProviderProxy::OnPermissionRequestCompleted(
-    SensorType type,
-    GetSensorCallback callback,
-    PermissionResult permission_result) {
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+  auto permission_status =
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::SENSORS),
+          &render_frame_host());
+
+  if (permission_status == blink::mojom::PermissionStatus::DENIED ||
+      (permission_status == blink::mojom::PermissionStatus::ASK &&
+       !has_valid_gesture)) {
     std::move(callback).Run(
         device::mojom::SensorCreationResult::ERROR_NOT_ALLOWED, nullptr);
     return;
@@ -112,7 +107,59 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
   if (!scoped_observation_.IsObserving()) {
     scoped_observation_.Observe(web_contents_sensor_provider);
   }
-  web_contents_sensor_provider->GetSensor(type, std::move(callback));
+
+  web_contents_sensor_provider->GetSensor(
+      type, base::BindOnce(&FrameSensorProviderProxy::OnHardwareCheckCompleted,
+                           weak_factory_.GetWeakPtr(), permission_status,
+                           has_valid_gesture, std::move(callback)));
+}
+
+void FrameSensorProviderProxy::OnHardwareCheckCompleted(
+    blink::mojom::PermissionStatus permission_status,
+    bool user_gesture,
+    GetSensorCallback callback,
+    device::mojom::SensorCreationResult result,
+    device::mojom::SensorInitParamsPtr params) {
+  if (result != device::mojom::SensorCreationResult::SUCCESS) {
+    std::move(callback).Run(result, nullptr);
+    return;
+  }
+
+  if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(result, std::move(params));
+    return;
+  }
+
+  CHECK_EQ(permission_status, blink::mojom::PermissionStatus::ASK);
+  CHECK(user_gesture);
+
+  auto* permission_controller =
+      render_frame_host().GetBrowserContext()->GetPermissionController();
+  auto permission_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::SENSORS);
+
+  permission_controller->RequestPermissionFromCurrentDocument(
+      &render_frame_host(),
+      PermissionRequestDescription(std::move(permission_descriptor),
+                                   user_gesture),
+      base::BindOnce(&FrameSensorProviderProxy::OnPermissionRequestCompleted,
+                     weak_factory_.GetWeakPtr(), std::move(params),
+                     std::move(callback)));
+}
+
+void FrameSensorProviderProxy::OnPermissionRequestCompleted(
+    device::mojom::SensorInitParamsPtr params,
+    GetSensorCallback callback,
+    PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(
+        device::mojom::SensorCreationResult::ERROR_NOT_ALLOWED, nullptr);
+    return;
+  }
+
+  std::move(callback).Run(device::mojom::SensorCreationResult::SUCCESS,
+                          std::move(params));
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(FrameSensorProviderProxy);

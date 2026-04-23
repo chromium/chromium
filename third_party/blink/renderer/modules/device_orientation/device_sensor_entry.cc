@@ -26,8 +26,8 @@ DeviceSensorEntry::DeviceSensorEntry(DeviceSensorEventPump* event_pump,
 
 DeviceSensorEntry::~DeviceSensorEntry() = default;
 
-void DeviceSensorEntry::Start(
-    mojom::blink::WebSensorProvider* sensor_provider) {
+void DeviceSensorEntry::Start(mojom::blink::WebSensorProvider* sensor_provider,
+                              bool user_gesture) {
   // If sensor remote is not bound, reset to |kNotInitialized| state (in case
   // we're in some other state), unless we're currently being initialized (which
   // is indicated by either |kInitializing| or |kShouldSuspend| state).
@@ -38,7 +38,7 @@ void DeviceSensorEntry::Start(
 
   if (state_ == State::kNotInitialized) {
     state_ = State::kInitializing;
-    sensor_provider->GetSensor(type_,
+    sensor_provider->GetSensor(type_, user_gesture,
                                BindOnce(&DeviceSensorEntry::OnSensorCreated,
                                         WrapWeakPersistent(this)));
   } else if (state_ == State::kSuspended) {

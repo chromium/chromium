@@ -271,10 +271,13 @@ void Sensor::Activate() {
   InitSensorProxyIfNeeded();
   DCHECK(sensor_proxy_);
 
-  if (sensor_proxy_->IsInitialized())
+  if (sensor_proxy_->IsInitialized()) {
     RequestAddConfiguration();
-  else
-    sensor_proxy_->Initialize();
+  } else {
+    auto* window = To<LocalDOMWindow>(GetExecutionContext());
+    sensor_proxy_->Initialize(
+        LocalFrame::HasTransientUserActivation(window->GetFrame()));
+  }
 
   sensor_proxy_->AddObserver(this);
 }

@@ -36,7 +36,7 @@ void SensorProxyImpl::Trace(Visitor* visitor) const {
   SensorProxy::Trace(visitor);
 }
 
-void SensorProxyImpl::Initialize() {
+void SensorProxyImpl::Initialize(bool user_gesture) {
   if (state_ != kUninitialized)
     return;
 
@@ -47,7 +47,7 @@ void SensorProxyImpl::Initialize() {
 
   state_ = kInitializing;
   sensor_provider_proxy()->GetSensor(
-      type_,
+      type_, user_gesture,
       BindOnce(&SensorProxyImpl::OnSensorCreated, WrapWeakPersistent(this)));
 }
 

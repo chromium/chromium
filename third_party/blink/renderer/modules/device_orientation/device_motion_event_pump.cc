@@ -82,9 +82,10 @@ void DeviceMotionEventPump::SendStartMessage(LocalFrame& frame) {
                  WrapWeakPersistent(this)));
   }
 
-  accelerometer_->Start(sensor_provider_.get());
-  linear_acceleration_sensor_->Start(sensor_provider_.get());
-  gyroscope_->Start(sensor_provider_.get());
+  accelerometer_->Start(sensor_provider_.get(), /*user_gesture=*/false);
+  linear_acceleration_sensor_->Start(sensor_provider_.get(),
+                                     /*user_gesture=*/false);
+  gyroscope_->Start(sensor_provider_.get(), /*user_gesture=*/false);
 }
 
 void DeviceMotionEventPump::StopListening() {

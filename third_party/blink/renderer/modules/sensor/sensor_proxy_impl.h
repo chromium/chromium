@@ -36,7 +36,7 @@ class SensorProxyImpl final : public SensorProxy,
 
  private:
   // SensorProxy overrides.
-  void Initialize() override;
+  void Initialize(bool user_gesture) override;
   void AddConfiguration(device::mojom::blink::SensorConfigurationPtr,
                         base::OnceCallback<void(bool)>) override;
   void RemoveConfiguration(

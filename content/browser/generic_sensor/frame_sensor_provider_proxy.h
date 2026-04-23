@@ -41,9 +41,17 @@ class FrameSensorProviderProxy final
 
   // blink::mojom::WebSensorProvider overrides.
   void GetSensor(device::mojom::SensorType type,
+                 bool user_gesture,
                  GetSensorCallback callback) override;
 
-  void OnPermissionRequestCompleted(device::mojom::SensorType type,
+  void OnHardwareCheckCompleted(
+      blink::mojom::PermissionStatus permission_status,
+      bool user_gesture,
+      GetSensorCallback callback,
+      device::mojom::SensorCreationResult result,
+      device::mojom::SensorInitParamsPtr params);
+
+  void OnPermissionRequestCompleted(device::mojom::SensorInitParamsPtr params,
                                     GetSensorCallback callback,
                                     PermissionResult permission_result);
 

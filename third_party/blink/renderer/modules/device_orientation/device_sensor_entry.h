@@ -48,7 +48,8 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
                     device::mojom::blink::SensorType sensor_type);
   ~DeviceSensorEntry() override;
 
-  void Start(mojom::blink::WebSensorProvider* sensor_provider);
+  void Start(mojom::blink::WebSensorProvider* sensor_provider,
+             bool user_gesture);
   void Stop();
   bool IsConnected() const;
   bool ReadyOrErrored() const;

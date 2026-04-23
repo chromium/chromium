@@ -37,6 +37,7 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   SensorProxy* CreateSensorProxy(device::mojom::blink::SensorType, Page*);
   SensorProxy* GetSensorProxy(device::mojom::blink::SensorType);
   void GetSensor(device::mojom::blink::SensorType,
+                 bool user_gesture,
                  mojom::blink::WebSensorProviderProxy::GetSensorCallback);
 
   void Trace(Visitor*) const override;

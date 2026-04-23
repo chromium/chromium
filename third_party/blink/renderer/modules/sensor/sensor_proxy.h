@@ -51,7 +51,7 @@ class SensorProxy : public GarbageCollected<SensorProxy>,
   void RemoveObserver(Observer*);
 
   // Public methods to be implemented by descendants.
-  virtual void Initialize() = 0;
+  virtual void Initialize(bool user_gesture) = 0;
   virtual void AddConfiguration(device::mojom::blink::SensorConfigurationPtr,
                                 base::OnceCallback<void(bool)>) = 0;
   virtual void RemoveConfiguration(

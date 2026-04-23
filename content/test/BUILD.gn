@@ -2697,6 +2697,7 @@ test("content_unittests") {
     "../browser/first_party_sets/first_party_sets_loader_unittest.cc",
     "../browser/font_access/font_access_manager_unittest.cc",
     "../browser/font_access/font_enumeration_data_source_unittest.cc",
+    "../browser/generic_sensor/frame_sensor_provider_proxy_unittest.cc",
     "../browser/generic_sensor/web_contents_sensor_provider_proxy_unittest.cc",
     "../browser/geolocation/geolocation_service_impl_unittest.cc",
     "../browser/gpu/gpu_data_manager_impl_private_unittest.cc",

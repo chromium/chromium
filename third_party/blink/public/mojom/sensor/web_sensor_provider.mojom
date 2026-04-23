@@ -12,8 +12,9 @@ import "services/device/public/mojom/sensor_provider.mojom";
 // privileged virtual sensor-related methods.
 interface WebSensorProvider {
   // Retrieves a sensor by the given |type|.
+  // |user_gesture| indicates if the request was triggered by a user action.
   // See SensorProvider.GetSensor()'s documentation for more details.
-  GetSensor(device.mojom.SensorType type) =>
+  GetSensor(device.mojom.SensorType type, bool user_gesture) =>
       (device.mojom.SensorCreationResult result,
        device.mojom.SensorInitParams? init_params);
 };
