@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -75,20 +76,29 @@
 
   _locationIndicatorActive = locationIndicatorActive;
 
-  if (locationIndicatorActive) {
-    if (_fullscreenController) {
-      _fullscreenController->EnterForceFullscreenMode(
-          /* insets_update_enabled */ false,
-          FullscreenModeTransitionTrigger::kForcedByCode);
+  FullscreenModeTransitionTrigger trigger =
+      FullscreenModeTransitionTrigger::kForcedByCode;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    if (locationIndicatorActive) {
+      [self.fullscreenCommands enterFullscreenWithTrigger:trigger animated:YES];
+    } else {
+      [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
     }
+  } else if (_fullscreenController) {
+    if (locationIndicatorActive) {
+      _fullscreenController->EnterForceFullscreenMode(
+          /* insets_update_enabled */ false, trigger);
+    } else {
+      _fullscreenController->ExitForceFullscreenMode(trigger);
+    }
+  }
+
+  if (locationIndicatorActive) {
     self.view.locationBarTopConstraint.constant = 0;
     self.view.bottomSeparator.alpha = 1.0;
     [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
   } else {
-    if (_fullscreenController) {
-      _fullscreenController->ExitForceFullscreenMode(
-          FullscreenModeTransitionTrigger::kForcedByCode);
-    }
     self.view.bottomSeparator.alpha = 0.0;
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
   }

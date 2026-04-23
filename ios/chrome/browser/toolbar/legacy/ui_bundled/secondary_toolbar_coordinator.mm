@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -52,6 +53,10 @@
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   self.viewController.popupMenuCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), PopupMenuCommands);
+  if (IsFullscreenRefactoringEnabled()) {
+    self.viewController.fullscreenCommands =
+        HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
+  }
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   self.viewController.keyboardStateProvider = _secondaryToolbarMediator;
   FullscreenController* controller = FullscreenController::FromBrowser(browser);

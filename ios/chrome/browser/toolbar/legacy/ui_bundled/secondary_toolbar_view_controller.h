@@ -11,6 +11,7 @@
 
 class FullscreenController;
 
+@protocol FullscreenCommands;
 @protocol SecondaryToolbarKeyboardStateProvider;
 @protocol ToolbarHeightDelegate;
 
@@ -28,6 +29,9 @@ class FullscreenController;
 
 /// Fullscreen controller used for collapsing the view above the keyboard.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
+
+/// Commands handler for fullscreen.
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenCommands;
 
 /// Disconnects observations and references.
 - (void)disconnect;

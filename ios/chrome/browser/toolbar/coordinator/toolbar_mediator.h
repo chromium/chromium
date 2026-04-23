@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 
 @class BrowserActionFactory;
+@protocol FullscreenCommands;
 class FullscreenController;
 @protocol ToolbarConsumer;
 @protocol ToolbarHeightDelegate;
@@ -33,6 +34,9 @@ class WebStateList;
 
 // Whether the toolbar is being shown in incognito or not.
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
+
+// Commands handler for fullscreen.
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenCommands;
 
 // Initializer.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList

@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
@@ -320,16 +322,21 @@
 
   _locationBarIndicatorActive = showLocationIndicator;
 
-  if (showLocationIndicator) {
-    if (_fullscreenController) {
-      _fullscreenController->EnterForceFullscreenMode(
-          /* insets_update_enabled */ false,
-          FullscreenModeTransitionTrigger::kForcedByCode);
+  FullscreenModeTransitionTrigger trigger =
+      FullscreenModeTransitionTrigger::kForcedByCode;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    if (showLocationIndicator) {
+      [self.fullscreenCommands enterFullscreenWithTrigger:trigger animated:YES];
+    } else {
+      [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
     }
-  } else {
-    if (_fullscreenController) {
-      _fullscreenController->ExitForceFullscreenMode(
-          FullscreenModeTransitionTrigger::kForcedByCode);
+  } else if (_fullscreenController) {
+    if (showLocationIndicator) {
+      _fullscreenController->EnterForceFullscreenMode(
+          /* insets_update_enabled */ false, trigger);
+    } else {
+      _fullscreenController->ExitForceFullscreenMode(trigger);
     }
   }
 

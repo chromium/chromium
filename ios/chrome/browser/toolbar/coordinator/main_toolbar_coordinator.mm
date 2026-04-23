@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
@@ -1242,6 +1243,10 @@
   toolbarMediator.incognito = self.profile->IsOffTheRecord();
   toolbarMediator.navigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(browser);
+  if (IsFullscreenRefactoringEnabled()) {
+    toolbarMediator.fullscreenCommands =
+        HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
+  }
 
   return toolbarMediator;
 }
