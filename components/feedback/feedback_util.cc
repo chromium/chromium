@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -32,6 +33,12 @@ namespace feedback_util {
 
 std::optional<std::string> ZipString(const base::FilePath& filename,
                                      std::string_view data) {
+  std::optional<base::SafeBaseName> safe_name =
+      base::SafeBaseName::Create(filename);
+  if (!safe_name || safe_name->path() != filename) {
+    return std::nullopt;
+  }
+
   base::ScopedTempDir temp_dir;
   base::FilePath zip_file;
 
@@ -40,7 +47,7 @@ std::optional<std::string> ZipString(const base::FilePath& filename,
   if (!temp_dir.CreateUniqueTempDir()) {
     return std::nullopt;
   }
-  if (!base::WriteFile(temp_dir.GetPath().Append(filename), data)) {
+  if (!base::WriteFile(temp_dir.GetPath().Append(safe_name->path()), data)) {
     return std::nullopt;
   }
   if (!base::CreateTemporaryFile(&zip_file)) {
