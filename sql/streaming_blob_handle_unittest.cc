@@ -353,6 +353,141 @@ TEST_F(StreamingBlobHandleTest, WriteBlobsInvalidatedByTransactionRollback) {
   EXPECT_THAT(errors, ElementsAre(SQLITE_ABORT_ROLLBACK));
 }
 
+// Tests that transaction reverts blob writes that happened entirely within the
+// scope of that transaction.
+TEST_F(StreamingBlobHandleTest, TransactionRollbacksRevertsBlobWrites) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo (data BLOB)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO foo (data) VALUES (x'C0FFEE')"));
+  const int64_t row_id = db.GetLastInsertRowId();
+
+  {
+    Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+
+    // Write a blob inside the transaction.
+    {
+      ASSERT_OK_AND_ASSIGN(
+          StreamingBlobHandle blob,
+          db.GetStreamingBlob("foo", "data", row_id, /*readonly=*/false));
+      EXPECT_TRUE(blob.Write(0, {0xDE, 0xCA, 0xFF}));
+    }
+
+    // The new content is already visible.
+    EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+                Optional(HeapArrayIs({0xDE, 0xCA, 0xFF})));
+
+    // But the transaction rollback reverts the blob write.
+    transaction.Rollback();
+    EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+                Optional(HeapArrayIs({0xC0, 0xFF, 0xEE})));
+  }
+}
+
+// Tests that if a blob is written to but remains active before a transaction
+// is created and rolled-back, that rollback reverts the blob write, even though
+// the blob write happened before the transaction was even started. This happens
+// because the blob opened an implicit transaction which spans over the whole
+// explicit `Transaction` scope. The call to `transaction.Rollback()` reverts
+// that implicit transaction.
+TEST_F(StreamingBlobHandleTest, TransactionRollbackRevertsUnfinishedWrites) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo (data BLOB)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO foo (data) VALUES (x'C0FFEE')"));
+  const int64_t row_id = db.GetLastInsertRowId();
+
+  // Write a blob before the transaction.
+  ASSERT_OK_AND_ASSIGN(
+      StreamingBlobHandle blob,
+      db.GetStreamingBlob("foo", "data", row_id, /*readonly=*/false));
+  EXPECT_TRUE(blob.Write(0, {0xDE, 0xCA, 0xFF}));
+
+  // The new content is already visible.
+  EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+              Optional(HeapArrayIs({0xDE, 0xCA, 0xFF})));
+
+  // Create and rollback a transaction while the blob is active.
+  {
+    Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    transaction.Rollback();
+  }
+
+  // The transaction rollback reverted the blob write.
+  EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+              Optional(HeapArrayIs({0xC0, 0xFF, 0xEE})));
+}
+
+// Tests that transaction rollbacks will not revert a blob write if the blob
+// was closed before the transaction started.
+TEST_F(StreamingBlobHandleTest, TransactionRollbackDoNotRevertFinishedWrites) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo (data BLOB)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO foo (data) VALUES (x'C0FFEE')"));
+  const int64_t row_id = db.GetLastInsertRowId();
+
+  // Write and close a blob before the transaction.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        StreamingBlobHandle blob,
+        db.GetStreamingBlob("foo", "data", row_id, /*readonly=*/false));
+    EXPECT_TRUE(blob.Write(0, {0xDE, 0xCA, 0xFF}));
+  }
+
+  // The new content is already visible.
+  EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+              Optional(HeapArrayIs({0xDE, 0xCA, 0xFF})));
+
+  // Create and rollback a transaction while the blob is active.
+  {
+    Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    transaction.Rollback();
+  }
+
+  // The transaction rollback did not revert the blob write.
+  EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+              Optional(HeapArrayIs({0xDE, 0xCA, 0xFF})));
+}
+
+// Tests that transaction rollbacks will revert a blob written before the
+// transaction if that blob is closed in the scope of the transaction.
+TEST_F(StreamingBlobHandleTest, TransactionRollbackRevertsBlobClosedInScope) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo (data BLOB)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO foo (data) VALUES (x'C0FFEE')"));
+  const int64_t row_id = db.GetLastInsertRowId();
+
+  // Open a read-write blob and keep it open.
+  std::optional<StreamingBlobHandle> blob =
+      db.GetStreamingBlob("foo", "data", row_id, /*readonly=*/false);
+  EXPECT_TRUE(blob.has_value());
+  EXPECT_TRUE(blob->Write(0, {0xDE, 0xCA, 0xFF}));
+
+  // Create a transaction while the blob is active.
+  {
+    Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+
+    // Close the blob inside the transaction.
+    blob.reset();
+
+    // The new content is visible.
+    EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+                Optional(HeapArrayIs({0xDE, 0xCA, 0xFF})));
+
+    transaction.Rollback();
+
+    // The transaction rollback reverted the blob write.
+    EXPECT_THAT(ReadBlob(db, "foo", "data", row_id),
+                Optional(HeapArrayIs({0xC0, 0xFF, 0xEE})));
+  }
+}
+
 TEST_F(StreamingBlobHandleTest, BlobInvalidatedIfRowChanges) {
   Database db(test::kTestTag);
   std::vector<int> errors;
