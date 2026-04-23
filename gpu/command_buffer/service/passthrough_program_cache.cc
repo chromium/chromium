@@ -12,6 +12,8 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_view_util.h"
@@ -128,8 +130,17 @@ size_t PassthroughProgramCache::Trim(size_t limit) {
 void PassthroughProgramCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock auto_lock(lock_);
-  memory_limit_ratio_ = GetMemoryLimitRatio();
-  TrimLocked(GetCurrentMaxSizeBytes());
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    memory_limit_ratio_ = GetMemoryLimitRatio();
+    TrimLocked(GetCurrentMaxSizeBytes());
+    return;
+  }
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    TrimLocked(max_size_bytes() / 4);
+  } else if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    TrimLocked(0);
+  }
 }
 
 bool PassthroughProgramCache::CacheEnabled() const {
@@ -245,9 +256,12 @@ size_t PassthroughProgramCache::TrimLocked(size_t limit) {
 }
 
 size_t PassthroughProgramCache::GetCurrentMaxSizeBytes() const {
-  CHECK_LE(memory_limit_ratio_, 1.0);
-  // To match previous behavior, the size must be 1/4 at 50% memory limit.
-  return max_size_bytes() * std::pow(memory_limit_ratio_, 2.0);
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    CHECK_LE(memory_limit_ratio_, 1.0);
+    // To match previous behavior, the size must be 1/4 at 50% memory limit.
+    return max_size_bytes() * std::pow(memory_limit_ratio_, 2.0);
+  }
+  return max_size_bytes();
 }
 
 void PassthroughProgramCache::BlobCacheSet(const void* key,

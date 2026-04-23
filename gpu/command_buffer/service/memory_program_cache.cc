@@ -13,8 +13,10 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -283,10 +285,13 @@ void MemoryProgramCache::ClearBackend() {
 }
 
 size_t MemoryProgramCache::GetCurrentMaxSizeBytes() const {
-  double memory_limit_ratio = GetMemoryLimitRatio();
-  CHECK_LE(memory_limit_ratio, 1.0);
-  // To match previous behavior, the size must be 1/4 at 50% memory limit.
-  return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    double memory_limit_ratio = GetMemoryLimitRatio();
+    CHECK_LE(memory_limit_ratio, 1.0);
+    // To match previous behavior, the size must be 1/4 at 50% memory limit.
+    return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
+  }
+  return max_size_bytes();
 }
 
 ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
@@ -568,7 +573,16 @@ size_t MemoryProgramCache::Trim(size_t limit) {
 
 void MemoryProgramCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  Trim(GetCurrentMaxSizeBytes());
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    Trim(GetCurrentMaxSizeBytes());
+    return;
+  }
+
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    Trim(max_size_bytes() / 4);
+  } else if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    Trim(0);
+  }
 }
 
 MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(

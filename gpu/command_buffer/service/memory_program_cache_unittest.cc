@@ -18,9 +18,11 @@
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -678,6 +680,9 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheTrim) {
 }
 
 TEST_F(MemoryProgramCacheTest, MemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
   const int kCacheCapacity = 4;
   // Compute a blob length giving us a cache capacity of 4 entries.
   const int kBlobLength = kCacheSizeBytes / kCacheCapacity;

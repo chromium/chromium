@@ -13,7 +13,9 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -267,6 +269,9 @@ TEST_F(PassthroughProgramCacheTest, Trim) {
 }
 
 TEST_F(PassthroughProgramCacheTest, MemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
   const int kKeyLength = 10;
   // Compute a blob length giving us a cache capacity of 4 entries.
   const int kCacheCapacity = 4;
