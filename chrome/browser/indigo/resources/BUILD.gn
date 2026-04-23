@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+grit("grit") {
+  # TODO(b/505475053): Add conditions to use either the external or internal grd
+  # files based on whether the build is branded.
+  source = "browser_resources.grd"
+
+  use_brotli = true
+  outputs = [
+    "indigo_browser_resources.pak",
+    "grit/indigo_browser_resources.h",
+  ]
+}
+
+source_set("browser_resources") {
+  public_deps = [ ":grit" ]
+  deps = [ "//base" ]
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/indigo_browser_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="indigo_browser_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <!-- Add resources here -->
+    </includes>
+  </release>
+</grit>
