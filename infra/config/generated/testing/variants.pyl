@@ -96,6 +96,7 @@
     ],
     'mixins': [
       'ios_runtime_cache_18_2',
+      'use-ios-simulator-cache',
     ],
   },
 }

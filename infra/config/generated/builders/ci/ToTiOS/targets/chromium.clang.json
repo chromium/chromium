@@ -6,6 +6,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -56,6 +57,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",

@@ -3,6 +3,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -55,6 +56,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -107,6 +109,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -159,6 +162,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -211,6 +215,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -263,6 +268,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -315,6 +321,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -367,6 +374,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -419,6 +427,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -471,6 +480,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -523,6 +533,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -575,6 +586,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -627,6 +639,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -681,6 +694,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -737,6 +751,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -793,6 +808,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -849,6 +865,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -905,6 +922,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -959,6 +977,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1013,6 +1032,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1067,6 +1087,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1120,6 +1141,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1175,6 +1197,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1231,6 +1254,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1285,6 +1309,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1337,6 +1362,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1389,6 +1415,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1443,6 +1470,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1497,6 +1525,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1549,6 +1578,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1601,6 +1631,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1653,6 +1684,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1706,6 +1738,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1758,6 +1791,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1810,6 +1844,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1862,6 +1897,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -1915,6 +1951,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1968,6 +2005,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -2020,6 +2058,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2072,6 +2111,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -2124,6 +2164,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2176,6 +2217,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -2228,6 +2270,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2280,6 +2323,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2332,6 +2376,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2384,6 +2429,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -2436,6 +2482,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2488,6 +2535,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2540,6 +2588,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
@@ -2592,6 +2641,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2644,6 +2694,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",

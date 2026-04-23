@@ -263,6 +263,7 @@ chromium_luci.configure_targets(
             "has_native_resultdb_integration": True,
             "intel_uhd_630_or_770": True,
             "ios_runtime_cache_18_2": True,
+            "use-ios-simulator-cache": True,
             "long_skylab_timeout": True,
             "mac_14_x64": True,
             "mac_default_arm64": True,

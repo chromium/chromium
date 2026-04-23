@@ -920,6 +920,11 @@
       'io_timeout': 900,
     },
   },
+  'use-ios-simulator-cache': {
+    'args': [
+      '--use-simulator-cache',
+    ],
+  },
   'vaapi_unittest_args': {
     'args': [
       '--stop-ui',
