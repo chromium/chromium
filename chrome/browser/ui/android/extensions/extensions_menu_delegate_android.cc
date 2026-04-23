@@ -23,7 +23,7 @@ namespace {
 
 using base::android::ScopedJavaLocalRef;
 
-constexpr gfx::Size kActionIconSize = gfx::Size(20, 20);
+constexpr gfx::Size kActionIconSize = gfx::Size(24, 24);
 
 ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
     const ui::ImageModel& image_model) {
