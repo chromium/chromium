@@ -197,7 +197,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
 
   void NavigateToNewTab() {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(chrome::kChromeUINewTabURL),
+        browser(), chrome::ChromeUINewTabURLAsGURL(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }

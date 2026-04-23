@@ -395,7 +395,7 @@ void LogMissingParams(const ExtensionSettingsOverriddenDialog::Params& params) {
 
 std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
     Profile* profile) {
-  const GURL ntp_url(chrome::kChromeUINewTabURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
   const extensions::Extension* extension =
       ExtensionUrlOverrides::GetExtensionControllingURL(ntp_url, profile);
   if (!extension) {
@@ -421,7 +421,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
   if (possible_rewrites.size() > 1) {
     default_ntp_is_secondary =
         possible_rewrites[1] == ntp_url ||
-        possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageURL) ||
+        possible_rewrites[1] == chrome::ChromeUINewTabPageURLAsGURL() ||
         possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
   }
   // Check if there's another extension that would take over (this isn't

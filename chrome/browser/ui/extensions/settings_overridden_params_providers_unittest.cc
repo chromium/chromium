@@ -56,7 +56,7 @@ class SettingsOverriddenParamsProvidersUnitTest
 
     registrar()->AddExtension(extension);
     EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
-                             GURL(chrome::kChromeUINewTabURL), profile()));
+                             chrome::ChromeUINewTabURLAsGURL(), profile()));
 
     return extension.get();
   }
