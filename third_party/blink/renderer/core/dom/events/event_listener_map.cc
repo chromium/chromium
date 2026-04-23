@@ -156,16 +156,18 @@ static bool RemoveListenerFromVector(
     const EventListener* listener,
     const RegisteredEventListener::OptionsForMatching& options,
     RegisteredEventListener** registered_listener) {
-  for (wtf_size_t i = 0; i < listener_vector->size(); ++i) {
-    RegisteredEventListener* current_listener = listener_vector->at(i);
-    if (current_listener->Matches(listener, options)) {
-      current_listener->SetRemoved();
-      *registered_listener = current_listener;
-      listener_vector->EraseAt(i);
-      return true;
-    }
-  }
-  return false;
+  wtf_size_t removed =
+      EraseIf(*listener_vector, [&](const auto& current_listener) {
+        if (current_listener->Matches(listener, options)) {
+          current_listener->SetRemoved();
+          *registered_listener = current_listener.Get();
+          return true;
+        }
+        return false;
+      });
+  // Ensures the vector has no duplicate listeners.
+  DCHECK_LE(removed, 1u);
+  return removed > 0;
 }
 
 bool EventListenerMap::Remove(
