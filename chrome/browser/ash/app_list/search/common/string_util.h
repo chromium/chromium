@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "url/gurl.h"
 
@@ -15,11 +16,11 @@ namespace app_list {
 // Normalizes training targets by removing any scheme prefix and trailing slash:
 // "arc://[id]/" to "[id]". This is necessary because apps launched from
 // different parts of the launcher have differently formatted IDs.
-std::string NormalizeId(const std::string& id);
+std::string NormalizeId(std::string_view id);
 
 // Remove the Arc app shortcut label from an app ID, if it exists, so that
 // "[app]/[label]" becomes "[app]".
-std::string RemoveAppShortcutLabel(const std::string& id);
+std::string RemoveAppShortcutLabel(std::string_view id);
 
 // Extracts the Drive ID from the given URL.
 // Only works with "docs.google.com/.../d/[id]/" links.
