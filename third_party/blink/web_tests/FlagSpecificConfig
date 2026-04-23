@@ -21,10 +21,6 @@
     "args": ["--enable-blink-features=AIPageContentBuildOnLoadForTesting"]
   },
   {
-    "name": "devtools-tab-target",
-    "args": ["--content-shell-devtools-tab-target"]
-  },
-  {
     "name": "disable-site-isolation-trials",
     "args": ["--disable-site-isolation-trials"]
   },

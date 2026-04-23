@@ -324,23 +324,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "blink_web_tests_dt_tab_target",
-    mixins = [
-        "has_native_resultdb_integration",
-        "blink_tests_write_run_histories",
-    ],
-    args = [
-        "--flag-specific=devtools-tab-target",
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        "--num-retries=3",
-        "http/tests/devtools",
-    ],
-    binary = "blink_web_tests",
-)
-
-targets.tests.isolated_script_test(
     name = "blink_wpt_tests",
     mixins = [
         "has_native_resultdb_integration",
