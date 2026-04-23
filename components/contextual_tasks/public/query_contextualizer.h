@@ -125,6 +125,9 @@ class QueryContextualizer {
       ContextualizedCallback callback,
       bool enable_smart_tab_selection);
 
+  // Extracts URLs from the query text.
+  static std::vector<GURL> ExtractUrlsFromQuery(const std::string& query_text);
+
  private:
   void OnRelevantTabsFetched(
       const std::optional<base::Uuid>& task_id,
