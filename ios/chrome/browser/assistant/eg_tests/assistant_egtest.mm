@@ -78,3 +78,41 @@ void OpenAssistantFromOmnibox() {
 }
 
 @end
+
+// Test suite for the Assistant side panel.
+// Inherits all tests from AssistantTestCase and runs them with the side panel
+// flag enabled.
+@interface AssistantSidePanelTestCase : AssistantTestCase
+@end
+
+@implementation AssistantSidePanelTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled_and_params.push_back({kAssistantSidePanel, {}});
+
+  return config;
+}
+
+// Tests that the omnibox remains visible when the assistant side panel is
+// shown.
+- (void)testOmniboxVisibleInSidePanel {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test only supported on iPad.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  OpenAssistantFromOmnibox();
+
+  // Verify assistant container is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+
+  // Verify that the omnibox is still visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
