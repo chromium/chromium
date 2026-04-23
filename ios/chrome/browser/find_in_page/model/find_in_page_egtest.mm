@@ -901,10 +901,8 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   GURL destinationURL = self.testServer->GetURL(kFindInPageComplexPDFTestURL);
   [ChromeEarlGrey loadURL:destinationURL];
 
-  // Ensure the toolbars are not in fullscreen mode by checking if share
-  // button is visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Ensure the toolbars are not in fullscreen mode.
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Open FIP with Overflow menu and check it is visible and the share button
   // is not visible.
@@ -912,16 +910,14 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:[self findInPageInputField]];
 
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:chrome_test_util::
-                                                             TabShareButton()];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   // Close find in page with Done button and ensure the share button is
   // visible again.
   [self closeFindInPageWithDoneButton];
   [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
 // Tests that FIP works properly with bottom omnibox.
