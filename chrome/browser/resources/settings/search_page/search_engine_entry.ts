@@ -205,6 +205,7 @@ export class SettingsSearchEngineEntryElement extends
 
   private onManageClick_() {
     assert(this.engine.extension);
+    this.closePopupMenu_();
     this.extensionBrowserProxy_.manageExtension(this.engine.extension.id);
   }
 

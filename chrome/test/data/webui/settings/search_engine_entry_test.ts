@@ -818,6 +818,11 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     const extensionId =
         await extensionBrowserProxy.whenCalled('manageExtension');
     assertEquals(entry.engine.extension!.id, extensionId);
+
+    // The context menu was closed.
+    const menu = entry.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertFalse(menu.open);
   });
 
   // Tests that the "Delete" option is hidden for extensions.
