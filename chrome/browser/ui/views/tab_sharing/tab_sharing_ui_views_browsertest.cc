@@ -399,7 +399,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
 
   void AddTabs(Browser* browser, int tab_count) {
     for (int i = 0; i < tab_count; ++i) {
-      AddTab(browser, GURL(chrome::kChromeUINewTabURL));
+      AddTab(browser, chrome::ChromeUINewTabURLAsGURL());
     }
 
     base::RunLoop().RunUntilIdle();
@@ -827,7 +827,7 @@ class TabSharingMessageLinksBrowserTest
   const int kCapturingTab = 0;
   const int kCapturedTab = 1;
   const int kOtherTab = 2;
-  const GURL kCapturedTabUrl = GURL(chrome::kChromeUINewTabURL);
+  const GURL kCapturedTabUrl = chrome::ChromeUINewTabURLAsGURL();
   const GURL kOtherTabUrl = GURL(chrome::kChromeUIAboutURL);
   const std::string kCapturingTabLinkText = "capturer.com";
   const std::string kCapturedTabLinkText = "chrome://new-tab-page";

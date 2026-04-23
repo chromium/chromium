@@ -2096,7 +2096,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
     GURL home_url(
         browser()->profile()->GetPrefs()->GetString(prefs::kHomePage));
     if (home_url.is_empty()) {
-      return GURL(chrome::kChromeUINewTabURL);
+      return chrome::ChromeUINewTabURLAsGURL();
     }
     return home_url;
   }

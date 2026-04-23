@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_ReloadAfterKill) {
 
   // Open new tab page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1823,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
                        DefaultSearchEnginePlaceholderForNewTabPage) {
   // Navigate to the New Tab Page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   // Take focus away from the omnibox.
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
@@ -1871,7 +1871,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
 
   // Navigate to the New Tab Page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
   EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
