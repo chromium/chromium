@@ -995,11 +995,14 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return YES;
   }
 
+  NSEvent* event = [NSApp currentEvent];
   // Run only for keyboard-initiated quits.
-  if ([[NSApp currentEvent] type] != NSEventTypeKeyDown)
-    return NSTerminateNow;
+  if (event.type != NSEventTypeKeyDown) {
+    return YES;
+  }
 
-  return [[ConfirmQuitPanelController sharedController] runModalLoop];
+  return [[ConfirmQuitPanelController sharedController]
+      runConfirmQuitLoopWithEvent:event];
 }
 
 // Called when the app is shutting down. Clean-up as appropriate.

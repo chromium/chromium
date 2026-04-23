@@ -20,9 +20,14 @@
 // Returns a string representation fit for display.
 @property(class, readonly) NSString* keyCommandString;
 
-// Runs a modal loop that brings up the panel and handles the logic for if and
-// when to terminate. Returns YES if the quit should continue.
-- (BOOL)runModalLoop;
+// Displays the "Hold to Quit" HUD and runs a nested event loop to determine
+// whether the application should terminate. This implements both the
+// "Hold to Quit" and "Double-tap to Quit" behaviors. Returns YES if the quit
+// should proceed.
+//
+// |event| is the KeyDown event that triggered the quit attempt; it is used to
+// identify the key being held (typically 'Q') without hardcoding its key code.
+- (BOOL)runConfirmQuitLoopWithEvent:(NSEvent*)event;
 
 // Shows the window.
 - (void)showWindow:(id)sender;
