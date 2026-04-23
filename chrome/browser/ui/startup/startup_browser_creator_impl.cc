@@ -606,6 +606,8 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   // URLs passed on the command line supersede all others, except pinned tabs.
   PrependTabs(reset_tabs, &tabs);
 
+  StartupTabs pinned_tabs = provider.GetPinnedTabs(*command_line_, profile_);
+
   if (launch_result == LaunchResult::kNormally) {
     // An initial preferences file provided with this distribution may specify
     // tabs to be displayed on first run, overriding all non-command-line tabs,
@@ -644,18 +646,29 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // read and add those.
     StartupTabs prefs_tabs =
         provider.GetPreferencesTabs(*command_line_, profile_);
+
+    bool prefs_tabs_originally_empty = prefs_tabs.empty();
+
+    // Filter out tabs from preferences that are already pinned.
+    std::erase_if(prefs_tabs, [&pinned_tabs](const StartupTab& pref_tab) {
+      return std::ranges::any_of(pinned_tabs,
+                                 [&pref_tab](const StartupTab& pinned_tab) {
+                                   return pref_tab.url == pinned_tab.url;
+                                 });
+    });
+
     AppendTabs(prefs_tabs, &tabs);
 
     // Potentially add the New Tab Page.
     // Note that URLs from preferences are explicitly meant to override showing
     // the NTP.
-    if (prefs_tabs.empty()) {
+    if (prefs_tabs_originally_empty) {
       AppendTabs(provider.GetNewTabPageTabs(*command_line_, profile_), &tabs);
     }
   }
 
   // Maybe add any tabs which the user has previously pinned.
-  AppendTabs(provider.GetPinnedTabs(*command_line_, profile_), &tabs);
+  AppendTabs(pinned_tabs, &tabs);
 
   return {std::move(tabs), launch_result};
 }

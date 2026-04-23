@@ -113,6 +113,70 @@ class FakeStartupTabProvider : public StartupTabProvider {
   const uint32_t options_;
 };
 
+// Fake StartupTabProvider that returns identical tabs for both pinned and
+// preference tabs. Used to test handling of duplicate pinned tabs in startup
+// tabs and restored tabs.
+class DuplicateFakeStartupTabProvider : public StartupTabProvider {
+ public:
+  static constexpr char kDuplicateUrl[] = "https://duplicate.test";
+  static constexpr char kDuplicateHost[] = "duplicate.test";
+
+  DuplicateFakeStartupTabProvider() = default;
+
+  DuplicateFakeStartupTabProvider(DuplicateFakeStartupTabProvider&& other) =
+      default;
+  DuplicateFakeStartupTabProvider& operator=(
+      DuplicateFakeStartupTabProvider&& other) = default;
+
+  ~DuplicateFakeStartupTabProvider() = default;
+
+  StartupTabs GetDistributionFirstRunTabs(
+      StartupBrowserCreator* browser_creator) const override {
+    return StartupTabs();
+  }
+
+  StartupTabs GetResetTriggerTabs(Profile* profile) const override {
+    return StartupTabs();
+  }
+
+  StartupTabs GetPinnedTabs(const base::CommandLine& command_line_,
+                            Profile* profile) const override {
+    StartupTabs tabs;
+    tabs.emplace_back(GURL(kDuplicateUrl), StartupTab::Type::kPinned);
+    return tabs;
+  }
+
+  StartupTabs GetPreferencesTabs(const base::CommandLine& command_line_,
+                                 Profile* profile) const override {
+    StartupTabs tabs;
+    tabs.emplace_back(GURL(kDuplicateUrl));
+    return tabs;
+  }
+
+  StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line_,
+                                Profile* profile) const override {
+    return StartupTabs();
+  }
+
+  StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
+                                 const base::FilePath& cur_dir,
+                                 Profile* profile) const override {
+    return StartupTabs();
+  }
+
+  CommandLineTabsPresent HasCommandLineTabs(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir) const override {
+    return CommandLineTabsPresent::kNo;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override {
+    return StartupTabs();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+};
+
 }  // namespace
 
 // Comparing a `StartupTab` with a string will compare the tab's host with that
@@ -176,6 +240,28 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
   EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
   EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
+}
+
+TEST_F(StartupBrowserCreatorImplTest,
+       DetermineStartupTabs_DeduplicatePinnedTabs) {
+  using LaunchResult = Creator::LaunchResult;
+
+  DuplicateFakeStartupTabProvider provider;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  Creator impl(base::FilePath(), command_line,
+               chrome::startup::IsFirstRun::kNo);
+
+  auto output = impl.DetermineStartupTabs(
+      provider, chrome::startup::IsProcessStartup::kYes,
+      /*is_ephemeral_profile=*/false, /*is_post_crash_launch=*/false,
+      /*promotional_tabs_enabled=*/true, /*whats_new_enabled=*/false);
+  EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
+
+  // Duplicated URL is expected to appear only once.
+  ASSERT_EQ(1U, output.tabs.size());
+  EXPECT_EQ(DuplicateFakeStartupTabProvider::kDuplicateHost,
+            output.tabs[0].url.GetHost());
+  EXPECT_EQ(StartupTab::Type::kPinned, output.tabs[0].type);
 }
 
 // Only the New Tab Page should appear in Incognito mode, skipping all the usual
