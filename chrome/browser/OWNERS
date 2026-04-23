@@ -70,7 +70,6 @@ per-file shell_integration_win*=grt@chromium.org
 per-file *linux*=thomasanderson@chromium.org
 
 per-file unload_browsertest.cc=file://content/OWNERS
-per-file unload_platform_browsertest.cc=file://content/OWNERS
 
 per-file web_bluetooth*=file://content/browser/bluetooth/OWNERS
 

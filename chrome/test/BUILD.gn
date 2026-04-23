@@ -1406,7 +1406,6 @@ source_set("platform_browser_tests") {
     "../browser/ssl/crlset_browsertest.cc",
     "../browser/task_manager/mock_web_contents_task_manager.cc",
     "../browser/task_manager/mock_web_contents_task_manager.h",
-    "../browser/unload_platform_browsertest.cc",
   ]
 
   deps = [
