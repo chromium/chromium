@@ -38,6 +38,10 @@ final class SigninButtonViewBinder {
             view.getAvatarButton()
                     .setContentDescription(
                             model.get(SigninButtonProperties.AVATAR_CONTENT_DESCRIPTION));
+        } else if (SigninButtonProperties.IS_ENABLED.equals(propertyKey)) {
+            boolean isEnabled = model.get(SigninButtonProperties.IS_ENABLED);
+            view.getAvatarButton().setEnabled(isEnabled);
+            view.getSigninTextButton().setEnabled(isEnabled);
         }
     }
 }

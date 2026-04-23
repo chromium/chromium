@@ -81,7 +81,8 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
                         deviceLockActivityLauncher,
                         bottomSheetController,
                         modalDialogManager,
-                        snackbarManager);
+                        snackbarManager,
+                        themeColorProvider);
 
         // Defers setting the view and binding the model until the button needs to be shown.
         mViewStub = viewStub;
