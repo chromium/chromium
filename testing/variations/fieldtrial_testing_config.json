@@ -1187,7 +1187,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_FadeOut150",
+                    "params": {
+                        "nav-animation-fade-hold-duration-ms": "350",
+                        "nav-animation-fade-out-duration-ms": "150",
+                        "skip_srp": "false"
+                    },
                     "enable_features": [
                         "AndroidNavigationBlurTransitionAnimation"
                     ]
