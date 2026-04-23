@@ -21,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -558,7 +559,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                          GLenum format,
                          GLenum type,
                          uint32_t unpadded_row_size,
-                         const void* pixels,
+                         base::span<const uint8_t> pixels,
                          uint32_t pixels_padded_row_size,
                          GLboolean internal,
                          ScopedTransferBufferPtr* buffer,
@@ -574,7 +575,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                          GLenum format,
                          GLenum type,
                          uint32_t unpadded_row_size,
-                         const void* pixels,
+                         base::span<const uint8_t> pixels,
                          uint32_t pixels_padded_row_size,
                          GLboolean internal,
                          ScopedTransferBufferPtr* buffer,

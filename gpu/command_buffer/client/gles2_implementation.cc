@@ -153,25 +153,26 @@ void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
                  format, type, nullptr);
 }
 
-void CopyRectToBuffer(const void* pixels,
+void CopyRectToBuffer(base::span<const uint8_t> pixels,
                       uint32_t height,
                       uint32_t unpadded_row_size,
                       uint32_t pixels_padded_row_size,
-                      void* buffer,
+                      base::span<uint8_t> buffer,
                       uint32_t buffer_padded_row_size) {
   if (height == 0)
     return;
-  const int8_t* source = static_cast<const int8_t*>(pixels);
-  int8_t* dest = static_cast<int8_t*>(buffer);
   if (pixels_padded_row_size != buffer_padded_row_size) {
+    uint32_t buffer_offset = 0;
+    uint32_t pixels_offset = 0;
     for (uint32_t ii = 0; ii < height; ++ii) {
-      UNSAFE_TODO(memcpy(dest, source, unpadded_row_size));
-      UNSAFE_TODO(dest += buffer_padded_row_size);
-      UNSAFE_TODO(source += pixels_padded_row_size);
+      buffer.subspan(buffer_offset, unpadded_row_size)
+          .copy_from(pixels.subspan(pixels_offset, unpadded_row_size));
+      buffer_offset += buffer_padded_row_size;
+      pixels_offset += pixels_padded_row_size;
     }
   } else {
     uint32_t size = (height - 1) * pixels_padded_row_size + unpadded_row_size;
-    UNSAFE_TODO(memcpy(dest, source, size));
+    buffer.copy_prefix_from(pixels.first(size));
   }
 }
 
@@ -3091,6 +3092,7 @@ void GLES2Implementation::TexImage2D(GLenum target,
     SetGLError(GL_INVALID_VALUE, func_name, "image size too large");
     return;
   }
+  const uint32_t client_pixels_size = size;
 
   if (bound_pixel_unpack_buffer_) {
     base::CheckedNumeric<uint32_t> offset = ToGLuint(pixels);
@@ -3155,12 +3157,13 @@ void GLES2Implementation::TexImage2D(GLenum target,
   }
 
   // advance pixels pointer past the skip rows and skip pixels
-  pixels = UNSAFE_TODO(reinterpret_cast<const int8_t*>(pixels) + skip_size);
+  auto pixels_span = UNSAFE_TODO(base::span<const uint8_t>(
+      static_cast<const uint8_t*>(pixels) + skip_size, client_pixels_size));
 
   // Check if we can send it all at once.
   int32_t shm_id = 0;
   uint32_t shm_offset = 0;
-  void* buffer_pointer = nullptr;
+  base::span<uint8_t> buffer_span;
 
   ScopedTransferBufferPtr transfer_alloc(size, helper_, transfer_buffer_);
   ScopedMappedMemoryPtr mapped_alloc(0, helper_, mapped_memory_.get());
@@ -3168,7 +3171,7 @@ void GLES2Implementation::TexImage2D(GLenum target,
   if (transfer_alloc.valid() && transfer_alloc.size() >= size) {
     shm_id = transfer_alloc.shm_id();
     shm_offset = transfer_alloc.offset();
-    buffer_pointer = transfer_alloc.address();
+    buffer_span = transfer_alloc.as_byte_span();
   } else if (size < max_extra_transfer_buffer_size_) {
     mapped_alloc.Reset(size);
     if (mapped_alloc.valid()) {
@@ -3177,13 +3180,13 @@ void GLES2Implementation::TexImage2D(GLenum target,
       mapped_alloc.SetFlushAfterRelease(true);
       shm_id = mapped_alloc.shm_id();
       shm_offset = mapped_alloc.offset();
-      buffer_pointer = mapped_alloc.address();
+      buffer_span = mapped_alloc.as_byte_span();
     }
   }
 
-  if (buffer_pointer) {
-    CopyRectToBuffer(pixels, height, unpadded_row_size, padded_row_size,
-                     buffer_pointer, service_padded_row_size);
+  if (!buffer_span.empty()) {
+    CopyRectToBuffer(pixels_span, height, unpadded_row_size, padded_row_size,
+                     buffer_span, service_padded_row_size);
     helper_->TexImage2D(target, level, internalformat, width, height, format,
                         type, shm_id, shm_offset);
     CheckGLError();
@@ -3194,7 +3197,7 @@ void GLES2Implementation::TexImage2D(GLenum target,
   helper_->TexImage2D(target, level, internalformat, width, height, format,
                       type, 0, 0);
   TexSubImage2DImpl(target, level, 0, 0, width, height, format, type,
-                    unpadded_row_size, pixels, padded_row_size, GL_TRUE,
+                    unpadded_row_size, pixels_span, padded_row_size, GL_TRUE,
                     &transfer_alloc, service_padded_row_size);
   CheckGLError();
 }
@@ -3249,6 +3252,7 @@ void GLES2Implementation::TexImage3D(GLenum target,
     SetGLError(GL_INVALID_VALUE, func_name, "image size too large");
     return;
   }
+  const uint32_t client_pixels_size = size;
 
   if (bound_pixel_unpack_buffer_) {
     base::CheckedNumeric<uint32_t> offset = ToGLuint(pixels);
@@ -3316,12 +3320,13 @@ void GLES2Implementation::TexImage3D(GLenum target,
       unpack_image_height_ > 0 ? unpack_image_height_ : height;
 
   // advance pixels pointer past the skip images/rows/pixels
-  pixels = UNSAFE_TODO(reinterpret_cast<const int8_t*>(pixels) + skip_size);
+  auto pixels_span = UNSAFE_TODO(base::span<const uint8_t>(
+      static_cast<const uint8_t*>(pixels) + skip_size, client_pixels_size));
 
   // Check if we can send it all at once.
   int32_t shm_id = 0;
   uint32_t shm_offset = 0;
-  void* buffer_pointer = nullptr;
+  base::span<uint8_t> buffer_span;
 
   ScopedTransferBufferPtr transfer_alloc(size, helper_, transfer_buffer_);
   ScopedMappedMemoryPtr mapped_alloc(0, helper_, mapped_memory_.get());
@@ -3329,7 +3334,7 @@ void GLES2Implementation::TexImage3D(GLenum target,
   if (transfer_alloc.valid() && transfer_alloc.size() >= size) {
     shm_id = transfer_alloc.shm_id();
     shm_offset = transfer_alloc.offset();
-    buffer_pointer = transfer_alloc.address();
+    buffer_span = transfer_alloc.as_byte_span();
   } else if (size < max_extra_transfer_buffer_size_) {
     mapped_alloc.Reset(size);
     if (mapped_alloc.valid()) {
@@ -3338,18 +3343,22 @@ void GLES2Implementation::TexImage3D(GLenum target,
       mapped_alloc.SetFlushAfterRelease(true);
       shm_id = mapped_alloc.shm_id();
       shm_offset = mapped_alloc.offset();
-      buffer_pointer = mapped_alloc.address();
+      buffer_span = mapped_alloc.as_byte_span();
     }
   }
 
-  if (buffer_pointer) {
+  if (!buffer_span.empty()) {
+    uint32_t image_size_src = padded_row_size * src_height;
+    uint32_t image_size_dst = service_padded_row_size * height;
+    uint32_t pixels_offset = 0;
+    uint32_t buffer_offset = 0;
     for (GLsizei z = 0; z < depth; ++z) {
-      CopyRectToBuffer(pixels, height, unpadded_row_size, padded_row_size,
-                       buffer_pointer, service_padded_row_size);
-      pixels = UNSAFE_TODO(reinterpret_cast<const int8_t*>(pixels) +
-                           padded_row_size * src_height);
-      buffer_pointer = UNSAFE_TODO(reinterpret_cast<int8_t*>(buffer_pointer) +
-                                   service_padded_row_size * height);
+      CopyRectToBuffer(pixels_span.subspan(pixels_offset), height,
+                       unpadded_row_size, padded_row_size,
+                       buffer_span.subspan(buffer_offset),
+                       service_padded_row_size);
+      pixels_offset += image_size_src;
+      buffer_offset += image_size_dst;
     }
     helper_->TexImage3D(target, level, internalformat, width, height, depth,
                         format, type, shm_id, shm_offset);
@@ -3361,7 +3370,7 @@ void GLES2Implementation::TexImage3D(GLenum target,
   helper_->TexImage3D(target, level, internalformat, width, height, depth,
                       format, type, 0, 0);
   TexSubImage3DImpl(target, level, 0, 0, 0, width, height, depth, format, type,
-                    unpadded_row_size, pixels, padded_row_size, GL_TRUE,
+                    unpadded_row_size, pixels_span, padded_row_size, GL_TRUE,
                     &transfer_alloc, service_padded_row_size);
   CheckGLError();
 }
@@ -3408,6 +3417,7 @@ void GLES2Implementation::TexSubImage2D(GLenum target,
     SetGLError(GL_INVALID_VALUE, func_name, "image size to large");
     return;
   }
+  const uint32_t client_pixels_size = size;
 
   if (bound_pixel_unpack_buffer_) {
     base::CheckedNumeric<uint32_t> offset = ToGLuint(pixels);
@@ -3472,7 +3482,8 @@ void GLES2Implementation::TexSubImage2D(GLenum target,
   }
 
   // advance pixels pointer past the skip rows and skip pixels
-  pixels = UNSAFE_TODO(reinterpret_cast<const int8_t*>(pixels) + skip_size);
+  auto pixels_span = UNSAFE_TODO(base::span<const uint8_t>(
+      static_cast<const uint8_t*>(pixels) + skip_size, client_pixels_size));
 
   ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
   base::CheckedNumeric<GLint> checked_xoffset = xoffset;
@@ -3488,8 +3499,8 @@ void GLES2Implementation::TexSubImage2D(GLenum target,
     return;
   }
   TexSubImage2DImpl(target, level, xoffset, yoffset, width, height, format,
-                    type, unpadded_row_size, pixels, padded_row_size, GL_FALSE,
-                    &buffer, service_padded_row_size);
+                    type, unpadded_row_size, pixels_span, padded_row_size,
+                    GL_FALSE, &buffer, service_padded_row_size);
   CheckGLError();
 }
 
@@ -3541,6 +3552,7 @@ void GLES2Implementation::TexSubImage3D(GLenum target,
     SetGLError(GL_INVALID_VALUE, func_name, "image size to large");
     return;
   }
+  const uint32_t client_pixels_size = size;
 
   if (bound_pixel_unpack_buffer_) {
     base::CheckedNumeric<uint32_t> offset = ToGLuint(pixels);
@@ -3605,7 +3617,8 @@ void GLES2Implementation::TexSubImage3D(GLenum target,
   }
 
   // advance pixels pointer past the skip images/rows/pixels
-  pixels = UNSAFE_TODO(reinterpret_cast<const int8_t*>(pixels) + skip_size);
+  auto pixels_span = UNSAFE_TODO(base::span<const uint8_t>(
+      static_cast<const uint8_t*>(pixels) + skip_size, client_pixels_size));
 
   ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
   base::CheckedNumeric<GLint> checked_xoffset = xoffset;
@@ -3627,7 +3640,7 @@ void GLES2Implementation::TexSubImage3D(GLenum target,
     return;
   }
   TexSubImage3DImpl(target, level, xoffset, yoffset, zoffset, width, height,
-                    depth, format, type, unpadded_row_size, pixels,
+                    depth, format, type, unpadded_row_size, pixels_span,
                     padded_row_size, GL_FALSE, &buffer,
                     service_padded_row_size);
   CheckGLError();
@@ -3658,7 +3671,7 @@ void GLES2Implementation::TexSubImage2DImpl(GLenum target,
                                             GLenum format,
                                             GLenum type,
                                             uint32_t unpadded_row_size,
-                                            const void* pixels,
+                                            base::span<const uint8_t> pixels,
                                             uint32_t pixels_padded_row_size,
                                             GLboolean internal,
                                             ScopedTransferBufferPtr* buffer,
@@ -3670,8 +3683,8 @@ void GLES2Implementation::TexSubImage2DImpl(GLenum target,
   DCHECK_GE(xoffset, 0);
   DCHECK_GE(yoffset, 0);
 
-  const int8_t* source = reinterpret_cast<const int8_t*>(pixels);
   // Transfer by rows.
+  uint32_t pixels_offset = 0;
   while (height) {
     unsigned int desired_size =
         buffer_padded_row_size * (height - 1) + unpadded_row_size;
@@ -3685,16 +3698,16 @@ void GLES2Implementation::TexSubImage2DImpl(GLenum target,
     GLint num_rows = ComputeNumRowsThatFitInBuffer(
         buffer_padded_row_size, unpadded_row_size, buffer->size(), height);
     num_rows = std::min(num_rows, height);
-    CopyRectToBuffer(source, num_rows, unpadded_row_size,
-                     pixels_padded_row_size, buffer->address(),
+    CopyRectToBuffer(pixels.subspan(pixels_offset), num_rows, unpadded_row_size,
+                     pixels_padded_row_size, buffer->as_byte_span(),
                      buffer_padded_row_size);
     helper_->TexSubImage2D(target, level, xoffset, yoffset, width, num_rows,
                            format, type, buffer->shm_id(), buffer->offset(),
                            internal);
     buffer->Release();
     yoffset += num_rows;
-    UNSAFE_TODO(source += num_rows * pixels_padded_row_size);
     height -= num_rows;
+    pixels_offset += num_rows * pixels_padded_row_size;
   }
 }
 
@@ -3709,7 +3722,7 @@ void GLES2Implementation::TexSubImage3DImpl(GLenum target,
                                             GLenum format,
                                             GLenum type,
                                             uint32_t unpadded_row_size,
-                                            const void* pixels,
+                                            base::span<const uint8_t> pixels,
                                             uint32_t pixels_padded_row_size,
                                             GLboolean internal,
                                             ScopedTransferBufferPtr* buffer,
@@ -3722,9 +3735,9 @@ void GLES2Implementation::TexSubImage3DImpl(GLenum target,
   DCHECK_GE(xoffset, 0);
   DCHECK_GE(yoffset, 0);
   DCHECK_GE(zoffset, 0);
-  const int8_t* source = reinterpret_cast<const int8_t*>(pixels);
   GLsizei total_rows = height * depth;
   GLint row_index = 0, depth_index = 0;
+  uint32_t pixels_offset = 0;
   while (total_rows) {
     // Each time, we either copy one or more images, or copy one or more rows
     // within a single image, depending on the buffer size limit.
@@ -3767,21 +3780,21 @@ void GLES2Implementation::TexSubImage3DImpl(GLenum target,
     }
 
     if (num_images > 0) {
-      int8_t* buffer_pointer = reinterpret_cast<int8_t*>(buffer->address());
+      auto buffer_span = buffer->as_byte_span();
       uint32_t src_height =
           unpack_image_height_ > 0 ? unpack_image_height_ : height;
       uint32_t image_size_dst = buffer_padded_row_size * height;
       uint32_t image_size_src = pixels_padded_row_size * src_height;
       for (GLint ii = 0; ii < num_images; ++ii) {
-        CopyRectToBuffer(UNSAFE_TODO(source + ii * image_size_src), my_height,
-                         unpadded_row_size, pixels_padded_row_size,
-                         UNSAFE_TODO(buffer_pointer + ii * image_size_dst),
+        CopyRectToBuffer(pixels.subspan(pixels_offset + ii * image_size_src),
+                         my_height, unpadded_row_size, pixels_padded_row_size,
+                         buffer_span.subspan(ii * image_size_dst),
                          buffer_padded_row_size);
       }
     } else {
-      CopyRectToBuffer(source, my_height, unpadded_row_size,
-                       pixels_padded_row_size, buffer->address(),
-                       buffer_padded_row_size);
+      CopyRectToBuffer(pixels.subspan(pixels_offset), my_height,
+                       unpadded_row_size, pixels_padded_row_size,
+                       buffer->as_byte_span(), buffer_padded_row_size);
     }
     helper_->TexSubImage3D(target, level, xoffset, yoffset + row_index,
                            zoffset + depth_index, width, my_height, my_depth,
@@ -3804,12 +3817,12 @@ void GLES2Implementation::TexSubImage3DImpl(GLenum target,
           num_image_paddings++;
         }
       }
-      UNSAFE_TODO(source += num_rows * pixels_padded_row_size);
+      uint32_t advance = num_rows * pixels_padded_row_size;
       if (unpack_image_height_ > height && num_image_paddings > 0) {
-        UNSAFE_TODO(source += num_image_paddings *
-                              (unpack_image_height_ - height) *
-                              pixels_padded_row_size);
+        advance += num_image_paddings * (unpack_image_height_ - height) *
+                   pixels_padded_row_size;
       }
+      pixels_offset += advance;
     }
   }
 }
