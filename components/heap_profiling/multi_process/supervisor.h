@@ -106,29 +106,36 @@ class Supervisor {
   Supervisor();
   ~Supervisor();
 
-  // Initialization stage 1: Start the Service on the IO thread.
-  void StartServiceOnIOThread(
+  // Initialization stage 1: Register with the MemoryInstrumentationRegistry.
+  // `continue_on_io_thread` is a callback to the next stage, which must be
+  // bound to the IO thread.
+  void RegisterProfilerOnMemoryInfraThread(
+      base::OnceCallback<void(
+          mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>,
+          mojo::PendingRemote<
+              memory_instrumentation::mojom::HeapProfilerHelper>)>
+          continue_on_io_thread);
+
+  // Initialization stage 2: Launch the Service on the IO thread.
+  // `continue_on_ui_thread` is a callback to the next stage, which must be
+  // bound to the UI thread.
+  void LaunchServiceOnIOThread(
+      mojom::StackMode stack_mode,
+      uint32_t sampling_rate,
+      base::OnceCallback<void(base::WeakPtr<Controller>)> continue_on_ui_thread,
       mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
           receiver,
       mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
-          remote_helper,
-      Mode mode,
-      mojom::StackMode stack_mode,
-      uint32_t sampling_rate,
-      base::OnceClosure callback);
+          remote_helper);
 
-  // Initialization stage 2: Start the ClientConnectManager on the UI thread.
-  void FinishInitializationOnUIhread(
+  // Initialization stage 3: Start the ClientConnectManager on the UI thread.
+  // Invokes `closure` on the UI thread when done if it's not null.
+  void StartClientConnectionOnUIhread(
       Mode mode,
       base::OnceClosure closure,
       base::WeakPtr<Controller> controller_weak_ptr);
 
   void GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback);
-
-  void StartProfilingOnMemoryInfraThread(Mode mode,
-                                         mojom::StackMode stack_mode,
-                                         uint32_t sampling_rate,
-                                         base::OnceClosure closure);
 
   // Bound to the IO thread.
   std::unique_ptr<Controller> controller_;

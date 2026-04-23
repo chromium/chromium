@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
@@ -72,29 +73,36 @@ void Supervisor::Start(Mode mode,
                        base::OnceClosure closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(!started_);
+  // Unretained is safe because `this` is a leaked global singleton.
+  auto ui_thread_callback = base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
+      base::BindOnce(&Supervisor::StartClientConnectionOnUIhread,
+                     base::Unretained(this), mode, std::move(closure)));
+  auto io_thread_callback = base::BindPostTask(
+      content::GetIOThreadTaskRunner({}),
+      base::BindOnce(&Supervisor::LaunchServiceOnIOThread,
+                     base::Unretained(this), stack_mode, sampling_rate,
+                     std::move(ui_thread_callback)));
   base::trace_event::MemoryDumpManager::GetInstance()
       ->GetDumpThreadTaskRunner()
       ->PostTask(FROM_HERE,
-                 base::BindOnce(&Supervisor::StartProfilingOnMemoryInfraThread,
-                                base::Unretained(this), mode, stack_mode,
-                                sampling_rate, std::move(closure)));
+                 base::BindOnce(
+                     &Supervisor::RegisterProfilerOnMemoryInfraThread,
+                     base::Unretained(this), std::move(io_thread_callback)));
 }
 
-void Supervisor::StartProfilingOnMemoryInfraThread(Mode mode,
-                                                   mojom::StackMode stack_mode,
-                                                   uint32_t sampling_rate,
-                                                   base::OnceClosure closure) {
+void Supervisor::RegisterProfilerOnMemoryInfraThread(
+    base::OnceCallback<void(
+        mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>,
+        mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>)>
+        continue_on_io_thread) {
   mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper> helper;
   mojo::PendingRemote<memory_instrumentation::mojom::HeapProfiler> profiler;
   auto profiler_receiver = profiler.InitWithNewPipeAndPassReceiver();
   content::GetMemoryInstrumentationRegistry()->RegisterHeapProfiler(
       std::move(profiler), helper.InitWithNewPipeAndPassReceiver());
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Supervisor::StartServiceOnIOThread,
-                     base::Unretained(this), std::move(profiler_receiver),
-                     std::move(helper), mode, stack_mode, sampling_rate,
-                     std::move(closure)));
+  std::move(continue_on_io_thread)
+      .Run(std::move(profiler_receiver), std::move(helper));
 }
 
 Mode Supervisor::GetMode() {
@@ -185,14 +193,13 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   DCHECK(result);
 }
 
-void Supervisor::StartServiceOnIOThread(
-    mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler> receiver,
-    mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
-        remote_helper,
-    Mode mode,
+void Supervisor::LaunchServiceOnIOThread(
     mojom::StackMode stack_mode,
     uint32_t sampling_rate,
-    base::OnceClosure closure) {
+    base::OnceCallback<void(base::WeakPtr<Controller>)> continue_on_ui_thread,
+    mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler> receiver,
+    mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+        remote_helper) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   mojo::PendingRemote<mojom::ProfilingService> service =
@@ -200,15 +207,10 @@ void Supervisor::StartServiceOnIOThread(
 
   controller_ = std::make_unique<Controller>(std::move(service), stack_mode,
                                              sampling_rate);
-  base::WeakPtr<Controller> controller_weak_ptr = controller_->GetWeakPtr();
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&Supervisor::FinishInitializationOnUIhread,
-                                base::Unretained(this), mode,
-                                std::move(closure), controller_weak_ptr));
+  std::move(continue_on_ui_thread).Run(controller_->GetWeakPtr());
 }
 
-void Supervisor::FinishInitializationOnUIhread(
+void Supervisor::StartClientConnectionOnUIhread(
     Mode mode,
     base::OnceClosure closure,
     base::WeakPtr<Controller> controller_weak_ptr) {
