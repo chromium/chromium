@@ -114,10 +114,10 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
 
   // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
   unsigned end = start_index;
-  UChar32 ch = text.CodePointAtAndNext(end);
+  UChar32 ch = UNSAFE_TODO(text.CodePointAtAndNext(end));
   if (!Character::IsCJKIdeographOrSymbol(ch)) {
     for (unsigned next_end = end; end < length; end = next_end) {
-      ch = text.CodePointAtAndNext(next_end);
+      ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
       if (IsWordDelimiter<true>(ch) ||
           Character::IsCJKIdeographOrSymbolBase(ch)) {
         return end;
@@ -131,7 +131,7 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
   // worsen the cache efficiency.
   bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
   for (unsigned next_end = end; end < length; end = next_end) {
-    ch = text.CodePointAtAndNext(next_end);
+    ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
     // Modifier check in order not to split Emoji sequences.
     if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
         ch == uchar::kZeroWidthJoiner || Character::IsEmojiComponent(ch) ||

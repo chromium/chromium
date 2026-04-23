@@ -392,8 +392,10 @@ int CodeUnitCompareIgnoringAsciiCase(const StringView& a, const StringView& b) {
 
 UChar32 StringView::CodePointAt(size_type i) const {
   SECURITY_DCHECK(i < length());
-  if (Is8Bit())
-    return UNSAFE_TODO((*this)[i]);
+  if (Is8Bit()) {
+    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+    return UNSAFE_BUFFERS((*this)[i]);
+  }
   return blink::CodePointAt(Span16(), i);
 }
 
@@ -411,7 +413,8 @@ StringView::size_type StringView::NextCodePointOffset(size_type i) const {
 
 UChar32 StringView::CodePointAtAndNext(size_type& i) const {
   if (Is8Bit()) {
-    return UNSAFE_TODO((*this)[i++]);
+    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+    return UNSAFE_BUFFERS((*this)[i++]);
   }
   return blink::CodePointAtAndNext(Span16(), i);
 }

@@ -231,7 +231,7 @@ inline bool ShapeResultBloberizer::IsSkipInkException(
   // For skip-ink: auto, skip CJK characters. For skip-ink: all, include all.
   return type_ == ShapeResultBloberizer::Type::kTextIntercepts &&
          !Character::CanTextDecorationSkipInk(
-             text.CodePointAt(character_index));
+             UNSAFE_TODO(text.CodePointAt(character_index)));
 }
 
 inline void ShapeResultBloberizer::AddEmphasisMark(
@@ -383,7 +383,7 @@ class ClusterCallbackContext {
       // Do not put emphasis marks on space, separator, and control
       // characters.
       if (Character::CanReceiveTextEmphasis(
-              text.CodePointAt(character_index))) {
+              UNSAFE_TODO(text.CodePointAt(character_index)))) {
         bloberizer->AddEmphasisMark(emphasis_data, canvas_rotation,
                                     glyph_center,
                                     advance_so_far + glyph_advance_x / 2,
