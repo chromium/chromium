@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/dissidia/dissidia_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -14,6 +15,8 @@
 namespace ash {
 
 namespace {
+
+constexpr char kResultHistogramName[] = "OOBE.FjordImageDownloader.Result";
 
 std::string GetImageName(FjordImageDownloader::ImageType image_type) {
   switch (image_type) {
@@ -23,6 +26,46 @@ std::string GetImageName(FjordImageDownloader::ImageType image_type) {
       return "selphie";
     case FjordImageDownloader::ImageType::kUnknown:
       NOTREACHED();
+  }
+}
+
+FjordImageDownloader::ImageDownloadResult PerformUpdateStatusToResult(
+    dissidia::PerformUpdateStatus status) {
+  switch (status) {
+    case dissidia::PerformUpdateStatus::kAlreadyOnRequestedImage:
+      return FjordImageDownloader::ImageDownloadResult::
+          kAlreadyOnRequestedImage;
+    case dissidia::PerformUpdateStatus::kUpdateAlreadyInProgress:
+      return FjordImageDownloader::ImageDownloadResult::
+          kUpdateAlreadyInProgress;
+    case dissidia::PerformUpdateStatus::kOobeAlreadyCompleted:
+      return FjordImageDownloader::ImageDownloadResult::kOobeAlreadyCompleted;
+    case dissidia::PerformUpdateStatus::kError:
+      return FjordImageDownloader::ImageDownloadResult::kPerformUpdateError;
+    case dissidia::PerformUpdateStatus::kUpdateStarted:
+      NOTREACHED();
+  }
+}
+
+FjordImageDownloader::ImageDownloadResult CompletedErrorCodeToResult(
+    dissidia::CompletedErrorCode error_code) {
+  switch (error_code) {
+    case dissidia::CompletedErrorCode::kSuccess:
+      return FjordImageDownloader::ImageDownloadResult::kSuccess;
+    case dissidia::CompletedErrorCode::kGeneralFailure:
+      return FjordImageDownloader::ImageDownloadResult::kGeneralFailure;
+    case dissidia::CompletedErrorCode::kDownloadFailed:
+      return FjordImageDownloader::ImageDownloadResult::kDownloadFailed;
+    case dissidia::CompletedErrorCode::kSlotResolutionFailed:
+      return FjordImageDownloader::ImageDownloadResult::kSlotResolutionFailed;
+    case dissidia::CompletedErrorCode::kExtractFailed:
+      return FjordImageDownloader::ImageDownloadResult::kExtractFailed;
+    case dissidia::CompletedErrorCode::kRootdevFailed:
+      return FjordImageDownloader::ImageDownloadResult::kRootdevFailed;
+    case dissidia::CompletedErrorCode::kCgptFailed:
+      return FjordImageDownloader::ImageDownloadResult::kCgptFailed;
+    case dissidia::CompletedErrorCode::kRebootFailed:
+      return FjordImageDownloader::ImageDownloadResult::kRebootFailed;
   }
 }
 
@@ -74,6 +117,8 @@ void FjordImageDownloader::OnPerformUpdateResponse(
   if (status != dissidia::PerformUpdateStatus::kUpdateStarted) {
     LOG(ERROR) << "PerformUpdate failed with status "
                << static_cast<int>(status) << ": " << message;
+    base::UmaHistogramEnumeration(kResultHistogramName,
+                                  PerformUpdateStatusToResult(status));
     is_running_ = false;
     if (callback_) {
       std::move(callback_).Run(
@@ -93,6 +138,8 @@ void FjordImageDownloader::OnCompleted(bool success,
                                        dissidia::CompletedErrorCode error_code,
                                        const std::string& message) {
   is_running_ = false;
+  base::UmaHistogramEnumeration(kResultHistogramName,
+                                CompletedErrorCodeToResult(error_code));
 
   if (success) {
     VLOG(1) << "Dissidia completed successfully: " << message;

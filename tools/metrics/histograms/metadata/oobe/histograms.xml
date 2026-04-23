@@ -736,6 +736,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.FjordImageDownloader.Result"
+    enum="FjordImageDownloadResult" expires_after="2027-04-20">
+  <owner>courtneywong@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the result of an image download attempt via the dissidia D-Bus
+    service during Fjord OOBE. Recorded when the PerformUpdate call fails
+    immediately or when the Completed signal is received.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2027-04-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>

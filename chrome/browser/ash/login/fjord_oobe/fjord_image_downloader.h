@@ -25,6 +25,26 @@ class FjordImageDownloader : public chromeos::DissidiaClient::Observer {
     kSelphie,
   };
 
+  // LINT.IfChange(ImageDownloadResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ImageDownloadResult {
+    kSuccess = 0,                  // Completed successfully
+    kAlreadyOnRequestedImage = 1,  // PerformUpdate: already on image
+    kUpdateAlreadyInProgress = 2,  // PerformUpdate: update in progress
+    kOobeAlreadyCompleted = 3,     // PerformUpdate: OOBE completed
+    kPerformUpdateError = 4,       // PerformUpdate: generic error
+    kGeneralFailure = 5,           // Completed: general failure
+    kDownloadFailed = 6,           // Completed: download failed
+    kSlotResolutionFailed = 7,     // Completed: slot resolution failed
+    kExtractFailed = 8,            // Completed: extract failed
+    kRootdevFailed = 9,            // Completed: rootdev failed
+    kCgptFailed = 10,              // Completed: cgpt failed
+    kRebootFailed = 11,            // Completed: reboot failed
+    kMaxValue = kRebootFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/enums.xml:FjordImageDownloadResult)
+
   FjordImageDownloader();
   FjordImageDownloader(const FjordImageDownloader&) = delete;
   FjordImageDownloader& operator=(const FjordImageDownloader&) = delete;

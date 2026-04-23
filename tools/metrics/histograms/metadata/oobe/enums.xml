@@ -67,6 +67,21 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Skip button clicked in flow"/>
 </enum>
 
+<enum name="FjordImageDownloadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already on requested image"/>
+  <int value="2" label="Update already in progress"/>
+  <int value="3" label="OOBE already completed"/>
+  <int value="4" label="PerformUpdate error"/>
+  <int value="5" label="General failure"/>
+  <int value="6" label="Download failed"/>
+  <int value="7" label="Slot resolution failed"/>
+  <int value="8" label="Extract failed"/>
+  <int value="9" label="Rootdev failed"/>
+  <int value="10" label="Cgpt failed"/>
+  <int value="11" label="Reboot failed"/>
+</enum>
+
 <enum name="GaiaLoginVariant">
   <int value="0" label="Unknown"/>
   <int value="1" label="OOBE"/>

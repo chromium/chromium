@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dissidia/dissidia_client.h"
 #include "chromeos/dbus/dissidia/fake_dissidia_client.h"
@@ -38,6 +39,7 @@ class FjordImageDownloaderTest : public testing::Test {
 };
 
 TEST_F(FjordImageDownloaderTest, PerformUpdateSucceeds) {
+  base::HistogramTester histogram_tester;
   fake_dissidia_client_->set_update_status(
       dissidia::PerformUpdateStatus::kUpdateStarted);
 
@@ -60,9 +62,13 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateSucceeds) {
   EXPECT_EQ("noctis", fake_dissidia_client_->last_target());
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "OOBE.FjordImageDownloader.Result",
+      FjordImageDownloader::ImageDownloadResult::kSuccess, 1);
 }
 
 TEST_F(FjordImageDownloaderTest, PerformUpdateFailsOnError) {
+  base::HistogramTester histogram_tester;
   fake_dissidia_client_->set_update_status(
       dissidia::PerformUpdateStatus::kError);
   fake_dissidia_client_->set_update_message("System error");
@@ -85,9 +91,13 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateFailsOnError) {
   EXPECT_EQ("selphie", fake_dissidia_client_->last_target());
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "OOBE.FjordImageDownloader.Result",
+      FjordImageDownloader::ImageDownloadResult::kPerformUpdateError, 1);
 }
 
 TEST_F(FjordImageDownloaderTest, PerformUpdateAlreadyOnImage) {
+  base::HistogramTester histogram_tester;
   fake_dissidia_client_->set_update_status(
       dissidia::PerformUpdateStatus::kAlreadyOnRequestedImage);
   fake_dissidia_client_->set_update_message("Already on requested image");
@@ -102,9 +112,13 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateAlreadyOnImage) {
                      &result));
 
   EXPECT_FALSE(result);
+  histogram_tester.ExpectUniqueSample(
+      "OOBE.FjordImageDownloader.Result",
+      FjordImageDownloader::ImageDownloadResult::kAlreadyOnRequestedImage, 1);
 }
 
 TEST_F(FjordImageDownloaderTest, CompletedSignalWithFailure) {
+  base::HistogramTester histogram_tester;
   fake_dissidia_client_->set_update_status(
       dissidia::PerformUpdateStatus::kUpdateStarted);
 
@@ -129,6 +143,9 @@ TEST_F(FjordImageDownloaderTest, CompletedSignalWithFailure) {
   EXPECT_EQ(error_msg, "Error 2: Download failed");
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "OOBE.FjordImageDownloader.Result",
+      FjordImageDownloader::ImageDownloadResult::kDownloadFailed, 1);
 }
 
 TEST_F(FjordImageDownloaderTest, RejectsSecondRequestWhileRunning) {
