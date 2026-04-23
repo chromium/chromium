@@ -373,6 +373,13 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
 
   UpdateAudioStatusForSession(session, session_id, filter);
 
+  // If `stream` is non-nil, this is an update to an already active capture
+  // session (e.g., the user added a window or changed their selection via the
+  // native macOS UI). ScreenCaptureKit automatically applies the new filter to
+  // the active SCStream under the hood. There is no need to manually call
+  // `[stream updateContentFilter...]`. We only update `session.filter` above so
+  // the correct filter is preserved if the stream needs to be recreated later
+  // (e.g., due to applyConstraints() changing the resolution).
   if (stream) {
     VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
                "stream found in stream_to_id_map_ for source id "
