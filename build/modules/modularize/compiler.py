@@ -89,7 +89,7 @@ class Compiler:
     for dep in deps.split():
       # Remove both the trailing newlines and any escapes in the file names.
       p = pathlib.Path(self.gn_out, dep.replace(':SPACE:', ' ')).resolve()
-      if p.suffix != '.txt' and p.suffix != '.cc':
+      if p.suffix not in ['.txt', '.cc', '.json']:
         files.append(p)
     return files
 

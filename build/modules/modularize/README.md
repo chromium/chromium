@@ -4,10 +4,16 @@ Modularize is a tool named after clang's
 modularize a platform.
 
 # How do I use it?
-If you want to create a new platform, you will want to do the following. If you
-want to update an existing platform, you can either follow the instructions
-below, or replace the `-C <directory>` with `--all` to update all platforms
-(strongly recommended to do this at least once before submitting).
+
+If you want to update existing platforms, add
+
+    target_os = [ 'android', 'win', 'mac', 'fuchsia' ]
+
+go your .gclient file, `gclient sync`, and then run:
+
+    build/modules/modularize/modularize.py --no-cache
+
+If you want to create a new platform, you will want to do the following.
 
 1) Create a gn output directory for said platform with the following values set:
    * `target_os = "<platform's os>"`
