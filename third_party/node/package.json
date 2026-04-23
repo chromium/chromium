@@ -6,7 +6,6 @@
   "dependencies": {
     "@azure/msal-browser": "4.2.1",
     "@bufbuild/protobuf": "2.2.5",
-    "@eslint/js": "10.0.1",
     "@mediapipe/tasks-vision": "0.10.9",
     "@rollup/wasm-node": "4.21.0",
     "@stylistic/eslint-plugin": "3.1.0",
@@ -33,7 +32,6 @@
     "@typescript-eslint/types": "8.58.2",
     "@typescript-eslint/utils": "8.58.2",
     "eslint": "10.2.0",
-    "eslint-plugin-jsdoc": "62.9.0",
     "eslint-plugin-lit": "2.2.1",
     "lit": "3.3.0",
     "messageformat": "4.0.0-11",
