@@ -475,18 +475,41 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /**
-     * Resets the menu items by pulling the list of menu entries from native and updating the action
-     * models list. Also updates the zero state visibility.
+     * Updates the menu items by pulling the list of menu entries from native and updating the
+     * action models list. Also updates the zero state visibility.
      */
     private void updateMenuEntries() {
-        mActionModels.clear();
         List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
 
-        for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
-            mActionModels.add(createMenuItem(entry));
+        if (mActionModels.size() != entries.size()) {
+            // If sizes mismatch (e.g., initial load), clear and rebuild.
+            reconstructModel(entries);
+        } else {
+            // Update items in-place to keep the {@link ListItem} instances.
+            for (int i = 0; i < entries.size(); i++) {
+                ExtensionsMenuTypes.MenuEntryState entry = entries.get(i);
+                ListItem item = mActionModels.get(i);
+
+                String currentId = item.model.get(ExtensionsMenuItemProperties.EXTENSION_ID);
+                if (!currentId.equals(entry.id)) {
+                    // In case the item order is different, clear and rebuild.
+                    reconstructModel(entries);
+                    break;
+                }
+
+                updateMenuItem(item.model, entry);
+            }
         }
 
         updateZeroState();
+    }
+
+    /** Resets and reconstructs {@link mActionModels}. */
+    private void reconstructModel(List<ExtensionsMenuTypes.MenuEntryState> entries) {
+        mActionModels.clear();
+        for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
+            mActionModels.add(createMenuItem(entry));
+        }
     }
 
     /**
