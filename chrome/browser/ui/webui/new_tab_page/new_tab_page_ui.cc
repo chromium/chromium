@@ -686,7 +686,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("composeboxShowContextMenuDescription", false);
 
-  source->AddBoolean("composeboxCloseByEscape", false);
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
   const auto* aim_eligibility_service =

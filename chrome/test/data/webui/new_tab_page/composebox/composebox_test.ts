@@ -284,8 +284,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('session abandoned on esc click', async () => {
     // Arrange.
-    loadTimeData.overrideValues({composeboxCloseByEscape: true});
-    createComposeboxElement(testProxy);
+    createComposeboxElement(testProxy, {closeOnEscape: true});
 
     testProxy.element.getInputElement().$.input.value = 'test';
     testProxy.element.getInputElement().$.input.dispatchEvent(
@@ -303,6 +302,33 @@ suite('NewTabPageComposeboxTest', () => {
     const event = await whenCloseComposebox;
     assertEquals(event.detail.composeboxText, 'test');
     assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+  });
+
+  test(
+      'esc clears input instead of closing when closeOnEscape is false and has content',
+       async () => {
+        // Arrange.
+        createComposeboxElement(testProxy, {closeOnEscape: false});
+
+        testProxy.element.getInputElement().$.input.value = 'test';
+        testProxy.element.getInputElement().$.input.dispatchEvent(
+            new Event('input'));
+        await microtasksFinished();
+
+        const closePromise =
+            eventToPromise('close-composebox', testProxy.element);
+        let closed = false;
+        closePromise.then(() => closed = true);
+
+        // Act
+        testProxy.element.$.composebox.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Escape'}));
+        await microtasksFinished();
+
+        // Assert: the clear branch fired instead of close-composebox.
+        assertFalse(closed);
+        assertEquals('', testProxy.element.getInputElement().$.input.value);
+        assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
   });
 
   test('session abandoned on cancel button click', async () => {

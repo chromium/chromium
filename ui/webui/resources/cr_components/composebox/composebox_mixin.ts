@@ -97,6 +97,7 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             dropdownNeeded: {type: Boolean},
+            closeOnEscape: {type: Boolean},
             showFileCarousel: {
               reflect: true,
               type: Boolean,
@@ -149,13 +150,12 @@ export const ComposeboxEmbedderMixin =
             'composeboxShowTypedSuggestWithContext', /*defaultValue=*/ false);
         queryZpsOnLoad: boolean =
             getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
-        composeboxCloseByEscape: boolean = getLoadTimeBoolean(
-            'composeboxCloseByEscape', /*defaultValue=*/ true);
         clearAllInputsWhenSubmittingQuery: boolean = getLoadTimeBoolean(
             'clearAllInputsWhenSubmittingQuery', /*defaultValue=*/ false);
         contextMenuOpened: boolean = false;
 
         accessor canSubmitFilesAndInput: boolean = true;
+        accessor closeOnEscape: boolean = true;
         accessor contextMenuEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenu');
         accessor errorMessage: string = '';
@@ -729,7 +729,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         handleEscapeKeyLogic() {
-          if (!this.composeboxCloseByEscape && this.hasContent()) {
+          if (!this.closeOnEscape && this.hasContent()) {
             this.resetModes();
             this.clearAllInputs(/* querySubmitted= */ false,
                                 /* shouldBlockAutoSuggestedTabs= */ false);
@@ -1210,7 +1210,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   imageFileTypes: string[];
   showTypedSuggestWithContext: boolean;
   queryZpsOnLoad: boolean;
-  composeboxCloseByEscape: boolean;
+  closeOnEscape: boolean;
   clearAllInputsWhenSubmittingQuery: boolean;
   contextMenuOpened: boolean;
   errorMessage: string;

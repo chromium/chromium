@@ -394,8 +394,9 @@ suite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest', () => {
     assertTrue(await areMatchesShowing(
         testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
-    // Case 1: composeboxCloseByEscape_ = false. Escape should clear the text.
-    (testProxy.element as any).composeboxCloseByEscape_ = false;
+    // Case 1: closeOnEscape = false. Escape should clear the text when the
+    // composebox has content.
+    testProxy.element.closeOnEscape = false;
     const closePromise = eventToPromise('close-composebox', testProxy.element);
     let closed = false;
     closePromise.then(() => closed = true);
@@ -414,9 +415,8 @@ suite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest', () => {
     assertFalse(closed);
     assertEquals('', testProxy.element.getInputElement().inputElement.value);
 
-    // Case 2: composeboxCloseByEscape_ = true. Escape should close the
-    // composebox.
-    (testProxy.element as any).composeboxCloseByEscape_ = true;
+    // Case 2: closeOnEscape = true. Escape should close the composebox.
+    testProxy.element.closeOnEscape = true;
     const whenCloseComposebox =
         eventToPromise('close-composebox', testProxy.element);
     testProxy.element.getInputElement().inputElement.dispatchEvent(

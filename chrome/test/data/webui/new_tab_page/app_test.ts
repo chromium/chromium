@@ -1298,10 +1298,6 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('Sequential ESC clears input then closes composebox', async () => {
-      // Arrange: Override the flag to FALSE for this specific test.
-      loadTimeData.overrideValues({composeboxCloseByEscape: false});
-      await microtasksFinished();
-
       // Arrange: Create and open the Composebox UI.
       const searchbox = $$(app, '#searchbox');
       assertTrue(!!searchbox);

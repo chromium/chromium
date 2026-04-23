@@ -71,6 +71,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
             .observeResize="${false}"
             .state="${this.composeboxState_}"
             @close-composebox="${this.onCloseComposebox_}"
+            .closeOnEscape="${false}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}">
         </cr-composebox>
