@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
@@ -45,6 +46,9 @@ class LoginStateApiUnittest : public ExtensionApiUnittest {
         ExtensionBuilder(kExtensionName).SetID(kExtensionId).Build();
     set_extension(extension);
   }
+
+ protected:
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 };
 
 // Test that |loginState.getProfileType()| returns |USER_PROFILE| for
@@ -97,7 +101,11 @@ class LoginStateApiAshUnittest : public LoginStateApiUnittest {
 
   ~LoginStateApiAshUnittest() override = default;
 
-  void SetUp() override { LoginStateApiUnittest::SetUp(); }
+  void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    LoginStateApiUnittest::SetUp();
+  }
 };
 
 // Test that calling |loginState.getSessionState()| returns the correctly mapped

@@ -38,6 +38,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -126,11 +128,9 @@ class ScopedTestingProfile {
  public:
   ScopedTestingProfile(TestingProfile* profile,
                        TestingProfileManager* profile_manager,
-                       ash::TestPrefServiceProvider* pref_service_provider,
                        const AccountId& account_id)
       : profile_(profile),
         profile_manager_(profile_manager),
-        pref_service_provider_(pref_service_provider),
         account_id_(account_id) {
     user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
                                                            profile->GetPrefs());
@@ -143,8 +143,6 @@ class ScopedTestingProfile {
   ~ScopedTestingProfile() {
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(account_id_);
     std::string user_name = profile_->GetProfileUserName();
-    pref_service_provider_->ClearUnownedUserPrefs(
-        AccountId::FromUserEmail(user_name));
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(user_name);
   }
@@ -154,7 +152,6 @@ class ScopedTestingProfile {
  private:
   raw_ptr<TestingProfile> profile_;
   const raw_ptr<TestingProfileManager> profile_manager_;
-  const raw_ptr<ash::TestPrefServiceProvider> pref_service_provider_;
   const AccountId account_id_;
 };
 
@@ -185,6 +182,13 @@ class LoginApiUnittest : public ExtensionApiUnittest {
 
  protected:
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+
     ExtensionApiUnittest::SetUp();
 
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
@@ -235,11 +239,10 @@ class LoginApiUnittest : public ExtensionApiUnittest {
       const std::string& email) {
     user_manager::User* user = fake_chrome_user_manager_->AddPublicAccountUser(
         AccountId::FromUserEmail(email));
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
+    TestingProfile* profile = profile_manager_->CreateTestingProfile(email);
 
     return std::make_unique<ScopedTestingProfile>(
-        profile, profile_manager(), ash_test_helper()->prefs_provider(),
-        user->GetAccountId());
+        profile, profile_manager_.get(), user->GetAccountId());
   }
 
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
@@ -250,6 +253,8 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 };
 
 MATCHER_P(MatchSigninSpecifics, expected, "") {
@@ -663,11 +668,10 @@ class LoginApiUserSessionUnittest : public LoginApiUnittest {
     auto* user = fake_chrome_user_manager_->AddUserWithAffiliation(
         AccountId::FromUserEmailGaiaId(email, kGaiaId),
         /* is_affiliated= */ true);
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
+    TestingProfile* profile = profile_manager_->CreateTestingProfile(email);
 
     return std::make_unique<ScopedTestingProfile>(
-        profile, profile_manager(), ash_test_helper()->prefs_provider(),
-        user->GetAccountId());
+        profile, profile_manager_.get(), user->GetAccountId());
   }
 };
 
@@ -884,8 +888,8 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 
  protected:
   void SetUp() override {
-    GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
-    GetCrosSettingsHelper()->SetBoolean(
+    cros_settings_test_helper().ReplaceDeviceSettingsProviderWithStub();
+    cros_settings_test_helper().SetBoolean(
         ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
     // Remove cleanup handlers.
     chromeos::CleanupManagerAsh::Get()->SetCleanupHandlersForTesting({});
@@ -894,7 +898,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   }
 
   void TearDown() override {
-    GetCrosSettingsHelper()->RestoreRealDeviceSettingsProvider();
+    cros_settings_test_helper().RestoreRealDeviceSettingsProvider();
     chromeos::SharedSessionHandler::Get()->ResetStateForTesting();
     chromeos::CleanupManagerAsh::Get()->ResetCleanupHandlersForTesting();
     testing_profile_.reset();
@@ -1012,7 +1016,7 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
 // when the DeviceRestrictedManagedGuestSessionEnabled policy is set to false.
 TEST_F(LoginApiSharedSessionUnittest,
        LaunchSharedManagedGuestSessionRestrictedMGSNotEnabled) {
-  GetCrosSettingsHelper()->SetBoolean(
+  cros_settings_test_helper().SetBoolean(
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(
@@ -1298,7 +1302,7 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
 // DeviceRestrictedManagedGuestSessionEnabled policy is set to false.
 TEST_F(LoginApiSharedSessionUnittest,
        EnterSharedSessionRestrictedMGSNotEnabled) {
-  GetCrosSettingsHelper()->SetBoolean(
+  cros_settings_test_helper().SetBoolean(
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
@@ -1417,13 +1421,14 @@ TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
 }
 
 TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
-  // Register second profile. Not necessary to be a User profile.
-  profile_manager()->CreateTestingProfile("other@test");
+  // Register two more profiles to test event routing.
+  profile_manager_->CreateTestingProfile("other1@test");
+  profile_manager_->CreateTestingProfile("other2@test");
 
   std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
   {
     auto loaded_profiles =
-        profile_manager()->profile_manager()->GetLoadedProfiles();
+        profile_manager_->profile_manager()->GetLoadedProfiles();
     ASSERT_GE(loaded_profiles.size(), 2u);
     for (auto* profile : loaded_profiles) {
       observers.push_back(std::make_unique<TestEventRouterObserver>(
@@ -1448,13 +1453,14 @@ TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
 }
 
 TEST_F(LoginApiUnittest, CallsOnExternalLogoutDone) {
-  // Register second profile. Not necessary to be a User profile.
-  profile_manager()->CreateTestingProfile("other@test");
+  // Register two more profiles to test event routing.
+  profile_manager_->CreateTestingProfile("other1@test");
+  profile_manager_->CreateTestingProfile("other2@test");
 
   std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
   {
     auto loaded_profiles =
-        profile_manager()->profile_manager()->GetLoadedProfiles();
+        profile_manager_->profile_manager()->GetLoadedProfiles();
     ASSERT_GE(loaded_profiles.size(), 2u);
     for (auto* profile : loaded_profiles) {
       observers.push_back(std::make_unique<TestEventRouterObserver>(

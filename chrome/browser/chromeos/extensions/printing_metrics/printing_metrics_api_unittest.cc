@@ -91,7 +91,7 @@ class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
     ash::MockPrintJobHistoryService* print_job_history_service =
         static_cast<ash::MockPrintJobHistoryService*>(
             ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
-                browser()->profile()));
+                profile()));
     EXPECT_CALL(*print_job_history_service, GetPrintJobs(testing::_))
         .WillOnce(callback);
   }

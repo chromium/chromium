@@ -8,11 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 
 class ExtensionFunction;
 
@@ -27,12 +26,9 @@ namespace extensions {
 // wrapped in a list. See also RunFunction* in api_test_utils.h.
 // TODO(yoz): Move users of this base class to use the equivalent base class
 // in extensions/browser/api_unittest.h.
-class ExtensionApiUnittest : public BrowserWithTestWindowTest {
+class ExtensionApiUnittest : public ExtensionServiceTestBase {
  public:
-  template <typename... TaskEnvironmentTraits>
-  explicit ExtensionApiUnittest(TaskEnvironmentTraits&&... traits)
-      : BrowserWithTestWindowTest(
-            std::forward<TaskEnvironmentTraits>(traits)...) {}
+  ExtensionApiUnittest();
   ~ExtensionApiUnittest() override;
 
   const Extension* extension() const { return extension_.get(); }

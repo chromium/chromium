@@ -36,6 +36,7 @@
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -50,9 +51,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/common/extension_builder.h"
 
 namespace extensions {
 namespace {
@@ -189,7 +193,59 @@ class QuickUnlockPrivateUnitTest
         std::make_unique<ash::AuthSessionStorageImpl>(
             ash::UserDataAuthClient::Get()));
 
-    ExtensionApiUnittest::SetUp();
+    ExtensionServiceTestBase::SetUp();
+
+    ExtensionServiceInitParams params;
+    params.testing_factories = GetTestingFactories();
+    InitializeExtensionService(std::move(params));
+
+    set_extension(ExtensionBuilder("Test").Build());
+
+    // Retrieve the TestingPrefServiceSyncable that was automatically created.
+    test_pref_service_ = testing_pref_service();
+
+    // Migrate logic from the old CreateProfile method.
+    AccountId auth_account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("gaia"));
+
+    // Ensure the primary user exists by explicitly logging them in to the
+    // UserManager.
+    auto* user_manager = user_manager::UserManager::Get();
+    ASSERT_TRUE(
+        user_manager::TestHelper(user_manager).AddRegularUser(auth_account_id));
+    user_manager->UserLoggedIn(
+        auth_account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(auth_account_id));
+
+    // Setup the primary user mapping.
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user_manager->FindUser(auth_account_id), profile());
+    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+
+    // Generate an auth token.
+    auth_token_user_context_.SetAccountId(auth_account_id);
+    auth_token_user_context_.SetUserIDHash(
+        user_manager::FakeUserManager::GetFakeUsernameHash(auth_account_id));
+    auth_token_user_context_.SetSessionLifetime(
+        base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
+
+    if (GetParam() == TestType::kCryptohome) {
+      fake_userdataauth_client_testapi =
+          ash::FakeUserDataAuthClient::TestApi::Get();
+
+      auto session_ids = fake_userdataauth_client_testapi->AddSession(
+          cryptohome::CreateAccountIdentifierFromAccountId(auth_account_id),
+          /*authenticated=*/true);
+      auth_token_user_context_.SetAuthSessionIds(session_ids.first,
+                                                 session_ids.second);
+      auth_token_user_context_.SetAuthFactorsConfiguration(
+          ash::AuthFactorsConfiguration());
+    }
+
+    token_ = ash::AuthSessionStorage::Get()->Store(
+        std::make_unique<ash::UserContext>(auth_token_user_context_));
+
+    base::RunLoop().RunUntilIdle();
 
     ash::SystemSaltGetter::Get()->SetRawSaltForTesting(
         {1, 2, 3, 4, 5, 6, 7, 8});
@@ -208,54 +264,6 @@ class QuickUnlockPrivateUnitTest
     RunSetModes(QuickUnlockModeList{}, CredentialList{});
   }
 
-  std::optional<std::string> GetDefaultProfileName() override {
-    return kTestUserEmail;
-  }
-
-  TestingProfile* CreateProfile(const std::string& profile_name) override {
-    auto pref_service =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(pref_service->registry());
-    test_pref_service_ = pref_service.get();
-
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(
-        profile_name, std::move(pref_service), u"Test profile",
-        1 /* avatar_id */, GetTestingFactories());
-
-    // Setup a primary user.
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user_manager()->GetPrimaryUser(), profile);
-
-    // Generate an auth token.
-    AccountId account_id = AccountId::FromUserEmail(profile_name);
-    auth_token_user_context_.SetAccountId(account_id);
-    auth_token_user_context_.SetUserIDHash(
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
-    auth_token_user_context_.SetSessionLifetime(
-        base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
-    if (GetParam() == TestType::kCryptohome) {
-      auto* fake_userdataauth_client_testapi =
-          ash::FakeUserDataAuthClient::TestApi::Get();
-
-      auto session_ids = fake_userdataauth_client_testapi->AddSession(
-          cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-          /*authenticated=*/true);
-      auth_token_user_context_.SetAuthSessionIds(session_ids.first,
-                                                 session_ids.second);
-      // Technically configuration should contain password as factor, but
-      // it is not checked anywhere.
-      auth_token_user_context_.SetAuthFactorsConfiguration(
-          ash::AuthFactorsConfiguration());
-    }
-
-    token_ = ash::AuthSessionStorage::Get()->Store(
-        std::make_unique<ash::UserContext>(auth_token_user_context_));
-
-    base::RunLoop().RunUntilIdle();
-
-    return profile;
-  }
-
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
 
@@ -270,7 +278,7 @@ class QuickUnlockPrivateUnitTest
     ash::quick_unlock::PinBackend::Shutdown();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
+  TestingProfile::TestingFactories GetTestingFactories() {
     return {TestingProfile::TestingFactory{
         ash::SmartLockServiceFactory::GetInstance(),
         base::BindRepeating(&CreateSmartLockServiceForTest)}};
