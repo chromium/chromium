@@ -143,6 +143,8 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_RRECT_TRANSFORM
 
+#define SK_GRAPHITE_USE_LEGACY_CLAMPING
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
