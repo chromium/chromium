@@ -90,6 +90,16 @@ class AnnotatedPageContentRequest
   void RefreshExtractedPageContentAndEligibilityForPage(
       GetExtractedPageContentAndEligibilityCallback callback);
 
+ private:
+  friend class content::WebContentsUserData<AnnotatedPageContentRequest>;
+  friend class AnnotatePageContentRequestTest;
+
+  AnnotatedPageContentRequest(
+      content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
+
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
@@ -97,15 +107,6 @@ class AnnotatedPageContentRequest
   void DidStopLoading() override;
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-
- private:
-  friend class content::WebContentsUserData<AnnotatedPageContentRequest>;
-
-  AnnotatedPageContentRequest(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
 
   bool IsPdf() const;
 
