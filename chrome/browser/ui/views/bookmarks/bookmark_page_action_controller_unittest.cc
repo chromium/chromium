@@ -150,9 +150,9 @@ TEST_F(BookmarkPageActionControllerTest, HiddenOnNTP) {
   pref_service().SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, true);
 
   // Simulate a navigation to the given `destination_url`.
-  auto navigate_to_url = [&](std::string_view destination_url) {
+  auto navigate_to_url = [&](GURL destination_url) {
     content::WebContentsTester::For(web_contents())
-        ->SetLastCommittedURL(GURL(destination_url));
+        ->SetLastCommittedURL(destination_url);
     static_cast<content::WebContentsObserver*>(
         &bookmark_page_action_controller())
         ->PrimaryPageChanged(web_contents()->GetPrimaryPage());
@@ -160,17 +160,17 @@ TEST_F(BookmarkPageActionControllerTest, HiddenOnNTP) {
 
   // Shown on non-NTP page context.
   EXPECT_CALL(page_action_controller(), Show(kActionBookmarkThisTab)).Times(1);
-  navigate_to_url("https://www.example.com");
+  navigate_to_url(GURL("https://www.example.com"));
 
   // Hidden on NTP page context ("chrome://newtab/").
   EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
-  navigate_to_url(chrome::kChromeUINewTabURL);
+  navigate_to_url(chrome::ChromeUINewTabURLAsGURL());
 
   // Shown on non-NTP page context.
   EXPECT_CALL(page_action_controller(), Show(kActionBookmarkThisTab)).Times(1);
-  navigate_to_url("https://www.example.com");
+  navigate_to_url(GURL("https://www.example.com"));
 
   // Hidden on NTP page context ("chrome://new-tab-page/").
   EXPECT_CALL(page_action_controller(), Hide(kActionBookmarkThisTab)).Times(1);
-  navigate_to_url(chrome::kChromeUINewTabPageURL);
+  navigate_to_url(chrome::ChromeUINewTabPageURLAsGURL());
 }

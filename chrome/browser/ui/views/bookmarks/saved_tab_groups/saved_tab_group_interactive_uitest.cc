@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        OpenTabFromAppMenuTabGroupSubmenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
-  GURL test_url(chrome::kChromeUINewTabURL);
+  GURL test_url = chrome::ChromeUINewTabURLAsGURL();
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
