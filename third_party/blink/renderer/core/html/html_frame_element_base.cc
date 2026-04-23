@@ -179,10 +179,6 @@ void HTMLFrameElementBase::SetNameAndOpenURL() {
 Node::InsertionNotificationRequest HTMLFrameElementBase::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLFrameOwnerElement::InsertedInto(insertion_point);
-  // Except for when state-preserving atomic moves are enabled, we should never
-  // have a content frame at the point where we got inserted into a tree.
-  SECURITY_CHECK(!ContentFrame() ||
-                 GetDocument().StatePreservingAtomicMoveInProgress());
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 
