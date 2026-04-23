@@ -10,8 +10,9 @@
 #include <string.h>
 
 #include "base/compiler_specific.h"
-#include "base/logging.h"
+#include "base/containers/span.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/wmi.h"
 #include "ui/display/util/edid_parser.h"
@@ -68,22 +69,26 @@ bool AppendBlock(Microsoft::WRL::ComPtr<IWbemServices>& wmi_services,
   if (block_content.type() != (VT_ARRAY | VT_UI1))
     return false;
 
-  SAFEARRAY* array = V_ARRAY(block_content.ptr());
-  if (SafeArrayGetDim(array) != 1)
+  base::win::ScopedSafearray scoped_array(block_content.Release().parray);
+  if (SafeArrayGetDim(scoped_array.Get()) != 1) {
     return false;
+  }
 
   long lower_bound = 0;
   long upper_bound = 0;
-  SafeArrayGetLBound(array, 1, &lower_bound);
-  SafeArrayGetUBound(array, 1, &upper_bound);
+  SafeArrayGetLBound(scoped_array.Get(), 1, &lower_bound);
+  SafeArrayGetUBound(scoped_array.Get(), 1, &upper_bound);
   if (lower_bound || upper_bound <= lower_bound)
     return false;
 
-  uint8_t* block = nullptr;
-  SafeArrayAccessData(array, reinterpret_cast<void**>(&block));
-  edid_blob.insert(edid_blob.end(), block,
-                   UNSAFE_TODO(block + upper_bound + 1));
-  SafeArrayUnaccessData(array);
+  auto locked_block = scoped_array.CreateLockScope<VT_UI1>();
+  if (!locked_block) {
+    return false;
+  }
+
+  auto block_span = base::span(*locked_block);
+  CHECK_EQ(block_span.size(), static_cast<size_t>(upper_bound) + 1);
+  edid_blob.insert(edid_blob.end(), block_span.begin(), block_span.end());
 
   return true;
 }

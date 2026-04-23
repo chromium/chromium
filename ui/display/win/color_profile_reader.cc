@@ -25,8 +25,7 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
                                                 LPRECT rect,
                                                 LPARAM data) {
   std::wstring device_name;
-  MONITORINFOEX monitor_info;
-  UNSAFE_TODO(::ZeroMemory(&monitor_info, sizeof(monitor_info)));
+  MONITORINFOEX monitor_info{};
   monitor_info.cbSize = sizeof(monitor_info);
   ::GetMonitorInfo(monitor, &monitor_info);
   device_name = std::wstring(monitor_info.szDevice);

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -213,7 +214,7 @@ EGLConfig ChooseConfig(EGLDisplay display,
       // through all of them (it'll put higher sum(R,G,B) bits
       // first with the above attribs).
       bool match_found = false;
-      for (int i = 0; i < num_configs; i++) {
+      for (int i = 0; i < num_configs; ++i) {
         EGLint red, green, blue, alpha;
         // Read the relevant attributes of the EGLConfig.
         if (eglGetConfigAttrib(display, matching_configs[i], EGL_RED_SIZE,
@@ -246,7 +247,7 @@ EGLConfig ChooseConfig(EGLDisplay display,
         }
       }
     } else if (visual_id >= 0) {
-      for (int i = 0; i < num_configs; i++) {
+      for (int i = 0; i < num_configs; ++i) {
         EGLint id;
         if (eglGetConfigAttrib(display, matching_configs[i],
                                EGL_NATIVE_VISUAL_ID, &id) &&
@@ -635,7 +636,7 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
 
   std::vector<TimeNamePair> tracePairs;
   tracePairs.reserve(supported_egl_timestamps_.size());
-  for (size_t i = 0; i < egl_timestamps.size(); i++) {
+  for (size_t i = 0; i < egl_timestamps.size(); ++i) {
     // Although a timestamp of 0 is technically valid, we shouldn't expect to
     // see it in practice. 0's are more likely due to a known linux kernel bug
     // that inadvertently discards timestamp information when merging two
@@ -686,15 +687,17 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
   //   1) when the order of events are different between frames and
   //   2) if multiple events occurred very close together.
   std::string valid_symbols(tracePairs.size(), '\0');
-  for (size_t i = 0; i < valid_symbols.size(); i++)
+  for (size_t i = 0; i < valid_symbols.size(); ++i) {
     valid_symbols[i] = tracePairs[i].name[0];
+  }
 
-  const char* pending_symbols = valid_symbols.c_str();
-  for (size_t i = 1; i < tracePairs.size(); i++) {
-    UNSAFE_TODO(pending_symbols++);
-    TRACE_EVENT_BEGIN(kSwapEventTraceCategories,
-                      perfetto::DynamicString(pending_symbols),
-                      perfetto::Track(trace_id), tracePairs[i - 1].time);
+  std::string_view pending_symbols(valid_symbols);
+  for (size_t i = 1; i < tracePairs.size(); ++i) {
+    pending_symbols.remove_prefix(1);
+    TRACE_EVENT_BEGIN(
+        kSwapEventTraceCategories,
+        perfetto::DynamicString(pending_symbols.data(), pending_symbols.size()),
+        perfetto::Track(trace_id), tracePairs[i - 1].time);
     TRACE_EVENT_END(kSwapEventTraceCategories, perfetto::Track(trace_id),
                     tracePairs[i].time);
     TRACE_EVENT_INSTANT(kSwapEventTraceCategories,
