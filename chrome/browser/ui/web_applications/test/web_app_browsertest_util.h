@@ -47,7 +47,7 @@ class WebAppInstallManager;
 // For InstallWebAppFromInfo see web_app_install_test_utils.h
 
 struct InstallWebAppOptions {
-  bool launch_or_reparent_page_to_app = true;
+  bool launch_or_reparent_page_to_app = false;
 };
 
 // Navigates to |app_url| and installs app without any installability checks.

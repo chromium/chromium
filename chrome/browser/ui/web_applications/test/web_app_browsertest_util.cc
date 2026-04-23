@@ -228,7 +228,8 @@ Browser* InstallWebAppFromPageGetBrowser(Browser* browser,
   chrome::AddTabAt(browser, app_url, /*index=*/-1,
                    /*foreground=*/true);
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  webapps::AppId app_id = InstallWebAppFromPage(browser, app_url);
+  webapps::AppId app_id = InstallWebAppFromPage(
+      browser, app_url, {.launch_or_reparent_page_to_app = true});
 
   Browser* app_browser = browser_created_observer.Wait();
   CHECK_NE(app_browser, browser);

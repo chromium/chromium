@@ -61,8 +61,6 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
 
   webapps::AppId InstallTestWebApp(const char* test_file_path,
                                    bool await_metric = true) {
-    BrowserWaiter browser_waiter;
-
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     if (await_metric) {
@@ -76,12 +74,6 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
     if (await_metric) {
       metrics_waiter.Wait();
     }
-
-    // Installing a web app will pop it out to a new window.
-    // Close this to avoid it interfering with test steps.
-    Browser* app_browser = browser_waiter.AwaitAdded();
-    chrome::CloseWindow(app_browser);
-    browser_waiter.AwaitRemoved();
 
     return app_id;
   }

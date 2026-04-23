@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
@@ -602,10 +603,9 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, HandlePageCalls) {
 
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  const webapps::AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), app_url);
-  Browser* app_browser = browser_created_observer.Wait();
+  Browser* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(browser(), app_url);
+  const webapps::AppId app_id = app_browser->app_controller()->app_id();
   page_handler->Wait();
 
   // Ensure that the `UpdateApp()` call happens twice, once after the start url
@@ -648,10 +648,9 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, MigrationCalls) {
 
   const GURL from_url = embedded_https_test_server().GetURL(
       "/web_apps/migration/migrate_from/no_migration_info.html");
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  const webapps::AppId source_app_id =
-      web_app::InstallWebAppFromPage(browser(), from_url);
-  Browser* app_browser = browser_created_observer.Wait();
+  Browser* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(browser(), from_url);
+  const webapps::AppId source_app_id = app_browser->app_controller()->app_id();
   page_handler->Wait();
 
   // The old app should be removed, and the new "Migrate To" app should be

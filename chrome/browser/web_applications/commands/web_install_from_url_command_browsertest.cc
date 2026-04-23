@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -411,14 +412,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   // Install setup
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::HistogramTester histograms;
 
   // Install the pwa to use to call `navigator.install()` from within.
-  webapps::AppId app_id = InstallWebAppFromPage(
+  Browser* app_browser = web_app::InstallWebAppFromPageGetBrowser(
       browser(),
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html"));
-  Browser* app_browser = browser_created_observer.Wait();
+  const webapps::AppId app_id = app_browser->app_controller()->app_id();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",
@@ -1116,11 +1116,10 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       GenerateManifestId("some_id", install_url).spec();
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
-  webapps::AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), install_url);
-  Browser* app_browser = browser_created_observer.Wait();
+  Browser* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(browser(), install_url);
+  const webapps::AppId app_id = app_browser->app_controller()->app_id();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",

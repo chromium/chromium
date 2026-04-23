@@ -136,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_app_notifications/index.html");
 
-  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(
+      browser(), app_url, {.launch_or_reparent_page_to_app = true});
   // The installation opens a new Browser window: |user_display_mode| is
   // kStandalone.
   SetAppBrowserForAppId(app_id);
@@ -217,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_app_notifications/index.html");
 
-  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(
+      browser(), app_url, {.launch_or_reparent_page_to_app = true});
   // The installation opens a new Browser window: |user_display_mode| is
   // kStandalone.
   SetAppBrowserForAppId(app_id);
@@ -288,7 +290,8 @@ class WebAppNotificationsBrowserTest_MacPermissions
     const GURL app_url = embedded_https_test_server().GetURL(
         "/web_app_notifications/index.html");
 
-    const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+    const webapps::AppId app_id = InstallWebAppFromPage(
+        browser(), app_url, {.launch_or_reparent_page_to_app = true});
     // The installation opens a new Browser window: |user_display_mode| is
     // kStandalone.
     SetAppBrowserForAppId(app_id);
