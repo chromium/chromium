@@ -477,8 +477,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
 }
 
+// TODO(crbug.com/505502457): flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  DISABLED_ClassicContextMenuOpensDeepSearch
+#else
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  ClassicContextMenuOpensDeepSearch
+#endif  // BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       ClassicContextMenuOpensDeepSearch) {
+                       MAYBE_ClassicContextMenuOpensDeepSearch) {
   const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "cr-composebox",
                                      "cr-composebox-tool-chip"};
   RunTestSequence(
@@ -505,7 +514,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, QueryWithTabContext) {
+// TODO(crbug.com/505502457): flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_QueryWithTabContext DISABLED_QueryWithTabContext
+#else
+#define MAYBE_QueryWithTabContext QueryWithTabContext
+#endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
+                       MAYBE_QueryWithTabContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
   browser()->profile()->GetPrefs()->SetInteger(
