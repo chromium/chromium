@@ -1703,6 +1703,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="HISTORY_ACTIVITY"/>
   <int value="6" label="SETTINGS_ACTIVITY"/>
   <int value="7" label="BOOKMARK_ACTIVITY"/>
+  <int value="8" label="FUSEBOX_POPUP"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimManager.java:ScrimClient) -->

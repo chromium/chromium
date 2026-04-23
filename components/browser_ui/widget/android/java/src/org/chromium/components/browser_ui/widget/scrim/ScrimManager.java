@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.scrim;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.BOOKMARK_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.CREATOR_COORDINATOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.FUSEBOX_POPUP;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.HISTORY_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.NONE;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.ROOT_UI_COORDINATOR;
@@ -65,6 +66,7 @@ public class ScrimManager {
         HISTORY_ACTIVITY,
         SETTINGS_ACTIVITY,
         BOOKMARK_ACTIVITY,
+        FUSEBOX_POPUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrimClient {
@@ -76,7 +78,8 @@ public class ScrimManager {
         int HISTORY_ACTIVITY = 5;
         int SETTINGS_ACTIVITY = 6;
         int BOOKMARK_ACTIVITY = 7;
-        int COUNT = 8;
+        int FUSEBOX_POPUP = 8;
+        int COUNT = 9;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ScrimClient)

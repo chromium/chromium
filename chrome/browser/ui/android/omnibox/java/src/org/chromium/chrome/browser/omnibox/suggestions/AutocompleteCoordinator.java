@@ -491,7 +491,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     /**
      * @return Suggestions Dropdown view, showing the list of suggestions.
      */
-    public @Nullable OmniboxSuggestionsDropdown getSuggestionsDropdownForTest() {
+    public @Nullable View getSuggestionsDropdown() {
         return mDropdown;
     }
 

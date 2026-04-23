@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -54,6 +55,8 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -79,6 +82,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
@@ -96,6 +100,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
+    private final ScrimManager mScrimManager;
+    private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
 
     private boolean mIsTextWrapping;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
@@ -104,6 +110,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private @Nullable FuseboxAttachmentModelList mModelList;
     private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Nullable FuseboxMetrics mMetrics;
+    private @Nullable PropertyModel mScrimModel;
     private final ListObserver<Void> mListObserver =
             new ListObserver<>() {
                 @Override
@@ -125,16 +132,21 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SnackbarManager snackbarManager,
-            Clipboard clipboard) {
+            Clipboard clipboard,
+            ScrimManager scrimManager,
+            Supplier<@Nullable View> scrimAnchorViewSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
         mModel = model;
         mViewHolder = viewHolder;
+        mViewHolder.popup.addOnDismissListener(this::onPopupDismissed);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
         mClipboard = clipboard;
+        mScrimManager = scrimManager;
+        mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -440,10 +452,32 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 OmniboxFeatures.sShowBottomSheetPopup.getValue()
                         ? PopupState.BOTTOM
                         : PopupState.FLOATING);
+        if (mScrimManager != null
+                && mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM) {
+            View scrimAnchor = mScrimAnchorViewSupplier.get();
+            if (scrimAnchor == null) {
+                scrimAnchor = mViewHolder.parentView;
+            }
+            mScrimModel =
+                    new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                            .with(ScrimProperties.ANCHOR_VIEW, scrimAnchor)
+                            .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
+                            .with(ScrimProperties.CLICK_DELEGATE, this::hidePopup)
+                            .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
+                            .build();
+            mScrimManager.showScrim(mScrimModel);
+        }
     }
 
     void hidePopup() {
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
+        if (mScrimModel != null) {
+            mScrimManager.hideScrim(mScrimModel, true);
+        }
+    }
+
+    private void onPopupDismissed() {
+        hidePopup();
     }
 
     private void updateModelForCurrentTab() {

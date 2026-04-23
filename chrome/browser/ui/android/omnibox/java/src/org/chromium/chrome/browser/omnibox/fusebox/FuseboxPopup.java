@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import org.chromium.base.task.PostTask;
@@ -227,5 +228,10 @@ class FuseboxPopup {
     /** Returns whether the popup window is currently showing. */
     boolean isShowing() {
         return mPopupWindow.isShowing();
+    }
+
+    /** Add a listener for when the popup is dismissed. */
+    void addOnDismissListener(OnDismissListener listener) {
+        mPopupWindow.addOnDismissListener(listener);
     }
 }

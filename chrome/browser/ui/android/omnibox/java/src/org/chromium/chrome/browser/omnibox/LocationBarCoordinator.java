@@ -161,6 +161,7 @@ public class LocationBarCoordinator
      *
      * @param locationBarLayout Inflated {@link LocationBarLayout}. {@code LocationBarCoordinator}
      *     takes ownership and will destroy this object.
+     * @param autocompleteAnchorView The view to anchor the autocomplete dropdown to.
      * @param profileObservableSupplier The supplier of the active profile.
      * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
      *     Toolbar state.
@@ -180,8 +181,13 @@ public class LocationBarCoordinator
      * @param omniboxUma Interface for logging UMA histogram.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
+     * @param omniboxActionDelegate Delegate for handling omnibox actions.
+     * @param browserControlsVisibilityDelegate Delegate for browser controls visibility.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
+     * @param omniboxSuggestionsDropdownScrollListener Listener for suggestions dropdown scroll.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param topInsetProvider Provider for top insets.
+     * @param locationBarEmbedder Embedder for location bar.
      * @param uiOverrides embedder-specific UI overrides
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
@@ -194,7 +200,14 @@ public class LocationBarCoordinator
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
      * @param onLongClickListener for the url bar.
+     * @param browserControlsStateProvider Provider for browser controls state.
+     * @param isToolbarPositionCustomizationEnabled Whether toolbar position customization is
+     *     enabled.
      * @param pageZoomManager The {@link PageZoomManager} for managing the page zoom.
+     * @param tabFaviconFunction Function to get tab favicon.
+     * @param snackbarManager Manager for snackbars.
+     * @param scrimManager Manager for scrims.
+     * @param bottomContainerView The bottom container view.
      * @param omniboxChipManager The {@link OmniboxChipManager} to show chips in the omnibox.
      */
     public LocationBarCoordinator(
@@ -267,7 +280,11 @@ public class LocationBarCoordinator
                         mLocationBarLayout,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
-                        snackbarManager);
+                        snackbarManager,
+                        () ->
+                                mAutocompleteCoordinator != null
+                                        ? mAutocompleteCoordinator.getSuggestionsDropdown()
+                                        : null);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
             fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();

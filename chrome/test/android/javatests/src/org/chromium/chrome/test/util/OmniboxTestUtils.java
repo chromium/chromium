@@ -675,7 +675,8 @@ public class OmniboxTestUtils {
             OmniboxSuggestionsContainer container =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionsContainerForTest();
             OmniboxSuggestionsDropdown dropdown =
-                    mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
+                    (OmniboxSuggestionsDropdown)
+                            mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdown();
             if (container == null || dropdown == null) {
                 return notFulfilled("suggestion list is null");
             }
@@ -705,7 +706,8 @@ public class OmniboxTestUtils {
             OmniboxSuggestionsContainer container =
                     mLocationBar.getAutocompleteCoordinator().getSuggestionsContainerForTest();
             OmniboxSuggestionsDropdown dropdown =
-                    mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdownForTest();
+                    (OmniboxSuggestionsDropdown)
+                            mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdown();
             // Suggestions list can't be showing if it's not constructed.
             if (container == null || dropdown == null) {
                 return fulfilled();

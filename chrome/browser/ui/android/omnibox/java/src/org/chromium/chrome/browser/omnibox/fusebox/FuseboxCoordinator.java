@@ -13,6 +13,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
@@ -36,6 +38,8 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -55,6 +59,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 
 /** Coordinator for the Fusebox component. */
 @NullMarked
@@ -84,6 +89,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
+    private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
+    private final ScrimManager mScrimManager;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
@@ -98,6 +105,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param tabModelSelectorSupplier The supplier of the tab model selector.
      * @param templateUrlServiceSupplier The supplier of the template URL service.
      * @param snackbarManager The snackbar manager to show messages.
+     * @param scrimAnchorViewSupplier Supplier for the view to anchor the scrim to.
      */
     public FuseboxCoordinator(
             Context context,
@@ -105,12 +113,17 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             ConstraintLayout parent,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            Supplier<@Nullable View> scrimAnchorViewSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mParent = parent;
+        mScrimManager =
+                new ScrimManager(
+                        context, (ViewGroup) parent.getRootView(), ScrimClient.FUSEBOX_POPUP);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
+        mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
 
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -195,7 +208,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mSnackbarManager,
-                        Clipboard.getInstance());
+                        Clipboard.getInstance(),
+                        mScrimManager,
+                        mScrimAnchorViewSupplier);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -216,6 +231,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mBottomSheetRectProvider != null) {
             mBottomSheetRectProvider.destroy();
         }
+        mScrimManager.destroy();
     }
 
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
