@@ -3806,8 +3806,15 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/505530418): The test is flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PasskeyUnlockError DISABLED_PasskeyUnlockError
+#else
+#define MAYBE_PasskeyUnlockError PasskeyUnlockError
+#endif  // BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
-                       PasskeyUnlockError) {
+                       MAYBE_PasskeyUnlockError) {
   AvatarToolbarButtonInterface* avatar =
       GetAvatarToolbarButtonInterface(browser());
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
