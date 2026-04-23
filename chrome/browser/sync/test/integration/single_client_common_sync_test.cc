@@ -383,8 +383,16 @@ class SingleClientGetUnsyncedTypesTest : public SyncTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/505733920): Enable the test.
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
+  DISABLED_ShouldGetTypesWithUnsyncedDataFromSyncService
+#else
+#define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
+  ShouldGetTypesWithUnsyncedDataFromSyncService
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
-                       ShouldGetTypesWithUnsyncedDataFromSyncService) {
+                       MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService) {
   ASSERT_TRUE(SetupSync());
 
 #if !BUILDFLAG(IS_ANDROID)
