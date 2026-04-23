@@ -2342,11 +2342,6 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
 
 void QuotaManagerImpl::SimulateStoragePressure(const url::Origin& origin_url) {
   const StorageKey key = StorageKey::CreateFirstParty(origin_url);
-  // In Incognito, since no data is stored on disk, storage pressure should be
-  // ignored.
-  CHECK_EQ(is_incognito_, storage_pressure_callback_.is_null(),
-           base::NotFatalUntil::M148);
-
   if (storage_pressure_callback_.is_null()) {
     return;
   }
@@ -2356,10 +2351,6 @@ void QuotaManagerImpl::SimulateStoragePressure(const url::Origin& origin_url) {
 
 void QuotaManagerImpl::IsSimulateStoragePressureAvailable(
     IsSimulateStoragePressureAvailableCallback callback) {
-  // We assume this is only the case in incognito. If it changes, update this.
-  CHECK_EQ(is_incognito_, storage_pressure_callback_.is_null(),
-           base::NotFatalUntil::M148);
-
   std::move(callback).Run(!storage_pressure_callback_.is_null());
 }
 
