@@ -50,6 +50,13 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/ash_element_identifiers.h"
+#include "base/test/run_until.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/strings/grit/ui_strings.h"
+#endif
+
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -124,6 +131,89 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   histogram_tester.ExpectUniqueSample("TabGroups.TabGroupBubble.TabCount", 2,
                                       1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EmojiDoesNotCloseBubble) {
+  ShowUi("SetUp");
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+
+  // Create a test element to simulate the Emoji Picker.
+  ui::test::TestElement emoji_picker(
+      ash::kEmojiPickerElementId,
+      views::ElementTrackerViews::GetContextForWidget(editor_bubble));
+  emoji_picker.Show();
+
+  // Execute Emoji command.
+  title_field->ExecuteCommand(IDS_CONTENT_CONTEXT_EMOJI, 0);
+
+  // Simulate focus shifting to the emoji picker (bubble deactivates).
+  editor_bubble->Deactivate();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !editor_bubble->IsActive(); }));
+  EXPECT_FALSE(editor_bubble->IsClosed());
+
+  // Simulate user clicking back into the bubble (activating it and closing
+  // picker).
+  editor_bubble->Activate();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return editor_bubble->IsActive(); }));
+  emoji_picker.Hide();
+  EXPECT_FALSE(editor_bubble->IsClosed());
+
+  // Deactivate the bubble again (click away).
+  editor_bubble->Deactivate();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return editor_bubble->IsClosed(); }));
+  EXPECT_TRUE(editor_bubble->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EmojiPickerClickOffClosesBubble) {
+  ShowUi("SetUp");
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+
+  // Create a test element to simulate the Emoji Picker.
+  ui::test::TestElement emoji_picker(
+      ash::kEmojiPickerElementId,
+      views::ElementTrackerViews::GetContextForWidget(editor_bubble));
+  emoji_picker.Show();
+
+  // Execute Emoji command.
+  title_field->ExecuteCommand(IDS_CONTENT_CONTEXT_EMOJI, 0);
+
+  // Deactivate the bubble (simulate clicking off the bubble while emoji picker
+  // is open).
+  editor_bubble->Deactivate();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !editor_bubble->IsActive(); }));
+  EXPECT_FALSE(editor_bubble->IsClosed());
+
+  // Simulate the emoji picker closing (clicking off both).
+  emoji_picker.Hide();
+
+  // Since the bubble was deactivated, it should close now.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return editor_bubble->IsClosed(); }));
+  EXPECT_TRUE(editor_bubble->IsClosed());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   base::HistogramTester histogram_tester;
