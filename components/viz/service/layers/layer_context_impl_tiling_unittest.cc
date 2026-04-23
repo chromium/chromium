@@ -364,5 +364,36 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest,
   EXPECT_TRUE(result.has_value());
 }
 
+TEST_F(LayerContextImplUpdateDisplayTilingTest, UpdateDisplayTreeWithTilings) {
+  constexpr int kLayerId = 2;
+  constexpr float kScaleKey = 1.0f;
+  const gfx::Size kTileSize(64, 64);
+  const gfx::Rect kTilingRect(0, 0, 200, 200);
+
+  // Initial update: Create TileDisplayLayer.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Second update: Send a Tiling as part of the LayerTreeUpdate.
+  auto update2 = CreateDefaultUpdate();
+  auto tiling = CreateTiling(kLayerId, kScaleKey, kTileSize, kTilingRect);
+  tiling->tiles.push_back(CreateSolidColorTile({0, 0}, SkColors::kRed));
+  update2->tilings.push_back(std::move(tiling));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  cc::TileDisplayLayerImpl* layer_impl =
+      GetTileDisplayLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  const cc::TileDisplayLayerTiling* tiling_impl =
+      layer_impl->GetTilingForTesting(kScaleKey);
+  ASSERT_NE(nullptr, tiling_impl);
+  EXPECT_NE(nullptr, tiling_impl->TileAt({0, 0}));
+}
+
 }  // namespace
 }  // namespace viz

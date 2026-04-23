@@ -4268,6 +4268,19 @@ TEST_F(LayerContextImplTest, SetTargetLocalSurfaceId) {
             target_local_surface_id);
 }
 
+TEST_F(LayerContextImplTest, SetVisible) {
+  // Initial state should be invisible (default for LayerTreeHostImpl).
+  EXPECT_FALSE(layer_context_impl_->host_impl()->visible());
+
+  static_cast<mojom::LayerContext*>(layer_context_impl_.get())
+      ->SetVisible(true);
+  EXPECT_TRUE(layer_context_impl_->host_impl()->visible());
+
+  static_cast<mojom::LayerContext*>(layer_context_impl_.get())
+      ->SetVisible(false);
+  EXPECT_FALSE(layer_context_impl_->host_impl()->visible());
+}
+
 TEST_F(LayerContextImplTest, UpdateDisplayTreeWithTargetSurfaceRanges) {
   const SurfaceRange ranges[] = {
       {SurfaceId(kDefaultFrameSinkId,

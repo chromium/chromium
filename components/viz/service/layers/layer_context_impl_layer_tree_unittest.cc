@@ -6,6 +6,7 @@
 
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/input/browser_controls_offset_manager.h"
+#include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
@@ -13,8 +14,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 namespace {
@@ -824,6 +827,294 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSelection) {
   EXPECT_EQ(active_tree->selection(), cc::LayerSelection());
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDelegatedInkMetadata) {
+  auto update1 = CreateDefaultUpdate();
+  const gfx::RectF kFrame(0, 0, 100, 100);
+  const base::TimeTicks kTimestamp = base::TimeTicks::Now();
+  update1->delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
+      gfx::PointF(10, 10), 2.0f, SK_ColorRED, kTimestamp, kFrame,
+      /*hovering=*/false);
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  const auto* metadata =
+      layer_context_impl_->host_impl()->active_tree()->delegated_ink_metadata();
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->point(), gfx::PointF(10, 10));
+  EXPECT_EQ(metadata->diameter(), 2.0f);
+  EXPECT_EQ(metadata->color(), SK_ColorRED);
+  EXPECT_EQ(metadata->timestamp(), kTimestamp);
+  EXPECT_EQ(metadata->presentation_area(), kFrame);
+
+  // Clear metadata.
+  auto update2 = CreateDefaultUpdate();
+  update2->delegated_ink_metadata.reset();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_FALSE(layer_context_impl_->host_impl()
+                   ->active_tree()
+                   ->delegated_ink_metadata());
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest,
+       UpdateViewportContainerBoundsDelta) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  const auto& property_trees = *active_tree->property_trees();
+
+  const gfx::Vector2dF kDelta1(10.f, 20.f);
+  const gfx::Vector2dF kDelta2(5.f, 15.f);
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->inner_viewport_container_bounds_delta = kDelta1;
+  update1->outer_viewport_container_bounds_delta = kDelta2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(property_trees.inner_viewport_container_bounds_delta(), kDelta1);
+  EXPECT_EQ(property_trees.outer_viewport_container_bounds_delta(), kDelta2);
+
+  // Update to new values.
+  const gfx::Vector2dF kDelta3(30.f, 40.f);
+  auto update2 = CreateDefaultUpdate();
+  update2->inner_viewport_container_bounds_delta = kDelta3;
+  update2->outer_viewport_container_bounds_delta = kDelta2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(property_trees.inner_viewport_container_bounds_delta(), kDelta3);
+  EXPECT_EQ(property_trees.outer_viewport_container_bounds_delta(), kDelta2);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateViewportPropertyIds) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  auto update = CreateDefaultUpdate();
+
+  // Add extra nodes using helper methods.
+  int transform_id = AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+  int clip_id = AddClipNode(update.get(), cc::kRootPropertyNodeId);
+  AddEffectNode(update.get(), cc::kRootPropertyNodeId);
+  int scroll_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+
+  // Update num nodes to match what was added.
+  update->num_transform_nodes = next_transform_id_;
+  update->num_clip_nodes = next_clip_id_;
+  update->num_effect_nodes = next_effect_id_;
+  update->num_scroll_nodes = next_scroll_id_;
+
+  update->overscroll_elasticity_transform = transform_id;
+  update->page_scale_transform = transform_id;
+  update->inner_scroll = scroll_id;
+  update->outer_clip = clip_id;
+  update->outer_scroll = scroll_id;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value()) << result.error();
+
+  const cc::ViewportPropertyIds& ids = active_tree->viewport_property_ids();
+  EXPECT_EQ(ids.overscroll_elasticity_transform, transform_id);
+  EXPECT_EQ(ids.page_scale_transform, transform_id);
+  EXPECT_EQ(ids.inner_scroll, scroll_id);
+  EXPECT_EQ(ids.outer_clip, clip_id);
+  EXPECT_EQ(ids.outer_scroll, scroll_id);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdatePageScaleFactors) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->page_scale_factor = 1.2f;
+  update1->min_page_scale_factor = 0.8f;
+  update1->max_page_scale_factor = 2.5f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->page_scale_factor()->Current(true), 1.2f);
+  EXPECT_EQ(active_tree->min_page_scale_factor(), 0.8f);
+  EXPECT_EQ(active_tree->max_page_scale_factor(), 2.5f);
+
+  // Update to new values.
+  auto update2 = CreateDefaultUpdate();
+  update2->page_scale_factor = 1.5f;
+  update2->min_page_scale_factor = 1.0f;
+  update2->max_page_scale_factor = 3.0f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->page_scale_factor()->Current(true), 1.5f);
+  EXPECT_EQ(active_tree->min_page_scale_factor(), 1.0f);
+  EXPECT_EQ(active_tree->max_page_scale_factor(), 3.0f);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateExternalPageScaleFactor) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->external_page_scale_factor = 1.2f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->external_page_scale_factor(), 1.2f);
+
+  // Update to new value.
+  auto update2 = CreateDefaultUpdate();
+  update2->external_page_scale_factor = 0.9f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->external_page_scale_factor(), 0.9f);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSurfaceRanges) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  const SurfaceRange ranges[] = {
+      {SurfaceId(kDefaultFrameSinkId,
+                 {1, base::UnguessableToken::CreateForTesting(2, 3)}),
+       SurfaceId(kDefaultFrameSinkId,
+                 {10, base::UnguessableToken::CreateForTesting(11, 12)})},
+      {SurfaceId(kDefaultFrameSinkId,
+                 {4, base::UnguessableToken::CreateForTesting(5, 6)}),
+       SurfaceId(kDefaultFrameSinkId,
+                 {13, base::UnguessableToken::CreateForTesting(14, 15)})}};
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->surface_ranges.emplace({ranges[0], ranges[1]});
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->SurfaceRanges().size(), 2U);
+  EXPECT_TRUE(active_tree->SurfaceRanges().contains(ranges[0]));
+  EXPECT_TRUE(active_tree->SurfaceRanges().contains(ranges[1]));
+
+  // Update with different ranges.
+  auto update2 = CreateDefaultUpdate();
+  update2->surface_ranges.emplace({ranges[0]});
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->SurfaceRanges().size(), 1U);
+  EXPECT_TRUE(active_tree->SurfaceRanges().contains(ranges[0]));
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDeviceScaleFactors) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->device_scale_factor = 2.0f;
+  update1->painted_device_scale_factor = 1.5f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->device_scale_factor(), 2.0f);
+  EXPECT_EQ(active_tree->painted_device_scale_factor(), 1.5f);
+
+  // Update to new values.
+  auto update2 = CreateDefaultUpdate();
+  update2->device_scale_factor = 3.0f;
+  update2->painted_device_scale_factor = 1.0f;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->device_scale_factor(), 3.0f);
+  EXPECT_EQ(active_tree->painted_device_scale_factor(), 1.0f);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateLatencyInfo) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update with latency info.
+  auto update1 = CreateDefaultUpdate();
+  ui::LatencyInfo latency1;
+  latency1.set_trace_id(123);
+  update1->latency_info.push_back(latency1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Verify it was queued by finishing swap promises.
+  CompositorFrameMetadata metadata;
+  active_tree->FinishSwapPromises(&metadata);
+  ASSERT_EQ(metadata.latency_info.size(), 1u);
+  EXPECT_EQ(metadata.latency_info[0].trace_id(), 123);
+  active_tree->ClearSwapPromises();
+
+  // Update with multiple latency infos.
+  auto update2 = CreateDefaultUpdate();
+  ui::LatencyInfo latency2;
+  latency2.set_trace_id(456);
+  ui::LatencyInfo latency3;
+  latency3.set_trace_id(789);
+  update2->latency_info.push_back(latency2);
+  update2->latency_info.push_back(latency3);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  metadata.latency_info.clear();
+  active_tree->FinishSwapPromises(&metadata);
+  ASSERT_EQ(metadata.latency_info.size(), 2u);
+  EXPECT_EQ(metadata.latency_info[0].trace_id(), 456);
+  EXPECT_EQ(metadata.latency_info[1].trace_id(), 789);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateThrottleAndInteraction) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  update1->may_throttle_if_undrawn_frames = false;
+  update1->is_handling_interaction = true;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_FALSE(host_impl->may_throttle_if_undrawn_frames());
+  EXPECT_TRUE(host_impl->IsHandlingInteraction());
+
+  // Update to different values.
+  auto update2 = CreateDefaultUpdate();
+  update2->may_throttle_if_undrawn_frames = true;
+  update2->is_handling_interaction = false;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(host_impl->may_throttle_if_undrawn_frames());
+  EXPECT_FALSE(host_impl->IsHandlingInteraction());
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateWithFrameHasDamage) {
+  // Verify that updates with/without frame_has_damage can be processed.
+  auto update1 = CreateDefaultUpdate();
+  const BeginFrameArgs args1 = update1->begin_frame_args;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  layer_context_impl_->DoDraw(args1, base::TimeTicks::Now(),
+                              /*frame_has_damage=*/true);
+
+  auto update2 = CreateDefaultUpdate();
+  const BeginFrameArgs args2 = update2->begin_frame_args;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  layer_context_impl_->DoDraw(args2, base::TimeTicks::Now(),
+                              /*frame_has_damage=*/false);
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateWithIsFlush) {
+  // Regular updates must have a current_local_surface_id.
+  auto update1 = CreateDefaultUpdate();
+  update1->is_flush = false;
+  update1->current_local_surface_id = std::nullopt;
+  auto result1 = layer_context_impl_->DoUpdateDisplayTree(std::move(update1));
+  ASSERT_FALSE(result1.has_value());
+  EXPECT_EQ(result1.error(),
+            "Missing current_local_surface_id in non-flush update");
+
+  // Flush updates can omit it.
+  auto update2 = CreateDefaultUpdate();
+  update2->is_flush = true;
+  update2->current_local_surface_id = std::nullopt;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+}
+
 class LayerContextImplBrowserControlsOffsetTagTest
     : public LayerContextImplTest {};
 
@@ -901,62 +1192,6 @@ TEST_F(LayerContextImplDebugStateTest, UpdateDebugState) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(host_impl->debug_state(), kDefaultDebugState);
-}
-
-TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSurfaceRanges) {
-  cc::LayerTreeImpl* active_tree =
-      layer_context_impl_->host_impl()->active_tree();
-
-  // Initial update.
-  auto update1 = CreateDefaultUpdate();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
-  EXPECT_TRUE(active_tree->SurfaceRanges().empty());
-
-  // Update with surface ranges.
-  auto update2 = CreateDefaultUpdate();
-  const SurfaceRange kRange1(
-      SurfaceId(
-          FrameSinkId(1, 1),
-          LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(1, 1))),
-      SurfaceId(
-          FrameSinkId(1, 1),
-          LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(1, 2))));
-  const SurfaceRange kRange2(
-      std::nullopt,
-      SurfaceId(
-          FrameSinkId(2, 2),
-          LocalSurfaceId(2, base::UnguessableToken::CreateForTesting(2, 2))));
-  update2->surface_ranges = {kRange1, kRange2};
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
-  EXPECT_THAT(active_tree->SurfaceRanges(),
-              testing::UnorderedElementsAre(kRange1, kRange2));
-
-  // Update with different surface ranges.
-  auto update3 = CreateDefaultUpdate();
-  update3->surface_ranges = {kRange1};
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
-  EXPECT_THAT(active_tree->SurfaceRanges(),
-              testing::UnorderedElementsAre(kRange1));
-
-  // Persistence test: Update with nullopt surface_ranges should keep existing
-  // ranges.
-  auto update_nullopt = CreateDefaultUpdate();
-  // update_nullopt->surface_ranges is std::nullopt by default.
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update_nullopt))
-          .has_value());
-  EXPECT_THAT(active_tree->SurfaceRanges(),
-              testing::UnorderedElementsAre(kRange1));
-
-  // Update with empty surface ranges.
-  auto update4 = CreateDefaultUpdate();
-  update4->surface_ranges = std::vector<SurfaceRange>();
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
-  EXPECT_TRUE(active_tree->SurfaceRanges().empty());
 }
 
 }  // namespace
