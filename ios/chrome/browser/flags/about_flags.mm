@@ -989,6 +989,7 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm2[] = {{"variant", "2"}};
+const FeatureEntry::FeatureParam kBestOfAppFREArm3[] = {{"variant", "3"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
     {"variant", "4"},
@@ -997,6 +998,7 @@ const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
 const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
     {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1, nullptr},
     {" - Variant B: Lens Animated Promo", kBestOfAppFREArm2, nullptr},
+    {" - Variant C: Best Features", kBestOfAppFREArm3, nullptr},
     {" - Variant D: Guided Tour", kBestOfAppFREArm4, nullptr},
     {" - Variant D: Guided Tour with manual metric upload",
      kBestOfAppFREArm4Upload, nullptr},

@@ -47,6 +47,8 @@ enum class BestFeaturesScreenVariationType {
   kSignedInUsersOnlyAfterDBPromo,
   // Show the address bar promo instead of the Best Features screen.
   kAddressBarPromoInsteadOfBestFeaturesScreen,
+  // Show the general screen to all users as a part of the Best of App FRE.
+  kBestOfApp,
 };
 
 // Enum to represent arms of feature kUpdatedFirstRunSequence.

@@ -31,6 +31,7 @@ source_set("features") {
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

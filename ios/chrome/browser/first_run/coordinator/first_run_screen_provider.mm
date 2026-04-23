@@ -62,6 +62,7 @@ void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens,
       AddDBPromoScreen(screens, profile);
       break;
     case kDisabled:
+    case kBestOfApp:
       AddDBPromoScreen(screens, profile);
       break;
   }
@@ -115,6 +116,8 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
     [screens addObject:@(kLensInteractivePromo)];
   } else if (IsBestOfAppLensAnimatedPromoEnabled()) {
     [screens addObject:@(kLensAnimatedPromo)];
+  } else if (IsBestOfAppBestFeaturesEnabled()) {
+    [screens addObject:@(kBestFeatures)];
   }
 
   [screens addObject:@(kStepsCompleted)];

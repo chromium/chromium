@@ -30,6 +30,7 @@ NSString* ConfigureSecondaryActionString() {
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
+    case kBestOfApp:
       // Best Features screen is last in the FRE sequence
       return l10n_util::GetNSString(
           IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);

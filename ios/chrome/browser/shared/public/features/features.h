@@ -636,6 +636,9 @@ bool IsBestOfAppLensInteractivePromoEnabled();
 // Whether the Lens Animated Promo variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppLensAnimatedPromoEnabled();
 
+// Whether the Best Features variant of `kBestOfAppFRE` is enabled.
+bool IsBestOfAppBestFeaturesEnabled();
+
 // Whether the `kDefaultBrowserPromoPropensityModel` feature is enabled.
 bool IsDefaultBrowserPromoPropensityModelEnabled();
 

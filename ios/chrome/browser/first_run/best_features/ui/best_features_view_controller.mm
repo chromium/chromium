@@ -133,6 +133,7 @@ const CGFloat kTableViewSectionFooterHeight = 3;
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
+    case kBestOfApp:
       return l10n_util::GetNSString(
           IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
     case kGeneralScreenBeforeDBPromo:

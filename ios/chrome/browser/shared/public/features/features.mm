@@ -698,6 +698,11 @@ bool IsBestOfAppLensAnimatedPromoEnabled() {
          std::ranges::contains(GetBestOfAppFREActiveVariants(), "2");
 }
 
+bool IsBestOfAppBestFeaturesEnabled() {
+  return IsBestOfAppFREEnabled() &&
+         std::ranges::contains(GetBestOfAppFREActiveVariants(), "3");
+}
+
 bool IsDefaultBrowserPromoPropensityModelEnabled() {
   return base::FeatureList::IsEnabled(
       segmentation_platform::features::kDefaultBrowserPromoPropensityModel);

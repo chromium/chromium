@@ -8,6 +8,7 @@
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace first_run {
 
@@ -54,6 +55,9 @@ BASE_FEATURE_PARAM(
                          kAnimationWithActionButtons));
 
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
+  if (IsBestOfAppBestFeaturesEnabled()) {
+    return BestFeaturesScreenVariationType::kBestOfApp;
+  }
   if (!base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun)) {
     return BestFeaturesScreenVariationType::kDisabled;
   }
