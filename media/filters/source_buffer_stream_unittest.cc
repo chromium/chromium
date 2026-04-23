@@ -5700,4 +5700,38 @@ TEST_F(SourceBufferStreamTest, SignalCodedFrameGroupWithoutCurrentRange) {
   SignalStartOfCodedFrameGroup(base::Milliseconds(1000));
 }
 
+TEST_F(SourceBufferStreamTest, GarbageCollectionUpdatesRangeForNextAppend) {
+  // Set memory limit to 10 buffers.
+  SetMemoryLimit(10);
+
+  // 1. Append 10 buffers to create Range A [0, 90ms].
+  NewCodedFrameGroupAppend("0K 10K 20K 30K 40K 50K 60K 70K 80K 90K");
+
+  // 2. Append 10 buffers to create Range B [1000ms, 1090ms].
+  // This exceeds the memory limit and triggers GC, but Range A is kept because
+  // it was recently appended.
+  NewCodedFrameGroupAppend(
+      "1000K 1010K 1020K 1030K 1040K 1050K 1060K 1070K 1080K 1090K");
+
+  // 3. Start a new coded frame group that overlaps Range A.
+  // This sets range_for_next_append_ to Range A and
+  // last_appended_buffer_timestamp_ to kNoTimestamp.
+  stream_->OnStartOfCodedFrameGroup(base::Milliseconds(0));
+
+  // 4. Trigger Garbage Collection.
+  // We want to free enough data that Range A is deleted.
+  // Set memory limit very low so GC must evict something.
+  SetMemoryLimit(5);
+
+  // Garbage collect with media time at Range B (1000ms).
+  // This should evict Range A from the front since it is far behind media time.
+  EXPECT_TRUE(GarbageCollect(base::Milliseconds(1000), 0));
+
+  // 5. Append data. If the bug exists, range_for_next_append_ is dangling and
+  // dereferencing it will cause a UAF or hit a CHECK.
+  // With the fix, range_for_next_append_ is reset to ranges_.end() when
+  // Range A is deleted.
+  AppendBuffers("0K 10K");
+}
+
 }  // namespace media
