@@ -4559,6 +4559,24 @@ const FeatureEntry::FeatureVariation kBookmarksEncryptionVariations[] = {
     {"Stage2", kBookmarksEncryptionStage2, nullptr},
     {"Stage3", kBookmarksEncryptionStage3, nullptr}};
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kGestureUserEducationPageDelay4Seconds[] = {
+    {"gesture-user-education-page-delay", "4000"}};
+const FeatureEntry::FeatureParam kGestureUserEducationPageDelay6Seconds[] = {
+    {"gesture-user-education-page-delay", "6000"}};
+const FeatureEntry::FeatureParam kGestureUserEducationPageDelay8Seconds[] = {
+    {"gesture-user-education-page-delay", "8000"}};
+const FeatureEntry::FeatureParam kGestureUserEducationPageDelay10Seconds[] = {
+    {"gesture-user-education-page-delay", "10000"}};
+
+const FeatureEntry::FeatureVariation kGestureUserEducationVariations[] = {
+    {"4000ms delay", kGestureUserEducationPageDelay4Seconds, nullptr},
+    {"6000ms delay", kGestureUserEducationPageDelay6Seconds, nullptr},
+    {"8000ms delay", kGestureUserEducationPageDelay8Seconds, nullptr},
+    {"10000ms delay", kGestureUserEducationPageDelay10Seconds, nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12880,7 +12898,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-gesture-user-education-back-swipe",
      flag_descriptions::kGestureUserEducationBackSwipeName,
      flag_descriptions::kGestureUserEducationBackSwipeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kGestureUserEducationBackSwipe)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kGestureUserEducationBackSwipe,
+         kGestureUserEducationVariations,
+         "GestureUserEducationBackSwipe")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

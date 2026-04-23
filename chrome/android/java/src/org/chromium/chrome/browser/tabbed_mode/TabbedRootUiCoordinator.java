@@ -901,7 +901,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mGestureUserEducationIphController != null) {
-            mGestureUserEducationIphController.unregisterTabObserver();
+            mGestureUserEducationIphController.destroy();
             mGestureUserEducationIphController = null;
         }
 

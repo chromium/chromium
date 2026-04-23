@@ -356,6 +356,11 @@ inline constexpr base::FeatureParam<bool> kFallbackToModerateParam(
     "fallback_to_moderate",
     /*default_value=*/false);
 
+inline constexpr base::FeatureParam<int> kGestureUserEducationPageDelay(
+    &kGestureUserEducationBackSwipe,
+    "gesture-user-education-page-delay",
+    /*default_value=*/4000);
+
 inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     &kProtectRecentlyVisibleTab,
     "duration_in_seconds",
