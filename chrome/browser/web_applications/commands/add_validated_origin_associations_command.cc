@@ -91,7 +91,7 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp& app_to_update = CHECK_DEREF(update->UpdateApp(app_id_));
     base::TimeDelta delta =
-        base::Seconds(base::RandInt(0, base::Days(1).InSeconds()));
+        base::Seconds(base::RandIntInclusive(0, base::Days(1).InSeconds()));
     app_to_update.SetOriginAssociationLastValidationCheckTime(
         lock_->clock().Now() + delta + base::Days(1));
     CompleteAndSelfDestruct(CommandResult::kSuccess,
