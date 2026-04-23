@@ -4,7 +4,6 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {VoiceSearchState} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -77,20 +76,29 @@ export enum VoiceSearchError {
   MAX_VALUE = SERVICE_NOT_ALLOWED,
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 export enum VoiceSearchAction {
   ACTIVATED_BY_ICON = 0,
   ACTIVATED_BY_KEYBOARD = 1,
-  CLOSED_BY_USER = 2,
+  // CLOSED_OVERLAY = 2, // Obsolete, replaced by CANCELED_BY_USER
   QUERY_SUBMITTED = 3,
   SUPPORT_LINK_CLICKED = 4,
   RETRY_BY_TRY_AGAIN_CLICKED = 5,
-  MAX_VALUE = RETRY_BY_TRY_AGAIN_CLICKED,
+  // TODO(b/492216568): Implement UI and metric logging for STOP and RESUME
+  //   actions.
+  // TRY_AGAIN_MIC_BUTTON = 6, // Obsolete. Deprecated as of 09/2022.
+  STOP_BUTTON_CLICKED = 7,
+  RESUME_BUTTON_CLICKED = 8,
+  ERROR_NON_CANCELING = 9,
+  ERROR_CANCELING = 10,
+  CANCELED_BY_USER = 11,
+  MAX_VALUE = CANCELED_BY_USER,
 }
 
 export enum VoiceSearchMetricType {
   ACTION = 'Action',
   ERROR = 'Errors',
-  STATE = 'State',
 }
 
 function toError(webkitError: string): VoiceSearchError {
@@ -353,8 +361,6 @@ export class ComposeboxVoiceSearchElement extends
     chrome.metricsPrivate.recordEnumerationValue(metricName, value, max);
   }
 
-
-
   private onError_(error: VoiceSearchError) {
     if (this.state_ === State.ERROR_RECEIVED && this.error_ === error) {
       return;
@@ -372,8 +378,8 @@ export class ComposeboxVoiceSearchElement extends
     this.recordMetric_(
         VoiceSearchMetricType.ERROR, error, VoiceSearchError.MAX_VALUE + 1);
     this.recordMetric_(
-        VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_ERROR,
-        VoiceSearchState.MAX_VALUE + 1);
+        VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_NON_CANCELING,
+        VoiceSearchAction.MAX_VALUE + 1);
     this.fire('voice-search-error', /*canceled-by-error=*/ false);
   }
 
@@ -415,9 +421,6 @@ export class ComposeboxVoiceSearchElement extends
     this.recordMetric_(
         VoiceSearchMetricType.ACTION, VoiceSearchAction.QUERY_SUBMITTED,
         VoiceSearchAction.MAX_VALUE + 1);
-    this.recordMetric_(
-        VoiceSearchMetricType.STATE, VoiceSearchState.SUCCESSFUL_TRANSCRIPT,
-        VoiceSearchState.MAX_VALUE + 1);
     this.voiceModeEndCleanup_();
   }
 
@@ -428,11 +431,8 @@ export class ComposeboxVoiceSearchElement extends
         'voice-search-cancel',
         /*canceled-by-user=*/ true);
     this.recordMetric_(
-        VoiceSearchMetricType.ACTION, VoiceSearchAction.CLOSED_BY_USER,
+        VoiceSearchMetricType.ACTION, VoiceSearchAction.CANCELED_BY_USER,
         VoiceSearchAction.MAX_VALUE + 1);
-    this.recordMetric_(
-        VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_CANCELED,
-        VoiceSearchState.MAX_VALUE + 1);
   }
 
   private resetState_() {
