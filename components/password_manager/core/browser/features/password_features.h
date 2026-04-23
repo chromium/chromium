@@ -25,6 +25,14 @@ BASE_DECLARE_FEATURE(kActorLoginConflictingPermissionCleanup);
 // Enables Actor Login form finding with async check
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables the Actor Login Permissions Settings UI on Android.
+BASE_DECLARE_FEATURE(kActorLoginPermissionsUi);
+#endif
+
+#if !BUILDFLAG(IS_IOS)
 // Enables the usage of temporary permissions across affiliated origins for
 // Actor Login.
 BASE_DECLARE_FEATURE(kActorLoginPermissionsUseStrongAffiliations);

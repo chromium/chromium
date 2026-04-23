@@ -22,6 +22,10 @@ BASE_FEATURE(kActorLoginLocalClassificationModel,
 BASE_FEATURE(kActorLoginSyncsPasswordPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kActorLoginPermissionsUi, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kActorLoginPermissionsUseStrongAffiliations,
              base::FEATURE_ENABLED_BY_DEFAULT);
