@@ -6,14 +6,13 @@
 
 #include <memory>
 
-#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/constrained_window/constrained_window_views_client.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,9 +57,7 @@ class ChromeWebUIDialogTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     constrained_window::SetConstrainedWindowViewsClient(nullptr);
-    base::RunLoop().RunUntilIdle();
     profile_.reset();
-    base::RunLoop().RunUntilIdle();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -135,12 +132,16 @@ TEST_F(ChromeWebUIDialogTest, CloseUIClosesWidget) {
   std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
   ASSERT_TRUE(widget);
 
+  bool close_called = false;
+  widget->MakeCloseSynchronous(base::BindLambdaForTesting(
+      [&](views::Widget::ClosedReason) { close_called = true; }));
+
   auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
-  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_FALSE(close_called);
 
   delegate->CloseUI();
 
-  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_TRUE(close_called);
 }
 
 TEST_F(ChromeWebUIDialogTest, AutoResizeWithinBounds) {
