@@ -30,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
@@ -557,6 +558,14 @@ void FileSelectHelper::RunFileChooser(
   listener_ = std::move(listener);
   content::WebContentsObserver::Observe(web_contents_);
 
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (tab_interface) {
+    tab_deactivated_subscription_ =
+        tab_interface->RegisterWillDeactivate(base::BindRepeating(
+            &FileSelectHelper::OnTabDeactivated, base::Unretained(this)));
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   if (PictureInPictureWindowManager::GetInstance()
           ->ShouldFileDialogBlockPictureInPicture(web_contents_)) {
@@ -676,6 +685,8 @@ void FileSelectHelper::RunFileChooserEnd() {
   scoped_tuck_picture_in_picture_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  tab_deactivated_subscription_ = {};
+
   // If there are temporary files, then this instance needs to stick around
   // until web_contents_ is destroyed, so that this instance can delete the
   // temporary files.
@@ -753,6 +764,10 @@ void FileSelectHelper::WebContentsDestroyed() {
   web_contents_ = nullptr;
   profile_ = nullptr;
   CleanUp();
+}
+
+void FileSelectHelper::OnTabDeactivated(tabs::TabInterface* tab) {
+  RunFileChooserEnd();
 }
 
 // static

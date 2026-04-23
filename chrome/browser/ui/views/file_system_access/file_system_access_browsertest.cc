@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1348,6 +1350,42 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserTest, ShowOpenFileThenHide) {
       browser(), embedded_test_server()->GetURL("/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // The first tab should not be the active tab anymore.
+  ASSERT_NE(first_tab, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Check that the dialog was closed.
+  ASSERT_EQ("AbortError", content::EvalJs(first_tab, "window.p"));
+}
+
+// Test that creating a split view while the dialog is showing closes the
+// dialog. https://crbug.com/474583539 https://crbug.com/454484864
+IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserTest,
+                       ShowOpenFileThenHideDueToSplitView) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open the dialog and wait until it's created.
+  content::SelectFileDialogRecorder recorder;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
+  ASSERT_EQ(42,
+            content::EvalJs(
+                first_tab,
+                "window.p = self.showOpenFilePicker().catch(e => e.name); 42"));
+  ASSERT_TRUE(base::test::RunUntil([&recorder]() {
+    return recorder.state != content::SelectFileDialogRecorder::kNotCreated;
+  }));
+
+  // Create a split view.
+  const int active_index = browser()->tab_strip_model()->active_index();
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetWebContentsAt(active_index + 1)));
 
   // The first tab should not be the active tab anymore.
   ASSERT_NE(first_tab, browser()->tab_strip_model()->GetActiveWebContents());
