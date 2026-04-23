@@ -156,7 +156,8 @@ TEST_F(PromotionEligibilityCheckerTest,
   checker_->MaybeCheckPromotionEligibility(callback.Get());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 }
 
 TEST_F(PromotionEligibilityCheckerTest,
