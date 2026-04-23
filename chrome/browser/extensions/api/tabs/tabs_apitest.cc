@@ -502,10 +502,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
       << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // The discarded property is not yet supported on desktop Android.
+// https://crbug.com/505306735.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdatedDiscardedState) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/discarded")) << message_;
 }

@@ -400,7 +400,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
 #if BUILDFLAG(IS_ANDROID)
   tab_object.discarded = contents->WasDiscarded();
-  // TODO(crbug.com/371432155): Determine auto-discardable and frozen states on
+  // TODO(crbug.com/505306735): Determine auto-discardable and frozen states on
   // desktop Android where the TabLifecycleUnit is not available.
 #else
   auto* tab_lifecycle_unit_external =

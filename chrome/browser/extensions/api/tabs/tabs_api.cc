@@ -1854,6 +1854,8 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
           web_contents);
 
+  // TODO(https://crbug.com/505306735): Add support (or appropriately handle)
+  // tab freezing, discarding, and auto-discarding on desktop android.
   if (!MatchesBool(query_info_.frozen,
                    tab_lifecycle_unit_external->GetTabState() ==
                        ::mojom::LifecycleUnitState::FROZEN)) {
@@ -2432,7 +2434,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     }
   }
 
-  // TODO(https://crbug.com/447211263): Support on desktop android.
+  // TODO(https://crbug.com/505306735): Support on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
   if (params->update_properties.auto_discardable) {
     bool state = *params->update_properties.auto_discardable;
