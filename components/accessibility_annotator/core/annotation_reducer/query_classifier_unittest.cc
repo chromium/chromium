@@ -137,7 +137,7 @@ TEST_F(QueryClassifierTest, PaymentIntents) {
 
 // Tests that credit card-related queries are correctly classified.
 TEST_F(QueryClassifierTest, CreditCardIntents) {
-  EXPECT_EQ(RunClassifier(u"credit card").intent, EntryType::kCreditCardFull);
+  EXPECT_EQ(RunClassifier(u"credit card").intent, EntryType::kCreditCardNumber);
   EXPECT_EQ(RunClassifier(u"credit card number").intent,
             EntryType::kCreditCardNumber);
   EXPECT_EQ(RunClassifier(u"credit card expiration date").intent,

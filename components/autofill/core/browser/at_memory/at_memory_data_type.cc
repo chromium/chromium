@@ -103,7 +103,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentDeliveryZipCode);
     case accessibility_annotator::EntryType::kUnknown:
     case accessibility_annotator::EntryType::kIbanNickname:
-    case accessibility_annotator::EntryType::kCreditCardFull:
     case accessibility_annotator::EntryType::kCreditCardNickname:
     case accessibility_annotator::EntryType::kFlightReservationArrivalDate:
     case accessibility_annotator::EntryType::kOrderGrandTotal:

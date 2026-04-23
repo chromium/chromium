@@ -263,8 +263,6 @@ void KeywordQueryClassify(std::u16string_view query,
             u"traveler number", u"ktn");
 
   // Credit Card
-  try_match(EntryType::kCreditCardNumber, u"credit card number",
-            u"debit card number", u"card number");
   try_match(EntryType::kCreditCardExpirationDate,
             u"credit card expiration date", u"credit card expiry date",
             u"credit card expiration");
@@ -272,8 +270,9 @@ void KeywordQueryClassify(std::u16string_view query,
             u"card security code", u"security code", u"cvv", u"cvc");
   try_match(EntryType::kCreditCardNameOnCard, u"cardholder name", u"card name",
             u"name card");
-  try_match(EntryType::kCreditCardFull, u"credit card", u"debit card",
-            u"payment method");
+  try_match(EntryType::kCreditCardNumber, u"credit card", u"debit card",
+            u"payment method", u"credit card number", u"debit card number",
+            u"card number");
 
   // Driver's License
   try_match(EntryType::kDriversLicenseNumber, u"drivers license number",

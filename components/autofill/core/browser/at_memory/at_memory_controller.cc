@@ -401,8 +401,6 @@ void AtMemoryController::FillCreditCard(
             std::u16string fill_value;
             switch (payload.entry_type) {
               case accessibility_annotator::EntryType::kCreditCardNumber:
-                // TODO(crbug.com/497795513): Fill number for
-                // `EntryType::kCreditCardFull` suggestions.
                 fill_value = fetched_card.number();
                 break;
               case accessibility_annotator::EntryType::kCreditCardSecurityCode:

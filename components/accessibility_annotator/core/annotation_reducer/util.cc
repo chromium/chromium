@@ -42,7 +42,6 @@ EntryType StringToEntryType(std::string_view intent_str) {
           {"kAddressZip", EntryType::kAddressZip},
           {"kCompanyName", EntryType::kCompanyName},
           {"kCreditCardExpirationDate", EntryType::kCreditCardExpirationDate},
-          {"kCreditCardFull", EntryType::kCreditCardFull},
           {"kCreditCardNameOnCard", EntryType::kCreditCardNameOnCard},
           {"kCreditCardNickname", EntryType::kCreditCardNickname},
           {"kCreditCardNumber", EntryType::kCreditCardNumber},

@@ -52,7 +52,6 @@ TEST(AnnotationReducerUtilTest, StringToEntryType_ValidMappings) {
   EXPECT_EQ(StringToEntryType("kCompanyName"), EntryType::kCompanyName);
   EXPECT_EQ(StringToEntryType("kCreditCardExpirationDate"),
             EntryType::kCreditCardExpirationDate);
-  EXPECT_EQ(StringToEntryType("kCreditCardFull"), EntryType::kCreditCardFull);
   EXPECT_EQ(StringToEntryType("kCreditCardNameOnCard"),
             EntryType::kCreditCardNameOnCard);
   EXPECT_EQ(StringToEntryType("kCreditCardNickname"),

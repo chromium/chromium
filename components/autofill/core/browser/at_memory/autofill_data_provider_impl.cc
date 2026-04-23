@@ -291,13 +291,6 @@ std::string_view AutofillDataProviderImpl::GetHistogramSuffix() const {
 void AutofillDataProviderImpl::RetrieveAll(
     EntryType entry_type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
-  if (entry_type == EntryType::kCreditCardFull) {
-    // TODO(crbug.com/497795513): Handle credit card data once re-auth
-    // flow is implemented.
-    std::move(callback).Run({});
-    return;
-  }
-
   std::optional<AtMemoryDataType> at_memory_type =
       ToAtMemoryDataType(entry_type);
   if (!at_memory_type) {

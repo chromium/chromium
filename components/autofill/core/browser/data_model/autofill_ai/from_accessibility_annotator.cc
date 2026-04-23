@@ -371,8 +371,6 @@ std::u16string GetEntryTypeNameForI18n(aa::EntryType type) {
       return u"IBAN";
     case aa::EntryType::kIbanNickname:
       return u"Name";
-    case aa::EntryType::kCreditCardFull:
-      return u"Credit card";
     case aa::EntryType::kCreditCardNumber:
       return u"Card number";
     case aa::EntryType::kCreditCardExpirationDate:

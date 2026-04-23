@@ -81,7 +81,6 @@ enum class EntryType {
   kOrderMerchantDomain,
   kOrderProductNames,
   kOrderGrandTotal,
-  kCreditCardFull,
   kCreditCardNumber,
   kCreditCardExpirationDate,
   kCreditCardSecurityCode,

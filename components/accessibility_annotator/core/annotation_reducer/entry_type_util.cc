@@ -154,7 +154,6 @@ bool IsFullEntryType(EntryType entry_type) {
     case EntryType::kDriversLicenseFull:
     case EntryType::kOrderFull:
     case EntryType::kShipmentFull:
-    case EntryType::kCreditCardFull:
       return true;
     case EntryType::kNameFull:
     case EntryType::kAddressFull:
@@ -570,7 +569,6 @@ EntityTypeEnumSet GetEntityTypesForEntryType(EntryType entry_type) {
     case EntryType::kCompanyName:
     case EntryType::kIban:
     case EntryType::kIbanNickname:
-    case EntryType::kCreditCardFull:
     case EntryType::kCreditCardNumber:
     case EntryType::kCreditCardExpirationDate:
     case EntryType::kCreditCardSecurityCode:
