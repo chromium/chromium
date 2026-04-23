@@ -15,7 +15,7 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
 
   // TODO(crbug.com/476493398): Tune this value, potentially making it dynamic
   // based on the drag offset from the bounds of the scroll view.
-  constexpr float kScrollIncrement = 10;
+  constexpr float kScrollIncrement = 5;
 
   const auto& visible_bounds = host_view->GetVisibleBounds();
   if (visible_bounds.bottom() < host_view->height() &&
@@ -37,7 +37,7 @@ void TabDragScrollHandler::StartOrContinueScrolling(
     return;
   }
 
-  constexpr base::TimeDelta kScrollTimerDelay = base::Milliseconds(10);
+  constexpr base::TimeDelta kScrollTimerDelay = base::Milliseconds(20);
   scroll_timer_.Start(
       FROM_HERE, kScrollTimerDelay,
       base::BindRepeating(&TabDragScrollHandler::UpdateScrollOffset,
