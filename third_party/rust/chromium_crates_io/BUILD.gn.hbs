@@ -21,6 +21,14 @@ cargo_crate("{{this.name}}") {
   enabled = {{cond}}
   {{/if}}
   crate_type = "{{crate_type}}"
+  {{#if_key_present "override_crate_type_as_dylib_in_component_builds" extra_kv
+    }}override_crate_type_as_dylib_in_component_builds = {{#if
+      extra_kv.override_crate_type_as_dylib_in_component_builds}}
+        true
+    {{else}}
+      false
+    {{/if}}
+  {{/if_key_present}}
   crate_root = "{{crate_root}}"
   sources = [
     {{#each sources}}

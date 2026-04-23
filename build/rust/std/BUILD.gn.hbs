@@ -4,6 +4,7 @@
 
 # @generated from build/rust/std/BUILD.gn.hbs by tools/crates/gnrt. Do not edit!
 
+import("//build/config/rust.gni")
 import("//build/rust/cargo_crate.gni")
 
 config("max_codegen_units") {
@@ -18,6 +19,9 @@ config("max_codegen_units") {
 {{#with this.detail}}
 cargo_crate("{{../name}}") {
   crate_type = "{{crate_type}}"
+  {{#if extra_kv.override_crate_type_as_dylib_in_component_builds}}
+  override_crate_type_as_dylib_in_component_builds = true
+  {{/if}}
   crate_root = "{{crate_root}}"
   {{#if cond}}
   enabled = {{cond}}

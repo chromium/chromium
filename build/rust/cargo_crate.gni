@@ -89,6 +89,13 @@ import("//build/rust/rust_static_library.gni")
 #    Whether to build an executable. The default is "rlib".
 #    At present others are not supported.
 #
+#  override_crate_type_as_dylib_in_component_builds (optional)
+#    Whether to change `crate_type` to `dylib` if `is_component_build`.
+#    Can be used as needed (e.g. to avoid bifurcating a global variable which
+#    would happen when linking the crate statically into multiple components).
+#    TODO(https://crbug.com/505430456): Automatically opt-in all `cargo_crate`
+#    targets into `override_crate_type_as_dylib_in_component_builds`
+#
 #  cargo_pkg_authors
 #  cargo_pkg_version
 #  cargo_pkg_name

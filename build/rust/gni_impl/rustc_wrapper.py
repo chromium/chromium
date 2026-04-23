@@ -10,6 +10,7 @@ import pathlib
 import subprocess
 import shlex
 import os
+import pathlib
 import signal
 import sys
 import re
@@ -105,6 +106,21 @@ FILE_RE = re.compile("^([^# ][^ ]*):( .+)?$")
 def remove_lib_suffix_from_l_args(text):
   if text.startswith("-l") and text.endswith(".lib"):
     return text[:-len(".lib")]
+  return text
+
+
+# Equivalent of python3.9 built-in
+def remove_lib_suffix_from_extern_args(text):
+  if text.endswith(".dll.lib"):
+    # Trimmed:
+    # * `--extern=foo=foo.dll.lib`    -> `text.startswith("--extern")`
+    # * `--extern`, `foo=foo.dll.lib` -> `"=" in text`
+    #
+    # Not trimmed:
+    # * `-Clink-arg=./atomic.dll.lib` -> `not text.startswith("-")`
+    if text.startswith("--extern=") or \
+        ("=" in text and not text.startswith("-")):
+      return text[:-len(".lib")]
   return text
 
 
@@ -357,6 +373,10 @@ def main():
     # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
     rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
     rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
+    # Work around for "--extern std=.../std_std.dll.lib`, where ".lib" suffix is
+    # undesirable.  See also https://crbug.com/498216362#comment9
+    rsp_args = [remove_lib_suffix_from_extern_args(arg) for arg in rsp_args]
+    rustc_args = [remove_lib_suffix_from_extern_args(arg) for arg in rustc_args]
   rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
   rsp_args = _ExpandNestedRustStyleRspFiles(rsp_args)
   out_rsp = str(args.rsp) + ".rust"

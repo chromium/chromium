@@ -93,9 +93,12 @@
 #
 #     configs_to_remove / configs_to_add: A list of GN config labels.
 #
-#     visibility: A list of targets that the crate should be visible to.
-#
 #     extra_deps: A list of dependencies to be added to the crate.
+#
+#     override_crate_type_as_dylib_in_component_builds: If true, then the
+#       crate will be built as `--crate-type=dylib` if `is_component_build`.
+#
+#     visibility: A list of targets that the crate should be visible to.
 #
 # Additional, less commonly needed options can also be discovered by reading
 # the doc comments in `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s

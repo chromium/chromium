@@ -55,6 +55,25 @@ template("rust_target") {
   _generate_crate_root =
       defined(invoker.generate_crate_root) && invoker.generate_crate_root
 
+  _override_crate_type_as_dylib = false
+  if (defined(invoker.override_crate_type_as_dylib_in_component_builds)) {
+    if (is_component_build) {
+      _override_crate_type_as_dylib =
+          invoker.override_crate_type_as_dylib_in_component_builds
+    } else {
+      not_needed(invoker,
+                 [ "override_crate_type_as_dylib_in_component_builds" ])
+    }
+  }
+  if (_override_crate_type_as_dylib) {
+    assert(defined(invoker.crate_type) && invoker.crate_type == "rlib")
+
+    invoker.crate_type = "dylib"
+    invoker.target_type = "shared_library"
+
+    _copy_so_or_dll_dylib_target_name = target_name + "_copy_so_or_dll_dylib"
+  }
+
   # Only one of `crate_root` or `generate_crate_root` can be specified, or
   # neither.
   assert(!defined(invoker.crate_root) || !_generate_crate_root)
@@ -174,7 +193,23 @@ template("rust_target") {
     _configs += invoker.proc_macro_configs
     _test_configs += [ "//build/rust:proc_macro_extern" ]
   } else if (invoker.target_type == "shared_library") {
-    _configs += invoker.shared_library_configs
+    if (_override_crate_type_as_dylib) {
+      _configs += invoker.library_configs
+      _configs += default_component_configs - default_compiler_configs
+
+      # Removing `libs = [ "dl", ...]` works around the `android_compile_dbg`
+      # problem from https://crbug.com/498216362#comment16.  This is only
+      # done for Android, because:
+      # * Link-time/delayed `cfg` (`#[link...cfg]`) seems to only be applied
+      #   for Android in `rust/library/std/src/sys/pal/unix/mod.rs`.
+      # * Without `config:default_libs` linking would fail on Windows due to
+      #   missing `delayimp.lib` / `undefined symbol: ___delayLoadHelper2@8`.
+      if (is_android) {
+        _configs -= [ "//build/config:default_libs" ]
+      }
+    } else {
+      _configs += invoker.shared_library_configs
+    }
   } else {
     _configs += invoker.library_configs
   }
@@ -336,6 +371,73 @@ template("rust_target") {
         }
         public_deps = [ ":${_main_target_name}" ]
         public_deps += _cxx_generated_deps_for_cpp
+
+        if (_override_crate_type_as_dylib) {
+          data_deps = [ ":${_copy_so_or_dll_dylib_target_name}" ]
+        }
+      }
+    }
+
+    if (_override_crate_type_as_dylib) {
+      # Building a `--crate-type=dylib` means that `rustc` generates a `.dll` /
+      # `.so` in target-specific subdirectories of the build directory.  This
+      # is particularly important for the standard library, which `rustc`
+      # expects to find under the sysroot when building other crates - this is
+      # why targets in `//build/rust/std/rules/BUILD.gn` set `output_dir =
+      # "$root_out_dir/local_rustc_sysroot/...".
+      #
+      # OTOH, executables linked against these `.dll`s / `.so`s need to find them
+      # at runtime (i.e. the runtime linker needs to find them).  The `copy` target
+      # here helps with this part by copying them to the root of the build directory
+      # (same directory where executables go by default).
+      copy(_copy_so_or_dll_dylib_target_name) {
+        # TODO(https://crbug.com/gn/490160737): If `get_target_outputs` can
+        # support binary targets (unclear) then it should be used here, instead
+        # of replicating how `...toolchain.gni` calculates the `.so` path in the
+        # `outputs` of `tool("rust_dylib")` (which feels rather fragile).
+        #
+        # `_source_dir` is an equivalent of `{{output_dir}}` in the toolchain.
+        _source_dir = target_out_dir
+        if (defined(invoker.output_dir)) {
+          _source_dir = invoker.output_dir
+        }
+        _source_dir += "/"
+
+        # `_source_ext` is an equivalent of `{{output_extension}}`
+        _source_ext = shlib_extension
+
+        # When cross-compiling for Windows from Linux, the toolchain might
+        # use `.dll` even for Linux targets (like the Rust stdlib which
+        # is part of the sysroot).
+        if (target_os == "win" && current_os == "linux" &&
+            _source_ext == ".so") {
+          _source_ext = ".dll"
+        }
+
+        # `_source_prefix` is an equivalent of `output_prefix` in `tool`.
+        _source_prefix = shlib_prefix
+
+        # `_source_name` is an equivalent of `{{target_output_name}}`.
+        assert(defined(invoker.output_name))  # Only tested with `cargo_crate`.
+        _source_name = invoker.output_name
+
+        # `_source_path` is the equivalent of `dllname` in the toolchain.
+        _source_filename = "${_source_prefix}${_source_name}${_source_ext}"
+        _source_path = "${_source_dir}${_source_filename}"
+
+        # `_target_dir` is the equivalent of `default_output_dir` in toolchain.
+        if (defined(invoker.default_shlib_subdir)) {
+          _target_dir = "${root_out_dir}${invoker.default_shlib_subdir}"
+        } else {
+          _target_dir = "${root_out_dir}"
+        }
+
+        sources = [ _source_path ]
+        outputs = [ "${_target_dir}/{{source_file_part}}" ]
+        deps = [ ":${_main_target_name}" ]
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
       }
     }
 
@@ -483,6 +585,13 @@ template("rust_target") {
       if (_enable_clippy_for_this_target && defined(visibility)) {
         visibility += [ ":${_clippy_target_name}" ]
       }
+      if (_enable_cpp_api_from_rust_for_this_target && defined(visibility)) {
+        visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_action" ]
+        visibility += [ ":${_cpp_api_from_rust_target_name}_crubit_impl" ]
+      }
+      if (_override_crate_type_as_dylib) {
+        visibility += [ ":${_copy_so_or_dll_dylib_target_name}" ]
+      }
 
       testonly = _testonly
       crate_name = _crate_name
@@ -562,9 +671,10 @@ template("rust_target") {
 
     if (_enable_clippy_for_this_target ||
         _enable_cpp_api_from_rust_for_this_target) {
-      # Using `filter_include(get_target_outputs(..., ["*.rustflags.json"]))`
-      # would have been cleaner, but `get_target_outputs` doesn't work for
-      # library nor executable targets...
+      # TODO(https://crbug.com/gn/490160737): If `get_target_outputs` can
+      # support binary targets (unclear) then it should be used here, instead
+      # of replicating how `...toolchain.gni` calculates the `outputs` of
+      # various Rust `tool`s (which feels rather fragile).
       _rustc_env_and_flags =
           "${target_out_dir}/${_main_target_name}.rustflags.json"
       _rustc_rsp = "${target_out_dir}/${_main_target_name}.rsp.rust"

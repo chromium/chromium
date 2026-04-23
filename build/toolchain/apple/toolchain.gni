@@ -430,6 +430,43 @@ template("single_apple_toolchain") {
         inputs = rustc_wrapper_inputs
       }
 
+      tool("rust_dylib") {
+        dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        rspfile = rustc_rsp_path
+        depfile = "$dllname.d"
+        pool = "//build/toolchain:link_pool($default_toolchain)"
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
+
+        # TODO(danakj): solink can generate TOC files for re-exporting library
+        # symbols, and we should do the same here.
+
+        default_output_extension = ".dylib"
+        output_prefix = "lib"
+        default_output_dir = "{{root_out_dir}}"
+        description = "RUST(DYLIB) {{output}}"
+        outputs = [
+          dllname,
+          rmetaname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
+
+        # TODO(danakj): Support dsym_switch like C++ targets.
+        # link_command += dsym_switch
+        # if (_enable_dsyms) {
+        #   outputs += dsym_output
+        # }
+        # if (_save_unstripped_output) {
+        #   outputs += [ _unstripped_output ]
+        # }
+
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$linker_driver_env $rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link,metadata=$rmetaname -o $dllname -- -Clinker=\"$linker_driver\" {{source}} LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
+        rust_sysroot = rust_sysroot_relative
+        inputs = rustc_wrapper_inputs
+      }
+
       tool("rust_macro") {
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
