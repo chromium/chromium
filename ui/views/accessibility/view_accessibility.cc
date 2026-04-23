@@ -806,7 +806,11 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
                         static_cast<int32_t>(data_.GetRestriction()));
 
-  NotifyEvent(ax::mojom::Event::kEnabledChanged, true);
+  // Ignored nodes are not exposed to the platform accessibility tree. Firing state-change
+  // events on them is incorrect and produces noise that may confuse assistive technologies.
+  if (!GetIsIgnored()) {
+    NotifyEvent(ax::mojom::Event::kEnabledChanged, true);
+  }
   NotifyDataChanged();
 }
 
