@@ -2609,22 +2609,6 @@ static_library("browser") {
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
-      "hid/chrome_hid_delegate.cc",
-      "hid/chrome_hid_delegate.h",
-      "hid/hid_chooser_context.cc",
-      "hid/hid_chooser_context_factory.cc",
-      "hid/hid_connection_tracker.cc",
-      "hid/hid_connection_tracker.h",
-      "hid/hid_connection_tracker_factory.cc",
-      "hid/hid_connection_tracker_factory.h",
-      "hid/hid_policy_allowed_devices.cc",
-      "hid/hid_policy_allowed_devices.h",
-      "hid/hid_policy_allowed_devices_factory.cc",
-      "hid/hid_policy_allowed_devices_factory.h",
-      "hid/hid_system_tray_icon.cc",
-      "hid/hid_system_tray_icon.h",
-      "hid/web_hid_histograms.cc",
-      "hid/web_view_chooser_context.cc",
       "intranet_redirect_detector.cc",
       "intranet_redirect_detector.h",
       "memory/oom_memory_details.cc",
@@ -2696,6 +2680,7 @@ static_library("browser") {
       "//chrome/browser/glic/selection",
       "//chrome/browser/headless:headless_extra_parts",
       "//chrome/browser/hid",
+      "//chrome/browser/hid:impl",
       "//chrome/browser/icon_transcoder",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/importer",
@@ -3094,6 +3079,10 @@ static_library("browser") {
       # support_tool's :impl includes chrome/browser/signin/
       # about_signin_internals_factory.h from //chrome/browser.
       "//chrome/browser/support_tool:impl",
+
+      # hid's :impl includes chrome/browser/browser_process.h from
+      # //chrome/browser.
+      "//chrome/browser/hid:impl",
     ]
 
     if (is_win || is_chromeos) {
@@ -3120,8 +3109,6 @@ static_library("browser") {
         "download/bubble/download_bubble_utils.h",
         "download/bubble/download_display_controller.cc",
         "download/bubble/download_display_controller.h",
-        "hid/hid_status_icon.cc",
-        "hid/hid_status_icon.h",
         "platform_util.cc",
         "profiles/avatar_menu.cc",
         "profiles/avatar_menu.h",
@@ -3204,8 +3191,6 @@ static_library("browser") {
       "exo_parts.h",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.cc",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.h",
-      "hid/hid_pinned_notification.cc",
-      "hid/hid_pinned_notification.h",
       "icon_loader_chromeos.cc",
       "memory/memory_kills_monitor.cc",
       "memory/oom_kills_monitor.cc",
@@ -5927,8 +5912,6 @@ static_library("test_support") {
     sources += [
       "apps/intent_helper/preferred_apps_test_util.cc",
       "apps/intent_helper/preferred_apps_test_util.h",
-      "hid/mock_hid_device_observer.cc",
-      "hid/mock_hid_device_observer.h",
       "speech/fake_speech_recognition_service.cc",
       "speech/fake_speech_recognition_service.h",
       "speech/fake_speech_recognizer.cc",

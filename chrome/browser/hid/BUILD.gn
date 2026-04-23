@@ -2,25 +2,109 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("hid") {
-  sources = [
+  public = [
+    "chrome_hid_delegate.h",
     "hid_chooser_context.h",
     "hid_chooser_context_factory.h",
     "hid_common.h",
+    "hid_connection_tracker.h",
+    "hid_connection_tracker_factory.h",
+    "hid_policy_allowed_devices.h",
+    "hid_policy_allowed_devices_factory.h",
+    "hid_system_tray_icon.h",
     "web_hid_histograms.h",
     "web_view_chooser_context.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/chooser_controller",
+    "//chrome/browser/device_notifications",
     "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
     "//components/permissions",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//ui/gfx",
     "//url",
   ]
+
+  if (is_chromeos) {
+    public += [ "hid_pinned_notification.h" ]
+  } else {
+    public += [ "hid_status_icon.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_hid_delegate.cc",
+    "hid_chooser_context.cc",
+    "hid_chooser_context_factory.cc",
+    "hid_connection_tracker.cc",
+    "hid_connection_tracker_factory.cc",
+    "hid_policy_allowed_devices.cc",
+    "hid_policy_allowed_devices_factory.cc",
+    "hid_system_tray_icon.cc",
+    "web_hid_histograms.cc",
+    "web_view_chooser_context.cc",
+  ]
+
+  public_deps = [
+    ":hid",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/hid",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/content_settings/core/common",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/cpp/hid",
+    "//services/device/public/mojom",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "hid_pinned_notification.cc" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/profiles",
+      "//chromeos/ash/components/browser_context_helper",
+      "//components/user_manager",
+    ]
+  } else {
+    sources += [ "hid_status_icon.cc" ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -28,10 +112,13 @@ source_set("test_support") {
   sources = [
     "hid_test_utils.cc",
     "hid_test_utils.h",
+    "mock_hid_device_observer.cc",
+    "mock_hid_device_observer.h",
   ]
   public_deps = [
     ":hid",
     "//chrome/browser/device_notifications:test_support",
+    "//testing/gmock",
   ]
   deps = [ "//chrome/browser" ]
 }
@@ -45,7 +132,6 @@ if (!is_android) {
       ":hid",
       ":test_support",
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/device_notifications:browser_test_support",
       "//chrome/test:test_support",

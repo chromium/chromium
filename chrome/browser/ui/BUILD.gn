@@ -1684,6 +1684,7 @@ static_library("ui") {
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",
       "//chrome/browser/hid",
+      "//chrome/browser/hid:impl",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/lens/region_search",
@@ -2070,6 +2071,11 @@ static_library("ui") {
 
       #TODO(crbug.com/486967014): Remove once views dep is removed for side panel.
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+
+      # hid's :impl includes //chrome/browser/ui/browser_finder.h,
+      # //chrome/browser/ui/dialogs/browser_dialogs.h, and
+      # //chrome/browser/ui/chrome_pages.h from //chrome/browser/ui.
+      "//chrome/browser/hid:impl",
     ]
 
     if (is_win || is_chromeos) {

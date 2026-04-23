@@ -318,6 +318,7 @@ static_library("test_support") {
     public_deps += [ "//chrome/renderer:process_state" ]
     deps += [
       "//chrome/browser/apps/app_service/publishers",
+      "//chrome/browser/hid",
       "//components/record_replay/content/renderer",
       "//components/storage_monitor:test_support",
     ]
