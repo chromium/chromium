@@ -28,6 +28,8 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -83,7 +85,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1926,17 +1927,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests injecting a content script when the iframe rewrites the parent to be
 // null. This re-write causes the parent to itself become an about:blank frame
 // without a parent. Regression test for https://crbug.com/40627511 and
 // https://crbug.com/41459000.
-// TODO(crbug.com/371432155): Port to desktop Android when we have cross
-// platform utilities for Navigate/NavigateParams. Attempting to use
-// NavigateToURLInNewTab() causes crashes in the navigation stack.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_NullParent) {
-  NavigateParams navigate_params(browser(), null_document_url(),
+  NavigateParams navigate_params(browser_window_interface(),
+                                 null_document_url(),
                                  ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
@@ -1968,7 +1966,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // no-parent about:blank case well when there was a non-about:blank
   // precursor origin, which caused a crash during the document writing.
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that match_about_blank does not allow extensions to inject into blob:
 // URLs.
