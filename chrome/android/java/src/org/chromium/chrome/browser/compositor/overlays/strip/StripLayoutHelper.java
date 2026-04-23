@@ -866,7 +866,9 @@ public class StripLayoutHelper
             mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
         }
 
-        if (!mIncognito && ChromeFeatureList.sGlic.isEnabled()) {
+        if (!mIncognito
+                && (ChromeFeatureList.sGlic.isEnabled()
+                        || ChromeFeatureList.sContextualTasks.isEnabled())) {
             mStripTabUnderlineManager = new StripTabUnderlineManager(this);
         }
 
