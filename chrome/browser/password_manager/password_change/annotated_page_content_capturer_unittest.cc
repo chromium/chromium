@@ -4,10 +4,12 @@
 
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -71,6 +73,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
 }
 
 TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
@@ -84,6 +87,85 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
   capturer->OnPageStable();
   EXPECT_TRUE(completion_future.IsReady());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.PageContentCaptureResult", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChange.PageContentCaptureDuration", 1);
+}
+
+TEST_P(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kRetryCapturePageContent};
+  base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
+      completion_future;
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
+      CreateCapturer(completion_future.GetCallback());
+
+  EXPECT_CALL(mock_get_page_content_, Run)
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")))
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 2")))
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 3")))
+      .WillOnce([&](auto, optimization_guide::OnAIPageContentDone callback) {
+        optimization_guide::AIPageContentResult page_content_result;
+        page_content_result.proto.mutable_root_node()
+            ->mutable_content_attributes()
+            ->set_common_ancestor_dom_node_id(3);
+        std::move(callback).Run(std::move(page_content_result));
+      });
+
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  capturer->OnPageStable();
+
+  ASSERT_TRUE(completion_future.Wait());
+  EXPECT_TRUE(completion_future.Get().has_value());
+}
+
+TEST_P(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kRetryCapturePageContent};
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
+      completion_future;
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
+      CreateCapturer(completion_future.GetCallback());
+
+  EXPECT_CALL(mock_get_page_content_, Run)
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")))
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 2")))
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 3")))
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 4")));
+
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  capturer->OnPageStable();
+
+  ASSERT_TRUE(completion_future.Wait());
+  EXPECT_FALSE(completion_future.Get().has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.PageContentCaptureResult", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChange.PageContentCaptureDuration", 1);
+}
+
+TEST_P(AnnotatedPageContentCapturerTest, CaptureDoesNotRetryWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kRetryCapturePageContent);
+
+  base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
+      completion_future;
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
+      CreateCapturer(completion_future.GetCallback());
+
+  EXPECT_CALL(mock_get_page_content_, Run)
+      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")));
+
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  capturer->OnPageStable();
+
+  ASSERT_TRUE(completion_future.Wait());
+  EXPECT_FALSE(completion_future.Get().has_value());
 }
 
 TEST_P(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {

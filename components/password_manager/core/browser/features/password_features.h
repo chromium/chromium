@@ -75,6 +75,12 @@ extern const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout;
 BASE_DECLARE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// Retries capturing annotated page context during automated password change if
+// capturing failed for some reason.
+BASE_DECLARE_FEATURE(kRetryCapturePageContent);
+extern const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay;
+extern const base::FeatureParam<int> kCapturePageContentRetryCount;
+
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 
