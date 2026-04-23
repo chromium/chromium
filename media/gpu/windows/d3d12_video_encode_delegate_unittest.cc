@@ -136,18 +136,23 @@ D3D12VideoEncodeDelegateTestBase::GetEncoderOutputMetadataResourceMap(
       MakeComPtr<NiceMock<D3D12ResourceMock>>();
   ON_CALL(*resource.Get(), GetDesc())
       .WillByDefault(Return(CD3DX12_RESOURCE_DESC::Buffer(bitstream_size)));
-  static base::NoDestructor<base::flat_map<
-      D3D12ResourceMock*, std::unique_ptr<D3D12_VIDEO_ENCODER_OUTPUT_METADATA>>>
+  static base::NoDestructor<
+      base::flat_map<D3D12ResourceMock*, std::unique_ptr<uint8_t[]>>>
       mapped_metadata;
   ON_CALL(*resource.Get(), Map(0, _, _))
       .WillByDefault([&](UINT, const D3D12_RANGE*, void** data) {
-        D3D12_VIDEO_ENCODER_OUTPUT_METADATA* metadata =
-            new D3D12_VIDEO_ENCODER_OUTPUT_METADATA{
-                .EncodedBitstreamWrittenBytesCount = bitstream_size,
-                .WrittenSubregionsCount = 1,
-            };
-        (*mapped_metadata)[resource.Get()].reset(metadata);
-        *data = metadata;
+        // Allocate a buffer large enough for the metadata structure or the
+        // bitstream size, whichever is larger.
+        auto buffer = std::make_unique<uint8_t[]>(std::max(
+            bitstream_size, sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)));
+        auto* metadata = reinterpret_cast<D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
+            buffer.get());
+        *metadata = D3D12_VIDEO_ENCODER_OUTPUT_METADATA{
+            .EncodedBitstreamWrittenBytesCount = bitstream_size,
+            .WrittenSubregionsCount = 1,
+        };
+        *data = buffer.get();
+        (*mapped_metadata)[resource.Get()] = std::move(buffer);
         return S_OK;
       });
   ScopedD3D12ResourceMap metadata_buffer;
