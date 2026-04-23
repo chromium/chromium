@@ -158,6 +158,7 @@ if (is_android) {
   }
 
   android_ndk_root = "//third_party/android_toolchain/ndk"
+  android_ndk_version = "r28"
 
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_platform_version = "37.0"
