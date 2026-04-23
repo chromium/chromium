@@ -23,6 +23,8 @@ using ::tflite::task::core::PopulateTensor;
 
 // The default size of the text input tensor for the model. This is
 // necessary if the model metadata does not provide this value.
+// Note: This 768 dimension is tied to the current production passage
+// embedding models and is mirrored in the AIv4 test models.
 constexpr int kDefaultTextInputSize = 768;
 
 PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(

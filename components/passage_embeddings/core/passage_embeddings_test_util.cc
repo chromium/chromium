@@ -15,14 +15,14 @@ namespace {
 
 inline constexpr uint32_t kEmbeddingsModelInputWindowSize = 256u;
 
-Embedding ComputeEmbeddingForPassage(size_t embeddings_model_output_size) {
-  Embedding embedding(std::vector<float>(embeddings_model_output_size, 1.0f));
+Embedding ComputeEmbeddingForPassage() {
+  Embedding embedding({1.0f, 0.0f, 0.0f});
   embedding.Normalize();
   return embedding;
 }
 
 EmbedderMetadata GetValidEmbedderMetadata() {
-  return EmbedderMetadata(kEmbeddingsModelVersion, kEmbeddingsModelOutputSize);
+  return EmbedderMetadata(kEmbeddingsModelVersion, 3ul);
 }
 
 }  // namespace
@@ -44,7 +44,7 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   // Create serialized metadata.
   optimization_guide::proto::PassageEmbeddingsModelMetadata model_metadata;
   model_metadata.set_input_window_size(kEmbeddingsModelInputWindowSize);
-  model_metadata.set_output_size(kEmbeddingsModelOutputSize);
+  model_metadata.set_output_size(3ul);
 
   // Load a model info builder.
   optimization_guide::TestModelInfoBuilder builder;
@@ -58,8 +58,7 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
 
 std::vector<Embedding> ComputeEmbeddingsForPassages(
     const std::vector<std::string>& passages) {
-  return std::vector<Embedding>(
-      passages.size(), ComputeEmbeddingForPassage(kEmbeddingsModelOutputSize));
+  return std::vector<Embedding>(passages.size(), ComputeEmbeddingForPassage());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

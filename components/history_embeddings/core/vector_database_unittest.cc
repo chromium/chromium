@@ -29,8 +29,7 @@ using passage_embeddings::Embedding;
 namespace {
 
 PassageEmbedding RandomEmbedding() {
-  constexpr size_t kSize = 768u;
-  std::vector<float> random_vector(kSize, 0.0f);
+  std::vector<float> random_vector(3, 0.0f);
   for (float& v : random_vector) {
     v = base::RandFloat();
   }
@@ -40,11 +39,7 @@ PassageEmbedding RandomEmbedding() {
 }
 
 PassageEmbedding DeterministicEmbedding(float value) {
-  constexpr size_t kSize = 768u;
-  std::vector<float> vector(kSize, 0.0f);
-  vector[0] = 1;
-  vector[1] = value;
-  Embedding embedding(std::move(vector));
+  Embedding embedding({1.0f, value, 0.0f});
   embedding.Normalize();
   return {.embedding = std::move(embedding), .word_count = 10};
 }

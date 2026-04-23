@@ -17,7 +17,6 @@
 namespace passage_embeddings {
 
 inline constexpr int64_t kEmbeddingsModelVersion = 1l;
-inline constexpr size_t kEmbeddingsModelOutputSize = 768ul;
 
 // Returns a model info builder preloaded with valid model info.
 optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo();

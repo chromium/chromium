@@ -175,7 +175,7 @@ TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesValidModelInfo) {
   auto metadata = embedder_metadata_future()->Take();
   EXPECT_TRUE(metadata.IsValid());
   EXPECT_EQ(metadata.model_version, kEmbeddingsModelVersion);
-  EXPECT_EQ(metadata.output_size, kEmbeddingsModelOutputSize);
+  EXPECT_EQ(metadata.output_size, 3ul);
 
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
   histogram_tester_.ExpectUniqueSample(kModelInfoMetricName,

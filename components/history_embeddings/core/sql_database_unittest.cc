@@ -40,10 +40,10 @@ MATCHER_P(PassageEmbeddingEq, expected, "") {
 }
 
 constexpr int64_t kEmbeddingsVersion = 1;
-constexpr size_t kEmbeddingsSize = 768ul;
+constexpr size_t kEmbeddingsSize = 3ul;
 
 PassageEmbedding FakeEmbedding() {
-  Embedding embedding(std::vector<float>(kEmbeddingsSize, 1.0f));
+  Embedding embedding({1.0f, 0.0f, 0.0f});
   embedding.Normalize();
   return {std::move(embedding), 10};
 }

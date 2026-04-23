@@ -45,8 +45,7 @@ TEST(ContentClassificationInputTest, IsComplete) {
       "Test Title");
   complete_input.annotated_page_content = std::move(annotated_page_content);
   complete_input.page_title_embedding =
-      passage_embeddings::Embedding(std::vector<float>(
-          passage_embeddings::kEmbeddingsModelOutputSize, -1.0f));
+      passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f});
   EXPECT_TRUE(complete_input.IsComplete());
 
   {
@@ -149,8 +148,7 @@ class ContentClassifierTest : public testing::Test {
     input.adopted_language = "en";
     input.sensitivity_score = 0.1f;
     input.page_title_embedding =
-        passage_embeddings::Embedding(std::vector<float>(
-            passage_embeddings::kEmbeddingsModelOutputSize, -1.0f));
+        passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f});
     return input;
   }
 
@@ -211,8 +209,8 @@ TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {
   ContentClassificationInput input = CreateDefaultInput();
   input.url = GURL("https://example.com/rule_1");
   input.page_title = "This is example 1";
-  input.page_title_embedding = passage_embeddings::Embedding(
-      std::vector<float>(passage_embeddings::kEmbeddingsModelOutputSize, 1.0f));
+  input.page_title_embedding =
+      passage_embeddings::Embedding({1.0f, 1.0f, 1.0f});
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
@@ -603,7 +601,8 @@ TEST_F(ContentClassifierTest, Classify_OnEmbedderModelChanged) {
   ContentClassificationInput input = CreateDefaultInput();
   input.page_title = "rule 1";
   input.url = GURL("https://example.com/rule_1");
-  input.page_title_embedding = passage_embeddings::Embedding({1.0f, 0.0f});
+  input.page_title_embedding =
+      passage_embeddings::Embedding({1.0f, 0.0f, 0.0f});
   ContentClassificationResult result = classifier->Classify(input);
 
   // Other classifiers should match correctly.
@@ -626,8 +625,8 @@ TEST_F(ContentClassifierTest, Classify_OnEmbedderModelChanged) {
   classifier->OnEmbedderModelChanged();
 
   // 4. Classify again - should now succeed for semantic.
-  input.page_title_embedding = passage_embeddings::Embedding(
-      std::vector<float>(passage_embeddings::kEmbeddingsModelOutputSize, 1.0f));
+  input.page_title_embedding =
+      passage_embeddings::Embedding({1.0f, 1.0f, 1.0f});
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
   result = classifier->Classify(input);

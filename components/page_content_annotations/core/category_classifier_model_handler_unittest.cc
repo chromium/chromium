@@ -129,8 +129,8 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(768, 0.1f)), {});
-  EXPECT_EQ(input_vector, std::vector<float>(768, 0.1f));
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  EXPECT_EQ(input_vector, (std::vector<float>{0.1f, 0.1f, 0.1f}));
 }
 
 TEST_F(CategoryClassifierModelHandlerTest,
@@ -152,8 +152,8 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(768, 0.1f)), {});
-  EXPECT_EQ(input_vector, std::vector<float>(768, 0.1f));
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  EXPECT_EQ(input_vector, (std::vector<float>{0.1f, 0.1f, 0.1f}));
 }
 
 TEST_F(CategoryClassifierModelHandlerTest,
@@ -175,8 +175,8 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(768, 0.1f)), {});
-  EXPECT_EQ(input_vector, std::vector<float>(768, 0.1f));
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  EXPECT_EQ(input_vector, (std::vector<float>{0.1f, 0.1f, 0.1f}));
 }
 
 TEST_F(CategoryClassifierModelHandlerTest,
@@ -198,9 +198,9 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)), {});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> padding_vector = std::vector<float>(3, 0.0f);
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> padding_vector = {0.0f, 0.0f, 0.0f};
   expected_input_vector.insert(expected_input_vector.end(),
                                padding_vector.begin(), padding_vector.end());
   EXPECT_EQ(input_vector, expected_input_vector);
@@ -225,13 +225,13 @@ TEST_F(CategoryClassifierModelHandlerTest, CreateInputVector_MaxPooling) {
 
   // The third passage should be ignored due to max_passages being 2.
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
       std::vector<passage_embeddings::Embedding>{
-          passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
-          passage_embeddings::Embedding(std::vector<float>(3, 0.3f)),
-          passage_embeddings::Embedding(std::vector<float>(3, -1.0f))});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> max_pooled_vector = std::vector<float>(3, 0.3f);
+          passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
+          passage_embeddings::Embedding({0.3f, 0.3f, 0.3f}),
+          passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f})});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> max_pooled_vector = {0.3f, 0.3f, 0.3f};
   expected_input_vector.insert(expected_input_vector.end(),
                                max_pooled_vector.begin(),
                                max_pooled_vector.end());
@@ -257,9 +257,9 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)), {});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> padding_vector = std::vector<float>(3, 0.0f);
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> padding_vector = {0.0f, 0.0f, 0.0f};
   expected_input_vector.insert(expected_input_vector.end(),
                                padding_vector.begin(), padding_vector.end());
   EXPECT_EQ(input_vector, expected_input_vector);
@@ -283,12 +283,12 @@ TEST_F(CategoryClassifierModelHandlerTest, CreateInputVector_MeanPooling) {
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
       std::vector<passage_embeddings::Embedding>{
-          passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
-          passage_embeddings::Embedding(std::vector<float>(3, 0.3f))});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> mean_pooled_vector = std::vector<float>(3, 0.2f);
+          passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
+          passage_embeddings::Embedding({0.3f, 0.3f, 0.3f})});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> mean_pooled_vector = {0.2f, 0.2f, 0.2f};
   expected_input_vector.insert(expected_input_vector.end(),
                                mean_pooled_vector.begin(),
                                mean_pooled_vector.end());
@@ -314,9 +314,9 @@ TEST_F(CategoryClassifierModelHandlerTest,
   SetModelMetadata(metadata);
 
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)), {});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> padding_vector = std::vector<float>(3, 0.0f);
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}), {});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> padding_vector = {0.0f, 0.0f, 0.0f};
   expected_input_vector.insert(expected_input_vector.end(),
                                padding_vector.begin(), padding_vector.end());
   expected_input_vector.insert(expected_input_vector.end(),
@@ -343,14 +343,14 @@ TEST_F(CategoryClassifierModelHandlerTest, CreateInputVector_MeanMaxPooling) {
 
   // The third passage should be ignored due to max_passages being 2.
   std::vector<float> input_vector = handler->ConstructInputVector(
-      passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
+      passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
       std::vector<passage_embeddings::Embedding>{
-          passage_embeddings::Embedding(std::vector<float>(3, 0.1f)),
-          passage_embeddings::Embedding(std::vector<float>(3, 0.3f)),
-          passage_embeddings::Embedding(std::vector<float>(3, -1.0f))});
-  std::vector<float> expected_input_vector = std::vector<float>(3, 0.1f);
-  std::vector<float> expected_mean_pooled_vector = std::vector<float>(3, 0.2f);
-  std::vector<float> expected_max_pooled_vector = std::vector<float>(3, 0.3f);
+          passage_embeddings::Embedding({0.1f, 0.1f, 0.1f}),
+          passage_embeddings::Embedding({0.3f, 0.3f, 0.3f}),
+          passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f})});
+  std::vector<float> expected_input_vector = {0.1f, 0.1f, 0.1f};
+  std::vector<float> expected_mean_pooled_vector = {0.2f, 0.2f, 0.2f};
+  std::vector<float> expected_max_pooled_vector = {0.3f, 0.3f, 0.3f};
   expected_input_vector.insert(expected_input_vector.end(),
                                expected_mean_pooled_vector.begin(),
                                expected_mean_pooled_vector.end());
