@@ -266,6 +266,13 @@ public class AccessibilityTestService extends AccessibilityService {
     static boolean eventMatches(AccessibilityEvent event, WaitForEventParams params) {
         if (event.getEventType() != params.eventType) return false;
 
+        // ContentChangeTypes are optional, but if a non-default value is provided, we should only
+        // match the events with the ContentChangeType requested.
+        if (params.contentChangeTypes != 0
+                && event.getContentChangeTypes() != params.contentChangeTypes) {
+            return false;
+        }
+
         AccessibilityNodeInfo source = event.getSource();
         CharSequence sourceClassName = source != null ? source.getClassName() : "";
         CharSequence sourceText = source != null ? source.getText() : "";

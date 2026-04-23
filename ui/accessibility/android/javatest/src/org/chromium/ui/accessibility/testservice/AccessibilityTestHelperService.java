@@ -27,6 +27,8 @@ public class AccessibilityTestHelperService extends Service {
                                     + params.eventType
                                     + ", class: "
                                     + params.className
+                                    + ", ContentChangeTypes: "
+                                    + params.contentChangeTypes
                                     + ", text: "
                                     + params.text);
                     return AccessibilityTestService.tryWaitForEvent(params);

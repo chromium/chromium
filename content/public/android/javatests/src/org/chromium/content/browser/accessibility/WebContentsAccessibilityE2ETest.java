@@ -435,6 +435,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
         private int mEventType;
         private String mClassName = "";
+        private int mContentChangeTypes;
         private String mText = "";
         private final long mTimeoutMs = DEFAULT_TIMEOUT_MS;
 
@@ -457,6 +458,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
             WaitForEventParams params = new WaitForEventParams();
             params.eventType = mEventType;
             params.className = mClassName;
+            params.contentChangeTypes = mContentChangeTypes;
             params.text = mText;
             params.timeoutMs = mTimeoutMs;
             return params;

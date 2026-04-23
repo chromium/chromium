@@ -9,6 +9,9 @@ parcelable WaitForEventParams {
     int eventType;
     /** The expected class name of the event source. Null or empty string matches any class name. */
     String className;
+    /** The event ContentChangeTypes (e.g., AccessibilityEvent.CONTENT_CHANGE_TYPE_ERROR).
+    Optional - assign 0 to match any ContentChangeType or lack thereof. */
+    int contentChangeTypes;
     /** The expected text of the event source. Null or empty string matches any text. */
     String text;
     /** The maximum time to wait in milliseconds. */
