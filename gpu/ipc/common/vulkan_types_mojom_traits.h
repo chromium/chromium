@@ -11,8 +11,6 @@
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 
-#include <algorithm>
-#include <cstddef>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -22,22 +20,11 @@
 
 namespace mojo {
 
-template <size_t DeducedExtent>
-std::string_view SafelyRetrieveStringView(
-    base::span<const char, DeducedExtent> field) {
-  if (std::find(field.begin(), field.end(), '\0') != field.end()) {
-    // A NUL byte exists somewhere in the run of this char array.
-    // We can safely construct a `string_view` from this.
-    return std::string_view(field.data());
-  };
-  return std::string_view(field);
-}
-
 template <>
 struct StructTraits<gpu::mojom::VkExtensionPropertiesDataView,
                     VkExtensionProperties> {
   static std::string_view extensionName(const VkExtensionProperties& input) {
-    return SafelyRetrieveStringView(base::span(input.extensionName));
+    return input.extensionName;
   }
 
   static uint32_t specVersion(const VkExtensionProperties& input) {
@@ -51,7 +38,7 @@ struct StructTraits<gpu::mojom::VkExtensionPropertiesDataView,
 template <>
 struct StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties> {
   static std::string_view layerName(const VkLayerProperties& input) {
-    return SafelyRetrieveStringView(base::span(input.layerName));
+    return input.layerName;
   }
 
   static uint32_t specVersion(const VkLayerProperties& input) {
@@ -63,7 +50,7 @@ struct StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties> {
   }
 
   static std::string_view description(const VkLayerProperties& input) {
-    return SafelyRetrieveStringView(base::span(input.description));
+    return input.description;
   }
 
   static bool Read(gpu::mojom::VkLayerPropertiesDataView data,
@@ -95,7 +82,7 @@ struct StructTraits<gpu::mojom::VkPhysicalDevicePropertiesDataView,
   }
 
   static std::string_view deviceName(const VkPhysicalDeviceProperties& input) {
-    return SafelyRetrieveStringView(base::span(input.deviceName));
+    return input.deviceName;
   }
 
   static base::span<const uint8_t> pipelineCacheUUID(
