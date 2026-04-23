@@ -1473,6 +1473,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // script elements and some SVG elements for similar purposes, but making
   // parsing a special case in this respect should be avoided if possible.
   virtual void FinishParsingChildren();
+  void DidFinishParsingChildren();
 
   void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 

@@ -122,6 +122,13 @@ void Patch::Finalize() {
       end_parent->ParserRemoveChild(*end_marker_);
     }
   }
+
+  // In normal parsing, positional style invalidation and other effects happen
+  // when finishehd parsing. When patching, we need to run the same logic when
+  // the patch finalizes.
+  if (Element* element = DynamicTo<Element>(*parent_)) {
+    element->DidFinishParsingChildren();
+  }
 }
 
 void Patch::Trace(Visitor* visitor) const {

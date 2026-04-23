@@ -7799,6 +7799,10 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
 
 void Element::FinishParsingChildren() {
   SetIsFinishedParsingChildren(true);
+  DidFinishParsingChildren();
+}
+
+void Element::DidFinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
