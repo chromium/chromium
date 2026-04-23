@@ -4,16 +4,20 @@
 
 #include "services/network/public/cpp/header_util.h"
 
+#include <map>
 #include <string>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -103,6 +107,94 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
   }
 
   return true;
+}
+
+bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers) {
+  static const bool enabled =
+      base::FeatureList::IsEnabled(features::kRestrictForbiddenSecurityHeaders);
+  if (!enabled) {
+    return false;
+  }
+
+  std::map<std::string, std::string> headers_to_truncate;
+
+  auto sanitize_and_check_security_header = [&](std::string_view name,
+                                                std::string_view value) {
+    // Client Hints are harmless and set by the renderer.
+    if (base::StartsWith(name, "Sec-CH-",
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      size_t size = value.size();
+      base::UmaHistogramCounts10000("NetworkService.SecCHHeaderSize", size);
+      if (size > 1024) {
+        headers_to_truncate[std::string(name)] =
+            std::string(value.substr(0, 1024));
+      }
+      return true;
+    }
+    // Sec-Purpose is used for prefetch hints and contains short strings.
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Purpose")) {
+      return value.size() < 256;
+    }
+    // Browsing Topics API headers contain structured interest tokens.
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Browsing-Topics")) {
+      return value.size() < 1024;
+    }
+    // Shared Storage and FLEDGE fetch headers use structured boolean "?1".
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Shared-Storage-Writable") ||
+        base::EqualsCaseInsensitiveASCII(name, "Sec-Ad-Auction-Fetch")) {
+      return value == "?1";
+    }
+    // Shared Storage data origin headers contain origin URLs.
+    if (base::EqualsCaseInsensitiveASCII(name,
+                                         "Sec-Shared-Storage-Data-Origin")) {
+      return value.size() <= 267;
+    }
+    // Speculation Rules headers contain comma-separated tokens.
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Speculation-Tags")) {
+      size_t size = value.size();
+      base::UmaHistogramCounts10000(
+          "NetworkService.SecSpeculationTagsHeaderSize", size);
+      if (size > 2048) {
+        std::string_view truncated_value = value.substr(0, 2048);
+        size_t last_comma = truncated_value.rfind(',');
+        if (last_comma != std::string_view::npos) {
+          truncated_value = truncated_value.substr(0, last_comma);
+        }
+        headers_to_truncate[std::string(name)] = std::string(truncated_value);
+      }
+      return true;
+    }
+    // FLEDGE/Protected Audience auction headers contain encoded auction
+    // signals.
+    if (base::StartsWith(name, "Sec-Ad-Auction-",
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      size_t size = value.size();
+      base::UmaHistogramCounts10000("NetworkService.SecAdAuctionHeaderSize",
+                                    size);
+      if (size > 2048) {
+        headers_to_truncate[std::string(name)] =
+            std::string(value.substr(0, 2048));
+      }
+      return true;
+    }
+    return false;
+  };
+
+  net::HttpRequestHeaders::Iterator it(headers);
+  while (it.GetNext()) {
+    if (base::StartsWith(it.name(), "Sec-",
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      if (!sanitize_and_check_security_header(it.name(), it.value())) {
+        return true;
+      }
+    }
+  }
+
+  for (const auto& [name, value] : headers_to_truncate) {
+    headers.SetHeader(name, value);
+  }
+
+  return false;
 }
 
 mojom::ReferrerPolicy ParseReferrerPolicy(

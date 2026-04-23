@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void DestroyCorsURLLoader(CorsURLLoader* loader);
 
   bool IsValidRequest(
-      const ResourceRequest& request,
+      ResourceRequest& request,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 

@@ -31,6 +31,13 @@ bool IsRequestHeaderSafe(std::string_view key, std::string_view value);
 COMPONENT_EXPORT(NETWORK_CPP)
 bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers);
 
+// Checks if the headers contain any forbidden security headers (e.g., Sec-
+// headers from renderer). This is a secondary security check (Defense in Depth)
+// to prevent a compromised renderer from spoofing critical security headers,
+// which is outside the standard Fetch specification.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers);
+
 // Parses the referrer policy header if present. Returns
 // mojom::ReferrerPolicy::kDefault if the header is absent.
 COMPONENT_EXPORT(NETWORK_CPP)

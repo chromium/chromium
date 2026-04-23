@@ -583,7 +583,7 @@ bool CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed() const {
 }
 
 bool CorsURLLoaderFactory::IsValidRequest(
-    const ResourceRequest& request,
+    ResourceRequest& request,
     uint32_t options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (request.url.SchemeIs(url::kDataScheme)) {
@@ -860,6 +860,13 @@ bool CorsURLLoaderFactory::IsValidRequest(
 
   if (!IsValidCorsExemptHeaders(*context_->cors_exempt_header_list(),
                                 request.cors_exempt_headers)) {
+    return false;
+  }
+
+  if (!process_id_.is_browser() &&
+      ContainsForbiddenSecurityHeader(request.headers)) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: Forbidden Sec- header from renderer");
     return false;
   }
 

@@ -5341,6 +5341,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.SecAdAuctionHeaderSize" units="bytes"
+    expires_after="2026-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The size of Sec-Ad-Auction-* headers in bytes. Recorded when validating
+    renderer-initiated requests in the Network Service. This helps monitor the
+    impact of size limits imposed to protect the IPC boundary.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.SecCHHeaderSize" units="bytes"
+    expires_after="2026-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The size of Sec-CH-* headers in bytes. Recorded when validating
+    renderer-initiated requests in the Network Service. This helps monitor the
+    impact of size limits imposed to protect the IPC boundary.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.SecSpeculationTagsHeaderSize" units="bytes"
+    expires_after="2026-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The size of Sec-Speculation-Tags headers in bytes. Recorded when validating
+    renderer-initiated requests in the Network Service. This helps monitor the
+    impact of size limits imposed to protect the IPC boundary.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.SlopBucket.ChunkAllocationFailedReason"
     enum="SlopBucketChunkAllocationFailedReason" expires_after="2026-09-06">
   <owner>ricea@chromium.org</owner>

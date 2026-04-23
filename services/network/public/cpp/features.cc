@@ -652,4 +652,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "initial_doh_probe_timeout",
                    base::Seconds(5));
 
+BASE_FEATURE(kRestrictForbiddenSecurityHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features
