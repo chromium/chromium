@@ -177,15 +177,11 @@ class DevToolsStreamEndpoint : public TracingController::TraceDataEndpoint {
   base::WeakPtr<TracingHandler> tracing_handler_;
 };
 
-std::string GetProcessHostHex(RenderProcessHost* host) {
-  return base::StringPrintf("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(host));
-}
 
 void SendProcessReadyInBrowserEvent(const base::UnguessableToken& frame_token,
                                     RenderProcessHost* host) {
   auto data = std::make_unique<base::trace_event::TracedValue>();
   data->SetString("frame", frame_token.ToString());
-  data->SetString("processPseudoId", GetProcessHostHex(host));
   data->SetInteger("processId", static_cast<int>(host->GetProcess().Pid()));
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "ProcessReadyInBrowser", TRACE_EVENT_SCOPE_THREAD,
@@ -216,7 +212,6 @@ void FillFrameData(base::trace_event::TracedValue* data,
   RenderProcessHost* process_host = frame_host->GetProcess();
   const base::Process& process_handle = process_host->GetProcess();
   if (!process_handle.IsValid()) {
-    data->SetString("processPseudoId", GetProcessHostHex(process_host));
     frame_host->GetProcess()->PostTaskWhenProcessIsReady(
         base::BindOnce(&SendProcessReadyInBrowserEvent,
                        frame_host->devtools_frame_token(), process_host));
