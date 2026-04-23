@@ -52,6 +52,12 @@ export abstract class LineFocusMoveMode {
   // Called when the mouse is moved vertically within the toolbar.
   abstract onMouseMoveInToolbar(y: number): void;
 
+  // Called when the location or size of the text lines may have changed.
+  abstract onTextLocationsChange(container: HTMLElement, height: number): void;
+
+  // Called when a scroll event finishes in the content panel.
+  abstract onScrollEnd(newScrollTop: number): void;
+
   // Updates focus when speech reaches a new word boundary.
   onWordBoundary(segments: Segment[]): void {
     const rects = getRectsForSegments(segments);
@@ -83,18 +89,31 @@ export abstract class LineFocusMoveMode {
   // rect, depending on the movement strategy.
   abstract moveToRect(rect: DOMRect): void;
 
-  setFocalPoint(focalPointY: number, quietly: boolean = false): void {
+  protected setFocalPoint(focalPointY: number, quietly: boolean = false): void {
     this.model_.setFocalPoint(focalPointY);
-    this.styleMode_.calculateHeight();
+    this.styleMode_.updateFocusBounds();
     if (!quietly) {
       this.delegate_.notifyMove();
     }
   }
 
-  scrollToCenter(
-      lines: DOMRect[], targetIndex: number, instant: boolean = false) {
-    const desiredCenter = this.styleMode_.getDesiredCenter(lines, targetIndex);
-    const scrollDiff = desiredCenter - (this.getCenterY());
+  protected getSafeIndex(isForward: boolean): number {
+    const lines = this.model_.getTextBounds();
+    const rawIndex =
+        getRectIndexAtY(this.model_.getFocalPoint(), lines, isForward);
+    return this.styleMode_.clampLineIndex(rawIndex);
+  }
+
+  recenterCurrentTextLine(instant: boolean): void {
+    const bounds = this.model_.getTextBounds();
+    if (bounds.length === 0) {
+      return;
+    }
+    const currentIndex = this.model_.getCurrentLineIndex() ??
+        this.getSafeIndex(/*isForward=*/ true);
+    this.model_.setCurrentLineIndex(currentIndex);
+    const desiredCenter = this.styleMode_.getDesiredCenter(currentIndex);
+    const scrollDiff = desiredCenter - this.getCenterY();
     this.scroll(scrollDiff, instant);
   }
 
@@ -106,17 +125,30 @@ export abstract class LineFocusMoveMode {
     this.delegate_.notifyScroll(scrollDiff, instant);
   }
 
-  initializeSnapIndex(lines: DOMRect[], isForward: boolean) {
-    const rawIndex = getRectIndexAtY(
-        this.model_.getFocalPoint(), this.model_.getTextBounds(), isForward);
-    const safeIndex = this.styleMode_.clampLineIndex(rawIndex);
+  protected resetScrollState(newScrollTop: number) {
+    const distance =
+        Math.round(Math.abs(newScrollTop - this.model_.getLastScrollTop()));
+    chrome.readingMode.addLineFocusScrollDistance(distance);
+    this.model_.setLastScrollTop(newScrollTop);
 
+    // If the scroll was not initiated by line focus, then reset which line is
+    // currently focused.
+    if (!this.model_.getInitiatedScroll()) {
+      this.model_.setCurrentLineIndex(null);
+    }
+
+    this.model_.setInitiatedScroll(false);
+  }
+
+  initializeSnapIndex(isForward: boolean) {
+    const lines = this.model_.getTextBounds();
+    const safeIndex = this.getSafeIndex(isForward);
     this.model_.setCurrentLineIndex(safeIndex);
     assert(safeIndex < lines.length);
     this.moveToRect(lines[safeIndex]!);
   }
 
-  updatePositions(container: HTMLElement, height: number): void {
+  protected updatePositions(container: HTMLElement, height: number): void {
     const {minY, maxY, bounds} = calculateTextBounds(container, height);
     this.model_.setMinY(minY);
     this.model_.setMaxY(maxY);
@@ -160,6 +192,25 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
   onMouseMove(_y: number): void {}
   onMouseMoveInToolbar(_y: number): void {}
 
+  onScrollEnd(newScrollTop: number): void {
+    const initiatedScroll = this.model_.getInitiatedScroll();
+    this.resetScrollState(newScrollTop);
+    if (initiatedScroll && this.styleMode_.updateAfterScroll()) {
+      this.delegate_.notifyMove();
+    }
+  }
+
+  onTextLocationsChange(container: HTMLElement, height: number): void {
+    const previousMaxY = this.model_.getMaxY();
+    const previousMinY = this.model_.getMinY();
+    this.updatePositions(container, height);
+    this.updateScrollBuffer();
+    if (previousMaxY !== this.model_.getMaxY() ||
+        previousMinY !== this.model_.getMinY()) {
+      this.setFocalPoint(this.getCenterY());
+    }
+  }
+
   moveToRect(rect: DOMRect): void {
     const focalPoint = this.styleMode_.getFocalPointForRect(rect);
     const scrollDiff = focalPoint - this.model_.getFocalPoint();
@@ -181,8 +232,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const wasEnabled = this.model_.isSessionActive();
     this.setupEnabledMode(container, height);
     if (!wasEnabled && this.model_.getTextBounds().length > 0) {
-      this.initializeSnapIndex(
-          this.model_.getTextBounds(), /*isForward=*/ true);
+      this.initializeSnapIndex(/*isForward=*/ true);
     } else {
       this.setFocalPoint(
           Math.max(this.model_.getMinY(), this.model_.getFocalPoint()));
@@ -203,6 +253,23 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     // settings. onAllMenusClose will notify them of the final position when
     // all the settings menus are closed.
     this.setFocalPoint(Math.max(this.model_.getMinY(), y), /*quietly=*/ true);
+  }
+
+  onScrollEnd(newScrollTop: number): void {
+    this.resetScrollState(newScrollTop);
+  }
+
+  onTextLocationsChange(container: HTMLElement, height: number): void {
+    const currentIndex = this.model_.getCurrentLineIndex();
+
+    this.updatePositions(container, height);
+    this.updateScrollBuffer();
+    this.recenterCurrentTextLine(/*instant=*/ true);
+
+    if (currentIndex !== null) {
+      const newFocalPoint = this.styleMode_.getDesiredCenter(currentIndex);
+      this.setFocalPoint(newFocalPoint);
+    }
   }
 
   moveToRect(rect: DOMRect): void {
@@ -237,6 +304,8 @@ export class LineFocusNoneMoveMode extends LineFocusMoveMode {
 
   onMouseMove(_y: number): void {}
   onMouseMoveInToolbar(_y: number): void {}
+  onScrollEnd(_newScrollTop: number): void {}
+  onTextLocationsChange(_container: HTMLElement, _height: number): void {}
   moveToRect(_rect: DOMRect): void {}
   override onWordBoundary(_segments: Segment[]): void {}
 

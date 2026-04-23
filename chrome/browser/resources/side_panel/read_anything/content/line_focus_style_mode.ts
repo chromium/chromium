@@ -25,8 +25,8 @@ export abstract class LineFocusStyleMode {
     return this.style_;
   }
 
-  // Calculates and sets the height of the focus element in the model.
-  abstract calculateHeight(): void;
+  // Updates the top position and height of the focus element in the model.
+  abstract updateFocusBounds(): void;
 
   // Returns the new focal point Y position based on the given bounding rect.
   abstract getFocalPointForRect(bounds: DOMRect): number;
@@ -40,10 +40,11 @@ export abstract class LineFocusStyleMode {
 
   // Returns where the center of the focus element should be in the focus area
   // outlined by the given rects.
-  abstract getDesiredCenter(lines: DOMRect[], targetIndex: number): number;
+  abstract getDesiredCenter(targetIndex: number): number;
 
-  // Returns whether the focal point should be refreshed after a scroll.
-  abstract shouldRefreshFocalPoint(oldHeight: number, oldTop: number): boolean;
+  // Returns true if after a line-focus-initiated scroll, this focus area
+  // calculates a change in position or height.
+  abstract updateAfterScroll(): boolean;
 }
 
 // Style strategy for focusing on a single line with an underline effect.
@@ -52,7 +53,7 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
     super(style, model);
   }
 
-  calculateHeight(): void {
+  updateFocusBounds(): void {
     this.model_.setTop(this.model_.getFocalPoint());
     this.model_.setWindowHeight(0);
   }
@@ -76,13 +77,16 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
     };
   }
 
-  getDesiredCenter(lines: DOMRect[], targetIndex: number): number {
+  getDesiredCenter(targetIndex: number): number {
+    const lines = this.model_.getTextBounds();
     const {bottomRect} = this.getFocusWindowBounds(lines, targetIndex);
     return bottomRect.bottom;
   }
 
-  shouldRefreshFocalPoint(_oldHeight: number, _oldTop: number): boolean {
-    return true;
+  updateAfterScroll(): boolean {
+    // No need to update the focus area in line mode since the size of the line
+    // does not affect the underline size.
+    return false;
   }
 }
 
@@ -92,7 +96,7 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     super(style, model);
   }
 
-  calculateHeight(): void {
+  updateFocusBounds(): void {
     const bounds = this.model_.getTextBounds();
     if (bounds.length === 0) {
       return;
@@ -160,12 +164,23 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     };
   }
 
-  getDesiredCenter(lines: DOMRect[], targetIndex: number): number {
+  getDesiredCenter(targetIndex: number): number {
+    const lines = this.model_.getTextBounds();
     const {topRect, bottomRect} = this.getFocusWindowBounds(lines, targetIndex);
     return (topRect.top + bottomRect.bottom) / 2;
   }
 
-  shouldRefreshFocalPoint(oldHeight: number, oldTop: number): boolean {
+  updateAfterScroll(): boolean {
+    if (this.style_.lines > 1) {
+      return false;
+    }
+
+    // Always adapt the single line focus window height to the current text line
+    // height, otherwise the text line might be much bigger than the focus area.
+    // This isn't needed for larger window sizes.
+    const oldHeight = this.model_.getWindowHeight();
+    const oldTop = this.model_.getTop();
+    this.updateFocusBounds();
     const heightDiff = Math.abs(oldHeight - this.model_.getWindowHeight());
     const topDiff = Math.abs(oldTop - this.model_.getTop());
     return heightDiff > WINDOW_DIFF_THRESHOLD ||
@@ -179,7 +194,7 @@ export class LineFocusNoneStyleMode extends LineFocusStyleMode {
     super(style, model);
   }
 
-  calculateHeight(): void {
+  updateFocusBounds(): void {
     // No-op.
   }
 
@@ -200,11 +215,11 @@ export class LineFocusNoneStyleMode extends LineFocusStyleMode {
     };
   }
 
-  getDesiredCenter(_lines: DOMRect[], _targetIndex: number): number {
+  getDesiredCenter(_targetIndex: number): number {
     return 0;
   }
 
-  shouldRefreshFocalPoint(_oldHeight: number, _oldTop: number): boolean {
+  updateAfterScroll(): boolean {
     return false;
   }
 }

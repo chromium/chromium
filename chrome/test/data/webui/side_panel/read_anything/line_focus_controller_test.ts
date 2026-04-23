@@ -389,40 +389,6 @@ suite('LineFocusController', () => {
     assertFalse(lineFocusController.isStatic());
   });
 
-  test('onScrollEnd adds scroll distance', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
-    let scrollDistance = 0;
-    let mouseDistance = 0;
-    chrome.readingMode.addLineFocusScrollDistance = y => {
-      scrollDistance = y;
-    };
-    chrome.readingMode.addLineFocusMouseDistance = y => {
-      mouseDistance = y;
-    };
-    const top1 = 43;
-    const top2 = 55;
-    const top3 = 12;
-    // Ensure we test scrolling up and down;
-    assertLT(top1, top2);
-    assertGT(top2, top3);
-
-    lineFocusController.onScrollEnd(top1);
-    assertEquals(0, mouseDistance);
-    assertEquals(top1, scrollDistance);
-
-    lineFocusController.onScrollEnd(top2);
-    assertEquals(0, mouseDistance);
-    assertEquals(top2 - top1, scrollDistance);
-
-    lineFocusController.onScrollEnd(top3);
-    assertEquals(0, mouseDistance);
-    assertEquals(top2 - top3, scrollDistance);
-  });
-
   test('onScrollEnd initiated by line focus, recalculates window', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const height = 50;
@@ -589,51 +555,6 @@ suite('LineFocusController', () => {
     lineFocusController.onAllMenusClose();
 
     assertTrue(lineFocusMoved);
-  });
-
-  test('onTextLocationsChange updates window position and height', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    const oldTop = lineFocusController.getTop();
-    const oldHeight = lineFocusController.getHeight();
-    const heading = document.createElement('h1');
-    heading.innerText =
-        'Like a comet pulled from orbit as\n\n\n\n\nas it passes the sun\n' +
-        'Like a stream that meets a boulder\n\nhalfway through the woods';
-    document.body.appendChild(heading);
-    lineFocusMoved = false;
-
-    lineFocusController.onTextLocationsChange(heading, defaultHeight);
-
-    assertNotEquals(NaN, lineFocusController.getTop());
-    assertNotEquals(NaN, lineFocusController.getHeight());
-    assertNotEquals(oldTop, lineFocusController.getTop());
-    assertNotEquals(oldHeight, lineFocusController.getHeight());
-    assertTrue(lineFocusMoved);
-  });
-
-  test('onTextLocationsChange updates line position to current line', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createLongContainer();
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, defaultHeight);
-    lineFocusController.onMouseMove(100);
-    const oldTop = lineFocusController.getTop();
-    const heading = document.createElement('h1');
-    heading.innerText =
-        'Who can say if I\'ve been changed for the better\n\n\n\n\nBut\n' +
-        'Because I knew you\n\nI have been changed for good';
-    document.body.appendChild(heading);
-
-    lineFocusController.onTextLocationsChange(heading, defaultHeight);
-
-    assertNotEquals(oldTop, lineFocusController.getTop());
   });
 
   test('snapToNextLine with cursor line moves by line', () => {
@@ -895,23 +816,5 @@ suite('LineFocusController', () => {
     lineFocusController.onKeyDown(upKey(), container, defaultHeight);
 
     assertFalse(lineFocusMoved);
-  });
-
-  test('onTextLocationsChange scrolls to re-center line focus', () => {
-    const container = createLongContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, defaultHeight);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    chrome.readingMode.isLineFocusEnabled = true;
-
-    // Simulate text bounds being available
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-
-    // Now simulate font size changing or another text layout update
-    scrollDiffReceived = 0;
-    lineFocusController.onTextLocationsChange(container, defaultHeight);
-
-    assertNotEquals(0, scrollDiffReceived);
   });
 });

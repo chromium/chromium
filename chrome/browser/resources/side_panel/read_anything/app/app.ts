@@ -734,12 +734,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private onTextLocationsChange_() {
     if (chrome.readingMode.isLineFocusEnabled) {
-      if (this.lineFocusController_.isEnabled()) {
-        const padding = this.lineFocusController_.isStatic() ?
-            Math.floor(this.$.containerParent.offsetHeight / 2) :
-            0;
-        this.styleUpdater_.setPaddingForLineFocus(padding);
-      }
       this.lineFocusController_.onTextLocationsChange(
           this.$.container, this.$.appFlexParent.clientHeight);
     }

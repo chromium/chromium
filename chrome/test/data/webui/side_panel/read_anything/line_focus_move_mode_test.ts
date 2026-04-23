@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, NodeStore, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {MoveModeDelegate} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -32,6 +32,10 @@ suite('LineFocusMoveMode', () => {
   }
 
   setup(() => {
+    // Clearing the DOM should always be done first.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const readingMode = new FakeReadingMode();
+    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     model = new LineFocusModel();
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);
     windowMode =
@@ -60,10 +64,6 @@ suite('LineFocusMoveMode', () => {
     let mode: LineFocusStaticMoveMode;
 
     setup(() => {
-      // Clearing the DOM should always be done first.
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      const readingMode = new FakeReadingMode();
-      chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
       mode = new LineFocusStaticMoveMode(model, styleMode, delegate);
     });
 
@@ -191,6 +191,104 @@ suite('LineFocusMoveMode', () => {
     test('onMouseMoveInToolbar does nothing', () => {
       mode.onMouseMoveInToolbar(101);
       assertFalse(notifiedMove);
+    });
+
+    test('onScrollEnd adds scroll distance', () => {
+      let scrollDistance = 0;
+      let mouseDistance = 0;
+      chrome.readingMode.addLineFocusScrollDistance = y => {
+        scrollDistance = y;
+      };
+      chrome.readingMode.addLineFocusMouseDistance = y => {
+        mouseDistance = y;
+      };
+      const top1 = 43;
+      const top2 = 55;
+      const top3 = 12;
+      // Ensure we test scrolling up and down;
+      assertLT(top1, top2);
+      assertGT(top2, top3);
+
+      mode.onScrollEnd(top1);
+      assertEquals(0, mouseDistance);
+      assertEquals(top1, scrollDistance);
+
+      mode.onScrollEnd(top2);
+      assertEquals(0, mouseDistance);
+      assertEquals(top2 - top1, scrollDistance);
+
+      mode.onScrollEnd(top3);
+      assertEquals(0, mouseDistance);
+      assertEquals(top2 - top3, scrollDistance);
+    });
+
+    test('onScrollEnd notifies of move only for line focus scroll', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setCurrentLineIndex(1);
+      model.setTop(10);
+      model.setWindowHeight(10);
+      const singleWindow =
+          new LineFocusWindowStyleMode(LineFocusStyle.SMALL_WINDOW, model);
+      mode = new LineFocusStaticMoveMode(model, singleWindow, delegate);
+
+      model.setInitiatedScroll(false);
+      mode.onScrollEnd(100);
+      assertFalse(notifiedMove);
+
+      model.setInitiatedScroll(true);
+      mode.onScrollEnd(100);
+      assertTrue(notifiedMove);
+    });
+
+    test('onScrollEnd notifies of move for single-line window only', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setCurrentLineIndex(1);
+      model.setTop(10);
+      model.setWindowHeight(10);
+
+      model.setInitiatedScroll(true);
+      mode = new LineFocusStaticMoveMode(model, windowMode, delegate);
+      mode.onScrollEnd(100);
+      assertFalse(notifiedMove);
+
+      model.setInitiatedScroll(true);
+      const singleWindow =
+          new LineFocusWindowStyleMode(LineFocusStyle.SMALL_WINDOW, model);
+      mode = new LineFocusStaticMoveMode(model, singleWindow, delegate);
+      mode.onScrollEnd(100);
+      assertTrue(notifiedMove);
+    });
+
+    test('onTextLocationsChange updates scroll buffer', () => {
+      const container = createShortContainer();
+      mode.onTextLocationsChange(container, defaultHeight);
+      assertEquals(true, bufferValReceived);
+    });
+
+    test('onTextLocationsChange updates positions', () => {
+      const container = createShortContainer();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertEquals(defaultHeight, model.getMaxY());
+      assertLT(model.getMinY(), defaultHeight);
+      assertEquals(3, model.getTextBounds().length);
+    });
+
+    test('onTextLocationsChange re-centers focal point', () => {
+      const container = createShortContainer();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertTrue(notifiedMove);
+      const center = model.getMaxY() / 2;
+      assertEquals(center, model.getFocalPoint());
     });
   });
 
@@ -463,6 +561,90 @@ suite('LineFocusMoveMode', () => {
       assertEquals(minY, model.getTop());
       assertLT(0, model.getWindowHeight());
     });
+
+    test('onScrollEnd adds scroll distance', () => {
+      let scrollDistance = 0;
+      let mouseDistance = 0;
+      chrome.readingMode.addLineFocusScrollDistance = y => {
+        scrollDistance = y;
+      };
+      chrome.readingMode.addLineFocusMouseDistance = y => {
+        mouseDistance = y;
+      };
+      const top1 = 43;
+      const top2 = 55;
+      const top3 = 12;
+      // Ensure we test scrolling up and down;
+      assertLT(top1, top2);
+      assertGT(top2, top3);
+
+      mode.onScrollEnd(top1);
+      assertEquals(0, mouseDistance);
+      assertEquals(top1, scrollDistance);
+
+      mode.onScrollEnd(top2);
+      assertEquals(0, mouseDistance);
+      assertEquals(top2 - top1, scrollDistance);
+
+      mode.onScrollEnd(top3);
+      assertEquals(0, mouseDistance);
+      assertEquals(top2 - top3, scrollDistance);
+    });
+
+    test('onTextLocationsChange scrolls to re-center line focus', () => {
+      const container = createShortContainer();
+      mode.onTextLocationsChange(container, defaultHeight);
+      assertNotEquals(0, scrollDiffReceived);
+    });
+
+    test('onTextLocationsChange updates scroll buffer', () => {
+      const container = createShortContainer();
+      mode.onTextLocationsChange(container, defaultHeight);
+      assertEquals(false, bufferValReceived);
+    });
+
+    test('onTextLocationsChange updates positions', () => {
+      const container = createShortContainer();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertEquals(defaultHeight, model.getMaxY());
+      assertLT(model.getMinY(), defaultHeight);
+      assertEquals(3, model.getTextBounds().length);
+    });
+
+    test('onTextLocationsChange moves to new focal point', () => {
+      const container = createShortContainer();
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setCurrentLineIndex(0);
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertLT(0, model.getFocalPoint());
+      assertTrue(notifiedMove);
+    });
+
+    test('onTextLocationsChange moves to new focal point with window', () => {
+      const container = createShortContainer();
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setCurrentLineIndex(1);
+      mode = createWindowMode();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      const focalPoint = model.getFocalPoint();
+      assertLT(0, focalPoint);
+      assertGT(focalPoint, model.getTop());
+      assertLT(0, model.getWindowHeight());
+      assertLT(focalPoint, model.getTop() + model.getWindowHeight());
+      assertTrue(notifiedMove);
+    });
   });
 
   suite('none mode', () => {
@@ -540,6 +722,24 @@ suite('LineFocusMoveMode', () => {
     test('onMouseMove does nothing', () => {
       mode.onMouseMove(101);
       assertFalse(notifiedMove);
+    });
+
+    test('onScrollEnd does nothing', () => {
+      mode.onScrollEnd(101);
+      assertFalse(notifiedMove);
+    });
+
+    test('onTextLocationsChange does nothing', () => {
+      const container = createShortContainer();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertFalse(!!bufferValReceived);
+      assertFalse(notifiedMove);
+      assertEquals(0, scrollDiffReceived);
+      assertEquals(0, model.getMaxY());
+      assertEquals(0, model.getMinY());
+      assertEquals(0, model.getTextBounds().length);
     });
   });
 });

@@ -122,6 +122,7 @@ suite('AppContent', () => {
 
   test('new content updates padding for line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    app.connectedCallback();
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
@@ -141,6 +142,7 @@ suite('AppContent', () => {
       'new content does not update padding for line focus with flag disabled',
       async () => {
         chrome.readingMode.isLineFocusEnabled = false;
+        app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.CURSOR}});
@@ -160,6 +162,7 @@ suite('AppContent', () => {
       'new content does not update padding for line focus with line focus off',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
+        app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.STATIC}});
