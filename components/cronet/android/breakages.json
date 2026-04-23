@@ -5,7 +5,7 @@
     "  - the bad gerrit changeId ie the gerrit change that introduced the breakage.",
     "  - the good changeId ie the commit that fixed the breakage, typically a revert or fix forward.",
     "  - NOTE: `good_change_ids` should be a list of IDs. The checker will pass if it",
-    "    detects any one of these IDs in the history. This accommodates multiple fixes",
+    "    detects any of these IDs in the history. This accommodates multiple fixes",
     "    across different branches (e.g., one on main and another on a release branch).",
     "  - the bug associated with the breakage",
     "  - a comment with a short description of the breakage",
