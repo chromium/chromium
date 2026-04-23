@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -525,9 +526,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
       std::string(), &error);
 
   if (!dummy_extension_.get()) {
+    std::string detailed_error = kWebstoreInvalidManifestError;
+    if (!error.empty()) {
+      detailed_error += ": " + base::UTF16ToUTF8(error);
+    }
     OnWebstoreParseFailure(details().id,
                            WebstoreInstallHelper::Delegate::kManifestError,
-                           kWebstoreInvalidManifestError);
+                           detailed_error);
     return;
   }
 

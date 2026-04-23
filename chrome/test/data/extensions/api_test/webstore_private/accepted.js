@@ -27,9 +27,11 @@ const tests = [
     const manifest = JSON.stringify(manifestObj);
     chrome.webstorePrivate.beginInstallWithManifest3(
         {'id': extensionId, 'manifest': manifest},
-        callbackFail('Invalid manifest', function(result) {
-          assertEq('manifest_error', result);
-        }));
+        callbackFail(
+            'Invalid manifest: Required value \'version\' is missing or invalid. It must be between 1-4 dot-separated integers each between 0 and 65536.',
+            function(result) {
+              assertEq('manifest_error', result);
+            }));
   },
 
   function successfulInstall() {
