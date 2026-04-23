@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -3721,6 +3722,21 @@ void RenderWidgetHostViewAndroid::UnregisterOffsetTags(
 void RenderWidgetHostViewAndroid::PassImeRenderWidgetHost(
     mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote) {
   host()->PassImeRenderWidgetHost(std::move(pending_remote));
+}
+
+void RenderWidgetHostViewAndroid::SetInputTransferHandlerForTesting(  // IN-TEST
+    InputTransferHandlerAndroid* handler) {
+  // Remove the old handler's observer from the host before it is destroyed,
+  // to avoid leaving a dangling pointer in the host's observer list.
+  if (input_transfer_handler_) {
+    host()->RemoveInputEventObserver(
+        &input_transfer_handler_->GetInputObserver());
+  }
+  input_transfer_handler_ = base::WrapUnique(handler);
+  // Register the new handler's observer if it is valid.
+  if (input_transfer_handler_) {
+    host()->AddInputEventObserver(&input_transfer_handler_->GetInputObserver());
+  }
 }
 
 void RenderWidgetHostViewAndroid::BeginRotationBatching() {

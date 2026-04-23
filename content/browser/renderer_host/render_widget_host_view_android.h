@@ -498,10 +498,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     return input_transfer_handler_.get();
   }
 
-  void SetInputTransferHandlerForTesting(InputTransferHandlerAndroid* handler) {
-    input_transfer_handler_ =
-        std::unique_ptr<InputTransferHandlerAndroid>(handler);
-  }
+  void SetInputTransferHandlerForTesting(InputTransferHandlerAndroid* handler);
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

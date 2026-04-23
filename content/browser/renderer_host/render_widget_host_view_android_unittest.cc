@@ -472,6 +472,12 @@ TEST_F(RenderWidgetHostViewAndroidTest,
        EventsPassedToInputTransferHandlerBeforedGestureProvider) {
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
 
+  MockMojoRenderInputRouterDelegate rir_delegate;
+  rwhva->host()
+      ->mojo_rir_delegate()
+      ->SetRenderInputRouterDelegateRemoteForTesting(
+          rir_delegate.GetPendingRemote());
+
   MockInputTransferHandler* handler = new MockInputTransferHandler();
   rwhva->SetInputTransferHandlerForTesting(handler);
 
@@ -520,6 +526,12 @@ TEST_F(RenderWidgetHostViewAndroidTest,
 TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
 
+  MockMojoRenderInputRouterDelegate rir_delegate;
+  rwhva->host()
+      ->mojo_rir_delegate()
+      ->SetRenderInputRouterDelegateRemoteForTesting(
+          rir_delegate.GetPendingRemote());
+
   gfx::Point point(/*x=*/100, /*y=*/100);
   ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -528,7 +540,8 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
 
   base::android::ScopedJavaLocalRef<jobject> obj =
       JNI_MotionEvent::Java_MotionEvent_obtain(
-          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          env, /*downTime=*/time_ns / 1000000, /*eventTime=*/0, /*action=*/0,
+          /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   auto touch_down = ui::MotionEventAndroidFactory::CreateFromJava(
       env, obj,
@@ -537,6 +550,8 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
       /*ticks_y=*/0,
       /*tick_multiplier=*/0,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*latest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*down_time_ms=*/base::TimeTicks::FromJavaNanoTime(time_ns),
       /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
       /*pointer_count=*/1,
       /*history_size=*/0,
@@ -548,7 +563,8 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
       /*raw_offset_y_pixels=*/0,
       /*for_touch_handle=*/false,
       /*pointer0=*/&p,
-      /*pointer1=*/nullptr);
+      /*pointer1=*/nullptr,
+      /*is_latest_event_time_resampled=*/false);
   rwhva->OnTouchEvent(*touch_down);
 
   auto& gesture_provider = rwhva->GetGestureProvider();

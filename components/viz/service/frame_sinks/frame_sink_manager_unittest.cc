@@ -70,13 +70,7 @@ struct RootCompositorFrameSinkData {
 
 class FrameSinkManagerTest : public testing::Test {
  public:
-  FrameSinkManagerTest() {
-    FrameSinkManagerImpl::InitParams init_params(&output_surface_provider_);
-    init_params.gpu_service = &gpu_service_;
-    manager_ = std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
-    surface_observer_ =
-        std::make_unique<FakeSurfaceObserver>(manager_->surface_manager());
-  }
+  FrameSinkManagerTest() = default;
   ~FrameSinkManagerTest() override = default;
 
   RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
@@ -190,6 +184,12 @@ class FrameSinkManagerTest : public testing::Test {
 
   // testing::Test implementation.
   void SetUp() override {
+    FrameSinkManagerImpl::InitParams init_params(&output_surface_provider_);
+    init_params.gpu_service = &gpu_service_;
+    manager_ = std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
+    surface_observer_ =
+        std::make_unique<FakeSurfaceObserver>(manager_->surface_manager());
+
     manager_->SetInputManagerForTesting(
         std::make_unique<MockInputManager>(manager_.get()));
   }
@@ -300,7 +300,8 @@ TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
 }
 
 TEST_F(FrameSinkManagerTest, InputManagerCreation) {
-  ASSERT_FALSE(input::InputUtils::IsTransferInputToVizSupported());
+  const bool expected_creation =
+      input::InputUtils::IsTransferInputToVizSupported();
 
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
@@ -308,9 +309,8 @@ TEST_F(FrameSinkManagerTest, InputManagerCreation) {
   CreateCompositorFrameSink(kFrameSinkIdA,
                             /* render_input_router_config= */ nullptr);
 
-  // InputManager is not created since IsTransferInputToVizSupported() returns
-  // false.
-  EXPECT_FALSE(InputManagerExists());
+  // InputManager's existence should match support.
+  EXPECT_EQ(InputManagerExists(), expected_creation);
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
   manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
