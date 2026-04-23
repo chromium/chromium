@@ -1572,6 +1572,7 @@ struct PanelState {
 [Stable, Extensible]
 enum FreOverride {
   [Default] kUnspecified = 0,
+  // Deprecated: No longer used.
   // Variation that requires text input from the user to unlock full client.
   kTrustFirstText = 1,
   // Variation that requires mouse click from the user to unlock full client.

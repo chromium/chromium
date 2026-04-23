@@ -2885,6 +2885,7 @@ export enum PanelStateKind {
 // Represents an override of the First Run Experience (FRE).
 export enum FreOverride {
   UNSPECIFIED = 0,
+  // Deprecated: No longer used.
   // Variation that requires text input from the user to unlock full client.
   TRUST_FIRST_TEXT = 1,
   // Variation that requires mouse click from the user to unlock full client.
