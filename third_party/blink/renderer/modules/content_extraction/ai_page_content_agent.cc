@@ -1728,7 +1728,16 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
 
 AIPageContentAgent::ContentBuilder::ContentBuilder(
     const mojom::blink::AIPageContentOptions& options)
-    : options_(options) {}
+    : options_(options) {
+  // Build a typed O(1) membership set once so node-id policy checks do not
+  // rescan the allowlisted attribute types for every content node in the tree.
+  if (!options.node_id_allowlist) {
+    return;
+  }
+  for (const auto attribute_type : *options.node_id_allowlist) {
+    allowlisted_attribute_types_.Put(attribute_type);
+  }
+}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
 
@@ -2318,10 +2327,7 @@ bool AIPageContentAgent::ContentBuilder::IsNodeIdAttributeTypeAllowlisted(
   if (!options_->node_id_allowlist) {
     return false;
   }
-  // The policy allowlist is expected to be small. Prioritize direct readability
-  // over auxiliary data structures here.
-  return std::ranges::find(*options_->node_id_allowlist, attribute_type) !=
-         options_->node_id_allowlist->end();
+  return allowlisted_attribute_types_.Has(attribute_type);
 }
 
 void AIPageContentAgent::ContentBuilder::AddLabel(

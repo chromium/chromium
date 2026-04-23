@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
@@ -97,6 +98,11 @@ class MODULES_EXPORT AIPageContentAgent final
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
 
    private:
+    using NodeIdAttributeTypeAllowlist =
+        base::EnumSet<mojom::blink::AIPageContentAttributeType,
+                      mojom::blink::AIPageContentAttributeType::kRoot,
+                      mojom::blink::AIPageContentAttributeType::kMaxValue>;
+
     class RecursionData {
       STACK_ALLOCATED();
 
@@ -223,6 +229,10 @@ class MODULES_EXPORT AIPageContentAgent final
 
     // List of nodes marked as isAccessibleForFree=false.
     PaidContent paid_content_;
+
+    // Built once per extraction so node-id policy checks do not rescan the
+    // allowlisted attribute types for every content node in the tree.
+    NodeIdAttributeTypeAllowlist allowlisted_attribute_types_;
   };
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
