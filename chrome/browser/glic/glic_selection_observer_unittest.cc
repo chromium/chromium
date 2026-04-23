@@ -100,7 +100,9 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   }
 
-  size_t GetRwhByFrameCount() const { return observer_->rwh_by_frame_.size(); }
+  size_t GetObservedFramesCount() const {
+    return observer_->observed_frames_.size();
+  }
 };
 
 TEST_F(GlicSelectionObserverTest, ObserverDeduplicatesRenderWidgetHosts) {
@@ -121,19 +123,19 @@ TEST_F(GlicSelectionObserverTest, ObserverDeduplicatesRenderWidgetHosts) {
   observer->RenderFrameCreated(main_rfh);
   observer->RenderFrameCreated(child_rfh);
 
-  EXPECT_EQ(2u, GetRwhByFrameCount());
+  EXPECT_EQ(2u, GetObservedFramesCount());
 
   // Removing the child frame should remove it from the map, but not the main
   // frame.
   observer->RenderFrameDeleted(child_rfh);
-  EXPECT_EQ(1u, GetRwhByFrameCount());
+  EXPECT_EQ(1u, GetObservedFramesCount());
 
   // We can't directly check the internal observer list of RenderWidgetHost
   // without exposing it in test headers, but we can verify our observer's map
   // handles the duplicate RenderWidgetHost correctly.
 
   observer->RenderFrameDeleted(main_rfh);
-  EXPECT_EQ(0u, GetRwhByFrameCount());
+  EXPECT_EQ(0u, GetObservedFramesCount());
 }
 
 TEST_F(GlicSelectionObserverTest, SelectionUpdatesDebounced) {
