@@ -996,7 +996,7 @@ void ForwardFrameRateDataAndReset(
 
   // Moves the callback out and erases the mapping first to allow new tracking
   // for |display_id| to start before |callback| run returns.
-  // See https://crbug.com/1098886.
+  // See https://crbug.com/40702167.
   auto callback = it->second->TakeCallback();
   DCHECK(callback);
   trackers->erase(it);

@@ -120,7 +120,7 @@ bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
 void MarketingOptInScreen::ShowImpl() {
   DCHECK(initialized_);
 
-  // Show a verbose legal footer for Canada. (https://crbug.com/1124956)
+  // Show a verbose legal footer for Canada. (https://crbug.com/40147627)
   const bool legal_footer_visible =
       email_opt_in_visible_ && countries_with_legal_footer.count(country_);
 

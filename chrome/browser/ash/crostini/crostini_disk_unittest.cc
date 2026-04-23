@@ -215,7 +215,7 @@ TEST_F(CrostiniDiskTest, DefaultIsCurrentValue) {
   EXPECT_GT(disk_info->ticks.at(disk_info->default_index + 1)->value, 3 * kGiB);
 }
 
-// Numbers taken from crbug/1126705.
+// Numbers taken from crbug.com/40718646.
 TEST_F(CrostiniDiskTest, AllocatedAboveMax) {
   vm_tools::concierge::ListVmDisksResponse response;
   auto* image = response.add_images();

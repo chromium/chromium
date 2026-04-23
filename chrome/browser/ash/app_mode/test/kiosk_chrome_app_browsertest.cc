@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(KioskChromeAppTest, InstallsAppFromPolicy) {
                                TheKioskChromeApp().id().app_id.value()));
 }
 
-// Covers crbug.com/1235334.
+// Covers crbug.com/40782012.
 IN_PROC_BROWSER_TEST_F(KioskChromeAppTest, AppWindowIsFullScreen) {
   auto& registry =
       CHECK_DEREF(extensions::AppWindowRegistry::Get(&CurrentProfile()));

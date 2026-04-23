@@ -25,7 +25,8 @@ class UserPolicyTestHelper;
 
 // This class can be used to implement tests which need policy to be set prior
 // to login.
-// TODO (crbug/1014663): Deprecate this class in favor of LoggedInUserMixin.
+// TODO (crbug.com/40103387): Deprecate this class in favor of
+// LoggedInUserMixin.
 class LoginPolicyTestBase : public ash::OobeBaseTest {
  public:
   LoginPolicyTestBase(const LoginPolicyTestBase&) = delete;

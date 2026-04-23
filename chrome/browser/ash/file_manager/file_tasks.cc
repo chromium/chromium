@@ -217,10 +217,10 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
     return;
   }
 
-  // TOOD(crbug/1071289): For a while is_file_extension_match would always be
-  // false for System Web App manifests, even when specifying extension matches.
-  // So this line can be removed once the media app manifest is updated with a
-  // full complement of image file extensions.
+  // TOOD(crbug.com/40685029): For a while is_file_extension_match would always
+  // be false for System Web App manifests, even when specifying extension
+  // matches. So this line can be removed once the media app manifest is updated
+  // with a full complement of image file extensions.
   media_app_task->is_file_extension_match = true;
 
   // The logic in ChooseAndSetDefaultTask() also requires the following to hold.
@@ -1078,8 +1078,8 @@ void ChooseAndSetDefaultTask(Profile* profile,
     }
   }
 
-  // Prefer a fallback app over viewing in the browser (crbug.com/1111399).
-  // Unless it's HTML which should open in the browser (crbug.com/1121396).
+  // Prefer a fallback app over viewing in the browser (crbug.com/40142559).
+  // Unless it's HTML which should open in the browser (crbug.com/40715467).
   for (FullTaskDescriptor& task : tasks) {
     if (IsFallbackFileHandler(task) &&
         ParseFilesAppActionId(task.task_descriptor.action_id) !=

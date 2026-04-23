@@ -3186,7 +3186,7 @@ void CrostiniManager::OnSetUpLxdContainerUser(
       // possible cause is we weren't able to read the /etc/passwd file.
       // We're in one of the following cases:
       // - Users are already set up but hit a transient error reading the file
-      //   e.g. crbug/1216305. This would be a no-op so safe to continue.
+      //   e.g. crbug.com/40770402. This would be a no-op so safe to continue.
       // - The container is in a bad state e.g. file is missing entirely.
       //   Once we start the container (next step) the system will try to repair
       //   this. It won't recover enough for restart to succeed, but it will

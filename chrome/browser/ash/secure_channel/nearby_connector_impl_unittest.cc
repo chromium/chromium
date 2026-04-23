@@ -305,7 +305,7 @@ TEST_F(NearbyConnectorImplTest, TwoConnections) {
   EXPECT_EQ(0u, fake_nearby_process_manager_.GetNumActiveReferences());
 }
 
-// Regression test for https://crbug.com/1156162.
+// Regression test for https://crbug.com/40735809.
 TEST_F(NearbyConnectorImplTest, TwoConnections_FirstFails) {
   // Attempt connection 1.
   FakeMessageReceiver receiver1;

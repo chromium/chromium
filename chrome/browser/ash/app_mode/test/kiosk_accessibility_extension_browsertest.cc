@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(KioskAccessibilityExtensionTest,
 
 // This test verifies that accessibility extensions do not preserve any local
 // data in-between session, as opposed to what they usually do in user sessions.
-// See crbug.com/1049566
+// See crbug.com/40117724
 IN_PROC_BROWSER_TEST_P(KioskAccessibilityExtensionTest,
                        PRE_ClearsStateOnSessionRestart) {
   auto& profile = CurrentProfile();

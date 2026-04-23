@@ -167,7 +167,7 @@ TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
   ASSERT_EQ(0, test_wallpaper_controller_.get_third_party_wallpaper_count());
 }
 
-// For crbug.com/1325863
+// For crbug.com/40840090
 TEST_F(ArcWallpaperServiceTest, GetEmptyWallpaper) {
   test_wallpaper_controller_.ShowWallpaperImage(gfx::ImageSkia{});
 

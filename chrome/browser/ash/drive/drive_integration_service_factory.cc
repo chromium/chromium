@@ -43,7 +43,7 @@ DriveIntegrationService* DriveIntegrationServiceFactory::GetForProfile(
 // static
 DriveIntegrationService* DriveIntegrationServiceFactory::FindForProfile(
     Profile* profile) {
-  if (!profile) {  // crbug.com/1254581
+  if (!profile) {  // crbug.com/40794425
     return nullptr;
   }
   return static_cast<DriveIntegrationService*>(

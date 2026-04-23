@@ -394,7 +394,7 @@ void Service::RestoreFileSystems(const ProviderId& provider_id) {
   for (const auto& restored_file_system : *restored_file_systems) {
     // Remove unsupported smbprovider shares and drop a log so we can verify
     // whether this correlates with fixing the bug in the field.
-    // See https://crbug.com/1254611
+    // See https://crbug.com/40794444
     if (is_smb_provider) {
       LOG(WARNING) << "Removing unsupported smbprovider share";
       registry_->ForgetFileSystem(restored_file_system.provider_id,

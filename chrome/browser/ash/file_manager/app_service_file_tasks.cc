@@ -217,7 +217,7 @@ void FindAppServiceTasks(Profile* profile,
 
   // App Service doesn't exist in Incognito mode but we still want to find
   // handlers to open a download from its notification from Incognito mode. Use
-  // the base profile in these cases (see crbug.com/1111695).
+  // the base profile in these cases (see crbug.com/40709322).
   Profile* profile_with_app_service = GetProfileWithAppService(profile);
   if (!profile_with_app_service) {
     LOG(WARNING) << "Unexpected profile type";
@@ -302,7 +302,7 @@ void ExecuteAppServiceTask(
   // App Service doesn't exist in Incognito mode but apps can be
   // launched (ie. default handler to open a download from its
   // notification) from Incognito mode. Use the base profile in these
-  // cases (see crbug.com/1111695).
+  // cases (see crbug.com/40709322).
   Profile* profile_with_app_service = GetProfileWithAppService(profile);
   if (!profile_with_app_service) {
     std::move(done).Run(
@@ -318,7 +318,7 @@ void ExecuteAppServiceTask(
   // In general, WebApps only have full support for files backed by inodes, so
   // substitute Fusebox files for any "non-real" file paths. However, the Media
   // app and other SWAs can handle "non-real" files, as can special tasks which
-  // only access the file via URL. See https://crbug.com/1079065
+  // only access the file via URL. See https://crbug.com/40129780
   bool use_fusebox_for_non_real_file_paths = false;
   if (app_type == apps::AppType::kWeb ||
       app_type == apps::AppType::kSystemWeb) {

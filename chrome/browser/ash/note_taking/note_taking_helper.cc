@@ -86,7 +86,7 @@ const char* const kDefaultAllowedAppIds[] = {
 };
 
 // Types of App Service apps that support note taking.
-// TODO (crbug.com/1336120): Add Android here.
+// TODO (crbug.com/40228788): Add Android here.
 const apps::AppType kNoteTakingAppTypes[] = {apps::AppType::kWeb,
                                              apps::AppType::kChromeApp};
 

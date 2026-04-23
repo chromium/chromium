@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
 // reordering uses alerts, this works for spoken feedback but does not work as
 // well for braille users. The preferred way to handle this is to actually
 // change focus as the user navigates, and to have each object's
-// accessible name describe its position. (See crbug.com/1098495)
+// accessible name describe its position. (See crbug.com/40701964)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   PopulateApps(22);
   chromevox_test_utils()->EnableChromeVox();

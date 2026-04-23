@@ -209,7 +209,7 @@ class AppContextMenuTest : public AppListTestBase {
 
   void TearDown() override {
     // Let any in-flight tasks finish, e.g. clear the background thread icon
-    // decode, otherwise the test might flake (crbug.com/1115763).
+    // decode, otherwise the test might flake (crbug.com/40711525).
     base::RunLoop().RunUntilIdle();
     menu_delegate_.reset();
     controller_.reset();

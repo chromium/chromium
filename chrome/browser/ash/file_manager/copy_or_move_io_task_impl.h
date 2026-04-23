@@ -94,7 +94,7 @@ class CopyOrMoveIOTaskImpl {
   // filesystems if either:
   // - the entries are not on the same volume OR
   // - one entry is in MyFiles, and the other one in Downloads.
-  // crbug.com/1200251
+  // crbug.com/40178193
   static bool IsCrossFileSystemForTesting(
       Profile* profile,
       const storage::FileSystemURL& source_url,

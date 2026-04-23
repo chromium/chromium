@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
-// crbug.com/1517839
+// crbug.com/41490816
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_SubmitFeedbackThenExit DISABLED_SubmitFeedbackThenExit
 #else

@@ -728,8 +728,8 @@ void SystemWebAppManager::OnAppsSynchronized(
     on_apps_synchronized_->Signal();
     DCHECK(provider_->is_registry_ready());
     provider_->policy_manager().OnDisableListPolicyChanged();
-    // TODO(http://crbug/1173187): Don't create SWA background tasks that are
-    // associated with a disabled SWA.
+    // TODO(http://crbug.com/40167016): Don't create SWA background tasks that
+    // are associated with a disabled SWA.
   }
 
   if (!shutting_down_) {

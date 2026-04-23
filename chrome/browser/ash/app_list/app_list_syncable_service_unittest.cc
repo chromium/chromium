@@ -1079,7 +1079,7 @@ TEST_F(AppListSyncableServiceTest,
 }
 
 // Simulates and verifies the fix of the single item folder issue of
-// crbug.com/1082530. Here is the repro of the bug.
+// crbug.com/40691980. Here is the repro of the bug.
 // When user signs in on a new device for the first time, a folder contains two
 // app items, one is installed before another. After the first app is installed,
 // user sees a single item folder with the first app. User moves the app out of

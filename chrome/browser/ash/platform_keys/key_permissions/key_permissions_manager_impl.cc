@@ -205,7 +205,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     // Some public keys are not removed from chaps although their corresponding
     // private keys are removed. We continue the migration process if we
     // received kKeyNotFound as a workaround until the keys-clean-up problem is
-    // solved (crbug.com/1096051).
+    // solved (crbug.com/40700534).
     LOG(WARNING) << "Corresponding private key not found. Continuing the "
                     "migration process...";
   } else if (permissions_update_status != Status::kSuccess) {

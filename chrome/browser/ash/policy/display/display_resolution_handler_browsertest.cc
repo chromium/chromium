@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, ConnectSecondDisplay) {
       << "Primary display scale after connecting external";
 }
 
-// crbug.com/1000694.
+// crbug.com/40645781.
 IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, SetAndUnsetPolicy) {
   const PolicyValue policy_value = GetParam();
   AddExternalDisplay(display_helper()->GetDisplayManager());

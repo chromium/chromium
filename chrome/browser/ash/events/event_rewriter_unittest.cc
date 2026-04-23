@@ -3567,8 +3567,8 @@ void EventRewriterTestBase::DontRewriteIfNotRewritten(int right_click_flags) {
   // Still rewrite to right button, even if the modifier key is already
   // released when the mouse release event happens
   // This is for regressions such as:
-  // https://crbug.com/1399284
-  // https://crbug.com/1417079
+  // https://crbug.com/40249767
+  // https://crbug.com/40893842
   {
     ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
                          gfx::Point(), ui::EventTimeForNow(), right_click_flags,

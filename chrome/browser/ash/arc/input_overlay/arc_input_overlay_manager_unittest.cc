@@ -237,7 +237,7 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
-  // This test is to check UAF issue reported in crbug.com/1363030.
+  // This test is to check UAF issue reported in crbug.com/40060949.
   task_environment()->RunUntilIdle();
   auto arc_window = CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                                     window_bounds, kEnabledPackageName);

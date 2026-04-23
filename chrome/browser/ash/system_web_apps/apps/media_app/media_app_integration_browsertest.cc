@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   const auto kTestFile = folder.files()[0];
   // Stamp the file with a time far in the past, so it can be "updated".
-  // Note: Add a bit to the epoch to workaround https://crbug.com/1080434.
+  // Note: Add a bit to the epoch to workaround https://crbug.com/40690801.
   TouchFileSync(kTestFile, base::Time::UnixEpoch() + base::Days(1));
 
   folder.Open(kTestFile);
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   const base::FilePath copied_jpeg_640x480 = folder.files()[0];
 
   // Stamp the file with a time far in the past, so it can be "updated".
-  // Note: Add a bit to the epoch to workaround https://crbug.com/1080434.
+  // Note: Add a bit to the epoch to workaround https://crbug.com/40690801.
   TouchFileSync(copied_jpeg_640x480, base::Time::UnixEpoch() + base::Days(1));
 
   // Sent an open request using only the 640x480 JPEG file.

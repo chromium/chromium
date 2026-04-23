@@ -930,7 +930,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                                  policy.metrics_enabled().metrics_enabled());
   } else {
     // If the policy is missing, default to reporting enabled on enterprise-
-    // enrolled devices, c.f. crbug/456186.
+    // enrolled devices, c.f. crbug.com/41156165.
     new_values_cache->SetBoolean(
         kStatsReportingPref, InstallAttributes::Get()->IsEnterpriseManaged());
   }

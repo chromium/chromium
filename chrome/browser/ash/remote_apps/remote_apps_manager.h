@@ -51,7 +51,7 @@ class RemoteAppsImpl;
 // This service is created for Managed Guest Sessions and Regular User Sessions.
 // The IDs of the added apps and folders are GUIDs generated using
 // |base::Uuid::GenerateRandomV4().AsLowercaseString()|.
-// See crbug.com/1101208 for more details on Remote Apps.
+// See crbug.com/40138243 for more details on Remote Apps.
 class RemoteAppsManager
     : public KeyedService,
       public apps::RemoteApps::Delegate,

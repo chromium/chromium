@@ -902,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PRE_DataIsRemoved) {
 }
 
 // Disabled on ASan and LSAn builds due to a consistent failure. See
-// crbug.com/1004228
+// crbug.com/40647624
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_DataIsRemoved DISABLED_DataIsRemoved
 #else

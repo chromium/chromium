@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
 // Test that the number of times the suggestion chip should show decreases when
 // the chip is shown in tablet mode.
-// https://crbug.com/1489431: test is flaky on bots.
+// https://crbug.com/40935045: test is flaky on bots.
 IN_PROC_BROWSER_TEST_F(
     HelpAppSearchBrowserTest,
     DISABLED_ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {

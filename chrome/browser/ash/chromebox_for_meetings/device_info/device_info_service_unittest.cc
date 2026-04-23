@@ -161,7 +161,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
 // This test ensures that the DiagnosticsInfoService is discoverable by its
 // mojom name by sending a signal received by CfmHotlineClient.
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_InfoServiceAvailable) {
   ASSERT_TRUE(GetClient()->FakeEmitSignal(mojom::MeetDevicesInfo::Name_));
 }
@@ -170,20 +170,20 @@ TEST_F(CfmDeviceInfoServiceTest, DISABLED_InfoServiceAvailable) {
 // for discovery by the cfm mojom binder daemon and correctly returns a
 // working mojom remote.
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_GetDeviceInfoRemote) {
   ASSERT_TRUE(GetDeviceInfoRemote().is_connected());
 }
 
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_GetDeviceInfoService) {
   const auto& details_remote = GetDeviceInfoRemote();
   ASSERT_TRUE(details_remote.is_connected());
 }
 
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestPolicyInfo) {
   base::RunLoop run_loop;
   const auto& details_remote = GetDeviceInfoRemote();
@@ -212,7 +212,7 @@ TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestPolicyInfo) {
 }
 
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestSysInfo) {
   base::RunLoop run_loop;
 
@@ -234,7 +234,7 @@ TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestSysInfo) {
 }
 
 // TODO(b/40766737): Fix tests broken due to use of Machine Statistics
-// Crashes on linux-cfm-rel. crbug.com/1209841
+// Crashes on linux-cfm-rel. crbug.com/40766737
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestMachineStatisticsInfo) {
   const std::string kExpectedHwid = "kExpectedHwid";
 

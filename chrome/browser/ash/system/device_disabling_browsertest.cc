@@ -253,7 +253,7 @@ class DeviceDisablingBeforeLoginHostCreated
 };
 
 // Sometimes LoginHost creation postponed (e.g. due to language switch
-// https://crbug.com/1065569). This tests checks this flow.
+// https://crbug.com/40681894). This tests checks this flow.
 IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
                        ShowsDisabledScreen) {
   EXPECT_TRUE(

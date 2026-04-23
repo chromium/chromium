@@ -167,7 +167,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   // switching to the clamshell mode. The tablet mode changes synchronously on
   // animation start to avoid the race condition between the fade out animation
   // completion and the task to change the tablet mode state.
-  // See https://crbug.com/1302924
+  // See https://crbug.com/40217187
   void RegisterModeSwitchClosureOnFadeOutStarted(bool tablet_mode_enabled) {
     auto switch_mode_closure = base::BindOnce(
         [](bool tablet_mode_enabled) {
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ClearPrefOrderByItemMove) {
 // or sorted by the apps' icon colors using the context menu in apps grid view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
-// Flaky. See https://crbug.com/1423200
+// Flaky. See https://crbug.com/40897358
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
                        DISABLED_ContextMenuSortItemsInFolder) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);

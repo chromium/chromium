@@ -1503,7 +1503,7 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
   app_dict.Set(kResizeLockState, static_cast<int32_t>(state));
 
   // If the app is not "ready", we shouldn't fire the AppStatesChanged
-  // callbacks. Otherwise, it would cause a crash (See crbug.com/1276603). When
+  // callbacks. Otherwise, it would cause a crash (See crbug.com/40808991). When
   // the app is changed to "ready", ArcAppListPrefs sends the notifications
   // afterwards so it's fine not to fire it here.
   if (app_info->ready)

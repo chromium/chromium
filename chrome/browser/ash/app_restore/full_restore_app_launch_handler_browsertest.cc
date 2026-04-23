@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
 
 // Tests that fullscreened windows will not be restored as fullscreen, which is
 // not supported for full restore. Regression test for
-// https://crbug.com/1203010.
+// https://crbug.com/40179333.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                        ImmersiveFullscreenApp) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Verify that |window_state| has viable restore bounds for when the user
   // wants to return to normal window show state. Regression test for
-  // https://crbug.com/1188986.
+  // https://crbug.com/40173537.
   EXPECT_TRUE(window_state->HasRestoreBounds());
 }
 

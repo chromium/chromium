@@ -236,7 +236,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<DlpFilesControllerAsh> files_controller_;
 };
 
-// Flaky on MSan bots: http://crbug.com/1178328
+// Flaky on MSan bots: http://crbug.com/40749035
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_BlockComponent DISABLED_BlockComponent
 #else
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
           DlpRulesManager::Level::kBlock)));
 }
 
-// Flaky on MSan bots: http://crbug.com/1178328
+// Flaky on MSan bots: http://crbug.com/40749035
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_WarnComponent DISABLED_WarnComponent
 #else

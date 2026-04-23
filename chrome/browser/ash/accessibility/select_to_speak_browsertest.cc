@@ -331,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithTouchSelection) {
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        WorksWithTouchSelectionOnNonPrimaryMonitor) {
   // Don't observe error messages.
-  // An error message is observed consistently on MSAN, see crbug.com/1201212,
-  // and flakily on other builds, see crbug.com/1213451.
+  // An error message is observed consistently on MSAN, see crbug.com/40762240,
+  // and flakily on other builds, see crbug.com/40768771.
   // Run the rest of this test on but don't try to catch console errors.
   // TODO: Figure out why the "unable to load tab" error is occurring
   // and bring back the console observer.

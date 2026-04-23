@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, MAYBE_EnrollmentForced) {
 
 // Zero touch with attestation authentication fail. Attestation fails because we
 // send empty cert request. Should switch to interactive authentication.
-// This test is flaky on ChromeOS. https://crbug.com/1231472
+// This test is flaky on ChromeOS. https://crbug.com/40779686
 IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
                        DISABLED_ZeroTouchForcedAttestationFail) {
   auto initial_enrollment =

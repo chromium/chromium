@@ -57,7 +57,7 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  // Crash keys for https://crbug.com/1296304.
+  // Crash keys for https://crbug.com/40821591.
   SCOPED_CRASH_KEY_NUMBER("Accessibility", "Speech recognition state",
                           new_state);
   SpeechRecognizerStatus next_state = new_state;

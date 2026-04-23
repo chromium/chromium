@@ -418,7 +418,7 @@ TEST_F(InputMethodManagerImplTest, TestCandidateWindowObserver) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestObserver) {
-  // For http://crbug.com/19655#c11 - (3).
+  // For http://crbug.com/40979322#c11 - (3).
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.emplace_back("xkb:us::eng");
 
@@ -498,7 +498,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayouts) {
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
-  // For http://crbug.com/19655#c11 - (5)
+  // For http://crbug.com/40979322#c11 - (5)
   // The hardware keyboard layout "xkb:us::eng" is always active, hence 2U.
   manager_->GetActiveIMEState()->EnableLoginLayouts(
       "ja", keyboard_layouts);  // Japanese
@@ -585,7 +585,7 @@ TEST_F(InputMethodManagerImplTest, TestEnabledInputMethods) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
-  // For http://crbug.com/19655#c11 - (8), step 6.
+  // For http://crbug.com/40979322#c11 - (8), step 6.
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
@@ -611,7 +611,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
-  // For http://crbug.com/19655#c11 - (9).
+  // For http://crbug.com/40979322#c11 - (9).
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::string us_id = ImeIdFromEngineId("xkb:us::eng");
@@ -641,7 +641,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
-  // For http://crbug.com/19655#c11 - (10).
+  // For http://crbug.com/40979322#c11 - (10).
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::string dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
@@ -669,7 +669,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme2) {
-  // For http://crbug.com/19655#c11 - (11).
+  // For http://crbug.com/40979322#c11 - (11).
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
@@ -721,7 +721,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableUnknownIds) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
-  // For http://crbug.com/19655#c11 - (14).
+  // For http://crbug.com/40979322#c11 - (14).
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::string us_id = ImeIdFromEngineId("xkb:us::eng");
@@ -769,7 +769,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
 }
 
 TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
-  // For http://crbug.com/19655#c11 - (15).
+  // For http://crbug.com/40979322#c11 - (15).
   TestObserver observer;
   manager_->AddObserver(&observer);
   std::string id1 = ImeIdFromEngineId("xkb:us:dvorak:eng");
@@ -818,7 +818,7 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
-  // For http://crbug.com/19655#c11 - (8), step 7-11.
+  // For http://crbug.com/40979322#c11 - (8), step 7-11.
   EXPECT_EQ(1, keyboard_->set_current_keyboard_layout_by_name_count_);
   std::string dvorak_id = ImeIdFromEngineId("xkb:us:dvorak:eng");
   std::string colemak_id = ImeIdFromEngineId("xkb:us:colemak:eng");
@@ -964,7 +964,7 @@ TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:us::eng"));
 
-  // For http://crbug.com/19655#c11 - (1)
+  // For http://crbug.com/40979322#c11 - (1)
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   InputMethodDescriptors sorted_enabled_input_methods =

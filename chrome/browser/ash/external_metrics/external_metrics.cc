@@ -171,12 +171,12 @@ void ExternalMetrics::RecordSparseHistogram(
     const metrics::MetricSample& sample) {
   CHECK_EQ(metrics::MetricSample::SPARSE_HISTOGRAM, sample.type());
   // We suspect a chromeos process reports a metric as regular and then later as
-  // a sparse enum histogram. See https://crbug.com/1173221
+  // a sparse enum histogram. See https://crbug.com/40746047
   {
     base::HistogramBase* histogram =
         base::StatisticsRecorder::FindHistogram(sample.name());
     if (histogram && histogram->GetHistogramType() != base::SPARSE_HISTOGRAM) {
-      LOG(FATAL) << "crbug.com/1173221 name " << sample.name() << " "
+      LOG(FATAL) << "crbug.com/40746047 name " << sample.name() << " "
                  << sample.ToString();
     }
   }

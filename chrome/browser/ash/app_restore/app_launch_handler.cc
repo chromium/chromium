@@ -214,7 +214,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
       continue;
     }
 
-    // Desk templates may have partial data. See http://crbug/1232520
+    // Desk templates may have partial data. See http://crbug.com/40191158
     if (!it.second->container.has_value() ||
         !it.second->disposition.has_value() ||
         !it.second->display_id.has_value()) {

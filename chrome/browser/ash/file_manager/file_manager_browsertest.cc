@@ -601,7 +601,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(false),
         TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(true),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-        // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
+        // TODO(http://crbug.com/40818544): Flaky on ASan non-DEBUG.
         TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(false),
         TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(true),
 #endif  // !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
@@ -718,7 +718,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirRenameToEmptyString").InGuestMode(),
         TestCase("dirRenameToExisting"),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-        // TODO(http://crbug.com/1230054): Flaky on ASan non-DEBUG.
+        // TODO(http://crbug.com/40778782): Flaky on ASan non-DEBUG.
         TestCase("dirRenameToExisting").InGuestMode(),
 #endif
         TestCase("dirRenameRemovableWithKeyboard"),
@@ -1559,7 +1559,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("fakesListed"),
                       TestCase("listUpdatedWhenGuestsChanged")
-// TODO(http://crbug.com/1486453): Flaky on ASan.
+// TODO(http://crbug.com/40933722): Flaky on ASan.
 #if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER) && \
     !defined(MEMORY_SANITIZER)
                           ,

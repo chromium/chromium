@@ -614,7 +614,7 @@ bool IsArcOobeOptInConfigurationBased() {
 bool IsArcTermsOfServiceNegotiationNeeded(const Profile* profile) {
   DCHECK(profile);
   // Don't show in session ARC OptIn dialog for managed user.
-  // For more info see crbug/950013.
+  // For more info see crbug.com/40621882.
   // Skip to show UI asking users to set up ARC OptIn preferences, if all of
   // them are managed by the admin policy. Note that the ToS agreement is anyway
   // not shown in the case of the managed ARC.

@@ -378,7 +378,7 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
     // was already accepted). To ensure we don't accidentally disconnect from a
     // valid connection, only transition to
     // kWaitingForConnectionToBeAcceptedByRemoteDevice if we are still accepting
-    // the connection. See https://crbug.com/1175489 for details.
+    // the connection. See https://crbug.com/40747380 for details.
     if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
       NotifyConnectionStateChanged(
           mojom::NearbyConnectionStep::kAcceptingConnectionFinished,

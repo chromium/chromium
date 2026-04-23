@@ -72,7 +72,7 @@ void ShellSurfaceForceCloseDelegate::ForceClose() {
   // Post a task because the dialog needs to finish running its accept button
   // handling code. If we CloseNow() here it will destroy the dialog's parent
   // widget, destroying the dialog and causing a use-after-free.
-  // https://crbug.com/1215247
+  // https://crbug.com/40769813
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ShellSurfaceForceCloseDelegate::ForceCloseNow,
                                 weak_ptr_factory_.GetWeakPtr()));

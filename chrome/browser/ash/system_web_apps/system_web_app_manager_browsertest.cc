@@ -1068,7 +1068,7 @@ using SystemWebAppManagerInstallAllAppsBrowserTest =
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        BasicConsistencyCheck) {
   // Wait for apps to install before performing assertions, otherwise the test
-  // might flake. See https://crbug.com/1286600#c6.
+  // might flake. See https://crbug.com/40210918#c6.
   GetManager().InstallSystemAppsForTesting();
 
   const auto& app_map = GetManager().system_app_delegates();
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
     // OS Settings uses a different install_url origin (by mistake) which are
     // persisted to disk. We can't fix it until the above crbug is fixed.
     // Without fixing the above bug, non-fresh profiles will run into
-    // https://crbug.com/1220354.
+    // https://crbug.com/40186435.
     if (type_and_info.first != SystemWebAppType::SETTINGS) {
       EXPECT_TRUE(url::IsSameOriginWith(
           type_and_info.second->GetInstallUrl(),

@@ -145,7 +145,7 @@ class ChromeSessionManagerExistingUsersTest : public ChromeSessionManagerTest {
                                    &cryptohome_mixin_};
 };
 
-// http://crbug.com/1338401
+// http://crbug.com/40849037
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
                        DISABLED_LoginExistingUsers) {
   // Verify that session state is LOGIN_PRIMARY with existing user data dir.

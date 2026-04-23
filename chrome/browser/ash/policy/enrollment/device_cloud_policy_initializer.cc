@@ -123,7 +123,7 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
   }
 
   if (!policy_manager_->HasSchemaRegistry()) {
-    // crbug.com/1295871: `policy_manager_` might not have schema registry on
+    // crbug.com/40821368: `policy_manager_` might not have schema registry on
     // start connection attempt. This may happen on chrome restart when
     // `chrome::kInitialProfile` is created after login profile: policy will be
     // loaded but `BuildSchemaRegistryServiceForProfile` will not be called for

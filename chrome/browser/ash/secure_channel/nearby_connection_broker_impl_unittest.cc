@@ -823,7 +823,7 @@ TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
   InvokeDisconnectedCallback();
 }
 
-// Regression test for https://crbug.com/1175489.
+// Regression test for https://crbug.com/40747380.
 TEST_F(NearbyConnectionBrokerImplTest, OnAcceptedBeforeAcceptCallback) {
   DiscoverEndpoint();
   InvokeRequestConnectionCallback(Status::kSuccess);

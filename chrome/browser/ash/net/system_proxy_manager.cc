@@ -411,7 +411,7 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
     request.set_active_principal_name(
         primary_profile_->GetPrefs()
             ->GetValue(ash::prefs::kKerberosActivePrincipalName)
-            // TODO (https://crbug.com/1344857) Maybe call GetString directly.
+            // TODO (https://crbug.com/40231941) Maybe call GetString directly.
             .GetString());
   }
   SystemProxyClient::Get()->SetAuthenticationDetails(

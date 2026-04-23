@@ -269,7 +269,7 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
   ash::AppIconColorCache::GetInstance(profile_).RemoveColorDataForApp(id);
 
   // Copy the ID to the stack since it may to be destroyed in
-  // RemoveChromeItem(). See crbug.com/1190347.
+  // RemoveChromeItem(). See crbug.com/40174120.
   std::string id_copy = id;
 
   item_manager_->RemoveChromeItem(id_copy);

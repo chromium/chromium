@@ -94,8 +94,8 @@ void LoginScreenAccessibilityPolicyBrowsertest::SetUpOnMainThread() {
   magnification_manager->SetProfileForTest(
       ash::ProfileHelper::GetSigninProfile());
 
-  // Disable PolicyRecommendationRestorer. See https://crbug.com/1015763#c13 for
-  // details.
+  // Disable PolicyRecommendationRestorer. See https://crbug.com/40653903#c13
+  // for details.
   ash::AccessibilityController::Get()
       ->DisablePolicyRecommendationRestorerForTesting();
 }

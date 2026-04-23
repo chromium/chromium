@@ -164,7 +164,7 @@ class ArcInputOverlayManager : public KeyedService,
       input_overlay_enabled_windows_;
   display::ScopedDisplayObserver display_observer_{this};
 
-  // To avoid UAF issue reported in crbug.com/1363030. Save the windows which
+  // To avoid UAF issue reported in crbug.com/40060949. Save the windows which
   // prepare or start loading the GIO default key mapping data. Once window is
   // destroying or the GIO data reading is finished, window is removed from this
   // set.

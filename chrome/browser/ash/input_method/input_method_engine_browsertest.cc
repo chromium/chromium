@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
-// Test is flaky. https://crbug.com/1462135.
+// Test is flaky. https://crbug.com/40921761.
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
   // Makes real end to end test without mocking the input context handler.
   // Ideally the test should mock the TextInputClient instance hooked up with

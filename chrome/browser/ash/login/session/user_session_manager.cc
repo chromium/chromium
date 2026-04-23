@@ -1529,7 +1529,7 @@ void UserSessionManager::InitProfilePreferences(
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     GaiaId gaia_id = user_context.GetGaiaID();
-    // TODO(http://crbug.com/1454286): Remove.
+    // TODO(http://crbug.com/40916881): Remove.
     bool used_extended_account_info = false;
     if (gaia_id.empty()) {
       const AccountInfo account_info =
@@ -1546,7 +1546,7 @@ void UserSessionManager::InitProfilePreferences(
                          user_context.GetAccountId().GetUserEmail());
       }
 
-      // Update http://crbug.com/1454286 if the following line CHECKs.
+      // Update http://crbug.com/40916881 if the following line CHECKs.
       CHECK(!gaia_id.empty());
     }
 
@@ -1610,7 +1610,7 @@ void UserSessionManager::InitProfilePreferences(
     VLOG(1) << "SetPrimaryAccount result="
             << static_cast<int>(set_account_result);
 
-    // TODO(http://crbug.com/1454286): Remove.
+    // TODO(http://crbug.com/40916881): Remove.
     const CoreAccountInfo& identity_manager_account_info =
         identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync);
     if (identity_manager_account_info.gaia != gaia_id) {

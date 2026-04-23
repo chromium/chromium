@@ -265,7 +265,7 @@ INSTANTIATE_TEST_SUITE_P(
     LoggedInSpokenFeedbackTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree)));
 
-// Flaky test, crbug.com/1081563
+// Flaky test, crbug.com/40691401
 IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   chromevox_test_utils()->EnableChromeVox();
 
@@ -1337,7 +1337,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 #endif  // !defined(ADDRESS_SANITIZER)
 
 // TODO: these brightness announcements are actually not made.
-// https://crbug.com/1064788
+// https://crbug.com/40681476
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ScreenBrightness) {
   chromevox_test_utils()->EnableChromeVox();
 

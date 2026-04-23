@@ -24,7 +24,7 @@ class SystemWebAppIconChecker {
   enum class IconState {
     // No SWA installed. We instantiate SystemWebAppManager on non-user profiles
     // without SWAs.
-    // See: https://crbug.com/1353262
+    // See: https://crbug.com/40235126
     kNoAppInstalled,
     // All icons are okay.
     kOk,
