@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/browser_context.h"
@@ -50,11 +49,6 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
   void SetUpOnMainThread() override {
     DevToolsProtocolTestBase::SetUpOnMainThread();
     AttachToBrowserTarget();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsProtocolTestBase::SetUpCommandLine(command_line);
-    command_line->RemoveSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
 
   const base::DictValue* SendLoadUnpackedCommand(

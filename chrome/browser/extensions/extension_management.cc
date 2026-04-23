@@ -479,9 +479,8 @@ bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
   if (extension.location() != mojom::ManifestLocation::kUnpacked) {
     return true;
   }
-  // Allow extensions loaded from DevTools' "Extensions.loadUnpacked" command.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableUnsafeExtensionDebugging)) {
+
+  if (extension.creation_flags() & extensions::Extension::INSTALLED_VIA_CDP) {
     return true;
   }
 

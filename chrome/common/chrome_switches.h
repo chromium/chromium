@@ -105,7 +105,6 @@ extern const char kEnableDevToolsPwaHandler[];
 extern const char kEnableDownloadWarningImprovements[];
 extern const char kEnableExtensionActivityLogging[];
 extern const char kEnableExtensionActivityLogTesting[];
-extern const char kEnableUnsafeExtensionDebugging[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
 extern const char kEnableNetBenchmarking[];
 extern const char kEnablePotentiallyAnnoyingSecurityFeatures[];
