@@ -219,7 +219,7 @@ TEST_F(TestReadingListPageHandlerTest, GetReadLaterEntries) {
 
 TEST_F(TestReadingListPageHandlerTest, OpenURLOnNTP) {
   // Open and navigate to NTP.
-  AddTabWithTitle(browser(), GURL(chrome::kChromeUINewTabURL), "NTP");
+  AddTabWithTitle(browser(), chrome::ChromeUINewTabURLAsGURL(), "NTP");
 
   // Check that OpenURL from the NTP does not open a new tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);

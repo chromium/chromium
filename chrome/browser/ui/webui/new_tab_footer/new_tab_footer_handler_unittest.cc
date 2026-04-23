@@ -226,7 +226,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, AttachedTabStateUpdated) {
   document_.FlushForTesting();
   EXPECT_EQ(ntp_type, new_tab_footer::mojom::NewTabPageType::kExtension);
 
-  handler().AttachedTabStateUpdated(GURL(chrome::kChromeUINewTabPageURL));
+  handler().AttachedTabStateUpdated(chrome::ChromeUINewTabPageURLAsGURL());
   document_.FlushForTesting();
   EXPECT_EQ(ntp_type, new_tab_footer::mojom::NewTabPageType::kFirstPartyWebUI);
 

@@ -182,7 +182,7 @@ class OmniboxWebUiInteractiveTest : public OmniboxWebUiInteractiveTestBase {
 IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, PopupResurfaces) {
   RunTestSequence(
       // Enter Gemini mode in Omnibox.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       EnterGeminiMode(),
       // With a query entered, no matches should show.
       EnterText(kOmniboxElementId, u"q"),
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, PopupResurfaces) {
 IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesVerbatimMatch) {
   RunTestSequence(
       // Enter Gemini mode in Omnibox.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       EnterGeminiMode(),
       // With a query entered, no suggestion match should be shown.
       EnterText(kOmniboxElementId, u"query"),
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
                        MAYBE_GeminiHidesNullMatch) {
   RunTestSequence(
       // Enter Gemini mode in Omnibox.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       EnterGeminiMode(),
       // Ensure the initial match is the default search suggestion.
       WaitForVerbatimMatch(kClassicPopupWebView, kClassicMatchText, "@gemini"),
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
 IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, AimEntryPointHidden) {
   RunTestSequence(
       // Open the Omnibox.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
       WaitForClassicPopupReady(),
       // Ensure that there's no context menu button in the popup.
@@ -362,7 +362,7 @@ class OmniboxAimWebUiInteractiveTestBase
 
   // Opens the AIM popup in a new tab to ensure a clean state.
   auto OpenAimPopupInNewTab() {
-    return Steps(AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+    return Steps(AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
                  OpenAimPopup());
   }
 
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       // Open the classic popup.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
       WaitForClassicPopupReady(),
       // Wait for the context menu button to render in the popup.
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, QueryWithTabContext) {
       // 1. Open a webpage and NTP in separate tabs.
       AddInstrumentedTab(kFirstTab, GURL("https://www.example.com/")),
 
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
 
       // 2. Focus the Omnibox and type to trigger popup.
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
   const std::string query = "query";
   RunTestSequence(
       // Open a new tab to ensure a clean state.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       // Open the AIM popup.
       OpenAimPopup(),
       // Write something into the input field.
@@ -716,13 +716,13 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       // Open the classic popup.
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
       // Seed a result to ensure the classic popup is visible.
       SeedSearchboxResult("result"),
       // Focus on the Omnibox and enter text to trigger the classic popup and
       // wait for it to be ready.
-      FocusElement(kOmniboxElementId),
-      EnterText(kOmniboxElementId, u"result"), WaitForClassicPopupReady(),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"result"),
+      WaitForClassicPopupReady(),
       // Wait for the context menu button to render.
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kClassicContextMenu)),

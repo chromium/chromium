@@ -349,7 +349,7 @@ void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {
     params.tutorial_id = tutorial_id;
     params.callback = base::BindOnce(&BrowserCommandHandler::OnTutorialStarted,
                                      base::Unretained(this), tutorial_id);
-    params.target_url = GURL(chrome::kChromeUINewTabPageURL);
+    params.target_url = chrome::ChromeUINewTabPageURLAsGURL();
     StartTutorial(std::move(params));
   }
 }

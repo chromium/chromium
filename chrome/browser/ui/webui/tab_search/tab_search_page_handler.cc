@@ -589,7 +589,7 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
   // Ignore NTP entries, duplicate entries and tabs with invalid URLs such as
   // empty URLs.
   if (tab_dedup_keys.contains(dedup_id) ||
-      recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL) ||
+      recently_closed_tab->url == chrome::ChromeUINewTabPageURLAsGURL() ||
       !recently_closed_tab->url.is_valid()) {
     return false;
   }

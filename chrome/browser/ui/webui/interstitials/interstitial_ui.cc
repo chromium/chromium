@@ -418,7 +418,7 @@ CreateSupervisedUserVerificationPageForYouTube(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+          chrome::ChromeUINewTabURLAsGURL(), kRequestUrl),
       is_main_frame);
 }
 
@@ -435,7 +435,7 @@ CreateSupervisedUserVerificationPageForBlockedSites(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+          chrome::ChromeUINewTabURLAsGURL(), kRequestUrl),
       supervised_user::FilteringBehaviorReason::DEFAULT, is_main_frame);
 }
 #endif

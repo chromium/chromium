@@ -67,7 +67,7 @@ history::mojom::ForeignSessionTabPtr SessionTabToMojom(
   const ::sessions::SerializedNavigationEntry& current_navigation =
       tab.navigations.at(selected_index);
   GURL tab_url = current_navigation.virtual_url();
-  if (!tab_url.is_valid() || tab_url.spec() == chrome::kChromeUINewTabURL) {
+  if (!tab_url.is_valid() || tab_url == chrome::ChromeUINewTabURLAsGURL()) {
     return nullptr;
   }
 

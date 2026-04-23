@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, MAYBE_200) {
   NavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_TRUE(observer.got_navigation());
   EXPECT_EQ(200, observer.http_status_code());
 }

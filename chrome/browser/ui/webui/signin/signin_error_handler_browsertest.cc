@@ -61,8 +61,8 @@ class SigninErrorHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                             GURL(chrome::kChromeUINewTabURL)));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), chrome::ChromeUINewTabURLAsGURL()));
     web_ui()->set_web_contents(
         browser()->tab_strip_model()->GetActiveWebContents());
     signin_error_ui_ = std::make_unique<SigninErrorUI>(web_ui());
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   // Before the test, there is only one new tab opened.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Open learn more.
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
   // Before the test, there is only one new tab opened.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Inform the handler that the browser was removed.
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
 
   // Verify that the learn more URL was not opened as the browser was removed.
   EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
