@@ -977,6 +977,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter\.cc',
             r'third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter\.h',
 
+            # Needed to implement Dawn wire interfaces.
+            r'gpu/command_buffer/client/dawn_client_memory_transfer_service\.cc',
+            r'gpu/command_buffer/service/dawn_service_memory_transfer_service\.cc',
+
             # Clang tools do not depend on //base. Some are even emitting
             # std::span rewrite for non chromium projects.
             r'^tools/clang/.*',

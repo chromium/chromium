@@ -41,12 +41,10 @@ class DawnClientMemoryTransferService::ReadHandleImpl
 
   const void* GetData() override { return buffer_.data(); }
 
-  bool DeserializeDataUpdate(const void* deserialize_pointer,
-                             size_t deserialize_size,
-                             size_t offset,
-                             size_t size) override {
+  bool DeserializeDataUpdate(std::span<const uint8_t> deserialize_data,
+                             size_t offset) override {
     // No data is deserialized because we're using shared memory.
-    DCHECK_EQ(deserialize_size, 0u);
+    DCHECK(deserialize_data.empty());
     return true;
   }
 
@@ -86,10 +84,10 @@ class DawnClientMemoryTransferService::WriteHandleImpl
     return 0;
   }
 
-  void SerializeDataUpdate(void* serialize_pointer,
-                           size_t offset,
-                           size_t size) override {
+  void SerializeDataUpdate(std::span<char> serialize_data,
+                           size_t offset) override {
     // No data is serialized because we're using shared memory.
+    DCHECK(serialize_data.empty());
   }
 
  private:

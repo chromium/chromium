@@ -65,21 +65,21 @@ class ReadHandleImpl
     return 0;
   }
 
-  void SerializeDataUpdate(const void* data,
+  void SerializeDataUpdate(std::span<const uint8_t> data,
                            size_t offset,
-                           size_t size,
-                           void* serializePointer) override {
+                           std::span<char> serializeData) override {
     // TODO(crbug.com/40061304): A compromised renderer could have a shared
     // memory size not large enough to fit the GPU buffer contents. Instead of
     // DCHECK, do a CHECK here to crash the release build. The crash is fine
     // since it is not reachable from normal behavior. WebGPU post-V1 will have
     // a refactored API.
     CHECK_LE(offset, buffer_data_view_.size());
-    CHECK_LE(size, buffer_data_view_.size() - offset);
+    CHECK_LE(data.size(), buffer_data_view_.size() - offset);
+    base::span<uint8_t> dest = buffer_data_view_.subspan(offset, data.size());
     // Copy the data into the shared memory allocation.
     // In the case of buffer mapping, this is the mapped GPU memory which we
     // copy into client-visible shared memory.
-    UNSAFE_TODO(memcpy(buffer_data_view_.data() + offset, data, size));
+    std::copy(data.begin(), data.end(), dest.begin());
   }
 
  private:
@@ -97,31 +97,23 @@ class WriteHandleImpl
 
   ~WriteHandleImpl() override = default;
 
-  // The offset is always absolute offset from start of buffer
-  bool DeserializeDataUpdate(const void* deserialize_pointer,
-                             size_t deserialize_size,
-                             size_t offset,
-                             size_t size) override {
+  bool DeserializeDataUpdate(std::span<const uint8_t> deserializeData,
+                             std::span<uint8_t> target,
+                             size_t offset) override {
     // Nothing is serialized because we're using shared memory.
-    DCHECK_EQ(deserialize_size, 0u);
+    DCHECK(deserializeData.empty());
     DCHECK(buffer_data_view_.data());
+    DCHECK(target.data());
 
-    auto targetData = GetTarget();
-    DCHECK(targetData.data());
+    size_t size = target.size();
 
-    if (offset > targetData.size() || size > targetData.size() - offset) {
-      return false;
-    }
     if (offset > buffer_data_view_.size() ||
         size > buffer_data_view_.size() - offset) {
       return false;
     }
 
-    // Copy from shared memory into the target buffer.
-    // `GetTarget()` will always return the starting address
-    // of the backing buffer after the dawn side change.
-    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(targetData.data()) + offset,
-                       buffer_data_view_.data() + offset, size));
+    const base::span<uint8_t> source = buffer_data_view_.subspan(offset, size);
+    std::copy(source.begin(), source.end(), target.begin());
     return true;
   }
 
