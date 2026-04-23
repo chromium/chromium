@@ -13,12 +13,16 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
+
+// This API is not supported on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace extensions {
 
@@ -78,9 +82,7 @@ const uint8_t kReportDescriptorWithIDs[] = {
 constexpr uint16_t kTestVendorId = 0x18D1;
 constexpr uint16_t kTestProductId = 0x58F0;
 
-}  // namespace
-
-class HidApiTest : public ShellApiTest {
+class HidApiTest : public ExtensionApiTest {
  public:
   HidApiTest() {
     // Because Device Service also runs in this process (browser process), we
@@ -96,7 +98,7 @@ class HidApiTest : public ShellApiTest {
   }
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], kTestVendorId,
               kTestProductId, false, "A");
@@ -154,7 +156,7 @@ class HidApiTest : public ShellApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, HidApp) {
-  ASSERT_TRUE(RunAppTest("api_test/hid/api")) << message_;
+  ASSERT_TRUE(RunExtensionTest("hid/api")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
@@ -162,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  ASSERT_TRUE(LoadApp("api_test/hid/add_event"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("hid/add_event")));
+
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Add a blocked device first so that the test will fail if a notification is
@@ -180,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  ASSERT_TRUE(LoadApp("api_test/hid/remove_event"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("hid/remove_event")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Device C was not returned by chrome.hid.getDevices, the app will not get
@@ -191,8 +194,6 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
   EXPECT_EQ("success", result_listener.message());
 }
-
-namespace {
 
 device::mojom::HidDeviceInfoPtr CreateDeviceWithOneCollection(
     const std::string& guid) {
@@ -221,8 +222,6 @@ device::mojom::HidDeviceInfoPtr CreateDeviceWithTwoCollections(
   return device_info;
 }
 
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(HidApiTest, DeviceAddedChangedRemoved) {
   constexpr char kTestGuid[] = "guid";
 
@@ -232,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, DeviceAddedChangedRemoved) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  ASSERT_TRUE(LoadApp("api_test/hid/add_change_remove"));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("hid/add_change_remove")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Add a device with one collection.
@@ -252,4 +252,5 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, DeviceAddedChangedRemoved) {
   EXPECT_EQ("success", result_listener.message());
 }
 
+}  // namespace
 }  // namespace extensions

@@ -4713,6 +4713,7 @@ if (!is_android) {
         "../browser/extensions/api/feedback_private/feedback_browsertest.cc",
         "../browser/extensions/api/feedback_private/feedback_private_apitest.cc",
         "../browser/extensions/api/file_system/file_system_apitest.cc",
+        "../browser/extensions/api/hid/hid_apitest.cc",
         "../browser/extensions/api/identity/gaia_remote_consent_flow_browsertest.cc",
         "../browser/extensions/api/idltest/idltest_apitest.cc",
         "../browser/extensions/api/image_writer_private/extractor_browsertest.cc",
