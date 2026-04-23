@@ -8,8 +8,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -57,6 +62,11 @@ public class SiteSearchViewBinder {
             ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
             button.setDelegate(delegate);
             button.setEnabled(delegate != null);
+        } else if (SiteSearchProperties.POSITION == propertyKey) {
+            int position = model.get(SiteSearchProperties.POSITION);
+            ContainmentItemController controller = new ContainmentItemController(view.getContext());
+            ContainerStyle style = createBackgroundStyle(controller, position);
+            ContainmentViewStyler.applyBackgroundStyle(view, style);
         }
     }
 
@@ -65,5 +75,40 @@ public class SiteSearchViewBinder {
         if (SiteSearchProperties.ADAPTER == propertyKey) {
             pref.setAdapter(model.get(SiteSearchProperties.ADAPTER));
         }
+    }
+
+    // The list item in the settings page is a custom view, so we need to apply custom background
+    // style to each list item rather than a general background style. The overall list design is
+    // like below:
+    //  _________
+    // / Item 1  \  --> top rounded corners
+    // |---------|
+    // | Item 2  |
+    // |---------|
+    // \___..____/  --> bottom rounded corners.
+    @VisibleForTesting
+    static ContainerStyle createBackgroundStyle(
+            ContainmentItemController controller, int position) {
+        boolean isTop =
+                position == SiteSearchProperties.ItemPosition.TOP
+                        || position == SiteSearchProperties.ItemPosition.SINGLE;
+        boolean isBottom =
+                position == SiteSearchProperties.ItemPosition.BOTTOM
+                        || position == SiteSearchProperties.ItemPosition.SINGLE;
+
+        ContainerStyle.Builder builder =
+                controller.createStandardBuilder(isTop, isBottom, /* isSingleLine= */ true);
+
+        if (isTop && isBottom) {
+            // Standalone item, keep default rounded corners.
+        } else if (isTop) {
+            builder.setBottomRadius(0);
+        } else if (isBottom) {
+            builder.setTopRadius(0);
+        } else {
+            builder.setTopRadius(0).setBottomRadius(0);
+        }
+
+        return builder.build();
     }
 }

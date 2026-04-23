@@ -64,7 +64,11 @@ public abstract class BaseSiteSearchMediator
      */
     public void initializeTemplateUrlService() {
         mTemplateUrlService.addObserver(this);
-        mTemplateUrlService.runWhenLoaded(this::refreshList);
+        mTemplateUrlService.runWhenLoaded(
+                () -> {
+                    refreshList();
+                    updatePositions(mModelList);
+                });
     }
 
     /** Cleans up native resources and observers. Must be called when the UI is destroyed. */
@@ -76,6 +80,7 @@ public abstract class BaseSiteSearchMediator
     @Override
     public void onTemplateURLServiceChanged() {
         refreshList();
+        updatePositions(mModelList);
     }
 
     /**
@@ -134,6 +139,41 @@ public abstract class BaseSiteSearchMediator
             Map<GURL, Bitmap> iconCache) {
         SearchEngineIconUtils.updateIcon(
                 context, model, propertyKey, templateUrl, pageUrl, largeIconBridge, iconCache);
+    }
+
+    /**
+     * Updates the POSITION property for all items in the ModelList. Call whenever the list content
+     * changes, e.g. template urls refreshed, list expanded, etc.
+     *
+     * @param modelList The ModelList to update.
+     */
+    @VisibleForTesting
+    void updatePositions(ModelList modelList) {
+        int size = modelList.size();
+        if (size == 0) {
+            return;
+        }
+
+        if (size == 1) {
+            mModelList
+                    .get(0)
+                    .model
+                    .set(SiteSearchProperties.POSITION, SiteSearchProperties.ItemPosition.SINGLE);
+            return;
+        }
+
+        for (int i = 0; i < size; i++) {
+            PropertyModel model = modelList.get(i).model;
+            int position;
+            if (i == 0) {
+                position = SiteSearchProperties.ItemPosition.TOP;
+            } else if (i == size - 1) {
+                position = SiteSearchProperties.ItemPosition.BOTTOM;
+            } else {
+                position = SiteSearchProperties.ItemPosition.MIDDLE;
+            }
+            model.set(SiteSearchProperties.POSITION, position);
+        }
     }
 
     /**

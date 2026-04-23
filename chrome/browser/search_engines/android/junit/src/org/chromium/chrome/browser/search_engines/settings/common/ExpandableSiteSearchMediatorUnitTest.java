@@ -50,11 +50,11 @@ public class ExpandableSiteSearchMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private ListItem mMockListItem;
 
     private Context mContext;
     private ModelList mModelList;
     private ExpandableSiteSearchMediator mMediator;
+    private ListItem mListItem;
 
     @Before
     public void setUp() {
@@ -74,7 +74,11 @@ public class ExpandableSiteSearchMediatorUnitTest {
                                 .useConstructor(mContext, mModelList, mProfile)
                                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
-        Mockito.doReturn(mMockListItem).when(mMediator).createListItem(Mockito.any());
+        mListItem =
+                new ListItem(
+                        SiteSearchProperties.ViewType.SEARCH_ENGINE,
+                        new PropertyModel(SiteSearchProperties.ALL_KEYS));
+        Mockito.doReturn(mListItem).when(mMediator).createListItem(Mockito.any());
     }
 
     @Test
@@ -93,8 +97,8 @@ public class ExpandableSiteSearchMediatorUnitTest {
     public void testHiddenItemsManagement() {
         assertTrue(mMediator.areExpandableItemsEmptyForTesting());
 
-        mMediator.addExpandableItemForTesting(mMockListItem);
-        mMediator.addExpandableItemForTesting(mMockListItem);
+        mMediator.addExpandableItemForTesting(mListItem);
+        mMediator.addExpandableItemForTesting(mListItem);
 
         assertFalse(mMediator.areExpandableItemsEmptyForTesting());
 
@@ -186,11 +190,11 @@ public class ExpandableSiteSearchMediatorUnitTest {
 
     @Test
     public void testOnMoreButtonClicked_ExpandAndCollapse() {
-        ListItem baseItem = new ListItem(0, null);
+        ListItem baseItem = new ListItem(0, new PropertyModel(SiteSearchProperties.ALL_KEYS));
         mModelList.add(baseItem);
 
-        ListItem hiddenItem1 = new ListItem(0, null);
-        ListItem hiddenItem2 = new ListItem(0, null);
+        ListItem hiddenItem1 = new ListItem(0, new PropertyModel(SiteSearchProperties.ALL_KEYS));
+        ListItem hiddenItem2 = new ListItem(0, new PropertyModel(SiteSearchProperties.ALL_KEYS));
         mMediator.addExpandableItemForTesting(hiddenItem1);
         mMediator.addExpandableItemForTesting(hiddenItem2);
 

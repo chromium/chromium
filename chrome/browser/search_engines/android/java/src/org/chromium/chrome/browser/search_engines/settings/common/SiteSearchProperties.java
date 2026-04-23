@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -28,8 +29,18 @@ public class SiteSearchProperties {
         int MORE = 2;
     }
 
+    @IntDef({ItemPosition.TOP, ItemPosition.MIDDLE, ItemPosition.BOTTOM, ItemPosition.SINGLE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ItemPosition {
+        int TOP = 0;
+        int MIDDLE = 1;
+        int BOTTOM = 2;
+        int SINGLE = 3;
+    }
+
     public static final WritableObjectPropertyKey<Adapter> ADAPTER =
             new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> SITE_NAME =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SITE_SHORTCUT =
@@ -44,6 +55,14 @@ public class SiteSearchProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ADAPTER, ICON, IS_EXPANDED, MENU_DELEGATE, ON_CLICK, SITE_NAME, SITE_SHORTCUT, TEXT,
+        ADAPTER,
+        ICON,
+        IS_EXPANDED,
+        MENU_DELEGATE,
+        ON_CLICK,
+        POSITION,
+        SITE_NAME,
+        SITE_SHORTCUT,
+        TEXT,
     };
 }

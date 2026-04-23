@@ -145,4 +145,36 @@ public class BaseSiteSearchMediatorUnitTest {
                         any(LargeIconBridge.class),
                         anyMap());
     }
+
+    @Test
+    public void testUpdatePositions() {
+        PropertyModel model1 = new PropertyModel(SiteSearchProperties.ALL_KEYS);
+        PropertyModel model2 = new PropertyModel(SiteSearchProperties.ALL_KEYS);
+        PropertyModel model3 = new PropertyModel(SiteSearchProperties.ALL_KEYS);
+
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model1));
+        mMediator.updatePositions(mModelList);
+        assertEquals(
+                SiteSearchProperties.ItemPosition.SINGLE,
+                model1.get(SiteSearchProperties.POSITION));
+
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model2));
+        mMediator.updatePositions(mModelList);
+        assertEquals(
+                SiteSearchProperties.ItemPosition.TOP, model1.get(SiteSearchProperties.POSITION));
+        assertEquals(
+                SiteSearchProperties.ItemPosition.BOTTOM,
+                model2.get(SiteSearchProperties.POSITION));
+
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model3));
+        mMediator.updatePositions(mModelList);
+        assertEquals(
+                SiteSearchProperties.ItemPosition.TOP, model1.get(SiteSearchProperties.POSITION));
+        assertEquals(
+                SiteSearchProperties.ItemPosition.MIDDLE,
+                model2.get(SiteSearchProperties.POSITION));
+        assertEquals(
+                SiteSearchProperties.ItemPosition.BOTTOM,
+                model3.get(SiteSearchProperties.POSITION));
+    }
 }

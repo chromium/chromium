@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.search_engines.settings.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +30,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link SiteSearchViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SiteSearchViewBinderUnitTest {
+    private static final float TOLERANCE = 0.001f;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private View mView;
@@ -46,17 +55,24 @@ public class SiteSearchViewBinderUnitTest {
     @Mock private RecyclerView.Adapter mAdapter;
     @Mock private SearchEngineListPreference mPreference;
 
+    private Context mContext;
     private PropertyModel mModel;
     private SiteSearchViewBinder.ViewHolder mViewHolder;
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+
         when(mView.findViewById(R.id.name)).thenReturn(mTitleView);
         when(mView.findViewById(R.id.shortcut)).thenReturn(mShortcutView);
         when(mView.findViewById(R.id.favicon)).thenReturn(mIconView);
         when(mView.findViewById(R.id.text)).thenReturn(mTextView);
         when(mView.findViewById(R.id.action_icon)).thenReturn(mActionIconView);
         when(mView.findViewById(R.id.overflow_menu_button)).thenReturn(mMenuButtonView);
+        when(mView.getContext()).thenReturn(mContext);
 
         mViewHolder = new SiteSearchViewBinder.ViewHolder(mView);
         when(mView.getTag()).thenReturn(mViewHolder);
@@ -147,5 +163,53 @@ public class SiteSearchViewBinderUnitTest {
         SiteSearchViewBinder.bindPreference(mModel, mPreference, SiteSearchProperties.ADAPTER);
 
         verify(mPreference).setAdapter(mAdapter);
+    }
+
+    @Test
+    public void testCreateBackgroundStyle_Top() {
+        ContainmentItemController controller = new ContainmentItemController(mContext);
+        ContainerStyle style =
+                SiteSearchViewBinder.createBackgroundStyle(
+                        controller, SiteSearchProperties.ItemPosition.TOP);
+
+        assertNotNull(style);
+        assertEquals(0f, style.getBottomRadius(), TOLERANCE);
+        assertTrue(style.getTopRadius() > 0f);
+    }
+
+    @Test
+    public void testCreateBackgroundStyle_Bottom() {
+        ContainmentItemController controller = new ContainmentItemController(mContext);
+        ContainerStyle style =
+                SiteSearchViewBinder.createBackgroundStyle(
+                        controller, SiteSearchProperties.ItemPosition.BOTTOM);
+
+        assertNotNull(style);
+        assertEquals(0f, style.getTopRadius(), TOLERANCE);
+        assertTrue(style.getBottomRadius() > 0f);
+    }
+
+    @Test
+    public void testCreateBackgroundStyle_Middle() {
+        ContainmentItemController controller = new ContainmentItemController(mContext);
+        ContainerStyle style =
+                SiteSearchViewBinder.createBackgroundStyle(
+                        controller, SiteSearchProperties.ItemPosition.MIDDLE);
+
+        assertNotNull(style);
+        assertEquals(0f, style.getTopRadius(), TOLERANCE);
+        assertEquals(0f, style.getBottomRadius(), TOLERANCE);
+    }
+
+    @Test
+    public void testCreateBackgroundStyle_Single() {
+        ContainmentItemController controller = new ContainmentItemController(mContext);
+        ContainerStyle style =
+                SiteSearchViewBinder.createBackgroundStyle(
+                        controller, SiteSearchProperties.ItemPosition.SINGLE);
+
+        assertNotNull(style);
+        assertTrue(style.getTopRadius() > 0f);
+        assertTrue(style.getBottomRadius() > 0f);
     }
 }

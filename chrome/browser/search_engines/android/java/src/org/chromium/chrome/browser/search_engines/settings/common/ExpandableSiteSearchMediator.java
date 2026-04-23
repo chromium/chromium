@@ -139,6 +139,7 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
             int startIndex = mModelList.size() - mExpandableItems.size();
             mModelList.removeRange(startIndex, mExpandableItems.size());
         }
+        updatePositions(mModelList);
     }
 
     /**
