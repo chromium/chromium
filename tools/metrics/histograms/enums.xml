@@ -3396,6 +3396,7 @@ Called by update_net_error_codes.py.-->
   <int value="117" label="CanonR40"/>
   <int value="118" label="CanonR50"/>
   <int value="119" label="Pfufs"/>
+  <int value="120" label="Brother5"/>
 </enum>
 
 <enum name="DownloadMimeTypeResult">
