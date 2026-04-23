@@ -336,8 +336,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       base::TimeTicks) = 0;
 
-  virtual void OnFirstContentfulPaint(
-      const base::TimeTicks& first_paint_time) = 0;
+  virtual void OnFirstContentfulPaint() = 0;
 };
 
 }  // namespace blink

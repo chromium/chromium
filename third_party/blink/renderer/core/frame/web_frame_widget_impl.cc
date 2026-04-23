@@ -5443,9 +5443,8 @@ void WebFrameWidgetImpl::SetBrowserControlsTopHeightOverride(
   browser_controls_top_height_override_ = height;
 }
 
-void WebFrameWidgetImpl::OnFirstContentfulPaint(
-    const base::TimeTicks& first_paint_time) {
-  widget_base_->OnFirstContentfulPaint(first_paint_time);
+void WebFrameWidgetImpl::OnFirstContentfulPaint() {
+  widget_base_->OnFirstContentfulPaint();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

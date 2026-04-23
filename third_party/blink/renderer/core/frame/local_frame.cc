@@ -1029,7 +1029,7 @@ void LocalFrame::OnFirstContentfulPaint(
   }
   auto* widget = GetWidgetForLocalRoot();
   if (widget) {
-    widget->OnFirstContentfulPaint(paint_time);
+    widget->OnFirstContentfulPaint();
   }
 }
 

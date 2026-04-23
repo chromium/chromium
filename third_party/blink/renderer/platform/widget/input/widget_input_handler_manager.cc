@@ -70,11 +70,6 @@ namespace {
 // long tasks which block the main thread 50 ms or longer.
 const base::TimeDelta kEventCountsTimerDelay = base::Milliseconds(500);
 
-// The 99th percentile of the delay between navigation start and first paint is
-// around 10sec on most platforms.  We are setting the max acceptable limit to
-// 1.5x to avoid false positives on slow devices.
-const base::TimeDelta kFirstPaintMaxAcceptableDelay = base::Seconds(15);
-
 // If enabled, restrict continuous events from setting input event as pending to
 // the compositor.
 BASE_FEATURE(kRestrictPendingInputEventType, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -310,7 +305,6 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
     : widget_(std::move(widget)),
       frame_widget_input_handler_(std::move(frame_widget_input_handler)),
       widget_scheduler_(std::move(widget_scheduler)),
-      widget_is_embedded_(widget_ && widget_->is_embedded()),
       main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
       compositor_thread_default_task_runner_(
           compositor_thread_scheduler
@@ -338,12 +332,9 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 #endif
 }
 
-void WidgetInputHandlerManager::OnFirstContentfulPaint(
-    const base::TimeTicks& first_paint_time) {
+void WidgetInputHandlerManager::OnFirstContentfulPaint() {
   suppressing_input_events_state_ &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
-
-  RecordEventMetricsForPaintTiming(first_paint_time);
 }
 
 void WidgetInputHandlerManager::SetHost(
@@ -610,65 +601,6 @@ void WidgetInputHandlerManager::PostHandwritingRadiusToInputThread(
   InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
 
-void WidgetInputHandlerManager::RecordEventMetricsForPaintTiming(
-    std::optional<base::TimeTicks> first_paint_time) {
-  CHECK(main_thread_task_runner_->BelongsToCurrentThread());
-
-  if (recorded_event_metric_for_paint_timing_) {
-    return;
-  }
-  recorded_event_metric_for_paint_timing_ = true;
-
-  if (first_paint_max_delay_timer_ &&
-      first_paint_max_delay_timer_->IsRunning()) {
-    first_paint_max_delay_timer_->Stop();
-  }
-
-  bool first_paint_max_delay_reached = !first_paint_time.has_value();
-
-  // Initialize to 0 timestamp and log 0 if there was no suppressed event or
-  // the most recent suppressed event was before the first_paint_time
-  auto diff = base::TimeDelta();
-  int suppressed_interactions_count = 0;
-  int suppressed_events_count = 0;
-  {
-    base::AutoLock lock(uma_data_lock_);
-    if (first_paint_max_delay_reached) {
-      diff = kFirstPaintMaxAcceptableDelay;
-    } else if (uma_data_.most_recent_suppressed_event_time >
-               first_paint_time.value()) {
-      diff = uma_data_.most_recent_suppressed_event_time -
-             first_paint_time.value();
-    }
-
-    suppressed_interactions_count = uma_data_.suppressed_interactions_count;
-    suppressed_events_count = uma_data_.suppressed_events_count;
-  }
-
-  UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint3",
-                      diff);
-  UMA_HISTOGRAM_COUNTS(
-      "PageLoad.Internal.SuppressedInteractionsCountBeforePaint3",
-      suppressed_interactions_count);
-  UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint3",
-                       suppressed_events_count);
-  UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Internal.SuppressedEventsBeforeMissingFirstPaint",
-      first_paint_max_delay_reached);
-}
-
-void WidgetInputHandlerManager::StartFirstPaintMaxDelayTimer() {
-  if (first_paint_max_delay_timer_ || recorded_event_metric_for_paint_timing_) {
-    return;
-  }
-  first_paint_max_delay_timer_ = std::make_unique<base::OneShotTimer>();
-  first_paint_max_delay_timer_->Start(
-      FROM_HERE, kFirstPaintMaxAcceptableDelay,
-      base::BindOnce(
-          &WidgetInputHandlerManager::RecordEventMetricsForPaintTiming, this,
-          std::nullopt));
-}
-
 void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
     std::unique_ptr<WebGestureEvent> event) {
   std::unique_ptr<WebCoalescedInputEvent> web_scoped_gesture_event =
@@ -714,43 +646,6 @@ void WidgetInputHandlerManager::DispatchEvent(
   bool event_is_mouse_or_pointer_move =
       event_type == WebInputEvent::Type::kMouseMove ||
       event_type == WebInputEvent::Type::kPointerMove;
-  if (!event_is_mouse_or_pointer_move &&
-      event_type != WebInputEvent::Type::kTouchMove) {
-    // We only count it if the only reason we are suppressing is because we
-    // haven't painted yet.
-    if (suppressing_input_events_state_ ==
-        static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted)) {
-      base::AutoLock lock(uma_data_lock_);
-      uma_data_.most_recent_suppressed_event_time = base::TimeTicks::Now();
-      uma_data_.suppressed_events_count += 1;
-
-      // Each of the events in the condition below represents a single
-      // interaction by the user even though some of these events can fire
-      // multiple JS events.  For example, further downstream from here Blink
-      // `EventHandler` fires a JS "pointerdown" event (and under certain
-      // conditions even a "mousedown" event) for single a kTouchStart event
-      // here.
-      if (event_type == WebInputEvent::Type::kMouseDown ||
-          event_type == WebInputEvent::Type::kRawKeyDown ||
-          event_type == WebInputEvent::Type::kKeyDown ||
-          event_type == WebInputEvent::Type::kTouchStart ||
-          event_type == WebInputEvent::Type::kPointerDown) {
-        uma_data_.suppressed_interactions_count += 1;
-      }
-    }
-  }
-
-  if (!widget_is_embedded_ &&
-      (suppressing_input_events_state_ &
-       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted))) {
-    // TODO(https://crbug.com/40057499): Remove the old metric and related code,
-    // including the states like `widget_is_embedded_`.
-    main_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WidgetInputHandlerManager::StartFirstPaintMaxDelayTimer,
-                       this));
-  }
-
   // Drop input if we are deferring a rendering pipeline phase, unless it's a
   // move event, or we are waiting for first visually non empty paint.
   // We don't want users interacting with stuff they can't see, so we drop it.
@@ -969,15 +864,6 @@ void WidgetInputHandlerManager::WaitForInputProcessed(
 void WidgetInputHandlerManager::InitializeInputEventSuppressionStates() {
   suppressing_input_events_state_ =
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
-
-  first_paint_max_delay_timer_.reset();
-  recorded_event_metric_for_paint_timing_ = false;
-
-  base::AutoLock lock(uma_data_lock_);
-  uma_data_.have_emitted_uma = false;
-  uma_data_.most_recent_suppressed_event_time = base::TimeTicks();
-  uma_data_.suppressed_interactions_count = 0;
-  uma_data_.suppressed_events_count = 0;
 }
 
 void WidgetInputHandlerManager::OnDeferMainFrameUpdatesChanged(bool status) {
@@ -1354,8 +1240,6 @@ WidgetInputHandlerManager::GetSynchronousCompositorRegistry() {
 #endif
 
 void WidgetInputHandlerManager::ClearClient() {
-  first_paint_max_delay_timer_.reset();
-  recorded_event_metric_for_paint_timing_ = false;
   input_event_queue_->ClearClient();
 }
 
