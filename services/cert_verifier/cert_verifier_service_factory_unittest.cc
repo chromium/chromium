@@ -68,6 +68,8 @@ using net::test::IsOk;
 namespace cert_verifier {
 namespace {
 
+constexpr base::TimeDelta kNetworkTimeUncertainty = base::Seconds(31);
+
 struct DummyCVServiceRequest : public mojom::CertVerifierRequest {
   explicit DummyCVServiceRequest(base::RepeatingClosure on_finish)
       : on_finish_(std::move(on_finish)) {}
@@ -1519,7 +1521,8 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   // Update the time tracker so the current time is within the certificate
   // validity range.
   cv_service_factory_impl.UpdateNetworkTime(now, ticks_now,
-                                            now - base::Days(2));
+                                            now - base::Days(2),
+                                            kNetworkTimeUncertainty);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -1587,7 +1590,8 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   // Update the time tracker so the current time is within the certificate
   // validity range.
   cv_service_factory_impl.UpdateNetworkTime(now, ticks_now,
-                                            now - base::Days(2));
+                                            now - base::Days(2),
+                                            kNetworkTimeUncertainty);
 
   // Update should have been notified.
   EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));

@@ -17,7 +17,8 @@ CertVerifierServiceTimeUpdater::CertVerifierServiceTimeUpdater(
   network_time::TimeTracker::TimeTrackerState state;
   if (tracker->GetTrackerState(&state)) {
     content::GetCertVerifierServiceFactory()->UpdateNetworkTime(
-        state.system_time, state.system_ticks, state.known_time);
+        state.system_time, state.system_ticks, state.known_time,
+        state.uncertainty);
   }
 }
 
@@ -26,5 +27,6 @@ CertVerifierServiceTimeUpdater::~CertVerifierServiceTimeUpdater() = default;
 void CertVerifierServiceTimeUpdater::OnNetworkTimeChanged(
     network_time::TimeTracker::TimeTrackerState state) {
   content::GetCertVerifierServiceFactory()->UpdateNetworkTime(
-      state.system_time, state.system_ticks, state.known_time);
+      state.system_time, state.system_ticks, state.known_time,
+      state.uncertainty);
 }

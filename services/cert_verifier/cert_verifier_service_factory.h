@@ -89,7 +89,8 @@ class CertVerifierServiceFactoryImpl
 #endif
   void UpdateNetworkTime(base::Time system_time,
                          base::TimeTicks system_ticks,
-                         base::Time current_time) override;
+                         base::Time current_time,
+                         base::TimeDelta uncertainty) override;
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);

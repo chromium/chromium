@@ -132,12 +132,17 @@ interface CertVerifierServiceFactory {
   [EnableIf=is_platform_root_store_info_supported]
   GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
 
-  // Updates the time used for certificate verification. After this is called,
-  // the system time will be recorded along with a known time passed in as
-  // `current_time`. Future verification attempts will estimate the real time
-  // based on how much the system clock has advanced since the last update.
-  // This only has an effect when the built-in verifier is being used.
+  // Synchronizes the clock used for certificate verification. After this is
+  // called, the local machine's time (recorded as both wall clock system time
+  // and system ticks) will be correlated with a known current_time and an
+  // estimate of uncertainty. Future certificate verification attempts will
+  // estimate the real time based on how much the system clock has advanced
+  // since the last update. This only has an effect when the built-in verifier
+  // is being used. The CertVerifierService implementation may choose to ignore
+  // or adjust the synchronziation request if the uncertainty is too high (impl
+  // defined)
   UpdateNetworkTime(mojo_base.mojom.Time system_time,
                     mojo_base.mojom.TimeTicks system_ticks,
-                    mojo_base.mojom.Time current_time);
+                    mojo_base.mojom.Time current_time,
+                    mojo_base.mojom.TimeDelta uncertainty);
 };
