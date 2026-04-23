@@ -112,6 +112,21 @@ TEST_F(ToolbarButtonTest, ToolbarButtonBlueDot) {
   EXPECT_EQ(FindSubViewByID(toolbar_button_, kToolbarButtonBlueDotViewID), nil);
 }
 
+// Checks that setting blue dot property correctly updates accessibility value.
+TEST_F(ToolbarButtonTest, ToolbarButtonAccessibility) {
+  NSString* blue_dot_label = @"New";
+  toolbar_button_.blueDotAccessibilityLabel = blue_dot_label;
+  EXPECT_FALSE(toolbar_button_.hasBlueDot);
+  EXPECT_EQ(toolbar_button_.accessibilityValue, nil);
+
+  toolbar_button_.hasBlueDot = YES;
+  EXPECT_TRUE(
+      [toolbar_button_.accessibilityValue isEqualToString:blue_dot_label]);
+
+  toolbar_button_.hasBlueDot = NO;
+  EXPECT_EQ(toolbar_button_.accessibilityValue, nil);
+}
+
 // Checks that setting a new image loader block updates the image, when the
 // image was already loaded.
 TEST_F(ToolbarButtonTest, SetImageLoader_LoadedImage) {

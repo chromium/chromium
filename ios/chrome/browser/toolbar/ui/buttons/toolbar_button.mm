@@ -126,6 +126,7 @@ UIColor* NormalTintColor() {
   if (hasBlueDot && !_blueDotView) {
     _blueDotView = [[UIView alloc] initWithFrame:CGRectZero];
     _blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _blueDotView.isAccessibilityElement = NO;
     _blueDotView.backgroundColor = [UIColor colorNamed:kBlueColor];
     _blueDotView.layer.cornerRadius = kBlueDotRadius;
     // Do not add the blue dot to the background as the background will be
@@ -143,6 +144,11 @@ UIColor* NormalTintColor() {
     ]];
   }
   _blueDotView.hidden = !hasBlueDot;
+  if (hasBlueDot) {
+    self.accessibilityValue = self.blueDotAccessibilityLabel;
+  } else {
+    self.accessibilityValue = nil;
+  }
   [self updateMask];
   [self updateHighlight];
 }

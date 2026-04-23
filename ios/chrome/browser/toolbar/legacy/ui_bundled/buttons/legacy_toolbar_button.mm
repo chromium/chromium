@@ -148,8 +148,10 @@ const CGFloat kButtonImageInset = 3;
 
   if (hasBlueDot) {
     [self addBlueDotViewIfNeeded];
+    self.accessibilityValue = self.blueDotAccessibilityLabel;
   } else {
     [self removeBlueDotViewIfNeeded];
+    self.accessibilityValue = nil;
   }
 }
 
@@ -285,6 +287,7 @@ const CGFloat kButtonImageInset = 3;
   self.blueDotView = [[UIView alloc] init];
   self.blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
   self.blueDotView.accessibilityIdentifier = kToolbarButtonBlueDotViewID;
+  self.blueDotView.isAccessibilityElement = NO;
   self.blueDotView.layer.cornerRadius = kBlueDotSize / 2;
   self.blueDotView.backgroundColor = [UIColor colorNamed:kBlue600Color];
   [self addSubview:self.blueDotView];

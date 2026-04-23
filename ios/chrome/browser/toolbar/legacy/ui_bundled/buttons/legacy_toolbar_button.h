@@ -46,6 +46,9 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 @property(nonatomic, assign) BOOL hasBlueDot;
 // Dispatcher for Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;
+// String used for voiceover for the blue dot on the icon. Assumes if there is a
+// blue dot on the toolbar button then it always has the same meaning.
+@property(nonatomic, copy) NSString* blueDotAccessibilityLabel;
 
 // Returns a LegacyToolbarButton with a type system, using the `imageLoader` to
 // load the image for normal state. Can only be used when

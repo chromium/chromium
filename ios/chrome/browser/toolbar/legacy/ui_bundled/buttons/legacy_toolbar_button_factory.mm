@@ -112,6 +112,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   tabGridButton.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID);
+  tabGridButton.blueDotAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT);
+
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
   [tabGridButton addTarget:self.actionHandler
                     action:@selector(tabGridTouchDown)
@@ -143,7 +146,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kLegacyToolbarToolsMenuButtonIdentifier);
-
+  toolsMenuButton.blueDotAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT);
   [self configureButton:toolsMenuButton width:kAdaptiveToolbarButtonWidth];
   [toolsMenuButton.heightAnchor
       constraintEqualToConstant:kAdaptiveToolbarButtonWidth]
