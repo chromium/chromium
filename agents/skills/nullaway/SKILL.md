@@ -210,7 +210,7 @@ non-nullability.
 - **Asserting over Silent Checks**: If a code path guarantees that an object
   must be non-null, use an explicit assertion instead of a silent null check
   (e.g., changing `if (x != null)` to `assert x != null`).
-- **Testing Getters**: `get_forTesting` methods should just return `@Nullable`
+- **Testing Getters**: `get*ForTesting()` methods should just return `@Nullable`
   (and be annotated as such) rather than asserting non-null, if the underlying
   field is nullable. Let the test handle the nullity.
 
