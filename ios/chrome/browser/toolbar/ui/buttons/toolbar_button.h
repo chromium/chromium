@@ -30,7 +30,7 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // visible.
 @property(nonatomic, copy) NSString* blueDotAccessibilityLabel;
 
-// The `imageLoader` for this button.
+// Initializer for this button in `incognito` with an `imageLoader`.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
                           incognito:(BOOL)incognito;
 

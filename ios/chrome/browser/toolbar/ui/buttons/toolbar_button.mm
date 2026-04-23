@@ -43,8 +43,7 @@ UIColor* NormalTintColor() {
 
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
                           incognito:(BOOL)incognito {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _imageLoader = [imageLoader copy];
 
     [NSLayoutConstraint activateConstraints:@[
@@ -63,7 +62,7 @@ UIColor* NormalTintColor() {
     ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
                                                    self.traitCollection);
 
-    ConfigureShadowForToolbarButton(self);
+    ConfigureShadowForToolbarElement(self);
 
     self.tintColor = NormalTintColor();
 

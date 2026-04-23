@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -13,7 +14,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
 constexpr CGFloat kShadowYOffset = 1;
 }  // namespace
 
-UIColor* ToolbarElementBackgroundColor(bool incognito) {
+UIColor* ToolbarElementBackgroundColor(BOOL incognito) {
   if (incognito) {
     return [UIColor colorNamed:kStaticGrey900Color];
   }
@@ -26,11 +27,13 @@ UIColor* ToolbarElementBackgroundColor(bool incognito) {
       }];
 }
 
-void ConfigureShadowForToolbarButton(UIView* button) {
-  button.layer.shadowColor = UIColor.whiteColor.CGColor;
-  button.layer.shadowOpacity = kShadowOpacity;
-  button.layer.shadowOffset = CGSizeMake(0, kShadowYOffset);
-  button.layer.shadowRadius = 0;
+void ConfigureShadowForToolbarElement(UIView* container, BOOL remove_shadow) {
+  container.layer.shadowColor =
+      remove_shadow ? nil : UIColor.whiteColor.CGColor;
+  container.layer.shadowOpacity = remove_shadow ? 0.0 : kShadowOpacity;
+  container.layer.shadowOffset =
+      remove_shadow ? CGSizeZero : CGSizeMake(0, kShadowYOffset);
+  container.layer.shadowRadius = 0;
 }
 
 void ConfigureCornerRadiusForToolbarButtonContainer(
@@ -39,8 +42,7 @@ void ConfigureCornerRadiusForToolbarButtonContainer(
   // Whether the window has a regular height x compact width size class,
   // corresponding to iPhone portrait mode or a skinny iPad window.
   BOOL isRegularXCompactSizeClass =
-      trait_collection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-      trait_collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+      !IsCompactHeight(trait_collection) && IsCompactWidth(trait_collection);
   container.layer.cornerRadius = isRegularXCompactSizeClass
                                      ? kToolbarButtonSquareCornerRadius
                                      : kToolbarButtonSize / 2;

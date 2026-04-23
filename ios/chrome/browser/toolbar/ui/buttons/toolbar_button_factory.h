@@ -12,6 +12,7 @@
 // Factory for creating toolbar buttons.
 @interface ToolbarButtonFactory : NSObject
 
+// Initializer for this factory in `incognito`.
 - (instancetype)initWithIncognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

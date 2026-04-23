@@ -22,8 +22,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 }
 
 - (instancetype)initWithIncognito:(BOOL)incognito {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
     _incognito = incognito;
   }
   return self;
@@ -57,6 +56,12 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   [buttonsContainer setContentHuggingPriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+  UIView* backgroundView = [[UIView alloc] init];
+  backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  backgroundView.backgroundColor = ToolbarElementBackgroundColor(_incognito);
+  [buttonsContainer addSubview:backgroundView];
+  AddSameConstraints(backgroundView, buttonsContainer);
+
   // Internal stack view to handle dynamic resizing when the forward button
   // visibility changes.
   UIStackView* buttonsStack = [[UIStackView alloc]
@@ -66,33 +71,29 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   buttonsStack.distribution = UIStackViewDistributionFill;
   buttonsStack.alignment = UIStackViewAlignmentFill;
 
-  [buttonsContainer addSubview:buttonsStack];
-  AddSameConstraints(buttonsStack, buttonsContainer);
-
-  backButton.translatesAutoresizingMaskIntoConstraints = NO;
-  forwardButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [backgroundView addSubview:buttonsStack];
+  AddSameConstraints(buttonsStack, backgroundView);
 
   [NSLayoutConstraint activateConstraints:@[
     [buttonsContainer.heightAnchor
         constraintEqualToAnchor:backButton.heightAnchor]
   ]];
 
-  buttonsContainer.backgroundColor = ToolbarElementBackgroundColor(_incognito);
   ConfigureCornerRadiusForToolbarButtonContainer(
-      buttonsContainer, buttonsContainer.traitCollection);
-  buttonsContainer.clipsToBounds = YES;
-  buttonsContainer.layer.masksToBounds = YES;
-  ConfigureShadowForToolbarButton(buttonsContainer);
+      backgroundView, buttonsContainer.traitCollection);
+  backgroundView.clipsToBounds = YES;
+  ConfigureShadowForToolbarElement(buttonsContainer);
 
-  backButton.backgroundColor = [UIColor clearColor];
-  forwardButton.backgroundColor = [UIColor clearColor];
+  // Remove effects from the standalone buttons in the container
+  ConfigureShadowForToolbarElement(backButton, /*remove_shadow*/ YES);
+  ConfigureShadowForToolbarElement(forwardButton, /*remove_shadow*/ YES);
 
   [buttonsContainer
       registerForTraitChanges:
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                   withHandler:^(id<UITraitEnvironment>, UITraitCollection*) {
                     ConfigureCornerRadiusForToolbarButtonContainer(
-                        buttonsContainer, buttonsContainer.traitCollection);
+                        backgroundView, buttonsContainer.traitCollection);
                   }];
   return buttonsContainer;
 }

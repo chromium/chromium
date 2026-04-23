@@ -609,7 +609,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   locationBarBackground.backgroundColor =
       ToolbarElementBackgroundColor(_incognito);
 
-  ConfigureShadowForToolbarButton(locationBarBackground);
+  ConfigureShadowForToolbarElement(locationBarBackground);
 
   return locationBarBackground;
 }
