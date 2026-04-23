@@ -1218,7 +1218,6 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testListViewAppearance() throws IOException {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1246,7 +1245,6 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testListViewV2Shows() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1260,7 +1258,6 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testListViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1289,7 +1286,6 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testListView_select() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
