@@ -50,6 +50,8 @@ component("cpp") {
     ]
   }
 
+  configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
 }
 

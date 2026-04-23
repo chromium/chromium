@@ -13,7 +13,17 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+// The fp16.h header triggers narrowing and sign conversion warnings.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#endif
 #include "third_party/fp16/src/include/fp16.h"
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 namespace webnn {
 

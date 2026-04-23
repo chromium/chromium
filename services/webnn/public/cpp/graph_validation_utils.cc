@@ -1128,12 +1128,13 @@ base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
                    input, context_properties.data_type_limits.expand_input)));
   }
 
+  uint32_t new_rank = base::checked_cast<uint32_t>(new_shape.size());
   if (!context_properties.data_type_limits.expand_input.ranks.Supports(
-          new_shape.size())) {
+          new_rank)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedOpOutputRankError(
-                   static_cast<uint32_t>(new_shape.size()),
-                   context_properties.data_type_limits.expand_input.ranks)));
+        label,
+        NotSupportedOpOutputRankError(
+            new_rank, context_properties.data_type_limits.expand_input.ranks)));
   }
 
   std::optional<std::vector<uint32_t>> output_shape =
@@ -1296,10 +1297,12 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
 
   std::vector<uint32_t> output_shape;
   output_shape.reserve(checked_output_rank.ValueOrDie());
-  std::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+  base::span<const uint32_t> indices_shape = indices.shape();
+  std::ranges::copy(indices_shape.first(indices_shape.size() - 1),
                     std::back_inserter(output_shape));
-  std::ranges::copy(input.shape().begin() + indices_last_dimension_size,
-                    input.shape().end(), std::back_inserter(output_shape));
+  base::span<const uint32_t> input_shape = input.shape();
+  std::ranges::copy(input_shape.subspan(indices_last_dimension_size),
+                    std::back_inserter(output_shape));
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
                                    output_shape, label);
@@ -2700,10 +2703,11 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
 
   std::vector<uint32_t> expected_updates_shape;
   expected_updates_shape.reserve(checked_updates_rank.ValueOrDie());
-  std::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+  base::span<const uint32_t> indices_shape = indices.shape();
+  std::ranges::copy(indices_shape.first(indices_shape.size() - 1),
                     std::back_inserter(expected_updates_shape));
-  std::ranges::copy(input.shape().begin() + indices_last_dim_size,
-                    input.shape().end(),
+  base::span<const uint32_t> input_shape = input.shape();
+  std::ranges::copy(input_shape.subspan(indices_last_dim_size),
                     std::back_inserter(expected_updates_shape));
 
   if (expected_updates_shape != updates.shape()) {
