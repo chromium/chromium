@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FUZZED_DATA_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FUZZED_DATA_PROVIDER_H_
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -64,7 +60,9 @@ class FuzzedDataProvider {
   // |array| must be a fixed-size array.
   template <typename T, size_t size>
   T PickValueInArray(T (&array)[size]) {
-    return array[provider_.ConsumeIntegralInRange<size_t>(0, size - 1)];
+    // SAFETY: size deduced by compiler during template expansion.
+    return UNSAFE_BUFFERS(
+        array[provider_.ConsumeIntegralInRange<size_t>(0, size - 1)]);
   }
 
   // Reports the remaining bytes available for fuzzed input.
