@@ -17,11 +17,10 @@ TEST(PaintOpWriterReaderTest, SizeT) {
   static_assert(PaintOpWriter::SerializedSize<size_t>() == 8u);
   static_assert(PaintOpWriter::SerializedSize(static_cast<size_t>(0u)) == 8u);
 
-  std::array<char, 128> buffer;
+  std::array<uint8_t, 128> buffer;
   TestOptionsProvider options_provider;
   std::ranges::fill(buffer, 0xa5);
-  PaintOpWriter writer(buffer.data(), buffer.size(),
-                       options_provider.serialize_options(),
+  PaintOpWriter writer(buffer, options_provider.serialize_options(),
                        /*enable_security_constraints*/ true);
   int i = 0x5555aaaa;
   size_t s1 = static_cast<size_t>(0x123456789abcdef0L);
@@ -31,7 +30,7 @@ TEST(PaintOpWriterReaderTest, SizeT) {
   writer.WriteSize(s2);
   EXPECT_EQ(20u, writer.size());
 
-  PaintOpReader reader(base::as_byte_span(buffer).first(writer.size()),
+  PaintOpReader reader(base::span(buffer).first(writer.size()),
                        options_provider.deserialize_options(),
                        /*enable_security_constraints*/ true);
   int read_i;
@@ -50,11 +49,10 @@ TEST(PaintOpWriterReaderTest, SizeT) {
 }
 
 TEST(PaintOpWriterReaderTest, Vector) {
-  std::array<char, 128> buffer;
+  std::array<uint8_t, 128> buffer;
   TestOptionsProvider options_provider;
   std::ranges::fill(buffer, 0xa5);
-  PaintOpWriter writer(buffer.data(), buffer.size(),
-                       options_provider.serialize_options(),
+  PaintOpWriter writer(buffer, options_provider.serialize_options(),
                        /*enable_security_constraints*/ true);
 
   writer.Write(std::vector<float>{});
@@ -64,7 +62,7 @@ TEST(PaintOpWriterReaderTest, Vector) {
   writer.Write(std::vector<uint32_t>{1, 2, 3});
   EXPECT_EQ(writer.size(), 44u);
 
-  PaintOpReader reader(base::as_byte_span(buffer).first(writer.size()),
+  PaintOpReader reader(base::span(buffer).first(writer.size()),
                        options_provider.deserialize_options(),
                        /*enable_security_constraints*/ true);
 
@@ -79,11 +77,10 @@ TEST(PaintOpWriterReaderTest, Vector) {
 }
 
 TEST(PaintOpWriterReaderTest, SkString) {
-  std::array<char, 128> buffer;
+  std::array<uint8_t, 128> buffer;
   TestOptionsProvider options_provider;
   std::ranges::fill(buffer, 0xa5);
-  PaintOpWriter writer(buffer.data(), buffer.size(),
-                       options_provider.serialize_options(),
+  PaintOpWriter writer(buffer, options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);
   const SkString original("test string");
 
@@ -92,7 +89,7 @@ TEST(PaintOpWriterReaderTest, SkString) {
   // aligned to 12 bytes.
   EXPECT_EQ(writer.size(), 20u);
 
-  PaintOpReader reader(base::as_byte_span(buffer).first(writer.size()),
+  PaintOpReader reader(base::span(buffer).first(writer.size()),
                        options_provider.deserialize_options(),
                        /*enable_security_constraints=*/true);
   SkString deseralized;
@@ -101,11 +98,10 @@ TEST(PaintOpWriterReaderTest, SkString) {
 }
 
 TEST(PaintOpWriterReaderTest, EmptySkString) {
-  std::array<char, 128> buffer;
+  std::array<uint8_t, 128> buffer;
   TestOptionsProvider options_provider;
   std::ranges::fill(buffer, 0xa5);
-  PaintOpWriter writer(buffer.data(), buffer.size(),
-                       options_provider.serialize_options(),
+  PaintOpWriter writer(buffer, options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);
   const SkString original;
 
@@ -113,7 +109,7 @@ TEST(PaintOpWriterReaderTest, EmptySkString) {
   // 8 bytes for size_t 0.
   EXPECT_EQ(writer.size(), 8u);
 
-  PaintOpReader reader(base::as_byte_span(buffer).first(writer.size()),
+  PaintOpReader reader(base::span(buffer).first(writer.size()),
                        options_provider.deserialize_options(),
                        /*enable_security_constraints=*/true);
   SkString deseralized;
@@ -134,11 +130,10 @@ using PaintOpWriterReaderUniformTest = testing::TestWithParam<UniformTestCase>;
 }  // namespace
 
 TEST_P(PaintOpWriterReaderUniformTest, Uniforms) {
-  std::array<char, 128> buffer;
+  std::array<uint8_t, 128> buffer;
   TestOptionsProvider options_provider;
   std::ranges::fill(buffer, 0xa5);
-  PaintOpWriter writer(buffer.data(), buffer.size(),
-                       options_provider.serialize_options(),
+  PaintOpWriter writer(buffer, options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);
   const auto& scalars = GetParam().scalars;
   const auto& float2s = GetParam().float2s;
@@ -158,7 +153,7 @@ TEST_P(PaintOpWriterReaderUniformTest, Uniforms) {
 
   EXPECT_EQ(writer.size(), GetParam().expected_size);
 
-  PaintOpReader reader(base::as_byte_span(buffer).first(writer.size()),
+  PaintOpReader reader(base::span(buffer).first(writer.size()),
                        options_provider.deserialize_options(),
                        /*enable_security_constraints=*/true);
 

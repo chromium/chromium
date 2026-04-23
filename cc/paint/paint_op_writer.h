@@ -77,18 +77,17 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // kMaxAlignment, and AllocateAlignedBuffer() is the preferred way to
   // allocate `memory`. Otherwise `memory` can be allocated in any way that can
   // ensure kDefaultAlignment. See BufferAlignment() for more details.
-  // If `size` is not enough to contain serialized data, the buffer won't
+  // If `memory` is not enough to contain serialized data, the buffer won't
   // overflow, but Write() will be silent no-ops.
-  PaintOpWriter(void* memory,
-                size_t size,
+  PaintOpWriter(base::span<uint8_t> memory,
                 const PaintOp::SerializeOptions& options,
                 bool enable_security_constraints = false)
-      : memory_(static_cast<uint8_t*>(memory)),
-        size_(base::bits::AlignDown(size, kDefaultAlignment)),
+      : buffer_(memory.first(
+            base::bits::AlignDown(memory.size(), kDefaultAlignment))),
+        remaining_(buffer_),
         options_(options),
         enable_security_constraints_(enable_security_constraints) {
-    memory_end_ = UNSAFE_TODO(memory_ + size_);
-    AssertAlignment(memory_, BufferAlignment());
+    AssertAlignment(remaining_.data(), BufferAlignment());
   }
 
   ~PaintOpWriter();
@@ -218,7 +217,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // PaintOp.
   void ReserveOpHeader() {
     // Pretend we have written the header to leave a space for the header.
-    DCHECK_GE(size_, kHeaderBytes);
+    DCHECK_GE(buffer_.size(), kHeaderBytes);
     DidWrite(kHeaderBytes);
   }
 
@@ -226,7 +225,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // or 0 on any errors.
   size_t FinishOp(uint8_t type);
 
-  static void WriteHeaderForTesting(void* memory,
+  static void WriteHeaderForTesting(base::span<uint8_t> memory,
                                     uint8_t type,
                                     size_t serialized_size);
 
@@ -235,7 +234,9 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   // Returns the size of successfully written data, including paddings for
   // alignment.
-  size_t size() const { return valid_ ? size_ - remaining_bytes() : 0u; }
+  size_t size() const {
+    return valid_ ? buffer_.size() - remaining_bytes() : 0u;
+  }
 
   // Writes a size_t.
   // Note that size_t is always serialized as two uint32_ts to make the
@@ -315,7 +316,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
   void AssertFieldAlignment() {
 #if DCHECK_IS_ON()
-    AssertAlignment(memory_, kDefaultAlignment);
+    AssertAlignment(remaining_.data(), kDefaultAlignment);
 #endif
   }
 
@@ -369,13 +370,13 @@ class CC_PAINT_EXPORT PaintOpWriter {
     // above (the comma followed by ... generates a fold expression).
     // Note that `vals` on the inside of the fold expression refers to
     // one specific value.
-    uint8_t* ptr = memory_;
+    auto write_span = remaining_;
     (
         [&] {
           static_assert(std::is_trivially_copyable_v<decltype(vals)>);
-          reinterpret_cast<decltype(vals)*>(ptr)[0] = vals;
-          UNSAFE_TODO(ptr +=
-                      base::bits::AlignUp(sizeof(vals), kDefaultAlignment));
+          reinterpret_cast<decltype(vals)*>(write_span.data())[0] = vals;
+          write_span.take_first(
+              base::bits::AlignUp(sizeof(vals), kDefaultAlignment));
         }(),
         ...);
 
@@ -404,9 +405,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
       return;
     }
 
-    reinterpret_cast<T*>(memory_)[0] = val;
-
-    UNSAFE_TODO(memory_ += size);
+    reinterpret_cast<T*>(remaining_.data())[0] = val;
+    remaining_.take_first(size);
     AssertFieldAlignment();
   }
 
@@ -417,11 +417,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   // The following sequence is used when the size is unknown before writing
   // some data:
-  //   void* memory = SkipSize();
+  //   auto size_span = SkipSize();
   //   size_t data_size = WriteSomeData();
-  //   WriteSizeAt(memory, data_size);
-  void* SkipSize();
-  void WriteSizeAt(void* memory, size_t size);
+  //   WriteSizeAt(size_span, data_size);
+  base::span<uint8_t> SkipSize();
+  void WriteSizeAt(base::span<uint8_t> memory, size_t size);
 
   // The main entry point is Write(const PaintFilter* filter) which casts the
   // filter and calls one of the following functions.
@@ -464,17 +464,14 @@ class CC_PAINT_EXPORT PaintOpWriter {
     size_t aligned_bytes =
         base::bits::AlignUp(bytes_written, kDefaultAlignment);
     DCHECK_LE(aligned_bytes, remaining_bytes());
-    UNSAFE_TODO(memory_ += aligned_bytes);
+    remaining_.take_first(aligned_bytes);
   }
   void EnsureBytes(size_t required_bytes) {
     if (remaining_bytes() < required_bytes) {
       valid_ = false;
     }
   }
-  size_t remaining_bytes() const {
-    DCHECK_LE(memory_, memory_end_);
-    return memory_end_ - memory_;
-  }
+  size_t remaining_bytes() const { return remaining_.size(); }
   sk_sp<PaintShader> TransformShaderIfNecessary(
       const PaintShader* original,
       PaintFlags::FilterQuality quality,
@@ -484,9 +481,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  uint8_t* memory_ = nullptr;
-  const uint8_t* memory_end_ = nullptr;
-  size_t size_ = 0u;
+  const base::span<uint8_t> buffer_;
+  base::span<uint8_t> remaining_;
   const PaintOp::SerializeOptions& options_;
   bool valid_ = true;
 

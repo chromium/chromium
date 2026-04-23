@@ -533,7 +533,7 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   // We don't need to populate the SerializeOptions here since the writer is
   // only used for serializing primitives.
   PaintOp::SerializeOptions options;
-  PaintOpWriter writer(data.data(), data.size(), options);
+  PaintOpWriter writer(data, options);
 
   DCHECK_EQ(gainmap_image_.has_value(), gainmap_info_.has_value());
   bool has_gainmap = gainmap_image_.has_value();

@@ -501,7 +501,7 @@ std::string PaintFilterToString(const sk_sp<cc::PaintFilter>& filter) {
   // constraints explicitly disable serializing images using the transfer cache
   // and serialization of PaintRecords.
   cc::PaintOp::SerializeOptions options;
-  cc::PaintOpWriter writer(buffer.data(), buffer.size(), options,
+  cc::PaintOpWriter writer(buffer, options,
                            true /* enable_security_constraints */);
   writer.Write(filter.get(), SkM44());
   if (writer.size() == 0)

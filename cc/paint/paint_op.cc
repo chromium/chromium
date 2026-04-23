@@ -2121,7 +2121,8 @@ size_t PaintOp::Serialize(void* memory,
     return 0u;
   }
 
-  PaintOpWriter writer(memory, size, options);
+  PaintOpWriter writer(
+      UNSAFE_TODO(base::span(static_cast<uint8_t*>(memory), size)), options);
   writer.ReserveOpHeader();
   g_serialize_functions[type](*this, writer, flags_to_serialize, current_ctm,
                               original_ctm);

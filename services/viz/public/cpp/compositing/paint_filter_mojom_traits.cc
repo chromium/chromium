@@ -20,7 +20,7 @@ StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
   // constraints explicitly disable serializing images using the transfer cache
   // and serialization of PaintRecords.
   cc::PaintOp::SerializeOptions options;
-  cc::PaintOpWriter writer(memory.data(), memory.size(), options,
+  cc::PaintOpWriter writer(memory, options,
                            true /* enable_security_constraints */);
   writer.Write(filter.get(), SkM44());
 
