@@ -9,7 +9,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 
 id<SystemIdentity> GetPrimarySystemIdentity(
-    signin::ConsentLevel consent_level,
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager) {
   CHECK(identity_manager);
@@ -31,8 +30,8 @@ id<SystemIdentity> GetPrimarySystemIdentity(
 }
 
 id<SystemIdentity> GetPrimarySystemIdentity(
+    signin::ConsentLevel consent_level,
     signin::IdentityManager* identity_manager,
     ChromeAccountManagerService* account_manager) {
-  return GetPrimarySystemIdentity(signin::ConsentLevel::kSignin,
-                                  identity_manager, account_manager);
+  return GetPrimarySystemIdentity(identity_manager, account_manager);
 }
