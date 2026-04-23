@@ -32,11 +32,14 @@ enum class ContextType {
   kMaxValue = kDrive,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextType,
-// //ui/webui/resources/cr_components/composebox/common.ts:ContextType)
+// //ui/webui/resources/cr_components/composebox/common.ts:ContextType,
+// //tools/metrics/actions/actions.xml:ContextType)
 
 std::string GetToolModeString(omnibox::ToolMode mode);
 
 std::string GetModelModeString(omnibox::ModelMode mode);
+
+std::string GetContextTypeString(ContextType type);
 
 }  // namespace omnibox
 

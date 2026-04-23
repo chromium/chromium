@@ -215,11 +215,45 @@ export function recordContextAdditionMethod(
       additionMethod, ComposeboxContextAddedMethod.MAX_VALUE + 1);
 }
 
+// LINT.IfChange(getContextTypeString)
+function getContextTypeString(type: ContextType): string {
+  switch (type) {
+    case ContextType.TAB:
+      return 'Tab';
+    case ContextType.FILE:
+      return 'File';
+    case ContextType.IMAGE:
+      return 'Image';
+    case ContextType.IMAGE_GEN:
+      return 'ImageGen';
+    case ContextType.DEEP_RESEARCH:
+      return 'DeepResearch';
+    case ContextType.DRIVE:
+      return 'Drive';
+    case ContextType.CANVAS:
+      return 'Canvas';
+    case ContextType.AUTO_MODEL:
+      return 'AutoModel';
+    case ContextType.THINKING_MODEL:
+      return 'ThinkingModel';
+    case ContextType.REGULAR_MODEL:
+      return 'RegularModel';
+    case ContextType.PRO_NO_GEN_UI_MODEL:
+      return 'ProNoGenUiModel';
+    case ContextType.UNKNOWN:
+      return 'Unknown';
+    default:
+      return 'Unknown';
+  }
+}
+// LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:GetContextTypeString)
+
 export function recordContextualElementClickedMetric(
     composeboxSource: string, popupType: string, contextType: ContextType) {
   const metricName = `${composeboxSource}.AimEntrypoint.${
       popupType}.ContextualElement.Clicked`;
   recordEnumerationValue(metricName, contextType, ContextType.MAX_VALUE + 1);
+  recordUserAction(`${metricName}.${getContextTypeString(contextType)}`);
 }
 
 export function recordContextualElementShownMetric(

@@ -95,6 +95,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void UpdateSearchboxContext(std::optional<TabInfo> tab_info,
                               std::optional<omnibox::ToolMode> tool_mode);
 
+  static void RecordContextMenuItemSelection(const std::string& prefix,
+                                             omnibox::ContextType context_type);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_InitialState);
@@ -166,6 +169,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   int GetMaxTabSuggestions() const;
 
   omnibox::ContextType CommandIdToEnum(int command_id) const;
+
+  void RecordContextMenuItemSelection(const std::string& prefix,
+                                      int command_id);
 
   /* Helpers for InputType input_state fields. */
   const omnibox::InputTypeConfig* GetInputTypeConfig(

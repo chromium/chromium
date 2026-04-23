@@ -109,6 +109,21 @@ should be able to be added at any place in this file.
   <variant name=".UnpinItem" summary="Remove a custom item."/>
 </variants>
 
+<variants name="ContextType">
+  <variant name="AutoModel" summary="AutoModel"/>
+  <variant name="Canvas" summary="Canvas"/>
+  <variant name="DeepResearch" summary="DeepResearch"/>
+  <variant name="Drive" summary="Drive"/>
+  <variant name="File" summary="File"/>
+  <variant name="Image" summary="Image"/>
+  <variant name="ImageGen" summary="ImageGen"/>
+  <variant name="ProNoGenUiModel" summary="ProNoGenUiModel"/>
+  <variant name="RegularModel" summary="RegularModel"/>
+  <variant name="Tab" summary="Tab"/>
+  <variant name="ThinkingModel" summary="ThinkingModel"/>
+  <variant name="Unknown" summary="Unknown"/>
+</variants>
+
 <variants name="ContextualSearchAiModeButtonSurface">
   <variant name="NtpOmnibox" summary="NTP Omnibox"/>
   <variant name="NtpRealbox" summary="NTP Realbox"/>
@@ -839,6 +854,12 @@ should be able to be added at any place in this file.
   <variant name="" summary="aggregated"/>
   <variant name=".FamiliarSite" summary="Recorded on a familiar site."/>
   <variant name=".UnfamiliarSite" summary="Recorded on an unfamiliar site."/>
+</variants>
+
+<variants name="PopupType">
+  <variant name="AimPopup" summary="Context menu opened from aim popup"/>
+  <variant name="ClassicPopup"
+      summary="Context menu opened from classic popup"/>
 </variants>
 
 <variants name="SidePanelEntry">
@@ -55818,6 +55839,20 @@ should be able to be added at any place in this file.
   <token key="ClosingSidePanelType" variants="SidePanelType"/>
   <token key="SidePanelEntry" variants="SidePanelEntry"/>
   <token key="OpeningSidePanelType" variants="SidePanelType"/>
+</action>
+
+<action
+    name="{ContextualSearchSource}.AimEntrypoint.{PopupType}.ContextualElement.Clicked.{ContextType}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user opens the context menu in a WebUI searchbox (omnibox,
+    realbox, etc.) or composebox and selects a menu item. This action is
+    recorded on {ContextualSearchSource} for {PopupType} and {ContextType}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+  <token key="PopupType" variants="PopupType"/>
+  <token key="ContextType" variants="ContextType"/>
 </action>
 
 <action name="{SidePanelType}.Hide">
