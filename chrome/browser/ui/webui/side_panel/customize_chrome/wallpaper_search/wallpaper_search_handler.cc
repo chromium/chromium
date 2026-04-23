@@ -253,7 +253,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
   resource_request->url =
       GURL(base::StrCat({kGstaticBaseURL, "descriptors_en-US.json"}));
   resource_request->request_initiator =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+      url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   descriptors_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -316,7 +316,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
   resource_request->url =
       GURL(base::StrCat({kGstaticBaseURL, "inspirations_en-US.json"}));
   resource_request->request_initiator =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+      url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
 
   inspirations_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -489,7 +489,7 @@ void WallpaperSearchHandler::SetBackgroundToInspirationImage(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(background_url);
   resource_request->request_initiator =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+      url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
 
   image_download_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
