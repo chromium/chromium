@@ -444,6 +444,7 @@ try_.orchestrator_builder(
         configs = [
             "ci/android-14-arm64-rel",
             "release_try_builder",
+            "minimal_symbols",
             "android_fastbuild",
             "enable_android_secondary_abi",
             "enable_rust_clippy",
