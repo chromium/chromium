@@ -4249,9 +4249,6 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
     }
   }
 })"));
-
-  histograms.ExpectUniqueSample(
-      "ContentSuggestions.Feed.DocumentViewSendCount100", 2, 1);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
@@ -4266,8 +4263,6 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
-  histograms.ExpectTotalCount(
-      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
@@ -4286,8 +4281,6 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
-  histograms.ExpectTotalCount(
-      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, OldViewsAreDeleted) {

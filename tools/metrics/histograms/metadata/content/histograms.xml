@@ -1103,17 +1103,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.DocumentViewSendCount100"
-    units="documents" expires_after="2023-10-15">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Number of docids sent when loading the Feed from the network. Reported when
-    the Feed is loaded from the network, when docview sending is allowed. This
-    histogram has a maximum count of 100.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.DocumentViewSendCount1000"
     units="documents" expires_after="2023-10-15">
   <owner>harringtond@chromium.org</owner>
@@ -1121,9 +1110,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of docids sent when loading the Feed from the network. Reported when
     the Feed is loaded from the network, when docview sending is allowed. This
-    histogram has a maximum count of 1000, see
-    ContentSuggestions.Feed.DocumentViewSendCount100 for a more accurate
-    representation of lower counts.
+    histogram has a maximum count of 1000.
   </summary>
 </histogram>
 

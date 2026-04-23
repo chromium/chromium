@@ -109,10 +109,6 @@ DocViewDigest CreateDigest(std::vector<feedstore::DocView> all_views) {
               GetFeedConfig().max_docviews_to_send);
   }
 
-  base::UmaHistogramCounts100(
-      "ContentSuggestions.Feed.DocumentViewSendCount100",
-      digest.doc_view_counts.size());
-
   base::UmaHistogramCounts1000(
       "ContentSuggestions.Feed.DocumentViewSendCount1000",
       digest.doc_view_counts.size());
