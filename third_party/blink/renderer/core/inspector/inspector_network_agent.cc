@@ -1729,7 +1729,8 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
   if (auto data_span = data.span(); data_span) {
     NetworkResourcesData::ResourceData const* resource_data =
         resources_data_->Data(request_id);
-    if (resource_data && !resource_data->HasContent() &&
+    if (!is_durable_messages_enabled_.Get() && resource_data &&
+        !resource_data->HasContent() &&
         (!resource_data->CachedResource() ||
          resource_data->CachedResource()->GetDataBufferingPolicy() ==
              kDoNotBufferData ||
@@ -1785,7 +1786,8 @@ void InspectorNetworkAgent::DidFinishLoading(
         pending_encoded_data_length);
   }
 
-  if (resource_data && !resource_data->HasContent() &&
+  if (!is_durable_messages_enabled_.Get() && resource_data &&
+      !resource_data->HasContent() &&
       (!resource_data->CachedResource() ||
        resource_data->CachedResource()->GetDataBufferingPolicy() ==
            kDoNotBufferData ||
@@ -2406,6 +2408,7 @@ protocol::Response InspectorNetworkAgent::enable(
 protocol::Response InspectorNetworkAgent::configureDurableMessages(
     std::optional<int> max_total_buffer_size,
     std::optional<int> max_resource_buffer_size) {
+  is_durable_messages_enabled_.Set(max_total_buffer_size.value_or(0) > 0);
   return protocol::Response::Success();
 }
 
@@ -2885,7 +2888,9 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       accepted_encodings_(&agent_state_,
                           /*default_value=*/false),
       report_direct_socket_traffic_(&agent_state_,
-                                    /*default_value=*/false) {
+                                    /*default_value=*/false),
+      is_durable_messages_enabled_(&agent_state_,
+                                   /*default_value=*/false) {
   DCHECK((IsMainThread() &&
           (!worker_or_worklet_global_scope_ ||
            worker_or_worklet_global_scope_->IsWorkletGlobalScope())) ||

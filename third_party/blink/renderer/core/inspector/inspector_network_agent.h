@@ -426,6 +426,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   InspectorAgentState::Integer max_post_data_size_;
   InspectorAgentState::BooleanMap accepted_encodings_;
   InspectorAgentState::Boolean report_direct_socket_traffic_;
+  InspectorAgentState::Boolean is_durable_messages_enabled_;
 };
 
 }  // namespace blink

@@ -303,4 +303,29 @@ TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveDecodesGzipBody) {
   WaitForEventCount(1);
 }
 
+TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveWorksAfterDisable) {
+  // Ensure that already collected messages are still retrievable via the remote
+  // pipe even after new collection has been disabled for the profile.
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
+
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  EnableForProfile(collector_remote, profile_id);
+
+  std::string request_id = "req1";
+  auto msg = collector->CreateDurableMessage(request_id);
+  ASSERT_NE(msg, nullptr);
+  std::string test_message = "Hello, world!";
+  AddBytes(msg, test_message);
+  MarkComplete(msg);
+
+  // Disable for profile.
+  DisableForProfile(collector_remote, profile_id);
+
+  // Verify that the message is still retrievable.
+  RetrieveAndCountEvent(collector_remote, request_id, test_message);
+
+  WaitForEventCount(1);
+}
+
 }  // namespace network

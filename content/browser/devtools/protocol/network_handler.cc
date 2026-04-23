@@ -4899,13 +4899,13 @@ void NetworkHandler::ConfigureDurableMessages(
     std::unique_ptr<ConfigureDurableMessagesCallback> callback) {
   if (!max_total_size.has_value() || max_total_size.value() == 0) {
     DisableDurableMessages(base::BindOnce(
-        &ConfigureDurableMessagesCallback::sendSuccess, std::move(callback)));
+        &ConfigureDurableMessagesCallback::fallThrough, std::move(callback)));
     return;
   }
   durable_message_max_total_size_ = max_total_size.value();
   enable_durable_messages_ = true;
   MaybeEnableDurableMessages(base::BindOnce(
-      &ConfigureDurableMessagesCallback::sendSuccess, std::move(callback)));
+      &ConfigureDurableMessagesCallback::fallThrough, std::move(callback)));
 }
 
 }  // namespace protocol
