@@ -403,8 +403,7 @@
 
   void (^clipboardAction)(std::optional<gfx::Image>) =
       ^(std::optional<gfx::Image> optionalImage) {
-        __typeof(weakSelf) strongSelf = weakSelf;
-        if (!optionalImage || !strongSelf) {
+        if (!optionalImage || !weakSelf) {
           return;
         }
 
@@ -412,7 +411,7 @@
 
         ImageSearchParamGenerator::PrepareImageDataAsync(
             image, base::BindOnce(^(NSData* imageData) {
-              [strongSelf loadWithImageData:imageData];
+              [weakSelf loadWithImageData:imageData];
             }));
       };
 
