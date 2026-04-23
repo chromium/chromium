@@ -71,6 +71,7 @@ builtin_module("ptrauth") {
 
 libcxx_module("std") {
   public_deps = [
+    ":_Builtin_float",
     ":_Builtin_limits",
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
@@ -79,7 +80,6 @@ libcxx_module("std") {
     ":std_ctype_h",
     ":std_errno_h",
     ":std_fenv_h",
-    ":std_float_h",
     ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",
@@ -115,13 +115,6 @@ libcxx_module("std_errno_h") {
 
 libcxx_module("std_fenv_h") {
   public_deps = [ ":sys_stage1" ]
-}
-
-libcxx_module("std_float_h") {
-  public_deps = [
-    ":_Builtin_float",
-    ":sys_stage1",
-  ]
 }
 
 libcxx_module("std_inttypes_h") {
@@ -207,7 +200,6 @@ group("all_modules") {
     ":std_ctype_h",
     ":std_errno_h",
     ":std_fenv_h",
-    ":std_float_h",
     ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",

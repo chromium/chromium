@@ -256,10 +256,7 @@ if (use_clang_modules && use_unified_system_module) {
   }
 
   builtin_module("_Builtin_limits") {
-    public_deps = [
-      ":std_float_h",
-      ":sysroot_limits",
-    ]
+    public_deps = [ ":sysroot_limits" ]
   }
 
   builtin_module("_Builtin_stdalign") {
@@ -307,13 +304,13 @@ if (use_clang_modules && use_unified_system_module) {
 
   libcxx_module("std") {
     public_deps = [
+      ":_Builtin_float",
       ":_Builtin_limits",
       ":_Builtin_stdalign",
       ":std_core",
       ":std_ctype_h",
       ":std_errno_h",
       ":std_fenv_h",
-      ":std_float_h",
       ":std_inttypes_h",
       ":std_math_h",
       ":std_private_mbstate_t",
@@ -361,13 +358,6 @@ if (use_clang_modules && use_unified_system_module) {
     public_deps = [
       ":std_config",
       ":sysroot_fenv",
-    ]
-  }
-
-  libcxx_module("std_float_h") {
-    public_deps = [
-      ":_Builtin_float",
-      ":std_config",
     ]
   }
 
@@ -427,7 +417,6 @@ if (use_clang_modules && use_unified_system_module) {
       ":std_ctype_h",
       ":std_errno_h",
       ":std_fenv_h",
-      ":std_float_h",
       ":std_inttypes_h",
       ":std_math_h",
       ":std_private_mbstate_t",
