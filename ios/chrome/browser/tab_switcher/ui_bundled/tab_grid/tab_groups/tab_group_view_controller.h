@@ -31,10 +31,10 @@ class TabGroup;
 // The embedded grid view controller.
 @property(nonatomic, readonly) TabGroupGridViewController* gridViewController;
 
-// Initiates a TabGroupViewController with `handler` to handle user action,
-// `incognito` to YES to have a dark theme, `tabGroup` to get tab group
+// Initiates a TabGroupViewController with `tabGroupsHandler` to handle user
+// action, `incognito` to YES to have a dark theme, `tabGroup` to get tab group
 // information.
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)tabGroupsHandler
                       incognito:(BOOL)incognito
                        tabGroup:(const TabGroup*)tabGroup;
 

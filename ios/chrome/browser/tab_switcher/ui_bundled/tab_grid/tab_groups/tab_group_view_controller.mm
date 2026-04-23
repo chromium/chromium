@@ -129,7 +129,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   // The tab group view's close button.
   UIButton* _closeButton;
   // Tab Groups handler.
-  __weak id<TabGroupsCommands> _handler;
+  __weak id<TabGroupsCommands> _tabGroupsHandler;
   // Group's title.
   NSString* _groupTitle;
   // Group's color.
@@ -181,12 +181,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)tabGroupsHandler
                       incognito:(BOOL)incognito
                        tabGroup:(const TabGroup*)tabGroup {
   CHECK(tabGroup);
   if ((self = [super init])) {
-    _handler = handler;
+    _tabGroupsHandler = tabGroupsHandler;
     _incognito = incognito;
     _tabGroup = tabGroup;
     _gridViewController = [[TabGroupGridViewController alloc] init];
@@ -422,14 +422,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (BOOL)navigationBar:(UINavigationBar*)navigationBar
         shouldPopItem:(UINavigationItem*)item {
   _backButtonTapped = YES;
-  [_handler hideTabGroup];
+  [_tabGroupsHandler hideTabGroup];
   return NO;
 }
 
 - (void)navigationBar:(UINavigationBar*)navigationBar
            didPopItem:(UINavigationItem*)item {
   _backButtonTapped = YES;
-  [_handler hideTabGroup];
+  [_tabGroupsHandler hideTabGroup];
 }
 
 #pragma mark - UIBarPositioningDelegate
@@ -520,7 +520,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // The close button has been tapped.
 - (void)didTapCloseButton {
   _backButtonTapped = YES;
-  [_handler hideTabGroup];
+  [_tabGroupsHandler hideTabGroup];
 }
 
 // The facePile button has been tapped.
@@ -779,7 +779,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Displays the menu to rename and change the color of the currently displayed
 // group.
 - (void)displayEditionMenu {
-  [_handler showTabGroupEditionForGroup:_tabGroup->GetWeakPtr()];
+  [_tabGroupsHandler showTabGroupEditionForGroup:_tabGroup->GetWeakPtr()];
 }
 
 // Returns the tab group menu.
@@ -875,12 +875,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Opens a new tab in the group.
 - (void)openNewTab {
   if ([self.mutator addNewItemInGroup]) {
-    [_handler showActiveTab];
+    [_tabGroupsHandler showActiveTab];
   } else {
     // Dismiss the view as it looks like the policy changed, and it is not
     // possible to create a new tab anymore. In this case, the user should not
     // see any tabs.
-    [_handler hideTabGroup];
+    [_tabGroupsHandler hideTabGroup];
   }
 }
 
@@ -888,7 +888,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)ungroup {
   // Shows the confirmation to ungroup the current group (keep the tab) and
   // close the view. Do nothing when a user cancels the action.
-  [_handler
+  [_tabGroupsHandler
       showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
                                   group:_tabGroup->GetWeakPtr()
                              sourceView:_menuButton];
@@ -897,14 +897,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Closes the tabs and deletes the current group and closes the view.
 - (void)closeGroup {
   [self.mutator closeGroup];
-  [_handler hideTabGroup];
+  [_tabGroupsHandler hideTabGroup];
 }
 
 // Deletes the tabs and deletes the current group and closes the view.
 - (void)deleteGroup {
   // Shows the confirmation to delete the tabs, delete the current group and
   // close the view. Do nothing when a user cancels the action.
-  [_handler
+  [_tabGroupsHandler
       showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
                                   group:_tabGroup->GetWeakPtr()
                              sourceView:_menuButton];
@@ -915,7 +915,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
 
-  [_handler
+  [_tabGroupsHandler
       startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
                           forAction:TabGroupActionType::kDeleteSharedTabGroup
                          sourceView:_menuButton];
@@ -926,7 +926,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kShared);
 
-  [_handler
+  [_tabGroupsHandler
       startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
                           forAction:TabGroupActionType::kLeaveSharedTabGroup
                          sourceView:_menuButton];
@@ -993,14 +993,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Starts managing the shared group.
 - (void)manageGroup {
   CHECK(_gridViewController.shared);
-  [_handler showManageForGroup:_tabGroup->GetWeakPtr()];
+  [_tabGroupsHandler showManageForGroup:_tabGroup->GetWeakPtr()];
 }
 
 // Starts sharing the group.
 - (void)shareGroup {
   CHECK(!_gridViewController.shared);
   CHECK(_shareAvailable);
-  [_handler showShareForGroup:_tabGroup->GetWeakPtr()];
+  [_tabGroupsHandler showShareForGroup:_tabGroup->GetWeakPtr()];
 }
 
 // Called when the gesture recognizer has an update.
@@ -1132,7 +1132,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
 - (void)showRecentActivity {
   CHECK(_gridViewController.shared);
-  [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
+  [_tabGroupsHandler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
 }
 
 #pragma mark - TabGroupHeaderDelegate
