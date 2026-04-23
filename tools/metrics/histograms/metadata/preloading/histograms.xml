@@ -276,6 +276,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Preloading.Prefetch.PrePrefetch.PrePrefetchServiceThreadBlockTime"
+    units="ms" expires_after="2026-10-18">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the time spent blocking the thread on
+    `PrePrefetchServiceImpl::StartPrePrefetchRequestInternal()` waiting for
+    `PrePrefetchServiceCore::StartPrePrefetchRequest` to complete execution on
+    its core sequence task runner.
+  </summary>
+</histogram>
+
 <histogram name="Preloading.PrefetchBCGSwap.RelatedActiveContents"
     units="contents" expires_after="2024-06-30">
   <owner>jbroman@chromium.org</owner>

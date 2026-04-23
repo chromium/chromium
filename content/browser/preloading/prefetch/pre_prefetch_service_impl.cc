@@ -8,9 +8,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
@@ -329,12 +331,17 @@ PrePrefetchServiceImpl::StartPrePrefetchRequestInternal(
   base::ScopedClosureRunner on_done_runner(
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
 
+  base::ElapsedTimer timer;
   core_.AsyncCall(&PrePrefetchServiceCore::StartPrePrefetchRequest)
       .WithArgs(base::PassKey<PrePrefetchServiceImpl>(),
                 std::move(prefetch_request), &handle,
                 std::move(on_done_runner));
 
   event.Wait();
+  UMA_HISTOGRAM_TIMES(
+      "Preloading.Prefetch.PrePrefetch.PrePrefetchServiceThreadBlockTime",
+      timer.Elapsed());
+
   return handle;
 }
 
