@@ -1459,6 +1459,7 @@ if (_is_default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.toolbar",
       "javatests:chrome_test_java_org.chromium.chrome.browser.webapps",
       "javatests:chrome_test_java_various",
+      "//chrome/browser/actor/android:javatests",
       "//chrome/browser/android/browserservices/verification:javatests",
       "//chrome/browser/android/httpclient:javatests",
       "//chrome/browser/android/metrics:ukm_javatests",
