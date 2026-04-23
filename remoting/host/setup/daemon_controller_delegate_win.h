@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_WIN_H_
 #define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_WIN_H_
 
+#include "base/files/file_path.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
@@ -12,6 +13,7 @@ namespace remoting {
 class DaemonControllerDelegateWin : public DaemonController::Delegate {
  public:
   DaemonControllerDelegateWin();
+  explicit DaemonControllerDelegateWin(const base::FilePath& config_dir);
 
   DaemonControllerDelegateWin(const DaemonControllerDelegateWin&) = delete;
   DaemonControllerDelegateWin& operator=(const DaemonControllerDelegateWin&) =
@@ -31,6 +33,9 @@ class DaemonControllerDelegateWin : public DaemonController::Delegate {
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
+
+ private:
+  base::FilePath config_dir_;
 };
 
 }  // namespace remoting

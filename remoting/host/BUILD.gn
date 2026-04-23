@@ -974,6 +974,10 @@ source_set("unit_tests") {
     sources += [ "setup/host_starter_base_unittest.cc" ]
   }
 
+  if (is_win) {
+    sources += [ "setup/daemon_controller_delegate_win_unittest.cc" ]
+  }
+
   if (is_linux) {
     deps += [
       "//components/dbus",

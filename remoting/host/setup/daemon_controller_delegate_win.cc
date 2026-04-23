@@ -136,7 +136,8 @@ bool MoveConfigFileFromTemp(const base::FilePath& filename) {
 }
 
 // Writes the configuration file up to |kMaxConfigFileSize| in size.
-bool WriteConfig(const base::DictValue& config) {
+bool WriteConfig(const base::FilePath& config_dir,
+                 const base::DictValue& config) {
   std::string config_json = HostConfigToJson(config);
   if (config_json.length() > kMaxConfigFileSize) {
     LOG(ERROR) << "Config is larger than the max size: " << kMaxConfigFileSize;
@@ -169,7 +170,7 @@ bool WriteConfig(const base::DictValue& config) {
 
   // Write the full configuration file to a temporary location.
   base::FilePath full_config_file_path =
-      remoting::GetConfigDir().Append(kDefaultHostConfigFile);
+      config_dir.Append(kDefaultHostConfigFile);
   if (!WriteConfigFileToTemp(full_config_file_path,
                              kConfigFileSecurityDescriptor, config_json)) {
     return false;
@@ -185,7 +186,7 @@ bool WriteConfig(const base::DictValue& config) {
 
   // Write the unprivileged configuration file to a temporary location.
   base::FilePath unprivileged_config_file_path =
-      remoting::GetConfigDir().Append(kDefaultUnprivilegedConfigFileName);
+      config_dir.Append(kDefaultUnprivilegedConfigFileName);
   if (!WriteConfigFileToTemp(unprivileged_config_file_path,
                              kUnprivilegedConfigFileSecurityDescriptor,
                              HostConfigToJson(unprivileged_config))) {
@@ -313,7 +314,12 @@ bool StopDaemon() {
 
 }  // namespace
 
-DaemonControllerDelegateWin::DaemonControllerDelegateWin() {}
+DaemonControllerDelegateWin::DaemonControllerDelegateWin()
+    : config_dir_(GetConfigDir()) {}
+
+DaemonControllerDelegateWin::DaemonControllerDelegateWin(
+    const base::FilePath& config_dir)
+    : config_dir_(config_dir) {}
 
 DaemonControllerDelegateWin::~DaemonControllerDelegateWin() {}
 
@@ -336,7 +342,7 @@ DaemonController::State DaemonControllerDelegateWin::GetState() {
 }
 
 std::optional<base::DictValue> DaemonControllerDelegateWin::GetConfig() {
-  base::FilePath config_dir = remoting::GetConfigDir();
+  base::FilePath config_dir = config_dir_;
 
   // Read the unprivileged part of host configuration.
   base::DictValue config;
@@ -352,7 +358,7 @@ void DaemonControllerDelegateWin::UpdateConfig(
     base::DictValue updated_config,
     DaemonController::CompletionCallback done) {
   // Get the old config.
-  base::FilePath config_dir = remoting::GetConfigDir();
+  base::FilePath config_dir = config_dir_;
   base::DictValue config;
   if (!ReadConfig(config_dir.Append(kDefaultHostConfigFile), config)) {
     InvokeCompletionCallback(std::move(done), false);
@@ -363,7 +369,7 @@ void DaemonControllerDelegateWin::UpdateConfig(
   config.Merge(std::move(updated_config));
 
   // Write the updated config.
-  bool result = WriteConfig(config);
+  bool result = WriteConfig(config_dir, config);
 
   InvokeCompletionCallback(std::move(done), result);
 }
@@ -416,7 +422,7 @@ void DaemonControllerDelegateWin::SetConfigAndStart(
   }
 
   // Determine the config directory path and create it if necessary.
-  base::FilePath config_dir = remoting::GetConfigDir();
+  base::FilePath config_dir = config_dir_;
   if (!base::CreateDirectory(config_dir)) {
     PLOG(ERROR) << "Failed to create the config directory.";
     InvokeCompletionCallback(std::move(done), false);
@@ -424,7 +430,7 @@ void DaemonControllerDelegateWin::SetConfigAndStart(
   }
 
   // Set the configuration.
-  if (!WriteConfig(config)) {
+  if (!WriteConfig(config_dir, config)) {
     InvokeCompletionCallback(std::move(done), false);
     return;
   }
