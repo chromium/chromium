@@ -3954,6 +3954,7 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="kBrowserShutdown"/>
   <int value="11" label="kLoaderCompleted"/>
   <int value="12" label="kRequestRetried"/>
+  <int value="13" label="kRequestBlockedByClient"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/keep_alive_request_tracker.h:RequestStageType) -->

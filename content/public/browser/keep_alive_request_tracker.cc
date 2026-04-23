@@ -70,6 +70,12 @@ std::ostream& operator<<(
     case KeepAliveRequestTracker::RequestStageType::kLoaderCompleted:
       os << "Loader Completed";
       break;
+    case KeepAliveRequestTracker::RequestStageType::kRequestRetried:
+      os << "Request Retried";
+      break;
+    case KeepAliveRequestTracker::RequestStageType::kRequestBlockedByClient:
+      os << "Request Blocked by Client";
+      break;
     default:
       os << "<invalid value: " << static_cast<int>(stage_type) << ">";
   }
@@ -121,6 +127,9 @@ void KeepAliveRequestTracker::AdvanceToNextStage(
       CHECK(next_stage.status.has_value());
       break;
     case RequestStageType::kRequestRetried:
+      CHECK(next_stage.status.has_value());
+      break;
+    case RequestStageType::kRequestBlockedByClient:
       CHECK(next_stage.status.has_value());
       break;
   }

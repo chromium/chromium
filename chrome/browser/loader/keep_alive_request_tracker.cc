@@ -185,6 +185,11 @@ void ChromeKeepAliveRequestTracker::AddStageMetrics(const RequestStage& stage) {
       ukm_builder_.SetRequestRetried_ExtendedErrorCode(
           stage.status->extended_error_code);
       break;
+    case RequestStageType::kRequestBlockedByClient:
+      // TODO(crbug.com/504836742): For now, we don't have a specific UKM metric
+      // for this yet, but the EndStage will be recorded in LogUkmEvent(). Add
+      // more detailed UKM metric.
+      break;
   }
 }
 
