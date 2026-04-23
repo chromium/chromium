@@ -5,6 +5,7 @@
 #include "components/omnibox/common/string_cleaning.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/case_conversion.h"
 #include "base/strings/escape.h"
@@ -23,20 +24,20 @@ const size_t kCleanedUpTitleMaxLength = 1024u;
 // Attempts to shorten a URL safely (i.e., by preventing the end of the URL from
 // being in the middle of an escape sequence) to no more than
 // 'kCleanedUpUrlMaxLength' characters, returning the result.
-std::string TruncateUrl(const std::string& url) {
+std::string TruncateUrl(std::string_view url) {
   if (url.length() <= kCleanedUpUrlMaxLength) {
-    return url;
+    return std::string(url);
   }
 
   // If we're in the middle of an escape sequence, truncate just before it.
   if (url[kCleanedUpUrlMaxLength - 1] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 1);
+    return std::string(url.substr(0, kCleanedUpUrlMaxLength - 1));
   }
   if (url[kCleanedUpUrlMaxLength - 2] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 2);
+    return std::string(url.substr(0, kCleanedUpUrlMaxLength - 2));
   }
 
-  return url.substr(0, kCleanedUpUrlMaxLength);
+  return std::string(url.substr(0, kCleanedUpUrlMaxLength));
 }
 
 std::u16string CleanUpUrlForMatching(
@@ -53,7 +54,7 @@ std::u16string CleanUpUrlForMatching(
       nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
 }
 
-std::u16string CleanUpTitleForMatching(const std::u16string& title) {
+std::u16string CleanUpTitleForMatching(std::u16string_view title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 

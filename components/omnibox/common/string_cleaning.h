@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_STRING_CLEANING_H_
 #define COMPONENTS_OMNIBOX_COMMON_STRING_CLEANING_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/strings/utf_offset_string_conversions.h"
 
@@ -39,7 +39,7 @@ std::u16string CleanUpUrlForMatching(
 
 // Returns the lower-cased title, possibly truncated if the original title is
 // overly-long.
-std::u16string CleanUpTitleForMatching(const std::u16string& title);
+std::u16string CleanUpTitleForMatching(std::u16string_view title);
 
 }  // namespace omnibox
 
