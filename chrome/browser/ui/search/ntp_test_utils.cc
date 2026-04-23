@@ -37,11 +37,11 @@ void SetUserSelectedDefaultSearchProvider(Profile* profile,
 
 GURL GetFinalNtpUrl(Profile* profile) {
   if (search::GetNewTabPageURL(profile) ==
-      GURL(chrome::kChromeUINewTabPageURL)) {
+      chrome::ChromeUINewTabPageURLAsGURL()) {
     // If chrome://newtab/ already maps to the local/WebUI NTP, then that will
     // load correctly, even without network.  The URL associated with the
     // WebContents will stay chrome://newtab/.
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   }
   // If chrome://newtab/ maps to a remote URL, then it will fail to load in a
   // browser_test environment.  In this case, we will get redirected to the

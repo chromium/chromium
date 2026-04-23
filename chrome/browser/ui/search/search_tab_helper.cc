@@ -103,7 +103,7 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
 void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
   NewTabPageConcretePage concrete_page = NewTabPageConcretePage::kOther;
   if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+      chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL()) {
     concrete_page = NewTabPageConcretePage::k1PWebUiNtp;
   } else if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
              GURL(chrome::kChromeUINewTabPageThirdPartyURL)
@@ -118,7 +118,7 @@ void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
                  navigation_handle->GetWebContents()->GetBrowserContext())
                  ->IsOffTheRecord() &&
              navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-                 GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+                 chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL()) {
     concrete_page = NewTabPageConcretePage::kOffTheRecordNtp;
   }
   base::UmaHistogramEnumeration("NewTabPage.ConcretePage", concrete_page);
@@ -191,7 +191,7 @@ void SearchTabHelper::DidStartNavigation(
   }
 
   if (web_contents()->GetVisibleURL().DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+      chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL()) {
     RecordConcreteNtp(navigation_handle);
   }
 

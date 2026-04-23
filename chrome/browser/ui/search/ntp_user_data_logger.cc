@@ -437,7 +437,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
   bool is_google = DefaultSearchProviderIsGoogle();
 
   // Split between NTP variants.
-  if (ntp_url_ == GURL(chrome::kChromeUINewTabPageURL)) {
+  if (ntp_url_ == chrome::ChromeUINewTabPageURLAsGURL()) {
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUINTP", load_time);
   } else if (ntp_url_ == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUI3PNTP", load_time);
