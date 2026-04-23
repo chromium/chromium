@@ -330,8 +330,7 @@ bool AuthenticationService::ShouldReauthPromptForSignInAndSync() const {
   return pref_service_->GetBoolean(prefs::kSigninShouldPromptForSigninAgain);
 }
 
-bool AuthenticationService::HasPrimaryIdentity(
-    signin::ConsentLevel consent_level) const {
+bool AuthenticationService::HasPrimaryIdentity() const {
   return GetPrimaryIdentity() != nil;
 }
 
@@ -340,11 +339,6 @@ bool AuthenticationService::HasPrimaryIdentityManaged() const {
              ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
                  signin::ConsentLevel::kSignin))
              .IsManaged() == signin::Tribool::kTrue;
-}
-
-bool AuthenticationService::HasPrimaryIdentityManaged(
-    signin::ConsentLevel consent_level) const {
-  return HasPrimaryIdentityManaged();
 }
 
 bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
@@ -359,11 +353,6 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity() const {
   return GetPrimarySystemIdentity(identity_manager_, account_manager_service_);
-}
-
-id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
-    signin::ConsentLevel consent_level) const {
-  return GetPrimaryIdentity();
 }
 
 void AuthenticationService::SignIn(id<SystemIdentity> identity,

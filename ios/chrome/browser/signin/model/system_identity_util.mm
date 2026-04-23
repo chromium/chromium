@@ -28,10 +28,3 @@ id<SystemIdentity> GetPrimarySystemIdentity(
 
   return account_manager->GetIdentityWithGaiaID(account_info.gaia);
 }
-
-id<SystemIdentity> GetPrimarySystemIdentity(
-    signin::ConsentLevel consent_level,
-    signin::IdentityManager* identity_manager,
-    ChromeAccountManagerService* account_manager) {
-  return GetPrimarySystemIdentity(identity_manager, account_manager);
-}
