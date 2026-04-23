@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -3818,6 +3819,10 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
   AvatarToolbarButtonInterface* avatar =
       GetAvatarToolbarButtonInterface(browser());
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+  ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
+    InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+    return !manager || !manager->IsShowPending();
+  }));
   SigninWithImageAndClearGreetingAndSyncPromo(browser(), avatar,
                                               u"test@gmail.com");
 
