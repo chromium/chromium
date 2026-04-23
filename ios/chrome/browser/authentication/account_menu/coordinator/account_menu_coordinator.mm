@@ -301,8 +301,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 #pragma mark - AccountMenuMediatorDelegate
 
 - (void)didTapManageYourGoogleAccount {
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   if (!identity.hasValidAuth) {
     [self openReauthCoordinatorWithAction:
               AccountMenuReauthActionManageYourGoogleAccount];
@@ -314,9 +313,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentAccountDetailsController(
-              _authenticationService->GetPrimaryIdentity(
-                  signin::ConsentLevel::kSignin),
-              _viewController,
+              _authenticationService->GetPrimaryIdentity(), _viewController,
               /*animated=*/YES,
               base::BindOnce(
                   [](__typeof(self) strongSelf) {
@@ -342,8 +339,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
                    completion:(signin_ui::SignoutCompletionCallback)completion {
-  if (!_authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!_authenticationService->HasPrimaryIdentity()) {
     // This could happen in very rare cases, if the account somehow got removed
     // after the accounts menu was created.
     return;

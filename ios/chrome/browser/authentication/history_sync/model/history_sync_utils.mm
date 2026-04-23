@@ -42,8 +42,7 @@ HistorySyncSkipReason GetSkipReason(
     // tabs sync is disabled by policy.
     return history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies;
   }
-  if (!authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!authenticationService->GetPrimaryIdentity()) {
     // Don't show history sync opt-in screen if no signed-in user account.
     return history_sync::HistorySyncSkipReason::kNotSignedIn;
   }

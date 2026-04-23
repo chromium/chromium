@@ -209,8 +209,7 @@
   if (!self.profile->IsOffTheRecord()) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(self.profile);
-    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
     userEmail = identity.userEmail;
   }
 

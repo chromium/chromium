@@ -1014,7 +1014,7 @@ void OnListFamilyMembersResponse(
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> systemIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   _managedConfirmationScreenCoordinator =
       [[ManagedProfileCreationCoordinator alloc]
           initWithBaseViewController:self.activeViewController
@@ -1853,8 +1853,7 @@ void OnListFamilyMembersResponse(
   if (IsDisableU18FeedbackIosEnabled()) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(self.profile);
-    configuration.primaryIdentity = authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    configuration.primaryIdentity = authenticationService->GetPrimaryIdentity();
   }
 
   NSError* error;

@@ -11,7 +11,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/scoped_variations_ids_provider.h"

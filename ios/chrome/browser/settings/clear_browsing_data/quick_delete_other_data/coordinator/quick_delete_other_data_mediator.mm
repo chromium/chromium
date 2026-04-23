@@ -49,8 +49,7 @@ using quick_delete_util::DefaultSearchEngineState;
   if ((self = [super init])) {
     _authenticationService = authenticationService;
     _identityManager = identityManager;
-    _isSignedIn = _authenticationService->HasPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    _isSignedIn = _authenticationService->HasPrimaryIdentity();
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);

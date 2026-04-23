@@ -82,8 +82,7 @@
 }
 
 - (void)enableHistorySyncOptin {
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   bool hasPrimaryAccount =
       _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   // It is possible to have no identity from AuthenticationService here
@@ -109,8 +108,7 @@
   if (!_consumer) {
     return;
   }
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   if (!identity) {
     // This can happen if identity is removed from the device while the history
     // sync screen is open. There is no point in updating the UI since the
@@ -146,8 +144,7 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  if ([identity isEqual:_authenticationService->GetPrimaryIdentity(
-                            signin::ConsentLevel::kSignin)]) {
+  if ([identity isEqual:_authenticationService->GetPrimaryIdentity()]) {
     [self updateAvatarImageWithIdentity:identity];
   }
 }

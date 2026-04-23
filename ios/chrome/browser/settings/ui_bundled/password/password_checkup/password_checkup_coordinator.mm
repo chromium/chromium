@@ -100,8 +100,7 @@ using password_manager::PasswordCheckReferrer;
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(self.profile);
     CHECK(authenticationService);
-    if (!authenticationService->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    if (!authenticationService->HasPrimaryIdentity()) {
       base::debug::DumpWithoutCrashing();
     }
 

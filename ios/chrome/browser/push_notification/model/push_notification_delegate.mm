@@ -700,8 +700,7 @@ void ProcessIncomingNotification(
     if (config.shouldRegisterContentNotification) {
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForProfile(profile);
-      id<SystemIdentity> identity =
-          authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      id<SystemIdentity> identity = authService->GetPrimaryIdentity();
       config.primaryAccount = identity;
       // Send an initial NAU to share the OS auth status and channel status with
       // the server. Send an NAU on every foreground to report the OS Auth
@@ -1031,8 +1030,7 @@ void ProcessIncomingNotification(
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  GaiaId gaiaID =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaId;
+  GaiaId gaiaID = authService->GetPrimaryIdentity().gaiaId;
 
   // Early return if 1) the user has previously disabled Send Tab push
   // notifications, because in that case we don't want to automatically enable

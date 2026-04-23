@@ -216,8 +216,7 @@ std::vector<AutofillProfile> FetchAddresses(
 
 // Returns the user's identity email address.
 - (NSString*)userEmail {
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   if (identity) {
     return identity.userEmail;
   } else {

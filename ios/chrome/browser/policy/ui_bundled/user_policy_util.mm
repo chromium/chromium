@@ -9,5 +9,5 @@
 bool CanFetchUserPolicy(AuthenticationService* authService,
                         PrefService* prefService) {
   // Return true if the primary identity is managed.
-  return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+  return authService->HasPrimaryIdentityManaged();
 }

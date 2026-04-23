@@ -396,7 +396,7 @@ struct EnhancedSafeBrowsingActivePromoData
     [_showMemoryDebugToolsEnabled setObserver:self];
 
     _authService = AuthenticationServiceFactory::GetForProfile(_profile);
-    _identity = _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    _identity = _authService->GetPrimaryIdentity();
 
     _featureEngagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(_profile);
@@ -671,7 +671,7 @@ struct EnhancedSafeBrowsingActivePromoData
                   AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
               authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninAllowed) &&
-             !_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+             !_authService->HasPrimaryIdentity()) {
     item = [self accountSignInItem];
   } else {
     // Signin is disabled by user or by internal.
@@ -697,7 +697,7 @@ struct EnhancedSafeBrowsingActivePromoData
 // Adds the account profile to the Account section if the user is signed in.
 - (void)addAccountToSigninSection {
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (_authService->HasPrimaryIdentity()) {
     // Account profile item.
     [model addItem:[self accountCellItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
@@ -1593,8 +1593,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
-      !authService->SigninEnabled()) {
+  if (!authService->HasPrimaryIdentity() || !authService->SigninEnabled()) {
     // Due to race condition, the user may be signed-out, or sign-in may be
     // disabled between the time the user tap on the button and the execution of
     // this method. In this case, do nothing, the button will disappear by
@@ -1759,7 +1758,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Updates the identity cell.
 - (void)updateIdentityAccountItem:(TableViewAccountItem*)identityAccountItem {
-  _identity = _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  _identity = _authService->GetPrimaryIdentity();
   if (!_identity) {
     // This could occur during the sign out process. Just ignore as the account
     // cell will be replaced by the "Sign in" button.
@@ -1807,7 +1806,7 @@ struct EnhancedSafeBrowsingActivePromoData
   if (_settingsAreDismissed) {
     return;
   }
-  if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!_authService->HasPrimaryIdentity()) {
     return;
   }
 
@@ -1980,8 +1979,7 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   NSString* detailText = nil;
-  id<SystemIdentity> identity =
-      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authService->GetPrimaryIdentity();
   PrefService* prefService = _profile->GetPrefs();
   push_notification_settings::ClientPermissionState permission_state =
       push_notification_settings::GetNotificationPermissionState(
@@ -2057,8 +2055,7 @@ struct EnhancedSafeBrowsingActivePromoData
   //   3.) Have Safe Browsing standard protection enabled.
   //   4.) One of the trigerring criteria has been met.
   //   5.) Not have their Safe Browsing preferences enterprise-managed.
-  bool isSignedIn =
-      _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  bool isSignedIn = _authService->HasPrimaryIdentity();
   bool isDefaultBrowser = IsChromeLikelyDefaultBrowser();
   bool isStandardProtectionEnabled =
       safe_browsing::GetSafeBrowsingState(*_profile->GetPrefs()) ==

@@ -332,8 +332,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
 
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity());
 
   // Wait for the sign-out completion block to finish.
   base::RunLoop run_loop;

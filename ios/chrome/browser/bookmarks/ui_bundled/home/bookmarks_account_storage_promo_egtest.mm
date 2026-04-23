@@ -7,7 +7,6 @@
 
 #import "base/ios/ios_util.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"

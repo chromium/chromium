@@ -247,8 +247,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
 
   base::WeakPtr<Browser> weakBrowser = command.originBrowser->AsWeakPtr();
   __weak __typeof(self) weakSelf = self;

@@ -263,7 +263,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 - (BOOL)isManagedAccount {
   raw_ptr<AuthenticationService> authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+  return authService->HasPrimaryIdentityManaged();
 }
 
 // Returns the currently active WebState's BWG tab helper.

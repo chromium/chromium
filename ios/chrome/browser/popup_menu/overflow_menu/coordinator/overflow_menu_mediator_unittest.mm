@@ -708,8 +708,7 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
       ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignIn(account_manager->GetDefaultIdentity(),
                                  signin_metrics::AccessPoint::kStartPage);
-  EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged());
 
   CreateMediator(/*incognito=*/NO);
   // Set the objects needed to detect the signed in managed account.

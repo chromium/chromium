@@ -106,7 +106,7 @@ void HandleSignoutForSnackbar(
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (!auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!auth_service->HasPrimaryIdentity()) {
     return;
   }
 

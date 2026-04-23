@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_consumer.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/constants.h"

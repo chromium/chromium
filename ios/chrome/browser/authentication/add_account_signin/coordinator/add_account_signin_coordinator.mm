@@ -124,14 +124,12 @@ using signin_metrics::PromoAction;
       break;
     case AddAccountSigninIntent::kPrimaryAccountReauth:
       // The user wants to reauth their primary account.
-      CHECK(_authenticationService->HasPrimaryIdentity(
-                signin::ConsentLevel::kSignin),
+      CHECK(_authenticationService->HasPrimaryIdentity(),
             base::NotFatalUntil::M143);
       break;
     case AddAccountSigninIntent::kResignin:
       // The user wants to add back their primary account.
-      CHECK(!_authenticationService->HasPrimaryIdentity(
-                signin::ConsentLevel::kSignin),
+      CHECK(!_authenticationService->HasPrimaryIdentity(),
             base::NotFatalUntil::M143);
       break;
   }
@@ -435,8 +433,7 @@ using signin_metrics::PromoAction;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(
           self.profile->GetOriginalProfile());
-  id<SystemIdentity> primaryIdentity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> primaryIdentity = authService->GetPrimaryIdentity();
   SigninCoordinatorResult signinResult;
   switch (result) {
     case HistorySyncResult::kUserCanceled:

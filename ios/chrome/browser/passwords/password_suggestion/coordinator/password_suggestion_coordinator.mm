@@ -199,8 +199,7 @@ constexpr char kUmaActionPrefix[] =
 - (NSString*)userEmail {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> authenticatedIdentity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> authenticatedIdentity = authService->GetPrimaryIdentity();
 
   return authenticatedIdentity.userEmail;
 }

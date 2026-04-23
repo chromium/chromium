@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 
 #import "base/check.h"
-#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -64,8 +63,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   if (!isIncognito) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(profile);
-    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
-        ::signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
     configuration.identity = identity;
   }
   configuration.localState = GetApplicationContext()->GetLocalState();

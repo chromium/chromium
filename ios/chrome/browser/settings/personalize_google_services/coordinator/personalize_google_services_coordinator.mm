@@ -110,8 +110,7 @@ enum class ActionAfterReauth {
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   if (!identity.hasValidAuth) {
     [self openReauthCoordinatorWithAction:ActionAfterReauth::
                                               kOpenWebAppAcvityDialog];
@@ -131,8 +130,7 @@ enum class ActionAfterReauth {
       "Signin_AccountSettings_LinkedGoogleServicesClicked"));
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   if (!identity.hasValidAuth) {
     [self openReauthCoordinatorWithAction:ActionAfterReauth::
                                               kOpenLinkedGoogleServicesDialog];

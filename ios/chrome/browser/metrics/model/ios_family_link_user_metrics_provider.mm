@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/supervised_user_log_record.h"

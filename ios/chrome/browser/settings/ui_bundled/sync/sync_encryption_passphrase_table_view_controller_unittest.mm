@@ -106,7 +106,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest, TestModel) {
   // Passphrase message item.
   NSString* userEmail =
       AuthenticationServiceFactory::GetForProfile(profile_.get())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+          ->GetPrimaryIdentity()
           .userEmail;
   EXPECT_NSEQ(
       l10n_util::GetNSStringF(IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL,

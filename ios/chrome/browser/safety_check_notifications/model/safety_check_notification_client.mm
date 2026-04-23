@@ -600,8 +600,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
   if (IsProvisionalNotificationAlertEnabled()) {
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-    id<SystemIdentity> identity =
-        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = authService->GetPrimaryIdentity();
     if (!push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kSafetyCheck, identity.gaiaId)) {

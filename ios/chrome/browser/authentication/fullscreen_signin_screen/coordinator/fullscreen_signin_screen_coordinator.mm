@@ -118,8 +118,7 @@
 
   self.authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (self.authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (self.authenticationService->GetPrimaryIdentity()) {
     // Don't show the sign-in screen since the user is already signed in.
     [_delegate screenWillFinishPresenting];
     return;

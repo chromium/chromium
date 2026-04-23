@@ -90,8 +90,7 @@ using l10n_util::GetNSStringF;
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  self.identity =
-      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  self.identity = _authService->GetPrimaryIdentity();
   CHECK(self.identity, base::NotFatalUntil::M145);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
@@ -133,8 +132,7 @@ using l10n_util::GetNSStringF;
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  id<SystemIdentity> identity =
-      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authService->GetPrimaryIdentity();
   if (![identity isEqual:self.identity]) {
     [self.delegate
         trustedVaultReauthenticationCoordinatorWantsToBeStopped:self];

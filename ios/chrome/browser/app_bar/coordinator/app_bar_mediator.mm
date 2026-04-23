@@ -446,8 +446,7 @@
       break;
     }
     case AppBarAssistantButtonState::kAsk: {
-      if (!_authenticationService->HasPrimaryIdentity(
-              signin::ConsentLevel::kSignin)) {
+      if (!_authenticationService->HasPrimaryIdentity()) {
         ShowSigninCommand* command = [[ShowSigninCommand alloc]
             initWithOperation:AuthenticationOperation::kSigninOnly
                   accessPoint:signin_metrics::AccessPoint::kIosAppBar];

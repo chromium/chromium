@@ -286,8 +286,8 @@ enum class AuthenticationFlowInProfileState {
 - (void)signOutIfNeededStep {
   ProfileIOS* profile = [self originalProfile];
   id<SystemIdentity> currentIdentity =
-      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
+      AuthenticationServiceFactory::GetForProfile(profile)
+          ->GetPrimaryIdentity();
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForProfile(profile);
@@ -316,7 +316,7 @@ enum class AuthenticationFlowInProfileState {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> currentIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   if (!currentIdentity) {
     [_performer signInIdentity:_identityToSignIn
                  atAccessPoint:_accessPoint

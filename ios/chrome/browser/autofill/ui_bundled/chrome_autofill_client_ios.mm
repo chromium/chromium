@@ -130,8 +130,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(profile);
     if (authenticationService) {
-      id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
+      id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
       // Tries to create kAccountNameEmail profile using the current primary
       // account data.
       if (identity) {
@@ -522,8 +521,7 @@ std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile_);
   DCHECK(authenticationService);
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
   if (identity) {
     return base::SysNSStringToUTF16(identity.userEmail);
   }

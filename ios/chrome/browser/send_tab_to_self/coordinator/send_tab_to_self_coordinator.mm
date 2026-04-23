@@ -25,7 +25,6 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
@@ -467,7 +466,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       DCHECK(accountManagerService);
       id<SystemIdentity> account =
           AuthenticationServiceFactory::GetForProfile(profile)
-              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+              ->GetPrimaryIdentity();
       DCHECK(account) << "The user must be signed in to share a tab";
       self.sendTabToSelfViewController =
           [[SendTabToSelfTableViewController alloc]

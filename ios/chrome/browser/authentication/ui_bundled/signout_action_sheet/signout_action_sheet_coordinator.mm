@@ -149,8 +149,7 @@ using signin_metrics::SignoutDataLossAlertReason;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  DCHECK(self.authenticationService->HasPrimaryIdentity());
   PrefService* profilePrefService = self.profile->GetPrefs();
   _signedInUserState = GetSignedInUserState(
       self.authenticationService, self.identityManager, profilePrefService);
@@ -316,8 +315,7 @@ using signin_metrics::SignoutDataLossAlertReason;
     return;
   }
 
-  if (!self.authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!self.authenticationService->HasPrimaryIdentity()) {
     SceneState* sceneState = browser->GetSceneState();
     [_completionWrapper signoutCompleteForScene:sceneState];
     _completionWrapper = nil;

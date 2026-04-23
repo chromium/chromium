@@ -11,7 +11,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -477,7 +476,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
 // consumer.
 - (void)updatePrimaryIdentity {
   id<SystemIdentity> newPrimaryIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      _authenticationService->GetPrimaryIdentity();
 
   if (newPrimaryIdentity == _primaryIdentity) {
     return;

@@ -1106,8 +1106,7 @@ using segmentation_platform::TipIdentifier;
 
   LogSafetyCheckNotificationOptIn(viaContextMenu);
 
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = self.authService->GetPrimaryIdentity();
 
   const PushNotificationClientId clientId =
       [self pushNotificationClientId:type];

@@ -179,8 +179,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
       syncer::UserSelectableType::kTabs, YES);
   authentication_service_->SignIn(fake_identity1,
                                   signin_metrics::AccessPoint::kStartPage);
-  EXPECT_TRUE(authentication_service_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service_->HasPrimaryIdentity());
 }
 
 // Tests that when a promo was previously registered, it is still registered
@@ -214,6 +213,5 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
       .Times(1);
   authentication_service_->SignIn(fake_identity1,
                                   signin_metrics::AccessPoint::kStartPage);
-  EXPECT_TRUE(authentication_service_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service_->HasPrimaryIdentity());
 }

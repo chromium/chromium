@@ -203,8 +203,7 @@ NSString* messageForAddingBookmarksInFolder(
   CHECK(model);
 
   NSString* folderTitle = TitleForBookmarkNode(folder);
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
 
   if (!identity ||
       !syncService->GetUserSettings()->GetSelectedTypes().Has(

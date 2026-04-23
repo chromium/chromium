@@ -94,7 +94,7 @@
       AuthenticationServiceFactory::GetForProfile(
           self.profile->GetOriginalProfile());
   id<SystemIdentity> primaryIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   SigninCoordinatorResult signinResult;
   switch (result) {
     case HistorySyncResult::kSuccess:

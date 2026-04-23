@@ -9,7 +9,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
-#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -100,8 +99,7 @@
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  _currentIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  _currentIdentity = authenticationService->GetPrimaryIdentity();
   _imageFetcher = std::make_unique<DriveFilePickerImageFetcher>(
       profile->GetSharedURLLoaderFactory());
   _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];

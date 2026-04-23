@@ -157,8 +157,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         ->GetProfileAttributesStorage()
         ->SetPersonalProfileName(profile_->GetProfileName());
 
-    ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-        signin::ConsentLevel::kSignin));
+    ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged());
   }
 
  protected:
@@ -259,16 +258,13 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   SignInManagedIdentity();
 
   // Mark the user as "migrated from previously syncing".
-  GetPrefs()->SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
-                        authentication_service()
-                            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                            .gaiaId.ToString());
+  GetPrefs()->SetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+      authentication_service()->GetPrimaryIdentity().gaiaId.ToString());
   GetPrefs()->SetString(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       base::SysNSStringToUTF8(
-          authentication_service()
-              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-              .userEmail));
+          authentication_service()->GetPrimaryIdentity().userEmail));
 
   CreateCoordinator();
   // There should be no query for unsynced data types: For a managed user who

@@ -58,8 +58,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
   DCHECK(auth_service);
-  id<SystemIdentity> identity =
-      auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = auth_service->GetPrimaryIdentity();
 
   UIImage* image =
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(

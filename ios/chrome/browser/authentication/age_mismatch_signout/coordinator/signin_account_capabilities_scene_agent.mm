@@ -385,7 +385,7 @@
   }
 
   id<SystemIdentity> primaryIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
 
   if (primaryIdentity && !_isAgeMismatchSignoutInProgress) {
     _isAgeMismatchSignoutInProgress = YES;

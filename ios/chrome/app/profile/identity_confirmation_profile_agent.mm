@@ -144,8 +144,7 @@ enum class IdentityConfirmationSnackbarDecision {
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (!authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!authenticationService->HasPrimaryIdentity()) {
     // As the user is signed-out, don’t show the identity snackbar.
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
@@ -159,8 +158,7 @@ enum class IdentityConfirmationSnackbarDecision {
   }
 
   // For non-managed accounts, show the snackbar only on top of Bling Start.
-  if (!authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin) &&
+  if (!authenticationService->HasPrimaryIdentityManaged() &&
       ![self isStartSurfaceWithBrowser:browser]) {
     return IdentityConfirmationSnackbarDecision::kDontShowNotOnStartPage;
   }
@@ -227,7 +225,7 @@ enum class IdentityConfirmationSnackbarDecision {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> systemIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   CHECK(systemIdentity, base::NotFatalUntil::M151);
 
   SnackbarMessage* message =

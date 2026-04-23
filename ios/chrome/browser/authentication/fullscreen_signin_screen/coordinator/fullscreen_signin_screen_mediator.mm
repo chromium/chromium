@@ -202,8 +202,7 @@ enum class SigninScreenState {
 
   // The sign-in screen should not be displayed if the user is already
   // signed-in.
-  CHECK(!_authenticationService->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin),
+  CHECK(!_authenticationService->HasPrimaryIdentity(),
         base::NotFatalUntil::M145);
   [self.consumer setUIEnabled:NO];
   authenticationFlow.delegate = self;
@@ -213,8 +212,7 @@ enum class SigninScreenState {
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
   // The sign-in screen should not be displayed if the user is already
   // signed-in.
-  CHECK(!_authenticationService->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin),
+  CHECK(!_authenticationService->HasPrimaryIdentity(),
         base::NotFatalUntil::M140);
   if (completion) {
     completion();

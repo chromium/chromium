@@ -109,10 +109,9 @@ const CGFloat kSpinnerButtonPadding = 18;
       service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     base::Time passphraseTime =
         service->GetUserSettings()->GetExplicitPassphraseTime();
-    NSString* userEmail =
-        AuthenticationServiceFactory::GetForProfile(profile)
-            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-            .userEmail;
+    NSString* userEmail = AuthenticationServiceFactory::GetForProfile(profile)
+                              ->GetPrimaryIdentity()
+                              .userEmail;
     DCHECK(userEmail);
     _headerMessage =
         passphraseTime.is_null()
@@ -565,8 +564,8 @@ const CGFloat kSpinnerButtonPadding = 18;
 - (void)onEndBatchOfRefreshTokenStateChanges {
   DCHECK(!_settingsAreDismissed);
   ProfileIOS* profile = self.browser->GetProfile();
-  if (AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (AuthenticationServiceFactory::GetForProfile(profile)
+          ->HasPrimaryIdentity()) {
     return;
   }
   if (!self.presentModally) {

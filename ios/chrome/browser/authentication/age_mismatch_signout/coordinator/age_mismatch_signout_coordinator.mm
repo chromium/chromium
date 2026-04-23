@@ -58,9 +58,8 @@
 
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
-  CHECK(
-      !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
-      base::NotFatalUntil::M153);
+  CHECK(!authenticationService->HasPrimaryIdentity(),
+        base::NotFatalUntil::M153);
 
   _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
       self.browser->GetSceneState(), UIBlockerExtent::kApplication);

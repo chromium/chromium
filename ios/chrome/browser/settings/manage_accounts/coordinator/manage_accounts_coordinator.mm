@@ -319,7 +319,7 @@ using signin_metrics::PromoAction;
   _UIBlocker.reset();
   [_viewController allowUserInteraction];
   if (!AuthenticationServiceFactory::GetForProfile(self.profile)
-           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+           ->HasPrimaryIdentity()) {
     // If there is no signed-in account after identity removal, then the primary
     // identity was removed, and there is no signed-in account at this stage.
     [self closeSettings];
@@ -375,7 +375,7 @@ using signin_metrics::PromoAction;
     return;
   }
   CHECK(!AuthenticationServiceFactory::GetForProfile(self.profile)
-             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+             ->HasPrimaryIdentity());
   [self closeSettings];
 }
 

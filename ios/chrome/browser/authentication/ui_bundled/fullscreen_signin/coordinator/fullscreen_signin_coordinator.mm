@@ -127,8 +127,7 @@
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   void (^completion)(void) = ^{
     SigninCoordinatorResult result =
         identity ? SigninCoordinatorResultSuccess

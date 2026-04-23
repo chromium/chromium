@@ -108,8 +108,7 @@ TEST_F(AuthenticationFlowInProfilePerformerTest, SignoutForSwitch) {
   [authentication_flow_in_profile_performer_
       signOutForAccountSwitchWithProfile:profile_.get()];
   run_loop_->Run();
-  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity());
   histogram_tester.ExpectUniqueSample(
       "Signin.SignoutProfile",
       signin_metrics::ProfileSignout::kSignoutForAccountSwitching, 1);

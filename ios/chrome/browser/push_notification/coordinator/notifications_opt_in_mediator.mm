@@ -11,7 +11,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -115,8 +114,7 @@
 
 // Returns the user's primary identity, or nil if not signed in.
 - (id<SystemIdentity>)primaryIdentity {
-  return _authenticationService->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  return _authenticationService->GetPrimaryIdentity();
 }
 
 - (std::vector<PushNotificationClientId>)clientIDsForItem:

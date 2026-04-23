@@ -89,8 +89,7 @@ GeminiServiceImpl::GeminiIneligibilityForProfile() {
   // with having the entrypoint maybe disappear at a later time (actual Gemini
   // requests to ineligible accounts will fail regardless).
   const bool is_managed_account =
-      auth_service_ &&
-      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+      auth_service_ && auth_service_->HasPrimaryIdentityManaged();
   const bool is_eligible =
       can_use_model_execution && allowed_by_enterprise &&
       !is_disabled_by_gemini_policy_.value_or(is_managed_account) &&

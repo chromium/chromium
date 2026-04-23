@@ -58,8 +58,7 @@
       AuthenticationServiceFactory::GetForProfile(
           self.sceneState.profileState.profile);
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
   if (!identity.gaiaId.empty()) {
     [shared_defaults setObject:identity.gaiaId.ToNSString()
                         forKey:app_group::kPrimaryAccount];

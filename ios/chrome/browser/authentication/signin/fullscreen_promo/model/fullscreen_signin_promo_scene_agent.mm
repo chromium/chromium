@@ -133,7 +133,7 @@
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (_authService->HasPrimaryIdentity()) {
     history_sync::HistorySyncSkipReason skipReason =
         history_sync::GetSkipReason(_syncService, _authService, _prefService,
                                     /*isOptional=*/YES);

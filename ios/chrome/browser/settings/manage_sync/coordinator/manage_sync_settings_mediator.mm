@@ -16,7 +16,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -153,8 +152,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
             authenticationService, self);
     _authenticationService = authenticationService;
     _chromeAccountManagerService = accountManagerService;
-    _signedInIdentity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    _signedInIdentity = _authenticationService->GetPrimaryIdentity();
     CHECK(_signedInIdentity, base::NotFatalUntil::M155);
     _prefService = prefService;
     // Register for font size change notifications
@@ -996,8 +994,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (void)manageSyncSettingsTableViewControllerLoadModel:
     (id<ManageSyncSettingsConsumer>)controller {
   DCHECK_EQ(self.consumer, controller);
-  if (!_authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!_authenticationService->GetPrimaryIdentity()) {
     // If the user signed out from this view or a child controller the view is
     // closing and should not re-load the model.
     return;
@@ -1050,12 +1047,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }
 
 - (void)onEndBatchOfPrimaryAccountChanges {
-  if (!_authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!_authenticationService->HasPrimaryIdentity()) {
     return;
   }
   id<SystemIdentity> signedInIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      _authenticationService->GetPrimaryIdentity();
   if ([signedInIdentity isEqual:_signedInIdentity]) {
     // Identity is the same, nothing to do.
     return;
@@ -1093,8 +1089,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       }
       break;
     case PrimaryAccountReauthErrorItemType: {
-      id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
+      id<SystemIdentity> identity =
+          _authenticationService->GetPrimaryIdentity();
       if (_authenticationService->HasCachedMDMErrorForIdentity(identity)) {
         [self.syncErrorHandler openMDMErrodDialogWithSystemIdentity:identity];
       } else {

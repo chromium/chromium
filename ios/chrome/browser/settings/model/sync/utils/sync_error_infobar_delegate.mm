@@ -149,8 +149,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
       CHECK(ShouldShowSyncSettings(error_state_), base::NotFatalUntil::M151);
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForProfile(profile_);
-      if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
-          !authService->SigninEnabled()) {
+      if (!authService->HasPrimaryIdentity() || !authService->SigninEnabled()) {
         // Due to race condition, the user may be signed-out, or sign-in may be
         // disabled between the time the user tap on the button and the
         // execution of this method. In this case, do nothing, the button will

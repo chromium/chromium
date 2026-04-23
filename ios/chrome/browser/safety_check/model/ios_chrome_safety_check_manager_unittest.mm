@@ -20,7 +20,6 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safety_check/features.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -733,14 +732,13 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ClearsPasswordStateOnSignOut) {
 
   // Simulate sign-in first.
   SignIn();
-  ASSERT_TRUE(auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(auth_service_->HasPrimaryIdentity());
 
   // Simulate sign-out (clearing the primary account at the `kSignin` level).
   // This will trigger `OnPrimaryAccountChanged()` in the `SafetyCheckManager`
   // via the `AuthenticationService` updating the `IdentityManager`.
   SignOut();
-  ASSERT_FALSE(
-      auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(auth_service_->HasPrimaryIdentity());
 
   // Verify that the password state has been reset.
   password_manager::InsecurePasswordCounts reset_counts = {

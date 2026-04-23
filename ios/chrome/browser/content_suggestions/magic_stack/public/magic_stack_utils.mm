@@ -41,8 +41,7 @@ CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
 bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                                      AuthenticationService* auth_service,
                                      PrefService* pref_service) {
-  id<SystemIdentity> identity =
-      auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = auth_service->GetPrimaryIdentity();
   return GetApplicationContext()->GetApplicationLocaleStorage()->Get() ==
              "en-US" &&
          !push_notification_settings::

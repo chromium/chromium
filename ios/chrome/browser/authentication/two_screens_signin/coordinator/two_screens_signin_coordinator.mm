@@ -168,8 +168,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   [_navigationController dismissViewControllerAnimated:YES completion:nil];
   SigninCoordinatorResult result = identity
                                        ? SigninCoordinatorResultSuccess

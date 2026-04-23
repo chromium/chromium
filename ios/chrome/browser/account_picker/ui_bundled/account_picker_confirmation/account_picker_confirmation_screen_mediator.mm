@@ -116,8 +116,8 @@
 
   // If the user is signed-in, present the signed-in account, otherwise the
   // default account on the device.
-  id<SystemIdentity> identity = GetPrimarySystemIdentity(
-      signin::ConsentLevel::kSignin, _identityManager, _accountManagerService);
+  id<SystemIdentity> identity =
+      GetPrimarySystemIdentity(_identityManager, _accountManagerService);
   if (!identity) {
     identity = signin::GetDefaultIdentityOnDevice(_identityManager,
                                                   _accountManagerService);

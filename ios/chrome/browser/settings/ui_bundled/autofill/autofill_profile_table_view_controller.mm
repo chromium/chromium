@@ -1224,8 +1224,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
   CHECK(authenticationService);
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity();
   if (identity) {
     _userEmail = identity.userEmail;
   }

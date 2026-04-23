@@ -274,8 +274,7 @@ bool PolicyUI::ShouldLoadTestPage(ProfileIOS* profile) {
   // managed.
   return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
                                                GetChannel()) &&
-         !auth_service->HasPrimaryIdentityManaged(
-             signin::ConsentLevel::kSignin);
+         !auth_service->HasPrimaryIdentityManaged();
 }
 
 // static

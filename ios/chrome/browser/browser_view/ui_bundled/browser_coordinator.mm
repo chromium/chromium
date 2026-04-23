@@ -3349,7 +3349,7 @@ const char kChromeAppStoreUrl[] =
     return;
   }
   if (!AuthenticationServiceFactory::GetForProfile(self.profile)
-           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+           ->HasPrimaryIdentity()) {
     // Drive can’t be accessed if the user has no primary identity.
     tab_helper->SetIsPresentingFilePicker(false);
     return;

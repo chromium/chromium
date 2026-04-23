@@ -60,8 +60,7 @@
   ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   UIView* passkeyNavigationTitleView =
       password_manager::CreatePasswordManagerTitleView(

@@ -341,8 +341,7 @@ void GeminiBrowserAgent::ConfigureGemini() {
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
-  if (!auth_service ||
-      !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!auth_service || !auth_service->HasPrimaryIdentity()) {
     return;
   }
 

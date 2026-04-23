@@ -16,7 +16,6 @@
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"

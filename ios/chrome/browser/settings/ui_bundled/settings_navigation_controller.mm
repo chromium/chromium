@@ -820,8 +820,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   CHECK(!self.manageSyncSettingsCoordinator, base::NotFatalUntil::M155);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  CHECK(authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M155);
+  CHECK(authService->HasPrimaryIdentity(), base::NotFatalUntil::M155);
   CHECK(authService->SigninEnabled(), base::NotFatalUntil::M155);
   self.manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self

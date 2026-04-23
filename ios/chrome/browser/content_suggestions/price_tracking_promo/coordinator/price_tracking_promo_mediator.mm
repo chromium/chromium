@@ -212,8 +212,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   if (clientID == PushNotificationClientId::kCommerce) {
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
     if (push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kCommerce, identity.gaiaId)) {
@@ -273,8 +272,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 - (void)enablePriceTrackingNotificationsSettings {
   _prefService->SetBoolean(commerce::kPriceEmailNotificationsEnabled, true);
   // TODO(crbug.com/368005246) Ensure sign out flows are handled correctly.
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   _pushNotificationService->SetPreference(
       identity.gaiaId, PushNotificationClientId::kCommerce, true);
 }

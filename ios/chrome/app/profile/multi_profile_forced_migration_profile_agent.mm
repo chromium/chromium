@@ -97,7 +97,7 @@
 
   localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
   id<SystemIdentity> systemIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   if (!systemIdentity) {
     // If the migrated account signs out before the confirmation dialog is shown
     // (a rare case), skip showing the dialog.

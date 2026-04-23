@@ -308,8 +308,7 @@ TEST_F(GeminiServiceImplTest,
   EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
 
   // Verify that the primary identity is now flagged as managed.
-  EXPECT_TRUE(
-      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(auth_service_->HasPrimaryIdentityManaged());
 
   // Workspace restriction should NOT be logged.
   histogram_tester_.ExpectBucketCount(

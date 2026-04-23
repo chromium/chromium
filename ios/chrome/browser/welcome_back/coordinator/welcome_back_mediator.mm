@@ -53,12 +53,10 @@
   _consumer = consumer;
   [_consumer setWelcomeBackItems:[self itemsToDisplay]];
 
-  bool isSignedIn =
-      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  bool isSignedIn = _authenticationService->HasPrimaryIdentity();
   // Feed the correct string and avatar (if applicable) to the consumer.
   if (isSignedIn) {
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
     UIImage* avatarImage =
         GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             identity, IdentityAvatarSize::Large);

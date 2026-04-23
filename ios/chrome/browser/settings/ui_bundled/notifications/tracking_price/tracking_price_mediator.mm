@@ -85,7 +85,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _authService = authenticationService;
     _prefService = prefService;
     _shoppingService->FetchPriceEmailPref();
-    _identity = _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    _identity = _authService->GetPrimaryIdentity();
 
     _prefChangeRegistrar.Init(prefService);
     _emailNotificationsEnabled = [[PrefBackedBoolean alloc]

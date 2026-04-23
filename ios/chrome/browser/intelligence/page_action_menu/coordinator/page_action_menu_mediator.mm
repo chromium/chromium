@@ -59,8 +59,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   if (!auth_service) {
     return false;
   }
-  return !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-         auth_service->SigninEnabled();
+  return !auth_service->HasPrimaryIdentity() && auth_service->SigninEnabled();
 }
 
 }  // namespace
@@ -743,16 +742,14 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   if (!_authenticationService) {
     return NO;
   }
-  return _authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  return _authenticationService->HasPrimaryIdentity();
 }
 
 - (BOOL)isManagedAccount {
   if (!_authenticationService) {
     return NO;
   }
-  return _authenticationService->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin);
+  return _authenticationService->HasPrimaryIdentityManaged();
 }
 
 - (BOOL)isGeminiEligibilityLoading {

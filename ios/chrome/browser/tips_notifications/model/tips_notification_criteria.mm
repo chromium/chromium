@@ -118,8 +118,7 @@ bool TipsNotificationCriteria::ShouldSendNotification(
 bool TipsNotificationCriteria::CanSignIn(ProfileIOS* profile) {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  return auth_service->SigninEnabled() &&
-         !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return auth_service->SigninEnabled() && !auth_service->HasPrimaryIdentity();
 }
 
 bool TipsNotificationCriteria::ShouldSendDefaultBrowser() {

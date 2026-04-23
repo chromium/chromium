@@ -127,8 +127,7 @@
   CHECK_EQ(self.viewController, controller, base::NotFatalUntil::M155);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
-  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
-      !authService->SigninEnabled()) {
+  if (!authService->HasPrimaryIdentity() || !authService->SigninEnabled()) {
     // The user is signed-out, so there is not reason to display sync settings.
     return;
   }

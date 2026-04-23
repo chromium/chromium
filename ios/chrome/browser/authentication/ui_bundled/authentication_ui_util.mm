@@ -89,9 +89,7 @@ NSString* GetActionSheetCoordinatorMessage(
       // This dialog is triggered only if there is unsync data.
       if (account_profile_switch) {
         NSString* userEmail =
-            authentication_service
-                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                .userEmail;
+            authentication_service->GetPrimaryIdentity().userEmail;
         return l10n_util::GetNSStringF(
             IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BODY,
             base::SysNSStringToUTF16(userEmail));
@@ -255,8 +253,7 @@ SignedInUserState GetSignedInUserState(
   const bool is_managed_account_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
           identity_manager, profile_pref_service) &&
-      authentication_service->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin);
+      authentication_service->HasPrimaryIdentityManaged();
 
   if (is_managed_account_migrated_from_syncing) {
     return SignedInUserState::kManagedAccountAndMigratedFromSyncing;

@@ -103,8 +103,7 @@ const CGFloat kProfileImageSize = 60.0;
 
 // Fetches and returns sender's profile image from account manager service.
 - (UIImage*)fetchSenderImage {
-  id<SystemIdentity> identity =
-      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authService->GetPrimaryIdentity();
   if (identity) {
     return CircularImageFromImage(
         GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(

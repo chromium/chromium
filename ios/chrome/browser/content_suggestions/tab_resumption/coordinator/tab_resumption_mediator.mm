@@ -559,8 +559,7 @@ class TabResumptionMediatorProxy {
 
 - (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionConfig*)config
                                           granted:(BOOL)granted {
-  id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
   _pushNotificationService->SetPreference(
       identity.gaiaId, PushNotificationClientId::kCommerce, true);
 

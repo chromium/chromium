@@ -165,8 +165,7 @@ void TipsNotificationClient::OptInIfAuthorized(
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   // Set `permitted_` here so that the OnPermittedPrefChanged exits early.

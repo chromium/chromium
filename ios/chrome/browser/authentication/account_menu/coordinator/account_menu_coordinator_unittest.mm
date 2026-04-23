@@ -307,9 +307,7 @@ TEST_F(AccountMenuCoordinatorTest, testSignOut) {
                              closure.Run();
                            }];
   run_loop.Run();
-  EXPECT_EQ(authentication_service_->GetPrimaryIdentity(
-                signin::ConsentLevel::kSignin),
-            nil);
+  EXPECT_EQ(authentication_service_->GetPrimaryIdentity(), nil);
 }
 
 // Tests that `mediatorWantsToBeDismissed` requests to the delegate to stop the

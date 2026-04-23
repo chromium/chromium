@@ -102,8 +102,7 @@
 }
 
 - (IdentityViewItem*)primaryIdentityViewItem {
-  id<SystemIdentity> identity =
-      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = _authService->GetPrimaryIdentity();
   CHECK(identity, base::NotFatalUntil::M147);
   return [self identityViewItemForIdentity:identity];
 }
@@ -152,7 +151,7 @@
 }
 
 - (void)onAccountsOnDeviceChanged {
-  if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!_authService->HasPrimaryIdentity()) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an
     // empty table view or during account switching.
@@ -166,7 +165,7 @@
 }
 
 - (void)onEndBatchOfPrimaryAccountChanges {
-  if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!_authService->HasPrimaryIdentity()) {
     [self.delegate manageAccountsMediatorWantsToBeStopped:self];
   }
 }

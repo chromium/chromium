@@ -92,8 +92,7 @@ using password_manager::metrics_util::LeakDialogType;
 
     // Opening the Password Checkup homepage or the Password Manager will stop
     // the presentation in the presenter. No need to send `stop`.
-    if (_authenticationService->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    if (_authenticationService->HasPrimaryIdentity()) {
       // The Password Checkup homepage is not made to be visited when signed
       // out.
       [self.presenter openPasswordCheckup];

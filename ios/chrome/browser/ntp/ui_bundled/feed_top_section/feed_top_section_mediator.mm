@@ -210,8 +210,8 @@ using base::UserMetricsAction;
 // Returns true if notifications are enabled in Chime or at the OS level.
 - (BOOL)isNotificationsEnabled {
   DCHECK([self isUserSignedIn]);
-  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity =
+      self.authenticationService->GetPrimaryIdentity();
   // Check if user has notifications enabled at the Chime level.
   BOOL isChimeEnabled =
       push_notification_settings::IsMobileNotificationsEnabledForAnyClient(

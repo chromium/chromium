@@ -13,7 +13,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/favicon/core/fallback_url_util.h"
 #import "components/ntp_tiles/ntp_tile.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "crypto/obsolete/md5.h"
 #import "google_apis/gaia/gaia_id.h"

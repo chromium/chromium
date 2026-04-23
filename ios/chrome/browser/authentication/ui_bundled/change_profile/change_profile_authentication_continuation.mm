@@ -104,8 +104,7 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
 
   if (context.type == AccountSwitchType::kSignOut) {
     // Perform sign-out only if there is a signed-in account in the profile.
-    if (authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    if (authentication_service->HasPrimaryIdentity()) {
       SignoutAndOpenContexts(browser, openURL, contexts, authentication_service,
                              std::move(closure));
     } else {
@@ -115,16 +114,12 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
       std::move(closure).Run();
     }
   } else {
-    if (!authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    if (!authentication_service->HasPrimaryIdentity()) {
       SigninForContext(context, contexts, openURL, authentication_service,
                        scene_state, std::move(closure));
     } else if (context.gaiaID !=
-                   authentication_service
-                       ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                       .gaiaId &&
-               !authentication_service->HasPrimaryIdentityManaged(
-                   signin::ConsentLevel::kSignin)) {
+                   authentication_service->GetPrimaryIdentity().gaiaId &&
+               !authentication_service->HasPrimaryIdentityManaged()) {
       base::OnceClosure completion = base::BindOnce(
           &SigninForContext, context, contexts, openURL, authentication_service,
           scene_state, std::move(closure));

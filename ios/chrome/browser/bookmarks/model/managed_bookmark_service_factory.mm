@@ -19,7 +19,6 @@ namespace {
 
 std::string GetManagedBookmarksDomain(ProfileIOS* profile) {
   id<SystemIdentity> identity = GetPrimarySystemIdentity(
-      signin::ConsentLevel::kSignin,
       IdentityManagerFactory::GetForProfile(profile),
       ChromeAccountManagerServiceFactory::GetForProfile(profile));
   if (!identity) {

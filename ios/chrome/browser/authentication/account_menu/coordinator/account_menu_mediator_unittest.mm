@@ -440,8 +440,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                                                            identity:nil];
 
   // Checks the user is signed-back in.
-  ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
-                                  signin::ConsentLevel::kSignin));
+  ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity());
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:

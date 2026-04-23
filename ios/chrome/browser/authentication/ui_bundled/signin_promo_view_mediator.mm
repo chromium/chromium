@@ -573,8 +573,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   CHECK(identityManager);
   CHECK(accountManagerService);
 
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    return authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (authService->HasPrimaryIdentity()) {
+    return authService->GetPrimaryIdentity();
   }
 
   return signin::GetDefaultIdentityOnDevice(identityManager,
@@ -770,7 +770,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint,
                                          self.signinPromoAction) != nullptr;
-  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (_authService->HasPrimaryIdentity()) {
     if (!self.displayedIdentity) {
       // TODO(crbug.com/40777223): The default identity should already be known
       // by the mediator. We should not have no identity. This can be reproduced

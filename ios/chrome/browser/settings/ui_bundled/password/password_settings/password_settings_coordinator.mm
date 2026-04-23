@@ -203,9 +203,8 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           passkeyModel);
 
-  _identity =
-      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
+  _identity = AuthenticationServiceFactory::GetForProfile(profile)
+                  ->GetPrimaryIdentity();
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
                 savedPasswordsPresenter:_savedPasswordsPresenter.get()

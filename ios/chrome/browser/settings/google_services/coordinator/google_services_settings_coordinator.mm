@@ -212,7 +212,7 @@ using signin_metrics::PromoAction;
                          completion:completion];
     return;
   }
-  if (!self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!self.authService->HasPrimaryIdentity()) {
     // We don’t need to ask the user to confirm as they are not signed-in in any
     // active scene.
     completion(/*success=*/YES, self.sceneState);

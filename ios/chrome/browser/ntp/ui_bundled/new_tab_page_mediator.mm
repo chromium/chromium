@@ -316,8 +316,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     _backgroundImageCacheService = backgroundImageCacheService;
     _imageFetcherService = imageFetcherService;
     _userUploadedImageManager = userUploadedImageManager;
-    _signedInIdentity =
-        _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    _signedInIdentity = _authService->GetPrimaryIdentity();
     _tracker = tracker;
     _aimEligibilityService = aimEligibilityService;
     if (_aimEligibilityService) {
@@ -516,8 +515,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onEndBatchOfPrimaryAccountChanges {
-  _signedInIdentity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  _signedInIdentity = self.authService->GetPrimaryIdentity();
   [self updateAccountImage];
   [self updateAccountErrorBadge];
 }

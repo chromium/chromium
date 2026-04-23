@@ -315,16 +315,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(profile);
     id<SystemIdentity> current_primary_identity =
-        authenticationService->GetPrimaryIdentity(
-            signin::ConsentLevel::kSignin);
+        authenticationService->GetPrimaryIdentity();
     // The user should not be allowed to sign-in to the current primary
     // identity.
     CHECK(![current_primary_identity isEqual:identity],
           base::NotFatalUntil::M142);
     if (current_primary_identity) {
       _wasPrimaryAccountManaged =
-          authenticationService->HasPrimaryIdentityManaged(
-              signin::ConsentLevel::kSignin);
+          authenticationService->HasPrimaryIdentityManaged();
     }
   }
   return self;
@@ -498,7 +496,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> currentIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity();
   // AuthenticationFlow should not switch to the same identity.
   CHECK(![currentIdentity isEqual:_identityToSignIn],
         base::NotFatalUntil::M145);

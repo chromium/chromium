@@ -134,9 +134,7 @@ bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
 bool ShouldSwitchProfileAtSignout(AuthenticationService* authentication_service,
                                   ProfileIOS* profile) {
   bool is_work_profile = !IsPersonalProfile(profile);
-  return authentication_service->HasPrimaryIdentityManaged(
-             signin::ConsentLevel::kSignin) &&
-         is_work_profile;
+  return authentication_service->HasPrimaryIdentityManaged() && is_work_profile;
 }
 
 // Post an asynchronous request to switch to `profile`, running `continuation`
@@ -215,7 +213,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (auth_service->HasPrimaryIdentity()) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile);
     switch (history_sync::GetSkipReason(sync_service, auth_service,
@@ -320,8 +318,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 bool ShouldPresentWebSignin(ProfileIOS* profile) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (authentication_service->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (authentication_service->HasPrimaryIdentity()) {
     // For some reasons, Gaia might ask for the web sign-in while the user is
     // already signed in. It might be a race conditions with a token already
     // disabled on Gaia, and Chrome not aware of it yet?

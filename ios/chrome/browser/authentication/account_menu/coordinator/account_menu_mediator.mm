@@ -12,7 +12,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
@@ -127,8 +126,7 @@
     _accessPoint = accessPoint;
     _url = url;
     _prepareChangeProfile = prepareChangeProfile;
-    _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity();
     CHECK(_primaryIdentityBeforeSignin);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
@@ -229,7 +227,7 @@
     return;
   }
   id<SystemIdentity> primaryIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      _authenticationService->GetPrimaryIdentity();
   if (primaryIdentity) {
     _primaryIdentityBeforeSignin = primaryIdentity;
     [self updateIdentitiesIfAllowed];
