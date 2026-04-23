@@ -21558,6 +21558,24 @@
             ]
         }
     ],
+    "SideBySideTutorialKillSwitch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "IPH_SideBySideTabSwitchFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "SigninLevelUpButton": [
         {
             "platforms": [
