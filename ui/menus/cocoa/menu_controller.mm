@@ -18,6 +18,7 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/themed_vector_icon.h"
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
@@ -49,6 +50,23 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     }
   }
   return false;
+}
+
+void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
+  if (icon.IsImage()) {
+    menu_item.image = icon.GetImage().ToNSImage();
+  } else if (icon.IsVectorIcon()) {
+    ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
+    NSImage* ns_image =
+        gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
+    [ns_image setTemplate:YES];
+    menu_item.image = ns_image;
+  } else if (icon.IsEmpty()) {
+    menu_item.image = nil;
+  } else {
+    CHECK(icon.IsImageGenerator());
+    NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -190,17 +208,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
                                                 action:@selector(itemSelected:)
                                          keyEquivalent:@""];
 
-  // If the menu item has an icon, set it.
-  ui::ImageModel icon = model->GetIconAt(index);
-  if (icon.IsImage()) {
-    item.image = icon.GetImage().ToNSImage();
-  } else if (icon.IsVectorIcon()) {
-    ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
-    NSImage* ns_image =
-        gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
-    [ns_image setTemplate:YES];
-    item.image = ns_image;
-  }
+  SetMenuItemIcon(item, model->GetIconAt(index));
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
   const NSInteger modelIndex = base::checked_cast<NSInteger>(index);
@@ -272,25 +280,16 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   BOOL checked = model->IsItemCheckedAt(modelIndex);
   menuItem.state = checked ? NSControlStateValueOn : NSControlStateValueOff;
   menuItem.hidden = !model->IsVisibleAt(modelIndex);
+
   if (model->IsItemDynamicAt(modelIndex)) {
     // Update the label and the icon.
     NSString* label =
         l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(modelIndex));
     menuItem.title = label;
 
-    ui::ImageModel icon = model->GetIconAt(modelIndex);
-    if (icon.IsImage()) {
-      menuItem.image = icon.GetImage().ToNSImage();
-    } else if (icon.IsVectorIcon()) {
-      ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
-      NSImage* ns_image =
-          gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
-      [ns_image setTemplate:YES];
-      menuItem.image = ns_image;
-    } else {
-      menuItem.image = nil;
-    }
+    SetMenuItemIcon(menuItem, model->GetIconAt(modelIndex));
   }
+
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);
   if (font_list) {
     CTFontRef font = font_list->GetPrimaryFont().GetCTFont();
