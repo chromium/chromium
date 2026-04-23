@@ -1,2 +1,6 @@
 mattreynolds@chromium.org
 robpitkin@chromium.org
+
+per-file wgi_*=gabrielbrito@microsoft.com
+per-file gameinput_*=gabrielbrito@microsoft.com
+per-file test_support/*=gabrielbrito@microsoft.com
