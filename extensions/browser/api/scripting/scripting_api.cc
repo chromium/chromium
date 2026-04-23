@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/scripting/scripting_api.h"
+#include "extensions/browser/api/scripting/scripting_api.h"
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "chrome/common/extensions/api/scripting.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -26,6 +25,7 @@
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
+#include "extensions/common/api/scripting.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/error_utils.h"

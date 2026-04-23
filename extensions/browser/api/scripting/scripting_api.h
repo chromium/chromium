@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
-#define CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
+#ifndef EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_API_H_
+#define EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_API_H_
 
 #include <memory>
 #include <optional>
@@ -11,11 +11,11 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/scripting.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/user_script.h"
 
@@ -203,4 +203,4 @@ class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
+#endif  // EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_API_H_

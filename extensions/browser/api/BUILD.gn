@@ -44,6 +44,7 @@ group("api_implementations") {
     "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
     "//extensions/browser/api/runtime",
+    "//extensions/browser/api/scripting",
     "//extensions/browser/api/storage",
     "//extensions/browser/api/system_cpu",
     "//extensions/browser/api/system_display",

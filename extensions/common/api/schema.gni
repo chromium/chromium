@@ -24,6 +24,7 @@ extensions_api_schema_files_ = [
   "power.webidl",
   "protocol_handlers.webidl",
   "runtime.json",
+  "scripting.idl",
   "storage.json",
   "system_cpu.webidl",
   "system_display.webidl",

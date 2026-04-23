@@ -53,7 +53,6 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/proxy",
     "//chrome/browser/extensions/api/reading_list",
     "//chrome/browser/extensions/api/runtime",
-    "//chrome/browser/extensions/api/scripting",
     "//chrome/browser/extensions/api/search",
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",

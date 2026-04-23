@@ -883,15 +883,6 @@
     "dependencies": ["permission:safeBrowsingPrivate"],
     "contexts": ["privileged_extension"]
   },
-  "scripting": {
-    "dependencies": ["permission:scripting"],
-    "contexts": ["privileged_extension"]
-  },
-  "scripting.globalParams": {
-    "channel": "trunk",
-    "dependencies": ["permission:scripting"],
-    "contexts": ["content_script"]
-  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["privileged_extension"]

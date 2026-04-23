@@ -710,6 +710,15 @@
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["privileged_extension"]
   },
+  "scripting": {
+    "dependencies": ["permission:scripting"],
+    "contexts": ["privileged_extension"]
+  },
+  "scripting.globalParams": {
+    "channel": "trunk",
+    "dependencies": ["permission:scripting"],
+    "contexts": ["content_script"]
+  },
   "serial": {
     "dependencies": ["permission:serial"],
     "contexts": ["privileged_extension"]

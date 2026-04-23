@@ -12,13 +12,14 @@ source_set("scripting") {
     "scripting_api.cc",
     "scripting_api.h",
   ]
+  public_deps = [
+    "//extensions/browser:browser_sources",
+    "//extensions/common/api",
+  ]
 
   deps = [
     "//base",
-    "//chrome/browser/extensions",
-    "//chrome/common/extensions/api",
     "//content/public/browser",
-    "//extensions/browser",
     "//extensions/common",
   ]
 }
