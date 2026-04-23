@@ -19,9 +19,9 @@ constexpr CGFloat kGrabberHeight = 4.0;
 constexpr CGFloat kGrabberTopMargin = 8.0;
 
 // Shadow styling.
-const float kAssistantShadowOpacity = 0.29f;
-const CGFloat kAssistantShadowRadius = 21.0;
-const CGSize kAssistantShadowOffset = {0, 11};
+const float kAssistantShadowOpacity = 0.16f;
+const CGFloat kAssistantShadowRadius = 20.0;
+const CGSize kAssistantShadowOffset = {0, 8};
 
 }  // namespace
 
