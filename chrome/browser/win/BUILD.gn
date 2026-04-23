@@ -114,6 +114,7 @@ source_set("impl") {
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/sessions",
     "//chrome/browser/themes",
     "//chrome/browser/win/conflicts:module_info",
     "//chrome/chrome_elf:constants",

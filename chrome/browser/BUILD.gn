@@ -313,16 +313,6 @@ static_library("browser") {
     "renderer_preferences_util.h",
     "resources_util.cc",
     "resources_util.h",
-    "sessions/chrome_serialized_navigation_driver.cc",
-    "sessions/chrome_serialized_navigation_driver.h",
-    "sessions/chrome_tab_restore_service_client.cc",
-    "sessions/chrome_tab_restore_service_client.h",
-    "sessions/session_common_utils.cc",
-    "sessions/session_common_utils.h",
-    "sessions/session_tab_helper_factory.cc",
-    "sessions/session_tab_helper_factory.h",
-    "sessions/tab_restore_service_factory.cc",
-    "sessions/tab_restore_service_factory.h",
     "shell_integration.cc",
     "signin/about_signin_internals_factory.cc",
     "signin/about_signin_internals_factory.h",
@@ -556,6 +546,11 @@ static_library("browser") {
     "//chrome/browser/search",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/signin:impl",
+
+    # sessions includes headers from //chrome/browser that can't be
+    # split out yet (e.g. defaults.h).
+    "//chrome/browser/sessions",
+    "//chrome/browser/sessions:impl",
 
     # ssl:impl includes headers from //chrome/browser that can't be
     # split out yet (e.g. browser_process.h,
@@ -1060,6 +1055,7 @@ static_library("browser") {
     "//chrome/browser/serial",
     "//chrome/browser/serial:impl",
     "//chrome/browser/sessions",
+    "//chrome/browser/sessions:impl",
     "//chrome/browser/share:impl",
     "//chrome/browser/sharing",
     "//chrome/browser/sharing:impl",
@@ -2186,7 +2182,6 @@ static_library("browser") {
       "profiles/android/profile_resolver.h",
       "profiles/profile_manager_android.cc",
       "profiles/profile_manager_android.h",
-      "sessions/session_restore_android.cc",
       "shell_integration_android.cc",
       "signin/android/signin_bridge.cc",
       "signin/android/signin_bridge.h",
@@ -2643,8 +2638,6 @@ static_library("browser") {
       "profiles/profile_window.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
-      "sessions/restore_on_startup_policy_handler.cc",
-      "sessions/restore_on_startup_policy_handler.h",
       "signin/signin_promo.cc",  # signin_promo.h is included in
                                  # //chrome/browser/signin:signin_promo
       "signin/signin_ui_delegate.cc",
@@ -5171,43 +5164,9 @@ static_library("browser") {
   }
 
   if (enable_session_service) {
-    sources += [
-      "sessions/app_session_service.cc",
-      "sessions/app_session_service.h",
-      "sessions/app_session_service_factory.cc",
-      "sessions/app_session_service_factory.h",
-      "sessions/exit_type_service.cc",
-      "sessions/exit_type_service.h",
-      "sessions/exit_type_service_factory.cc",
-      "sessions/exit_type_service_factory.h",
-      "sessions/session_data_deleter.cc",
-      "sessions/session_data_deleter.h",
-      "sessions/session_data_service.cc",
-      "sessions/session_data_service.h",
-      "sessions/session_data_service_factory.cc",
-      "sessions/session_data_service_factory.h",
-      "sessions/session_restore.cc",
-      "sessions/session_restore_delegate.cc",
-      "sessions/session_restore_delegate.h",
-      "sessions/session_restore_stats_collector.cc",
-      "sessions/session_restore_stats_collector.h",
-      "sessions/session_service.cc",
-      "sessions/session_service.h",
-      "sessions/session_service_base.cc",
-      "sessions/session_service_base.h",
-      "sessions/session_service_factory.cc",
-      "sessions/session_service_factory.h",
-      "sessions/session_service_log.cc",
-      "sessions/session_service_log.h",
-      "sessions/session_service_lookup.cc",
-      "sessions/session_service_lookup.h",
-      "sessions/session_service_utils.cc",
-      "sessions/session_service_utils.h",
-    ]
     deps += [
       "//chrome/browser/ui/webui/tab_strip_internals",
       "//chrome/browser/ui/webui/tab_strip_internals:impl",
-      "//components/tab_groups",
     ]
 
     # TODO(crbug.com/427204855): Remove this circular include once
@@ -5970,24 +5929,15 @@ static_library("test_support") {
       "apps/intent_helper/preferred_apps_test_util.h",
       "hid/mock_hid_device_observer.cc",
       "hid/mock_hid_device_observer.h",
-      "sessions/app_session_service_test_helper.cc",
-      "sessions/app_session_service_test_helper.h",
-      "sessions/session_restore_test_helper.cc",
-      "sessions/session_restore_test_helper.h",
-      "sessions/session_restore_test_utils.cc",
-      "sessions/session_restore_test_utils.h",
-      "sessions/session_service_base_test_helper.cc",
-      "sessions/session_service_base_test_helper.h",
-      "sessions/session_service_test_helper.cc",
-      "sessions/session_service_test_helper.h",
-      "sessions/tab_restore_service_load_waiter.cc",
-      "sessions/tab_restore_service_load_waiter.h",
       "speech/fake_speech_recognition_service.cc",
       "speech/fake_speech_recognition_service.h",
       "speech/fake_speech_recognizer.cc",
       "speech/fake_speech_recognizer.h",
     ]
-    public_deps += [ "//chrome/browser/privacy_sandbox:attestations_mixin" ]
+    public_deps += [
+      "//chrome/browser/privacy_sandbox:attestations_mixin",
+      "//chrome/browser/sessions:test_support",
+    ]
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/hid",

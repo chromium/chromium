@@ -306,6 +306,7 @@ source_set("ui_impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/contextual_tasks:resources",
     "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui",

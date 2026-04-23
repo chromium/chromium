@@ -130,6 +130,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
     "//chrome/browser/share",
     "//chrome/browser/signin",
     "//chrome/browser/spellchecker",

@@ -1,19 +1,197 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("sessions") {
-  sources = [
+  public = [
+    "chrome_serialized_navigation_driver.h",
+    "chrome_tab_restore_service_client.h",
+    "session_common_utils.h",
     "session_restore.h",
     "session_restore_observer.h",
     "session_service_base_observer.h",
+    "session_tab_helper_factory.h",
+    "tab_restore_service_factory.h",
   ]
+
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/sessions",
     "//ui/base:types",
   ]
 
-  deps = [ "//chrome/browser/glic" ]
+  if (!is_android) {
+    public += [ "restore_on_startup_policy_handler.h" ]
+    public_deps += [ "//components/policy/core/browser" ]
+  }
+
+  if (enable_session_service) {
+    public += [
+      "app_session_service.h",
+      "app_session_service_factory.h",
+      "exit_type_service.h",
+      "exit_type_service_factory.h",
+      "session_data_deleter.h",
+      "session_data_service.h",
+      "session_data_service_factory.h",
+      "session_restore_delegate.h",
+      "session_restore_stats_collector.h",
+      "session_service.h",
+      "session_service_base.h",
+      "session_service_factory.h",
+      "session_service_log.h",
+      "session_service_lookup.h",
+      "session_service_utils.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/browser_window",
+      "//components/keyed_service/core",
+      "//components/split_tabs",
+      "//components/tab_groups",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_serialized_navigation_driver.cc",
+    "chrome_tab_restore_service_client.cc",
+    "session_common_utils.cc",
+    "session_tab_helper_factory.cc",
+    "tab_restore_service_factory.cc",
+  ]
+
+  public_deps = [
+    ":sessions",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser/glic",
+    "//chrome/browser/lifetime",
+  ]
+
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/platform_apps",
+    ]
+  }
+
+  if (is_android) {
+    sources += [ "session_restore_android.cc" ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [ "restore_on_startup_policy_handler.cc" ]
+    deps += [ "//chrome/browser/prefs:util" ]
+  }
+
+  if (enable_session_service) {
+    sources += [
+      "app_session_service.cc",
+      "app_session_service_factory.cc",
+      "exit_type_service.cc",
+      "exit_type_service_factory.cc",
+      "session_data_deleter.cc",
+      "session_data_service.cc",
+      "session_data_service_factory.cc",
+      "session_restore.cc",
+      "session_restore_delegate.cc",
+      "session_restore_stats_collector.cc",
+      "session_service.cc",
+      "session_service_base.cc",
+      "session_service_factory.cc",
+      "session_service_log.cc",
+      "session_service_lookup.cc",
+      "session_service_utils.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/devtools",
+      "//chrome/browser/extensions",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/notifications",
+      "//chrome/browser/performance_manager",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/search",
+      "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/webui/tab_strip_internals",
+      "//chrome/browser/ui/webui/tab_strip_internals:impl",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/web_applications",
+      "//components/keep_alive_registry",
+      "//components/media_device_salt",
+      "//components/pref_registry",
+      "//components/tab_groups",
+    ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (is_chromeos) {
+      deps += [
+        "//ash",
+        "//chrome/browser/ash/boot_times_recorder",
+        "//chrome/browser/ash/crostini",
+        "//chrome/browser/ash/profiles",
+        "//chromeos/components/kiosk",
+      ]
+    }
+  }
+}
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "app_session_service_test_helper.cc",
+      "app_session_service_test_helper.h",
+      "session_restore_test_helper.cc",
+      "session_restore_test_helper.h",
+      "session_restore_test_utils.cc",
+      "session_restore_test_utils.h",
+      "session_service_base_test_helper.cc",
+      "session_service_base_test_helper.h",
+      "session_service_test_helper.cc",
+      "session_service_test_helper.h",
+      "tab_restore_service_load_waiter.cc",
+      "tab_restore_service_load_waiter.h",
+    ]
+
+    public_deps = [
+      ":sessions",
+      "//base",
+      "//components/sessions",
+    ]
+
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//components/sessions:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

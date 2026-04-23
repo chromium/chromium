@@ -467,6 +467,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/serial",
+    "//chrome/browser/sessions",
     "//chrome/browser/sharing",
     "//chrome/browser/signin",
     "//chrome/browser/speech",

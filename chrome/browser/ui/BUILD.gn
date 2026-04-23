@@ -389,6 +389,7 @@ static_library("ui") {
     "//chrome/browser/search_provider_logos",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/sessions",
+    "//chrome/browser/sessions:impl",
     "//chrome/browser/share",
     "//chrome/browser/signin",
     "//chrome/browser/signin:impl",
@@ -744,7 +745,14 @@ static_library("ui") {
 
   # page_load_metrics's :impl includes headers from //chrome/browser/ui that
   # can't be split out yet.
-  allow_circular_includes_from = [ "//chrome/browser/page_load_metrics:impl" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/page_load_metrics:impl",
+
+    # sessions includes headers from //chrome/browser/ui that can't be
+    # split out yet (e.g. browser.h, browser_finder.h).
+    "//chrome/browser/sessions",
+    "//chrome/browser/sessions:impl",
+  ]
 
   if (is_android) {
     sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]

@@ -23,6 +23,7 @@ source_set("impl") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/power_bookmarks",
+    "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//components/commerce/content/browser",

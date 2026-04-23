@@ -101,6 +101,7 @@ static_library("borealis") {
     "//chrome/browser/ash/guest_os/infra",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/sessions",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/borealis",
     "//chromeos/ash/components/dbus",
