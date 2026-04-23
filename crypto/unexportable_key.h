@@ -187,7 +187,7 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 class CRYPTO_EXPORT StatefulUnexportableKeyProvider
     : public UnexportableKeyProvider {
  public:
-  // `GetAllSigningKeysSlowly()` returns all previously stored keys matching
+  // `GetAllKeysSlowly()` returns all previously stored keys matching
   // `Config` or nullopt in case of failures.
   //
   // NOTE: For macOS this will perform prefix matching on
@@ -198,7 +198,7 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   // This can sometimes block, and therefore must not be called from the UI
   // thread.
   virtual std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
-  GetAllSigningKeysSlowly() = 0;
+  GetAllKeysSlowly() = 0;
 
   // Deletes all state associated with all signing keys matching `Config` that
   // match one of the provided wrapped keys. Returns the number of keys deleted,

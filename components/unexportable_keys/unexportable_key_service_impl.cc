@@ -200,19 +200,18 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
   }
 }
 
-void UnexportableKeyServiceImpl::
-    GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-        BackgroundTaskPriority priority,
-        base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-            callback) {
-  task_manager_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+void UnexportableKeyServiceImpl::GetAllKeysForGarbageCollectionSlowlyAsync(
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+        callback) {
+  task_manager_->GetAllKeysForGarbageCollectionSlowlyAsync(
       task_origin_, config_, priority,
       WrapCallbackWithErrorIfCancelled(
           std::move(callback),
           // SAFETY: `this` is guaranteed to be alive if the projection callback
           // is invoked.
           base::BindOnce(&UnexportableKeyServiceImpl::
-                             OnGetAllSigningKeysForGarbageCollectionSlowlyImpl,
+                             OnGetAllKeysForGarbageCollectionSlowlyImpl,
                          base::Unretained(this))));
 }
 
@@ -372,7 +371,7 @@ UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
 }
 
 ServiceErrorOr<std::vector<UnexportableKeyId>>
-UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
+UnexportableKeyServiceImpl::OnGetAllKeysForGarbageCollectionSlowlyImpl(
     ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
         keys_or_error) {
   ASSIGN_OR_RETURN(
@@ -452,7 +451,7 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(
   if (maybe_pending_callbacks.HasKeyId()) {
     // If there is already a key ID for this wrapped key, it means that the key
     // id has been resolved in the meantime, for example through
-    // `GetAllSigningKeys...`. In this case, there is nothing to do and we can
+    // `GetAllKeys...`. In this case, there is nothing to do and we can
     // return immediately.
     return;
   }

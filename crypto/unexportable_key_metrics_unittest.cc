@@ -68,7 +68,7 @@ class MockTrackingUnexportableKeyProvider
 
   // StatefulUnexportableKeyProvider:
   std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
-  GetAllSigningKeysSlowly() override {
+  GetAllKeysSlowly() override {
     return base::ToVector(keys_, [&](const std::vector<uint8_t>& key) {
       return FromWrappedSigningKeySlowly(key);
     });

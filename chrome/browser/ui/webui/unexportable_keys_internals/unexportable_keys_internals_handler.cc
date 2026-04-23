@@ -52,13 +52,13 @@ UnexportableKeysInternalsHandler::~UnexportableKeysInternalsHandler() = default;
 
 void UnexportableKeysInternalsHandler::GetUnexportableKeysInfo(
     GetUnexportableKeysInfoCallback callback) {
-  key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  key_service_->GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
-      base::BindOnce(&UnexportableKeysInternalsHandler::
-                         OnGetAllSigningKeysForGarbageCollection,
-                     // `this` is guaranteed to be alive because `key_service_`
-                     // is owned by `this`.
-                     base::Unretained(this), std::move(callback)));
+      base::BindOnce(
+          &UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection,
+          // `this` is guaranteed to be alive because `key_service_`
+          // is owned by `this`.
+          base::Unretained(this), std::move(callback)));
 }
 
 void UnexportableKeysInternalsHandler::DeleteKey(
@@ -74,7 +74,7 @@ void UnexportableKeysInternalsHandler::DeleteKey(
           std::move(callback)));
 }
 
-void UnexportableKeysInternalsHandler::OnGetAllSigningKeysForGarbageCollection(
+void UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection(
     GetUnexportableKeysInfoCallback callback,
     unexportable_keys::ServiceErrorOr<
         std::vector<unexportable_keys::UnexportableKeyId>> keys) {

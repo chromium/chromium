@@ -356,7 +356,7 @@ void SessionStoreImpl::StartGarbageCollection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK_EQ(db_status_, DBStatus::kSuccess);
-  key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  key_service_->GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(&SessionStoreImpl::OnGetAllKeysForGarbageCollection,
                      weak_ptr_factory_.GetWeakPtr()));

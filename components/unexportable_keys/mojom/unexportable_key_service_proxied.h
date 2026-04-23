@@ -58,7 +58,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
-  void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  void GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           callback) override;
@@ -104,7 +104,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
           original_callback,
       ServiceErrorOr<mojom::NewKeyDataPtr> result);
 
-  void OnGetAllSigningKeysForGarbageCollection(
+  void OnGetAllKeysForGarbageCollection(
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           original_callback,
       ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result);

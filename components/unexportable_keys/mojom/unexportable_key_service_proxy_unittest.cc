@@ -454,8 +454,7 @@ TEST(UnexportableKeyServiceProxyTest, SignError) {
   EXPECT_THAT(result, ErrorIs(expected_error));
 }
 
-TEST(UnexportableKeyServiceProxyTest,
-     GetAllSigningKeysForGarbageCollectionSuccess) {
+TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionSuccess) {
   base::test::TaskEnvironment task_environment;
   mojo::Remote<mojom::UnexportableKeyService> uks_remote;
   mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
@@ -468,8 +467,8 @@ TEST(UnexportableKeyServiceProxyTest,
   const UnexportableKeyId key_id2;
   std::vector<UnexportableKeyId> mock_result = {key_id1, key_id2};
 
-  EXPECT_CALL(mock_uks, GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-                            kTestPriority, _))
+  EXPECT_CALL(mock_uks,
+              GetAllKeysForGarbageCollectionSlowlyAsync(kTestPriority, _))
       .WillOnce(RunOnceCallback<1>(base::ok(mock_result)));
 
   // Proxy implementation calls accessors for each key.
@@ -488,8 +487,8 @@ TEST(UnexportableKeyServiceProxyTest,
 
   TestFuture<base::expected<std::vector<mojom::NewKeyDataPtr>, ServiceError>>
       future;
-  uks_remote->GetAllSigningKeysForGarbageCollection(kTestPriority,
-                                                    future.GetCallback());
+  uks_remote->GetAllKeysForGarbageCollection(kTestPriority,
+                                             future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::vector<mojom::NewKeyDataPtr> keys, future.Take());
   ASSERT_THAT(keys, SizeIs(2));
@@ -497,8 +496,7 @@ TEST(UnexportableKeyServiceProxyTest,
   EXPECT_EQ(keys[1]->key_id, key_id2);
 }
 
-TEST(UnexportableKeyServiceProxyTest,
-     GetAllSigningKeysForGarbageCollectionError) {
+TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionError) {
   base::test::TaskEnvironment task_environment;
   mojo::Remote<mojom::UnexportableKeyService> uks_remote;
   mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
@@ -509,14 +507,14 @@ TEST(UnexportableKeyServiceProxyTest,
 
   ServiceError expected_error = ServiceError::kCryptoApiFailed;
 
-  EXPECT_CALL(mock_uks, GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-                            kTestPriority, _))
+  EXPECT_CALL(mock_uks,
+              GetAllKeysForGarbageCollectionSlowlyAsync(kTestPriority, _))
       .WillOnce(RunOnceCallback<1>(base::unexpected(expected_error)));
 
   TestFuture<base::expected<std::vector<mojom::NewKeyDataPtr>, ServiceError>>
       future;
-  uks_remote->GetAllSigningKeysForGarbageCollection(kTestPriority,
-                                                    future.GetCallback());
+  uks_remote->GetAllKeysForGarbageCollection(kTestPriority,
+                                             future.GetCallback());
 
   const auto& result = future.Get();
   EXPECT_THAT(result, ErrorIs(expected_error));

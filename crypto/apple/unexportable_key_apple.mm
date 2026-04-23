@@ -539,7 +539,7 @@ UnexportableKeyProviderApple::AsStatefulUnexportableKeyProvider() {
 }
 
 std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
-UnexportableKeyProviderApple::GetAllSigningKeysSlowly() {
+UnexportableKeyProviderApple::GetAllKeysSlowly() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 

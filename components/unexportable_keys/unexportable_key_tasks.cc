@@ -34,17 +34,19 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
       std::move(key), UnexportableKeyId());
 }
 
+// TOOD(crbug.com/501307030): Return the more generic
+// `RefCountedUnexportableKey`.
 ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
-GetAllSigningKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
-                        void* task_ptr_for_tracing) {
-  TRACE_EVENT("browser", "unexportable_keys::GetAllSigningKeysSlowly",
+GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
+                 void* task_ptr_for_tracing) {
+  TRACE_EVENT("browser", "unexportable_keys::GetAllKeysSlowly",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
   CHECK(key_provider);
 
   ASSIGN_OR_RETURN(
       std::vector<std::unique_ptr<crypto::UnexportableSigningKey>> keys,
       CHECK_DEREF(key_provider->AsStatefulUnexportableKeyProvider())
-          .GetAllSigningKeysSlowly(),
+          .GetAllKeysSlowly(),
       [] { return ServiceError::kCryptoApiFailed; });
 
   return base::ToVector(keys, [](auto& key) {
@@ -143,7 +145,7 @@ GetAllKeysTask::GetAllKeysTask(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(GetAllKeysTask::ReturnType, size_t)> callback)
     : internal::BackgroundTaskImpl<GetAllKeysTask::ReturnType>(
-          base::BindRepeating(&GetAllSigningKeysSlowly,
+          base::BindRepeating(&GetAllKeysSlowly,
                               base::Owned(std::move(key_provider)),
                               this),
           std::move(callback),

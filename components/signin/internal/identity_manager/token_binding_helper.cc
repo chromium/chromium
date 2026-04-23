@@ -137,7 +137,7 @@ void TokenBindingHelper::GenerateBindingKeyAssertion(
 
 void TokenBindingHelper::StartGarbageCollection(
     absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db) {
-  unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  unexportable_key_service_->GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(&TokenBindingHelper::OnGetAllKeysForGarbageCollection,
                      weak_ptr_factory_.GetWeakPtr(),

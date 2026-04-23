@@ -127,10 +127,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   //
   //
   // UnexportableKeyService& service = GetUnexportableKeyService();
-  // service.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  // service.GetAllKeysForGarbageCollectionSlowlyAsync(
   //     kPriority,
   //     base::BindOnce(OnKeys));
-  virtual void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  virtual void GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           callback) = 0;

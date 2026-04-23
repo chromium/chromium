@@ -120,8 +120,7 @@ TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,
   EXPECT_CALL(*created_service, GetKeyTag(orphaned_key_id))
       .WillOnce(Return(orphaned_tag));
 
-  EXPECT_CALL(*created_service,
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(*created_service, GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(base::ToVector({
           active_key_id,
           orphaned_key_id,

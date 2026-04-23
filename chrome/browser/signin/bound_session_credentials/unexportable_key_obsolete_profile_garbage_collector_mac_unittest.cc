@@ -122,7 +122,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
        GarbageCollectionScheduled) {
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync);
+              GetAllKeysForGarbageCollectionSlowlyAsync);
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
 }
@@ -131,7 +131,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
        GarbageCollectionNoKeys) {
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+              GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector<UnexportableKeyId>()));
   EXPECT_CALL(*user_data_dir_service(), GetKeyTag).Times(0);
   EXPECT_CALL(*user_data_dir_service(), DeleteKeysSlowlyAsync).Times(0);
@@ -152,7 +152,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   ASSERT_TRUE(user_data_dir_service());
   UnexportableKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+              GetAllKeysForGarbageCollectionSlowlyAsync(
                   BackgroundTaskPriority::kBestEffort, _))
       .WillOnce(RunOnceCallback<1>(base::ToVector({key_id})));
 
@@ -210,7 +210,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+              GetAllKeysForGarbageCollectionSlowlyAsync(
                   BackgroundTaskPriority::kBestEffort, _))
       .WillOnce(RunOnceCallback<1>(base::ToVector({
           active_key_id,
@@ -273,7 +273,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+              GetAllKeysForGarbageCollectionSlowlyAsync(
                   BackgroundTaskPriority::kBestEffort, _))
       .WillOnce(RunOnceCallback<1>(base::ToVector({
           active_key_id,
@@ -332,7 +332,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+              GetAllKeysForGarbageCollectionSlowlyAsync(
                   BackgroundTaskPriority::kBestEffort, _))
       .WillOnce(RunOnceCallback<1>(base::ToVector({
           active_key_id,
@@ -377,7 +377,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   ASSERT_TRUE(user_data_dir_service());
   UnexportableKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+              GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(base::ToVector({key_id})));
 
   EXPECT_CALL(*user_data_dir_service(), GetKeyTag(key_id))
@@ -442,7 +442,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   UnexportableKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+              GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce([&](auto priority, auto callback) {
         // Destroy the profile manager before the garbage collection callback is
         // run.

@@ -223,23 +223,23 @@ void UnexportableKeyServiceProxied::DeleteAllKeysSlowlyAsync(
       base::unexpected(ServiceError::kOperationCancelled)));
 }
 
-void UnexportableKeyServiceProxied::
-    GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-        BackgroundTaskPriority priority,
-        base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-            callback) {
+void UnexportableKeyServiceProxied::GetAllKeysForGarbageCollectionSlowlyAsync(
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+        callback) {
   // remote_ will not call any pending callbacks after it is destroyed.
   // Since we own remote_, it is guaranteed that this will be alive when a
   // callback is called.
-  remote_->GetAllSigningKeysForGarbageCollection(
-      priority, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                    base::BindOnce(&UnexportableKeyServiceProxied::
-                                       OnGetAllSigningKeysForGarbageCollection,
-                                   base::Unretained(this), std::move(callback)),
-                    base::unexpected(ServiceError::kOperationCancelled)));
+  remote_->GetAllKeysForGarbageCollection(
+      priority,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              &UnexportableKeyServiceProxied::OnGetAllKeysForGarbageCollection,
+              base::Unretained(this), std::move(callback)),
+          base::unexpected(ServiceError::kOperationCancelled)));
 }
 
-void UnexportableKeyServiceProxied::OnGetAllSigningKeysForGarbageCollection(
+void UnexportableKeyServiceProxied::OnGetAllKeysForGarbageCollection(
     base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
         original_callback,
     ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result) {

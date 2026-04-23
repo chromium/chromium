@@ -108,9 +108,9 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     }
   }
 
-  void GetAllSigningKeysForGarbageCollection(
+  void GetAllKeysForGarbageCollection(
       BackgroundTaskPriority priority,
-      GetAllSigningKeysForGarbageCollectionCallback callback) override {
+      GetAllKeysForGarbageCollectionCallback callback) override {
     if (get_all_keys_response_) {
       std::move(callback).Run(std::move(get_all_keys_response_.value()));
       get_all_keys_response_.reset();
@@ -146,7 +146,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     sign_response_ = std::move(response);
   }
 
-  void SetGetAllSigningKeysForGarbageCollectionResponse(
+  void SetGetAllKeysForGarbageCollectionResponse(
       base::expected<std::vector<mojom::NewKeyDataPtr>, ServiceError>
           response) {
     get_all_keys_response_ = std::move(response);
@@ -490,7 +490,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, DeleteAllKeysErrorFromService) {
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest,
-       GetAllSigningKeysForGarbageCollectionSuccess) {
+       GetAllKeysForGarbageCollectionSuccess) {
   std::vector<mojom::NewKeyDataPtr> key_data_list;
   UnexportableKeyId key_id1;
   UnexportableKeyId key_id2;
@@ -509,11 +509,11 @@ TEST_F(UnexportableKeyServiceProxiedTest,
   key_data_list.push_back(create_data(key_id1));
   key_data_list.push_back(create_data(key_id2));
 
-  fake_service_.SetGetAllSigningKeysForGarbageCollectionResponse(
+  fake_service_.SetGetAllKeysForGarbageCollectionResponse(
       base::ok(std::move(key_data_list)));
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>> future;
-  proxied_service_.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  proxied_service_.GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kUserVisible, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::vector<UnexportableKeyId> key_ids, future.Get());
@@ -526,25 +526,23 @@ TEST_F(UnexportableKeyServiceProxiedTest,
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
 }
 
-TEST_F(UnexportableKeyServiceProxiedTest,
-       GetAllSigningKeysForGarbageCollectionEmpty) {
-  fake_service_.SetGetAllSigningKeysForGarbageCollectionResponse(
+TEST_F(UnexportableKeyServiceProxiedTest, GetAllKeysForGarbageCollectionEmpty) {
+  fake_service_.SetGetAllKeysForGarbageCollectionResponse(
       base::ok(std::vector<mojom::NewKeyDataPtr>()));
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>> future;
-  proxied_service_.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  proxied_service_.GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kUserVisible, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ValueIs(IsEmpty()));
 }
 
-TEST_F(UnexportableKeyServiceProxiedTest,
-       GetAllSigningKeysForGarbageCollectionError) {
-  fake_service_.SetGetAllSigningKeysForGarbageCollectionResponse(
+TEST_F(UnexportableKeyServiceProxiedTest, GetAllKeysForGarbageCollectionError) {
+  fake_service_.SetGetAllKeysForGarbageCollectionResponse(
       base::unexpected(ServiceError::kCryptoApiFailed));
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>> future;
-  proxied_service_.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  proxied_service_.GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kUserVisible, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
@@ -594,10 +592,10 @@ TEST_F(UnexportableKeyServiceProxiedTest, DeleteAllKeysCancelled) {
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest,
-       GetAllSigningKeysForGarbageCollectionCancelled) {
+       GetAllKeysForGarbageCollectionCancelled) {
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>> future;
 
-  proxied_service_.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  proxied_service_.GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kUserVisible, future.GetCallback());
 
   receiver_.reset();

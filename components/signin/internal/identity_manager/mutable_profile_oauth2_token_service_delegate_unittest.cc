@@ -2523,7 +2523,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest,
   WaitForRefreshTokensLoaded();
 
   EXPECT_CALL(mock_unexportable_key_service,
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+              GetAllKeysForGarbageCollectionSlowlyAsync)
       .Times(enable_unexportable_key_deletion ? 1 : 0);
 
   task_environment_.FastForwardUntilNoTasksRemain();

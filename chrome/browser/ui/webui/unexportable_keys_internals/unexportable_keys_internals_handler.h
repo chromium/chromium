@@ -46,7 +46,7 @@ class UnexportableKeysInternalsHandler
                  DeleteKeyCallback callback) override;
 
  private:
-  void OnGetAllSigningKeysForGarbageCollection(
+  void OnGetAllKeysForGarbageCollection(
       GetUnexportableKeysInfoCallback callback,
       unexportable_keys::ServiceErrorOr<
           std::vector<unexportable_keys::UnexportableKeyId>> keys);

@@ -58,14 +58,14 @@ class OriginalProfileGarbageCollectionService : public KeyedService {
 
  private:
   void StartGarbageCollection() {
-    service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+    service_->GetAllKeysForGarbageCollectionSlowlyAsync(
         BackgroundTaskPriority::kBestEffort,
         base::BindOnce(&OriginalProfileGarbageCollectionService::
-                           OnGetAllSigningKeysForGarbageCollection,
+                           OnGetAllKeysForGarbageCollection,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnGetAllSigningKeysForGarbageCollection(
+  void OnGetAllKeysForGarbageCollection(
       ServiceErrorOr<std::vector<UnexportableKeyId>> key_ids_or_error) {
     if (!key_ids_or_error.has_value() || key_ids_or_error->empty()) {
       return;

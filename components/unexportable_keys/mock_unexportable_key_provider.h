@@ -47,7 +47,7 @@ class MockUnexportableKeyProvider
   // crypto::StatefulUnexportableKeyProvider:
   MOCK_METHOD(std::optional<
                   std::vector<std::unique_ptr<crypto::UnexportableSigningKey>>>,
-              GetAllSigningKeysSlowly,
+              GetAllKeysSlowly,
               (),
               (override));
   MOCK_METHOD(std::optional<size_t>,

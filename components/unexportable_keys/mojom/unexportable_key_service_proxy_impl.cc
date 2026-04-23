@@ -129,10 +129,10 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::
-    GetAllSigningKeysForGarbageCollection(
+    GetAllKeysForGarbageCollection(
         BackgroundTaskPriority priority,
-        GetAllSigningKeysForGarbageCollectionCallback callback) {
-  unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+        GetAllKeysForGarbageCollectionCallback callback) {
+  unexportable_key_service_->GetAllKeysForGarbageCollectionSlowlyAsync(
       priority, base::BindOnce(PopulateAllNewKeyData,
                                std::ref(*unexportable_key_service_))
                     .Then(std::move(callback)));

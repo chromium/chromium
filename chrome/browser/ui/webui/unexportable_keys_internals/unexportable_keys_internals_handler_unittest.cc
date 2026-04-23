@@ -79,8 +79,7 @@ class UnexportableKeysInternalsHandlerTest : public testing::Test {
 
 TEST_F(UnexportableKeysInternalsHandlerTest,
        GetUnexportableKeysInfoFailsToGetKeys) {
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(base::unexpected(
           unexportable_keys::ServiceError::kOperationNotSupported)));
 
@@ -97,8 +96,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   const unexportable_keys::UnexportableKeyId key_id_1;
   const unexportable_keys::UnexportableKeyId key_id_2;
 
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector{
           key_id_1,
           key_id_2,
@@ -135,8 +133,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   const unexportable_keys::UnexportableKeyId key_id_1;
   const unexportable_keys::UnexportableKeyId key_id_2;
 
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector{
           key_id_1,
           key_id_2,
@@ -175,8 +172,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   const unexportable_keys::UnexportableKeyId key_id_1;
   const unexportable_keys::UnexportableKeyId key_id_2;
 
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector{
           key_id_1,
           key_id_2,
@@ -218,8 +214,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   const unexportable_keys::UnexportableKeyId key_id_1;
   const unexportable_keys::UnexportableKeyId key_id_2;
 
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector{
           key_id_1,
           key_id_2,
@@ -273,8 +268,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
   const std::string key_tag_2 = "key_tag_2";
   const base::Time creation_time_2 = base::Time::Now();
 
-  EXPECT_CALL(mock_key_service(),
-              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+  EXPECT_CALL(mock_key_service(), GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(std::vector{
           key_id_1,
           key_id_2,

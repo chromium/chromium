@@ -70,10 +70,10 @@ TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {
   }
 }
 
-TEST_F(UnexportableKeyMacTest, GetAllSigningKeys) {
+TEST_F(UnexportableKeyMacTest, GetAllKeys) {
   // Initially, there should be no keys.
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(IsEmpty()));
 
   // Create one key.
@@ -82,7 +82,7 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeys) {
   ASSERT_NE(key1, nullptr);
 
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(UnorderedElementsAre(WrappedKeyEq(key1.get()))));
 
   // Create a second key.
@@ -91,12 +91,12 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeys) {
   ASSERT_NE(key2, nullptr);
 
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(UnorderedElementsAre(WrappedKeyEq(key1.get()),
                                     WrappedKeyEq(key2.get()))));
 }
 
-TEST_F(UnexportableKeyMacTest, GetAllSigningKeysFiltersByTag) {
+TEST_F(UnexportableKeyMacTest, GetAllKeysFiltersByTag) {
   ASSERT_TRUE(provider_);
   auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key);
@@ -116,16 +116,16 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeysFiltersByTag) {
 
   // The original provider should still only see its own key.
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(UnorderedElementsAre(WrappedKeyEq(key.get()))));
 
   // The other provider should only see its own key.
-  EXPECT_THAT(other_provider->AsStatefulUnexportableKeyProvider()
-                  ->GetAllSigningKeysSlowly(),
-              Optional(UnorderedElementsAre(WrappedKeyEq(other_key.get()))));
+  EXPECT_THAT(
+      other_provider->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+      Optional(UnorderedElementsAre(WrappedKeyEq(other_key.get()))));
 }
 
-TEST_F(UnexportableKeyMacTest, GetAllSigningKeysPerformsPrefixMatching) {
+TEST_F(UnexportableKeyMacTest, GetAllKeysPerformsPrefixMatching) {
   // 1. Create a key with the base tag "test-tag".
   UnexportableKeyProvider::Config config = config_;
   config.application_tag = "test-tag";
@@ -158,16 +158,15 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeysPerformsPrefixMatching) {
 
   // 4. Verify that the base provider sees both its own key and the extended
   // key.
-  EXPECT_THAT(
-      provider->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
-      Optional(UnorderedElementsAre(WrappedKeyEq(key1.get()),
-                                    WrappedKeyEq(key2.get()))));
+  EXPECT_THAT(provider->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+              Optional(UnorderedElementsAre(WrappedKeyEq(key1.get()),
+                                            WrappedKeyEq(key2.get()))));
 
   // 5. Verify that the extended provider only sees its own key.
   // It should NOT see "test-tag" because "test-tag.extension" is not a
   // prefix of "test-tag".
   EXPECT_THAT(extended_provider->AsStatefulUnexportableKeyProvider()
-                  ->GetAllSigningKeysSlowly(),
+                  ->GetAllKeysSlowly(),
               Optional(UnorderedElementsAre(WrappedKeyEq(key2.get()))));
 }
 
@@ -187,9 +186,9 @@ TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyRepairsKey) {
   ASSERT_TRUE(other_provider);
 
   // 3. Initially, the second provider should not see any keys.
-  EXPECT_THAT(other_provider->AsStatefulUnexportableKeyProvider()
-                  ->GetAllSigningKeysSlowly(),
-              Optional(IsEmpty()));
+  EXPECT_THAT(
+      other_provider->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+      Optional(IsEmpty()));
 
   // 4. Load the key using the second provider. This should trigger the
   //    repair/copy logic because the wrapped key (label) exists but the tag
@@ -205,16 +204,16 @@ TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyRepairsKey) {
   ASSERT_TRUE(signature);
 
   // 6. Verify that the key is now persisted for the second provider.
-  //    GetAllSigningKeysSlowly filters by the provider's tag, so it should now
+  //    GetAllKeysSlowly filters by the provider's tag, so it should now
   //    find the newly created entry.
-  EXPECT_THAT(other_provider->AsStatefulUnexportableKeyProvider()
-                  ->GetAllSigningKeysSlowly(),
-              Optional(UnorderedElementsAre(WrappedKeyEq(key_repaired.get()))));
+  EXPECT_THAT(
+      other_provider->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+      Optional(UnorderedElementsAre(WrappedKeyEq(key_repaired.get()))));
 
   // 7. Verify the original key is still accessible to the first provider.
   //    The repair operation should copy the key, not move/steal it.
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(UnorderedElementsAre(WrappedKeyEq(key_original.get()))));
 }
 
@@ -478,16 +477,16 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_PrecisionCollision) {
   EXPECT_EQ(scoped_fake_keychain_.keychain()->items().size(), 1u);
 
   // Verify that provider A no longer sees any keys.
-  // We use GetAllSigningKeysSlowly() here because it only returns keys
+  // We use GetAllKeysSlowly() here because it only returns keys
   // matching Tag A and does NOT trigger the repair logic.
   EXPECT_THAT(
-      provider_->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      provider_->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
       Optional(IsEmpty()));
 
   // Verify that provider B still sees its key.
-  EXPECT_THAT(provider_b->AsStatefulUnexportableKeyProvider()
-                  ->GetAllSigningKeysSlowly(),
-              Optional(SizeIs(1)));
+  EXPECT_THAT(
+      provider_b->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+      Optional(SizeIs(1)));
 }
 
 TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_TagMismatch) {

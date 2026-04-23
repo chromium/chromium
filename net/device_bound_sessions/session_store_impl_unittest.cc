@@ -651,7 +651,7 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
   const std::vector<uint8_t> kWrappedKey2 = {4, 5, 6};
   const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
 
-  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).WillRepeatedly([=] {
+  EXPECT_CALL(mock_key_provider, GetAllKeysSlowly).WillRepeatedly([=] {
     auto key1 = std::make_unique<unexportable_keys::MockUnexportableKey>();
     auto key2 = std::make_unique<unexportable_keys::MockUnexportableKey>();
     auto stale_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
@@ -671,7 +671,7 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
   base::test::TestFuture<unexportable_keys::ServiceErrorOr<
       std::vector<unexportable_keys::UnexportableKeyId>>>
       get_all_keys_future;
-  unexportable_key_service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  unexportable_key_service().GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       get_all_keys_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(
@@ -730,7 +730,7 @@ TEST_F(SessionStoreImplTest, GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
   unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
       SwitchToMockKeyProvider().mock();
 
-  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).Times(0);
+  EXPECT_CALL(mock_key_provider, GetAllKeysSlowly).Times(0);
   EXPECT_CALL(mock_key_provider, DeleteAllSigningKeysSlowly).Times(0);
 
   CreateStoreAndLoadSessions();

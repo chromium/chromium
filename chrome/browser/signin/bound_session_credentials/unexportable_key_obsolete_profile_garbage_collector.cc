@@ -98,15 +98,15 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
 }
 
 void UnexportableKeyObsoleteProfileGarbageCollector::StartGarbageCollection() {
-  user_data_dir_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  user_data_dir_service_->GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority::kBestEffort,
       base::BindOnce(&UnexportableKeyObsoleteProfileGarbageCollector::
-                         OnGetAllSigningKeysForGarbageCollection,
+                         OnGetAllKeysForGarbageCollection,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UnexportableKeyObsoleteProfileGarbageCollector::
-    OnGetAllSigningKeysForGarbageCollection(
+    OnGetAllKeysForGarbageCollection(
         ServiceErrorOr<std::vector<UnexportableKeyId>> key_ids_or_error) {
   if (!key_ids_or_error.has_value() || key_ids_or_error->empty()) {
     return;

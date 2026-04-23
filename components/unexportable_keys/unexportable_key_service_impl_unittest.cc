@@ -372,7 +372,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   ON_CALL(*key_b, GetKeyTag).WillByDefault(Return("TagB"));
 
   // Load all keys into the service.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(key_a),
@@ -381,7 +381,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto ids, get_all_future.Get());
@@ -427,14 +427,14 @@ TEST_F(
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysForGarbageCollectionSlowlyAsyncStatelessProvider) {
+       GetAllKeysForGarbageCollectionSlowlyAsyncStatelessProvider) {
   ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
                 ->AsStatefulUnexportableKeyProvider(),
             nullptr);
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_THAT(get_all_keys_future.Get(),
@@ -442,12 +442,12 @@ TEST_F(UnexportableKeyServiceImplTest,
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysForGarbageCollectionSlowlyAsyncAddsKeysToService) {
+       GetAllKeysForGarbageCollectionSlowlyAsyncAddsKeysToService) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   auto provider_key = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(kWrappedKey));
 
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(provider_key),
@@ -455,7 +455,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
 
@@ -475,8 +475,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   EXPECT_THAT(from_wrapped_future.Get(), ValueIs(key_id));
 }
 
-TEST_F(UnexportableKeyServiceImplTest,
-       FromWrappedSigningKeyBeforeGetAllSigningKeys) {
+TEST_F(UnexportableKeyServiceImplTest, FromWrappedSigningKeyBeforeGetAllKeys) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   MockUnexportableKeyProvider& mock_provider = SwitchToMockKeyProvider().mock();
 
@@ -491,17 +490,17 @@ TEST_F(UnexportableKeyServiceImplTest,
   service().FromWrappedSigningKeySlowlyAsync(kWrappedKey, kTaskPriority,
                                              from_wrapped_future.GetCallback());
 
-  // Then, `GetAllSigningKeysSlowly` will be called.
+  // Then, `GetAllKeysSlowly` will be called.
   auto key_for_get_all = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  EXPECT_CALL(mock_provider, GetAllSigningKeysSlowly())
+  EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(key_for_get_all),
           })));
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
 
   RunBackgroundTasks();
@@ -513,22 +512,21 @@ TEST_F(UnexportableKeyServiceImplTest,
   ASSERT_THAT(key_ids, ElementsAre(key_id));
 }
 
-TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysBeforeFromWrappedSigningKey) {
+TEST_F(UnexportableKeyServiceImplTest, GetAllKeysBeforeFromWrappedSigningKey) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   MockUnexportableKeyProvider& mock_provider = SwitchToMockKeyProvider().mock();
 
-  // First, `GetAllSigningKeysSlowly` will be called.
+  // First, `GetAllKeysSlowly` will be called.
   auto key_for_get_all = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  EXPECT_CALL(mock_provider, GetAllSigningKeysSlowly())
+  EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(key_for_get_all),
           })));
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
 
   // Then, `FromWrappedSigningKeySlowlyAsync` will be called.
@@ -552,14 +550,14 @@ TEST_F(UnexportableKeyServiceImplTest,
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysBeforeFromWrappedSigningKeyWithDeletion) {
+       GetAllKeysBeforeFromWrappedSigningKeyWithDeletion) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   MockUnexportableKeyProvider& mock_provider = SwitchToMockKeyProvider().mock();
 
-  // First, `GetAllSigningKeysSlowly` will be called.
+  // First, `GetAllKeysSlowly` will be called.
   auto key_for_get_all = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  EXPECT_CALL(mock_provider, GetAllSigningKeysSlowly())
+  EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(key_for_get_all),
@@ -568,11 +566,11 @@ TEST_F(UnexportableKeyServiceImplTest,
       get_all_keys_future;
 
   // Simulate a scenario where the key is deleted after it's returned by
-  // `GetAllSigningKeysSlowly`, but before `FromWrappedSigningKeySlowly`'s
+  // `GetAllKeysSlowly`, but before `FromWrappedSigningKeySlowly`'s
   // handling logic is executed. This should be handled gracefully.
-  // It is important that the GetAllSigningKeys task is scheduled before the
+  // It is important that the `GetAllKeys` task is scheduled before the
   // FromWrappedSigningKey task below.
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority,
       base::BindLambdaForTesting(
           [&](ServiceErrorOr<std::vector<UnexportableKeyId>> result) {
@@ -606,7 +604,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysForGarbageCollectionSlowlyAsyncWithKeyCollisions) {
+       GetAllKeysForGarbageCollectionSlowlyAsyncWithKeyCollisions) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   const std::string kTag1 = "tag1";
   const std::string kTag2 = "tag2";
@@ -621,7 +619,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   ON_CALL(*key2, GetKeyTag).WillByDefault(Return(kTag2));
 
   // The provider returns both keys.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(key1),
@@ -630,7 +628,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
 
@@ -649,7 +647,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysForGarbageCollectionSlowlyAsyncKeyAlreadyExists) {
+       GetAllKeysForGarbageCollectionSlowlyAsyncKeyAlreadyExists) {
   // Generate a key to have it in the service.
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
@@ -665,7 +663,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   auto provider_key = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(wrapped_key));
 
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(provider_key),
@@ -673,23 +671,23 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
 
-  // `GetAllSigningKeys` should return the existing key ID.
+  // `GetAllKeys` should return the existing key ID.
   ASSERT_OK_AND_ASSIGN(const auto& key_ids, get_all_keys_future.Get());
   ASSERT_THAT(key_ids, ElementsAre(existing_key_id));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllSigningKeysForGarbageCollectionSlowlyAsyncProviderFails) {
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+       GetAllKeysForGarbageCollectionSlowlyAsyncProviderFails) {
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
 
@@ -699,12 +697,12 @@ TEST_F(UnexportableKeyServiceImplTest,
 
 TEST_F(
     UnexportableKeyServiceImplTest,
-    GetAllSigningKeysForGarbageCollectionSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
+    GetAllKeysForGarbageCollectionSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   auto provider_key = std::make_unique<NiceMock<MockUnexportableKey>>();
   ON_CALL(*provider_key, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{1, 2, 3}));
 
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
               std::move(provider_key),
@@ -712,7 +710,7 @@ TEST_F(
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
       get_all_keys_future;
-  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  service().GetAllKeysForGarbageCollectionSlowlyAsync(
       kTaskPriority, get_all_keys_future.GetCallback());
 
   DestroyService();

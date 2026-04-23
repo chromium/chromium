@@ -58,10 +58,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   static std::unique_ptr<crypto::UnexportableKeyProvider>
   GetUnexportableKeyProvider(crypto::UnexportableKeyProvider::Config config);
 
-  // Retrieves all signing keys that are currently stored on the platform.
+  // Retrieves all keys that are currently stored on the platform.
   // Invokes `callback` with a list of all keys, or `ServiceError` if an error
   // occurs during retrieval.
-  void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+  void GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       BackgroundTaskPriority priority,
