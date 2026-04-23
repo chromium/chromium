@@ -82,6 +82,8 @@
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
@@ -246,6 +248,22 @@ void InjectNTP(Browser* browser) {
   browser->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::Automatic().Activate());
+}
+
+// Returns true if the profile is unmanaged according to
+// `policy::BrowserManagementService`. If the service is unavailable, the
+// management status is undefined and so the profile is potentially managed,
+// so this returns false.
+bool IsProfileUnmanaged(ProfileIOS* profile) {
+  policy::BrowserManagementService* service =
+      policy::BrowserManagementServiceFactory::GetForProfile(profile);
+  // If the profile does not have a `BrowserManagementService`, the management
+  // status is undefined and so the profile is potentially managed.
+  if (!service) {
+    return false;
+  }
+  // Otherwise, the profile is unmanaged if it is not managed.
+  return !service->IsManaged();
 }
 
 }  // namespace
@@ -1452,7 +1470,9 @@ void InjectNTP(Browser* browser) {
                           prefService:prefService]];
   }
 
-  if (web::features::IsCobaltEnabled()) {
+  // Add Cobalt scene agent if the feature is enabled and the profile management
+  // status is defined and unmanaged.
+  if (web::features::IsCobaltEnabled() && IsProfileUnmanaged(profile)) {
     ObservingSceneAgent* cobaltSceneAgent =
         ios::provider::CreateCobaltSceneAgent();
     if (cobaltSceneAgent) {
