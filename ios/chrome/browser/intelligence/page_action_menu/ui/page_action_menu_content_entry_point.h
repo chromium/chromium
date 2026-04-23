@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
+
 // Model class for an element in the footer displaying information on entry
 // points that aren't available.
 @interface ContentEntryPointUnavailabilityItem : NSObject
@@ -18,19 +20,11 @@
 // Optional "url" associated with the link in the text; this is not a valid
 // url per say and only gets used to uniquely identify the link during handling.
 @property(nonatomic, copy) NSString* actionIdentifier;
+// Identifier used to log the impression of this unavailability item.
+@property(nonatomic, assign) IOSPageActionMenuFooterReason metricIdentifier;
 
+// Initializers are intentionally unavailable. Use factory methods instead.
 - (instancetype)init NS_UNAVAILABLE;
-// Convenience initializer for texts without associated icons nor links.
-- (instancetype)initWithText:(NSString*)text;
-// Convenience initializer for texts and icon without associated links.
-- (instancetype)initWithText:(NSString*)text icon:(UIImage*)icon;
-// Designated initializer that minimally requires the text. The icon and action
-// identifier are optional.
-- (instancetype)initWithText:(NSString*)text
-                        icon:(UIImage*)icon
-            actionIdentifier:(NSString*)actionIdentifier
-    NS_DESIGNATED_INITIALIZER;
-
 // Factory for an item linked to enterprise policies with Gemini.
 + (instancetype)geminiEnterprise;
 // Factory for an item linked to enterprise policies with Lens.

@@ -29,3 +29,7 @@ void RecordPageActionMenuFeatureRowSettingsOpened(
   base::UmaHistogramEnumeration("IOS.PageActionMenu.FeatureRowSettingsOpened",
                                 feature_type);
 }
+
+void RecordPageActionMenuFooterRowShown(IOSPageActionMenuFooterReason reason) {
+  base::UmaHistogramEnumeration("IOS.PageActionMenu.Footer.RowShown", reason);
+}

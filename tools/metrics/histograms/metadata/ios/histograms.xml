@@ -4881,6 +4881,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PageActionMenu.Footer.RowShown"
+    enum="IOSPageActionMenuFooterReason" expires_after="2026-11-21">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records when an ineligibility disclaimer is shown to the user in the Page
+    Action Menu footer.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PageContext.AnnotatedPageContent.{Config}.ByteSize"
     units="bytes" expires_after="2026-10-31">
   <owner>nicolasmacbeth@google.com</owner>

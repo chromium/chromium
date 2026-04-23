@@ -888,6 +888,7 @@ const CGFloat kDividerWidth = 1.0;
   for (ContentEntryPointUnavailabilityItem* item in items) {
     UIView* view = [self createFooterItemWithConfiguration:item];
     [_footerStackView addArrangedSubview:view];
+    RecordPageActionMenuFooterRowShown(item.metricIdentifier);
   }
 
   // Hide the container view when no unavailability items exist.
@@ -1450,7 +1451,7 @@ const CGFloat kDividerWidth = 1.0;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.clipsToBounds = YES;
 
-  //  Add icon to the left
+  // Add icon to the left
   UIImageView* imageView = [[UIImageView alloc] initWithImage:item.icon];
   imageView.contentMode = UIViewContentModeScaleAspectFit;
   imageView.translatesAutoresizingMaskIntoConstraints = NO;

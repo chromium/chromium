@@ -37,23 +37,17 @@ const CGFloat kIconSize = 20;
 
 @implementation ContentEntryPointUnavailabilityItem
 
-- (instancetype)initWithText:(NSString*)text {
-  return [self initWithText:text icon:nil actionIdentifier:nil];
-}
-
-- (instancetype)initWithText:(NSString*)text icon:(UIImage*)icon {
-  return [self initWithText:text icon:icon actionIdentifier:nil];
-}
-
 - (instancetype)initWithText:(NSString*)text
                         icon:(UIImage*)icon
-            actionIdentifier:(NSString*)actionIdentifier {
+            actionIdentifier:(NSString*)actionIdentifier
+            metricIdentifier:(IOSPageActionMenuFooterReason)metricIdentifier {
   CHECK(text);
   self = [super init];
   if (self) {
     _text = [text copy];
     _icon = icon;
     _actionIdentifier = [actionIdentifier copy];
+    _metricIdentifier = metricIdentifier;
   }
   return self;
 }
@@ -63,8 +57,11 @@ const CGFloat kIconSize = 20;
       IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_ENTERPRISE_LABEL);
   UIImage* icon = [CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  return [[ContentEntryPointUnavailabilityItem alloc] initWithText:text
-                                                              icon:icon];
+  return [[ContentEntryPointUnavailabilityItem alloc]
+          initWithText:text
+                  icon:icon
+      actionIdentifier:nil
+      metricIdentifier:IOSPageActionMenuFooterReason::kGeminiEnterprise];
 }
 
 + (instancetype)lensEnterprise {
@@ -72,8 +69,11 @@ const CGFloat kIconSize = 20;
       l10n_util::GetNSString(IDS_IOS_AI_HUB_LENS_UNAVAILABLE_ENTERPRISE_LABEL);
   UIImage* icon = [CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  return [[ContentEntryPointUnavailabilityItem alloc] initWithText:text
-                                                              icon:icon];
+  return [[ContentEntryPointUnavailabilityItem alloc]
+          initWithText:text
+                  icon:icon
+      actionIdentifier:nil
+      metricIdentifier:IOSPageActionMenuFooterReason::kLensEnterprise];
 }
 
 + (instancetype)lensSearchEngine {
@@ -82,6 +82,7 @@ const CGFloat kIconSize = 20;
   return [[ContentEntryPointUnavailabilityItem alloc]
           initWithText:text
                   icon:nil
-      actionIdentifier:kSearchEngineSettingsActionIdentifier];
+      actionIdentifier:kSearchEngineSettingsActionIdentifier
+      metricIdentifier:IOSPageActionMenuFooterReason::kLensSearchEngine];
 }
 @end

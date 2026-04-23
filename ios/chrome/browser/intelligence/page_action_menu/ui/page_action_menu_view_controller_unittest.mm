@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +37,7 @@
 - (void)handleReaderModeTapped:(UIButton*)button;
 - (void)handleReaderModeOptionsTapped:(UIButton*)button;
 - (void)dismissPageActionMenu;
+- (void)updateFooterContent;
 @end
 
 namespace {
@@ -112,9 +117,6 @@ class PageActionMenuViewControllerTest : public PlatformTest {
     OCMStub([mock_mutator_ lensEntryPointForTraitCollection:[OCMArg any]])
         .andReturn(enabledEntryPoint);
     OCMStub([mock_mutator_ readerModeEntryPoint]).andReturn(enabledEntryPoint);
-
-    OCMStub([mock_mutator_ unavailabilityItemsForTraitCollection:[OCMArg any]])
-        .andReturn(@[]);
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -362,4 +364,36 @@ TEST_F(PageActionMenuViewControllerTest, GeminiButtonTapped) {
   id self = nil;
   OCMVerifyAll(mock_page_action_menu_handler_);
   OCMVerifyAll(mock_bwg_handler_);
+}
+
+// Tests that loading the view with ineligibility reasons logs impressions.
+TEST_F(PageActionMenuViewControllerTest, FooterRowShownMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPageToolsFeatureUnavailability);
+  base::HistogramTester histogram_tester;
+  ContentEntryPointUnavailabilityItem* item =
+      [ContentEntryPointUnavailabilityItem geminiEnterprise];
+  OCMStub([mock_mutator_ unavailabilityItemsForTraitCollection:[OCMArg any]])
+      .andReturn(@[ item ]);
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ updateFooterContent];
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "IOS.PageActionMenu.Footer.RowShown",
+                IOSPageActionMenuFooterReason::kGeminiEnterprise),
+            0);
+}
+
+// Tests that loading the view without ineligibility reasons doesn't log
+// impressions.
+TEST_F(PageActionMenuViewControllerTest, FooterRowNotShownMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPageToolsFeatureUnavailability);
+  base::HistogramTester histogram_tester;
+  OCMStub([mock_mutator_ unavailabilityItemsForTraitCollection:[OCMArg any]])
+      .andReturn(@[]);
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ updateFooterContent];
+  histogram_tester.ExpectTotalCount("IOS.PageActionMenu.Footer.RowShown", 0);
 }

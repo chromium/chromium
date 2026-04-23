@@ -1391,6 +1391,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSPageActionMenuFeatureType) -->
 
+<!-- LINT.IfChange(IOSPageActionMenuFooterReason) -->
+
+<enum name="IOSPageActionMenuFooterReason">
+  <summary>
+    Reason for showing an ineligibility disclaimer in the Page Action Menu
+    footer.
+  </summary>
+  <int value="0" label="Gemini - Enterprise Policies"/>
+  <int value="1" label="Lens - Enterprise Policies"/>
+  <int value="2" label="Lens - Non Google Search Engine"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSPageActionMenuFooterReason) -->
+
 <enum name="IOSPageLoadCountNavigationType">
   <int value="0" label="Chrome URL Navigation"/>
   <int value="1" label="Same Document Web Navigation"/>
