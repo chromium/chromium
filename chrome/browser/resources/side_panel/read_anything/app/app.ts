@@ -467,6 +467,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.speechController_.onPlayPauseToggle(this.$.container);
   }
 
+  ///////////////////////// LineFocusListener methods //////////////////////////
   onLineFocusMove(): void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
@@ -503,9 +504,28 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
     this.lineFocusMovement_ =
         this.lineFocusController_.getCurrentLineFocusMovement();
-    this.setLineFocus_();
+    this.setLineFocusStyle_();
     this.requestUpdate();
   }
+
+  onScrollBufferForLineFocusChange(needsBuffer: boolean): void {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    const oldPadding = this.styleUpdater_.getPaddingForLineFocus();
+    const newPadding =
+        needsBuffer ? Math.floor(this.$.containerParent.offsetHeight / 2) : 0;
+    if (oldPadding !== newPadding) {
+      this.styleUpdater_.setPaddingForLineFocus(newPadding);
+      const paddingDiff = newPadding - oldPadding;
+      // Maintain the same scroll position even after adding or removing padding
+      // by scrolling by the difference in padding.
+      this.$.containerScroller.scrollBy(
+          {top: paddingDiff, behavior: 'instant'});
+    }
+  }
+  /////////////////////// end LineFocusListener methods ////////////////////////
 
   onContentStateChange(): void {
     this.contentState_ = this.contentController_.getState();
@@ -622,7 +642,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
           chrome.readingMode.lastNonDisabledLineFocus,
           chrome.readingMode.isLineFocusOn, this.$.container,
           this.$.appFlexParent.clientHeight);
-      this.setLineFocus_();
+      this.setLineFocusStyle_();
     }
     // TODO: crbug.com/40927698 - Remove this call. Using this.settingsPrefs_
     // should replace this direct call to the toolbar.
@@ -688,7 +708,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.$.appFlexParent.clientHeight);
       this.lineFocusStyle_ =
           this.lineFocusController_.getCurrentLineFocusStyle();
-      this.setLineFocus_();
+      this.setLineFocusStyle_();
     }
   }
 
@@ -700,40 +720,23 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.$.appFlexParent.clientHeight);
       this.lineFocusMovement_ =
           this.lineFocusController_.getCurrentLineFocusMovement();
-      this.setLineFocus_();
+      this.setLineFocusStyle_();
     }
   }
 
-  private setLineFocus_() {
+  private setLineFocusStyle_() {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
     this.styleUpdater_.setLineFocusStyle(
         this.lineFocusController_.getCurrentLineFocusType());
-
-    const oldPadding = this.styleUpdater_.getPaddingForLineFocus();
-    // Add padding so the top and bottom lines of the page can still be
-    // focused even though static line focus stays in the middle.
-    const shouldAddPadding = this.lineFocusController_.isEnabled() &&
-        this.lineFocusController_.isStatic();
-    const newPadding = shouldAddPadding ?
-        Math.floor(this.$.containerParent.clientHeight / 2) :
-        0;
-    if (oldPadding !== newPadding) {
-      this.styleUpdater_.setPaddingForLineFocus(newPadding);
-      const paddingDiff = newPadding - oldPadding;
-      // Maintain the same scroll position even after adding or removing padding
-      // by scrolling by the difference in padding.
-      this.$.containerScroller.scrollBy(
-          {top: paddingDiff, behavior: 'instant'});
-    }
   }
 
   private onTextLocationsChange_() {
     if (chrome.readingMode.isLineFocusEnabled) {
       if (this.lineFocusController_.isEnabled()) {
         const padding = this.lineFocusController_.isStatic() ?
-            Math.floor(this.$.containerParent.clientHeight / 2) :
+            Math.floor(this.$.containerParent.offsetHeight / 2) :
             0;
         this.styleUpdater_.setPaddingForLineFocus(padding);
       }

@@ -224,6 +224,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('line focus style change updates padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    app.connectedCallback();
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
@@ -263,6 +264,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('line focus movement change updates padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    app.connectedCallback();
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});

@@ -4,7 +4,7 @@
 import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {getRectIndexAtY, getRectsForSegments} from '../shared/dom_queries.js';
+import {getRectIndexAtY} from '../shared/dom_queries.js';
 import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
@@ -18,9 +18,12 @@ export interface LineFocusListener {
   onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusToggled(): void;
+  onScrollBufferForLineFocusChange(needsBuffer: boolean): void;
 }
 
-// Handles the business logic for managing the line focus feature.
+// Coordinates the business logic for managing the line focus feature by
+// managing the line focus model and delegating movement and style behaviors
+// to specialized strategies.
 export class LineFocusController implements MoveModeDelegate {
   private readonly listeners_: LineFocusListener[] = [];
   private model_: LineFocusModel = new LineFocusModel();
@@ -132,28 +135,16 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onMouseMove(y: number) {
-    // Line focus should follow along with speech if it's active, so ignore
-    // mouse movements.
-    if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
-        !this.isStatic()) {
-      this.model_.setCurrentLineIndex(null);
-      const previousY = this.model_.getFocalPoint();
-      this.model_.getCurrentMoveMode().setFocalPoint(
-          Math.max(this.model_.getMinY(), y));
-      chrome.readingMode.addLineFocusMouseDistance(
-          Math.round(Math.abs(this.model_.getFocalPoint() - previousY)));
+    if (chrome.readingMode.isLineFocusEnabled &&
+        !this.speechController_.isSpeechActive()) {
+      this.model_.getCurrentMoveMode().onMouseMove(y);
     }
   }
 
   onMouseMoveInToolbar(y: number) {
-    if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
-        !this.isStatic()) {
-      // Store the new position, but do not notify listeners since the mouse is
-      // in the toolbar, which means they are likely trying to change some
-      // settings. onAllMenusClose will notify them of the final position when
-      // all the settings menus are closed.
-      this.model_.getCurrentMoveMode().setFocalPoint(
-          Math.max(this.model_.getMinY(), y), /* quietly= */ true);
+    if (chrome.readingMode.isLineFocusEnabled &&
+        !this.speechController_.isSpeechActive()) {
+      this.model_.getCurrentMoveMode().onMouseMoveInToolbar(y);
     }
   }
 
@@ -162,32 +153,8 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onWordBoundary(segments: Segment[]) {
-    if (!this.isEnabled()) {
-      return;
-    }
-
-    const sortedRects = getRectsForSegments(segments);
-    if (!sortedRects.length) {
-      return;
-    }
-
-    if (this.model_.getFocalPoint() !==
-        this.model_.getCurrentStyleMode().getFocalPointForRect(
-            sortedRects[0]!)) {
-      chrome.readingMode.incrementLineFocusSpeechLines();
-    }
-    this.model_.getCurrentMoveMode().moveToRect(sortedRects[0]!);
-
-    // If line focus would go off screen, scroll the text to the center.
-    const height = this.getHeight() || 0;
-    const bottom = this.getTop() + height;
-    if (bottom > this.model_.getMaxY()) {
-      this.model_.getCurrentMoveMode().scroll(
-          bottom - (this.model_.getMaxY() / 2));
-    } else if (this.getTop() < this.model_.getMinY()) {
-      this.model_.getCurrentMoveMode().scroll(
-          this.model_.getMinY() + this.model_.getFocalPoint() -
-          (this.model_.getMaxY() / 2));
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.model_.getCurrentMoveMode().onWordBoundary(segments);
     }
   }
 
@@ -261,13 +228,10 @@ export class LineFocusController implements MoveModeDelegate {
   private setStyleAndMovement_(
       style: LineFocusStyle, movement: LineFocusMovement,
       container: HTMLElement, height: number) {
-    const wasEnabled = this.isEnabled();
     this.updateStrategies_(style, movement);
     this.propagateLineFocus_(style, movement);
     this.model_.getCurrentMoveMode().onActivated(container, height);
-    if (style !== LineFocusStyle.OFF) {
-      this.updateLineFocus_(wasEnabled, container, height);
-    }
+    this.calculateNewPositions_(container, height);
   }
 
   private updateStrategies_(
@@ -289,20 +253,6 @@ export class LineFocusController implements MoveModeDelegate {
         new LineFocusStaticMoveMode(this.model_, styleMode, this) :
         new LineFocusCursorMoveMode(this.model_, styleMode, this);
     this.model_.setCurrentMoveMode(moveMode);
-  }
-
-  private updateLineFocus_(
-      wasEnabled: boolean, container: HTMLElement, height: number) {
-    this.calculateNewPositions_(container, height);
-    if (this.isStatic()) {
-      this.setCenterY_();
-    } else if (!wasEnabled && this.model_.getTextBounds().length > 0) {
-      this.model_.getCurrentMoveMode().initializeSnapIndex(
-          this.model_.getTextBounds(), /*isForward=*/ true);
-    } else {
-      this.model_.getCurrentMoveMode().setFocalPoint(
-          Math.max(this.model_.getMinY(), this.model_.getFocalPoint()));
-    }
   }
 
   private propagateLineFocus_(
@@ -430,6 +380,11 @@ export class LineFocusController implements MoveModeDelegate {
   notifyScroll(scrollDiff: number, instant?: boolean): void {
     this.listeners_.forEach(
         l => l.onNeedScrollForLineFocus(scrollDiff, instant));
+  }
+
+  notifyScrollBuffer(needsBuffer: boolean): void {
+    this.listeners_.forEach(
+        l => l.onScrollBufferForLineFocusChange(needsBuffer));
   }
 
   onSessionEnd(): void {
