@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
   [[nodiscard]] HANDLE ReleaseHandle() {
     DCHECK_EQ(type_, Type::kHandle);
     type_ = Type::kNone;
-    return handle_.Take();
+    return handle_.release();
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   bool is_valid() const { return is_valid_fd() || is_valid_handle(); }

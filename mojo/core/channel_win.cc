@@ -218,7 +218,7 @@ class ChannelWin : public Channel,
     CHECK(handle_.is_valid());
     CancelIo(handle_.get());
     if (leak_handle_) {
-      std::ignore = handle_.Take();
+      std::ignore = handle_.release();
     } else {
       handle_.Close();
     }

@@ -206,8 +206,9 @@ void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
       shared_image_mailbox_created_ = true;
       gpu::Mailbox mailbox = CreateSharedImage();
       client_->OnSharedImageMailboxBound(mailbox);
-    } else
+    } else {
       DLOG(ERROR) << "Unable to call client_->OnSharedImageMailboxBound";
+    }
   }
 }
 
@@ -232,7 +233,7 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
     return;
   }
 
-  surface_handle_.Set(surface_handle.Take());
+  surface_handle_.Set(surface_handle.release());
   std::move(callback).Run(true);
 }
 

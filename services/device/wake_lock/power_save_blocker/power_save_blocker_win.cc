@@ -33,7 +33,7 @@ HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
   }
 
   if (::PowerSetRequest(handle.Get(), type))
-    return handle.Take();
+    return handle.release();
 
   // Something went wrong.
   return INVALID_HANDLE_VALUE;
@@ -97,9 +97,9 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
 
 void PowerSaveBlocker::Delegate::RemoveBlock() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DeletePowerRequest(RequestType(), handle_.Take());
+  DeletePowerRequest(RequestType(), handle_.release());
   DeletePowerRequest(PowerRequestSystemRequired,
-                     system_sleep_prevention_handle_.Take());
+                     system_sleep_prevention_handle_.release());
 }
 
 POWER_REQUEST_TYPE PowerSaveBlocker::Delegate::RequestType() {

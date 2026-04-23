@@ -62,7 +62,7 @@ class GenericScopedHandle {
 
   GenericScopedHandle(GenericScopedHandle&& other)
       : handle_(Traits::NullHandle()) {
-    Set(other.Take());
+    Set(other.release());
   }
 
   GenericScopedHandle(const GenericScopedHandle&) = delete;
@@ -74,7 +74,7 @@ class GenericScopedHandle {
 
   GenericScopedHandle& operator=(GenericScopedHandle&& other) {
     DCHECK_NE(this, &other);
-    Set(other.Take());
+    Set(other.release());
     return *this;
   }
 

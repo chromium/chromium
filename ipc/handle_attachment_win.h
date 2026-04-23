@@ -33,7 +33,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT HandleAttachmentWin
   // MessageAttachment interface.
   Type GetType() const override;
 
-  HANDLE Take() { return handle_.Take(); }
+  HANDLE Take() { return handle_.release(); }
 
  private:
   ~HandleAttachmentWin() override;
