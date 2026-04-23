@@ -184,6 +184,80 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityAnnotation) {
   EXPECT_EQ(retrieved[0].second.steps().at(1).description(), "Step 1");
 }
 
+TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityData) {
+  const Recording recording = CreateLoginRecording();
+
+  base::test::TestFuture<int64_t> id_future;
+  data_manager().AddRecording(recording, id_future.GetCallback());
+  int64_t recording_id = id_future.Get();
+  ASSERT_GT(recording_id, 0);
+
+  ActivityAnnotation annotation;
+  annotation.set_title("Test Title");
+  base::test::TestFuture<void> anno_future;
+  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
+                                        recording.url(), recording_id,
+                                        anno_future.GetCallback());
+  anno_future.Get();
+
+  ActivityData data;
+  StepDataValues values;
+  (*values.mutable_values())["key1"] = "value1";
+  (*data.mutable_step_data())[1] = values;
+
+  base::test::TestFuture<bool> save_future;
+  data_manager().SaveActivityData(recording_id, data,
+                                  save_future.GetCallback());
+  EXPECT_TRUE(save_future.Get());
+
+  base::test::TestFuture<std::optional<ActivityData>> get_future;
+  data_manager().GetActivityData(recording_id, get_future.GetCallback());
+  std::optional<ActivityData> retrieved_data = get_future.Get();
+
+  ASSERT_TRUE(retrieved_data.has_value());
+  EXPECT_EQ(retrieved_data->step_data().at(1).values().at("key1"), "value1");
+}
+
+TEST_F(RecordingDataManagerImplTest, DeleteActivityData) {
+  const Recording recording = CreateLoginRecording();
+
+  base::test::TestFuture<int64_t> id_future;
+  data_manager().AddRecording(recording, id_future.GetCallback());
+  int64_t recording_id = id_future.Get();
+
+  ActivityAnnotation annotation;
+  base::test::TestFuture<void> anno_future;
+  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
+                                        recording.url(), recording_id,
+                                        anno_future.GetCallback());
+  anno_future.Get();
+
+  ActivityData data;
+  (*data.mutable_step_data())[1] = StepDataValues();
+
+  base::test::TestFuture<bool> save_future;
+  data_manager().SaveActivityData(recording_id, data,
+                                  save_future.GetCallback());
+  ASSERT_TRUE(save_future.Get());
+
+  base::test::TestFuture<bool> delete_future;
+  data_manager().DeleteActivityData(recording_id, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+
+  base::test::TestFuture<std::optional<ActivityData>> get_future;
+  data_manager().GetActivityData(recording_id, get_future.GetCallback());
+  EXPECT_FALSE(get_future.Get().has_value());
+}
+
+TEST_F(RecordingDataManagerImplTest, SaveActivityDataWithInvalidIdFails) {
+  ActivityData data;
+  (*data.mutable_step_data())[1] = StepDataValues();
+
+  base::test::TestFuture<bool> save_future;
+  data_manager().SaveActivityData(9999, data, save_future.GetCallback());
+  EXPECT_FALSE(save_future.Get());
+}
+
 }  // namespace
 
 }  // namespace record_replay

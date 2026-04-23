@@ -51,6 +51,14 @@ class RecordingDataManagerImpl : public RecordingDataManager {
       base::OnceCallback<
           void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback)
       override;
+  void SaveActivityData(int64_t annotation_id,
+                        ActivityData data,
+                        base::OnceCallback<void(bool)> callback) override;
+  void GetActivityData(
+      int64_t annotation_id,
+      base::OnceCallback<void(std::optional<ActivityData>)> callback) override;
+  void DeleteActivityData(int64_t annotation_id,
+                          base::OnceCallback<void(bool)> callback) override;
 
  private:
   base::SequenceBound<CapabilitiesDatabase> db_;

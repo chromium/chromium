@@ -53,6 +53,20 @@ class RecordingDataManager : public KeyedService {
       std::string url,
       base::OnceCallback<void(
           std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback) = 0;
+
+  // Saves or updates activity data for an annotation.
+  virtual void SaveActivityData(int64_t annotation_id,
+                                ActivityData data,
+                                base::OnceCallback<void(bool)> callback) = 0;
+
+  // Retrieves activity data for an annotation.
+  virtual void GetActivityData(
+      int64_t annotation_id,
+      base::OnceCallback<void(std::optional<ActivityData>)> callback) = 0;
+
+  // Deletes activity data for an annotation.
+  virtual void DeleteActivityData(int64_t annotation_id,
+                                  base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace record_replay

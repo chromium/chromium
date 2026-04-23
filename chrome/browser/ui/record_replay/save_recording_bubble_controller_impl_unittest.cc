@@ -44,6 +44,21 @@ class MockRecordingDataManager : public RecordingDataManager {
        base::OnceCallback<
            void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback),
       (override));
+  MOCK_METHOD(void,
+              SaveActivityData,
+              (int64_t annotation_id,
+               ActivityData data,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(void,
+              GetActivityData,
+              (int64_t annotation_id,
+               base::OnceCallback<void(std::optional<ActivityData>)> callback),
+              (override));
+  MOCK_METHOD(void,
+              DeleteActivityData,
+              (int64_t annotation_id, base::OnceCallback<void(bool)> callback),
+              (override));
 };
 
 class SaveRecordingBubbleControllerImplTest : public testing::Test {};

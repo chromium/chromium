@@ -66,4 +66,29 @@ void RecordingDataManagerImpl::GetActivityAnnotationsByUrl(
       .Then(std::move(callback));
 }
 
+void RecordingDataManagerImpl::SaveActivityData(
+    int64_t annotation_id,
+    ActivityData data,
+    base::OnceCallback<void(bool)> callback) {
+  db_.AsyncCall(&CapabilitiesDatabase::SaveActivityData)
+      .WithArgs(annotation_id, std::move(data))
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::GetActivityData(
+    int64_t annotation_id,
+    base::OnceCallback<void(std::optional<ActivityData>)> callback) {
+  db_.AsyncCall(&CapabilitiesDatabase::GetActivityData)
+      .WithArgs(annotation_id)
+      .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::DeleteActivityData(
+    int64_t annotation_id,
+    base::OnceCallback<void(bool)> callback) {
+  db_.AsyncCall(&CapabilitiesDatabase::DeleteActivityData)
+      .WithArgs(annotation_id)
+      .Then(std::move(callback));
+}
+
 }  // namespace record_replay

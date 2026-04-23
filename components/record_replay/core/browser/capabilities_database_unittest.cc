@@ -69,4 +69,33 @@ TEST_F(CapabilitiesDatabaseTest, GetActivityAnnotationForNonExistentId) {
   EXPECT_FALSE(db_.GetActivityAnnotation(99999).has_value());
 }
 
+TEST_F(CapabilitiesDatabaseTest, CascadeDeleteActivityData) {
+  Recording recording;
+  recording.set_url("https://example.com");
+  int64_t recording_id = db_.AddRecording(recording);
+
+  ActivityAnnotation annotation;
+  annotation.set_title("Test Annotation");
+  db_.SaveActivityAnnotation(std::nullopt, annotation, "https://example.com",
+                             recording_id);
+
+  std::vector<std::pair<int64_t, ActivityAnnotation>> retrieved =
+      db_.GetActivityAnnotationsByUrl("https://example.com");
+  ASSERT_EQ(retrieved.size(), 1u);
+  int64_t annotation_id = retrieved[0].first;
+
+  ActivityData data;
+  (*data.mutable_step_data())[0].mutable_values()->insert({"key", "value"});
+  EXPECT_TRUE(db_.SaveActivityData(annotation_id, data));
+
+  // Verify data is there.
+  EXPECT_TRUE(db_.GetActivityData(annotation_id).has_value());
+
+  // Delete the annotation.
+  EXPECT_TRUE(db_.DeleteActivityAnnotation(annotation_id));
+
+  // Verify data is gone due to cascade delete.
+  EXPECT_FALSE(db_.GetActivityData(annotation_id).has_value());
+}
+
 }  // namespace record_replay

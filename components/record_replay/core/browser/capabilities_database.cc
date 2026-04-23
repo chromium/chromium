@@ -49,8 +49,9 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
-  // Enable foreign key support.
-  std::ignore = db_.Execute("PRAGMA foreign_keys = ON");
+  if (!db_.Execute("PRAGMA foreign_keys = ON")) {
+    return;
+  }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -60,6 +61,7 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("wipe-recordings")) {
     std::ignore = db_.Execute("DROP TABLE IF EXISTS Recordings");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityAnnotations");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityData");
   }
 
   if (!CreateRecordingsTable()) {
@@ -67,6 +69,10 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
   }
 
   if (!CreateActivityAnnotationsTable()) {
+    return;
+  }
+
+  if (!CreateActivityDataTable()) {
     return;
   }
 
@@ -130,6 +136,22 @@ bool CapabilitiesDatabase::CreateActivityAnnotationsTable() {
   return db_.Execute(
       "CREATE INDEX IF NOT EXISTS activity_annotations_url ON "
       "ActivityAnnotations(target_url)");
+}
+
+bool CapabilitiesDatabase::CreateActivityDataTable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_.DoesTableExist("ActivityData")) {
+    return true;
+  }
+
+  static constexpr char kSql[] =
+      "CREATE TABLE ActivityData("
+      "annotation_id INTEGER PRIMARY KEY,"
+      "proto BLOB,"
+      "FOREIGN KEY(annotation_id) REFERENCES "
+      "ActivityAnnotations(annotation_id) "
+      "ON DELETE CASCADE)";
+  return db_.Execute(kSql);
 }
 
 int64_t CapabilitiesDatabase::AddRecording(Recording recording) {
@@ -243,6 +265,57 @@ CapabilitiesDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
     }
   }
   return annotations;
+}
+
+bool CapabilitiesDatabase::SaveActivityData(int64_t annotation_id,
+                                            const ActivityData& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "INSERT OR REPLACE INTO ActivityData(annotation_id, proto) "
+      "VALUES(?, ?)";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, annotation_id);
+  statement.BindBlob(1, data.SerializeAsString());
+
+  return statement.Run();
+}
+
+std::optional<ActivityData> CapabilitiesDatabase::GetActivityData(
+    int64_t annotation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT proto FROM ActivityData WHERE annotation_id=?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, annotation_id);
+
+  if (statement.Step()) {
+    ActivityData data;
+    if (data.ParseFromString(statement.ColumnBlobAsString(0))) {
+      return data;
+    }
+  }
+
+  return std::nullopt;
+}
+
+bool CapabilitiesDatabase::DeleteActivityData(int64_t annotation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "DELETE FROM ActivityData WHERE annotation_id=?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, annotation_id);
+
+  return statement.Run();
+}
+
+bool CapabilitiesDatabase::DeleteActivityAnnotation(int64_t annotation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "DELETE FROM ActivityAnnotations WHERE annotation_id=?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, annotation_id);
+
+  return statement.Run();
 }
 
 }  // namespace record_replay

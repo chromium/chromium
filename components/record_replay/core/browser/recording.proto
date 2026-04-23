@@ -83,3 +83,14 @@ message StepAnnotation {
   string description = 1;
   repeated string expected_data_keys = 2;
 }
+
+message ActivityData {
+  // Maps step index to the data values.
+  map<int32, StepDataValues> step_data = 1;
+}
+
+message StepDataValues {
+  // Maps data key to its value. The keys are from StepAnnotation
+  // expected_data_keys.
+  map<string, string> values = 1;
+}

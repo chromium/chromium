@@ -54,6 +54,18 @@ class CapabilitiesDatabase {
   std::vector<std::pair<int64_t, ActivityAnnotation>>
   GetActivityAnnotationsByUrl(const std::string& url);
 
+  // Saves or updates activity data for an annotation.
+  bool SaveActivityData(int64_t annotation_id, const ActivityData& data);
+
+  // Retrieves activity data for an annotation.
+  std::optional<ActivityData> GetActivityData(int64_t annotation_id);
+
+  // Deletes activity data for an annotation.
+  bool DeleteActivityData(int64_t annotation_id);
+
+  // Deletes an activity annotation.
+  bool DeleteActivityAnnotation(int64_t annotation_id);
+
  private:
   // Returns the current version of the database.
   int GetDatabaseVersion();
@@ -66,6 +78,9 @@ class CapabilitiesDatabase {
 
   // Creates the "ActivityAnnotations" table if it doesn't exist.
   bool CreateActivityAnnotationsTable();
+
+  // Creates the "ActivityData" table if it doesn't exist.
+  bool CreateActivityDataTable();
 
   sql::Database db_;
 
