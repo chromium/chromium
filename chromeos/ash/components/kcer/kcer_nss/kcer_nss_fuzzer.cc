@@ -522,7 +522,8 @@ void CertGenerator::GenerateCert() {
     }
   }
   if (GetBool()) {
-    std::vector<std::string> memory_holder;
+    // Use std::deque so the memory is not moved when the container grows.
+    std::deque<std::string> memory_holder;
     std::vector<bssl::der::Input> purpose_oids;
     while (GetBool()) {
       memory_holder.push_back(GetString());
