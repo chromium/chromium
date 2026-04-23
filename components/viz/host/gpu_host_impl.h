@@ -151,8 +151,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
     kSuccess,
   };
   using EstablishChannelCallback =
-      base::OnceCallback<void(mojo::ScopedMessagePipeHandle,
-                              const gpu::GPUInfo&,
+      base::OnceCallback<void(const gpu::GPUInfo&,
                               const gpu::GpuFeatureInfo&,
                               const gpu::SharedImageCapabilities&,
                               EstablishChannelStatus)>;
@@ -194,12 +193,14 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
                            bool is_gpu_host,
                            bool enable_extra_handles_validation,
                            bool sync,
+                           mojo::ScopedMessagePipeHandle handle,
                            EstablishChannelCallback callback);
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
   void SetChannelDiskCacheHandle(int client_id,
                                  const gpu::GpuDiskCacheHandle& handle);
   void RemoveChannelDiskCacheHandles(int client_id);
   void CloseChannel(int client_id);
+  void CancelEstablishGpuChannel(int client_id);
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   // Command as a Json string that the visual debugging instance interprets as
@@ -254,7 +255,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void OnChannelEstablished(
       int client_id,
       bool sync,
-      mojo::ScopedMessagePipeHandle channel_handle,
+      bool success,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities);
@@ -348,6 +349,11 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   // These are the channel requests that we have already sent to the GPU
   // service, but haven't heard back about yet.
   base::flat_map<int, EstablishChannelCallback> channel_requests_;
+
+  // Track the client IDs of requests that were cancelled. The value is the
+  // number of cancelled requests for that client ID. Their replies will be
+  // ignored.
+  base::flat_map<int, int> cancelled_channel_requests_;
 
   base::OneShotTimer shutdown_timeout_;
 

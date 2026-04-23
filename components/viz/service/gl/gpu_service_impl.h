@@ -164,6 +164,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
                            bool enable_extra_handles_validation,
+                           mojo::ScopedMessagePipeHandle channel_handle,
                            EstablishGpuChannelCallback callback) override;
   void SetChannelClientPid(int32_t client_id,
                            base::ProcessId client_pid) override;

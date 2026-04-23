@@ -282,6 +282,7 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
                                       bool is_gpu_host,
                                       bool enable_extra_handles_validation,
                                       bool sync,
+                                      mojo::ScopedMessagePipeHandle handle,
                                       EstablishChannelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT2("gpu", "GpuHostImpl::EstablishGpuChannel", "client_id",
@@ -293,32 +294,32 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   if (gpu::IsReservedClientId(client_id)) {
     // The display-compositor/GrShaderCache in the gpu process uses these
     // special client ids.
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo(),
+    std::move(callback).Run(gpu::GPUInfo(), gpu::GpuFeatureInfo(),
                             gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuAccessDenied);
     return;
   }
 
   channel_requests_[client_id] = std::move(callback);
+
   if (sync) {
-    mojo::ScopedMessagePipeHandle channel_handle;
     gpu::GPUInfo gpu_info;
     gpu::GpuFeatureInfo gpu_feature_info;
     gpu::SharedImageCapabilities shared_image_capabilities;
+    bool success = false;
     {
       mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
       gpu_service_remote_->EstablishGpuChannel(
           client_id, client_tracing_id, is_gpu_host,
-          enable_extra_handles_validation, &channel_handle, &gpu_info,
-          &gpu_feature_info, &shared_image_capabilities);
+          enable_extra_handles_validation, std::move(handle), &success,
+          &gpu_info, &gpu_feature_info, &shared_image_capabilities);
     }
-    OnChannelEstablished(client_id, true, std::move(channel_handle), gpu_info,
-                         gpu_feature_info, shared_image_capabilities);
+    OnChannelEstablished(client_id, /*sync=*/true, /*success=*/success,
+                         gpu_info, gpu_feature_info, shared_image_capabilities);
   } else {
     gpu_service_remote_->EstablishGpuChannel(
         client_id, client_tracing_id, is_gpu_host,
-        enable_extra_handles_validation,
+        enable_extra_handles_validation, std::move(handle),
         base::BindOnce(&GpuHostImpl::OnChannelEstablished,
                        weak_ptr_factory_.GetWeakPtr(), client_id, false));
   }
@@ -377,6 +378,17 @@ void GpuHostImpl::CloseChannel(int client_id) {
   channel_requests_.erase(client_id);
 }
 
+void GpuHostImpl::CancelEstablishGpuChannel(int client_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(channel_requests_.contains(client_id));
+  channel_requests_.erase(client_id);
+  // Track that we cancelled a request. Mojo guarantees reply order, so the
+  // next reply for this client ID will be the one from the cancelled request.
+  // We track it so we can drop it in `OnChannelEstablished` and avoid it
+  // consuming the callback of a subsequent request.
+  cancelled_channel_requests_[client_id]++;
+}
+
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 void GpuHostImpl::FilterVisualDebugStream(base::DictValue json) {
   viz_main_->FilterDebugStream(std::move(json));
@@ -404,8 +416,8 @@ void GpuHostImpl::SendOutstandingReplies() {
   // Send empty channel handles for all EstablishChannel requests.
   for (auto& entry : channel_requests_) {
     std::move(entry.second)
-        .Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-             gpu::GpuFeatureInfo(), gpu::SharedImageCapabilities(),
+        .Run(gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+             gpu::SharedImageCapabilities(),
              EstablishChannelStatus::kGpuHostInvalid);
   }
   channel_requests_.clear();
@@ -545,7 +557,7 @@ void GpuHostImpl::OnDiskCacheHandleDestoyed(
 void GpuHostImpl::OnChannelEstablished(
     int client_id,
     bool sync,
-    mojo::ScopedMessagePipeHandle channel_handle,
+    bool success,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::SharedImageCapabilities& shared_image_capabilities) {
@@ -558,6 +570,17 @@ void GpuHostImpl::OnChannelEstablished(
       ->OnHdrEnabledChanged(IsHdrEnabledForGpuInfo(gpu_info));
 #endif  // BUILDFLAG(IS_OZONE)
 
+  auto cancelled_it = cancelled_channel_requests_.find(client_id);
+  if (cancelled_it != cancelled_channel_requests_.end()) {
+    // Drop the reply from the cancelled request to prevent it from consuming
+    // the callback of a subsequent request.
+    cancelled_it->second--;
+    if (cancelled_it->second == 0) {
+      cancelled_channel_requests_.erase(cancelled_it);
+    }
+    return;
+  }
+
   auto it = channel_requests_.find(client_id);
   if (it == channel_requests_.end())
     return;
@@ -565,11 +588,8 @@ void GpuHostImpl::OnChannelEstablished(
   auto callback = std::move(it->second);
   channel_requests_.erase(it);
 
-  // If the GPU process sent an empty handle back, it could be a transient error
-  // in which case the client should try again so return kGpuHostInvalid.
-  if (!channel_handle.is_valid()) {
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo(),
+  if (!success) {
+    std::move(callback).Run(gpu::GPUInfo(), gpu::GpuFeatureInfo(),
                             gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuHostInvalid);
     return;
@@ -581,14 +601,13 @@ void GpuHostImpl::OnChannelEstablished(
   // in the caller means we won't get the async DidInitialize() call before
   // this point, so the delegate_ methods won't have the GPU info structs yet.
   if (sync) {
-    std::move(callback).Run(std::move(channel_handle), gpu_info,
-                            gpu_feature_info, shared_image_capabilities,
-                            EstablishChannelStatus::kSuccess);
-  } else {
-    std::move(callback).Run(std::move(channel_handle), delegate_->GetGPUInfo(),
-                            delegate_->GetGpuFeatureInfo(),
+    std::move(callback).Run(gpu_info, gpu_feature_info,
                             shared_image_capabilities,
                             EstablishChannelStatus::kSuccess);
+  } else {
+    std::move(callback).Run(
+        delegate_->GetGPUInfo(), delegate_->GetGpuFeatureInfo(),
+        shared_image_capabilities, EstablishChannelStatus::kSuccess);
   }
 }
 

@@ -439,6 +439,8 @@ const char kFileUrlPathAlias[] = "file-url-path-alias";
 const char kForcePresentationReceiverForTesting[] =
     "force-presentation-receiver-for-testing";
 
+const char kGpuClientId[] = "gpu-client-id";
+
 // Extra command line options for launching the GPU process (normally used
 // for debugging). Use like renderer-cmd-prefix.
 const char kGpuLauncher[]                   = "gpu-launcher";

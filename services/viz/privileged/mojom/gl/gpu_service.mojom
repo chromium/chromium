@@ -52,9 +52,10 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/mojom/dxgi_info.mojom";
 
 interface GpuService {
-  // Tells the GPU service to create a new channel for communication with a
-  // client. The GPU service responds with an IPC handle. |gpu_info| and
-  // |gpu_feature_info| are returned so that if this method is called
+  // Tells the GPU service to connect `channel_handle` for communication with a
+  // client. The GPU service responds with `success` to indicate whether the
+  // connecting of `channel_handle` succeeds or not.  `gpu_info` and
+  // `gpu_feature_info` are returned so that if this method is called
   // synchronously they are available (since the PostTask for
   // GpuHost::DidInitialize might not be dispatched yet).
   [Sync, NoInterrupt]
@@ -62,8 +63,9 @@ interface GpuService {
       int32 client_id,
       uint64 client_tracing_id,
       bool is_gpu_host,
-      bool enable_extra_handles_validation)
-      => (handle<message_pipe>? channel_handle,
+      bool enable_extra_handles_validation,
+      handle<message_pipe> channel_handle)  => (
+          bool success,
           gpu.mojom.GpuInfo gpu_info,
           gpu.mojom.GpuFeatureInfo gpu_feature_info,
           gpu.mojom.SharedImageCapabilities shared_image_capabilities);
