@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
@@ -68,6 +69,14 @@ source_set("impl") {
     deps += [
       "//chrome/browser/startup",
       "//chrome/browser/ui/startup",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/extensions/api/debugger",
+      "//extensions/browser",
+      "//extensions/common",
     ]
   }
 }

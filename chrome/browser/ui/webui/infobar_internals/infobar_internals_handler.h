@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -31,6 +34,10 @@ class InfoBarInternalsHandler final
   bool TriggerInfoBarInternal(infobar_internals::mojom::InfoBarType type);
 
   mojo::Receiver<infobar_internals::mojom::PageHandler> receiver_;
+
+  // Stores the subscriptions to the ExtensionDevToolsInfoBarDelegate to keep
+  // them alive.
+  std::vector<base::CallbackListSubscription> subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_

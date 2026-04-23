@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,8 +25,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
@@ -82,6 +90,13 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       /*description=*/
       "The DevTools infobar is used to confirm that the user wants to "
       "allow DevTools to be used. This trigger shows the infobar."));
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kExtensionDevTools, /*name=*/"Extension DevTools",
+      /*description=*/
+      "The Extension DevTools infobar is used to globally warn users "
+      "that an extension is debugging the browser. This trigger shows "
+      "the infobar."));
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -155,6 +170,37 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
               },
               bwi->GetActiveTabInterface()->GetContents()));
       return true;
+    }
+    case InfoBarType::kExtensionDevTools: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+      if (!profile) {
+        return false;
+      }
+
+      extensions::ExtensionRegistry* registry =
+          extensions::ExtensionRegistry::Get(profile);
+      const extensions::ExtensionSet& extensions =
+          registry->enabled_extensions();
+
+      std::string extension_id = "dummy_extension_id";
+      std::string extension_name = "Dummy Extension";
+
+      if (!extensions.empty()) {
+        const extensions::Extension* extension = extensions.begin()->get();
+        extension_id = extension->id();
+        extension_name = extension->name();
+      }
+
+      subscriptions_.push_back(
+          extensions::ExtensionDevToolsInfoBarDelegate::Create(
+              extension_id, extension_name, /*callback=*/base::DoNothing()));
+      return true;
+#else
+      return false;
+#endif
     }
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case InfoBarType::kInstallerDownloader: {

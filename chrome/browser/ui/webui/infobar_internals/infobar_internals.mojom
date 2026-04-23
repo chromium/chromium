@@ -15,6 +15,9 @@ enum InfoBarType {
   // DevTools infobar.
   kDevTools,
 
+  // Extension DevTools infobar.
+  kExtensionDevTools,
+
   // Installer downloader infobar. Can only be triggered on Windows.
   [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,
