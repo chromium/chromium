@@ -315,6 +315,13 @@ public final class ChromePreferenceKeys {
     public static final String DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS =
             "Chrome.DefaultBrowserPromo.PromoedBySystemSettings";
 
+    /**
+     * Indicates whether we should check the default browser state on the next Activity's onResume
+     * after deep-linking to Settings OS and returning to Chrome.
+     */
+    public static final String DEFAULT_BROWSER_PROMO_DEEP_LINK_COMPARE_OUTCOME_SOURCE =
+            "Chrome.DefaultBrowserPromo.DeepLinkCompareOutcomeSource";
+
     /** Indicates whether the desktop site global setting was enabled by default for a device. */
     public static final String DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING =
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabled";
@@ -1157,6 +1164,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_LAST_SESSION_COUNT,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,
+                DEFAULT_BROWSER_PROMO_DEEP_LINK_COMPARE_OUTCOME_SOURCE,
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,

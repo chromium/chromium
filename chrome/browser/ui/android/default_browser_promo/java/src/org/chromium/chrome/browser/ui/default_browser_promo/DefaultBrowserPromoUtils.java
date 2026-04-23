@@ -87,6 +87,7 @@ public class DefaultBrowserPromoUtils {
         int CHROME_STARTUP = 3;
         int FRE = 4;
         int APP_MENU_RMD = 5;
+        int APP_MENU_DEEP_LINK = 6;
     }
 
     DefaultBrowserPromoUtils(
@@ -398,6 +399,14 @@ public class DefaultBrowserPromoUtils {
                     } else {
                         // Fallback: show the default apps page in Android settings.
 
+                        // Save the source to SharedPreferences so we can check it upon returning to
+                        // Chrome.
+                        ChromeSharedPreferences.getInstance()
+                                .writeInt(
+                                        ChromePreferenceKeys
+                                                .DEFAULT_BROWSER_PROMO_DEEP_LINK_COMPARE_OUTCOME_SOURCE,
+                                        source);
+
                         // Record the specific deep-link source.
                         if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
                             DefaultBrowserPromoMetrics.recordPromoClick(
@@ -410,6 +419,45 @@ public class DefaultBrowserPromoUtils {
                         }
 
                         openSystemDefaultAppsSettings(activity);
+                    }
+                });
+    }
+
+    /**
+     * Checks if there is an outcome to record from a previous deep-link. Called from
+     * ChromeTabbedActivity#onResumeWithNative.
+     */
+    public void maybeRecordDeepLinkOutcome() {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        // 0 for AppMenu, 1 for Settings.
+        int beforeSource =
+                prefs.readInt(
+                        ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_DEEP_LINK_COMPARE_OUTCOME_SOURCE,
+                        -1);
+
+        if (beforeSource == -1) return;
+
+        // Clear the SharedPreference immediately.
+        prefs.removeKey(
+                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_DEEP_LINK_COMPARE_OUTCOME_SOURCE);
+
+        int outcomeSource;
+        if (beforeSource == DefaultBrowserPromoEntryPoint.APP_MENU) {
+            // Promo in App Menu can either show the RMD or deep-link. This method only records
+            // deep-links.
+            outcomeSource = DefaultBrowserPromoEntryPoint.APP_MENU_DEEP_LINK;
+        } else {
+            // Promo in Main Settings always deep links.
+            outcomeSource = beforeSource;
+        }
+
+        // We need to fetch the default browser info again to make sure the state is
+        // updated before recording the outcome.
+        fetchDefaultBrowserInfo(
+                info -> {
+                    if (info != null) {
+                        DefaultBrowserPromoMetrics.recordOutcome(
+                                info.defaultBrowserState, outcomeSource);
                     }
                 });
     }

@@ -1769,28 +1769,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.DefaultBrowserPromo.Outcome.AppMenu"
-    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-01-30">
-  <owner>eleanorlee@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The final default browser state (outcome) after the user has been prompted
-    to set Chrome as the default via the App Menu item. Recorded when the system
-    UI prompting the user to change their default is dismissed.
-  </summary>
-</histogram>
-
-<histogram name="Android.DefaultBrowserPromo.Outcome.FRE"
-    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-04-09">
-  <owner>eleanorlee@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The final default browser state (outcome) after the user has been prompted
-    to set Chrome as the default via the First Run Experience. Recorded when the
-    Role Manager Dialog is dismissed.
-  </summary>
-</histogram>
-
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-08-30">
   <owner>lazzzis@google.com</owner>
@@ -1828,6 +1806,30 @@ chromium-metrics-reviews@google.com.
     <variant name="FourthPromo" summary="four"/>
     <variant name="SecondPromo" summary="two"/>
     <variant name="ThirdPromo" summary="three"/>
+  </token>
+</histogram>
+
+<histogram name="Android.DefaultBrowserPromo.Outcome.{Source}"
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-04-22">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The final default browser state (outcome) after the user has been prompted
+    to set Chrome as the default via the {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="AppMenu"
+        summary="Promo shown in App Menu. Recorded when the Role Manager
+                 Dialog is dismissed."/>
+    <variant name="AppMenu.DeepLink"
+        summary="Promo shown in App Menu. Recorded upon returning to Chrome
+                 from a deep-link."/>
+    <variant name="FRE"
+        summary="Promo shown in FRE. Recorded when the Role Manager Dialog is
+                 dismissed."/>
+    <variant name="Settings"
+        summary="Promo shown in Main Settings. Recorded upon returning to
+                 Chrome from a deep-link."/>
   </token>
 </histogram>
 

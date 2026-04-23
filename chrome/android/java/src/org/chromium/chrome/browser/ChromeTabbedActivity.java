@@ -1595,6 +1595,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         super.onResumeWithNative();
 
+        DefaultBrowserPromoUtils.getInstance().maybeRecordDeepLinkOutcome();
+
         if (!isColdStart() && isMainIntentLaunchPostOnResume()) {
             StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
             startupLatencyInjector.maybeInjectLatency();

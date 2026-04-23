@@ -51,6 +51,8 @@ public class DefaultBrowserPromoMetrics {
             return "AppMenu";
         } else if (source == DefaultBrowserPromoEntryPoint.APP_MENU_RMD) {
             return "AppMenu.RoleManagerDialog";
+        } else if (source == DefaultBrowserPromoEntryPoint.APP_MENU_DEEP_LINK) {
+            return "AppMenu.DeepLink";
         } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
             return "Settings";
         } else if (source == DefaultBrowserPromoEntryPoint.FRE) {
