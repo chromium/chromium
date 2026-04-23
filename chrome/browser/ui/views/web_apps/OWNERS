@@ -1,3 +1,3 @@
 file://chrome/browser/web_applications/OWNERS
 
-per-file protocol_handler_picker*=greengrape@google.com
+per-file protocol_handler_picker*=file://components/webapps/isolated_web_apps/PLATFORM_OWNERS

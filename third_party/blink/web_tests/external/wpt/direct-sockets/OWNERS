@@ -1,2 +1,2 @@
 # This directory already inherits owner '*', so these owners are informational.
-greengrape@google.com
+file://third_party/blink/renderer/modules/direct_sockets/OWNERS

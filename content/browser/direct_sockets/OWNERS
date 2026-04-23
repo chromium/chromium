@@ -1,5 +1,5 @@
-greengrape@google.com
 vkrot@google.com
 
-# For backup
-reillyg@chromium.org
+# Secondary
+file://components/webapps/isolated_web_apps/PLATFORM_OWNERS  #{LAST_RESORT_SUGGESTION}
+

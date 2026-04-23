@@ -6,3 +6,4 @@ file://chrome/browser/ash/policy/OWNERS
 
 # Device Attributes backup owner
 pchodur@google.com  #{LAST_RESORT_SUGGESTION}
+file://components/webapps/isolated_web_apps/PLATFORM_OWNERS  #{LAST_RESORT_SUGGESTION}

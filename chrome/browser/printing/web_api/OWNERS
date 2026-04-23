@@ -1,4 +1,4 @@
-greengrape@google.com
+file://components/webapps/isolated_web_apps/PLATFORM_OWNERS
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
