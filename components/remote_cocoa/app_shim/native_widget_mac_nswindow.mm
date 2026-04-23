@@ -694,6 +694,14 @@ struct NSEdgeAndCornerThicknesses {
 // -orderWindowByShuffling:relativeTo: instead.
 - (void)orderWindow:(NSWindowOrderingMode)orderingMode
          relativeTo:(NSInteger)otherWindowNumber {
+  // Prevent a window that should never be visible from being ordered in.
+  // External frameworks (e.g., AuthenticationServicesCore presenting
+  // passkey/WebAuthn dialogs) can trigger window ordering on the invisible
+  // browser-side proxy window for app shims, causing a DumpWithoutCrashing.
+  // See https://crbug.com/325931972 and https://crbug.com/40626510.
+  if (_isEnforcingNeverMadeVisible && orderingMode != NSWindowOut) {
+    return;
+  }
   [super orderWindow:orderingMode relativeTo:otherWindowNumber];
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
 }

@@ -6,6 +6,7 @@
 
 #include <AppKit/AppKit.h>
 
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/cocoa/window_size_constants.h"
@@ -73,4 +74,31 @@ TEST(BrowserNativeWidgetWindowTest, AlwaysShowTrafficLights) {
   EXPECT_EQ(theme_frame.closeButton.alphaValue, 0.0);
   EXPECT_EQ(theme_frame.minimizeButton.alphaValue, 0.0);
   EXPECT_EQ(theme_frame.zoomButton.alphaValue, 0.0);
+}
+
+// Test that a window with enforceNeverMadeVisible cannot be ordered in.
+// This prevents external frameworks (e.g., AuthenticationServicesCore)
+// from making the invisible proxy window visible as a side effect of
+// presenting modal dialogs. See https://crbug.com/325931972.
+TEST(NativeWidgetMacNSWindowTest, EnforceNeverMadeVisibleBlocksOrderIn) {
+  NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+      initWithContentRect:ui::kWindowSizeDeterminedLater
+                styleMask:NSWindowStyleMaskBorderless
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+
+  [window enforceNeverMadeVisible];
+  EXPECT_FALSE([window isVisible]);
+
+  // orderWindow:NSWindowAbove should be blocked.
+  [window orderWindow:NSWindowAbove relativeTo:0];
+  EXPECT_FALSE([window isVisible]);
+
+  // orderWindow:NSWindowBelow should also be blocked.
+  [window orderWindow:NSWindowBelow relativeTo:0];
+  EXPECT_FALSE([window isVisible]);
+
+  // orderWindow:NSWindowOut should still work (ordering out is fine).
+  [window orderWindow:NSWindowOut relativeTo:0];
+  EXPECT_FALSE([window isVisible]);
 }
