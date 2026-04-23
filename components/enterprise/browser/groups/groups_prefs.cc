@@ -10,6 +10,7 @@ namespace enterprise_groups {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kEnterpriseGroupsBrowserPref);
+  registry->RegisterDictionaryPref(kEnterpriseGroupsProfilePref);
 }
 
 }  // namespace enterprise_groups

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/groups/enterprise_groups_handler_factory.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/groups/enterprise_groups_handler.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -156,6 +158,12 @@ void UserPolicySigninService::InitializeCloudPolicyManager(
   if (remote_command_service) {
     remote_command_service->Init();
   }
+  auto* enterprise_groups_handler =
+      enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetForProfile(
+          profile_);
+  if (enterprise_groups_handler) {
+    enterprise_groups_handler->Init();
+  }
 }
 
 void UserPolicySigninService::Shutdown() {
@@ -171,6 +179,12 @@ void UserPolicySigninService::ShutdownCloudPolicyManager() {
           profile_);
   if (remote_command_service) {
     remote_command_service->Shutdown();
+  }
+  auto* enterprise_groups_handler =
+      enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetForProfile(
+          profile_);
+  if (enterprise_groups_handler) {
+    enterprise_groups_handler->ResetAndClearGroups();
   }
   UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
 }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_GROUPS_ENTERPRISE_GROUPS_HANDLER_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_GROUPS_ENTERPRISE_GROUPS_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -44,6 +46,12 @@ class EnterpriseGroupsHandlerBase : public CloudPolicyCore::Observer,
   void OnCloudPolicyServiceInitializationCompleted() override;
   void OnPolicyRefreshed(bool success) override;
 
+  // Stop observing `CloudPolicyCore` and `CloudPolicyService`.
+  void ResetObservations();
+
+  // Returns whether the handler is observing `CloudPolicyCore`.
+  bool IsObserving() const;
+
  private:
   void UpdateAvailableGroups();
 
@@ -52,7 +60,6 @@ class EnterpriseGroupsHandlerBase : public CloudPolicyCore::Observer,
   bool IsFeatureEnabled() const;
 
   raw_ptr<CloudPolicyCore> cloud_policy_core_;
-  bool policies_loaded_ = false;
 
   base::ScopedObservation<CloudPolicyCore, CloudPolicyCore::Observer>
       cloud_policy_core_observation_{this};
@@ -75,9 +82,46 @@ class EnterpriseGroupsBrowserHandler : public EnterpriseGroupsHandlerBase {
   ~EnterpriseGroupsBrowserHandler() override;
 
  private:
+  // EnterpriseGroupsHandlerBase:
   void SaveGroupsToPrefs(base::ListValue groups) override;
 
   raw_ptr<PrefService> local_state_;
+};
+
+// A class that handles copying the available groups from user `PolicyData`.
+// The list of groups is saved to the local state preference, since it has to be
+// available for the Variations code at browser startup.
+// The class updates the list of groups only when the profile is activated.
+// Idle profiles are still considered as valid as long as the profile exists.
+class EnterpriseGroupsProfileHandler : public EnterpriseGroupsHandlerBase,
+                                       public KeyedService {
+ public:
+  EnterpriseGroupsProfileHandler(CloudPolicyCore* cloud_policy_core,
+                                 PrefService* local_state,
+                                 const std::string& profile_key);
+
+  EnterpriseGroupsProfileHandler(const EnterpriseGroupsProfileHandler&) =
+      delete;
+  EnterpriseGroupsProfileHandler& operator=(
+      const EnterpriseGroupsProfileHandler&) = delete;
+
+  ~EnterpriseGroupsProfileHandler() override;
+
+  // Resets the observations and clears the groups from preferences.
+  void ResetAndClearGroups();
+
+  // KeyedService:
+  void Shutdown() override;
+
+ private:
+  // EnterpriseGroupsHandlerBase:
+  void SaveGroupsToPrefs(base::ListValue groups) override;
+
+  raw_ptr<PrefService> local_state_;
+
+  // This key must be consistent with
+  // `ProfileAttributesStorage::StorageKeyFromProfilePath`.
+  const std::string profile_key_;
 };
 
 }  // namespace policy

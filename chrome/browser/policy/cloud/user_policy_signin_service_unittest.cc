@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/groups/enterprise_groups_handler_factory.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -31,6 +32,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/browser/groups/enterprise_groups_handler.h"
+#include "components/enterprise/browser/groups/groups_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -106,8 +109,10 @@ class UserPolicySigninServiceTest : public testing::Test {
             kTestUser,
             signin::GetTestGaiaIdForEmail(kTestUser))),
         register_completed_(false) {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_commands::kUserRemoteCommands);
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_commands::kUserRemoteCommands,
+         enterprise_groups::kEnterpriseGroupsExperiments},
+        {});
   }
 
   MOCK_METHOD1(OnPolicyRefresh, void(bool));
@@ -179,6 +184,9 @@ class UserPolicySigninServiceTest : public testing::Test {
         ->set_profile_can_be_managed_for_testing(true);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    enterprise_groups_profile_handler_ =
+        enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetForProfile(
+            profile_.get());
 
     manager_ = profile_->GetUserCloudPolicyManager();
     DCHECK(manager_);
@@ -195,6 +203,7 @@ class UserPolicySigninServiceTest : public testing::Test {
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(NULL);
 
     // Free the profile before we clear out the browser prefs.
+    enterprise_groups_profile_handler_ = nullptr;
     identity_test_env_adaptor_.reset();
     profile_.reset();
     base::RunLoop run_loop;
@@ -303,6 +312,8 @@ class UserPolicySigninServiceTest : public testing::Test {
   SchemaRegistry schema_registry_;
   raw_ptr<UserCloudPolicyManager, DanglingUntriaged> manager_ =
       nullptr;  // Not owned.
+  raw_ptr<EnterpriseGroupsProfileHandler> enterprise_groups_profile_handler_ =
+      nullptr;
 
   // BrowserPolicyConnector and UrlFetcherFactory want to initialize and free
   // various components asynchronously via tasks, so create fake threads here.
@@ -355,6 +366,9 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   // UserCloudPolicyManager should not be initialized.
   ASSERT_FALSE(manager_->core()->service());
   EXPECT_FALSE(manager_->ArePoliciesRequired());
+
+  // Enterprise groups handler should not be observing the policy fetching.
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 // TODO(crbug.com/40831734): Extend the test coverage by merging tests from
@@ -398,6 +412,7 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
 TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedIn) {
   // UserCloudPolicyManager should be initialized.
   ASSERT_TRUE(manager_->core()->service());
+  ASSERT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -412,11 +427,13 @@ TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedIn) {
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(IsRequestActive());
   EXPECT_TRUE(manager_->ArePoliciesRequired());
+  EXPECT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedInOAuthError) {
   // UserCloudPolicyManager should be initialized.
   ASSERT_TRUE(manager_->core()->service());
+  ASSERT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -437,12 +454,14 @@ TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedInOAuthError) {
       error);
   ASSERT_FALSE(IsRequestActive());
   EXPECT_TRUE(manager_->ArePoliciesRequired());
+  EXPECT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
   // UserCloudPolicyManager should not be initialized since there is no
   // signed-in user.
   ASSERT_FALSE(manager_->core()->service());
+  ASSERT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 
   // Now sign in the user.
   identity_test_env()->SetPrimaryAccount(kTestUser,
@@ -457,6 +476,7 @@ TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
   // UserCloudPolicyManager should be initialized.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(manager_->core()->service());
+  EXPECT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 
   // Client registration should be in progress since we have an oauth token.
   ASSERT_TRUE(IsRequestActive());
@@ -467,6 +487,7 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
   // UserCloudPolicyManager should not be initialized since there is no
   // signed-in user.
   ASSERT_FALSE(manager_->core()->service());
+  ASSERT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 
   // Now sign in a non-enterprise user (gmail.com domain).
   identity_test_env()->SetPrimaryAccount("non_enterprise_user@gmail.com",
@@ -481,6 +502,7 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
   // UserCloudPolicyManager should not be initialized and there should be no
   // DMToken request active.
   ASSERT_TRUE(!manager_->core()->service());
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
   ASSERT_FALSE(IsRequestActive());
   EXPECT_FALSE(manager_->ArePoliciesRequired());
 }
@@ -750,6 +772,7 @@ TEST_F(UserPolicySigninServiceSignedInTest, SignOutAfterInit) {
   // UserCloudPolicyManager should be initialized.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(manager_->core()->service());
+  ASSERT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 
   // Signing out will clear the policy from the store.
   EXPECT_CALL(*mock_store_, Clear());
@@ -759,6 +782,7 @@ TEST_F(UserPolicySigninServiceSignedInTest, SignOutAfterInit) {
 
   // UserCloudPolicyManager should be shut down.
   ASSERT_FALSE(manager_->core()->service());
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientOAuthFailure) {

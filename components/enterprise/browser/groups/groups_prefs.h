@@ -14,6 +14,11 @@ namespace enterprise_groups {
 inline constexpr char kEnterpriseGroupsBrowserPref[] =
     "enterprise_groups.browser";
 
+// The name of the preference that stores the enterprise group IDs from user
+// policy data.
+inline constexpr char kEnterpriseGroupsProfilePref[] =
+    "enterprise_groups.profiles";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_groups

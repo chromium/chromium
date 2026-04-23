@@ -161,7 +161,13 @@ source_set("enterprise") {
       "reporting/android_app_info_generator.h",
     ]
   } else {
+    public_deps += [
+      "//components/enterprise/browser/groups",
+      "//components/enterprise/browser/groups:features",
+    ]
+
     public += [
+      "groups/enterprise_groups_handler_factory.h",
       "remote_commands/clear_browsing_data_job.h",
       "remote_commands/job_profile_picker.h",
       "remote_commands/user_remote_commands_factory.h",
@@ -568,6 +574,7 @@ source_set("impl") {
 
   if (!is_chromeos) {
     sources += [
+      "groups/enterprise_groups_handler_factory.cc",
       "remote_commands/clear_browsing_data_job.cc",
       "remote_commands/job_profile_picker.cc",
       "remote_commands/user_remote_commands_factory.cc",
