@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -241,9 +242,7 @@ TEST_F(AppNetWorkerTest, ServerNotExist) {
   remote_->PostRequest(
       GURL("https://host_that.does_not_exist"), "", "text/plain", {},
       MakePostRequestObserver(
-          base::BindRepeating(
-              [](int32_t http_status_code, int64_t content_length) {}),
-          base::BindRepeating([](int64_t current) {}),
+          base::DoNothing(), base::DoNothing(),
           base::BindLambdaForTesting(
               [&](std::optional<std::string> response_body, int32_t net_error,
                   const std::string& header_etag,

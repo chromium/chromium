@@ -1639,8 +1639,7 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   service_proxy->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       policy_same_version_update,
-      /*language=*/{},
-      base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
+      /*language=*/{}, base::DoNothing(),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);
         loop.Quit();

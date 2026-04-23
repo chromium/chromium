@@ -696,7 +696,7 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
   registration.version = kNullVersion;
   RegisterApp(
       registration,
-      base::BindOnce([](int registration_result) {})
+      base::OnceCallback<void(int)>(base::DoNothing())
           .Then(base::BindPostTask(
               main_task_runner_,
               base::BindOnce(

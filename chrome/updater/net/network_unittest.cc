@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -217,7 +218,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
         base::BindRepeating([](int response_code, int64_t /*content_length*/) {
           EXPECT_EQ(response_code, 200);
         }),
-        base::BindRepeating([](int64_t /*current*/) {}),
+        base::DoNothing(),
         base::BindOnce([](int net_error, int64_t content_size) {
           EXPECT_EQ(net_error, 0);
         }).Then(run_loop.QuitClosure()));
