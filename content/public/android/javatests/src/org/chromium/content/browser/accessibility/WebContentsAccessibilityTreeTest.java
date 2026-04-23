@@ -8,6 +8,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,6 +26,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content.common.ContentInternalFeatures;
@@ -574,6 +576,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaIllegalVal() {
         performAriaTest("aria-illegal-val.html");
@@ -1012,12 +1015,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     public void test_ariaSortAriaGrid() {
         performAriaTest("aria-sort-aria-grid.html");
     }
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     public void test_ariaSortHtmlTable() {
         performAriaTest("aria-sort-html-table.html");
     }

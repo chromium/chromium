@@ -256,6 +256,29 @@ public final class AccessibilityNodeInfoCompatDumper {
         if (collectionItemInfo.isSelected()) {
             prefix += "selected, ";
         }
+
+        int sortDirection = collectionItemInfo.getSortDirection();
+        if (sortDirection
+                != AccessibilityNodeInfoCompat.CollectionItemInfoCompat.SORT_DIRECTION_NONE) {
+            String sortStr = "";
+            if (sortDirection
+                    == AccessibilityNodeInfoCompat.CollectionItemInfoCompat
+                            .SORT_DIRECTION_ASCENDING) {
+                sortStr = "ascending";
+            } else if (sortDirection
+                    == AccessibilityNodeInfoCompat.CollectionItemInfoCompat
+                            .SORT_DIRECTION_DESCENDING) {
+                sortStr = "descending";
+            } else if (sortDirection
+                    == AccessibilityNodeInfoCompat.CollectionItemInfoCompat.SORT_DIRECTION_OTHER) {
+                sortStr = "other";
+            }
+
+            if (!sortStr.isEmpty()) {
+                prefix += "sortDirection=" + sortStr + ", ";
+            }
+        }
+
         if (collectionItemInfo.getRowSpan() != 1) {
             prefix += String.format("rowSpan=%s, ", collectionItemInfo.getRowSpan());
         }
