@@ -3481,6 +3481,28 @@ TEST_F(HTMLFormMcpToolTest, GenericIssue_ParameterMissingName) {
       issue1->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
 }
 
+TEST_F(HTMLFormMcpToolTest,
+       GenericIssue_UnsupportedParameterExcludedFromMissingName) {
+  SetBodyInnerHTML(R"HTML(
+    <form id="form" toolname="my_tool" tooldescription="My tool description">
+      <input type="text" name="text" toolparamdescription="Text field">
+      <input type="submit" id="submit_btn">
+    </form>
+  )HTML");
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(0u, storage.size());
+}
+
 TEST_F(HTMLFormMcpToolTest, GenericIssue_RequiredParameterMissingName) {
   SetBodyInnerHTML(R"HTML(
     <form id="form" toolname="my_tool" tooldescription="My tool description">

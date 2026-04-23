@@ -54,8 +54,12 @@ class CORE_EXPORT FormMCPSchema {
   HTMLFormControlElement* SubmitButton() const { return submit_button_; }
 
  private:
-  std::unique_ptr<JSONObject> ComputeParameterSchema(const String& name,
-                                                     bool& required);
+  std::unique_ptr<JSONObject> ComputeParameterSchemaForName(const String& name,
+                                                            bool& required);
+  std::unique_ptr<JSONObject> ComputeParameterSchemaForControls(
+      const ControlVector&,
+      bool& required);
+
   std::unique_ptr<JSONObject> ComputeTextParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);

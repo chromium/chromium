@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "form_mcp_schema.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -135,7 +136,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeJSON() {
     // Note that a nullptr from ComputeParameterSchema() means the parameter
     // is not supported, for whatever reason.
     if (std::unique_ptr<JSONObject> parameter_schema =
-            ComputeParameterSchema(name, is_required)) {
+            ComputeParameterSchemaForName(name, is_required)) {
       ReportParameterIssueIfNeeded(name, *parameter_schema);
       properties->SetObject(name, std::move(parameter_schema));
       if (is_required) {
@@ -158,6 +159,13 @@ void FormMCPSchema::ReportMissingParamNameIssuesIfNeeded() {
   // Iterate through controls with an empty name
   if (auto it = name_to_controls_.find(""); it != name_to_controls_.end()) {
     for (ListedElement* element : *it->value) {
+      auto* temp_vector = MakeGarbageCollected<ControlVector>();
+      temp_vector->push_back(element);
+
+      bool required_unused;
+      if (!ComputeParameterSchemaForControls(*temp_vector, required_unused)) {
+        continue;
+      }
       DOMNodeId violating_node_id =
           DOMNodeIds::IdForNode(&element->ToHTMLElement());
       auto* form_control =
@@ -481,7 +489,58 @@ void FormMCPSchema::FillParameterData(const String& name,
   }
 }
 
-std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchemaForControls(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  if (IsText(controls_for_name)) {
+    return ComputeTextParameterSchema(controls_for_name, required);
+  }
+  if (IsDate(controls_for_name)) {
+    return ComputeDateParameterSchema(controls_for_name, required);
+  }
+  if (IsDatetimeLocal(controls_for_name)) {
+    return ComputeDatetimeLocalParameterSchema(controls_for_name, required);
+  }
+  if (IsMonth(controls_for_name)) {
+    return ComputeMonthParameterSchema(controls_for_name, required);
+  }
+  if (IsWeek(controls_for_name)) {
+    return ComputeWeekParameterSchema(controls_for_name, required);
+  }
+  if (IsTime(controls_for_name)) {
+    return ComputeTimeParameterSchema(controls_for_name, required);
+  }
+  if (IsNumber(controls_for_name)) {
+    return ComputeNumberParameterSchema(controls_for_name, required);
+  }
+  if (IsSelect(controls_for_name)) {
+    return ComputeSelectParameterSchema(controls_for_name, required);
+  }
+  if (IsRange(controls_for_name)) {
+    return ComputeRangeParameterSchema(controls_for_name, required);
+  }
+  if (IsCheckbox(controls_for_name)) {
+    return ComputeCheckboxParameterSchema(controls_for_name, required);
+  }
+  if (IsRadio(controls_for_name)) {
+    return ComputeRadioParameterSchema(controls_for_name, required);
+  }
+  if (IsColor(controls_for_name)) {
+    return ComputeColorParameterSchema(controls_for_name, required);
+  }
+  if (IsCustomElement(controls_for_name)) {
+    return ComputeCustomElementParameterSchema(controls_for_name, required);
+  }
+  if (IsFile(controls_for_name)) {
+    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
+        form_->GetExecutionContext()));
+    return ComputeFileParameterSchema(controls_for_name, required);
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchemaForName(
     const String& name,
     bool& required) {
   auto it = name_to_controls_.find(name);
@@ -492,52 +551,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   ControlVector* controls_for_name = it->value;
   CHECK(controls_for_name);
 
-  if (IsText(*controls_for_name)) {
-    return ComputeTextParameterSchema(*controls_for_name, required);
-  }
-  if (IsDate(*controls_for_name)) {
-    return ComputeDateParameterSchema(*controls_for_name, required);
-  }
-  if (IsDatetimeLocal(*controls_for_name)) {
-    return ComputeDatetimeLocalParameterSchema(*controls_for_name, required);
-  }
-  if (IsMonth(*controls_for_name)) {
-    return ComputeMonthParameterSchema(*controls_for_name, required);
-  }
-  if (IsWeek(*controls_for_name)) {
-    return ComputeWeekParameterSchema(*controls_for_name, required);
-  }
-  if (IsTime(*controls_for_name)) {
-    return ComputeTimeParameterSchema(*controls_for_name, required);
-  }
-  if (IsNumber(*controls_for_name)) {
-    return ComputeNumberParameterSchema(*controls_for_name, required);
-  }
-  if (IsSelect(*controls_for_name)) {
-    return ComputeSelectParameterSchema(*controls_for_name, required);
-  }
-  if (IsRange(*controls_for_name)) {
-    return ComputeRangeParameterSchema(*controls_for_name, required);
-  }
-  if (IsCheckbox(*controls_for_name)) {
-    return ComputeCheckboxParameterSchema(*controls_for_name, required);
-  }
-  if (IsRadio(*controls_for_name)) {
-    return ComputeRadioParameterSchema(*controls_for_name, required);
-  }
-  if (IsColor(*controls_for_name)) {
-    return ComputeColorParameterSchema(*controls_for_name, required);
-  }
-  if (IsCustomElement(*controls_for_name)) {
-    return ComputeCustomElementParameterSchema(*controls_for_name, required);
-  }
-  if (IsFile(*controls_for_name)) {
-    CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled(
-        form_->GetExecutionContext()));
-    return ComputeFileParameterSchema(*controls_for_name, required);
-  }
-
-  return nullptr;
+  return ComputeParameterSchemaForControls(*controls_for_name, required);
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeTextParameterSchema(
