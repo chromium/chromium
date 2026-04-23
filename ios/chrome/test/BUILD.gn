@@ -396,6 +396,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/metrics/model:unit_tests",
     "//ios/chrome/browser/metrics/model:unit_tests_internal",
     "//ios/chrome/browser/mini_map/coordinator:unit_tests",
+    "//ios/chrome/browser/mini_map/model:unit_tests",
     "//ios/chrome/browser/net/model:unit_tests",
     "//ios/chrome/browser/ntp/model:unit_tests",
     "//ios/chrome/browser/ntp/search_engine_logo/mediator:unit_tests",
