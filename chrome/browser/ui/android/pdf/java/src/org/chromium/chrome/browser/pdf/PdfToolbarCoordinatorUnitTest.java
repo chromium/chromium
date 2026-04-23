@@ -47,6 +47,9 @@ public class PdfToolbarCoordinatorUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mPdfPageView = LayoutInflater.from(mActivity).inflate(R.layout.pdf_page, null);
         mPdfToolbarCoordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
+        mPdfToolbarCoordinator.onDocumentLoaded(100, "test_title.pdf");
+        mPdfToolbarCoordinator.onViewportChanged(98, 1); // 0-indexed page 98
+
     }
 
     @After
@@ -115,11 +118,13 @@ public class PdfToolbarCoordinatorUnitTest {
     @Test
     public void testOnDocumentLoaded() {
         // Initial state from constructor is 99/100
-        mPdfToolbarCoordinator.onDocumentLoaded(50);
+        mPdfToolbarCoordinator.onDocumentLoaded(50, "test_title.pdf");
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
         // Current page remains 99 (default), total page count becomes 50
         Assert.assertEquals("99", currentPage.getText().toString());
         Assert.assertEquals("50", pageCount.getText().toString());
+        TextView title = mPdfPageView.findViewById(R.id.pdf_title);
+        Assert.assertEquals("test_title.pdf", title.getText().toString());
     }
 }

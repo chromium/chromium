@@ -79,6 +79,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     private final NativePageHost mNativePageHost;
 
     private final String mTabId;
+    private String mTitle;
     private final String mUrl;
     private final boolean mIsIncognito;
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
@@ -112,6 +113,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      * @param profile The current Profile.
      * @param activity The current Activity.
      * @param filepath The pdf filepath.
+     * @param title The pdf title.
      * @param tabId The id of the tab.
      * @param url The url of the pdf.
      */
@@ -120,12 +122,14 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             Profile profile,
             Activity activity,
             @Nullable String filepath,
+            String title,
             int tabId,
             String url) {
         mActivity = activity;
         mTabId = String.valueOf(tabId);
         mNativePageHost = host;
         mIsIncognito = profile.isOffTheRecord();
+        mTitle = title;
         mUrl = url;
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
         mProgressBar = mView.findViewById(R.id.progress_bar);
@@ -350,8 +354,10 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      * Called after pdf download complete.
      *
      * @param pdfFilePath The filepath of the downloaded pdf document.
+     * @param pdfFileName The filename of the downloaded pdf document.
      */
-    void onDownloadComplete(String pdfFilePath) {
+    void onDownloadComplete(String pdfFilePath, String pdfFileName) {
+        mTitle = pdfFileName;
         loadPdfFile(pdfFilePath);
     }
 
@@ -540,7 +546,9 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     @Override
     public void onDocumentLoaded(int pageCount) {
         assert mToolbarCoordinator != null;
-        mToolbarCoordinator.onDocumentLoaded(pageCount);
+        assert mUri != null;
+        assert mTitle != null;
+        mToolbarCoordinator.onDocumentLoaded(pageCount, mTitle);
     }
 
     @Override

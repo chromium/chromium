@@ -65,6 +65,7 @@ public class PdfCoordinatorUnitTest {
     private PdfView mPdfView;
     private static final String PDF_URL =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.irs.gov%2Fpub%2Firs-pdf%2Ffw4.pdf";
+    private static final String PDF_TITLE = "fw4.pdf";
     private static final String LINK_URL = "https://www.bar.com";
     private static final String FILE_PATH =
             "/data/user/10/com.google.android.apps.chrome/cache/pdfs/fw4.pdf";
@@ -89,7 +90,13 @@ public class PdfCoordinatorUnitTest {
         // is called.
         mPdfCoordinator =
                 new PdfCoordinator(
-                        mNativePageHost, mProfile, mActivity, FILE_PATH, TAB_ID, PDF_URL);
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        FILE_PATH,
+                        PDF_TITLE,
+                        TAB_ID,
+                        PDF_URL);
         mPdfView = new PdfView(mActivity);
         mPdfView.layout(0, 0, /* width= */ 500, /* height= */ PDF_CONTENT_HEIGHT);
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
@@ -238,7 +245,14 @@ public class PdfCoordinatorUnitTest {
     public void testGetFileUri_NullUri() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mPdfCoordinator =
-                new PdfCoordinator(mNativePageHost, mProfile, mActivity, null, TAB_ID, PDF_URL);
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        null,
+                        PDF_TITLE,
+                        TAB_ID,
+                        PDF_URL);
 
         Uri uri =
                 mPdfCoordinator.getFileUri(

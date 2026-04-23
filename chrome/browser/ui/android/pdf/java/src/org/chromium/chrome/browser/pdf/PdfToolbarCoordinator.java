@@ -34,13 +34,9 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         // TODO(crbug.com/496180649): Only show the toolbar when the PDF is loaded via ViewStub.
         toolbar.setVisibility(View.VISIBLE);
 
-        // Initialize the Model with all keys
         mModel =
                 new PropertyModel.Builder(PdfToolbarProperties.ALL_KEYS)
                         .with(PdfToolbarProperties.ON_CLICK_LISTENER, this)
-                        .with(PdfToolbarProperties.CURRENT_PAGE_NUMBER, 99)
-                        .with(PdfToolbarProperties.TITLE, "This_is_a_pdf_title.pdf")
-                        .with(PdfToolbarProperties.TOTAL_PAGE_COUNT, 100)
                         .with(PdfToolbarProperties.ZOOM_VALUE, "100%")
                         .build();
 
@@ -93,9 +89,11 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
      * Called when the PDF document is successfully loaded.
      *
      * @param pageCount The total page count of the document.
+     * @param title The title of the PDF document.
      */
-    public void onDocumentLoaded(int pageCount) {
+    public void onDocumentLoaded(int pageCount, String title) {
         mModel.set(PdfToolbarProperties.TOTAL_PAGE_COUNT, pageCount);
+        mModel.set(PdfToolbarProperties.TITLE, title);
     }
 
     /**

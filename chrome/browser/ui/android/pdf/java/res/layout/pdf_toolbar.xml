@@ -17,20 +17,23 @@ found in the LICENSE file.
     android:paddingEnd="24dp"
     android:background="@drawable/toolbar_no_divider">
 
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
             android:id="@+id/pdf_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:ellipsize="end"
+            android:paddingEnd="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/page_decrease_button"
             android:textAppearance="@style/TextAppearance.TextLargeThick.Primary"
             android:layout_gravity="start|center_vertical" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:clipToOutline="true">
 
         <!-- page_navigation -->
         <org.chromium.ui.widget.ChromeImageButton
@@ -43,7 +46,7 @@ found in the LICENSE file.
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingEnd="12dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/current_page"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -54,7 +57,7 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
             android:paddingStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/page_decrease_button"
+            app:layout_constraintEnd_toStartOf="@id/page_count_divider"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -64,8 +67,8 @@ found in the LICENSE file.
             tools:ignore="HardcodedText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/current_page"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            app:layout_constraintEnd_toStartOf="@id/page_count"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -76,7 +79,7 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
             android:paddingEnd="12dp"
-            app:layout_constraintStart_toEndOf="@id/page_count_divider"
+            app:layout_constraintEnd_toStartOf="@id/page_increase_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -88,9 +91,10 @@ found in the LICENSE file.
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:src="@drawable/ic_chevron_right_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/page_count"
+            app:layout_constraintEnd_toStartOf="@id/zoom_page_divider"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -101,7 +105,8 @@ found in the LICENSE file.
             android:layout_height="24dp"
             android:background="@color/divider_color"
             android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/page_increase_button"
+            android:layout_marginEnd="12dp"
+            app:layout_constraintEnd_toStartOf="@id/zoom_decrease_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -117,7 +122,7 @@ found in the LICENSE file.
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingEnd="12dp"
-            app:layout_constraintStart_toEndOf="@id/zoom_page_divider"
+            app:layout_constraintEnd_toStartOf="@id/zoom_value"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -127,7 +132,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-            app:layout_constraintStart_toEndOf="@id/zoom_decrease_button"
+            app:layout_constraintEnd_toStartOf="@id/zoom_increase_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -139,9 +144,10 @@ found in the LICENSE file.
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:src="@drawable/ic_add_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/zoom_value"
+            app:layout_constraintEnd_toStartOf="@id/other_zoom_divider"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -152,7 +158,7 @@ found in the LICENSE file.
             android:layout_height="24dp"
             android:background="@color/divider_color"
             android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/zoom_increase_button"
+            app:layout_constraintEnd_toStartOf="@id/fit_to_page_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -166,7 +172,7 @@ found in the LICENSE file.
             android:paddingEnd="12dp"
             android:src="@drawable/ic_fit_page_height_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/other_zoom_divider"
+            app:layout_constraintEnd_toStartOf="@id/rotate_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -181,7 +187,7 @@ found in the LICENSE file.
             android:paddingEnd="12dp"
             android:src="@drawable/ic_rotate_page_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/fit_to_page_button"
+            app:layout_constraintEnd_toStartOf="@id/two_page_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -196,7 +202,7 @@ found in the LICENSE file.
             android:paddingEnd="12dp"
             android:src="@drawable/ic_two_page_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/rotate_button"
+            app:layout_constraintEnd_toStartOf="@id/info_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -211,7 +217,7 @@ found in the LICENSE file.
             android:paddingEnd="20dp"
             android:src="@drawable/ic_info_24dp"
             app:tint="@color/default_icon_color_tint_list"
-            app:layout_constraintStart_toEndOf="@id/two_page_button"
+            app:layout_constraintEnd_toStartOf="@id/edit_button"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -224,7 +230,6 @@ found in the LICENSE file.
             android:backgroundTint="?attr/colorSecondaryContainer"
             android:clipToOutline="true"
             android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@id/info_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
