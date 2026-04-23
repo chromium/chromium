@@ -311,11 +311,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                        == PrimaryAccountChangeEvent.Type.CLEARED
-                // TODO(b/40066949): Remove this usage of ConsentLevel.SYNC after all android sync
-                // users have been migrated.
-                || eventDetails.getEventTypeFor(ConsentLevel.SYNC)
-                        == PrimaryAccountChangeEvent.Type.CLEARED) {
+                == PrimaryAccountChangeEvent.Type.CLEARED) {
             finishCurrentSettings();
         }
     }

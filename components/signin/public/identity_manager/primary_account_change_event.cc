@@ -196,18 +196,15 @@ base::android::ScopedJavaLocalRef<jobject>
 ConvertToJavaPrimaryAccountChangeEvent(
     JNIEnv* env,
     const PrimaryAccountChangeEvent& event_details) {
-  PrimaryAccountChangeEvent::Type event_type_not_required =
+  PrimaryAccountChangeEvent::Type event_type =
       event_details.GetEventTypeFor(ConsentLevel::kSignin);
-  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is
-  //     deleted. See ConsentLevel::kSync documentation for details.
-  PrimaryAccountChangeEvent::Type event_type_sync =
-      event_details.GetEventTypeFor(ConsentLevel::kSync);
-  // Should not fire events if there is no change in primary accounts for any
-  // consent level.
-  DCHECK(event_type_not_required != PrimaryAccountChangeEvent::Type::kNone ||
-         event_type_sync != PrimaryAccountChangeEvent::Type::kNone);
+  if (event_type == PrimaryAccountChangeEvent::Type::kNone) {
+    // Java layers are only aware of the kSignin account and so only observe
+    // events relevant to it.
+    return {};
+  }
   return Java_PrimaryAccountChangeEvent_Constructor(
-      env, int32_t(event_type_not_required), int32_t(event_type_sync));
+      env, std::to_underlying(event_type));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

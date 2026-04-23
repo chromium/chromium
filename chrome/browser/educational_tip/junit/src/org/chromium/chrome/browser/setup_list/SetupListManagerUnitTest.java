@@ -631,8 +631,7 @@ public class SetupListManagerUnitTest {
 
         // 2. Act: Trigger a sign-in event via the captured observer.
         PrimaryAccountChangeEvent event =
-                new PrimaryAccountChangeEvent(
-                        PrimaryAccountChangeEvent.Type.SET, ConsentLevel.SIGNIN);
+                new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET);
         observer.onPrimaryAccountChanged(event);
 
         // 3. Assert: Sign-In should be completed and awaiting animation.
@@ -650,15 +649,13 @@ public class SetupListManagerUnitTest {
 
         // Sign-in event
         PrimaryAccountChangeEvent signInEvent =
-                new PrimaryAccountChangeEvent(
-                        PrimaryAccountChangeEvent.Type.SET, ConsentLevel.SIGNIN);
+                new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET);
         manager.onPrimaryAccountChanged(signInEvent);
         verify(observer).onSetupListStateChanged();
 
         // Sign-out event
         PrimaryAccountChangeEvent signOutEvent =
-                new PrimaryAccountChangeEvent(
-                        PrimaryAccountChangeEvent.Type.CLEARED, ConsentLevel.SIGNIN);
+                new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED);
         manager.onPrimaryAccountChanged(signOutEvent);
         verify(observer, times(2)).onSetupListStateChanged();
     }

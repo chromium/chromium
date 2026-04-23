@@ -223,10 +223,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         } else {
             signOutPreference.setLayoutResource(R.layout.account_management_account_row);
             signOutPreference.setIcon(R.drawable.ic_signout_40dp);
-            signOutPreference.setTitle(
-                    getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)
-                            ? R.string.sign_out_and_turn_off_sync
-                            : R.string.sign_out);
+            signOutPreference.setTitle(R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(
                     preference -> {
                         if (!isVisible() || !isResumed()) {

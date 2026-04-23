@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -142,8 +141,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
     @SmallTest
     public void testCardRemovedOnSignout() {
         mHistorySyncPromoCoordinator.onPrimaryAccountChanged(
-                new PrimaryAccountChangeEvent(
-                        PrimaryAccountChangeEvent.Type.CLEARED, ConsentLevel.SIGNIN));
+                new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED));
 
         verify(mRemoveModuleCallback).run();
     }

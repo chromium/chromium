@@ -349,9 +349,6 @@ CHAR_LIMIT guidelines:
         Link Chrome and other Google services for personalization and other purposes
       </message>
       <!-- Unified consent preferences -->
-      <message name="IDS_SIGN_OUT_AND_TURN_OFF_SYNC" desc="The text for a preferences row that for signs out the user and turns off sync.">
-        Sign out and turn off sync
-      </message>
       <message name="IDS_PREFS_GOOGLE_SERVICES" desc="Title for the group of preferences that control non-personalized Google services. This group contains preferences for data that is not tied to user's Google Account. [CHAR_LIMIT=40]">
         Google services
       </message>

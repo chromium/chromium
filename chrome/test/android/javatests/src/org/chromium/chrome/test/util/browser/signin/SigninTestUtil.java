@@ -146,7 +146,7 @@ public final class SigninTestUtil {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.turnOnSyncForTesting(
                             coreAccountInfo, SigninAccessPoint.WEB_SIGNIN);
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
     }
 

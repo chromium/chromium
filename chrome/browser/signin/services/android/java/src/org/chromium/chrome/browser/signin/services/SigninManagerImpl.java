@@ -308,8 +308,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 : "Must be signed-in to turn on sync ";
         @PrimaryAccountError
         int primaryAccountError =
-                mIdentityMutator.setPrimaryAccount(
-                        coreAccountInfo.getId(), ConsentLevel.SYNC, accessPoint, () -> {});
+                mIdentityMutator.setPrimaryAccountWithSyncConsentForTesting(
+                        coreAccountInfo.getId(), accessPoint, () -> {});
         assert primaryAccountError == PrimaryAccountError.NO_ERROR
                 : "Encountered error: " + primaryAccountError;
     }
@@ -474,13 +474,9 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         // Only one signOut at a time!
         assert mSignOutState == null;
 
-        // Check the management domain before nativeSignOut() potentially clears it.
-        boolean shouldWipeBecauseOfAccountManagement =
-                getManagementDomain() != null
-                        && mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
         @SignOutState.DataWipeAction
         int dataWipeAction =
-                (forceWipeUserData || shouldWipeBecauseOfAccountManagement)
+                forceWipeUserData
                         ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
                         : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY;
         mSignOutState = new SignOutState(signOutCallback, dataWipeAction);

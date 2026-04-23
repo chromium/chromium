@@ -14,7 +14,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
@@ -22,13 +21,14 @@ final class SyncTestSigninUtils {
     private static SigninTestRule sSigninTestRule;
 
     /** Sets up the test account and signs in. */
-    // TODO(crbug.com/40066949): Remove param `consentLevel` once Sync-the-feature is fully removed.
+    // TODO(crbug.com/40066949): Remove param `withSyncConsent` once native tests for
+    // sync-the-feature are removed.
     @CalledByNative
     private static void setUpAccountAndSignInForTesting(
-            @JniType("AccountInfo") AccountInfo accountInfo, @ConsentLevel int consentLevel) {
-        if (consentLevel == ConsentLevel.SIGNIN) {
+            @JniType("AccountInfo") AccountInfo accountInfo, boolean withSyncConsent) {
+        if (!withSyncConsent) {
             sSigninTestRule.addAccountThenSignin(accountInfo);
-        } else if (consentLevel == ConsentLevel.SYNC) {
+        } else {
             sSigninTestRule.addAccountThenSigninWithConsentLevelSync(accountInfo);
         }
     }
@@ -55,16 +55,17 @@ final class SyncTestSigninUtils {
     }
 
     /** Add an account to the device and signs in for live testing. */
-    // TODO(crbug.com/40066949): Remove param `consentLevel` once Sync-the-feature is fully removed.
+    // TODO(crbug.com/40066949): Remove param `withSyncConsent` once native tests for
+    // sync-the-feature are removed.
     @CalledByNative
     private static void setUpLiveAccountAndSignInForTesting(
             @JniType("std::string") String accountName,
             @JniType("std::string") String password,
-            @ConsentLevel int consentLevel) {
-        if (consentLevel == ConsentLevel.SIGNIN) {
+            boolean withSyncConsent) {
+        if (!withSyncConsent) {
             LiveSigninTestUtil.getInstance()
                     .addAccountWithPasswordThenSignin(accountName, password);
-        } else if (consentLevel == ConsentLevel.SYNC) {
+        } else {
             LiveSigninTestUtil.getInstance()
                     .addAccountWithPasswordThenSigninWithConsentLevelSync(accountName, password);
         }

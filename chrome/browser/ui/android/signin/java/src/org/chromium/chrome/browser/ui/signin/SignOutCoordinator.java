@@ -43,9 +43,8 @@ import java.util.stream.IntStream;
 public class SignOutCoordinator {
     /**
      * Starts the sign-out flow. The caller must verify existence of a signed-in account and whether
-     * sign-out is allowed before calling. Child users may only call this method if there is an
-     * account with {@link ConsentLevel#SYNC}. It can show three different UIs depending on user
-     * state:
+     * sign-out is allowed before calling. Child users must not call this method. It can show three
+     * different UIs depending on user state:
      * <li>A snackbar indicating user has signed-out.
      * <li>A confirmation dialog indicating user has unsaved data.
      * <li>A confirmation dialog indicating that user may be signed-out as a side-effect of some
@@ -86,9 +85,8 @@ public class SignOutCoordinator {
     // signout snackbar from here, which means after fixing b/343933167.
     /**
      * Starts the sign-out flow. The caller must verify existence of a signed-in account and whether
-     * sign-out is allowed before calling. Child users may only call this method if there is an
-     * account with {@link ConsentLevel#SYNC}. It can show three different UIs depending on user
-     * state:
+     * sign-out is allowed before calling. Child users must not call this method. It can show three
+     * different UIs depending on user state:
      * <li>A snackbar indicating user has signed-out.
      * <li>A confirmation dialog indicating user has unsaved data.
      * <li>A confirmation dialog indicating that user may be signed-out as a side-effect of some

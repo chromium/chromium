@@ -38,31 +38,30 @@ public class PrimaryAccountChangeEvent {
         int CLEARED = 2;
     }
 
-    private final @Type int mEventTypeForConsentLevelSync;
-    private final @Type int mEventTypeForConsentLevelNotRequired;
+    private final @Type int mEventType;
 
     @CalledByNative
     @VisibleForTesting
-    public PrimaryAccountChangeEvent(
-            @Type int eventTypeForConsentLevelNotRequired, @Type int eventTypeForConsentLevelSync) {
-        mEventTypeForConsentLevelNotRequired = eventTypeForConsentLevelNotRequired;
-        mEventTypeForConsentLevelSync = eventTypeForConsentLevelSync;
-        assert mEventTypeForConsentLevelNotRequired != Type.NONE
-                        || mEventTypeForConsentLevelSync != Type.NONE
+    public PrimaryAccountChangeEvent(@Type int eventType) {
+        mEventType = eventType;
+        assert mEventType != Type.NONE
                 : "PrimaryAccountChangeEvent should not be fired for no-change events";
     }
 
     /**
      * Returns primary account change event type for the corresponding consentLevel.
+     *
+     * <p>TODO(crbug.com/40066949): Remove ConsentLevel param.
+     *
      * @param consentLevel The consent level for the primary account change.
-     * @return The event type for the change.
-     *         NONE - No change in primary account for consentLevel.
-     *         SET - A new primary account is set or changed for consentLevel.
-     *         CLEARED - The primary account set for consentLevel is cleared.
+     * @return The event type for the change:
+     *     <ul>
+     *       <li>NONE - No change in primary account for consentLevel.
+     *       <li>SET - A new primary account is set or changed for consentLevel.
+     *       <li>CLEARED - The primary account set for consentLevel is cleared.
+     *     </ul>
      */
-    public @Type int getEventTypeFor(@ConsentLevel int consentLevel) {
-        return consentLevel == ConsentLevel.SYNC
-                ? mEventTypeForConsentLevelSync
-                : mEventTypeForConsentLevelNotRequired;
+    public @Type int getEventTypeFor(@SuppressWarnings("unused") @ConsentLevel int consentLevel) {
+        return mEventType;
     }
 }

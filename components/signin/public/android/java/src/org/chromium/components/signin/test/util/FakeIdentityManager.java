@@ -127,9 +127,7 @@ public class FakeIdentityManager implements IdentityManager {
                                 mPrimaryAccount == null
                                         ? PrimaryAccountChangeEvent.Type.SET
                                         : PrimaryAccountChangeEvent.Type.CLEARED;
-                        observer.onPrimaryAccountChanged(
-                                new PrimaryAccountChangeEvent(
-                                        type, PrimaryAccountChangeEvent.Type.NONE));
+                        observer.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(type));
                     }
                 });
     }
