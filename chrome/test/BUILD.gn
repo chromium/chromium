@@ -3352,6 +3352,7 @@ if (!is_android) {
       "//components/test/data/ad_tagging/",
       "//components/test/data/ads_observer/",
       "//components/test/data/autofill/",
+      "//components/test/data/contextual_tasks/",
       "//components/test/data/custom_handlers/",
       "//components/test/data/optimization_guide/",
       "//components/test/data/page_content_annotations/",

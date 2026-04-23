@@ -4,11 +4,15 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_model_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -26,7 +30,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/tab_relevance_model_metadata.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -170,7 +176,6 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    scoped_feature_list_.Reset();
     InProcessBrowserTest::TearDown();
   }
 
@@ -179,8 +184,8 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
         {
             {kContextualTasksContext,
              {{{"ContextualTasksContextOnlyUseTitles", "false"},
-               {"ContextualTasksContextEmbeddingSimilarityScore", "0.8"},
-               {"ContextualTasksContextMinMultiSignalScore", "0.8"}}}},
+               {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+               {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}}},
             {kContextualTasksContextLogging, {}},
         },
         /*disabled_features=*/{});
@@ -253,6 +258,21 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   ContextualTasksContextService* service() {
     return ContextualTasksContextServiceFactory::GetForProfile(
         browser()->profile());
+  }
+
+  ContextualTasksContextModelHandler* GetModelHandler() {
+    return service()->model_handler_.get();
+  }
+
+  void UpdateModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const optimization_guide::ModelInfo& model_info) {
+    service()->model_handler_ =
+        std::make_unique<ContextualTasksContextModelHandler>(
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->profile()),
+            base::SequencedTaskRunner::GetCurrentDefault());
+    service()->model_handler_->OnModelUpdated(optimization_target, model_info);
   }
 
   MockPageEmbeddingsService* page_embeddings_service() {
@@ -820,8 +840,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
                                  .quality();
   EXPECT_EQ(uploaded_quality_log.number_of_query_words(), 4);
   EXPECT_GT(uploaded_quality_log.query_active_tab_title_similarity(), 0.99f);
-  EXPECT_EQ(
-      uploaded_quality_log.query_active_tab_passage_similarities().size(), 2);
+  EXPECT_EQ(uploaded_quality_log.query_active_tab_passage_similarities().size(),
+            2);
   EXPECT_GT(uploaded_quality_log.query_active_tab_passage_similarities()[0],
             0.99f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
@@ -1174,8 +1194,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                                  .quality();
 
   EXPECT_EQ(uploaded_quality_log.query_active_tab_title_similarity(), 0.0f);
-  ASSERT_EQ(
-      uploaded_quality_log.query_active_tab_passage_similarities().size(), 1);
+  ASSERT_EQ(uploaded_quality_log.query_active_tab_passage_similarities().size(),
+            1);
 
   ASSERT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
   auto& tab_context = uploaded_quality_log.eligible_tabs()[0];
@@ -1215,15 +1235,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
           // First call is for the Active Tab (in CreateQueryState)
           embeddings.emplace_back(
               std::make_pair(
-                   "active title",
-                   page_content_annotations::EmbeddingPassageType::kTitle),
+                  "active title",
+                  page_content_annotations::EmbeddingPassageType::kTitle),
               CreateFakeEmbedding(-1.0f));
         } else {
           // Subsequent calls are for the candidate tabs in the all_tabs loop
           embeddings.emplace_back(
               std::make_pair(
-                   "candidate title",
-                   page_content_annotations::EmbeddingPassageType::kTitle),
+                  "candidate title",
+                  page_content_annotations::EmbeddingPassageType::kTitle),
               CreateFakeEmbedding(1.0f));
         }
         return embeddings;
@@ -1374,12 +1394,78 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, OnTypedQuery) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Verifies that with ML model mode selected, the service execution follows
+  // the ML model execution path and returns results.
+  base::HistogramTester histogram_tester;
+
+  // unit_test_tab_relevance.tflite expects 25 float inputs.
+  optimization_guide::proto::TabRelevanceModelMetadata metadata;
+  metadata.set_num_features(25);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
+  for (int i = 0; i < 24; ++i) {
+    metadata.add_feature_sequence(
+        optimization_guide::proto::TabRelevanceModelMetadata::
+            TAB_RELEVANCE_FEATURE_UNKNOWN);
+  }
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.TabRelevanceModelMetadata");
+  metadata.SerializeToString(any_metadata.mutable_value());
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+  base::FilePath model_file_path =
+      test_data_dir.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("contextual_tasks")
+          .AppendASCII("unit_test_tab_relevance.tflite");
+  {
+    ASSERT_TRUE(base::PathExists(model_file_path));
+  }
+
+  auto model_info = optimization_guide::TestModelInfoBuilder()
+                        .SetModelFilePath(model_file_path)
+                        .SetModelMetadata(any_metadata)
+                        .Build();
+  UpdateModel(optimization_guide::proto::
+                  OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
+              *model_info);
+
+  NavigateToValidURL();
   NotifyEmbedderMetadata();
 
-  EXPECT_CALL(*page_embeddings_service(), ProcessEmbeddingsOnDemand()).Times(1);
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
 
-  service()->OnTypedQuery();
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kStaticSignalsMlModel;
+  // Set threshold lower than expected score (0.515047f for 5 words).
+  options.min_model_score = 0.5f;
+
+  service()->GetRelevantTabsForQuery(options, "summarize the test page now",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
+
+  EXPECT_EQ(1u, future.Get().size());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       ModelHandlerInitialization) {
+  // Verifies that the model handler is properly instantiated.
+  EXPECT_TRUE(GetModelHandler() != nullptr);
 }
 
 }  // namespace contextual_tasks

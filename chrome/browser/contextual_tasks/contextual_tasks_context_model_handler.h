@@ -31,9 +31,11 @@ class ContextualTasksContextModelHandler
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~ContextualTasksContextModelHandler() override;
 
-  // Executes the model with high-level signals. Returns the score.
-  double ExecuteModelWithSignalsSync(const QueryStateSignals& query_signals,
-                                     const TabSignals& tab_signals);
+  // Executes the model asynchronously with high-level signals.
+  void ExecuteModelWithSignals(
+      const QueryStateSignals& query_signals,
+      const TabSignals& tab_signals,
+      base::OnceCallback<void(const std::optional<float>&)> callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContextualTasksContextModelHandlerTest,
