@@ -196,7 +196,12 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
   base::TimeTicks entry_shown_timestamp_;
 
-  base::ObserverList<SidePanelEntryObserver> observers_;
+  base::ObserverList<
+      SidePanelEntryObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // The last trigger that caused this side panel entry to be shown. This is
   // used for metrics.
