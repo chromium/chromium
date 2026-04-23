@@ -929,8 +929,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Forced sign-in"/>
   <int value="30" label="(obsolete) Re-signin after an account rename"/>
   <int value="31"
-      label="Bottom sheet from web sign-in (Mobile). Implicit web sign-in
-             (Desktop, deprecated)"/>
+      label="Bottom sheet from web sign-in (Mobile). Web sign-in, not used
+             for Chrome sign-in (Desktop)"/>
   <int value="32" label="Safety check settings page"/>
   <int value="33" label="(obsolete) Kaleidoscope"/>
   <int value="34" label="(obsolete) Enterprise sign-out coordinator"/>
