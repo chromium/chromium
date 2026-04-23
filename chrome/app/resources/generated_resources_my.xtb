@@ -1046,7 +1046,6 @@
 <translation id="1703666494654169921">ပကတိအသွင်ကိရိယာများ (သို့) ဒေတာများသုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="1704097193565924901">ထိပ်စာလုံး အကြီးပြောင်းခြင်း</translation>
 <translation id="1704230497453185209">အသံဖွင့်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
-<translation id="1706015824809136764">Gemini ကို ကိရိယာဘားဖြတ်လမ်းတွင် ပင်ထိုးရန်</translation>
 <translation id="1706586824377653884">သင့်စီမံခန့်ခွဲသူက ထည့်သွင်းထားခြင်းဖြစ်သည်</translation>
 <translation id="170658918174941828">သင်ရွေးချယ်သည့် အထက်ပါအချက်အလက်များနှင့်အတူ
     သင့် Chrome ဗားရှင်း၊ လည်ပတ်သည့်စနစ် ဗားရှင်း၊ ကာစ်ဆက်တင်များ၊
@@ -1557,7 +1556,6 @@
 <translation id="204914487372604757">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
 <translation id="2049573977943974163">“<ph name="EXTENSION_NAME" />” ဖွင့်မလား။</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
-<translation id="2050394140692183739">လက်ရှိ တူးလ်ဘားဖြတ်လမ်း</translation>
 <translation id="2051555741181591333">ဟော့စပေါ့ အလိုအလျောက်ပိတ်ရန်</translation>
 <translation id="2051669996101374349">ရနိုင်ချိန်တိုင်း HTTPS ကိုသုံးပြီး ၎င်းက ပံ့ပိုးမထားသော ဝဘ်ဆိုက်များကို မဖွင့်မီ သတိပေးချက်ရယူပါ။ သင့်တွင် ‘အဆင့်မြင့်ကာကွယ်ရေး’ ဖွင့်ထားသောကြောင့် ဤဆက်တင်ကို ပြောင်း၍မရပါ။</translation>
 <translation id="2052572566310583903">သင်၏အခြားစက်များတွင် ထည့်သွင်းထားသည်များ</translation>
@@ -4246,6 +4244,7 @@
 <translation id="3874532133373654352">ဤဝန်ဆောင်မှုများမှ စုဆောင်းထားသော ဒေတာအား မည်သို့အသုံးပြုနိုင်ပုံကို သင့်အဖွဲ့အစည်းက စီမံပါသည်။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">ဤဝန်ဆောင်မှုသည် AI ကို အသုံးပြုပြီး စမ်းသပ်ဆဲဖြစ်သည်</translation>
 <translation id="3875511946736639169">ပုံများ ပြပါ</translation>
+<translation id="3875777964669698078">စာသားရေးနေသည်…</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ကို ဘရောင်ဇာတဘ်အသစ်တွင် ဖွင့်ရန် သတ်မှတ်ထားသည်။ ပံ့ပိုးထားသည့်လင့်ခ်များကိုလည်း ဘရောင်ဇာတွင် ဖွင့်ပါမည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">အပေါ်သို့ဆွဲညှိပြီး ဝင်းဒိုးများကို အရွယ်ပြင်ထားသည်</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> ၏ စက်အတွက် 'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ၊ <ph name="USER_EMAIL" /> အကောင့်အောက်တွင် မျှဝေထားသည်။</translation>
@@ -4716,6 +4715,7 @@
 <translation id="4223404254440398437">မိုက်ခရိုဖုန်း ခွင့်ပြုမထားပါ</translation>
 <translation id="4224541845943007092">လိပ်စာဘားမှ ကီးဘုတ်ထည့်သွင်းချက်ကို ဖတ်ပြီး သိမ်းနိုင်သည်</translation>
 <translation id="4225397296022057997">ဝဘ်ဆိုက်များ အားလုံးတွင်</translation>
+<translation id="4225895483398857530">ကိရိယာဘား ဖြတ်လမ်းလင့်ခ်</translation>
 <translation id="4226303886821889519">အပ်ဒိတ်လုပ်ပေးသည့်စနစ် ဗားရှင်း- <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">သင့်အဖွဲ့အစည်း၏ အီးမေးလ်လိပ်စာ သုံးရန်</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲကို ခွင့်မပြုပါ}other{နောက်ဆက်တွဲအချို့ကို ခွင့်မပြုပါ}}</translation>
@@ -6609,6 +6609,7 @@
 <translation id="5555639311269196631">ဟော့စပေါ့ ပိတ်ရန်</translation>
 <translation id="5555760010546505198">အရောင်ပြောင်းပြန်ပြုလုပ်ခြင်း၊ အရောင် အမှန်ပြင်ခြင်း၊ မှန်ဘီလူးနှင့် ပြသမှုဆက်တင်များ</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> ဖွင့်ရန်</translation>
+<translation id="5556191579768914260">အမှားပြပါ</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="555671485580955310">မှတ်တမ်းနှင့် တဘ်များ စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="5558129378926964177">ဇူးမ်ဆွဲရန်</translation>
@@ -10139,7 +10140,6 @@
 <translation id="8032569120109842252">လိုက်ကြည့်နေသည်</translation>
 <translation id="8033827949643255796">ရွေးထား</translation>
 <translation id="8033958968890501070">အချိန်ကုန်သွားသည်</translation>
-<translation id="8034399942062051455">V8 အကောင်းဆုံးချိန်ညှိခြင်း ပိတ်ထားသည်</translation>
 <translation id="8034697324150621782">ထိပ်ပိုင်းမြင်ကွင်းဖြင့် လဲလှယ်ရန်</translation>
 <translation id="8035059678007243127">ရှေ့/နောက် ကက်ရှ်သိမ်းထားသော ရုပ်ဖျက်စာမျက်နှာ- <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">သိမ်းထားသော တဘ်အုပ်စုများခလုတ်ကို ပြပါ</translation>
@@ -11788,7 +11788,6 @@
 <translation id="914031120300235526">ပရိုဖိုင် ဖွင့်၍မရပါ</translation>
 <translation id="9143298529634201539">အကြံပြုချက် ဖယ်ရှားမလား။</translation>
 <translation id="9143922477019434797">သင့်စကားဝှက်များကို ကာကွယ်သည်</translation>
-<translation id="914621365454686586">Search ကို Drive အကြောင်းအရာ သုံးခွင့်ပြုမလား</translation>
 <translation id="9147392381910171771">&amp;ရွေးစရာများ</translation>
 <translation id="9148058034647219655">ထွက်</translation>
 <translation id="9148126808321036104">ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန်</translation>

@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">да го потврди вашиот идентитет за да може да ги пополни вашите податоци за плаќање</translation>
 <translation id="1150565364351027703">Очила за сонце</translation>
 <translation id="1150979032973867961">Серверот не може да докаже дека е <ph name="DOMAIN" />; oперативниот систем на компјутерот не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="1151858212483238980">Може да ги пополнувате автоматски картичките што се зачувани во Google Wallet</translation>
 <translation id="1151972924205500581">Потребна е лозинка</translation>
 <translation id="1156303062776767266">Прегледувате локална или споделена датотека</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> неочекувано ја затвори врската.</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204184165594298176">{0,plural, =1{Датотеката е блокирана за копирање}one{<ph name="FILE_COUNT" /> датотека се блокирани за копирање}other{<ph name="FILE_COUNT" /> датотеки се блокирани за копирање}}</translation>
 <translation id="120509973613679868">Деловни патувања</translation>
+<translation id="1205344127823614428">Може да ги пополнувате автоматски картичките што се зачувани во Google Wallet.</translation>
 <translation id="120587177308723209">Фиктивни спортски игри</translation>
 <translation id="1206967143813997005">Лош почетен потпис</translation>
 <translation id="1209206284964581585">Скриј засега</translation>
@@ -3185,6 +3187,7 @@
 <translation id="5968400720580217226">AI-режим</translation>
 <translation id="5969199813874624822">Зачувајте и следете ја цената</translation>
 <translation id="5969933937005244170">Релевантните отворени картички ќе се користат само ако ги споделите во низа</translation>
+<translation id="5972020793760134803">Префлете на картичка</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шеста ролна</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
@@ -3595,6 +3598,7 @@
 <translation id="6579858392010591435">Празници и сезонски настани</translation>
 <translation id="6581831440014388355">Отстранување несакани влакна од телото и лицето</translation>
 <translation id="658230438113661756">Напаѓачите на сајтот што се обидовте да го отворите може да инсталираат штетен софтвер што краде или брише работи како вашите лозинки, фотографии, пораки или броеви на кредитни картички. Chrome силно препорачува да се вратите на безбедно. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Зачувано во Google Wallet</translation>
 <translation id="6587893660316489419">Плик B5</translation>
 <translation id="6587923378399804057">Линкот што го копиравте</translation>
 <translation id="6591833882275308647">Вашиот <ph name="DEVICE_TYPE" /> не е управуван</translation>
@@ -3750,6 +3754,7 @@
 <translation id="6834757537110528125">Сајтов не поддржува безбедна врска</translation>
 <translation id="6841864657731852591">Цилиндар со гравура</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844746916504777213">Никогаш не споделувај ги сајтовиве</translation>
 <translation id="6844998850832008753">„Следење раце“ е дозволена еднаш</translation>
 <translation id="6849023911358004088">Копче за управување со безбедносните поставки, активирајте го за да управувате со „Безбедното прелистување“ и друго во поставките за Chrome</translation>
 <translation id="6850286078059909152">Боја на текст</translation>
@@ -4418,6 +4423,7 @@
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Начини на плаќање достапни за избирање за да се продолжи со плаќањето. Тастатурата е скриена.</translation>
+<translation id="784189052219692670">Отсега Gemini може да ги вчитува вашите лични податоци од вашите апликации на Google и да ги пополнува автоматски на страницата што ја прегледувате.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="784623644169604270">Нема неодамнешна активност</translation>
@@ -4821,6 +4827,7 @@
 <translation id="8488350697529856933">Се однесува на</translation>
 <translation id="8490137692873530638">Фиока за складирање 10</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>
+<translation id="8495170825732897952">Внесете @@ во кој било формулар за да ги вчитате и да ги пополните податоците без да се префрлате во друга картичка</translation>
 <translation id="8498870489552322848">да ги пополни вашите чувствителни податоци на <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222">На <ph name="HOST_NAME" /> му требаше премногу време да одговори.</translation>
 <translation id="8502023382441452707">Родендени и имендени</translation>

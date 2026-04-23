@@ -1047,7 +1047,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1703666494654169921">Moenie werwe toelaat om virtuelerealiteittoestelle of data te gebruik nie</translation>
 <translation id="1704097193565924901">Hoofletters</translation>
 <translation id="1704230497453185209">Moenie werwe toelaat om klank te speel nie</translation>
-<translation id="1706015824809136764">Speld Gemini aan Nutsbalk Vas-kortpad</translation>
 <translation id="1706586824377653884">Bygevoeg deur jou administrateur</translation>
 <translation id="170658918174941828">Jou Chrome-weergawe, bedryfstelselweergawe, Cast-instellings,
     weerspieëlingprestasiestatistieke en kommunikasiekanaal se diagnostiese loglêers
@@ -1559,7 +1558,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2049573977943974163">Skakel “<ph name="EXTENSION_NAME" />” aan?</translation>
 <translation id="2050339315714019657">Portret</translation>
-<translation id="2050394140692183739">Huidige nutsbalkkortpad</translation>
 <translation id="2051555741181591333">Deaktiveer warmkol outomaties</translation>
 <translation id="2051669996101374349">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie. Jy kan nie hierdie instelling verander nie omdat Gevorderde Beskerming geaktiveer is.</translation>
 <translation id="2052572566310583903">Op jou ander toestelle geïnstalleer</translation>
@@ -4247,6 +4245,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3874532133373654352">Jou organisasie bestuur hoe data wat deur hierdie kenmerke ingesamel word, gebruik mag word. <ph name="BEGIN_LINK" />Vind meer uit<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Hierdie kenmerk gebruik KI en is eksperimenteel</translation>
 <translation id="3875511946736639169">Aktiveer prente</translation>
+<translation id="3875777964669698078">Transkribeer tans …</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> is gestel om in 'n nuwe blaaieroortjie oop te maak; gesteunde skakels sal ook in die blaaier oopmaak. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Het grootte van vensters na die bokant verander</translation>
 <translation id="3877075909000773256">Nabydeling-instellings vir <ph name="USER_NAME" /> se toestel, wat deel onder die rekening <ph name="USER_EMAIL" />.</translation>
@@ -4718,6 +4717,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4223404254440398437">Mikrofoon nie toegelaat nie</translation>
 <translation id="4224541845943007092">Lees en stoor sleutelbordinvoer van die adresbalk af</translation>
 <translation id="4225397296022057997">Op alle werwe</translation>
+<translation id="4225895483398857530">Nutsbalkkortpad</translation>
 <translation id="4226303886821889519">Opdateerderweergawe: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Gebruik jou organisasie se e-posadres</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding word nie toegelaat nie}other{Sommige uitbreidings word nie toegelaat nie}}</translation>
@@ -6611,6 +6611,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5555639311269196631">Skakel warmkol af</translation>
 <translation id="5555760010546505198">Kleuromkering, kleurregstelling, vergrootglas en skerminstellings</translation>
 <translation id="555604722231274592">Aktiveer <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Wys fout</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="555671485580955310">Sinkroniseer geskiedenis en oortjies</translation>
 <translation id="5558129378926964177">Zoem in</translation>
@@ -10144,7 +10145,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8032569120109842252">Volg tans</translation>
 <translation id="8033827949643255796">gekies</translation>
 <translation id="8033958968890501070">Uittelling</translation>
-<translation id="8034399942062051455">V8-optimering is af</translation>
 <translation id="8034697324150621782">Ruil met boaansig</translation>
 <translation id="8035059678007243127">Incognito-terug-vorentoe-kasgegeue-bladsy: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Wys knoppie vir gestoorde oortjiegroepe</translation>
@@ -11793,7 +11793,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="914031120300235526">Kan nie die profiel ontsluit nie</translation>
 <translation id="9143298529634201539">Verwyder voorstel?</translation>
 <translation id="9143922477019434797">Beskerm jou wagwoorde</translation>
-<translation id="914621365454686586">Laat Search toe om toegang tot Drive-inhoud te kry?</translation>
 <translation id="9147392381910171771">Opsies</translation>
 <translation id="9148058034647219655">Gaan uit</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>

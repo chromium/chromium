@@ -1048,7 +1048,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1703666494654169921">Não permitir que os sites usem dispositivos ou dados de realidade virtual</translation>
 <translation id="1704097193565924901">Iniciais em maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites toquem sons</translation>
-<translation id="1706015824809136764">Atalho para fixar Gemini na barra de ferramentas</translation>
 <translation id="1706586824377653884">Adicionado pelo seu administrador</translation>
 <translation id="170658918174941828">Seus registros de diagnósticos do canal de comunicação, sua versão do sistema operacional, suas configurações do Google Cast,
     suas estatísticas de desempenho de espelhamento e sua versão do Google Chrome
@@ -1560,7 +1559,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2049573977943974163">Ativar o recurso "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Retrato</translation>
-<translation id="2050394140692183739">Atalho atual da barra de ferramentas</translation>
 <translation id="2051555741181591333">Desativar ponto de acesso automaticamente</translation>
 <translation id="2051669996101374349">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo. Não é possível mudar essa configuração porque a Proteção Avançada está ativada.</translation>
 <translation id="2052572566310583903">Instalado nos seus outros dispositivos</translation>
@@ -4720,6 +4718,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4223404254440398437">Acesso ao microfone não permitido</translation>
 <translation id="4224541845943007092">Ler e salvar a entrada do teclado da barra de endereço</translation>
 <translation id="4225397296022057997">Em todos os sites</translation>
+<translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
 <translation id="4226303886821889519">Versão do atualizador: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Usar o endereço de e-mail da sua organização</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{A extensão não é permitida}one{A extensão não é permitida}other{Algumas extensões não são permitidas}}</translation>
@@ -10150,7 +10149,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8033827949643255796">selecionado</translation>
 <translation id="8033958968890501070">Expirada</translation>
-<translation id="8034399942062051455">A otimização do V8 está desativada</translation>
 <translation id="8034697324150621782">Trocar com a visualização de cima</translation>
 <translation id="8035059678007243127">Página de navegação anônima salva em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Mostrar botão do grupos de guias salvos</translation>
@@ -11800,7 +11798,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="914031120300235526">Não é possível desbloquear o perfil</translation>
 <translation id="9143298529634201539">Remover sugestão?</translation>
 <translation id="9143922477019434797">Proteger senhas</translation>
-<translation id="914621365454686586">Permitir que a Pesquisa acesse o conteúdo do Drive?</translation>
 <translation id="9147392381910171771">&amp;Opções</translation>
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>

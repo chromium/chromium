@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
+<translation id="1151858212483238980">Du kannst in Google Wallet gespeicherte Karten automatisch ausfüllen lassen</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Du siehst dir eine lokale oder freigegebene Datei an</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> hat die Verbindung unerwartet geschlossen.</translation>
@@ -131,6 +132,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1202892408424955784">Beobachtete Produkte</translation>
 <translation id="1204184165594298176">{0,plural, =1{Datei kann nicht kopiert werden}other{<ph name="FILE_COUNT" /> Dateien können nicht kopiert werden}}</translation>
 <translation id="120509973613679868">Geschäftsreisen</translation>
+<translation id="1205344127823614428">Du kannst in Google Wallet gespeicherte Karten automatisch ausfüllen lassen.</translation>
 <translation id="120587177308723209">Fantasy Sport</translation>
 <translation id="1206967143813997005">Erste Signatur ungültig</translation>
 <translation id="1209206284964581585">Vorerst ausblenden</translation>
@@ -3183,6 +3185,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5968400720580217226">KI‑Modus</translation>
 <translation id="5969199813874624822">Speichern und Preis beobachten</translation>
 <translation id="5969933937005244170">Relevante geöffnete Tabs werden nur verwendet, wenn du sie in einem Thread teilst</translation>
+<translation id="5972020793760134803">Zu folgendem Tab wechseln:</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sechste Rolle</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
@@ -3593,6 +3596,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6579858392010591435">Feiertage und besondere Anlässe</translation>
 <translation id="6581831440014388355">Entfernung unerwünschter Haare an Gesicht und Körper</translation>
 <translation id="658230438113661756">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der beispielsweise Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">In Google Wallet gespeichert</translation>
 <translation id="6587893660316489419">Umschlag B5</translation>
 <translation id="6587923378399804057">Von dir kopierter Link</translation>
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
@@ -3748,6 +3752,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6834757537110528125">Diese Website unterstützt keine verschlüsselte Verbindung</translation>
 <translation id="6841864657731852591">Tiefdruckzylinder</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
+<translation id="6844746916504777213">Diese Websites nie teilen</translation>
 <translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
 <translation id="6849023911358004088">Button „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
@@ -4417,6 +4422,7 @@ Weitere Details:
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Verfügbare Zahlungsmethoden, die ausgewählt werden können, um mit der Zahlung fortzufahren. Tastatur ausgeblendet.</translation>
+<translation id="784189052219692670">Gemini kann sich jetzt an deine personenbezogenen Daten aus deinen Google-Apps erinnern und sie auf der Seite, die du gerade ansiehst, automatisch ausfüllen.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="784623644169604270">Keine neuen Aktivitäten</translation>
@@ -4820,6 +4826,7 @@ Weitere Details:
 <translation id="8488350697529856933">Gilt für</translation>
 <translation id="8490137692873530638">Stapelfach 10</translation>
 <translation id="8493948351860045254">Speicherplatz freigeben</translation>
+<translation id="8495170825732897952">Gib in einem beliebigen Formular „@@“ ein, um Informationen abzurufen und einzufügen, ohne den Tab zu wechseln</translation>
 <translation id="8498870489552322848">deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen</translation>
 <translation id="8498891568109133222">Die Antwort von <ph name="HOST_NAME" /> hat zu lange gedauert.</translation>
 <translation id="8502023382441452707">Geburts- und Namenstage</translation>

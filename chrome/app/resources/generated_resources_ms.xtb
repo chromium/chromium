@@ -1047,7 +1047,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
 <translation id="1704097193565924901">Menggunakan huruf besar</translation>
 <translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
-<translation id="1706015824809136764">Sematkan pintasan Gemini pada bar alat</translation>
 <translation id="1706586824377653884">Ditambahkan oleh pentadbir anda</translation>
 <translation id="170658918174941828">Versi Chrome, versi sistem pengendalian, tetapan Cast,
     statistik prestasi pencerminan dan log diagnostik saluran komunikasi anda
@@ -1559,7 +1558,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="204914487372604757">Cipta pintasan</translation>
 <translation id="2049573977943974163">Hidupkan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Potret</translation>
-<translation id="2050394140692183739">Pintasan bar alat semasa</translation>
 <translation id="2051555741181591333">Lumpuhkan tempat liputan secara automatik</translation>
 <translation id="2051669996101374349">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini. Anda tidak boleh menukar tetapan ini kerana anda telah mendayakan Perlindungan Lanjutan.</translation>
 <translation id="2052572566310583903">Dipasang pada peranti anda yang lain</translation>
@@ -4247,6 +4245,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3874532133373654352">Organisasi anda mengurus cara data yang dikumpulkan oleh ciri ini mungkin digunakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ciri ini menggunakan AI dan merupakan ciri percubaan</translation>
 <translation id="3875511946736639169">Dayakan imej</translation>
+<translation id="3875777964669698078">Mentranskripsi...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ditetapkan untuk dibuka dalam tab penyemak imbas baharu, pautan yang disokong juga akan dibuka dalam penyemak imbas. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Ubah saiz tetingkap pada bahagian atas</translation>
 <translation id="3877075909000773256">Tetapan Kongsi Berdekatan untuk peranti <ph name="USER_NAME" />, berkongsi menggunakan akaun <ph name="USER_EMAIL" />.</translation>
@@ -4718,6 +4717,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4223404254440398437">Mikrofon tidak dibenarkan</translation>
 <translation id="4224541845943007092">Baca dan simpan input papan kekunci daripada bar alamat</translation>
 <translation id="4225397296022057997">Di semua tapak</translation>
+<translation id="4225895483398857530">Pintasan bar alat</translation>
 <translation id="4226303886821889519">Versi pengemaskinian: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Gunakan alamat e-mel organisasi anda</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak dibenarkan}other{Sesetengah sambungan tidak dibenarkan}}</translation>
@@ -6611,6 +6611,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5555639311269196631">Matikan tempat liputan</translation>
 <translation id="5555760010546505198">Tetapan penyongsangan warna, pembetulan warna, penggadang dan paparan</translation>
 <translation id="555604722231274592">Dayakan <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Tunjukkan ralat</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="555671485580955310">Segerakkan sejarah dan tab</translation>
 <translation id="5558129378926964177">Zum &amp;Masuk</translation>
@@ -10144,7 +10145,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8032569120109842252">Mengikut</translation>
 <translation id="8033827949643255796">dipilih</translation>
 <translation id="8033958968890501070">Tamat masa</translation>
-<translation id="8034399942062051455">Pengoptimuman V8 dimatikan</translation>
 <translation id="8034697324150621782">Tukar dengan Paparan Atas</translation>
 <translation id="8035059678007243127">Halaman Dicache Kembali/Maju Inkognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Butang tunjukkan kumpulan tab yang disimpan</translation>
@@ -11794,7 +11794,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="914031120300235526">Tidak dapat membuka kunci profil</translation>
 <translation id="9143298529634201539">Alih keluar cadangan?</translation>
 <translation id="9143922477019434797">Lindungi kata laluan anda</translation>
-<translation id="914621365454686586">Benarkan Search Mengakses Kandungan Drive?</translation>
 <translation id="9147392381910171771">&amp;Pilihan</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>

@@ -719,7 +719,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Se muestran en orden aleatorio. Puedes cambiar tu buscador predeterminado cuando quieras.</translation>
 <translation id="2137891579555018930">Esperando permiso...</translation>
-<translation id="213826338245044447">Marcadores móvil</translation>
+<translation id="213826338245044447">Marcadores de móvil</translation>
 <translation id="2141000681034340397">Editar los datos introducidos</translation>
 <translation id="2141475438898772664">Paga en 4 cuotas o mensualmente</translation>
 <translation id="2144171668675205303">No hay temas activos</translation>
@@ -3187,6 +3187,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5969199813874624822">Guardar y seguir precio</translation>
 <translation id="5969933937005244170">Las pestañas abiertas relevantes solo se usarán si las compartes en una conversación</translation>
+<translation id="5972020793760134803">Cambia a la pestaña</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rollo</translation>
 <translation id="5975083100439434680">Reducir</translation>
@@ -4498,7 +4499,7 @@ Más información:
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada a este sitio</translation>
 <translation id="7953569069500808819">Grapado en el borde superior</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
-<translation id="7956713633345437162">Marcadores móvil</translation>
+<translation id="7956713633345437162">Marcadores de móvil</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7962467575542381659">Máquina de la plataforma</translation>
 <translation id="7966803981046576691">Tipo de cuenta de tarea</translation>

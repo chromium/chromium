@@ -1043,7 +1043,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
 <translation id="1704230497453185209">Websites dürfen keinen Ton wiedergeben</translation>
-<translation id="1706015824809136764">Symbol „Gemini an die Symbolleiste anpinnen“</translation>
 <translation id="1706586824377653884">Von deinem Administrator hinzugefügt</translation>
 <translation id="170658918174941828">Neben den oben angegebenen Informationen werden deine Chrome-Version, die Version deines Betriebssystems, deine Google Cast-Einstellungen, Statistiken zur Spiegelungsleistung und Diagnoseprotokolle des Kommunikationskanals gesendet. Dieses Feedback wird zur Fehlerdiagnose und zur Verbesserung der Funktion genutzt. Von dir absichtlich oder unabsichtlich gesendete personenbezogene Daten werden entsprechend unserer Datenschutzerklärung geschützt. Durch das Senden dieses Feedbacks stimmst du zu, dass Google dein Feedback zur Verbesserung aller Google-Produkte und -Dienste nutzen darf.</translation>
 <translation id="17081583771848899">Launcher-Taste + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1546,7 +1545,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2049573977943974163">„<ph name="EXTENSION_NAME" />“ aktivieren?</translation>
 <translation id="2050339315714019657">Porträt</translation>
-<translation id="2050394140692183739">Aktuelles Symbol für die Symbolleiste</translation>
 <translation id="2051555741181591333">Hotspot automatisch deaktivieren</translation>
 <translation id="2051669996101374349">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen. Du kannst diese Einstellung nicht ändern, da das erweiterte Sicherheitsprogramm aktiviert ist.</translation>
 <translation id="2052572566310583903">Auf deinen anderen Geräten installiert</translation>
@@ -4229,6 +4227,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3874532133373654352">Deine Organisation legt fest, wie die von diesen Funktionen erhobenen Daten verwendet werden dürfen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Diese Funktion verwendet KI und ist experimentell</translation>
 <translation id="3875511946736639169">Bilder aktivieren</translation>
+<translation id="3875777964669698078">Wird transkribiert...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> wird in einem neuen Browsertab geöffnet. Unterstützte Links werden ebenfalls im Browser geöffnet. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Fenstergröße nach oben angepasst</translation>
 <translation id="3877075909000773256">Nearby Share-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
@@ -4700,6 +4699,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4223404254440398437">Mikrofonnutzung nicht zulässig</translation>
 <translation id="4224541845943007092">Tastatureingaben aus der Adressleiste lesen und speichern</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
+<translation id="4225895483398857530">Verknüpfung in Symbolleiste</translation>
 <translation id="4226303886821889519">Updater-Version: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">E-Mail-Adresse der Organisation verwenden</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
@@ -6591,6 +6591,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5555639311269196631">Hotspot deaktivieren</translation>
 <translation id="5555760010546505198">Farbumkehr, Farbkorrektur, Lupe und Anzeigeeinstellungen</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> aktivieren</translation>
+<translation id="5556191579768914260">Fehler anzeigen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="555671485580955310">Verlauf und Tabs synchronisieren</translation>
 <translation id="5558129378926964177">Ver&amp;größern</translation>
@@ -10121,7 +10122,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8032569120109842252">Folge ich</translation>
 <translation id="8033827949643255796">Ausgewählt</translation>
 <translation id="8033958968890501070">Zeitüberschreitung</translation>
-<translation id="8034399942062051455">V8-Optimierung ist deaktiviert</translation>
 <translation id="8034697324150621782">Mit oberer Ansicht tauschen</translation>
 <translation id="8035059678007243127">Inkognito-Seite im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Button für gespeicherte Tabgruppen einblenden</translation>
@@ -11770,7 +11770,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="914031120300235526">Profil kann nicht entsperrt werden</translation>
 <translation id="9143298529634201539">Vorschlag entfernen?</translation>
 <translation id="9143922477019434797">Passwörter schützen</translation>
-<translation id="914621365454686586">Der Google Suche erlauben, auf Drive-Inhalte zuzugreifen?</translation>
 <translation id="9147392381910171771">&amp;Optionen</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>

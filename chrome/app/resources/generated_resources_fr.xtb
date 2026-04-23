@@ -1047,7 +1047,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
 <translation id="1704097193565924901">Mettre une majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à lire des sons</translation>
-<translation id="1706015824809136764">Épingler Gemini au raccourci de la barre d'outils</translation>
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
 <translation id="170658918174941828">Nous recevrons la version de Chrome, la version de votre système d'exploitation, les paramètres Cast, les statistiques des performances de duplication d'écran et les journaux des diagnostics de votre canal de communication, ainsi que toute autre information que vous choisirez d'inclure ci-dessus. Vos commentaires nous servent à diagnostiquer les problèmes et à améliorer la fonctionnalité. Toute information personnelle que vous nous envoyez, de manière explicite ou tacite, est protégée conformément à nos règles de confidentialité. En nous envoyant ces informations, vous acceptez que nous les utilisions pour améliorer tout produit ou service Google.</translation>
 <translation id="17081583771848899">lanceur d'applications+Alt+<ph name="TOP_ROW_KEY" /></translation>
@@ -1550,7 +1549,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="204914487372604757">Créer un raccourci</translation>
 <translation id="2049573977943974163">Activer <ph name="EXTENSION_NAME" /> ?</translation>
 <translation id="2050339315714019657">Portrait</translation>
-<translation id="2050394140692183739">Raccourci actuel de la barre d'outils</translation>
 <translation id="2051555741181591333">Désactiver automatiquement le point d'accès</translation>
 <translation id="2051669996101374349">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge. Vous ne pouvez pas modifier ce paramètre, car la Protection Avancée est activée.</translation>
 <translation id="2052572566310583903">Installée sur vos autres appareils</translation>
@@ -4233,6 +4231,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3874532133373654352">Votre organisation gère la manière dont les données collectées par ces fonctionnalités peuvent être utilisées. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Cette fonctionnalité utilise l'IA et est expérimentale</translation>
 <translation id="3875511946736639169">Afficher les images</translation>
+<translation id="3875777964669698078">Transcription...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> est configuré pour s'ouvrir dans un nouvel onglet de navigateur. Les liens compatibles s'ouvriront aussi dans le navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Fenêtres redimensionnées en haut</translation>
 <translation id="3877075909000773256">Paramètres du Partage à proximité pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
@@ -4704,6 +4703,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4223404254440398437">Micro non autorisé</translation>
 <translation id="4224541845943007092">Lire et enregistrer la saisie au clavier à partir de la barre d'adresse</translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
+<translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4226303886821889519">Version de l'outil de mise à jour : <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Utiliser l'adresse e-mail de votre organisation</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Cette extension n'est pas autorisée}one{Cette extension n'est pas autorisée}other{Certaines extensions ne sont pas autorisées}}</translation>
@@ -6595,6 +6595,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5555639311269196631">Désactiver le point d'accès</translation>
 <translation id="5555760010546505198">Inversion des couleurs, correction des couleurs, loupe et paramètres d'affichage</translation>
 <translation id="555604722231274592">Activer le <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Afficher l'erreur</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="555671485580955310">Synchroniser l'historique et les onglets</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
@@ -10131,7 +10132,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8032569120109842252">Suivis</translation>
 <translation id="8033827949643255796">sélectionné</translation>
 <translation id="8033958968890501070">Délai dépassé</translation>
-<translation id="8034399942062051455">L'optimisation V8 est désactivée</translation>
 <translation id="8034697324150621782">Remplacer par la vue du haut</translation>
 <translation id="8035059678007243127">Page de navigation privée en cache back/forward : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Afficher le bouton des groupes d'onglets enregistrés</translation>
@@ -11781,7 +11781,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="914031120300235526">Impossible de déverrouiller le profil</translation>
 <translation id="9143298529634201539">Supprimer la suggestion ?</translation>
 <translation id="9143922477019434797">Protégez vos mots de passe</translation>
-<translation id="914621365454686586">Autoriser la Recherche à accéder au contenu Drive ?</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>

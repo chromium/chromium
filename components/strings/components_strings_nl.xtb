@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld</translation>
 <translation id="1150565364351027703">Zonnebril</translation>
 <translation id="1150979032973867961">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door het besturingssysteem van je computer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="1151858212483238980">Je kunt automatisch gegevens voor kaarten invullen die zijn opgeslagen in Google Wallet</translation>
 <translation id="1151972924205500581">Wachtwoord vereist</translation>
 <translation id="1156303062776767266">Je bekijkt een lokaal of gedeeld bestand</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> heeft de verbinding onverwacht verbroken.</translation>
@@ -131,6 +132,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1202892408424955784">Gevolgde producten</translation>
 <translation id="1204184165594298176">{0,plural, =1{Bestand kan niet worden gekopieerd}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden gekopieerd}}</translation>
 <translation id="120509973613679868">Zakenreizen</translation>
+<translation id="1205344127823614428">Je kunt automatisch gegevens voor kaarten invullen die zijn opgeslagen in Google Wallet.</translation>
 <translation id="120587177308723209">Fantasy sport</translation>
 <translation id="1206967143813997005">Onjuiste eerste handtekening</translation>
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
@@ -3179,6 +3181,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5968400720580217226">AI-modus</translation>
 <translation id="5969199813874624822">Opslaan en prijs volgen</translation>
 <translation id="5969933937005244170">Relevante geopende tabbladen worden alleen gebruikt als je ze deelt in een gesprek</translation>
+<translation id="5972020793760134803">Overschakelen naar tabblad</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6e rol</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
@@ -3588,6 +3591,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6579858392010591435">Feestdagen</translation>
 <translation id="6581831440014388355">Verwijdering van ongewenst lichaams- en gezichtshaar</translation>
 <translation id="658230438113661756">Aanvallers op de site die je probeerde te bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoorden, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Opgeslagen in Google Wallet</translation>
 <translation id="6587893660316489419">Envelop B5</translation>
 <translation id="6587923378399804057">Link die je hebt gekopieerd</translation>
 <translation id="6591833882275308647">Je <ph name="DEVICE_TYPE" /> wordt niet beheerd</translation>
@@ -3743,6 +3747,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6834757537110528125">Deze site ondersteunt geen beveiligde verbinding</translation>
 <translation id="6841864657731852591">Gravurecilinder</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844746916504777213">Deze sites nooit delen</translation>
 <translation id="6844998850832008753">Handen volgen deze keer toegestaan</translation>
 <translation id="6849023911358004088">Knop Beveiligingsinstellingen beheren. Activeer deze om onder andere Safe Browsing te beheren in de Chrome-instellingen.</translation>
 <translation id="6850286078059909152">Tekstkleur</translation>
@@ -4412,6 +4417,7 @@ Aanvullende informatie:
 <translation id="7840103971441592723">Schermopname is gestart</translation>
 <translation id="784137052867620416">Shopping-inzichten</translation>
 <translation id="7841633276323004751">Betaalmethoden die kunnen worden geselecteerd om door te gaan met de betaling. Toetsenbord verborgen.</translation>
+<translation id="784189052219692670">Gemini kan nu je persoonlijke informatie uit al je Google-apps ophalen en automatisch invullen op de pagina die je bekijkt.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="784623644169604270">Geen recente activiteit</translation>
@@ -4815,6 +4821,7 @@ Aanvullende informatie:
 <translation id="8488350697529856933">Van toepassing op</translation>
 <translation id="8490137692873530638">Stapeleenheid 10</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>
+<translation id="8495170825732897952">Typ @@ in een formulier om informatie op te roepen en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="8498870489552322848">je gevoelige informatie in te vullen in <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222">Het duurt te lang voordat <ph name="HOST_NAME" /> reageert.</translation>
 <translation id="8502023382441452707">Verjaardagen en naamdagen</translation>

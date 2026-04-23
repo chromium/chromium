@@ -1048,7 +1048,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1703666494654169921">Ne dopuštaj web-lokacijama korištenje uređaja ili podataka virtualne stvarnosti</translation>
 <translation id="1704097193565924901">Promijeni prvo slovo u veliko</translation>
 <translation id="1704230497453185209">Ne dopuštaj web-lokacijama reprodukciju zvuka</translation>
-<translation id="1706015824809136764">Prečac za prikvačivanje Geminija na alatnu traku</translation>
 <translation id="1706586824377653884">Dodao vaš administrator</translation>
 <translation id="170658918174941828">Vaša verzija Chromea, verzija operativnog sustava, postavke Casta, statistički podaci o izvedbi zrcaljenja i dijagnostički zapisnici komunikacijskih kanala poslat će se zajedno s informacijama koje ste prethodno odabrali. Te povratne informacije upotrebljavaju se za dijagnosticiranje problema i poboljšanje značajke. Svi osobni podaci koje pošaljete, bilo eksplicitno ili slučajno, bit će zaštićeni u skladu s našim pravilima o privatnosti. Slanjem tih povratnih informacija slažete se da Google može upotrebljavati te povratne informacije za poboljšanje svojih proizvoda ili usluga.</translation>
 <translation id="17081583771848899">pokretač + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1551,7 +1550,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="204914487372604757">Stvori prečac</translation>
 <translation id="2049573977943974163">Uključiti proširenje <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Portret</translation>
-<translation id="2050394140692183739">Trenutačni prečac alatne trake</translation>
 <translation id="2051555741181591333">Automatski onemogući žarišnu točku</translation>
 <translation id="2051669996101374349">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju. Ne možete promijeniti tu postavku jer je omogućena Napredna zaštita.</translation>
 <translation id="2052572566310583903">Instalirano na vašim drugim uređajima</translation>
@@ -4236,6 +4234,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3874532133373654352">Vaša organizacija upravlja načinom na koji se podaci koje prikupljaju ove značajke mogu upotrebljavati. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ova značajka upotrebljava AI i eksperimentalna je</translation>
 <translation id="3875511946736639169">Omogućite slike</translation>
+<translation id="3875777964669698078">Transkripcija...</translation>
 <translation id="3875815154304214043">Aplikacija <ph name="APP_NAME" /> postavljena je za otvaranje u novoj kartici preglednika. Veze za podršku također će se otvoriti u pregledniku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Veličina prozora promijenjena je pri vrhu</translation>
 <translation id="3877075909000773256">Postavke dijeljenja u blizini za uređaj na kojem <ph name="USER_NAME" /> dijeli putem računa <ph name="USER_EMAIL" />.</translation>
@@ -4707,6 +4706,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4223404254440398437">Mikrofon nije dopušten</translation>
 <translation id="4224541845943007092">Čitanje i spremanje unosa pomoću tipkovnice iz adresne trake</translation>
 <translation id="4225397296022057997">Na svim web-lokacijama</translation>
+<translation id="4225895483398857530">Prečac alatne trake</translation>
 <translation id="4226303886821889519">Verzija alata za ažuriranje: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Upotrijebite e-adresu svoje organizacije</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{To proširenje nije dopušteno}one{Neka proširenja nisu dopuštena}few{Neka proširenja nisu dopuštena}other{Neka proširenja nisu dopuštena}}</translation>
@@ -6598,6 +6598,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5555639311269196631">Isključi žarišnu točku</translation>
 <translation id="5555760010546505198">Postavke inverzije boja, korekcije boja, povećala i prikaza</translation>
 <translation id="555604722231274592">Omogućivanje značajke <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Prikaži pogrešku</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="555671485580955310">Sinkronizacija povijesti i kartica</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Povećaj)</translation>
@@ -10132,7 +10133,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8032569120109842252">Praćeno</translation>
 <translation id="8033827949643255796">odabrano</translation>
 <translation id="8033958968890501070">Vrijeme je isteklo</translation>
-<translation id="8034399942062051455">V8 optimizacija je isključena</translation>
 <translation id="8034697324150621782">Zamijeni gornjim prikazom</translation>
 <translation id="8035059678007243127">Anonimno predmemorirana posjećena stranica: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Prikaži gumb za spremljene grupe kartica</translation>
@@ -11783,7 +11783,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="914031120300235526">Profil se ne može otključati</translation>
 <translation id="9143298529634201539">Želite li ukloniti prijedlog?</translation>
 <translation id="9143922477019434797">Zaštita zaporki</translation>
-<translation id="914621365454686586">Želite li dopustiti Pretraživanju da pristupa sadržaju Diska?</translation>
 <translation id="9147392381910171771">&amp;Opcije</translation>
 <translation id="9148058034647219655">Izlaz</translation>
 <translation id="9148126808321036104">Prijavite se ponovno</translation>

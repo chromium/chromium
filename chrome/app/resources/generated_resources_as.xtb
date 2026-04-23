@@ -1045,7 +1045,6 @@
 <translation id="1703666494654169921">ছাইটক ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="1704097193565924901">বৰফলাৰ কৰক</translation>
 <translation id="1704230497453185209">ছাইটক ধ্বনি প্লে’ অনুমতি নিদিব</translation>
-<translation id="1706015824809136764">টুলবাৰৰ শ্বৰ্টকাটত Gemini পিন কৰক</translation>
 <translation id="1706586824377653884">আপোনাৰ প্ৰশাসকৰ দ্বাৰা যোগ কৰা হৈছে</translation>
 <translation id="170658918174941828">আপুনি অন্তৰ্ভুক্ত কৰিবলৈ ওপৰত বাছনি কৰা অন্য যিকোনো তথ্যৰ উপৰিও আপোনাৰ Chromeৰ সংস্কৰণ, অপাৰেটিং ছিষ্টেমৰ সংস্কৰণ, কাষ্ট কৰাৰ ছেটিং,
     কাৰ্যদক্ষতাৰ পৰিসংখ্যাৰ প্ৰতিবিম্বকৰণ আৰু যোগাযোগৰ চেনেলৰ ডায়েগন’ষ্টিক
@@ -1557,7 +1556,6 @@
 <translation id="204914487372604757">শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" অন কৰিবনে?</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
-<translation id="2050394140692183739">বৰ্তমানৰ টুলবাৰৰ শ্বৰ্টকাট</translation>
 <translation id="2051555741181591333">হটস্পট স্বয়ংক্ৰিয়ভাৱে অক্ষম কৰক</translation>
 <translation id="2051669996101374349">সম্ভৱ হ’লে HTTPS ব্যৱহাৰ কৰক আৰু এইটো সমৰ্থন নকৰা ছাইটসমূহ ল’ড কৰাৰ পূৰ্বে সকীয়নি লাভ কৰক। আপুনি এই ছেটিং সলনি কৰিব নোৱাৰে, কাৰণ আপুনি সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধা সক্ষম কৰিছে।</translation>
 <translation id="2052572566310583903">আপোনাৰ অন্য ডিভাইচত ইনষ্টল কৰা</translation>
@@ -4716,6 +4714,7 @@
 <translation id="4223404254440398437">মাইক্ৰ’ফ’নৰ অনুমতি নাই</translation>
 <translation id="4224541845943007092">ঠিকনাৰ বাৰৰ পৰা কীব’ৰ্ডৰ ইনপুট পঢ়ক আৰু ছেভ কৰক</translation>
 <translation id="4225397296022057997">সকলো ছাইটত</translation>
+<translation id="4225895483398857530">টুলবাৰৰ শ্বৰ্টকাট</translation>
 <translation id="4226303886821889519">আপডে’ট কৰোঁতাৰ সংস্কৰণ: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">আপোনাৰ প্ৰতিষ্ঠানৰ ইমেইল ঠিকনাটো ব্যৱহাৰ কৰক</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটোক অনুমতি দিয়া নহয়}one{কিছুমান এক্সটেনশ্বনক অনুমতি দিয়া নহয়}other{কিছুমান এক্সটেনশ্বনক অনুমতি দিয়া নহয়}}</translation>
@@ -10144,7 +10143,6 @@
 <translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="8033827949643255796">বাছনি কৰা হৈছে</translation>
 <translation id="8033958968890501070">সময় উকলিছে</translation>
-<translation id="8034399942062051455">V8 অপ্টিমাইজেশ্বন অফ আছে</translation>
 <translation id="8034697324150621782">ওপৰৰ ভিউৰ সৈতে সলনাসলনি কৰক</translation>
 <translation id="8035059678007243127">বেক-ফৰৱাৰ্ড কেশ্বত থকা ইনক’গনিট’ পৃষ্ঠা: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">ছেভ হৈ থকা টেবৰ গোটসমূহৰ বুটাম দেখুৱাওক</translation>
@@ -11794,7 +11792,6 @@
 <translation id="914031120300235526">এই প্ৰ’ফাইলটো আনলক কৰিব নোৱাৰি</translation>
 <translation id="9143298529634201539">পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="9143922477019434797">আপোনাৰ পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
-<translation id="914621365454686586">Searchক Driveৰ সমল এক্সেছ কৰিবলৈ অনুমতি দিবনে?</translation>
 <translation id="9147392381910171771">&amp;বিকল্পসমূহ</translation>
 <translation id="9148058034647219655">বাহিৰ হওক</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>

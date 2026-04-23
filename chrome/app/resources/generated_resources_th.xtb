@@ -1046,7 +1046,6 @@
 <translation id="1703666494654169921">ไม่อนุญาตให้เว็บไซต์ใช้อุปกรณ์หรือข้อมูลเทคโนโลยีความจริงเสมือน (VR)</translation>
 <translation id="1704097193565924901">Capitalize</translation>
 <translation id="1704230497453185209">ไม่อนุญาตให้เว็บไซต์เล่นเสียง</translation>
-<translation id="1706015824809136764">ทางลัดสำหรับปักหมุด Gemini ไว้ที่แถบเครื่องมือ</translation>
 <translation id="1706586824377653884">เพิ่มโดยผู้ดูแลระบบ</translation>
 <translation id="170658918174941828">นอกเหนือจากข้อมูลที่คุณเลือกให้รวมไว้ข้างต้น จะมีการส่งเวอร์ชัน Chrome, เวอร์ชันระบบปฏิบัติการ, การตั้งค่า Cast, สถิติประสิทธิภาพการมิเรอร์ และบันทึกการวินิจฉัยช่องทางการสื่อสารด้วย ความคิดเห็นนี้จะใช้เพื่อวินิจฉัยปัญหาและช่วยปรับปรุงฟีเจอร์ ทั้งนี้ข้อมูลส่วนบุคคลที่ส่งมาไม่ว่าจะโดยชัดแจ้งหรือโดยไม่ตั้งใจจะได้รับการปกป้องตามนโยบายความเป็นส่วนตัว การส่งความคิดเห็นนี้เป็นการยอมรับว่า Google สามารถใช้ความคิดเห็นเพื่อปรับปรุงผลิตภัณฑ์หรือบริการได้</translation>
 <translation id="17081583771848899">Launcher + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1549,7 +1548,6 @@
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2049573977943974163">เปิดใช้ "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
-<translation id="2050394140692183739">ทางลัดแถบเครื่องมือปัจจุบัน</translation>
 <translation id="2051555741181591333">ปิดใช้ฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="2051669996101374349">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS คุณเปลี่ยนการตั้งค่านี้ไม่ได้เนื่องจากเปิดใช้การปกป้องขั้นสูงอยู่</translation>
 <translation id="2052572566310583903">ติดตั้งอยู่ในอุปกรณ์อื่น</translation>
@@ -4704,6 +4702,7 @@
 <translation id="4223404254440398437">ไม่อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4224541845943007092">อ่านและบันทึกการป้อนข้อมูลด้วยแป้นพิมพ์จากแถบที่อยู่</translation>
 <translation id="4225397296022057997">ในเว็บไซต์ทั้งหมด</translation>
+<translation id="4225895483398857530">ทางลัดแถบเครื่องมือ</translation>
 <translation id="4226303886821889519">เวอร์ชันโปรแกรมอัปเดต: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">ใช้อีเมลขององค์กร</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
@@ -10125,7 +10124,6 @@
 <translation id="8032569120109842252">กำลังติดตาม</translation>
 <translation id="8033827949643255796">เลือกแล้ว</translation>
 <translation id="8033958968890501070">หมดเวลา</translation>
-<translation id="8034399942062051455">การเพิ่มประสิทธิภาพ V8 ปิดอยู่</translation>
 <translation id="8034697324150621782">สลับกับมุมมองด้านบน</translation>
 <translation id="8035059678007243127">หน้าแคชย้อนหลังในโหมดไม่ระบุตัวตน: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">แสดงปุ่มกลุ่มแท็บที่บันทึกไว้</translation>
@@ -11774,7 +11772,6 @@
 <translation id="914031120300235526">ปลดล็อกโปรไฟล์ไม่ได้</translation>
 <translation id="9143298529634201539">นำคำแนะนำออกไหม</translation>
 <translation id="9143922477019434797">ปกป้องรหัสผ่านของคุณ</translation>
-<translation id="914621365454686586">อนุญาตให้ Search เข้าถึงเนื้อหาในไดรฟ์ไหม</translation>
 <translation id="9147392381910171771">&amp;ตัวเลือก</translation>
 <translation id="9148058034647219655">ออก</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>

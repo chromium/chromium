@@ -1046,7 +1046,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704097193565924901">Beginhoofdletters van maken</translation>
 <translation id="1704230497453185209">Niet toestaan dat sites geluid afspelen</translation>
-<translation id="1706015824809136764">Snelkoppeling om Gemini vast te zetten op de werkbalk</translation>
 <translation id="1706586824377653884">Toegevoegd door je beheerder</translation>
 <translation id="170658918174941828">De volgende gegevens worden gestuurd: je Chrome-versie, versie van het besturingssysteem, Cast-instellingen, prestatiestatistieken voor mirroring, logboeken met diagnostische gegevens van communicatiekanalen en eventuele informatie die je hierboven opgeeft. Deze feedback wordt gebruikt om een diagnose van problemen te stellen en de functie te verbeteren. Persoonlijke informatie die je stuurt, ongeacht of dit expliciet of per ongeluk gebeurt, wordt beschermd in overeenstemming met ons Privacybeleid. Door deze feedback in te dienen, ga je ermee akkoord dat Google je feedback kan gebruiken om producten of services van Google te verbeteren.</translation>
 <translation id="17081583771848899">Launcher + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1549,7 +1548,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2049573977943974163"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="2050339315714019657">Staand</translation>
-<translation id="2050394140692183739">Huidige snelkoppeling voor werkbalk</translation>
 <translation id="2051555741181591333">Hotspot automatisch uitzetten</translation>
 <translation id="2051669996101374349">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen. Je kunt deze instelling niet wijzigen, omdat je Geavanceerde beveiliging hebt aangezet.</translation>
 <translation id="2052572566310583903">Geïnstalleerd op je andere apparaten</translation>
@@ -4232,6 +4230,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3874532133373654352">Je organisatie beheert hoe gegevens die door deze functies worden verzameld, mogen worden gebruikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Deze functie gebruikt AI en is experimenteel</translation>
 <translation id="3875511946736639169">Afbeeldingen aanzetten</translation>
+<translation id="3875777964669698078">Transcript maken…</translation>
 <translation id="3875815154304214043">Er is ingesteld dat <ph name="APP_NAME" /> wordt geopend in een nieuw browsertabblad. Ondersteunde links worden ook geopend in de browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Vensters met gewijzigd formaat naar boven verplaatsen</translation>
 <translation id="3877075909000773256">Instellingen voor Dichtbij delen voor het apparaat van <ph name="USER_NAME" />, delen via het account <ph name="USER_EMAIL" />.</translation>
@@ -4702,6 +4701,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4223404254440398437">Microfoon niet toegestaan</translation>
 <translation id="4224541845943007092">Toetsenbordinvoer uit de adresbalk lezen en opslaan</translation>
 <translation id="4225397296022057997">Op alle sites</translation>
+<translation id="4225895483398857530">Snelkoppeling voor werkbalk</translation>
 <translation id="4226303886821889519">Versie van updater: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Het e-mailadres van je organisatie gebruiken</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Deze extensie is niet toegestaan}other{Sommige extensies zijn niet toegestaan}}</translation>
@@ -6593,6 +6593,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5555639311269196631">Hotspot uitzetten</translation>
 <translation id="5555760010546505198">Kleurinversie, kleurcorrectie, vergrootglas en weergave-instellingen</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> aanzetten</translation>
+<translation id="5556191579768914260">Fout tonen</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555671485580955310">Geschiedenis en tabbladen synchroniseren</translation>
 <translation id="5558129378926964177">&amp;Inzoomen</translation>
@@ -10122,7 +10123,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8032569120109842252">Je volgt</translation>
 <translation id="8033827949643255796">geselecteerd</translation>
 <translation id="8033958968890501070">Time-out</translation>
-<translation id="8034399942062051455">V8-optimalisatie staat uit</translation>
 <translation id="8034697324150621782">Wisselen met weergave bovenaan</translation>
 <translation id="8035059678007243127">Incognitopagina in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Knop Opgeslagen tabbladgroepen tonen</translation>
@@ -11772,7 +11772,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="914031120300235526">Kan het profiel niet ontgrendelen</translation>
 <translation id="9143298529634201539">Suggestie verwijderen?</translation>
 <translation id="9143922477019434797">Bescherm je wachtwoorden</translation>
-<translation id="914621365454686586">Zoeken toegang geven tot Drive-content?</translation>
 <translation id="9147392381910171771">&amp;Opties</translation>
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>

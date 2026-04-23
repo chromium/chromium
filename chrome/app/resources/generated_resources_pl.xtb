@@ -1048,7 +1048,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="1704097193565924901">Od wielkiej litery</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
-<translation id="1706015824809136764">Skrót do przypinania Gemini do paska narzędzi</translation>
 <translation id="1706586824377653884">Dodane przez administratora</translation>
 <translation id="170658918174941828">Oprócz informacji, które wybierzesz powyżej, przesłane zostaną również takie dane, jak wersja Chrome i systemu operacyjnego, ustawienia Cast, statystyki działania funkcji odbicia lustrzanego oraz dzienniki diagnostyczne kanału komunikacji. Te informacje pomogą nam znaleźć przyczynę problemów oraz ulepszyć daną funkcję. Wszelkie dane osobowe, które prześlesz celowo lub przypadkowo, będą chronione zgodnie z naszą polityką prywatności. Przesyłając to zgłoszenie, zgadzasz się na to, abyśmy mogli wykorzystać je do ulepszenia naszych produktów lub usług.</translation>
 <translation id="17081583771848899">Menu z aplikacjami + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1549,7 +1548,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="204914487372604757">Utwórz skrót</translation>
 <translation id="2049573977943974163">Włączyć rozszerzenie „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2050339315714019657">Pionowo</translation>
-<translation id="2050394140692183739">Bieżący skrót na pasku narzędzi</translation>
 <translation id="2051555741181591333">Automatyczne wyłączanie hotspota</translation>
 <translation id="2051669996101374349">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują. Nie możesz zmienić tego ustawienia, ponieważ masz włączoną Ochronę zaawansowaną.</translation>
 <translation id="2052572566310583903">Zainstalowano na innych urządzeniach</translation>
@@ -4213,6 +4211,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3874532133373654352">Twoja organizacja określa, jak mogą być używane dane zbierane przez te funkcje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ta funkcja korzysta z AI i jest eksperymentalna</translation>
 <translation id="3875511946736639169">Włącz obrazy</translation>
+<translation id="3875777964669698078">Tworzę transkrypcję…</translation>
 <translation id="3875815154304214043">Aplikacja <ph name="APP_NAME" /> jest skonfigurowana do otwierania się w nowej karcie przeglądarki. W przeglądarce będą się też otwierać obsługiwane linki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Zmieniono rozmiar okien w górę</translation>
 <translation id="3877075909000773256">Ustawienia Udostępniania w pobliżu dotyczące urządzenia, którego używa <ph name="USER_NAME" />, przypisane do konta <ph name="USER_EMAIL" />.</translation>
@@ -4684,6 +4683,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4223404254440398437">Mikrofon nie jest dozwolony</translation>
 <translation id="4224541845943007092">Odczytuj i zapisuj tekst wpisywany na klawiaturze w pasku adresu</translation>
 <translation id="4225397296022057997">We wszystkich witrynach</translation>
+<translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
 <translation id="4226303886821889519">Wersja aktualizatora: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Użyj adresu e-mail organizacji</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{To rozszerzenie jest niedozwolone}few{Niektóre rozszerzenia są niedozwolone}many{Niektóre rozszerzenia są niedozwolone}other{Niektóre rozszerzenia są niedozwolone}}</translation>
@@ -6574,6 +6574,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5555639311269196631">Wyłączanie hotspota</translation>
 <translation id="5555760010546505198">Ustawienia odwrócenia i korekcji kolorów, lupy oraz wyświetlania</translation>
 <translation id="555604722231274592">Włącz <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Pokaż błąd</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="555671485580955310">Synchronizuj historię i karty</translation>
 <translation id="5558129378926964177">Po&amp;większ</translation>
@@ -10108,7 +10109,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8032569120109842252">Obserwujesz</translation>
 <translation id="8033827949643255796">wybrano</translation>
 <translation id="8033958968890501070">Przekroczono limit czasu</translation>
-<translation id="8034399942062051455">Optymalizacja V8 jest wyłączona</translation>
 <translation id="8034697324150621782">Zamień z widokiem u góry</translation>
 <translation id="8035059678007243127">Strona w trybie incognito w pamięci podręcznej stanu strony internetowej: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Pokaż przycisk Zapisane grupy kart</translation>
@@ -11752,7 +11752,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="914031120300235526">Nie udało się odblokować profilu</translation>
 <translation id="9143298529634201539">Usunąć sugestię?</translation>
 <translation id="9143922477019434797">Chroń swoje hasła</translation>
-<translation id="914621365454686586">Zezwolić wyszukiwarce na dostęp do treści na Dysku?</translation>
 <translation id="9147392381910171771">&amp;Opcje</translation>
 <translation id="9148058034647219655">Zakończ</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>

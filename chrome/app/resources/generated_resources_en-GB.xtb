@@ -1047,7 +1047,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
 <translation id="1704097193565924901">Capitalise</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
-<translation id="1706015824809136764">Pin Gemini to toolbar shortcut</translation>
 <translation id="1706586824377653884">Added by your administrator</translation>
 <translation id="170658918174941828">Your Chrome version, operating system version, cast settings,
     mirroring performance stats and communication channel diagnostic
@@ -1559,7 +1558,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="204914487372604757">Create shortcut</translation>
 <translation id="2049573977943974163">Turn '<ph name="EXTENSION_NAME" />' on?</translation>
 <translation id="2050339315714019657">Portrait</translation>
-<translation id="2050394140692183739">Current toolbar shortcut</translation>
 <translation id="2051555741181591333">Automatically disable hotspot</translation>
 <translation id="2051669996101374349">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2052572566310583903">Installed on your other devices</translation>
@@ -4719,6 +4717,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4223404254440398437">Microphone not allowed</translation>
 <translation id="4224541845943007092">Read and save keyboard input from the address bar</translation>
 <translation id="4225397296022057997">On all sites</translation>
+<translation id="4225895483398857530">Toolbar shortcut</translation>
 <translation id="4226303886821889519">Updater version: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Use your organisation’s email address</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{This extension is not allowed}other{Some extensions are not allowed}}</translation>
@@ -10146,7 +10145,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8032569120109842252">Following</translation>
 <translation id="8033827949643255796">selected</translation>
 <translation id="8033958968890501070">Time out</translation>
-<translation id="8034399942062051455">V8 optimisation is off</translation>
 <translation id="8034697324150621782">Swap with top view</translation>
 <translation id="8035059678007243127">Incognito back-forward cached page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Show saved tab groups button</translation>
@@ -11795,7 +11793,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="914031120300235526">Can't unlock the profile</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
 <translation id="9143922477019434797">Protect your passwords</translation>
-<translation id="914621365454686586">Allow Search to access Drive content?</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9148126808321036104">Sign in again</translation>

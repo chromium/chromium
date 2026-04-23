@@ -1048,7 +1048,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
 <translation id="1704097193565924901">Velikost písmen</translation>
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
-<translation id="1706015824809136764">Připnout Gemini ke zkratce na liště</translation>
 <translation id="1706586824377653884">Přidáno administrátorem</translation>
 <translation id="170658918174941828">Kromě údajů, jejichž zahrnutí vyberete výše, bude odeslána verze Chromu, verze operačního systému, nastavení aplikace Cast, statistiky výkonu zrcadlení a protokoly diagnostiky komunikačního kanálu. Tato zpětná vazba slouží k diagnostice problémů a zlepšení funkce. Veškeré osobní údaje, které odešlete (ať už záměrně, nebo neúmyslně), budou chráněny v souladu s našimi zásadami ochrany soukromí. Odesláním zpětné vazby vyjadřujete souhlas s tím, že společnost Google může vaši zpětnou vazbu použít ke zlepšení libovolné služby nebo aplikace Google.</translation>
 <translation id="17081583771848899">spouštěč + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1551,7 +1550,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="204914487372604757">Vytvořit zástupce</translation>
 <translation id="2049573977943974163">Zapnout rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Na výšku</translation>
-<translation id="2050394140692183739">Aktuální zkratka na liště</translation>
 <translation id="2051555741181591333">Automaticky deaktivovat hotspot</translation>
 <translation id="2051669996101374349">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje. Toto nastavení nemůžete změnit, protože máte zapnutou pokročilou ochranu.</translation>
 <translation id="2052572566310583903">Nainstalováno v jiných vašich zařízeních</translation>
@@ -4234,6 +4232,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3874532133373654352">Vaše organizace určuje, jak mohou být data shromážděná těmito funkcemi použita. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Tato funkce využívá AI a je experimentální</translation>
 <translation id="3875511946736639169">Povolit obrázky</translation>
+<translation id="3875777964669698078">Přepisování…</translation>
 <translation id="3875815154304214043">Aplikace <ph name="APP_NAME" /> se bude otevírat na nové kartě prohlížeče. Podporované odkazy se také budou otevírat v prohlížeči. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Velikost oken byla změněna nahoru</translation>
 <translation id="3877075909000773256">Nastavení sdílení nablízko pro zařízení uživatele <ph name="USER_EMAIL" />. Sdílení bude probíhat pod e‑mailem <ph name="USER_NAME" />.</translation>
@@ -4704,6 +4703,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4223404254440398437">Mikrofon není povolen</translation>
 <translation id="4224541845943007092">Číst a ukládat vstup z klávesnice z adresního řádku</translation>
 <translation id="4225397296022057997">Na všech webech</translation>
+<translation id="4225895483398857530">Zkratka lišty</translation>
 <translation id="4226303886821889519">Verze aktualizačního programu: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Použijte e‑mailovou adresu své organizace</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Toto rozšíření není povoleno}few{Některá rozšíření nejsou povolena}many{Některá rozšíření nejsou povolena}other{Některá rozšíření nejsou povolena}}</translation>
@@ -6595,6 +6595,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5555639311269196631">Vypnout hotspot</translation>
 <translation id="5555760010546505198">Převrácení barev, korekce barev, lupa a nastavení zobrazení</translation>
 <translation id="555604722231274592">Zapnout funkci <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Zobrazit chybu</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="555671485580955310">Synchronizovat historii a karty</translation>
 <translation id="5558129378926964177">&amp;Přiblížit</translation>
@@ -10128,7 +10129,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8032569120109842252">Sledováno</translation>
 <translation id="8033827949643255796">vybráno</translation>
 <translation id="8033958968890501070">Vypršel časový limit</translation>
-<translation id="8034399942062051455">Je vypnutá optimalizace V8</translation>
 <translation id="8034697324150621782">Vyměnit s horním zobrazením</translation>
 <translation id="8035059678007243127">Mezipaměť pro přechod zpět nebo vpřed na anonymní stránce: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Zobrazit tlačítko uložených skupin karet</translation>
@@ -11778,7 +11778,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="914031120300235526">Profil nelze odemknout</translation>
 <translation id="9143298529634201539">Odstranit návrh?</translation>
 <translation id="9143922477019434797">Chraňte svá hesla</translation>
-<translation id="914621365454686586">Povolit Vyhledávání přístup k obsahu na Disku?</translation>
 <translation id="9147392381910171771">&amp;Možnosti</translation>
 <translation id="9148058034647219655">Ukončit</translation>
 <translation id="9148126808321036104">Znovu přihlásit</translation>

@@ -1076,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="4828431027673677473">Produits en fonction de vos centres d'intérêt</translation>
+<translation id="4829420936835028285">Modifier le groupe d'onglets</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
 <translation id="483689884442613745">Enregistrer…</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
@@ -1083,7 +1084,6 @@
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4854068532375923088">Autoriser « Gemini » à utiliser votre appareil photo</translation>
-<translation id="4860114370595561279">Vos informations enregistrées sont stockées sur votre appareil</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4861953997778766866">Tout le monde peut apporter des modifications à vos groupes d'onglets partagés</translation>
 <translation id="4865063548323785458">Enregistrez et remplissez automatiquement vos mots de passe pour vous connecter facilement aux sites et aux applis</translation>

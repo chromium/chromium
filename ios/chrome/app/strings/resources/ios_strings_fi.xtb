@@ -363,7 +363,7 @@
 <translation id="2223461067862937305">Luo QR-koodi</translation>
 <translation id="2225701818156393674">Tuote lisätty seurattuihin tuotteisiin.</translation>
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
-<translation id="2236949375853147973">Omat tapahtumat</translation>
+<translation id="2236949375853147973">Oma toiminta</translation>
 <translation id="2237869114829007407">Saat yleiskatsauksen ja tärkeimmät tiedot mistä tahansa sivusta tai aiheesta</translation>
 <translation id="2240256190924001613">Konfigurointiprofiili saatavilla</translation>
 <translation id="2244080985779413662">Verkkosivusto haluaa ladata tiedoston ja avata sen Walletissa.</translation>
@@ -1076,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja 1 muu}other{{domain} ja {count} muuta}}</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="4828431027673677473">Kiinnostuksen kohteisiisi perustuvat tuotteet</translation>
+<translation id="4829420936835028285">Muokkaa välilehtiryhmää</translation>
 <translation id="4833786495304741580">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="483689884442613745">Tallenna…</translation>
 <translation id="4840495572919996524">Kirjanmerkkejä, historiaa, salasanoja tai muita tietojasi ei enää synkronoida Google-tilille.</translation>
@@ -1083,7 +1084,6 @@
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4854068532375923088">Salli "Geminin" käyttää kameraa</translation>
-<translation id="4860114370595561279">Tallennetut tiedot tallennetaan laitteellesi</translation>
 <translation id="4860895144060829044">Soita</translation>
 <translation id="4861953997778766866">Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
 <translation id="4865063548323785458">Tallenna ja täytä salasanat automaattisesti, jotta voit kirjautua sivustoille ja sovelluksiin helposti</translation>

@@ -1047,7 +1047,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1703666494654169921">Không cho phép các trang web sử dụng dữ liệu hoặc thiết bị thực tế ảo</translation>
 <translation id="1704097193565924901">Viết hoa chữ cái đầu tiên</translation>
 <translation id="1704230497453185209">Không cho phép các trang web phát âm thanh</translation>
-<translation id="1706015824809136764">Ghim Gemini vào lối tắt trên thanh công cụ</translation>
 <translation id="1706586824377653884">Do quản trị viên thêm</translation>
 <translation id="170658918174941828">Phiên bản Chrome, phiên bản hệ điều hành, phần Cài đặt phương thức truyền,
     thống kê hiệu suất phản chiếu và nhật ký chẩn đoán kênh liên lạc của bạn
@@ -1559,7 +1558,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="204914487372604757">Tạo lối tắt</translation>
 <translation id="2049573977943974163">Bạn muốn bật "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
-<translation id="2050394140692183739">Lối tắt hiện tại trên thanh công cụ</translation>
 <translation id="2051555741181591333">Tự động tắt điểm phát sóng</translation>
 <translation id="2051669996101374349">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS. Bạn không thể thay đổi chế độ cài đặt này vì đã bật tính năng Bảo vệ nâng cao.</translation>
 <translation id="2052572566310583903">Đã cài đặt trên các thiết bị khác của bạn</translation>
@@ -4247,6 +4245,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3874532133373654352">Tổ chức của bạn quản lý cách sử dụng dữ liệu do các tính năng này thu thập. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Tính năng này sử dụng AI và đang trong giai đoạn thử nghiệm</translation>
 <translation id="3875511946736639169">Hiển thị hình ảnh</translation>
+<translation id="3875777964669698078">Đang chép lời...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> được thiết lập để mở trong một thẻ trình duyệt mới. Các đường liên kết được hỗ trợ cũng sẽ mở ra trong trình duyệt đó. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Đã đổi kích thước cửa sổ về phía trên cùng</translation>
 <translation id="3877075909000773256">Các tùy chọn cài đặt Chia sẻ lân cận cho thiết bị của <ph name="USER_NAME" />, chia sẻ bằng tài khoản <ph name="USER_EMAIL" />.</translation>
@@ -4718,6 +4717,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4223404254440398437">Không cho phép truy cập micrô</translation>
 <translation id="4224541845943007092">Đọc và lưu nội dung nhập bằng bàn phím trên thanh địa chỉ</translation>
 <translation id="4225397296022057997">Trên tất cả các trang web</translation>
+<translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
 <translation id="4226303886821889519">Phiên bản của trình cập nhật: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Sử dụng địa chỉ email của tổ chức bạn</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Không được phép dùng tiện ích này}other{Không được phép dùng một số tiện ích}}</translation>
@@ -6611,6 +6611,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5555639311269196631">Tắt điểm phát sóng</translation>
 <translation id="5555760010546505198">Đảo màu, chỉnh màu, phóng to và chế độ cài đặt hiển thị</translation>
 <translation id="555604722231274592">Bật <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Hiển thị lỗi</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="555671485580955310">Đồng bộ hoá nhật ký và thẻ</translation>
 <translation id="5558129378926964177">Phóng &amp;to</translation>
@@ -10146,7 +10147,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8032569120109842252">Đang theo dõi</translation>
 <translation id="8033827949643255796">đã chọn</translation>
 <translation id="8033958968890501070">Hết giờ</translation>
-<translation id="8034399942062051455">Đã tắt tính năng tối ưu hoá V8</translation>
 <translation id="8034697324150621782">Hoán đổi với dạng xem trên cùng</translation>
 <translation id="8035059678007243127">Trang ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Hiện nút Nhóm thẻ đã lưu</translation>
@@ -11795,7 +11795,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="914031120300235526">Không thể mở khoá hồ sơ</translation>
 <translation id="9143298529634201539">Xóa đề xuất?</translation>
 <translation id="9143922477019434797">Bảo vệ mật khẩu</translation>
-<translation id="914621365454686586">Cho phép Google Tìm kiếm truy cập vào nội dung trên Drive?</translation>
 <translation id="9147392381910171771">&amp;Tuỳ chọn</translation>
 <translation id="9148058034647219655">Thoát</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>

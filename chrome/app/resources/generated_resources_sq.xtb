@@ -1043,7 +1043,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
 <translation id="1704097193565924901">Kapitalizo</translation>
 <translation id="1704230497453185209">Mos lejo që sajtet të luajnë tinguj</translation>
-<translation id="1706015824809136764">Gozhdo Gemini në shkurtoren e shiritit të veglave</translation>
 <translation id="1706586824377653884">Shtuar nga administratori yt</translation>
 <translation id="170658918174941828">Versioni yt i Chrome, versioni i sistemit operativ, cilësimet e Cast, statistikat e rendimentit të pasqyrimit dhe regjistrat e diagnostikimit të kanalit të komunikimit do të dërgohen bashkë me çdo informacion që zgjedh të përfshish më sipër. Ky koment përdoret për diagnostikimin e problemeve dhe për të ndihmuar në përmirësimin e veçorisë. Çdo informacion personal që dorëzon, me pajtimin tënd apo jo, do të mbrohet në përputhje me politikat tona të privatësisë. Duke e dorëzuar këtë koment, ti pranon që Google të mund ta përdorë komentin e dhënë për të përmirësuar çdo produkt ose shërbim të Google.</translation>
 <translation id="17081583771848899">nisësi + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1545,7 +1544,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="204914487372604757">Krijo shkurtore</translation>
 <translation id="2049573977943974163">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Vertikal</translation>
-<translation id="2050394140692183739">Shkurtorja aktuale e shiritit të veglave</translation>
 <translation id="2051555741181591333">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2051669996101374349">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë. Nuk mund ta ndryshosh këtë cilësim sepse ke të aktivizuar "Mbrojtjen e përparuar".</translation>
 <translation id="2052572566310583903">Instaluar në pajisje të tjera</translation>
@@ -4231,6 +4229,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3874532133373654352">Organizata jote menaxhon se si mund të përdoren të dhënat e mbledhura nga këto veçori. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Kjo veçori përdor IA-në dhe është eksperimentale</translation>
 <translation id="3875511946736639169">Aktivizo imazhet</translation>
+<translation id="3875777964669698078">Po transkriptohet...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> është caktuar të hapet në një skedë të re shfletuesi. Lidhjet e mbështetura do të hapen gjithashtu në shfletues. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Madhësia e dritareve u ndryshua në krye</translation>
 <translation id="3877075909000773256">Cilësimet e "Ndarjes në afërsi" për pajisjen e <ph name="USER_NAME" />, e cila ndan nën llogarinë <ph name="USER_EMAIL" />.</translation>
@@ -4702,6 +4701,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4223404254440398437">Mikrofoni nuk lejohet</translation>
 <translation id="4224541845943007092">Lexo dhe ruaj hyrjen e tastierës nga shiriti i adresave</translation>
 <translation id="4225397296022057997">Në të gjitha sajtet</translation>
+<translation id="4225895483398857530">Shkurtorja e shiritit të veglave</translation>
 <translation id="4226303886821889519">Versioni i përditësuesit: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Përdor adresën e email-it të organizatës sate</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk lejohet}other{Disa shtesa nuk lejohen}}</translation>
@@ -6593,6 +6593,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5555639311269196631">Çaktivizo zonën e qasjes për internet</translation>
 <translation id="5555760010546505198">Cilësimet e anasjelljes së ngjyrës, korrigjimit të ngjyrës, zmadhuesit dhe ekranit</translation>
 <translation id="555604722231274592">Aktivizo "<ph name="FEATURE_NAME" />"</translation>
+<translation id="5556191579768914260">Shfaq gabimin</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="555671485580955310">Sinkronizo historikun dhe skedat</translation>
 <translation id="5558129378926964177">Afroje&amp;</translation>
@@ -10125,7 +10126,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="8033827949643255796">u zgjodh</translation>
 <translation id="8033958968890501070">Skadimi</translation>
-<translation id="8034399942062051455">Optimizimi i V8 është joaktiv</translation>
 <translation id="8034697324150621782">Ndërro me pamjen lart</translation>
 <translation id="8035059678007243127">Faqja e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Butoni "Shfaq grupet e ruajtura të skedave"</translation>
@@ -11774,7 +11774,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="914031120300235526">Profili nuk mund të shkyçet</translation>
 <translation id="9143298529634201539">Të hiqet sugjerimi?</translation>
 <translation id="9143922477019434797">Mbro fjalëkalimet e tua</translation>
-<translation id="914621365454686586">Të lejohet që "Kërko" të ketë qasje te përmbajtjet e "Diskut"?</translation>
 <translation id="9147392381910171771">&amp;Opsionet</translation>
 <translation id="9148058034647219655">Dil</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>

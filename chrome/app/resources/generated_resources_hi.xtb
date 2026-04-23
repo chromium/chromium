@@ -1048,7 +1048,6 @@
 <translation id="1703666494654169921">साइटों को वर्चुअल रियलिटी वाले डिवाइसों या डेटा इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="1704097193565924901">पहले अक्षर को बड़े अक्षर में बदलें</translation>
 <translation id="1704230497453185209">साइटों को ऑडियो चलाने की अनुमति न दें</translation>
-<translation id="1706015824809136764">Gemini को टूलबार पर पिन करने का शॉर्टकट</translation>
 <translation id="1706586824377653884">आपके व्यवस्थापक ने जोड़ा</translation>
 <translation id="170658918174941828">आपने ऊपर दी हुई जो भी जानकारी चुनी है उसके साथ
     ही आपका Chrome वर्शन, ऑपरेटिंग सिस्टम वर्शन, Cast सेटिंग,
@@ -1560,7 +1559,6 @@
 <translation id="204914487372604757">शॉर्टकट बनाएं</translation>
 <translation id="2049573977943974163">क्या "<ph name="EXTENSION_NAME" />" को चालू करना है?</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
-<translation id="2050394140692183739">टूलबार का मौजूदा शॉर्टकट</translation>
 <translation id="2051555741181591333">हॉटस्पॉट के अपने-आप बंद होने की सेटिंग चालू करें</translation>
 <translation id="2051669996101374349">जब भी हो सके एचटीटीपीएस का इस्तेमाल करें. ऐसा करने से, आपको उन साइटों के लोड होने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं. इस सेटिंग को नहीं बदला जा सकता, क्योंकि आपने बेहतर सुरक्षा की सेटिंग चालू की हुई है.</translation>
 <translation id="2052572566310583903">आपके दूसरे डिवाइसों पर इंस्टॉल किया गया है</translation>
@@ -4248,6 +4246,7 @@
 <translation id="3874532133373654352">आपका संगठन यह मैनेज करता है कि इन सुविधाओं से इकट्ठा किया गया डेटा कैसे इस्तेमाल किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">यह सुविधा, एआई का इस्तेमाल करती है और इसे फ़िलहाल आज़माया जा रहा है</translation>
 <translation id="3875511946736639169">इमेज दिखाने की सुविधा चालू करें</translation>
+<translation id="3875777964669698078">बोले जा रहे शब्दों को टेक्स्ट में बदला जा रहा है...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> नए ब्राउज़र टैब में खोले जाने के लिए तैयार है. साथ में काम करने वाले लिंक भी ब्राउज़र में खुलेंगे. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">विंडो का साइज़ ऊपर की ओर बदल गया</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> के डिवाइस के लिए आस-पास शेयर करने की सेटिंग. इसके लिए <ph name="USER_EMAIL" /> खाते का इस्तेमाल किया जा रहा है.</translation>
@@ -4718,6 +4717,7 @@
 <translation id="4223404254440398437">माइक्रोफ़ोन ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="4224541845943007092">पता बार से, कीबोर्ड के इनपुट को पढ़ें और सेव करें</translation>
 <translation id="4225397296022057997">सभी साइट पर</translation>
+<translation id="4225895483398857530">Toolbar का शॉर्टकट</translation>
 <translation id="4226303886821889519">अपडेटर का वर्शन: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">अपने संगठन के ईमेल पते का इस्तेमाल करें</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन के इस्तेमाल की अनुमति नहीं है}}</translation>
@@ -6609,6 +6609,7 @@
 <translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
 <translation id="5555760010546505198">रंग उलटने की सुविधा, रंग में सुधार करने की सुविधा, ज़ूम करने की सुविधा, और डिसप्ले की सेटिंग</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> को चालू करें</translation>
+<translation id="5556191579768914260">गड़बड़ी दिखाएं</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="555671485580955310">'इतिहास और टैब' सिंक करें</translation>
 <translation id="5558129378926964177">ज़ूम &amp;इन करें</translation>
@@ -10143,7 +10144,6 @@
 <translation id="8032569120109842252">फ़ॉलो कर रहे हैं</translation>
 <translation id="8033827949643255796">चयनित</translation>
 <translation id="8033958968890501070">समय खत्म</translation>
-<translation id="8034399942062051455">V8 ऑप्टिमाइज़ेशन की सुविधा बंद है</translation>
 <translation id="8034697324150621782">टॉप व्यू के साथ स्वैप करें</translation>
 <translation id="8035059678007243127">बैक/फ़ॉरवर्ड कैश मेमोरी में सेव किया गया गुप्त पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">सेव किए गए टैब ग्रुप दिखाने का बटन</translation>
@@ -11793,7 +11793,6 @@
 <translation id="914031120300235526">प्रोफ़ाइल अनलॉक नहीं की जा सकती</translation>
 <translation id="9143298529634201539">सुझाव हटाएं?</translation>
 <translation id="9143922477019434797">अपने पासवर्ड सुरक्षित रखें</translation>
-<translation id="914621365454686586">क्या Search को Drive का कॉन्टेंट ऐक्सेस करने की अनुमति देनी है?</translation>
 <translation id="9147392381910171771">&amp;विकल्प</translation>
 <translation id="9148058034647219655">बाहर निकलें</translation>
 <translation id="9148126808321036104">फिर से साइन इन करें</translation>

@@ -1046,7 +1046,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1703666494654169921">Ez eman errealitate birtualeko gailuak edo datuak erabiltzeko baimena webguneei</translation>
 <translation id="1704097193565924901">Ezarri maiuskulaz</translation>
 <translation id="1704230497453185209">Ez eman soinua erreproduzitzeko baimena webguneei</translation>
-<translation id="1706015824809136764">Gemini tresna-barran ainguratzeko lasterbidea</translation>
 <translation id="1706586824377653884">Administratzaileak gehitu du</translation>
 <translation id="170658918174941828">Chrome-ren bertsioa, sistema eragilearen bertsioa, Cast-en ezarpenak, islatzearen errendimendu-estatistikak eta komunikazio-kanalen diagnostikoen erregistroak bidaliko dira, goian aukeratzen duzun informazioarekin batera. Arazoak identifikatzeko eta eginbidea hobetzeko erabiltzen dira oharrak. Informazio pertsonalik bidaltzen baduzu, nahita zein nahi gabe, gure pribatutasun-gidalerroei jarraikiz babestuko dugu. Ohar hauek bidalita, onartu egingo duzu agian Google-k bere produktu eta zerbitzuak hobetzeko erabiliko dituela.</translation>
 <translation id="17081583771848899">Exekutatzeko tresnaren tekla + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1548,7 +1547,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="204914487372604757">Sortu lasterbidea</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" aktibatu nahi duzu?</translation>
 <translation id="2050339315714019657">Bertikala</translation>
-<translation id="2050394140692183739">Oraingo tresna-barrako lasterbidea</translation>
 <translation id="2051555741181591333">Desgaitu automatikoki wifi-gunea</translation>
 <translation id="2051669996101374349">Erabili HTTPS ahal den guztietan eta jaso abisuak hura onartzen ez duten webguneak kargatu baino lehen. Ezin duzu aldatu ezarpena, Babes aurreratua gaituta daukazulako.</translation>
 <translation id="2052572566310583903">Beste gailuetan instalatuta daukazu</translation>
@@ -4231,6 +4229,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3874532133373654352">Zure erakundeak kudeatzen du nola erabil daitezkeen eginbide hauek biltzen dituzten datuak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Eginbideak AA darabil, eta esperimentala da</translation>
 <translation id="3875511946736639169">Gaitu irudiak</translation>
+<translation id="3875777964669698078">Transkribatzen...</translation>
 <translation id="3875815154304214043">Arakatzaileko beste fitxa batean irekitzeko konfiguratuta dago <ph name="APP_NAME" />. Onartzen diren estekak ere irekiko dira arakatzailean. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Leihoen tamaina aldatu da, eta gora eraman dira</translation>
 <translation id="3877075909000773256">Nearby Share-ren ezarpenak <ph name="USER_NAME" /> erabiltzailearen gailurako; <ph name="USER_EMAIL" /> kontuaren bidez partekatzen dira.</translation>
@@ -4702,6 +4701,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4223404254440398437">Ukatu da mikrofonoa erabiltzeko baimena</translation>
 <translation id="4224541845943007092">Helbide-barran idatzitakoa irakurri eta gorde.</translation>
 <translation id="4225397296022057997">Webgune guztietan</translation>
+<translation id="4225895483398857530">Tresna-barrako lasterbidea</translation>
 <translation id="4226303886821889519">Eguneratzailearen bertsioa: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Erabili erakundearen helbide elektronikoa</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ez da onartzen luzapena}other{Ez dira onartzen zenbait luzapen}}</translation>
@@ -6593,6 +6593,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5555639311269196631">Desaktibatu wifi-gunea</translation>
 <translation id="5555760010546505198">Koloreen alderantzikatzea, koloreen zuzenketa, lupa eta bistaratze-ezarpenak</translation>
 <translation id="555604722231274592">Gaitu <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Erakutsi errorea</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="555671485580955310">Sinkronizatu historia eta fitxak</translation>
 <translation id="5558129378926964177">&amp;Handitu</translation>
@@ -10121,7 +10122,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8032569120109842252">Jarraitzen</translation>
 <translation id="8033827949643255796">hautatuta</translation>
 <translation id="8033958968890501070">Gainditu egin da denbora-muga</translation>
-<translation id="8034399942062051455">V8 optimizatzailea desaktibatuta dago</translation>
 <translation id="8034697324150621782">Aldatu goiko ikuspegiarekin</translation>
 <translation id="8035059678007243127">Aurreko orria cachean gordetzeko eginbidean gordetako ezkutuko moduko orria: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Gordetako fitxa taldeak erakusteko botoia</translation>
@@ -11770,7 +11770,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="914031120300235526">Ezin da desblokeatu profila</translation>
 <translation id="9143298529634201539">Kendu egin nahi duzu iradokizuna?</translation>
 <translation id="9143922477019434797">Babestu pasahitzak</translation>
-<translation id="914621365454686586">Drive-ko edukia atzitzeko baimena eman nahi diozu Bilaketa zerbitzuari?</translation>
 <translation id="9147392381910171771">&amp;Aukerak</translation>
 <translation id="9148058034647219655">Irten</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>

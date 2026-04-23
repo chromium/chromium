@@ -1076,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 další}few{{domain} a {count} další}many{{domain} a {count} dalšího}other{{domain} a {count} dalších}}</translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
 <translation id="4828431027673677473">Produkty na základě vašich zájmů</translation>
+<translation id="4829420936835028285">Upravit skupinu karet</translation>
 <translation id="4833786495304741580">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="483689884442613745">Uložit…</translation>
 <translation id="4840495572919996524">Vaše záložky, historie, hesla a další nastavení již nebudou synchronizovány do účtu Google.</translation>
@@ -1083,7 +1084,6 @@
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="4854068532375923088">Povolte Gemini používat fotoaparát</translation>
-<translation id="4860114370595561279">Vaše uložené informace se ukládají na vaše zařízení</translation>
 <translation id="4860895144060829044">Volat</translation>
 <translation id="4861953997778766866">Ve sdílených skupinách karet můžou všichni provádět změny</translation>
 <translation id="4865063548323785458">Ukládejte a automaticky vyplňujte hesla, abyste se mohli snadno přihlašovat na weby a do aplikací</translation>

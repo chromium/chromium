@@ -1046,7 +1046,6 @@
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
 <translation id="1704097193565924901">大小寫設定</translation>
 <translation id="1704230497453185209">禁止網站播放音效</translation>
-<translation id="1706015824809136764">將 Gemini 固定至工具列捷徑</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
 <translation id="170658918174941828">除了你選擇提交的以上資訊外，你的 Chrome 版本、作業系統版本、Cast 設定、鏡像成效統計資料和通訊頻道診斷記錄也會一併提交。我們會使用你提交的意見回饋來診斷問題並協助改善功能。其中無論是你明確提交還是不慎提交的個人資訊，一律會依隱私權政策規定受到妥善保護。提交意見回饋即表示你同意 Google 將你提供的意見回饋用於改善任何 Google 產品或服務。</translation>
 <translation id="17081583771848899">啟動鍵 + Alt + <ph name="TOP_ROW_KEY" /> 鍵</translation>
@@ -1549,7 +1548,6 @@
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2049573977943974163">要開啟「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="2050339315714019657">直向</translation>
-<translation id="2050394140692183739">現有工具列捷徑</translation>
 <translation id="2051555741181591333">自動停用無線基地台</translation>
 <translation id="2051669996101374349">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告。由於「進階保護」功能已啟用，因此你無法變更這項設定。</translation>
 <translation id="2052572566310583903">你在其他裝置上安裝的應用程式</translation>
@@ -4231,6 +4229,7 @@
 <translation id="3874532133373654352">貴機構會管理如何使用這些功能收集的資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">這項功能採用 AI 技術，目前仍處於實驗階段</translation>
 <translation id="3875511946736639169">顯示圖片</translation>
+<translation id="3875777964669698078">轉錄中...</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">已向上調整並排視窗的大小</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
@@ -4701,6 +4700,7 @@
 <translation id="4223404254440398437">不允許使用麥克風</translation>
 <translation id="4224541845943007092">讀取並儲存網址列的鍵盤輸入內容</translation>
 <translation id="4225397296022057997">所有網站</translation>
+<translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4226303886821889519">更新程式版本：<ph name="VERSION" /></translation>
 <translation id="4228071595943929139">使用貴機構的電子郵件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖部分擴充功能}}</translation>
@@ -6589,6 +6589,7 @@
 <translation id="5555639311269196631">關閉無線基地台</translation>
 <translation id="5555760010546505198">色彩反轉、色彩校正、放大鏡和顯示設定</translation>
 <translation id="555604722231274592">啟用<ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">顯示錯誤</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555671485580955310">同步歷史記錄和分頁</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
@@ -10117,7 +10118,6 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8033827949643255796">已選取</translation>
 <translation id="8033958968890501070">逾時</translation>
-<translation id="8034399942062051455">已關閉 V8 最佳化功能</translation>
 <translation id="8034697324150621782">與上方畫面交換</translation>
 <translation id="8035059678007243127">無痕模式往返快取頁面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">顯示「已儲存的分頁群組」按鈕</translation>
@@ -11766,7 +11766,6 @@
 <translation id="914031120300235526">無法解鎖設定檔</translation>
 <translation id="9143298529634201539">要移除建議嗎？</translation>
 <translation id="9143922477019434797">保護密碼</translation>
-<translation id="914621365454686586">要允許 Google 搜尋存取雲端硬碟內容嗎？</translation>
 <translation id="9147392381910171771">選項 (&amp;O)</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>

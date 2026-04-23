@@ -1048,7 +1048,6 @@
 <translation id="1703666494654169921">সাইটগুলিকে ভার্চুয়াল রিয়েলিটি ডিভাইস বা ডেটা ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="1704097193565924901">বড় হাতের করুন</translation>
 <translation id="1704230497453185209">সাইটগুলিকে সাউন্ড চালানোর অনুমতি দেয় না</translation>
-<translation id="1706015824809136764">টুলবার শর্টকাটে Gemini পিন করুন</translation>
 <translation id="1706586824377653884">আপনার প্রশাসক দ্বারা যোগ করা হয়েছে</translation>
 <translation id="170658918174941828">উপরের উল্লেখ করা তথ্যগুলির মধ্যে থেকে আপনি যা অন্তর্ভুক্ত করতে চান সেগুলি বাদ দিয়ে
     আপনার Chrome-এর ভার্সন, অপারেটিং সিস্টেম ভার্সন,
@@ -1560,7 +1559,6 @@
 <translation id="204914487372604757">শর্টকাট তৈরি করুন</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" চালু করবেন?</translation>
 <translation id="2050339315714019657">পোর্ট্রেট</translation>
-<translation id="2050394140692183739">বর্তমান টুলবার শর্টকাট</translation>
 <translation id="2051555741181591333">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="2051669996101374349">যখনই সম্ভব, তখনই HTTPS ব্যবহার করুন এবং এখানে কাজ করে না এমন সাইট লোড করার আগে সতর্কতা পান। 'উন্নত সুরক্ষা' চালু করা আছে বলে আপনি এই সেটিং পরিবর্তন করতে পারবেন না।</translation>
 <translation id="2052572566310583903">আপনার অন্য ডিভাইসে ইনস্টল করা হয়েছে</translation>
@@ -4720,6 +4718,7 @@
 <translation id="4223404254440398437">মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
 <translation id="4224541845943007092">অ্যাড্রেস বার থেকে কীবোর্ড পড়ুন এবং সেভ করুন</translation>
 <translation id="4225397296022057997">সমস্ত সাইটে</translation>
+<translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
 <translation id="4226303886821889519">আপডেটার ভার্সন: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">আপনার সংস্থার ইমেল আইডি ব্যবহার করুন</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশনের অনুমতি নেই}one{কিছু এক্সটেনশনের অনুমতি নেই}other{কিছু এক্সটেনশনের অনুমতি নেই}}</translation>
@@ -10150,7 +10149,6 @@
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="8033827949643255796">নির্বাচিত</translation>
 <translation id="8033958968890501070">সময় শেষ হয়ে গেছে</translation>
-<translation id="8034399942062051455">ভি৮ অপ্টিমাইজেশনের সুবিধা বন্ধ করা আছে</translation>
 <translation id="8034697324150621782">উপরের ভিউয়ের সাথে অদল বদল করুন</translation>
 <translation id="8035059678007243127">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী পেজ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">সেভ করা ট্যাব গ্রুপ বোতাম দেখুন</translation>
@@ -11800,7 +11798,6 @@
 <translation id="914031120300235526">প্রোফাইল আনলক করা যায়নি</translation>
 <translation id="9143298529634201539">সাজেশন সরিয়ে দিতে চান?</translation>
 <translation id="9143922477019434797">আপনার পাসওয়ার্ড সুরক্ষিত রাখুন</translation>
-<translation id="914621365454686586">Search-কে Drive কন্টেন্ট অ্যাক্সেস করার অনুমতি দিতে চান?</translation>
 <translation id="9147392381910171771">&amp;বিকল্প</translation>
 <translation id="9148058034647219655">প্রস্থান করুন</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>

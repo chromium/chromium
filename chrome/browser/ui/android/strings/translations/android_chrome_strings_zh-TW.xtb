@@ -187,8 +187,6 @@
 <translation id="1820408774134375111">登入底部功能表</translation>
 <translation id="1823492026305965829">以「<ph name="USER_FULL_NAME" />」身分登入</translation>
 <translation id="1824902652744048041">輕觸「刪除瀏覽資料」</translation>
-<translation id="1825772852827001597">系統不會加密保護 Google Pay 中的付款方式和地址，也不會同步處理 Chrome 中的瀏覽記錄。
-只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
 <translation id="1832459821645506983">啟用同步功能</translation>
 <translation id="1845958458910716240">如果有最近未造訪的網站，可以允許 Chrome 移除權限，保護你的資料</translation>
@@ -373,6 +371,7 @@
 <translation id="2616989802003447151">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀請你取用一個共用項目。</translation>
 <translation id="2634393460268044753">將你造訪的網站網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
+<translation id="263442110807675126">請稍候</translation>
 <translation id="2643064289437760082">刪除瀏覽資料即可刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2650077116157640844">前往已同步的裝置查看更多資訊</translation>
@@ -1313,7 +1312,6 @@
 <translation id="6565959834589222080">有可用 Wi-Fi 時，系統會使用 Wi-Fi</translation>
 <translation id="657177046675873214">如要將書籤同步到所有裝置，請在設定中開啟「書籤」</translation>
 <translation id="6573096386450695060">一律允許</translation>
-<translation id="6573431926118603307">您在其他裝置上透過 Chrome 開啟的分頁會顯示在這裡。</translation>
 <translation id="6583199322650523874">將目前的網頁加入書籤</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
 <translation id="6590471736817333463">節省高達 60% 的數據用量</translation>

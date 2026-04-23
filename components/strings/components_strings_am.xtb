@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">የክፍያ መረጃዎን እንዲያስገባ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="1150565364351027703">የጸሐይ መነጽሮች</translation>
 <translation id="1150979032973867961">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በኮምፒውተርዎ ስርዓተ ክወና የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
+<translation id="1151858212483238980">Google Wallet ውስጥ የተቀመጡ ካርዶችን በራስ-መሙላት ይችላሉ</translation>
 <translation id="1151972924205500581">የይለፍ ቃል ያስፈልጋል</translation>
 <translation id="1156303062776767266">አካባቢያዊ ወይም የተጋራ ፋይል እየተመለከቱ ነው</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ሳይታሰብ ግንኙነቱን ዘግቷል።</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">ክትትል የሚደረግባቸው ምርቶች</translation>
 <translation id="1204184165594298176">{0,plural, =1{ፋይል ከመቅዳት ታግዷል}one{<ph name="FILE_COUNT" /> ፋይል ከመቅዳት ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች ከመቅዳት ታግደዋል}}</translation>
 <translation id="120509973613679868">የንግድ ጉዞ</translation>
+<translation id="1205344127823614428">Google Wallet ውስጥ የተቀመጡ ካርዶችን በራስ-መሙላት ይችላሉ።</translation>
 <translation id="120587177308723209">ምናባዊ ስፖርቶች</translation>
 <translation id="1206967143813997005">መጥፎ የመጀመሪያ ፊርማ</translation>
 <translation id="1209206284964581585">ለአሁን ደብቅ</translation>
@@ -3184,6 +3186,7 @@
 <translation id="5968400720580217226">የሰው ሠራሽ አስተውሎት ሁነታ</translation>
 <translation id="5969199813874624822">ዋጋን ያስቀምጡ እና ይከታተሉ</translation>
 <translation id="5969933937005244170">አግባብነት ያላቸው ክፍት ትሮች ጥቅም ላይ የሚውሉት በተከታታይ ውስጥ ካጋሯቸው ብቻ ነው</translation>
+<translation id="5972020793760134803">ወደ ትር ቀይር</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ስድስተኛ ጥቅልል</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
@@ -3594,6 +3597,7 @@
 <translation id="6579858392010591435">የበዓላት እና ወቅታዊ ክስተቶች</translation>
 <translation id="6581831440014388355">ያልተፈለገ የሰውነት እና የፊት ጸጉር ማስወገድ</translation>
 <translation id="658230438113661756">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች እንደ የእርስዎ የይለፍ ቃሎች፣ ፎቶዎች፣ መልዕክቶች ወይም የክሬዲት ካርድ ቁጥሮች ያሉ ነገሮችን የሚሰርቅ ወይም የሚሰርዝ ጎጂ ሶፍትዌርን ሊጭኑ ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">በGoogle Wallet ውስጥ ተከማችቷል</translation>
 <translation id="6587893660316489419">ቢ5 ፖስታ</translation>
 <translation id="6587923378399804057">እርስዎ የቀዱት አገናኝ</translation>
 <translation id="6591833882275308647">የእርስዎ <ph name="DEVICE_TYPE" /> የሚተዳደር አይደለም</translation>
@@ -3749,6 +3753,7 @@
 <translation id="6834757537110528125">ይህ ጣቢያ የተመሰጠረ ግንኙነትን አይደግፍም</translation>
 <translation id="6841864657731852591">ግራቩር ሲሊንደር</translation>
 <translation id="6842196666980060516">184 x 260 ሚሜ</translation>
+<translation id="6844746916504777213">እነዚህን ጣቢያዎች በጭራሽ አያጋሩ</translation>
 <translation id="6844998850832008753">የእጅ ክትትል በዚህ ጊዜ ተፈቅዷል</translation>
 <translation id="6849023911358004088">የደህንነት ቅንብሮች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ አሰሳዎን እና ተጨማሪ ነገሮችን ለማስተዳደር ያግብሩ</translation>
 <translation id="6850286078059909152">የጽሑፍ ቀለም</translation>
@@ -4418,6 +4423,7 @@
 <translation id="7840103971441592723">የማያ ገፅ ቀረጻ ተጀምሯል</translation>
 <translation id="784137052867620416">የሸመታ ግንዛቤዎች</translation>
 <translation id="7841633276323004751">ከክፍያ ጋር ለመቀጠል የሚመረጡ የመክፈያ ዘዴዎች ይገኛሉ። ቁልፍ ሰሌዳ ተደብቋል።</translation>
+<translation id="784189052219692670">Gemini አሁን የግል መረጃዎን በመላው የGoogle መተግበሪያዎችዎ ላይ ማስታወስ እና እርስዎ በሚመለከቱት ገጽ ላይ በራስ-መሙላት ይችላል።</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ምንም}=1{1 መተግበሪያ (<ph name="EXAMPLE_APP_1" />)}=2{2 መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />)}one{# መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />፣ <ph name="AND_MORE" />)}other{# መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />፣ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">አንድ ስህተት ነበር። እንደገና ይሞክሩ።</translation>
 <translation id="784623644169604270">ምንም የቅርብ ጊዜ እንቅስቃሴ የለም</translation>
@@ -4821,6 +4827,7 @@
 <translation id="8488350697529856933">የሚመለከተው ለ</translation>
 <translation id="8490137692873530638">ቁልል 10</translation>
 <translation id="8493948351860045254">ቦታ አስለቅቅ</translation>
+<translation id="8495170825732897952">ትሮችን ሳይቀይሩ መረጃን ለማስታወስ እና ለመሙላት በማንኛውም ቅጽ ውስጥ @@ ይተይቡ</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> ላይ የእርስዎን ልዩ ጥንቃቄ የሚያስፈልገው መረጃ ይሙሉ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ምላሽ ለመስጠት ከልክ በላይ ረዥም ጊዜ ወስዷል።</translation>
 <translation id="8502023382441452707">የልደት ቀናት እና የስም ቀናት</translation>

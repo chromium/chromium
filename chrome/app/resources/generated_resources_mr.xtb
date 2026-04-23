@@ -1047,7 +1047,6 @@
 <translation id="1703666494654169921">साइटना आभासी वास्तविकता डिव्हाइस किंवा डेटा वापरण्याची अनुमती देऊ नका</translation>
 <translation id="1704097193565924901">कॅपिटल करणे</translation>
 <translation id="1704230497453185209">साइटना आवाज प्ले करण्याची अनुमती देऊ नका</translation>
-<translation id="1706015824809136764">Gemini ला टूलबार शॉर्टकटवर पिन करा</translation>
 <translation id="1706586824377653884">तुमच्या ॲडमिनिस्ट्रेटरने जोडले</translation>
 <translation id="170658918174941828">तुम्ही वर समावेश करण्यासाठी निवडता त्या सर्व माहितीच्या समावेशासह
     तुमची Chrome ची आवृत्ती, ऑपरेटिंग सिस्टमची आवृत्ती, Cast सेटिंग्ज,
@@ -1559,7 +1558,6 @@
 <translation id="204914487372604757">शॉर्टकट तयार करा </translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" सुरू करायचे आहे का?</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
-<translation id="2050394140692183739">सद्य टूलबार शॉर्टकट</translation>
 <translation id="2051555741181591333">हॉटस्पॉट आपोआप बंद करा</translation>
 <translation id="2051669996101374349">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा. प्रगत संरक्षण सुरू केल्यामुळे, तुम्ही हे सेटिंग बदलू शकत नाही.</translation>
 <translation id="2052572566310583903">तुमच्या इतर डिव्हाइसवर इंस्टॉल केले</translation>
@@ -4717,6 +4715,7 @@
 <translation id="4223404254440398437">मायक्रोफोनला अनुमती नाही</translation>
 <translation id="4224541845943007092">अ‍ॅड्रेस बारमधील कीबोर्ड इनपुट वाचा आणि सेव्ह करा</translation>
 <translation id="4225397296022057997">सर्व साइटवर</translation>
+<translation id="4225895483398857530">टूलबार शॉर्टकट</translation>
 <translation id="4226303886821889519">अपडेटरची आवृत्ती: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">तुमच्या संस्थेचा ईमेल अ‍ॅड्रेस वापरा</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला अनुमती नाही}other{काही एक्स्टेंशनला अनुमती नाही}}</translation>
@@ -10147,7 +10146,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8032569120109842252">फॉलो करत आहे</translation>
 <translation id="8033827949643255796">निवडलेले</translation>
 <translation id="8033958968890501070">वेळ संपली</translation>
-<translation id="8034399942062051455">V8 ऑप्टिमायझेशन बंद आहे</translation>
 <translation id="8034697324150621782">वरून दिसणाऱ्या दृश्यासह बदला</translation>
 <translation id="8035059678007243127">बॅक/फॉरवर्ड कॅशे केलेले गुप्त पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">सेव्ह केलेले टॅब गट बटण दाखवा</translation>
@@ -11797,7 +11795,6 @@ I feel - विटांची इमारत</translation>
 <translation id="914031120300235526">प्रोफाइल अनलॉक करू शकत नाही</translation>
 <translation id="9143298529634201539">सूचना काढून टाकायची का?</translation>
 <translation id="9143922477019434797">तुमचे पासवर्ड संरक्षित करा</translation>
-<translation id="914621365454686586">Drive मधील आशय अ‍ॅक्सेस करण्यासाठी शोधा ला अनुमती द्यायची आहे का?</translation>
 <translation id="9147392381910171771">&amp;पर्याय</translation>
 <translation id="9148058034647219655">निर्गमन</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>

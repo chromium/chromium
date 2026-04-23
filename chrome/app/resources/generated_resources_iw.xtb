@@ -1046,7 +1046,6 @@
 <translation id="1703666494654169921">לא לאפשר לאתרים להשתמש במכשירי מציאות מדומה או בנתונים כאלה</translation>
 <translation id="1704097193565924901">אותיות רישיות</translation>
 <translation id="1704230497453185209">לא לאפשר לאתרים להפעיל צליל</translation>
-<translation id="1706015824809136764">‏הצמדת Gemini כקיצור דרך בסרגל הכלים</translation>
 <translation id="1706586824377653884">נוסף על ידי מנהל המערכת שלך</translation>
 <translation id="170658918174941828">‏נתונים על גרסת Chrome, גרסת מערכת ההפעלה, הגדרות להפעלת Cast,
     נתונים סטטיסטיים של ביצועי שיקוף מסך ויומני אבחון של ערוץ
@@ -1557,7 +1556,6 @@
 <translation id="204914487372604757">יצירת קיצור דרך</translation>
 <translation id="2049573977943974163">להפעיל את <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">לאורך</translation>
-<translation id="2050394140692183739">קיצור הדרך הנוכחי בסרגל הכלים</translation>
 <translation id="2051555741181591333">השבתה אוטומטית של הנקודה לשיתוף אינטרנט</translation>
 <translation id="2051669996101374349">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS. לא ניתן לשנות את ההגדרה הזו כי ההגנה המתקדמת מופעלת.</translation>
 <translation id="2052572566310583903">מותקנת במכשירים אחרים שלך</translation>
@@ -4245,6 +4243,7 @@
 <translation id="3874532133373654352">הארגון שלך קובע את אופן השימוש בנתונים שנאספו באמצעות התכונות האלה. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">‏התכונה הזאת היא ניסיונית ומבוססת על AI</translation>
 <translation id="3875511946736639169">הפעלת התמונות</translation>
+<translation id="3875777964669698078">בתהליך תמלול...</translation>
 <translation id="3875815154304214043">האפליקציה <ph name="APP_NAME" /> הוגדרה כך שתיפתח בכרטיסייה חדשה בדפדפן. גם הקישורים הנתמכים ייפתחו בדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />למידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">שינוי גודל החלונות למעלה</translation>
 <translation id="3877075909000773256">הגדרות שיתוף בקרבת מקום למכשיר של <ph name="USER_NAME" />. השיתוף יתבצע בשם <ph name="USER_EMAIL" />.</translation>
@@ -4716,6 +4715,7 @@
 <translation id="4223404254440398437">אין הרשאת גישה למיקרופון</translation>
 <translation id="4224541845943007092">קריאה ושמירה של הקלט מהמקלדת בסרגל הכתובות</translation>
 <translation id="4225397296022057997">בכל האתרים</translation>
+<translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
 <translation id="4226303886821889519">גרסת הכלי לעדכון: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">שימוש בכתובת האימייל של הארגון שלך</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
@@ -6610,6 +6610,7 @@
 <translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
 <translation id="5555760010546505198">היפוך צבעים, תיקון צבע, הגדלת התצוגה והגדרות התצוגה</translation>
 <translation id="555604722231274592">הפעלה של <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">פרטי השגיאה</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="555671485580955310">היסטוריית הסנכרון וכרטיסיות</translation>
 <translation id="5558129378926964177">הת&amp;קרבות</translation>
@@ -10147,7 +10148,6 @@
 <translation id="8032569120109842252">במעקב</translation>
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
-<translation id="8034399942062051455">‏האופטימיזציה של V8 מושבתת</translation>
 <translation id="8034697324150621782">החלפה עם התצוגה העליונה</translation>
 <translation id="8035059678007243127">הדף האנונימי השמור במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">הצגת הכפתור של קבוצות הכרטיסיות השמורות</translation>
@@ -11798,7 +11798,6 @@
 <translation id="914031120300235526">לא ניתן לבטל את הנעילה של הפרופיל</translation>
 <translation id="9143298529634201539">האם להסיר את ההצעה?</translation>
 <translation id="9143922477019434797">הגנה על הסיסמאות</translation>
-<translation id="914621365454686586">‏רוצה לתת לחיפוש Google גישה לתוכן ב-Drive?</translation>
 <translation id="9147392381910171771">&amp;אפשרויות</translation>
 <translation id="9148058034647219655">יציאה</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>

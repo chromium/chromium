@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">sahkan identiti anda supaya maklumat pembayaran anda boleh diisi</translation>
 <translation id="1150565364351027703">Cermin mata hitam</translation>
 <translation id="1150979032973867961">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh sistem pengendalian komputer anda. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
+<translation id="1151858212483238980">Anda boleh membuat autolengkap kad yang disimpan dalam Google Wallet</translation>
 <translation id="1151972924205500581">Kata laluan diperlukan</translation>
 <translation id="1156303062776767266">Anda sedang melihat fail setempat atau yang dikongsi</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> menutup sambungan tanpa di jangka.</translation>
@@ -131,6 +132,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="1204184165594298176">{0,plural, =1{Fail disekat daripada disalin}other{<ph name="FILE_COUNT" /> fail disekat daripada disalin}}</translation>
 <translation id="120509973613679868">Perjalanan Perniagaan</translation>
+<translation id="1205344127823614428">Anda boleh membuat autolengkap kad yang disimpan dalam Google Wallet.</translation>
 <translation id="120587177308723209">Sukan Fantasi</translation>
 <translation id="1206967143813997005">Tandatangan awal tidak sah</translation>
 <translation id="1209206284964581585">Sorok sementara</translation>
@@ -3186,6 +3188,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5968400720580217226">AI Mode</translation>
 <translation id="5969199813874624822">Simpan dan Jejak Harga</translation>
 <translation id="5969933937005244170">Tab terbuka yang berkaitan hanya akan digunakan jika anda berkongsi tab tersebut dalam urutan</translation>
+<translation id="5972020793760134803">Beralih ke tab</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Gulungan Keenam</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
@@ -3596,6 +3599,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6579858392010591435">Acara Musim Cuti &amp; Bermusim</translation>
 <translation id="6581831440014388355">Pembuangan Bulu Badan &amp; Muka Yang Tidak Dikehendaki</translation>
 <translation id="658230438113661756">Penyerang pada laman yang cuba anda lawati mungkin memasang perisian berbahaya yang mencuri atau memadamkan perkara seperti kata laluan, foto, mesej atau nombor kad kredit anda. Chrome amat mengesyorkan untuk kembali ke tempat selamat. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut tentang amaran ini<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Disimpan dalam Google Wallet</translation>
 <translation id="6587893660316489419">Sampul B5</translation>
 <translation id="6587923378399804057">Pautan yang anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> anda tidak diurus</translation>
@@ -3751,6 +3755,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6834757537110528125">Laman ini tidak menyokong sambungan selamat</translation>
 <translation id="6841864657731852591">Silinder Gravur</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844746916504777213">Jangan sekali-kali berkongsi laman ini</translation>
 <translation id="6844998850832008753">Penjejakan tangan dibenarkan pada masa ini</translation>
 <translation id="6849023911358004088">Butang urus tetapan keselamatan, aktifkan untuk mengurus Penyemakan Imbas Selamat anda dan banyak lagi dalam tetapan Chrome</translation>
 <translation id="6850286078059909152">Warna teks</translation>
@@ -4420,6 +4425,7 @@ Butiran tambahan:
 <translation id="7840103971441592723">Tangkapan skrin telah bermula</translation>
 <translation id="784137052867620416">Cerapan Beli-belah</translation>
 <translation id="7841633276323004751">Kaedah pembayaran tersedia untuk dipilih bagi meneruskan pembayaran. Papan kekunci tersembunyi.</translation>
+<translation id="784189052219692670">Kini Gemini boleh mengingati maklumat peribadi anda merentas apl Google anda dan membuat autolengkap maklumat tersebut pada halaman yang anda lihat.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tiada}=1{1 apl (<ph name="EXAMPLE_APP_1" />)}=2{2 apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="784623644169604270">Tiada aktiviti terbaharu</translation>
@@ -4823,6 +4829,7 @@ Butiran tambahan:
 <translation id="8488350697529856933">Diguna pakai untuk</translation>
 <translation id="8490137692873530638">Petak 10</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
+<translation id="8495170825732897952">Taip @@ dalam mana-mana borang untuk mengingati dan mengisi maklumat tanpa menukar tab</translation>
 <translation id="8498870489552322848">isi maklumat sensitif anda pada <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> mengambil masa terlalu lama untuk bertindak balas.</translation>
 <translation id="8502023382441452707">Hari Lahir &amp; Nama Hari</translation>

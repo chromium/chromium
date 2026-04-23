@@ -1076,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} және тағы 1}other{{domain} және тағы {count}}}</translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
 <translation id="4828431027673677473">Қызығушылықтарыңызға сай тауарлар</translation>
+<translation id="4829420936835028285">Қойындылар тобын өзгерту</translation>
 <translation id="4833786495304741580">Қолданыс статистикасын және жаңылыс туралы есептерді Google-ға автоматты түрде жібереді.</translation>
 <translation id="483689884442613745">Сақтау…</translation>
 <translation id="4840495572919996524">Бетбелгілер, тарих, құпия сөздер және тағы басқа мәліметтер Google аккаунтымен синхрондалмайды.</translation>
@@ -1083,7 +1084,6 @@
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="4854068532375923088">Gemini-ға камераны пайдалануға рұқсат беріңіз</translation>
-<translation id="4860114370595561279">Сақталған ақпаратыңыз құрылғыңызға сақталады.</translation>
 <translation id="4860895144060829044">Қоңырау шалу</translation>
 <translation id="4861953997778766866">Ортақ қойындылар топтарына барлығы өзгеріс енгізе алады.</translation>
 <translation id="4865063548323785458">Сайттар мен қолданбаларға оңай кіру үшін құпия сөздерді сақтап, автоматты түрде толтырыңыз.</translation>

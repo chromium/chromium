@@ -1044,7 +1044,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
-<translation id="1706015824809136764">Hurtigtast for å feste Gemini til verktøylinjen</translation>
 <translation id="1706586824377653884">Lagt til av administratoren din</translation>
 <translation id="170658918174941828">Chrome-versjonen, operativsystemversjonen, Cast-innstillingene,
     statistikken for speilingsytelsen og diagnostikkloggene for kommunikasjonskanalen
@@ -1553,7 +1552,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="204914487372604757">Opprett snarvei</translation>
 <translation id="2049573977943974163">Vil du slå på «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="2050339315714019657">Stående</translation>
-<translation id="2050394140692183739">Gjeldende snarvei på verktøylinjen</translation>
 <translation id="2051555741181591333">Deaktiver wifi-sone automatisk</translation>
 <translation id="2051669996101374349">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette. Du kan ikke endre denne innstillingen siden Avansert beskyttelse er slått på.</translation>
 <translation id="2052572566310583903">Installert på de andre enhetene dine</translation>
@@ -4241,6 +4239,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3874532133373654352">Organisasjonen din administrerer hvordan dataene som samles inn av disse funksjonene, kan brukes. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Denne funksjonen bruker AI og er på forsøksstadiet</translation>
 <translation id="3875511946736639169">Slå på bilder</translation>
+<translation id="3875777964669698078">Transkriberer …</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> er konfigurert til å åpnes i en ny nettleserfane. Støttede linker åpnes også i nettleseren. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Størrelsen på vinduene er endret til toppen</translation>
 <translation id="3877075909000773256">Nærdelingsinnstillinger for enheten til <ph name="USER_NAME" />, som deles under kontoen <ph name="USER_EMAIL" />.</translation>
@@ -4710,6 +4709,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4223404254440398437">Mikrofon er ikke tillatt</translation>
 <translation id="4224541845943007092">Les og lagre tastaturinndata fra adressefeltet</translation>
 <translation id="4225397296022057997">På alle nettsteder</translation>
+<translation id="4225895483398857530">Verktøylinje-snarvei</translation>
 <translation id="4226303886821889519">Oppdateringsversjon: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Bruk organisasjonens e-postadresse</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er ikke tillatt}other{Noen utvidelser er ikke tillatt}}</translation>
@@ -6600,6 +6600,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5555639311269196631">Slå av wifi-sone</translation>
 <translation id="5555760010546505198">Innstillinger for fargeinvertering, fargekorrigering, lupe og skjerm</translation>
 <translation id="555604722231274592">Slå på <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Vis feil</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="555671485580955310">Synkroniser logg og faner</translation>
 <translation id="5558129378926964177">Zoom &amp;inn</translation>
@@ -10133,7 +10134,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Tidsavbrudd</translation>
-<translation id="8034399942062051455">V8-optimalisering er av</translation>
 <translation id="8034697324150621782">Bytt med øverste visning</translation>
 <translation id="8035059678007243127">Inkognitoside i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Knapp for å vise lagrede fanegrupper</translation>
@@ -11782,7 +11782,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="914031120300235526">Kan ikke låse opp profilen</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
 <translation id="9143922477019434797">Beskytt passordene dine</translation>
-<translation id="914621365454686586">Vil du gi Søk tilgang til Disk-innhold?</translation>
 <translation id="9147392381910171771">&amp;Alternativer</translation>
 <translation id="9148058034647219655">Avslutt</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>

@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">לאמת את זהותך לצורך מילוי פרטי התשלום שלך</translation>
 <translation id="1150565364351027703">משקפי שמש</translation>
 <translation id="1150979032973867961">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המחשב. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
+<translation id="1151858212483238980">‏אפשר למלא אוטומטית פרטי כרטיסים ששמורים ב-Google Wallet</translation>
 <translation id="1151972924205500581">נדרשת סיסמה</translation>
 <translation id="1156303062776767266">מוצג לך קובץ מקומי או משותף</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> סגר את החיבור באופן בלתי צפוי.</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">מוצרים במעקב</translation>
 <translation id="1204184165594298176">{0,plural, =1{אין אפשרות להעתיק את הקובץ}one{אין אפשרות להעתיק <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעתיק <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעתיק <ph name="FILE_COUNT" /> קבצים}}</translation>
 <translation id="120509973613679868">נסיעות עסקים</translation>
+<translation id="1205344127823614428">‏אפשר למלא אוטומטית פרטי כרטיסים ששמורים ב-Google Wallet.</translation>
 <translation id="120587177308723209">ספורט פנטזי</translation>
 <translation id="1206967143813997005">חתימה ראשונית לא חוקית</translation>
 <translation id="1209206284964581585">להסתיר בינתיים</translation>
@@ -3190,6 +3192,7 @@ Del</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5969199813874624822">שמירה ומעקב אחר המחירים</translation>
 <translation id="5969933937005244170">אנחנו משתמשים בכרטיסיות הפתוחות הרלוונטיות רק אם שיתפת אותן בשרשור</translation>
+<translation id="5972020793760134803">מעבר לכרטיסייה</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | ‏<ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">הגליל השישי</translation>
 <translation id="5975083100439434680">התרחקות</translation>
@@ -3600,6 +3603,7 @@ Del</translation>
 <translation id="6579858392010591435">חגים ואירועים עונתיים</translation>
 <translation id="6581831440014388355">הסרת שיער מהפנים ומהגוף</translation>
 <translation id="658230438113661756">‏תוקפים באתר שבו ניסית לבקר עשויים להתקין תוכנות מזיקות שגונבות או מוחקות פריטים כמו הסיסמאות, התמונות, ההודעות או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">‏מאוחסן ב-Google Wallet</translation>
 <translation id="6587893660316489419">‏מעטפה – B5</translation>
 <translation id="6587923378399804057">קישור שהעתקת</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>
@@ -3755,6 +3759,7 @@ Del</translation>
 <translation id="6834757537110528125">האתר הזה לא תומך בחיבור מאובטח</translation>
 <translation id="6841864657731852591">Gravure Cylinder</translation>
 <translation id="6842196666980060516">‏184x260 מ"מ</translation>
+<translation id="6844746916504777213">אני לא רוצה לשתף את האתרים האלה אף פעם</translation>
 <translation id="6844998850832008753">יש הרשאה חד-פעמית למעקב אחר תנועות הידיים</translation>
 <translation id="6849023911358004088">‏הכפתור לניהול הגדרות האבטחה, מפעילים אותו כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="6850286078059909152">צבע טקסט</translation>
@@ -4424,6 +4429,7 @@ Del</translation>
 <translation id="7840103971441592723">צילום המסך התחיל</translation>
 <translation id="784137052867620416">תובנות בנושא קניות</translation>
 <translation id="7841633276323004751">רשימת אמצעי התשלום הזמינים לבחירה כדי להמשיך בתהליך התשלום. המקלדת מוסתרת.</translation>
+<translation id="784189052219692670">‏עכשיו Gemini יכול לשלוף את הפרטים האישיים שלך מאפליקציות Google ולמלא אותם אוטומטית בדף שפתחת.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="784623644169604270">אין פעילות מהתקופה האחרונה</translation>
@@ -4827,6 +4833,7 @@ Del</translation>
 <translation id="8488350697529856933">חלה על</translation>
 <translation id="8490137692873530638">מערים 10</translation>
 <translation id="8493948351860045254">פינוי נפח אחסון</translation>
+<translation id="8495170825732897952">כדי לשלוף את הפרטים ולמלא אותם בלי לעבור בין כרטיסיות, צריך להקליד @@ בטופס כלשהו</translation>
 <translation id="8498870489552322848">מילוי המידע הרגיש שלך ב-<ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222">ל-<ph name="HOST_NAME" /> נדרש זמן רב מדי להגיב.</translation>
 <translation id="8502023382441452707">ימי הולדת</translation>

@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności</translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
 <translation id="1150979032973867961">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego komputera. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
+<translation id="1151858212483238980">Możesz automatycznie wypełniać karty zapisane w Portfelu Google</translation>
 <translation id="1151972924205500581">Wymagane hasło</translation>
 <translation id="1156303062776767266">Przeglądasz plik lokalny lub udostępniony</translation>
 <translation id="1158211211994409885">Serwer <ph name="HOST_NAME" /> nieoczekiwanie zakończył połączenie.</translation>
@@ -131,6 +132,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204184165594298176">{0,plural, =1{Kopiowanie pliku zostało zablokowane}few{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Kopiowanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="120509973613679868">Podróże służbowe</translation>
+<translation id="1205344127823614428">Możesz automatycznie wypełniać karty zapisane w Portfelu Google.</translation>
 <translation id="120587177308723209">Sporty wirtualne</translation>
 <translation id="1206967143813997005">Nieprawidłowy podpis wstępny</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
@@ -3185,6 +3187,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5968400720580217226">Tryb AI</translation>
 <translation id="5969199813874624822">Zapisz i śledź cenę</translation>
 <translation id="5969933937005244170">Odpowiednie otwarte karty będą używane tylko wtedy, gdy udostępnisz je w wątku</translation>
+<translation id="5972020793760134803">Przełącz na kartę</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Rolka 6</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
@@ -3595,6 +3598,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6579858392010591435">Święta i wydarzenia sezonowe</translation>
 <translation id="6581831440014388355">Depilacja ciała i twarzy</translation>
 <translation id="658230438113661756">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasła, zdjęcia, wiadomości czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Zapisano w Portfelu Google</translation>
 <translation id="6587893660316489419">Koperta B5</translation>
 <translation id="6587923378399804057">Skopiowany link</translation>
 <translation id="6591833882275308647">Twoje urządzenie <ph name="DEVICE_TYPE" /> nie jest zarządzane</translation>
@@ -3750,6 +3754,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6834757537110528125">Ta witryna nie obsługuje bezpiecznego połączenia</translation>
 <translation id="6841864657731852591">Walec wklęsłodrukowy</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844746916504777213">Nigdy nie udostępniaj tych witryn</translation>
 <translation id="6844998850832008753">Tym razem zezwolono na śledzenie rąk</translation>
 <translation id="6849023911358004088">Przycisk Zarządzaj ustawieniami zabezpieczeń; aktywuj, aby zarządzać m.in. Bezpiecznym przeglądaniem w ustawieniach Chrome</translation>
 <translation id="6850286078059909152">Kolor tekstu</translation>
@@ -4419,6 +4424,7 @@ Dodatkowe informacje:
 <translation id="7840103971441592723">Rozpoczęto wykonywanie zrzutu ekranu</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Dostępne formy płatności, które można wybrać, aby dokonać płatności. Klawiatura jest ukryta.</translation>
+<translation id="784189052219692670">Gemini może teraz przypominać sobie Twoje dane osobowe z różnych aplikacji Google i automatycznie je uzupełniać na przeglądanej stronie.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="784623644169604270">Brak ostatniej aktywności</translation>
@@ -4822,6 +4828,7 @@ Dodatkowe informacje:
 <translation id="8488350697529856933">Dotyczy</translation>
 <translation id="8490137692873530638">Układarka 10</translation>
 <translation id="8493948351860045254">Zwolnij miejsce</translation>
+<translation id="8495170825732897952">Wpisz @@ w dowolnym formularzu, aby przywołać i wypełnić informacje bez przełączania kart</translation>
 <translation id="8498870489552322848">uzupełnić informacje poufne na stronie <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222">Serwer <ph name="HOST_NAME" /> potrzebował zbyt wiele czasu na odpowiedź.</translation>
 <translation id="8502023382441452707">Urodziny i imieniny</translation>

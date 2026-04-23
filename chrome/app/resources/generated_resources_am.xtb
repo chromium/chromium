@@ -1047,7 +1047,6 @@
 <translation id="1703666494654169921">ጣቢያዎች ምናባዊ የእውነተኛ መሣሪያዎችን ወይም መረጃዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="1704097193565924901">ዐብይ ፊደል አድርግ</translation>
 <translation id="1704230497453185209">ጣቢያዎች ድምፅ እንዲጫወቱ አይፍቀዱ</translation>
-<translation id="1706015824809136764">Geminiን ወደ የመሣሪያ አሞሌ አቋራጭ ሰካ</translation>
 <translation id="1706586824377653884">በእርስዎ አስተዳዳሪ ታክሏል</translation>
 <translation id="170658918174941828">የእርስዎ የChrome ስሪት፣ የስርዓተ ክወና ስሪት፣ የCast ቅንብሮች፣
 የማንጸባረቅ አፈጻጸም ስታቲስቲክስ እና የግንኙነት ሰርጥ ምርመራ 
@@ -1557,7 +1556,6 @@
 <translation id="204914487372604757">አቋራጭ ፍጠር</translation>
 <translation id="2049573977943974163">«<ph name="EXTENSION_NAME" />» ይብራ?</translation>
 <translation id="2050339315714019657">የቁም ፎቶ</translation>
-<translation id="2050394140692183739">የአሁን የመሣሪያ አሞሌ አቋራጭ</translation>
 <translation id="2051555741181591333">መገናኛ ነጥብ በራስ ሰር አሰናክል</translation>
 <translation id="2051669996101374349">በተቻለ መጠን ኤችቲቲፒኤስ ይጠቀሙ እና እሱን የማይደግፉትን ጣቢያዎች ከመጫንዎ በፊት ማስጠንቀቂያ ያግኙ። የላቀ ጥበቃን ስላነቁ ይህን ቅንብር መለወጥ አይችሉም።</translation>
 <translation id="2052572566310583903">በሌሎች መሣሪያዎችዎ ላይ ተጭነዋል</translation>
@@ -4243,6 +4241,7 @@
 <translation id="3874532133373654352">ድርጅትዎ በእነዚህ ባህሪያት የተሰበሰበ ውሂብ እንዴት ጥቅም ላይ ሊውል እንደሚችል ያስተዳድራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">ይህን ባህሪ ሰው ሠራሽ አስተውሎት ይጠቀማል እና የሙከራ ነው</translation>
 <translation id="3875511946736639169">ምስሎችን አንቃ</translation>
+<translation id="3875777964669698078">ጽሑፍ በመገልበጥ ላይ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> በአዲስ የአሳሽ ትር ውስጥ እንዲከፈት ተቀናብሯል፣ እንዲሁም የሚደገፉ አገናኞች በአሳሹ ውስጥ ይከፈታሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ወደ ላይ መጠናቸው የተቀየሩ መስኮቶች</translation>
 <translation id="3877075909000773256">የ<ph name="USER_NAME" /> መሣሪያ የአቅራቢያ አጋራ ቅንብሮች፣ በ<ph name="USER_EMAIL" /> መለያው ስር ማጋራት።</translation>
@@ -4712,6 +4711,7 @@
 <translation id="4223404254440398437">ማይክሮፎን አይፈቀድም</translation>
 <translation id="4224541845943007092">ከአድራሻ አሞሌው ላይ የቁልፍ ሰሌዳ ግብዓት ያንብቡ እና ያስቀምጡ</translation>
 <translation id="4225397296022057997">በሁሉም ጣቢያዎች ላይ</translation>
+<translation id="4225895483398857530">የመሣሪያ አሞሌ አቋራጭ</translation>
 <translation id="4226303886821889519">የማዘመኛ ሥሪት፦ <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">የድርጅትዎን የኢሜይል አድራሻ ይጠቀሙ</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ አይፈቀድም}one{አንዳንድ ቅጥያዎች አይፈቀዱም}other{አንዳንድ ቅጥያዎች አይፈቀዱም}}</translation>
@@ -6605,6 +6605,7 @@
 <translation id="5555639311269196631">መገናኛ ነጥብን አጥፋ</translation>
 <translation id="5555760010546505198">ቀለም መገልበጥ፣ የቀለም ማስተካከያ፣ ማጉያ እና የማሳያ ቅንብሮች</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> ያንቁ</translation>
+<translation id="5556191579768914260">ስሕተትን አሳይ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="555671485580955310">ታሪክ እና ትሮችን ያስምሩ</translation>
 <translation id="5558129378926964177">&amp;አጉላ</translation>
@@ -10145,7 +10146,6 @@ nil</translation>
 <translation id="8032569120109842252">የምከተላቸው</translation>
 <translation id="8033827949643255796">ተመርጧል</translation>
 <translation id="8033958968890501070">ጊዜው አልቋል</translation>
-<translation id="8034399942062051455">V8 ማትባት ጠፍቷል</translation>
 <translation id="8034697324150621782">በአናት ዕይታ ለውጥ</translation>
 <translation id="8035059678007243127">ማንነት የማያሳውቅ የጀርባ/ፊት መሸጎጫ ገፅ፦ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">የተቀመጡ የትር ቡድኖች አዝራርን አሳይ</translation>
@@ -11795,7 +11795,6 @@ nil</translation>
 <translation id="914031120300235526">መገለጫውን መክፈት አልተቻለም</translation>
 <translation id="9143298529634201539">የአስተያየት ጥቆማ ይወገድ?</translation>
 <translation id="9143922477019434797">የእርስዎን የይለፍ ቃላት ይጠብቁ</translation>
-<translation id="914621365454686586">ፍለጋ የDrive ይዘትን እንዲደርስ ይፈቀድ?</translation>
 <translation id="9147392381910171771">&amp;አማራጮች</translation>
 <translation id="9148058034647219655">ውጣ</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>

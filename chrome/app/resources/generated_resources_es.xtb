@@ -1046,7 +1046,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
 <translation id="1704097193565924901">Mayúsculas</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
-<translation id="1706015824809136764">Acceso directo para fijar Gemini en la barra de herramientas</translation>
 <translation id="1706586824377653884">Añadido por tu administrador</translation>
 <translation id="170658918174941828">Se enviará la versión de Chrome, la versión del sistema operativo, la configuración de envío, las estadísticas de rendimiento de proyección y los registros de diagnóstico de canales de comunicación, así como la información que selecciones más arriba. Tus comentarios se utilizarán para diagnosticar problemas y ayudarán a mejorar la función. La información personal que envíes, ya sea intencionadamente o por error, se protegerá de acuerdo con nuestras políticas de privacidad. Al enviar estos comentarios, aceptas que Google pueda utilizarlos para mejorar sus productos o servicios.</translation>
 <translation id="17081583771848899">tecla del menú de aplicaciones + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1549,7 +1548,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="204914487372604757">Crear acceso directo</translation>
 <translation id="2049573977943974163">¿Activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Vertical</translation>
-<translation id="2050394140692183739">Combinación de teclas actual en la barra de herramientas</translation>
 <translation id="2051555741181591333">Inhabilitar punto de acceso automáticamente</translation>
 <translation id="2051669996101374349">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo. No puedes cambiar este ajuste porque tienes habilitada la Protección Avanzada.</translation>
 <translation id="2052572566310583903">Instaladas en tus otros dispositivos</translation>
@@ -4706,6 +4704,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4223404254440398437">Micrófono no permitido</translation>
 <translation id="4224541845943007092">Leer y guardar la entrada del teclado desde la barra de direcciones</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
+<translation id="4225895483398857530">Acceso directo en la barra de herramientas</translation>
 <translation id="4226303886821889519">Versión de la herramienta de actualización: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Usa la dirección de correo electrónico de tu organización</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión no está permitida}other{Algunas extensiones no están permitidas}}</translation>
@@ -10131,7 +10130,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tiempo de espera agotado</translation>
-<translation id="8034399942062051455">La optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Intercambiar con vista superior</translation>
 <translation id="8035059678007243127">Página de incógnito almacenada en la caché de páginas completas: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Mostrar botón de grupos de pestañas guardados</translation>
@@ -11780,7 +11778,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="914031120300235526">No se puede desbloquear el perfil</translation>
 <translation id="9143298529634201539">¿Eliminar la sugerencia?</translation>
 <translation id="9143922477019434797">Protege tus contraseñas</translation>
-<translation id="914621365454686586">¿Permitir que la Búsqueda acceda al contenido de Drive?</translation>
 <translation id="9147392381910171771">&amp;Opciones</translation>
 <translation id="9148058034647219655">Salir</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>

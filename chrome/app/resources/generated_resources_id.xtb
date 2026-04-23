@@ -1047,7 +1047,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
 <translation id="1704097193565924901">Huruf Besar di Awal Kata</translation>
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
-<translation id="1706015824809136764">Sematkan Gemini ke pintasan toolbar</translation>
 <translation id="1706586824377653884">Ditambahkan oleh administrator Anda</translation>
 <translation id="170658918174941828">Versi Chrome, versi sistem operasi, setelan Cast,
     statistik performa pencerminan, dan log diagnostik saluran
@@ -1558,7 +1557,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="204914487372604757">Buat pintasan</translation>
 <translation id="2049573977943974163">Aktifkan "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="2050339315714019657">Potret</translation>
-<translation id="2050394140692183739">Pintasan toolbar saat ini</translation>
 <translation id="2051555741181591333">Nonaktifkan hotspot secara otomatis</translation>
 <translation id="2051669996101374349">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya. Anda tidak dapat mengubah setelan ini karena Anda mengaktifkan Perlindungan Lanjutan.</translation>
 <translation id="2052572566310583903">Diinstal di perangkat lain</translation>
@@ -4246,6 +4244,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3874532133373654352">Organisasi Anda mengelola cara penggunaan data yang dikumpulkan oleh fitur ini. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Fitur ini menggunakan AI dan bersifat eksperimental</translation>
 <translation id="3875511946736639169">Aktifkan gambar</translation>
+<translation id="3875777964669698078">Mentranskripsikan...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> disetel untuk dibuka di tab browser baru, link yang didukung juga akan dibuka di browser. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Jendela diubah ukurannya ke atas</translation>
 <translation id="3877075909000773256">Setelan Berbagi Langsung untuk perangkat <ph name="USER_NAME" />, berbagi menggunakan akun <ph name="USER_EMAIL" />.</translation>
@@ -4717,6 +4716,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4223404254440398437">Mikrofon tidak diizinkan</translation>
 <translation id="4224541845943007092">Membaca dan menyimpan input keyboard dari kolom URL</translation>
 <translation id="4225397296022057997">Di semua situs</translation>
+<translation id="4225895483398857530">Pintasan toolbar</translation>
 <translation id="4226303886821889519">Versi updater: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Gunakan alamat email organisasi Anda</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ekstensi ini tidak diizinkan}other{Beberapa ekstensi tidak diizinkan}}</translation>
@@ -6610,6 +6610,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5555639311269196631">Nonaktifkan hotspot</translation>
 <translation id="5555760010546505198">Setelan inversi warna, koreksi warna, kaca pembesar, dan tampilan</translation>
 <translation id="555604722231274592">Aktifkan <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Tampilkan error</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="555671485580955310">Sinkronkan histori dan tab</translation>
 <translation id="5558129378926964177">Per&amp;besar</translation>
@@ -10142,7 +10143,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8033827949643255796">dipilih</translation>
 <translation id="8033958968890501070">Waktu habis</translation>
-<translation id="8034399942062051455">Pengoptimalan V8 nonaktif</translation>
 <translation id="8034697324150621782">Tukar dengan Tampilan Atas</translation>
 <translation id="8035059678007243127">Halaman Samaran yang Disimpan di Back/Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Tampilkan tombol grup tab tersimpan</translation>
@@ -11791,7 +11791,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="914031120300235526">Tidak dapat membuka kunci profil</translation>
 <translation id="9143298529634201539">Hapus saran?</translation>
 <translation id="9143922477019434797">Lindungi sandi Anda</translation>
-<translation id="914621365454686586">Izinkan Penelusuran Mengakses Konten Drive?</translation>
 <translation id="9147392381910171771">&amp;Pilihan</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>

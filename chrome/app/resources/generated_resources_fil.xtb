@@ -1048,7 +1048,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1703666494654169921">Huwag payagan ang mga site na gumamit ng mga virtual reality device o data</translation>
 <translation id="1704097193565924901">I-capitalize</translation>
 <translation id="1704230497453185209">Huwag payagan ang mga site na mag-play ng tunog</translation>
-<translation id="1706015824809136764">I-pin ang Gemini sa shortcut ng toolbar</translation>
 <translation id="1706586824377653884">Idinagdag ng iyong administrator</translation>
 <translation id="170658918174941828">Ang iyong bersyon ng Chrome, bersyon ng operating system, mga setting ng Cast,
     stats ng performance ng pag-mirror, at diagnostic log ng channel ng pakikipag-ugnayan
@@ -1560,7 +1559,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="204914487372604757">Lumikha ng shortcut sa </translation>
 <translation id="2049573977943974163">I-on ang "<ph name="EXTENSION_NAME" />?"</translation>
 <translation id="2050339315714019657">Portrait</translation>
-<translation id="2050394140692183739">Kasalukuyang shortcut ng toolbar</translation>
 <translation id="2051555741181591333">Awtomatikong i-disable ang hotspot</translation>
 <translation id="2051669996101374349">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito. Hindi mo mababago ang setting na ito dahil naka-enable sa iyo ang Advanced na Proteksyon.</translation>
 <translation id="2052572566310583903">Naka-install sa iyong iba pang device</translation>
@@ -4720,6 +4718,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4223404254440398437">Hindi pinapayagan ang mikropono</translation>
 <translation id="4224541845943007092">Magbasa at mag-save ng input ng keyboard mula sa address bar</translation>
 <translation id="4225397296022057997">Sa lahat ng site</translation>
+<translation id="4225895483398857530">Shortcut ng toolbar</translation>
 <translation id="4226303886821889519">Bersyon ng updater: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Gamitin ang email address ng iyong organisasyon</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hindi pinapayagan ang extension na ito}one{Hindi pinapayagan ang ilang extension}other{Hindi pinapayagan ang ilang extension}}</translation>
@@ -10149,7 +10148,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8033827949643255796">pinili</translation>
 <translation id="8033958968890501070">Time out</translation>
-<translation id="8034399942062051455">Naka-off ang pag-optimize ng V8</translation>
 <translation id="8034697324150621782">I-swap sa View sa Itaas</translation>
 <translation id="8035059678007243127">Back/Forward Cached na Page ng Incognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Ipakita ang button na mga naka-save na grupo ng tab</translation>
@@ -11801,7 +11799,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="914031120300235526">Hindi ma-unlock ang profile</translation>
 <translation id="9143298529634201539">Alisin ang suhestyon?</translation>
 <translation id="9143922477019434797">Protektahan ang iyong mga password</translation>
-<translation id="914621365454686586">Payagan ang Search na I-access ang Content ng Drive?</translation>
 <translation id="9147392381910171771">&amp;Mga pagpipilian</translation>
 <translation id="9148058034647219655">Lumabas</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>

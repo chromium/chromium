@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">төлем туралы ақпаратыңызды толтыру үшін жеке басыңызды растағысы келеді</translation>
 <translation id="1150565364351027703">Күнқағар көзілдірік</translation>
 <translation id="1150979032973867961">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификатын компьютеріңіздің операциялық жүйесі растамаған. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
+<translation id="1151858212483238980">Google Wallet-ке сақталған карталарды автоматты түрде толтыруға болады.</translation>
 <translation id="1151972924205500581">Құпия сөз қажет</translation>
 <translation id="1156303062776767266">Жергілікті немесе ортақ файлды көрудесіз</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> байланысты кенет үзді.</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">Бақыланатын өнімдер</translation>
 <translation id="1204184165594298176">{0,plural, =1{Файлды көшіруге блок қойылған}other{<ph name="FILE_COUNT" /> файлды көшіруге блок қойылған}}</translation>
 <translation id="120509973613679868">Іссапар</translation>
+<translation id="1205344127823614428">Google Wallet-ке сақталған карталарды автоматты түрде толтыруға болады.</translation>
 <translation id="120587177308723209">Фэнтези-спорт</translation>
 <translation id="1206967143813997005">Бастапқы қолтаңба дұрыс емес</translation>
 <translation id="1209206284964581585">Әзірге жасыру</translation>
@@ -3184,6 +3186,7 @@
 <translation id="5968400720580217226">AI режимі</translation>
 <translation id="5969199813874624822">Бағаны сақтау және бақылау</translation>
 <translation id="5969933937005244170">Сәйкес ашық қойындылар тізбекте бөлісілген жағдайда ғана пайдаланылады</translation>
+<translation id="5972020793760134803">Қойындыға ауысу</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтыншы орам</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
@@ -3594,6 +3597,7 @@
 <translation id="6579858392010591435">Мерекелік және маусымдық іс-шаралар</translation>
 <translation id="6581831440014388355">Дене мен беттегі қажетсіз түкті кетіру</translation>
 <translation id="658230438113661756">Сіз кіргіңіз келген сайттағы шабуылдаушылар құпия сөздер, фотосуреттер, хабарлар немесе несиелік карта нөмірлері сияқты нәрселерді ұрлайтын не жоятын зиянды бағдарламалық құралды орнатуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Google Wallet-ке сақталған</translation>
 <translation id="6587893660316489419">B5 хатқалтасы</translation>
 <translation id="6587923378399804057">Көшірілген сілтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
@@ -3749,6 +3753,7 @@
 <translation id="6834757537110528125">Бұл сайт қауіпсіз байланысқа қолдау көрсетпейді</translation>
 <translation id="6841864657731852591">Формалық цилиндр</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
+<translation id="6844746916504777213">Бұл сайттарды ешқашан бөліспеу</translation>
 <translation id="6844998850832008753">Бұл жолы қолды бақылау функциясына рұқсат берілді</translation>
 <translation id="6849023911358004088">"Қауіпсіздік параметрлерін басқару" түймесі, Chrome параметрлерінен Safe Browsing және т.б. басқару үшін белсендіріңіз</translation>
 <translation id="6850286078059909152">Мәтін түсі</translation>
@@ -4417,6 +4422,7 @@
 <translation id="7840103971441592723">Экранды түсіру басталды</translation>
 <translation id="784137052867620416">Сауда-саттық статистикасы</translation>
 <translation id="7841633276323004751">Төлемді жалғастыру үшін таңдауға болатын төлеу әдістері. Пернетақта жасырылды.</translation>
+<translation id="784189052219692670">Gemini енді Google қолданбаларындағы жеке ақпаратыңызды еске түсіріп, сіз көріп отырған бетте автоматты түрде толтыра алады.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
 <translation id="784623644169604270">Соңғы іс-әрекеттер жоқ.</translation>
@@ -4820,6 +4826,7 @@
 <translation id="8488350697529856933">Келесіге қолданылады</translation>
 <translation id="8490137692873530638">10-жинастырушы</translation>
 <translation id="8493948351860045254">Жадтағы орынды босату</translation>
+<translation id="8495170825732897952">Кез келген үлгіде @@ деп теріп, қойындыларды ауыстырмай-ақ ақпаратты еске түсіріп, толтырады.</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> сайтында құпия ақпаратыңызды толтырғалы жатыр.</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> жауабы тым ұзақ уақыт алды.</translation>
 <translation id="8502023382441452707">Туған күндер мен атаулы күндер</translation>

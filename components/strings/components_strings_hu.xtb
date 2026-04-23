@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">ellenőrizni az Ön személyazonosságát, hogy kitölthesse a fizetési adatokat</translation>
 <translation id="1150565364351027703">Napszemüveg</translation>
 <translation id="1150979032973867961">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa az Ön számítógépének operációs rendszere szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
+<translation id="1151858212483238980">Automatikusan kitöltheti a Google Walletbe mentett kártyák adatait.</translation>
 <translation id="1151972924205500581">Jelszó szükséges</translation>
 <translation id="1156303062776767266">Helyi vagy megosztott fájlt tekint meg</translation>
 <translation id="1158211211994409885">A(z) <ph name="HOST_NAME" /> váratlanul megszakította a kapcsolatot.</translation>
@@ -131,6 +132,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1202892408424955784">Nyomon követett termékek</translation>
 <translation id="1204184165594298176">{0,plural, =1{A fájl másolása le van tiltva}other{<ph name="FILE_COUNT" /> fájl másolása le van tiltva}}</translation>
 <translation id="120509973613679868">Üzleti utazás</translation>
+<translation id="1205344127823614428">Automatikusan kitöltheti a Google Walletbe mentett kártyák adatait.</translation>
 <translation id="120587177308723209">Sportmenedzserjátékok</translation>
 <translation id="1206967143813997005">Hibás alapértelmezett aláírás</translation>
 <translation id="1209206284964581585">Elrejtés ideiglenesen</translation>
@@ -3182,6 +3184,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5968400720580217226">AI-mód</translation>
 <translation id="5969199813874624822">Mentés és az ár nyomon követése</translation>
 <translation id="5969933937005244170">A releváns megnyitott lapok csak akkor lesznek használva, ha megosztja őket egy témaszálban</translation>
+<translation id="5972020793760134803">Váltás lapra</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6. tekercs</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
@@ -3592,6 +3595,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6579858392010591435">Ünnepek és szezonális események</translation>
 <translation id="6581831440014388355">Test- és arcszőrzet eltávolítása</translation>
 <translation id="658230438113661756">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók olyan kártékony szoftvereket telepítenek, amelyek ellopják vagy törlik például az Ön jelszavait, fotóit, üzeneteit és bankkártyaszámait. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
+<translation id="6583309742916093092">A Google Walletben tárolva</translation>
 <translation id="6587893660316489419">B5 boríték</translation>
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
@@ -3747,6 +3751,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6834757537110528125">Ez a webhely nem támogatja a biztonságos kapcsolatot</translation>
 <translation id="6841864657731852591">Gravűrhenger</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
+<translation id="6844746916504777213">Ezek a webhelyek nem lesznek megosztva</translation>
 <translation id="6844998850832008753">A kézmozgás követése erre az alkalomra engedélyezve van</translation>
 <translation id="6849023911358004088">Biztonsági beállítások kezelése gomb. A gombot megnyomva kezelheti a Biztonságos Böngészést és más funkciókat a Chrome-beállítások között.</translation>
 <translation id="6850286078059909152">Szöveg színe</translation>
@@ -4416,6 +4421,7 @@ További részletek:
 <translation id="7840103971441592723">A képernyőfelvétel elindult</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">A fizetés folytatásához kiválasztható fizetési módok. A billentyűzet el van rejtve.</translation>
+<translation id="784189052219692670">A Gemini mostantól fel tudja idézni az Ön Google-alkalmazásokból származó személyes adatait, és automatikusan ki tudja tölteni őket a megtekintett oldalon.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nincs}=1{1 alkalmazás (<ph name="EXAMPLE_APP_1" />)}=2{2 alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Valami hiba történt. Próbálja újra.</translation>
 <translation id="784623644169604270">Nincs tevékenység a közelmúltból</translation>
@@ -4820,6 +4826,7 @@ További részletek:
 <translation id="8488350697529856933">A következőre érvényes</translation>
 <translation id="8490137692873530638">10. kötegelő</translation>
 <translation id="8493948351860045254">Terület felszabadítása</translation>
+<translation id="8495170825732897952">Írja be a @@ karaktereket bármely űrlapba az adatok lapváltás nélkül való előhívásához és kitöltéséhez</translation>
 <translation id="8498870489552322848">kitölteni az Ön bizalmas információit a(z) <ph name="APP_NAME" /> alkalmazásban</translation>
 <translation id="8498891568109133222">A(z) <ph name="HOST_NAME" /> túl hosszú ideje nem válaszol.</translation>
 <translation id="8502023382441452707">Születésnapok és névnapok</translation>

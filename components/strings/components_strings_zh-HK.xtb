@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">驗證你的身份，以便為你填入付款資料</translation>
 <translation id="1150565364351027703">太陽眼鏡</translation>
 <translation id="1150979032973867961">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您電腦的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="1151858212483238980">你可自動填入儲存在「Google 錢包」中的付款卡</translation>
 <translation id="1151972924205500581">請輸入密碼</translation>
 <translation id="1156303062776767266">您正在查看本機或共用檔案</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> 意外中斷連線。</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">已追蹤的產品</translation>
 <translation id="1204184165594298176">{0,plural, =1{禁止複製檔案}other{禁止複製 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="120509973613679868">公務旅遊</translation>
+<translation id="1205344127823614428">你可以自動填入儲存喺「Google 錢包」入面嘅付款卡。</translation>
 <translation id="120587177308723209">夢幻球隊經理人遊戲</translation>
 <translation id="1206967143813997005">縮寫簽名錯誤</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
@@ -3184,6 +3186,7 @@
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5969199813874624822">儲存並追蹤價格</translation>
 <translation id="5969933937005244170">只有在對話串中分享相關已開啟分頁，系統才會使用這些分頁</translation>
+<translation id="5972020793760134803">切換至分頁</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第六卷</translation>
 <translation id="5975083100439434680">縮小</translation>
@@ -3594,6 +3597,7 @@
 <translation id="6579858392010591435">假日和節日活動</translation>
 <translation id="6581831440014388355">身體或臉部脫毛</translation>
 <translation id="658230438113661756">你嘗試瀏覽的網站受到攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽此網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">儲存咗喺「Google 錢包」</translation>
 <translation id="6587893660316489419">B5 信封</translation>
 <translation id="6587923378399804057">您複製的連結</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
@@ -3749,6 +3753,7 @@
 <translation id="6834757537110528125">此網站不支援安全連線</translation>
 <translation id="6841864657731852591">凹版印刷滾筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
+<translation id="6844746916504777213">永不分享這些網站</translation>
 <translation id="6844998850832008753">今次允許用手勢追蹤功能</translation>
 <translation id="6849023911358004088">管理安全設定按鈕，啟動之後就可以喺 Chrome 設定度管理安全瀏覽功能之類嘅功能</translation>
 <translation id="6850286078059909152">文字顏色</translation>
@@ -4418,6 +4423,7 @@
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
 <translation id="784137052867620416">購物分析資料</translation>
 <translation id="7841633276323004751">畫面顯示可選的付款方式，讓使用者選擇並繼續付款。已隱藏鍵盤。</translation>
+<translation id="784189052219692670">Gemini 現在可以從各個 Google 應用程式中調用你的個人資料，並在你目前瀏覽的頁面中自動填入。</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="784623644169604270">沒有近期活動</translation>
@@ -4821,6 +4827,7 @@
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊器 10</translation>
 <translation id="8493948351860045254">釋出儲存空間</translation>
+<translation id="8495170825732897952">在任何表格中輸入 @@ 即可調用並填入資料，無需切換分頁</translation>
 <translation id="8498870489552322848">在 <ph name="APP_NAME" /> 填入敏感資料</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的回應時間過長。</translation>
 <translation id="8502023382441452707">生日和命名日</translation>

@@ -1046,7 +1046,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1703666494654169921">Saytlara virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verməyin</translation>
 <translation id="1704097193565924901">Baş hərfi böyük yazın</translation>
 <translation id="1704230497453185209">Saytlara səs oxutmaq icazəsi verməyin</translation>
-<translation id="1706015824809136764">Gemini-ı alətlər panelinə bərkidin qısayolu</translation>
 <translation id="1706586824377653884">Administrator tərəfindən əlavə edildi</translation>
 <translation id="170658918174941828">Chrome versiyanız, əməliyyat sistemi versiyanız, Yayım ayarları, əks etdirmə məhsuldarlığı statistikaları və kommunikasiya kanalının diaqnostika qeydləri yuxarıda daxil etmək üçün seçdiyiniz istənilən məlumata əlavə olaraq göndəriləcək. Bu rəy problemləri müəyyən etmək və funksiyanı təkmilləşdirməyə yardım etmək üçün istifadə edilir. Göndərdiyiniz istənilən şəxsi məlumat, açıq şəkildə və ya təsadüfi məxfilik siyasətimizə əsasən qorunacaq. Bu rəyi təqdim etməklə, Google'un verdiyiniz rəyi istənilən Google məhsulu və ya xidmətini təkmilləşdirmək üçün istifadə edə biləcəyi ilə razılaşırsınız.</translation>
 <translation id="17081583771848899">başladıcı + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1549,7 +1548,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="204914487372604757">Qısayol yaradın</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" yandırılsın?</translation>
 <translation id="2050339315714019657">Portret</translation>
-<translation id="2050394140692183739">Cari alətlər paneli qısayolu</translation>
 <translation id="2051555741181591333">Hotspotu avtomatik deaktiv edin</translation>
 <translation id="2051669996101374349">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın. Qabaqcıl Qoruma aktivləşdirildiyi üçün bu ayarı dəyişə bilməzsiniz.</translation>
 <translation id="2052572566310583903">Digər cihazlarınızda quraşdırılıb</translation>
@@ -4237,6 +4235,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3874532133373654352">Təşkilatınız bu funksiyalar tərəfindən toplanılan datanın necə istifadə olunacağını idarə edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Bu funksiya AI istifadə edir və təcrübidir</translation>
 <translation id="3875511946736639169">Şəkilləri aktivləşdirin</translation>
+<translation id="3875777964669698078">Transkripsiya edilir…</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> yeni brauzer tabında açıq olaraq ayarlanıb, dəstəklənən keçidlər də brauzerdə açılacaq. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Pəncərələrin ölçüsü yuxarı doğru dəyişdirildi</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> adlı istifadəçinin cihazı üçün Yaxındakılarla Paylaşma ayarları, <ph name="USER_EMAIL" /> hesabında paylaşılır.</translation>
@@ -4706,6 +4705,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4223404254440398437">Mikrofona icazə verilmir</translation>
 <translation id="4224541845943007092">Ünvan panelindən klaviatura daxiletməsinin oxunması və yadda saxlanması</translation>
 <translation id="4225397296022057997">Bütün saytlarda</translation>
+<translation id="4225895483398857530">Alətlər paneli qısayolu</translation>
 <translation id="4226303886821889519">Güncəlləyici versiyası: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Təşkilatın e-poçt ünvanından istifadə edin</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu artırmaya icazə verilmir}other{Bəzi artırmalara icazə verilmir}}</translation>
@@ -6599,6 +6599,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5555639311269196631">Hotspotu deaktiv edin</translation>
 <translation id="5555760010546505198">Rəng inversiyası, rəng korreksiyası, böyüdücü və displey ayarları</translation>
 <translation id="555604722231274592">Aktivləşdirin: <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Xətanı göstərin</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="555671485580955310">Tarixçə və tabları sinxronlaşdırın</translation>
 <translation id="5558129378926964177">Böyüdün</translation>
@@ -10129,7 +10130,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8032569120109842252">İzlənilir</translation>
 <translation id="8033827949643255796">seçilib</translation>
 <translation id="8033958968890501070">Vaxtın bitməsi</translation>
-<translation id="8034399942062051455">V8 optimallaşdırması deaktivdir</translation>
 <translation id="8034697324150621782">Üst Görünüşlə Dəyişin</translation>
 <translation id="8035059678007243127">Anonim Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Yadda saxlanılmış tab qruplarını göstərin düyməsi</translation>
@@ -11776,7 +11776,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="914031120300235526">Profil kilidini açmaq olmur</translation>
 <translation id="9143298529634201539">Təklif silinsin?</translation>
 <translation id="9143922477019434797">Parollarınızı qoruyun</translation>
-<translation id="914621365454686586">Axtarışa Disk kontentinə daxil olmaq icazəsi verilsin?</translation>
 <translation id="9147392381910171771">&amp;Variantlar</translation>
 <translation id="9148058034647219655">Çıxış</translation>
 <translation id="9148126808321036104">Yenidən daxil olun</translation>

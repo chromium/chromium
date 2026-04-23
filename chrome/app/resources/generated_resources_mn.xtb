@@ -1044,7 +1044,6 @@
 <translation id="1703666494654169921">Сайтуудад виртуал бодит байдлын төхөөрөмжүүд эсвэл өгөгдөл ашиглахыг бүү зөвшөөр</translation>
 <translation id="1704097193565924901">Үсгийг томоор бичих</translation>
 <translation id="1704230497453185209">Сайтуудад дуу чимээ тоглуулахыг бүү зөвшөөр</translation>
-<translation id="1706015824809136764">Gemini-г хэрэгслийн мөрд бэхлэх товчлол</translation>
 <translation id="1706586824377653884">Таны админ нэмсэн</translation>
 <translation id="170658918174941828">Таны Chrome-н хувилбар, үйлдлийн системийн хувилбар, Cast-н тохиргоо,
     тусгал үүсгэх гүйцэтгэлийн статистик болон харилцаа холбооны сувгийн оношилгооны
@@ -1555,7 +1554,6 @@
 <translation id="204914487372604757">Богино холболт үүсгэх</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />"-г асаах уу?</translation>
 <translation id="2050339315714019657">Босоо</translation>
-<translation id="2050394140692183739">Хэрэгслийн мөрийн одоогийн товчлол</translation>
 <translation id="2051555741181591333">Сүлжээний цэгийг автоматаар идэвхгүй болгох</translation>
 <translation id="2051669996101374349">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай. Та Дэвшилтэт хамгаалалтыг идэвхжүүлсэн тул энэ тохиргоог өөрчлөх боломжгүй.</translation>
 <translation id="2052572566310583903">Таны бусад төхөөрөмж дээр суулгасан</translation>
@@ -4243,6 +4241,7 @@
 <translation id="3874532133373654352">Танай байгууллага эдгээр онцлогийн цуглуулсан өгөгдлийг хэрхэн ашиглаж болохыг удирдана. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Энэ онцлог ХОУ-ыг ашигладаг бөгөөд туршилтынх юм</translation>
 <translation id="3875511946736639169">Зургуудыг идэвхжүүлэх</translation>
+<translation id="3875777964669698078">Сийрүүлж байна...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />-г хөтчийн шинэ табд нээхээр тохируулсан бөгөөд дэмжигдсэн холбооснуудыг мөн хөтчид нээнэ. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Цонхны хэмжээг дээш өөрчилсөн</translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> бүртгэлээр хуваалцаж байгаа <ph name="USER_NAME" />-н төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
@@ -4713,6 +4712,7 @@
 <translation id="4223404254440398437">Микрофоныг зөвшөөрөөгүй</translation>
 <translation id="4224541845943007092">Хаяг оруулах хэсгээс гарын оролтыг уншиж, хадгалах</translation>
 <translation id="4225397296022057997">Бүх сайтад</translation>
+<translation id="4225895483398857530">Самбарын товчлол</translation>
 <translation id="4226303886821889519">Шинэчлэгчийн хувилбар: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Байгууллагынхаа имэйл хаягийг ашиглах</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг зөвшөөрдөггүй}other{Зарим өргөтгөлийг зөвшөөрдөггүй}}</translation>
@@ -6606,6 +6606,7 @@
 <translation id="5555639311269196631">Сүлжээний цэгийг унтраах</translation>
 <translation id="5555760010546505198">Өнгө урвуулах, өнгөний засвар, томруулагч болон дэлгэцийн тохиргоо</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" />-г идэвхжүүлэх</translation>
+<translation id="5556191579768914260">Алдааг харуулах</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="555671485580955310">Түүх, табуудыг синк хийх</translation>
 <translation id="5558129378926964177">Томруул</translation>
@@ -10137,7 +10138,6 @@
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
-<translation id="8034399942062051455">V8-н оновчлол унтраалттай байна</translation>
 <translation id="8034697324150621782">Дээд талын харагдах байдлаар солих</translation>
 <translation id="8035059678007243127">Нууцлалтай Back/Forward Cache хийсэн хуудас: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Хадгалсан табын бүлгүүдийн товчийг харуулах</translation>
@@ -11784,7 +11784,6 @@
 <translation id="914031120300235526">Профайлын түгжээг тайлах боломжгүй</translation>
 <translation id="9143298529634201539">Зөвлөмжийг устгах уу?</translation>
 <translation id="9143922477019434797">Нууц үгнүүдээ хамгаална уу</translation>
-<translation id="914621365454686586">Хайлтад Драйвын контентод хандахыг зөвшөөрөх үү?</translation>
 <translation id="9147392381910171771">Сонголт</translation>
 <translation id="9148058034647219655">гарах</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>

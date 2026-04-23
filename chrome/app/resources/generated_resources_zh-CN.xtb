@@ -1041,7 +1041,6 @@
 <translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
 <translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
-<translation id="1706015824809136764">将 Gemini 固定到工具栏的快捷方式</translation>
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
 <translation id="170658918174941828">除了您选择包含的上述所有信息之外，还将提交您的 Chrome 版本、操作系统版本、Cast 设置、镜像性能统计信息以及通信渠道诊断日志。该反馈用于诊断问题并帮助改进此功能。您明确提交或无意中提交的任何个人信息都将按照我们的隐私权政策受到保护。提交该反馈即表示您授权 Google 使用您提供的反馈来改进任何 Google 产品或服务。</translation>
 <translation id="17081583771848899">启动器键 + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1542,7 +1541,6 @@
 <translation id="204914487372604757">创建快捷方式</translation>
 <translation id="2049573977943974163">要开启“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="2050339315714019657">纵向</translation>
-<translation id="2050394140692183739">当前工具栏快捷方式</translation>
 <translation id="2051555741181591333">自动停用热点</translation>
 <translation id="2051669996101374349">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2052572566310583903">已安装在您的其他设备上</translation>
@@ -4224,6 +4222,7 @@
 <translation id="3874532133373654352">您的组织可管理由这些功能收集的数据的使用方式。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">此功能使用了 AI 技术，处于实验阶段</translation>
 <translation id="3875511946736639169">启用图片</translation>
+<translation id="3875777964669698078">正在转写…</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />已设为在新的浏览器标签页中打开，所支持的链接也会在浏览器中打开。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">往顶部调整窗口大小</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过账号 <ph name="USER_EMAIL" /> 进行分享。</translation>
@@ -4694,6 +4693,7 @@
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
 <translation id="4224541845943007092">读取并保存地址栏中的键盘输入内容</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
+<translation id="4225895483398857530">工具栏中的快捷方式</translation>
 <translation id="4226303886821889519">更新程序版本：<ph name="VERSION" /></translation>
 <translation id="4228071595943929139">使用您组织的电子邮件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
@@ -6585,6 +6585,7 @@
 <translation id="5555639311269196631">关闭热点</translation>
 <translation id="5555760010546505198">颜色反转、色彩校正、放大镜和显示设置</translation>
 <translation id="555604722231274592">启用“<ph name="FEATURE_NAME" />”功能</translation>
+<translation id="5556191579768914260">显示错误</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555671485580955310">同步历史记录和标签页</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
@@ -10115,7 +10116,6 @@
 <translation id="8032569120109842252">已关注</translation>
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
-<translation id="8034399942062051455">已关闭 V8 优化功能</translation>
 <translation id="8034697324150621782">与顶部视图交换</translation>
 <translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">显示“已保存的标签页分组”按钮</translation>
@@ -11764,7 +11764,6 @@
 <translation id="914031120300235526">无法解锁该个人资料</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
 <translation id="9143922477019434797">保护您的密码</translation>
-<translation id="914621365454686586">允许 Google 搜索访问云端硬盘内容？</translation>
 <translation id="9147392381910171771">选项(&amp;O)</translation>
 <translation id="9148058034647219655">退出</translation>
 <translation id="9148126808321036104">重新登录</translation>

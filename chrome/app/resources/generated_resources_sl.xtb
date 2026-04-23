@@ -1050,7 +1050,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1703666494654169921">Spletnim mestom ni dovoljena uporaba naprav ali podatkov za navidezno resničnost.</translation>
 <translation id="1704097193565924901">Začni z veliko začetnico</translation>
 <translation id="1704230497453185209">Spletnim mestom ni dovoljeno predvajanje zvoka.</translation>
-<translation id="1706015824809136764">Bližnjica za pripenjanje Geminija v orodno vrstico</translation>
 <translation id="1706586824377653884">Dodal skrbnik</translation>
 <translation id="170658918174941828">Poleg podatkov, ki jih izberete zgoraj, so poslani tudi različica Chroma,
     različica operacijskega sistema, nastavitve za Google Cast, statistični podatki
@@ -1561,7 +1560,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="204914487372604757">Ustvari bližnjico</translation>
 <translation id="2049573977943974163">Želite vklopiti »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="2050339315714019657">Pokončno</translation>
-<translation id="2050394140692183739">Trenutna bližnjica do orodne vrstice</translation>
 <translation id="2051555741181591333">Samodejno onemogočanje dostopne točke</translation>
 <translation id="2051669996101374349">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo. Te nastavitve ne morete spremeniti, ker je omogočena dodatna zaščita.</translation>
 <translation id="2052572566310583903">Nameščeno v vaših drugih napravah</translation>
@@ -4249,6 +4247,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3874532133373654352">Vaša organizacija upravlja, kako se morda uporabljajo podatki, ki jih zberejo te funkcije. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ta funkcija uporablja umetno inteligenco in je preizkusna</translation>
 <translation id="3875511946736639169">Omogočanje slik</translation>
+<translation id="3875777964669698078">Prepisovanje …</translation>
 <translation id="3875815154304214043">Aplikacija <ph name="APP_NAME" /> je nastavljena, da se odpre na novem zavihku brskalnika. Podprte povezave se bodo tudi odprle v brskalniku. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Spremenjena velikost oken na vrh</translation>
 <translation id="3877075909000773256">Nastavitve Deljenja v bližini za napravo uporabnika <ph name="USER_NAME" />, deljenje z računom <ph name="USER_EMAIL" />.</translation>
@@ -4720,6 +4719,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4223404254440398437">Mikrofon ni dovoljen</translation>
 <translation id="4224541845943007092">Branje in shranjevanje vnosa s tipkovnico v naslovni vrstici</translation>
 <translation id="4225397296022057997">Na vseh spletnih mestih</translation>
+<translation id="4225895483398857530">Bližnjica do orodne vrstice</translation>
 <translation id="4226303886821889519">Različica posodobitvenega programa: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Uporabi e-poštni naslov organizacije</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni odobrena}one{Nekatere razširitve niso odobrene}two{Nekatere razširitve niso odobrene}few{Nekatere razširitve niso odobrene}other{Nekatere razširitve niso odobrene}}</translation>
@@ -6613,6 +6613,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5555639311269196631">Izklopi dostopno točko</translation>
 <translation id="5555760010546505198">Inverzija barv, popravljanje barv, lupa in nastavitve zaslona</translation>
 <translation id="555604722231274592">Omogočanje funkcije <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Prikaži napako</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="555671485580955310">Sinhronizacija zgodovine in zavihkov</translation>
 <translation id="5558129378926964177">Po&amp;večaj</translation>
@@ -10153,7 +10154,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8032569120109842252">Spremljate</translation>
 <translation id="8033827949643255796">izbrani</translation>
 <translation id="8033958968890501070">Potek časovne omejitve</translation>
-<translation id="8034399942062051455">Optimizacija mehanizma V8 je izklopljena</translation>
 <translation id="8034697324150621782">Zamenjava s pogledom z vrha</translation>
 <translation id="8035059678007243127">Anonimna stran v predpomnilniku za hitro obnovitev strani: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Gumb za prikaz shranjenih skupin zavihkov</translation>
@@ -11805,7 +11805,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="914031120300235526">Profila ni mogoče odkleniti</translation>
 <translation id="9143298529634201539">Želite odstraniti predlog?</translation>
 <translation id="9143922477019434797">Zaščitite gesla.</translation>
-<translation id="914621365454686586">Želite Iskanju Google dovoliti dostop do vsebine v Googlu Drive?</translation>
 <translation id="9147392381910171771">&amp;Možnosti</translation>
 <translation id="9148058034647219655">Zapri</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>

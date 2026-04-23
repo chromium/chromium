@@ -1050,7 +1050,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1703666494654169921">Neleisti svetainėms naudoti virtualiosios realybės įrenginių ar duomenų</translation>
 <translation id="1704097193565924901">Rašyti didžiosiomis raidėmis</translation>
 <translation id="1704230497453185209">Neleisti svetainėms leisti garso</translation>
-<translation id="1706015824809136764">„Gemini“ prisegimo prie įrankių juostos spartusis klavišas</translation>
 <translation id="1706586824377653884">Pridėjo jūsų administratorius</translation>
 <translation id="170658918174941828">„Chrome“ versija, operacinės sistemos versija, plėtinio „Cast“ nustatymai,
     ekrano vaizdo bendrinimo našumo statistika ir ryšio kanalo diagnostikos
@@ -1562,7 +1561,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="204914487372604757">Kurti spartųjį klavišą</translation>
 <translation id="2049573977943974163">Įjungti „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2050339315714019657">Portreto režimas</translation>
-<translation id="2050394140692183739">Dabartinis įrankių juostos spartusis klavišas</translation>
 <translation id="2051555741181591333">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
 <translation id="2051669996101374349">Kai įmanoma, naudokite HTTPS ir gaukite įspėjimą prieš įkeliant jo nepalaikančias svetaines. Šio nustatymo pakeisti negalima, nes esate įgalinę papildomą apsaugą.</translation>
 <translation id="2052572566310583903">Įdiegta kituose jūsų įrenginiuose</translation>
@@ -4722,6 +4720,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4223404254440398437">Mikrofonas neleidžiamas</translation>
 <translation id="4224541845943007092">Skaityti ir išsaugoti klaviatūros įvestį iš adreso juostos</translation>
 <translation id="4225397296022057997">Visose svetainėse</translation>
+<translation id="4225895483398857530">Įrankių juostos spartusis klavišas</translation>
 <translation id="4226303886821889519">Atnaujinimo priemonės versija: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Naudokite organizacijos el. pašto adresą</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Šis plėtinys neleidžiamas}one{Keli plėtiniai neleidžiami}few{Keli plėtiniai neleidžiami}many{Keli plėtiniai neleidžiami}other{Keli plėtiniai neleidžiami}}</translation>
@@ -10156,7 +10155,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8032569120109842252">Stebima</translation>
 <translation id="8033827949643255796">pasirinkta</translation>
 <translation id="8033958968890501070">Skirtojo laiko pabaiga</translation>
-<translation id="8034399942062051455">V8 optimizavimas išjungtas</translation>
 <translation id="8034697324150621782">Apkeisti su viršutiniu rodiniu</translation>
 <translation id="8035059678007243127">Ilgalaikis viso inkognito puslapio saugojimas talpykloje: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Rodyti išsaugotų skirtukų grupių mygtuką</translation>
@@ -11808,7 +11806,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="914031120300235526">Nepavyko atrakinti profilio</translation>
 <translation id="9143298529634201539">Pašalinti pasiūlymą?</translation>
 <translation id="9143922477019434797">Apsaugokite slaptažodžius</translation>
-<translation id="914621365454686586">Leisti Paieškai pasiekti Disko turinį?</translation>
 <translation id="9147392381910171771">&amp;Parinktys</translation>
 <translation id="9148058034647219655">Išeiti</translation>
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>

@@ -1044,7 +1044,6 @@
 <translation id="1703666494654169921">Да не се разрешава на сайтовете да използват устройствата и данните за виртуална реалност</translation>
 <translation id="1704097193565924901">Изписване с главна първа буква</translation>
 <translation id="1704230497453185209">Да не се разрешава на сайтовете да възпроизвеждат звук</translation>
-<translation id="1706015824809136764">Пряк път за фиксиране на Gemini в лентата с инструменти</translation>
 <translation id="1706586824377653884">Добавено от администратора ви</translation>
 <translation id="170658918174941828">Версията на Chrome и на операционната ви система, настройките на Cast,
 статистическите данни за ефективността при дублиране и регистрационните файлове за
@@ -1555,7 +1554,6 @@
 <translation id="204914487372604757">Създаване на пряк път</translation>
 <translation id="2049573977943974163">Искате ли да включите <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Вертикално</translation>
-<translation id="2050394140692183739">Текущ пряк път в лентата с инструменти</translation>
 <translation id="2051555741181591333">Автоматично деактивиране на точката за достъп</translation>
 <translation id="2051669996101374349">Използвайте HTTPS при възможност и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол. Не можете да промените настройката, защото сте активирали „Разширена защита“.</translation>
 <translation id="2052572566310583903">Инсталирани на другите ви устройства</translation>
@@ -4244,6 +4242,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3874532133373654352">Организацията ви управлява начина, по който може да се използват данните, събрани от тези функции. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Тази функция използва AI и е експериментална</translation>
 <translation id="3875511946736639169">Активиране на изображенията</translation>
+<translation id="3875777964669698078">Транскрибира се…</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ще се отваря в нов раздел на браузъра. Поддържаните връзки също ще се отварят в браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Прозорците се преоразмерени към горната част</translation>
 <translation id="3877075909000773256">Настройки за функцията „Споделяне наблизо“ за устройството на <ph name="USER_NAME" />, което споделя чрез профила <ph name="USER_EMAIL" />.</translation>
@@ -4715,6 +4714,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4223404254440398437">Достъпът до микрофона не е разрешен</translation>
 <translation id="4224541845943007092">Четене и запазване на въведен с клавиатурата текст от адресната лента</translation>
 <translation id="4225397296022057997">На всички сайтове</translation>
+<translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
 <translation id="4226303886821889519">Версия на програмата за актуализиране: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Използване на имейл адреса на организацията ви</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Това разширение не е разрешено}other{Някои разширения не са разрешени}}</translation>
@@ -6608,6 +6608,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5555639311269196631">Изключване на точката за достъп</translation>
 <translation id="5555760010546505198">Настройки за инвертирането на цветовете, корекцията на цветове, лупата и дисплея</translation>
 <translation id="555604722231274592">Активиране на „<ph name="FEATURE_NAME" />“</translation>
+<translation id="5556191579768914260">Показване на грешката</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="555671485580955310">Синхронизиране на историята и разделите</translation>
 <translation id="5558129378926964177">&amp;Увеличаване</translation>
@@ -10142,7 +10143,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8032569120109842252">Следено</translation>
 <translation id="8033827949643255796">откроени</translation>
 <translation id="8033958968890501070">Времето за изчакване изтече</translation>
-<translation id="8034399942062051455">Оптимизирането с V8 е изключено</translation>
 <translation id="8034697324150621782">Размяна с изгледа отгоре</translation>
 <translation id="8035059678007243127">Страница в режим „инкогнито“, съхранена в кеша за назад/напред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Бутон за показване на запазените групи раздели</translation>
@@ -11791,7 +11791,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="914031120300235526">Потребителският профил не може да се отключи</translation>
 <translation id="9143298529634201539">Да се премахне ли предложението?</translation>
 <translation id="9143922477019434797">Защитете паролите си</translation>
-<translation id="914621365454686586">Да се разреши ли на Търсене достъп до съдържанието в Диск?</translation>
 <translation id="9147392381910171771">&amp;Опции</translation>
 <translation id="9148058034647219655">Изход</translation>
 <translation id="9148126808321036104">Влезте отново</translation>

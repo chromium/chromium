@@ -1046,7 +1046,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1703666494654169921">Non consentire ai siti di usare dati o dispositivi per realtà virtuale</translation>
 <translation id="1704097193565924901">Scrivi in maiuscolo</translation>
 <translation id="1704230497453185209">Non consentire ai siti di riprodurre audio</translation>
-<translation id="1706015824809136764">Scorciatoia per fissare Gemini sulla barra degli strumenti</translation>
 <translation id="1706586824377653884">Aggiunta dall'amministratore</translation>
 <translation id="170658918174941828">La versione di Chrome, la versione del sistema operativo, le impostazioni di trasmissione, le statistiche sulle prestazioni del mirroring e i log di diagnosi sui canali di comunicazione verranno inviati in aggiunta a qualsiasi informazione che scegli di includere sopra. Questo feedback viene utilizzato per identificare i problemi e migliorare la funzionalità. Le informazioni personali inviate, in modo esplicito o fortuito, verranno protette secondo le nostre norme sulla privacy. Se invii questo feedback, accetti che Google possa utilizzarlo per migliorare i propri prodotti o servizi.</translation>
 <translation id="17081583771848899">Avvio app + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1548,7 +1547,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2049573977943974163">Attivare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Verticale</translation>
-<translation id="2050394140692183739">Scorciatoia attuale per la barra degli strumenti</translation>
 <translation id="2051555741181591333">Disabilita automaticamente l'hotspot</translation>
 <translation id="2051669996101374349">Se possibile, utilizza HTTPS e ricevi un avviso prima di caricare i siti che non lo supportano. Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>
 <translation id="2052572566310583903">Installata su altri dispositivi</translation>
@@ -4233,6 +4231,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3874532133373654352">La tua organizzazione gestisce il modo in cui possono essere utilizzati i dati raccolti da queste funzionalità. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Questa funzionalità utilizza l'AI ed è sperimentale</translation>
 <translation id="3875511946736639169">Attiva le immagini</translation>
+<translation id="3875777964669698078">Trascrizione in corso…</translation>
 <translation id="3875815154304214043">L'app <ph name="APP_NAME" /> è stata impostata in modo da essere aperta in una nuova scheda del browser; anche i link supportati verranno aperti nel browser. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Finestre ridimensionate in alto</translation>
 <translation id="3877075909000773256">Impostazioni di Condivisione nelle vicinanze per il dispositivo di <ph name="USER_NAME" />, con l'account <ph name="USER_EMAIL" />.</translation>
@@ -4704,6 +4703,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4223404254440398437">Microfono non consentito</translation>
 <translation id="4224541845943007092">Leggi e salva l'input della tastiera dalla barra degli indirizzi</translation>
 <translation id="4225397296022057997">Su tutti i siti</translation>
+<translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
 <translation id="4226303886821889519">Versione del programma di aggiornamento: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Utilizza l'indirizzo email della tua organizzazione</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Questa estensione non è consentita}other{Alcune estensioni non sono consentite}}</translation>
@@ -6596,6 +6596,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5555639311269196631">Disattiva l'hotspot</translation>
 <translation id="5555760010546505198">Inversione dei colori, correzione del colore, lente d'ingrandimento e impostazioni di visualizzazione</translation>
 <translation id="555604722231274592">Attiva <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Mostra errore</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="555671485580955310">Sincronizza cronologia e schede</translation>
 <translation id="5558129378926964177">&amp;Ingrandisci</translation>
@@ -10126,7 +10127,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8032569120109842252">Stai seguendo</translation>
 <translation id="8033827949643255796">selezionati</translation>
 <translation id="8033958968890501070">Timeout</translation>
-<translation id="8034399942062051455">Ottimizzazione di V8 disattivata</translation>
 <translation id="8034697324150621782">Passa alla visualizzazione dall'alto</translation>
 <translation id="8035059678007243127">Pagina in incognito memorizzata nella cache back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Mostra pulsante gruppi di schede salvati</translation>
@@ -11775,7 +11775,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="914031120300235526">Impossibile sbloccare il profilo</translation>
 <translation id="9143298529634201539">Rimuovere il suggerimento?</translation>
 <translation id="9143922477019434797">Proteggi le tue password</translation>
-<translation id="914621365454686586">Consentire a Ricerca di accedere ai contenuti di Drive?</translation>
 <translation id="9147392381910171771">&amp;Opzioni</translation>
 <translation id="9148058034647219655">Esci</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>

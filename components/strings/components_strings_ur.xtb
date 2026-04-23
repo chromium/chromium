@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">تصدیق کریں کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے</translation>
 <translation id="1150565364351027703">دھوپ کا چشمہ</translation>
 <translation id="1150979032973867961">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے کمپیوٹر کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
+<translation id="1151858212483238980">‏آپ Google والٹ میں محفوظ کردہ کارڈز کو آٹو فل کر سکتے ہیں</translation>
 <translation id="1151972924205500581">پاس ورڈ درکار ہے</translation>
 <translation id="1156303062776767266">آپ ایک مقامی یا اشتراک کردہ فائل دیکھ رہے ہیں</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> نے غیر متوقع طور پر کنکشن بند کر دیا۔</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="1204184165594298176">{0,plural, =1{فائل کو کاپی ہونے سے مسدود کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو کاپی ہونے سے مسدود کر دیا گیا}}</translation>
 <translation id="120509973613679868">کاروباری سفر</translation>
+<translation id="1205344127823614428">‏آپ Google والٹ میں محفوظ کردہ کارڈز کو آٹو فل کر سکتے ہیں۔</translation>
 <translation id="120587177308723209">تصوراتی کھیل</translation>
 <translation id="1206967143813997005">غلط ابتدائی دستخط</translation>
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
@@ -3186,6 +3188,7 @@
 <translation id="5968400720580217226">‏‫AI وضع</translation>
 <translation id="5969199813874624822">قیمت محفوظ کریں اور ٹریک کریں</translation>
 <translation id="5969933937005244170">متعلقہ کھلے ٹیبز صرف اس صورت میں استعمال کیے جائیں گے جب آپ ان کا اشتراک کسی سلسلہ میں کریں گے</translation>
+<translation id="5972020793760134803">ٹیب پر سوئچ کریں</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">چھٹا رول</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
@@ -3597,6 +3600,7 @@
 <translation id="6579858392010591435">چھٹیاں اور موسمی ایونٹس</translation>
 <translation id="6581831440014388355">جسم اور چہرے کے ان چاہے بال ہٹانا</translation>
 <translation id="658230438113661756">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور ایسا نقصان دہ سافٹ ویئر انسٹال کر سکتے ہیں جو آپ کے پاس ورڈز، تصاویر، پیغامات یا کریڈٹ کارڈ نمبرز جیسی چیزیں چُراتا یا حذف کرتا ہے۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">‏‫Google والٹ میں محفوظ کردہ</translation>
 <translation id="6587893660316489419">‏B5 لفافہ</translation>
 <translation id="6587923378399804057">آپ کا کاپی کردہ لنک</translation>
 <translation id="6591833882275308647">آپ کا <ph name="DEVICE_TYPE" /> زیر انتظام نہیں ہے</translation>
@@ -3752,6 +3756,7 @@
 <translation id="6834757537110528125">یہ سائٹ محفوظ کنکشن کو سپورٹ نہیں کرتی ہے</translation>
 <translation id="6841864657731852591">گریوور سلنڈر</translation>
 <translation id="6842196666980060516">‏‎184 x 260 ملی میٹر</translation>
+<translation id="6844746916504777213">ان سائٹس کا کبھی اشتراک نہ کریں</translation>
 <translation id="6844998850832008753">اس وقت ہینڈ ٹریکنگ کی اجازت ہے</translation>
 <translation id="6849023911358004088">‏سیکیورٹی کی ترتیبات کا نظم کریں بٹن، Chrome کی ترتیبات میں محفوظ براؤزنگ اور بہت کچھ کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="6850286078059909152">متن کا رنگ</translation>
@@ -4420,6 +4425,7 @@
 <translation id="7840103971441592723">اسکرین کیپچر شروع ہو گئی ہے</translation>
 <translation id="784137052867620416">خریداری کی بصیرتیں</translation>
 <translation id="7841633276323004751">ادائیگی کے ساتھ آگے بڑھنے کی خاطر منتخب کیے جانے کے لیے دستیاب ادائیگی کے طریقے۔ کی بورڈ پوشیدہ ہے۔</translation>
+<translation id="784189052219692670">‏‫Gemini اب آپ کی تمام Google ایپس سے آپ کی ذاتی معلومات کو یاد کر سکتا ہے اور اسے آپ کے ملاحظہ کردہ صفحہ پر آٹو فل کر سکتا ہے۔</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{کوئی نہیں}=1{1 ایپ (<ph name="EXAMPLE_APP_1" />)}=2{2 ایپس (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ایپس (<ph name="EXAMPLE_APP_1" />، <ph name="EXAMPLE_APP_2" />، <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="784623644169604270">کوئی حالیہ سرگرمی نہیں ہے</translation>
@@ -4823,6 +4829,7 @@
 <translation id="8488350697529856933">اس پر اطلاق ہوتا ہے</translation>
 <translation id="8490137692873530638">اسٹیکر 10</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
+<translation id="8495170825732897952">ٹیبز کو سوئچ کیے بغیر معلومات کو یاد کرنے اور پُر کرنے کے لیے کسی بھی فارم میں @@ ٹائپ کریں</translation>
 <translation id="8498870489552322848">‫<ph name="APP_NAME" /> پر اپنی حساس معلومات پُر کریں</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> کو جواب دینے میں کافی وقت لگا۔</translation>
 <translation id="8502023382441452707">سالگرہیں اور ناموں سے منسوب دن</translation>

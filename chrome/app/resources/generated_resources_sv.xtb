@@ -1047,7 +1047,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1703666494654169921">Tillåt inte att webbplatser använder VR-enheter eller VR-data</translation>
 <translation id="1704097193565924901">Använd versaler</translation>
 <translation id="1704230497453185209">Tillåt inte att webbplatser spelar upp ljud</translation>
-<translation id="1706015824809136764">Genväg för att fästa Gemini i verktygsfältet</translation>
 <translation id="1706586824377653884">Lades till av administratören</translation>
 <translation id="170658918174941828">Chrome-versionen, operativsystemversionen, Cast-inställningar,
     statistik över speglingsprestationer och diagnostiseringsloggar för kommunikationskanaler
@@ -1559,7 +1558,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="204914487372604757">Skapa genväg</translation>
 <translation id="2049573977943974163">Vill du aktivera <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Stående</translation>
-<translation id="2050394140692183739">Aktuell genväg i verktygsfältet</translation>
 <translation id="2051555741181591333">Inaktivera surfzon automatiskt</translation>
 <translation id="2051669996101374349">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in. Det går inte att ändra den här inställningen eftersom Avancerat skydd är aktiverat.</translation>
 <translation id="2052572566310583903">Installerade på dina andra enheter</translation>
@@ -4247,6 +4245,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3874532133373654352">Organisationen hanterar hur data som samlas in av dessa funktioner får användas. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Den här funktionen använder AI och är experimentell</translation>
 <translation id="3875511946736639169">Aktivera bilder</translation>
+<translation id="3875777964669698078">Transkriberar …</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> har ställts in på att öppnas på en ny webbläsarflik. Länkar som stöds öppnas också i webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Avdelaren mellan fönster flyttades uppåt</translation>
 <translation id="3877075909000773256">Närdelningsinställningar för enheten som tillhör <ph name="USER_NAME" /> och som delar under kontot <ph name="USER_EMAIL" />.</translation>
@@ -4718,6 +4717,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4223404254440398437">Mikrofon tillåts inte</translation>
 <translation id="4224541845943007092">Läs och spara tangentbordsinmatningar från adressfältet</translation>
 <translation id="4225397296022057997">På alla webbplatser</translation>
+<translation id="4225895483398857530">Genväg i verktygsfältet</translation>
 <translation id="4226303886821889519">Uppdateringsversion: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Använd organisationens e-postadress</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Detta tillägg är inte tillåtet}other{Vissa tillägg är inte tillåtna}}</translation>
@@ -6611,6 +6611,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5555639311269196631">Inaktivera surfzon</translation>
 <translation id="5555760010546505198">Inställningar för inverterade färger, färgkorrigering, skärmförstoring och skärm</translation>
 <translation id="555604722231274592">Aktivera <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Visa fel</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="555671485580955310">Synkronisera historik och flikar</translation>
 <translation id="5558129378926964177">Zooma &amp;in</translation>
@@ -10144,7 +10145,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8032569120109842252">Följer</translation>
 <translation id="8033827949643255796">markerat</translation>
 <translation id="8033958968890501070">Tidsgränsen överskreds</translation>
-<translation id="8034399942062051455">V8-optimering är inaktiverat</translation>
 <translation id="8034697324150621782">Byt med den övre vyn</translation>
 <translation id="8035059678007243127">Inkognitosida i vilocacheminne: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Visa knappen för sparade flikgrupper</translation>
@@ -11793,7 +11793,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="914031120300235526">Det går inte att låsa upp profilen</translation>
 <translation id="9143298529634201539">Vill du ta bort förslaget?</translation>
 <translation id="9143922477019434797">Skydda dina lösenord</translation>
-<translation id="914621365454686586">Vill du ge Sök åtkomst till Drive-innehåll?</translation>
 <translation id="9147392381910171771">&amp;Alternativ</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9148126808321036104">Logga in igen</translation>

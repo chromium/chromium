@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">vérifier qu'il s'agit bien de vous afin qu'il puisse remplir vos infos de paiement</translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="1150979032973867961">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre ordinateur. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
+<translation id="1151858212483238980">Vous pouvez remplir automatiquement les cartes enregistrées dans Google Portefeuille</translation>
 <translation id="1151972924205500581">Veuillez entrer le mot de passe</translation>
 <translation id="1156303062776767266">Vous consultez un fichier local ou partagé</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> a mis fin à la connexion de manière inattendue.</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1204184165594298176">{0,plural, =1{La copie du fichier a été bloquée}one{La copie de <ph name="FILE_COUNT" /> fichier a été bloquée}other{La copie de <ph name="FILE_COUNT" /> fichiers a été bloquée}}</translation>
 <translation id="120509973613679868">Voyages d'affaires</translation>
+<translation id="1205344127823614428">Vous pouvez remplir automatiquement les cartes enregistrées dans Google Portefeuille.</translation>
 <translation id="120587177308723209">Sports virtuels</translation>
 <translation id="1206967143813997005">Signature initiale incorrecte</translation>
 <translation id="1209206284964581585">Masquer pour l'instant</translation>
@@ -3185,6 +3187,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5969199813874624822">Enregistrer et suivre le prix</translation>
 <translation id="5969933937005244170">Les onglets ouverts pertinents ne seront utilisés que si vous les partagez dans un fil</translation>
+<translation id="5972020793760134803">Passer vers un autre onglet</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixième rouleau</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
@@ -3595,6 +3598,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6579858392010591435">Fêtes et événements saisonniers</translation>
 <translation id="6581831440014388355">Épilation corporelle et faciale</translation>
 <translation id="658230438113661756">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient installer un logiciel nuisible qui vole ou supprime des éléments tels que vos mots de passe, vos photos, vos messages ou vos numéros de cartes de crédit. Chrome vous recommande fortement de revenir à une page sûre. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Stockées dans Google Portefeuille</translation>
 <translation id="6587893660316489419">Enveloppe B5</translation>
 <translation id="6587923378399804057">Le lien que vous avez copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
@@ -3750,6 +3754,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6834757537110528125">Ce site ne prend pas en charge une connexion sécurisée</translation>
 <translation id="6841864657731852591">Cylindre de gravure</translation>
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
+<translation id="6844746916504777213">Ne jamais partager ces sites</translation>
 <translation id="6844998850832008753">Le suivi des mains est autorisé cette fois-ci</translation>
 <translation id="6849023911358004088">Bouton Gérer les paramètres de sécurité, activez-le pour gérer votre navigation sécurisée et plus dans les paramètres de Chrome</translation>
 <translation id="6850286078059909152">Couleur du texte</translation>
@@ -4418,6 +4423,7 @@ Détails supplémentaires :
 <translation id="7840103971441592723">La capture d'écran a commencé</translation>
 <translation id="784137052867620416">Perspectives d'achat</translation>
 <translation id="7841633276323004751">Modes de paiement pouvant pour être sélectionnés pour procéder au paiement. Clavier masqué.</translation>
+<translation id="784189052219692670">Gemini peut désormais se souvenir de vos renseignements personnels à partir de vos applis Google et les remplir automatiquement sur la page que vous consultez.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur est survenue. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
@@ -4821,6 +4827,7 @@ Détails supplémentaires :
 <translation id="8488350697529856933">S'applique à</translation>
 <translation id="8490137692873530638">Empileur 10</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>
+<translation id="8495170825732897952">Tapez @@ dans n'importe quel formulaire pour rappeler et remplir vos renseignements sans changer d'onglet</translation>
 <translation id="8498870489552322848">remplissez vos infos sensibles dans <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a pris trop de temps à répondre.</translation>
 <translation id="8502023382441452707">Fêtes et anniversaires</translation>

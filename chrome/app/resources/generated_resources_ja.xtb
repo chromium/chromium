@@ -1045,7 +1045,6 @@
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="1704097193565924901">大文字にする</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
-<translation id="1706015824809136764">Gemini をツールバーに固定するショートカット</translation>
 <translation id="1706586824377653884">管理者により追加</translation>
 <translation id="170658918174941828">上記で送信するよう選択した情報に加えて、お使いの Chrome のバージョン、オペレーティング システムのバージョン、キャストの設定、ミラーリングのパフォーマンス統計情報、通信チャンネルの診断ログが送信されます。お寄せいただいたフィードバックは、問題の診断と機能の改善に使用されます。送信していただいた個人情報は、直接の送信、他の情報に付随しての送信を問わず、Google のプライバシー ポリシーに従って保護されます。このフィードバックを送信すると、Google がその内容を Google のプロダクトまたはサービスの改善のため使用することについて同意したことになります。</translation>
 <translation id="17081583771848899">ランチャー+Alt+<ph name="TOP_ROW_KEY" /></translation>
@@ -1545,7 +1544,6 @@
 <translation id="204914487372604757">ショートカットを作成</translation>
 <translation id="2049573977943974163">「<ph name="EXTENSION_NAME" />」をオンにしますか？</translation>
 <translation id="2050339315714019657">縦</translation>
-<translation id="2050394140692183739">現在のツールバーのショートカット</translation>
 <translation id="2051555741181591333">アクセス ポイントを自動的に無効にする</translation>
 <translation id="2051669996101374349">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。高度な保護機能が有効になっているため、この設定は変更できません。</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
@@ -4225,6 +4223,7 @@
 <translation id="3874532133373654352">これらの機能で収集されるデータの使用方法は組織が管理しています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">この機能は AI を使用しており、試験運用中です</translation>
 <translation id="3875511946736639169">画像を有効にする</translation>
+<translation id="3875777964669698078">文字起こし中...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> は新しいブラウザタブで開くよう設定されています。サポートされているリンクもブラウザで開かれます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ウィンドウを上方向にサイズ変更しました</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
@@ -4695,6 +4694,7 @@
 <translation id="4223404254440398437">マイクは許可されていません</translation>
 <translation id="4224541845943007092">アドレスバーからキーボード入力を読み取って保存する</translation>
 <translation id="4225397296022057997">すべてのサイト</translation>
+<translation id="4225895483398857530">ツールバー ショートカット</translation>
 <translation id="4226303886821889519">アップデータのバージョン: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">組織のメールアドレスを使用します</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
@@ -6582,6 +6582,7 @@
 <translation id="5555639311269196631">アクセス ポイントをオフにする</translation>
 <translation id="5555760010546505198">色反転、色補正、拡大鏡、表示設定</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> を有効にする</translation>
+<translation id="5556191579768914260">エラーを表示</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="555671485580955310">履歴とタブを同期する</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
@@ -10112,7 +10113,6 @@
 <translation id="8032569120109842252">フォロー中</translation>
 <translation id="8033827949643255796">選択しました</translation>
 <translation id="8033958968890501070">タイムアウト</translation>
-<translation id="8034399942062051455">V8 の最適化がオフになっています</translation>
 <translation id="8034697324150621782">上のビューと入れ替え</translation>
 <translation id="8035059678007243127">バックフォワード キャッシュのシークレット ページ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">保存したタブグループのボタンを表示する</translation>
@@ -11761,7 +11761,6 @@
 <translation id="914031120300235526">プロフィールのロックを解除できません</translation>
 <translation id="9143298529634201539">候補を削除しますか？</translation>
 <translation id="9143922477019434797">パスワードを保護する</translation>
-<translation id="914621365454686586">Google 検索にドライブのコンテンツへのアクセスを許可しますか？</translation>
 <translation id="9147392381910171771">オプション(&amp;O)</translation>
 <translation id="9148058034647219655">終了</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>

@@ -1049,7 +1049,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
 <translation id="1704097193565924901">Veliko početno slovo</translation>
 <translation id="1704230497453185209">Nemoj dozvoliti web lokacijama reproduciranje zvuka</translation>
-<translation id="1706015824809136764">Prečica za kačenje Geminija na alatnu traku</translation>
 <translation id="1706586824377653884">Dodao je vaš administrator</translation>
 <translation id="170658918174941828">Osim informacija koje odaberete iznad, poslat će se i podaci o verziji vašeg Chromea, verziji operativnog sistema, postavke Cast-a, statistika o performansama preslikavanja i zapisnici dijagnostike komunikacijskih kanala. Ove povratne informacije se koriste za dijagnosticiranje problema i
     pomažu u poboljšanju funkcije. Sve lične informacije koje pošaljete,
@@ -1558,7 +1557,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2049573977943974163">Uključiti "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Uspravno</translation>
-<translation id="2050394140692183739">Trenutna prečica alatne trake</translation>
 <translation id="2051555741181591333">Automatski onemogući pristupnu tačku</translation>
 <translation id="2051669996101374349">Koristite HTTPS kad god je moguće i dobijte upozorenje prije učitavanja web lokacija koje ga ne podržavaju. Ne možete promijeniti ovu postavku jer vam je omogućena Napredna zaštita.</translation>
 <translation id="2052572566310583903">Instalirano na vašim drugim uređajima</translation>
@@ -4246,6 +4244,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3874532133373654352">Vaša organizacija upravlja načinom korištenja podataka koje ove funkcije prikupljaju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Ova funkcija koristi AI i eksperimentalna je</translation>
 <translation id="3875511946736639169">Omogućavanje slika</translation>
+<translation id="3875777964669698078">Transkripcija…</translation>
 <translation id="3875815154304214043">Aplikacija <ph name="APP_NAME" /> je postavljena da se otvori u novoj kartici preglednika. Podržani linkovi će se također otvoriti u pregledniku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Veličina prozora je promijenjena nagore</translation>
 <translation id="3877075909000773256">Postavke Dijeljenja u blizini za uređaj koji koristi <ph name="USER_NAME" />, dijeljenje se vrši pod računom <ph name="USER_EMAIL" />.</translation>
@@ -4717,6 +4716,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4223404254440398437">Mikrofon nije dozvoljen</translation>
 <translation id="4224541845943007092">Čitaj i pohranjuj unose tastaturom iz trake za adresu</translation>
 <translation id="4225397296022057997">Na svim web lokacijama</translation>
+<translation id="4225895483398857530">Prečica za alatnu traku</translation>
 <translation id="4226303886821889519">Verzija programa za ažuriranje: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Koristite adresu e-pošte organizacije</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija nije dozvoljena}one{Neke ekstenzije nisu dozvoljene}few{Neke ekstenzije nisu dozvoljene}other{Neke ekstenzije nisu dozvoljene}}</translation>
@@ -6610,6 +6610,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5555639311269196631">Isključi pristupnu tačku</translation>
 <translation id="5555760010546505198">Postavke inverzije boja, ispravke boja, povećala i prikaza</translation>
 <translation id="555604722231274592">Omogućite funkciju <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Prikaži grešku</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555671485580955310">Sinhroniziraj historiju i kartice</translation>
 <translation id="5558129378926964177">Uve&amp;ćaj</translation>
@@ -10147,7 +10148,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8033827949643255796">odabrano</translation>
 <translation id="8033958968890501070">Vrijeme je isteklo</translation>
-<translation id="8034399942062051455">Optimizacija V8 je isključena</translation>
 <translation id="8034697324150621782">Zamijeni gornjim prikazom</translation>
 <translation id="8035059678007243127">Keširana verzija cijele stranice anonimnog načina rada: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Prikaži dugme za sačuvane grupe kartica</translation>
@@ -11798,7 +11798,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="914031120300235526">Nije moguće otključati profil</translation>
 <translation id="9143298529634201539">Ukloniti prijedlog?</translation>
 <translation id="9143922477019434797">Zaštitite svoje lozinke</translation>
-<translation id="914621365454686586">Dozvoliti Pretraživanju da pristupa sadržaju na Disku?</translation>
 <translation id="9147392381910171771">&amp;Opcije</translation>
 <translation id="9148058034647219655">Izađi</translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>

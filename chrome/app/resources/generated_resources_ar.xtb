@@ -1049,7 +1049,6 @@
 <translation id="1703666494654169921">عدم السماح للمواقع الإلكترونية باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
 <translation id="1704097193565924901">تحويل الأحرف الأولى إلى أحرف كبيرة</translation>
 <translation id="1704230497453185209">عدم السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
-<translation id="1706015824809136764">‏اختصار تثبيت Gemini في شريط الأدوات</translation>
 <translation id="1706586824377653884">تمت الإضافة من قبل المشرف</translation>
 <translation id="170658918174941828">‏سيتم إرسال إصدار Chrome وإصدار نظام التشغيل وإعدادات Google Cast وإحصاءات أداء النسخ المطابق وسجلات تشخيص قناة الاتصال بالإضافة إلى أي معلومات تختار تضمينها أعلاه. ويتم استخدام ملاحظاتك هذه لتشخيص المشاكل والمساعدة في تحسين الميزة. وستتم حماية أي معلومات شخصية ترسلها، سواء بشكل صريح أو بدون قصد، بموجب سياسات الخصوصية التي نلتزم بها. ومن خلال إرسال هذه الملاحظات، فإنّك توافق على أنّه يجوز لشركة Google استخدام الملاحظات التي تقدّمها لتحسين أي منتج أو خدمة من Google.</translation>
 <translation id="17081583771848899">‏مشغّل التطبيقات + Alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1554,7 +1553,6 @@
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2049573977943974163">هل تريد تفعيل "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="2050339315714019657">عمودي</translation>
-<translation id="2050394140692183739">اختصار شريط الأدوات الحالي</translation>
 <translation id="2051555741181591333">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2051669996101374349">‏يُرجى استخدام بروتوكول HTTPS كلما أمكن ذلك لتظهر لك تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه. ولا يمكنك تغيير هذه الإعدادات لأنّ إعداد "الحماية المتقدّمة" مفعّل.</translation>
 <translation id="2052572566310583903">التطبيق مثبَّت على أجهزتك الأخرى.</translation>
@@ -4240,6 +4238,7 @@
 <translation id="3874532133373654352">تتحكّم مؤسستك في كيفية استخدام البيانات التي تجمعها هذه الميزات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">هذه الميزة تجريبية وتستخدِم الذكاء الاصطناعي</translation>
 <translation id="3875511946736639169">السماح بعرض الصور</translation>
+<translation id="3875777964669698078">جارٍ تحويل الصوت إلى نص...</translation>
 <translation id="3875815154304214043">تم ضبط تطبيق <ph name="APP_NAME" /> بحيث يُفتَح في علامة تبويب متصفّح جديدة، وستُفتَح الروابط المتوافقة في المتصفّح أيضًا. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">تم تغيير حجم النوافذ بسحب حافتها للأعلى</translation>
 <translation id="3877075909000773256">إعدادات ميزة "المشاركة عن قرب" لجهاز <ph name="USER_NAME" /> الذي يشارك البيانات عبر حساب <ph name="USER_EMAIL" /></translation>
@@ -4708,6 +4707,7 @@
 <translation id="4223404254440398437">تم رفض طلب الوصول إلى الميكروفون.</translation>
 <translation id="4224541845943007092">قراءة إدخالات لوحة المفاتيح وحفظها من شريط العناوين</translation>
 <translation id="4225397296022057997">على جميع المواقع</translation>
+<translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
 <translation id="4226303886821889519">إصدار أداة التحديث: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">استخدام عنوان البريد الإلكتروني لمؤسستك</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{هذه الإضافة غير مسموح بها}zero{هذه الإضافات غير مسموح بها}two{هاتان الإضافتان غير مسموح بهما}few{بعض الإضافات غير مسموح بها}many{بعض الإضافات غير مسموح بها}other{بعض الإضافات غير مسموح بها}}</translation>
@@ -6601,6 +6601,7 @@
 <translation id="5555639311269196631">إيقاف نقطة الاتصال</translation>
 <translation id="5555760010546505198">قلب الألوان وتصحيح الألوان والمكبِّر وإعدادات العرض</translation>
 <translation id="555604722231274592">تفعيل ميزة "<ph name="FEATURE_NAME" />"</translation>
+<translation id="5556191579768914260">عرض تفاصيل الخطأ</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="555671485580955310">مزامنة السجلّ وعلامات التبويب</translation>
 <translation id="5558129378926964177">ت&amp;كبير</translation>
@@ -10142,7 +10143,6 @@
 <translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="8033827949643255796">تم التحديد</translation>
 <translation id="8033958968890501070">انتهاء المهلة</translation>
-<translation id="8034399942062051455">‏ميزة "تحسين V8" غير مفعَّلة</translation>
 <translation id="8034697324150621782">التبديل مع العرض العلوي</translation>
 <translation id="8035059678007243127">الصفحة المخزّنة من خلال ميزة "التخزين المؤقت للصفحات" في وضع "التصفّح المتخفي": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">عرض زر مجموعات علامات التبويب المحفوظة</translation>
@@ -11796,7 +11796,6 @@
 <translation id="914031120300235526">يتعذّر فتح قفل الملف الشخصي</translation>
 <translation id="9143298529634201539">هل تريد إزالة الاقتراح؟</translation>
 <translation id="9143922477019434797">حماية كلمات المرور الخاصة بك</translation>
-<translation id="914621365454686586">‏السماح لميزة البحث بالوصول إلى محتوى Drive؟</translation>
 <translation id="9147392381910171771">&amp;الخيارات</translation>
 <translation id="9148058034647219655">إنهاء</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>

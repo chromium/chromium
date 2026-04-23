@@ -1045,7 +1045,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1703666494654169921">Non permitir que os sitios utilicen datos nin dispositivos de realidade virtual</translation>
 <translation id="1704097193565924901">Usar maiúsculas</translation>
 <translation id="1704230497453185209">Non permitir que os sitios reproduzan son</translation>
-<translation id="1706015824809136764">Atallo para fixar Gemini na barra de ferramentas</translation>
 <translation id="1706586824377653884">Engadido polo administrador</translation>
 <translation id="170658918174941828">Enviaranse a versión de Chrome, a versión do sistema operativo, as opcións de configuración de Cast, as estatísticas de rendemento de proxección e os rexistros de diagnóstico de canles de comunicación, así como a información que seleccionases máis arriba. Estes comentarios utilízanse para diagnosticar problemas e axudar a mellorar a función. A información persoal que envíes, de forma explícita ou ben por erro, protexerase de acordo coas nosas políticas de privacidade. Ao enviar estes comentarios, aceptas que Google poida utilizalos para mellorar os seus produtos ou servizos.</translation>
 <translation id="17081583771848899">menú de aplicacións + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1548,7 +1547,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="204914487372604757">Crear atallo</translation>
 <translation id="2049573977943974163">Queres activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Vertical</translation>
-<translation id="2050394140692183739">Atallo actual da barra de ferramentas</translation>
 <translation id="2051555741181591333">Desconectar zona wifi automaticamente</translation>
 <translation id="2051669996101374349">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo. Non podes cambiar esta opción de configuración porque tes activada a opción Protección avanzada.</translation>
 <translation id="2052572566310583903">Instalada nos teus outros dispositivos</translation>
@@ -4236,6 +4234,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3874532133373654352">A túa organización controla como se poden usar os datos recompilados por estas funcións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Esta función usa IA e é experimental</translation>
 <translation id="3875511946736639169">Activar as imaxes</translation>
+<translation id="3875777964669698078">Transcribindo...</translation>
 <translation id="3875815154304214043">Configurouse <ph name="APP_NAME" /> para que se abra nunha nova pestana do navegador. As ligazóns compatibles tamén se abrirán no navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Ventás co tamaño cambiado na parte superior</translation>
 <translation id="3877075909000773256">Configuración de Compartir por Nearby para o dispositivo de <ph name="USER_NAME" />, compartindo contido desde a conta <ph name="USER_EMAIL" />.</translation>
@@ -4707,6 +4706,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4223404254440398437">O acceso ao micrófono non está permitido</translation>
 <translation id="4224541845943007092">Ler e gardar a entrada do teclado desde a barra de enderezos</translation>
 <translation id="4225397296022057997">En todos os sitios</translation>
+<translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
 <translation id="4226303886821889519">Versión do actualizador: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Usar o enderezo de correo electrónico da túa organización</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión non está permitida}other{Algunhas extensións non están permitidas}}</translation>
@@ -6600,6 +6600,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5555639311269196631">Desactivar zona wifi</translation>
 <translation id="5555760010546505198">Configuración de pantalla, lupa, corrección da cor e inversión da cor</translation>
 <translation id="555604722231274592">Activar <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Mostrar erro</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555671485580955310">Sincronizar historial e pestanas</translation>
 <translation id="5558129378926964177">Achegar</translation>
@@ -10129,7 +10130,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tempo de espera esgotado</translation>
-<translation id="8034399942062051455">A optimización de V8 está desactivada</translation>
 <translation id="8034697324150621782">Cambiar pola vista superior</translation>
 <translation id="8035059678007243127">Páxina de incógnito almacenada na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Mostrar botón Grupos de pestanas gardados</translation>
@@ -11778,7 +11778,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="914031120300235526">Non se pode desbloquear o perfil</translation>
 <translation id="9143298529634201539">Queres quitar a suxestión?</translation>
 <translation id="9143922477019434797">Protexe os teus contrasinais</translation>
-<translation id="914621365454686586">Queres permitir que a Busca acceda ao contido de Drive?</translation>
 <translation id="9147392381910171771">&amp;Opcións</translation>
 <translation id="9148058034647219655">Saír</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>

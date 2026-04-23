@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">Ödeme bilgilerinizin doldurulması için kimliğinizi doğrulayın</translation>
 <translation id="1150565364351027703">Güneş Gözlüğü</translation>
 <translation id="1150979032973867961">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bilgisayarınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
+<translation id="1151858212483238980">Google Cüzdan'da kayıtlı kartları otomatik doldurabilirsiniz</translation>
 <translation id="1151972924205500581">Şifre gerekiyor</translation>
 <translation id="1156303062776767266">Yerel veya paylaşılan bir dosyayı görüntülüyorsunuz</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> bağlantıyı beklenmedik şekilde kapattı.</translation>
@@ -131,6 +132,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1202892408424955784">Takip edilen ürünler</translation>
 <translation id="1204184165594298176">{0,plural, =1{Dosyanın kopyalanması engellendi}other{<ph name="FILE_COUNT" /> dosyanın kopyalanması engellendi}}</translation>
 <translation id="120509973613679868">İş Seyahati</translation>
+<translation id="1205344127823614428">Google Cüzdan'da kayıtlı kartları otomatik doldurabilirsiniz.</translation>
 <translation id="120587177308723209">Fantazi Sporlar</translation>
 <translation id="1206967143813997005">Başlangıç anahtarlı imza hatalı</translation>
 <translation id="1209206284964581585">Şimdilik gizle</translation>
@@ -3185,6 +3187,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5968400720580217226">AI Modu</translation>
 <translation id="5969199813874624822">Fiyatı kaydet ve takip et</translation>
 <translation id="5969933937005244170">Alakalı açık sekmeler yalnızca bir ileti dizisinde paylaşırsanız kullanılır</translation>
+<translation id="5972020793760134803">Sekmeye geç</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Altıncı Rulo</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
@@ -3595,6 +3598,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6579858392010591435">Tatiller ve Mevsimsel Etkinlikler</translation>
 <translation id="6581831440014388355">Vücut ve Yüzdeki İstenmeyen Tüyleri Alma</translation>
 <translation id="658230438113661756">Ziyaret etmeye çalıştığınız sitedeki saldırganlar; şifreleriniz, fotoğraflarınız, mesajlarınız veya kredi kartı numaralarınız gibi bilgileri çalan ya da silen zararlı yazılımlar yükleyebilir. Chrome, güvenli bir alana dönmenizi önemle tavsiye eder. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
+<translation id="6583309742916093092">Google Cüzdan'da saklanır</translation>
 <translation id="6587893660316489419">Zarf B5</translation>
 <translation id="6587923378399804057">Kopyalanan bağlantı</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> cihazınız yönetilmemektedir</translation>
@@ -3750,6 +3754,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6834757537110528125">Bu site güvenli bağlantıyı desteklemiyor</translation>
 <translation id="6841864657731852591">Gravür Silindir</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
+<translation id="6844746916504777213">Bu siteleri hiçbir zaman paylaşmayın</translation>
 <translation id="6844998850832008753">El takibine bu sefer izin veriliyor</translation>
 <translation id="6849023911358004088">Güvenlik ayarlarını yönet düğmesi, Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetmek için etkinleştirin</translation>
 <translation id="6850286078059909152">Metin rengi</translation>
@@ -4419,6 +4424,7 @@ Ek ayrıntılar:
 <translation id="7840103971441592723">Ekran görüntüsü başlatıldı</translation>
 <translation id="784137052867620416">Alışveriş Analizleri</translation>
 <translation id="7841633276323004751">Ödemede kullanılmak üzere seçilebilecek ödeme yöntemleri. Klavye gizli.</translation>
+<translation id="784189052219692670">Gemini artık Google uygulamalarınızdaki kişisel bilgilerinizi getirebilir ve görüntülediğiniz sayfada otomatik doldurabilir.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="784623644169604270">Yeni etkinlik yok</translation>
@@ -4822,6 +4828,7 @@ Ek ayrıntılar:
 <translation id="8488350697529856933">Uygulandığı yer</translation>
 <translation id="8490137692873530638">Yığınlayıcı 10</translation>
 <translation id="8493948351860045254">Yer aç</translation>
+<translation id="8495170825732897952">Sekme değiştirmeden bilgileri getirip doldurmak için herhangi bir formda @@ yazın</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ana makinesinin yanıt vermesi çok uzun sürdü.</translation>
 <translation id="8502023382441452707">Doğum Günleri ve İsim Günleri</translation>

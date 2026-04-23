@@ -1076,6 +1076,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個}other{{domain} 和另外 {count} 個}}</translation>
 <translation id="4826588772550366629">相機和麥克風</translation>
 <translation id="4828431027673677473">切合你興趣的產品</translation>
+<translation id="4829420936835028285">編輯分頁群組</translation>
 <translation id="4833786495304741580">自動將使用情況統計和當機報告傳送給 Google。</translation>
 <translation id="483689884442613745">儲存…</translation>
 <translation id="4840495572919996524">您的書籤、記錄、密碼及其他設定將不會同步至您的 Google 帳戶。</translation>
@@ -1083,7 +1084,6 @@
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854068532375923088">允許「Gemini」使用相機</translation>
-<translation id="4860114370595561279">有關資料會儲存在你的裝置上</translation>
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4861953997778766866">所有人都可以修改你的共用分頁群組</translation>
 <translation id="4865063548323785458">儲存及自動填入密碼，輕鬆登入網站和應用程式</translation>

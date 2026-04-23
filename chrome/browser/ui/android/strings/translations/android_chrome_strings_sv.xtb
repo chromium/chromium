@@ -187,8 +187,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1820408774134375111">Ark för inloggning på nedre delen av skärmen</translation>
 <translation id="1823492026305965829">Logga in som <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Tryck på Radera webbinformation</translation>
-<translation id="1825772852827001597">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
-Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1845958458910716240">Tillåt att Chrome tar bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data</translation>
@@ -373,6 +371,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2616989802003447151">{COUNT,plural, =1{1 objekt}other{# objekt}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har bjudit in dig att få åtkomst till ett delat objekt.</translation>
 <translation id="2634393460268044753">Webbadresser som du besöker och ett litet urval av sidans innehåll, nedladdningar, tilläggsaktivitet och systeminformation skickas till Google Säker webbsökning, som kontrollerar om webbadresserna är skadliga.</translation>
+<translation id="263442110807675126">Detta kan ta några sekunder</translation>
 <translation id="2643064289437760082">Du kan när du vill radera annonsmätningsdata genom att radera din webbinformation</translation>
 <translation id="2647434099613338025">Lägg till språk</translation>
 <translation id="2650077116157640844">Fler på synkroniserade enheter</translation>
@@ -1314,7 +1313,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6565959834589222080">wifi används när det är tillgängligt</translation>
 <translation id="657177046675873214">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter</translation>
 <translation id="6573096386450695060">Tillåt alltid</translation>
-<translation id="6573431926118603307">Här visas flikar som du har öppnat i Chrome på andra enheter.</translation>
 <translation id="6583199322650523874">Infoga ett bokmärke för den aktuella sidan</translation>
 <translation id="6588043302623806746">Använd säker DNS</translation>
 <translation id="6590471736817333463">Spara upp till 60 % data</translation>

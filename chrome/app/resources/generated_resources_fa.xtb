@@ -1045,7 +1045,6 @@
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
-<translation id="1706015824809136764">‏سنجاق کردن Gemini به میان‌بر نوارابزار</translation>
 <translation id="1706586824377653884">افزوده‌شده توسط سرپرست سیستم</translation>
 <translation id="170658918174941828">‏نسخه Chrome، نسخه سیستم‌عامل، تنظیمات Cast،
     آمار عملکرد بازتاب، و گزارش‌های عیب‌یابی
@@ -1556,7 +1555,6 @@
 <translation id="204914487372604757">ایجاد میان‌بر</translation>
 <translation id="2049573977943974163">‫«<ph name="EXTENSION_NAME" />» روشن شود؟</translation>
 <translation id="2050339315714019657">پرتره</translation>
-<translation id="2050394140692183739">میان‌بر نوارابزار کنونی</translation>
 <translation id="2051555741181591333">غیرفعال کردن خودکار نقطه اتصال</translation>
 <translation id="2051669996101374349">‏درصورت امکان از HTTPS استفاده می‌شود و قبل‌از بار شدن سایت‌هایی که از آن پشتیبانی نمی‌کنند هشدار دریافت می‌کنید. نمی‌توانید این تنظیم را تغییر دهید زیرا «محافظت پیشرفته» را فعال کرده‌اید.</translation>
 <translation id="2052572566310583903">در دیگر دستگاه‌هایتان نصب شده است</translation>
@@ -4244,6 +4242,7 @@
 <translation id="3874532133373654352">سازمان شما نحوه استفاده از داده‌های جمع‌آوری‌شده با این ویژگی‌ها را مدیریت می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">این ویژگی از هوش مصنوعی استفاده می‌کند و در مرحله آزمایش است</translation>
 <translation id="3875511946736639169">فعال کردن تصاویر</translation>
+<translation id="3875777964669698078">درحال آوانویسی...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> طوری تنظیم شده که در زبانه مرورگر جدید باز شود، پیوندهای پشتیبانی‌شده نیز در مرورگر باز خواهد شد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">اندازه پنجره‌های بالا تغییر کرد</translation>
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
@@ -4715,6 +4714,7 @@
 <translation id="4223404254440398437">میکروفون مجاز نیست</translation>
 <translation id="4224541845943007092">خواندن و ذخیره کردن ورودی صفحه‌کلید از نوار نشانی</translation>
 <translation id="4225397296022057997">در همه سایت‌ها</translation>
+<translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
 <translation id="4226303886821889519">نسخه به‌روزرسان: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">استفاده از نشانی ایمیل سازمان</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{این افزونه مجاز نیست}one{برخی افزونه‌ها مجاز نیستند}other{برخی افزونه‌ها مجاز نیستند}}</translation>
@@ -6608,6 +6608,7 @@
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
 <translation id="5555760010546505198">وارونگی رنگ، تصحیح رنگ، ذره‌بین، و تنظیمات نمایش</translation>
 <translation id="555604722231274592">فعال کردن <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">نمایش خطا</translation>
 <translation id="5556459405103347317">مجدد بار کردن</translation>
 <translation id="555671485580955310">همگام‌سازی سابقه و زبانه‌ها</translation>
 <translation id="5558129378926964177">&amp;بزرگنمایی</translation>
@@ -6947,7 +6948,7 @@
 <translation id="5809840528400421362">پین باید ۶ رقمی باشد</translation>
 <translation id="5810809306422959727">این حساب برای کنترل‌های والدین واجد شرایط نیست</translation>
 <translation id="5811614940486072060">این فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
-<translation id="5812674658566766066">بزرگ کردن همه</translation>
+<translation id="5812674658566766066">گستردن همه</translation>
 <translation id="5814776875237242830">برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های زبانه، به «تنظیمات» بروید و گروه‌های زبانه خود را همگام‌سازی کنید</translation>
 <translation id="5815332505145266563">درحال کار کردن روی تکلیف شما…</translation>
 <translation id="5815645614496570556">‏آدرس X.400</translation>
@@ -7451,7 +7452,7 @@
 <translation id="616290554291007512">‏اجازه ندادن به Gemini برای ورود به سیستم ازطرف شما</translation>
 <translation id="6163363155248589649">&amp;عادی</translation>
 <translation id="6163376401832887457">‏تنظیمات Kerberos</translation>
-<translation id="6163522313638838258">بزرگ کردن همه...</translation>
+<translation id="6163522313638838258">گستردن همه…</translation>
 <translation id="6164393601566177235">افزودن سایت‌ها</translation>
 <translation id="6164832038898943453">زبان‌های موردنظر را برای ترجمه خودکار اضافه کنید</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
@@ -8534,7 +8535,7 @@
 <translation id="6914812290245989348">عدم نمایش هشدار قبل‌از رفتن به سایت‌های ناامن</translation>
 <translation id="6916590542764765824">مدیریت افزونه‌ها</translation>
 <translation id="6916676294509106572">‏تقویم Outlook پنهان است</translation>
-<translation id="6916818963747321523">ازهم باز کردن همه</translation>
+<translation id="6916818963747321523">گستردن همه</translation>
 <translation id="6917873303492266709">‏برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های زبانه، تنظیمات را باز کنید و «مجاز کردن ورود به سیستم Chrome» را روشن کنید</translation>
 <translation id="6918677045355889289">‏به‌روزرسانی ChromeOS الزامی است</translation>
 <translation id="6918733588290914545">‏راه‌اندازی سریع با تلفن Android</translation>
@@ -10143,7 +10144,6 @@
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
 <translation id="8033827949643255796">انتخاب شد</translation>
 <translation id="8033958968890501070">پایان درنگ</translation>
-<translation id="8034399942062051455">‏بهینه‌سازی V8 خاموش است</translation>
 <translation id="8034697324150621782">جابه‌جا کردن با نمای بالا</translation>
 <translation id="8035059678007243127">صفحه ناشناس ذخیره‌شده در حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">نمایش دکمه گروه زبانه‌های ذخیره‌شده</translation>
@@ -11793,7 +11793,6 @@
 <translation id="914031120300235526">نمی‌توان قفل نمایه را باز کرد</translation>
 <translation id="9143298529634201539">پیشنهاد حذف شود؟</translation>
 <translation id="9143922477019434797">محافظت از گذرواژه‌ها</translation>
-<translation id="914621365454686586">‏به «جستجو» اجازه می‌دهید به محتوای Drive دسترسی داشته باشد؟</translation>
 <translation id="9147392381910171771">&amp;گزینه‌ها</translation>
 <translation id="9148058034647219655">خارج شدن</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>

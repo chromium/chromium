@@ -1048,7 +1048,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
 <translation id="1704097193565924901">Anvend stort begyndelsesbogstav</translation>
 <translation id="1704230497453185209">Tillad ikke, at websites afspiller lyd</translation>
-<translation id="1706015824809136764">Genvej til at fastgøre Gemini til værktøjslinjen</translation>
 <translation id="1706586824377653884">Tilføjet af din administrator</translation>
 <translation id="170658918174941828">Din Chrome-version, version af operativsystemet, dine valgmuligheder for Google Cast-udvidelsen,
     din effektivitetsstatistik for spejling og diagnostiske
@@ -1561,7 +1560,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="204914487372604757">Opret genvej</translation>
 <translation id="2049573977943974163">Vil du aktivere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Højformat</translation>
-<translation id="2050394140692183739">Aktuel genvej til værktøjslinje</translation>
 <translation id="2051555741181591333">Deaktiver hotspot automatisk</translation>
 <translation id="2051669996101374349">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS. Du kan ikke ændre denne indstilling, fordi du har aktiveret Avanceret beskyttelse.</translation>
 <translation id="2052572566310583903">Installeret på dine andre enheder</translation>
@@ -4249,6 +4247,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3874532133373654352">Din organisation administrerer, hvordan data, der indsamles af disse funktioner, må anvendes. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">Denne funktion anvender AI og er eksperimentel</translation>
 <translation id="3875511946736639169">Aktivér billeder</translation>
+<translation id="3875777964669698078">Transskriberer…</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> er indstillet til at åbne i en ny browserfane. Understøttede links åbnes også i browseren. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Størrelsen på vinduerne øverst blev ændret</translation>
 <translation id="3877075909000773256">Indstillingerne for Deling tæt på for enheden, der tilhører <ph name="USER_NAME" />, deles under kontoen <ph name="USER_EMAIL" />.</translation>
@@ -4720,6 +4719,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
 <translation id="4224541845943007092">Læse og gemme tastaturinput fra adresselinjen</translation>
 <translation id="4225397296022057997">På alle websites</translation>
+<translation id="4225895483398857530">Genvej til værktøjslinje</translation>
 <translation id="4226303886821889519">Opdateringsversion: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Brug din organisations mailadresse</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er ikke tilladt}one{Denne udvidelse er ikke tilladt}other{Nogle udvidelser er ikke tilladt}}</translation>
@@ -6613,6 +6613,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5555639311269196631">Deaktiver hotspot</translation>
 <translation id="5555760010546505198">Ombytning af farver, farvekorrigering, lup og skærmindstillinger</translation>
 <translation id="555604722231274592">Aktivér <ph name="FEATURE_NAME" /></translation>
+<translation id="5556191579768914260">Vis fejl</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="555671485580955310">Synkroniser historik og faner</translation>
 <translation id="5558129378926964177">Zoom &amp;ind</translation>
@@ -10148,7 +10149,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Timeout</translation>
-<translation id="8034399942062051455">V8-optimering er deaktiveret</translation>
 <translation id="8034697324150621782">Byt med øverste visning</translation>
 <translation id="8035059678007243127">Inkognitoside i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">Knappen Vis gemte fanegrupper</translation>
@@ -11799,7 +11799,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="914031120300235526">Profilen kan ikke låses op</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
 <translation id="9143922477019434797">Beskyt dine adgangskoder</translation>
-<translation id="914621365454686586">Vil du give Søgning adgang til Drev-indhold?</translation>
 <translation id="9147392381910171771">&amp;Valgmuligheder</translation>
 <translation id="9148058034647219655">Afslut</translation>
 <translation id="9148126808321036104">Log ind igen</translation>

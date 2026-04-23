@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">お支払い情報を入力できるよう、本人確認を行ってください</translation>
 <translation id="1150565364351027703">サングラス</translation>
 <translation id="1150979032973867961">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のパソコンのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
+<translation id="1151858212483238980">Google ウォレットに保存されているカードの情報を自動入力できます</translation>
 <translation id="1151972924205500581">パスワードを入力してください</translation>
 <translation id="1156303062776767266">ローカル ファイルまたは共有ファイルを表示しています</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> により途中で接続が切断されました。</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">トラッキングしている商品</translation>
 <translation id="1204184165594298176">{0,plural, =1{ファイルのコピーがブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルのコピーがブロックされています}}</translation>
 <translation id="120509973613679868">出張旅行</translation>
+<translation id="1205344127823614428">Google ウォレットに保存されているカードの情報を自動入力できます。</translation>
 <translation id="120587177308723209">ファンタジー スポーツ</translation>
 <translation id="1206967143813997005">最初の署名に問題があります</translation>
 <translation id="1209206284964581585">今は表示しない</translation>
@@ -3185,6 +3187,7 @@
 <translation id="5968400720580217226">AI モード</translation>
 <translation id="5969199813874624822">保存して価格をトラッキング</translation>
 <translation id="5969933937005244170">開いている関連タブは、スレッドで共有した場合にのみ使用されます</translation>
+<translation id="5972020793760134803">タブを切り替え</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ロール 6</translation>
 <translation id="5975083100439434680">縮小する</translation>
@@ -3595,6 +3598,7 @@
 <translation id="6579858392010591435">祝日、年中行事</translation>
 <translation id="6581831440014388355">体や顔の脱毛</translation>
 <translation id="658230438113661756">アクセスしようとしたサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">Google ウォレットに保存済み</translation>
 <translation id="6587893660316489419">B5 封筒</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
@@ -3750,6 +3754,7 @@
 <translation id="6834757537110528125">このサイトは安全な接続をサポートしていません</translation>
 <translation id="6841864657731852591">グラビア シリンダー</translation>
 <translation id="6842196666980060516">184x260 mm</translation>
+<translation id="6844746916504777213">共有しないサイト</translation>
 <translation id="6844998850832008753">今回のみハンド トラッキングを許可しました</translation>
 <translation id="6849023911358004088">[セキュリティ設定を管理] ボタンです。実行すると、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
 <translation id="6850286078059909152">テキストの色</translation>
@@ -4419,6 +4424,7 @@
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">お支払い手続きで選択できるお支払い方法が表示されています。キーボードは非表示です。</translation>
+<translation id="784189052219692670">Gemini を使用して、ご利用の Google アプリから個人情報を取り出して、表示中のページに自動入力できるようになりました。</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="784623644169604270">最近のアクティビティはありません</translation>
@@ -4822,6 +4828,7 @@
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
+<translation id="8495170825732897952">フォームに「@@」と入力すると、タブを切り替えずに情報を取り出して入力できます</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> に機密情報を入力</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> からの応答時間が長すぎます。</translation>
 <translation id="8502023382441452707">誕生日</translation>

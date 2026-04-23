@@ -91,6 +91,7 @@
 <translation id="1149617035358809955">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອໃຫ້ສາມາດຕື່ມຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານໄດ້</translation>
 <translation id="1150565364351027703">ແວ່ນກັນແດດ</translation>
 <translation id="1150979032973867961">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນໂດຍລະບົບການດໍາເນີນງານຂອງຄອມພິວເຕີຂອງທ່ານ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
+<translation id="1151858212483238980">ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດທີ່ບັນທຶກໄວ້ໃນ Google Wallet ໂດຍອັດຕະໂນມັດໄດ້</translation>
 <translation id="1151972924205500581">ຕ້ອງມີລະ​ຫັດ​ຜ່ານ​</translation>
 <translation id="1156303062776767266">ທ່ານກຳລັງເບິ່ງໄຟລ໌ພາຍໃນເຄື່ອງ ຫຼື ໄຟລ໌ທີ່ແບ່ງປັນ</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> ໄດ້ປິດການເຊື່ອມຕໍ່ແບບບໍ່ຄາດຄິດ.</translation>
@@ -131,6 +132,7 @@
 <translation id="1202892408424955784">ສິນຄ້າທີ່ຕິດຕາມແລ້ວ</translation>
 <translation id="1204184165594298176">{0,plural, =1{ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ສຳເນົາ}other{<ph name="FILE_COUNT" /> ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ສຳເນົາ}}</translation>
 <translation id="120509973613679868">ການເດີນທາງເພື່ອທຸລະກິດ</translation>
+<translation id="1205344127823614428">ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດທີ່ບັນທຶກໄວ້ໃນ Google Wallet ໂດຍອັດຕະໂນມັດໄດ້.</translation>
 <translation id="120587177308723209">ກິລາແຟນຕາຊີ</translation>
 <translation id="1206967143813997005">ລາຍເຊັນເບື້ອງຕົ້ນທີ່ບໍ່ດີ</translation>
 <translation id="1209206284964581585">ເຊື່ອງສຳລັບຕອນນີ້</translation>
@@ -3185,6 +3187,7 @@
 <translation id="5968400720580217226">ໂໝດ AI</translation>
 <translation id="5969199813874624822">ບັນທຶກ ແລະ ຕິດຕາມລາຄາ</translation>
 <translation id="5969933937005244170">ລະບົບຈະໃຊ້ແຖບທີ່ເປີດຢູ່ເຊິ່ງກ່ຽວຂ້ອງກໍຕໍ່ເມື່ອທ່ານແບ່ງປັນແຖບເຫຼົ່ານັ້ນໃນຫົວຂໍ້</translation>
+<translation id="5972020793760134803">ປ່ຽນເປັນແຖບ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ມ້ວນທີຫົກ</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
@@ -3595,6 +3598,7 @@
 <translation id="6579858392010591435">ມື້ພັກ ແລະ ກິດຈະກຳຕາມລະດູການ</translation>
 <translation id="6581831440014388355">ການຖອນຂົນເທິງໃບໜ້າ ແລະ ຮ່າງກາຍທີ່ບໍ່ຕ້ອງການ</translation>
 <translation id="658230438113661756">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກລວງໃຫ້ທ່ານຕິດຕັ້ງຊອບແວທີ່ເປັນອັນຕະລາຍເຊິ່ງຈະລັກ ຫຼື ລຶບຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ຮູບພາບ, ຂໍ້ຄວາມ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ. Chrome ຂໍແນະນຳຢ່າງຍິ່ງໃຫ້ກັບໄປຫາຄວາມປອດໄພ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6583309742916093092">ຈັດເກັບໄວ້ໃນ Google Wallet</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">ລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="6591833882275308647">ບໍ່ມີການຈັດການ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -3750,6 +3754,7 @@
 <translation id="6834757537110528125">ເວັບໄຊນີ້ບໍ່ຮອງຮັບການເຊື່ອມຕໍ່ທີ່ປອດໄພ</translation>
 <translation id="6841864657731852591">ກະບອກພິມຮູບ</translation>
 <translation id="6842196666980060516">184 x 260 ມມ</translation>
+<translation id="6844746916504777213">ບໍ່ຕ້ອງແບ່ງປັນເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="6844998850832008753">ອະນຸຍາດໃຫ້ໃຊ້ການຕິດຕາມການເຄື່ອນໄຫວຂອງມືໃນເທື່ອນີ້</translation>
 <translation id="6849023911358004088">ປຸ່ມຈັດການການຕັ້ງຄ່າຄວາມປອດໄພ, ເປີດນຳໃຊ້ເພື່ອຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6850286078059909152">ສີຂໍ້ຄວາມ</translation>
@@ -4418,6 +4423,7 @@
 <translation id="7840103971441592723">ເລີ່ມການຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="784137052867620416">ຂໍ້ມູນເຈາະເລິກການຊື້ເຄື່ອງ</translation>
 <translation id="7841633276323004751">ວິທີການຈ່າຍເງິນທີ່ພ້ອມໃຫ້ເລືອກເພື່ອດຳເນີນການຈ່າຍເງິນ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
+<translation id="784189052219692670">ຕອນນີ້ Gemini ສາມາດເອີ້ນຄືນຂໍ້ມູນສ່ວນຕົວຂອງທ່ານຈາກທົ່ວແອັບ Google ຂອງທ່ານ ແລະ ຕື່ມຂໍ້ມູນດັ່ງກ່າວໃນໜ້າເວັບທີ່ທ່ານກຳລັງເບິ່ງໂດຍອັດຕະໂນມັດໄດ້ແລ້ວ.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ແອັບ (<ph name="EXAMPLE_APP_1" />)}=2{2 ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ມີຂໍ້ຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="784623644169604270">ບໍ່ມີການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
@@ -4821,6 +4827,7 @@
 <translation id="8488350697529856933">ນໍາໃຊ້ກັບ</translation>
 <translation id="8490137692873530638">ສະແຕັກເກີ້ 10</translation>
 <translation id="8493948351860045254">ຂະຫຍາຍພື້ນທີ່ຫວ່າງ</translation>
+<translation id="8495170825732897952">ພິມ @@ ໃນແບບຟອມໃດກໍໄດ້ເພື່ອເອີ້ນຄືນ ແລະ ຕື່ມຂໍ້ມູນໂດຍບໍ່ຕ້ອງສະຫຼັບແຖບ</translation>
 <translation id="8498870489552322848">ຕື່ມຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃສ່ <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ໃຊ້ເວລາດົນເກີນໄປໃນການຕອບສະໜອງ.</translation>
 <translation id="8502023382441452707">ວັນເກີດ ແລະ ວັນຕັ້ງຊື່</translation>

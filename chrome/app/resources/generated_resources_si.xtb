@@ -1044,7 +1044,6 @@
 <translation id="1703666494654169921">අතථ්‍ය යථාර්ථ උපාංග හෝ දත්ත භාවිත කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="1704097193565924901">කැපිටල් අකුරු බවට පත් කරන්න</translation>
 <translation id="1704230497453185209">ශබ්දය වාදනය කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
-<translation id="1706015824809136764">Gemini මෙවලම් තීරු කෙටිමඟට අමුණන්න</translation>
 <translation id="1706586824377653884">ඔබගේ පරිපාලක විසින් එක් කළ</translation>
 <translation id="170658918174941828">ඔබ ඉහත ඇතුළත් කිරීමට තෝරන ඕනෑම තොරතුරකට අතිරේකව ඔබගේ Chrome අනුවාදය, මෙහෙයුම් පද්ධති අනුවාදය, විකාශ සැකසීම්, දර්පණය කිරීමේ කාර්ය සාධන සංඛ්‍යාලේඛන සහ සන්නිවේදන නාලිකා දෝෂ නිර්ණ ලොග ඉදිරිපත් කරනු ඇත. මෙම ප්‍රතිපෝෂණය ගැටලු නිර්ණය කිරීමට සහ විශේෂාංගය වැඩිදියුණු කිරීමට භාවිත වේ. ප්‍රකාශිතව හෝ ආනුෂංගිකව හෝ ඔබ ඉදිරිපත් කරන ඕනෑම පුද්ගලික තොරතුරක් අපගේ පෞද්ගලිකත්ව ප්‍රතිපත්තිවලට අනුකූලව ආරක්ෂා කරනු ඇත. මෙම ප්‍රතිපෝෂණය ඉදිරිපත් කිරීම මගින්, ඕනෑම Google නිෂ්පාදනයක් හෝ සේවාවක් වැඩිදියුණු කිරීමට ඔබ සපයන ප්‍රතිපෝෂණ Google හට භාවිත කළ හැකි බවට ඔබ එකඟ වේ.</translation>
 <translation id="17081583771848899">දියත්කරණය + alt + <ph name="TOP_ROW_KEY" /></translation>
@@ -1547,7 +1546,6 @@
 <translation id="204914487372604757">කෙටිමඟ තනන්න</translation>
 <translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="2050339315714019657">සිරස්</translation>
-<translation id="2050394140692183739">වත්මන් මෙවලම් තීරු කෙටිමඟ</translation>
 <translation id="2051555741181591333">හොට්ස්පොට් ස්වයංක්‍රීයව අබල කරන්න</translation>
 <translation id="2051669996101374349">හැකි සෑම විට ම HTTPS භාවිතා කර එයට සහය නොදක්වන අඩවි පූරණය කිරීමට පෙර අනතුරු අඟවන්න. ඔබ උසස් ආරක්ෂණය සබල කර ඇති නිසා ඔබට මෙම සැකසීම වෙනස් කළ නොහැක.</translation>
 <translation id="2052572566310583903">ඔබගේ අනෙකුත් උපාංග මත ස්ථාපිත</translation>
@@ -4234,6 +4232,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3874532133373654352">මෙම විශේෂාංග මගින් රැස් කරන ලද දත්ත භාවිතා කළ හැකි ආකාරය ඔබේ සංවිධානය කළමනාකරණය කරයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3874845889165401548">මෙම විශේෂාංගය AI භාවිතා කරන අතර එය පර්යේෂණාත්මක වේ</translation>
 <translation id="3875511946736639169">රූප සබල කරන්න</translation>
+<translation id="3875777964669698078">අනුපත් කරමින්...</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> නව බ්‍රව්සර ටැබයක විවෘත කිරීමට සකසා ඇති අතර, සහාය දක්වන සබැඳි බ්‍රව්සරයේද විවෘත වනු ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ඉහළට ප්‍රතිප්‍රමාණ කළ කවුළු</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ගේ උපාංගය සඳහා ළඟ බෙදා ගැනීමේ සැකසීම්, <ph name="USER_EMAIL" /> යටතේ බෙදා ගනිමින්.</translation>
@@ -4705,6 +4704,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4223404254440398437">මයික්‍රෆෝනයට ඉඩ නොදෙයි</translation>
 <translation id="4224541845943007092">ලිපින තීරුවෙන් යතුරු පුවරු ආදානය කියවා සුරකින්න</translation>
 <translation id="4225397296022057997">සියලු අඩවිවල ඇත</translation>
+<translation id="4225895483398857530">මෙවලම් තීරු කෙටිමඟ</translation>
 <translation id="4226303886821889519">යාවත්කාලීන අනුවාදය: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">ඔබේ සංවිධානයේ ඉ-තැපැල් ලිපිනය භාවිතා කරන්න</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{මෙම දිගුව ඉඩ නොදේ}one{සමහර දිගු ඉඩ නොදේ}other{සමහර දිගු ඉඩ නොදේ}}</translation>
@@ -6597,6 +6597,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5555639311269196631">හොට්ස්පොට් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5555760010546505198">වර්ණ අපවර්තනය, වර්ණ නිවැරදි කිරීම, විශාලනය සහ සංදර්ශක සැකසීම්</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> සබල කරන්න</translation>
+<translation id="5556191579768914260">දෝෂය පෙන්වන්න</translation>
 <translation id="5556459405103347317">නැවත</translation>
 <translation id="555671485580955310">ඉතිහාසය සහ පටිති සමමුහූර්ත කරන්න</translation>
 <translation id="5558129378926964177">විශාල කරන්න</translation>
@@ -10130,7 +10131,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8032569120109842252">අනුගමනය කරයි</translation>
 <translation id="8033827949643255796">තෝරන ලදි</translation>
 <translation id="8033958968890501070">කාල නිමාව</translation>
-<translation id="8034399942062051455">V8 ප්‍රශස්තකරණය ක්‍රියාවිරහිතයි</translation>
 <translation id="8034697324150621782">ඉහළ දසුන සමඟ හුවමාරු කරන්න</translation>
 <translation id="8035059678007243127">අප්‍රසිද්ධ පසුපසට/ඉදිරියට හැඹිලිගත කළ පිටුව: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">සුරැකි පටිති සමූහ බොත්තම පෙන්වන්න</translation>
@@ -11780,7 +11780,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="914031120300235526">පැතිකඩ අගුළු ඇරීමට නොහැක</translation>
 <translation id="9143298529634201539">යෝජනාව ඉවත් කරන්නද?</translation>
 <translation id="9143922477019434797">ඔබේ මුරපද ආරක්ෂා කරන්න</translation>
-<translation id="914621365454686586">Drive අන්තර්ගතයට ප්‍රවේශ වීමට සෙවීමට ඉඩ දෙන්න ද?</translation>
 <translation id="9147392381910171771">&amp;විකල්ප</translation>
 <translation id="9148058034647219655">ඉවත් වන්න</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
