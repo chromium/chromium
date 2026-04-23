@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 
 #include <algorithm>
@@ -31,10 +30,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
@@ -3694,6 +3695,52 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogsClosedWhenRenderProcessHostExits) {
   // removal of all PeerConnections associated with it.
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
   rph_.reset();
+}
+
+TEST_F(WebRtcEventLogManagerTest, RemoteLoggingFinishedKeepsFile) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  std::optional<base::FilePath> file_path;
+
+  ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
+      .WillByDefault(SaveFilePathTo(&file_path));
+
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
+  ASSERT_TRUE(StartRemoteLogging(key));
+  ASSERT_TRUE(file_path);
+  ASSERT_TRUE(base::PathExists(*file_path));
+
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
+
+  base::test::TestFuture<void> future;
+  WebRtcEventLogManager::GetInstance()->FinishLogging(rph_->GetDeprecatedID(),
+                                                      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_TRUE(base::PathExists(*file_path));
+}
+
+TEST_F(WebRtcEventLogManagerTest, RemoteLoggingCancelledDeletesFile) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  std::optional<base::FilePath> file_path;
+
+  ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
+      .WillByDefault(SaveFilePathTo(&file_path));
+
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
+  ASSERT_TRUE(StartRemoteLogging(key));
+  ASSERT_TRUE(file_path);
+  ASSERT_TRUE(base::PathExists(*file_path));
+
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
+
+  base::test::TestFuture<void> future;
+  WebRtcEventLogManager::GetInstance()->CancelLogging(rph_->GetDeprecatedID(),
+                                                      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(base::PathExists(*file_path));
 }
 
 // Once a RenderProcessHost exits/crashes, its PeerConnections are removed,

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -617,10 +618,15 @@ void WebRtcRemoteEventLogManager::RemovePendingLogsForNotEnabledBrowserContext(
 void WebRtcRemoteEventLogManager::RenderProcessHostExitedDestroyed(
     int render_process_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  StopLogging(render_process_id, StopLoggingAction::kStore, base::DoNothing());
+}
+
+void WebRtcRemoteEventLogManager::StopLogging(int render_process_id,
+                                              StopLoggingAction action,
+                                              base::OnceClosure callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Remove all of the peer connections associated with this render process.
-  // It's important to do this before closing the actual files, because closing
-  // files can trigger a new upload if no active peer connections are present.
   auto pc_it = active_peer_connections_.begin();
   while (pc_it != active_peer_connections_.end()) {
     if (pc_it->first.render_process_id == render_process_id) {
@@ -630,18 +636,24 @@ void WebRtcRemoteEventLogManager::RenderProcessHostExitedDestroyed(
     }
   }
 
+  const bool make_pending = (action == StopLoggingAction::kStore);
+
   // Close all of the files that were associated with peer connections which
   // belonged to this render process.
   auto log_it = active_logs_.begin();
   while (log_it != active_logs_.end()) {
     if (log_it->first.render_process_id == render_process_id) {
-      log_it = CloseLogFile(log_it, /*make_pending=*/true);
+      log_it = CloseLogFile(log_it, make_pending);
     } else {
       ++log_it;
     }
   }
 
   ManageUploadSchedule();
+
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 void WebRtcRemoteEventLogManager::OnConnectionChanged(
