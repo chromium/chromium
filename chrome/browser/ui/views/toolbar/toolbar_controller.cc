@@ -256,12 +256,21 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
   if (browser_actions) {
     auto* root_item = browser_actions->root_action_item();
     if (root_item) {
+      PinnedToolbarActionsModel* const pinned_actions_model =
+          PinnedToolbarActionsModel::Get(browser->profile());
       for (const auto& item : root_item->GetChildren().children()) {
         auto id = item->GetActionId();
-        if (item->GetProperty(actions::kActionItemPinnableKey) ==
-                std::underlying_type_t<actions::ActionPinnableState>(
-                    actions::ActionPinnableState::kPinnable) &&
-            id.has_value()) {
+        // Add an item if it is pinnable and/or pinned. The tab search item may
+        // be pinned but not pinnable in the event of a race condition after
+        // action item initialization but before the bubble host has been
+        // initialized by TabSearchToolbarButtonController.
+        // TODO(b/471062209): Remove the pinned check as part of
+        // cleanup of the tab search toolbar button feature.
+        if (id.has_value() &&
+            (item->GetProperty(actions::kActionItemPinnableKey) ==
+                 std::underlying_type_t<actions::ActionPinnableState>(
+                     actions::ActionPinnableState::kPinnable) ||
+             pinned_actions_model->Contains(id.value()))) {
           elements.emplace_back(id.value());
         }
       }
