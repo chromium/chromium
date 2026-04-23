@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   // Expectation is before NavigateToUrl for this test as the expectation can be
   // met after NavigateToUrl and before the Wait.
-  waiter->AddMainFrameIntersectionExpectation(
+  waiter->AddMainFrameRectExpectation(
       gfx::Rect(0, 0, document_width,
                 document_height));  // Initial main frame rect.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   // Expectation is before NavigateToUrl for this test as the expectation can be
   // met after NavigateToUrl and before the Wait.
-  waiter->AddMainFrameIntersectionExpectation(
+  waiter->AddMainFrameRectExpectation(
       gfx::Rect(0, 0, document_width,
                 document_height));  // Initial main frame rect.
 

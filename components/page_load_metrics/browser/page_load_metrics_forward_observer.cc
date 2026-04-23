@@ -339,13 +339,11 @@ void PageLoadMetricsForwardObserver::MediaStartedPlaying(
   parent_observer_->MediaStartedPlaying(video_type, render_frame_host);
 }
 
-void PageLoadMetricsForwardObserver::OnMainFrameIntersectionRectChanged(
-    content::RenderFrameHost* rfh,
-    const gfx::Rect& main_frame_intersection_rect) {
+void PageLoadMetricsForwardObserver::OnMainFrameRectChanged(
+    const gfx::Rect& main_frame_rect) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnMainFrameIntersectionRectChanged(
-      rfh, main_frame_intersection_rect);
+  parent_observer_->OnMainFrameRectChanged(main_frame_rect);
 }
 
 void PageLoadMetricsForwardObserver::OnMainFrameViewportRectChanged(

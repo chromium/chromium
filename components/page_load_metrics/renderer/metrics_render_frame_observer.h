@@ -101,8 +101,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // before being destroyed.
   void WillDetach(blink::DetachReason detach_reason) override;
 
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectangleChanged(int element_id,
@@ -158,8 +157,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // The main frame intersection rectangle signal received before
   // `page_timing_metrics_sender_` is created. The signal will be send out right
   // after `page_timing_metrics_sender_` is created.
-  std::optional<gfx::Rect>
-      main_frame_intersection_rect_before_metrics_sender_created_;
+  std::optional<gfx::Rect> main_frame_rect_before_metrics_sender_created_;
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;

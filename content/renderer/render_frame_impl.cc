@@ -4390,12 +4390,12 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection,
   SyncSelectionIfRequired(force_sync);
 }
 
-void RenderFrameImpl::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection_rect) {
-  if (main_frame_intersection_rect != main_frame_intersection_rect_) {
-    main_frame_intersection_rect_ = main_frame_intersection_rect;
+void RenderFrameImpl::OnMainFrameRectangleChanged(
+    const gfx::Rect& main_frame_rect) {
+  if (main_frame_rect != main_frame_rect_) {
+    main_frame_rect_ = main_frame_rect;
     for (auto& observer : observers_) {
-      observer.OnMainFrameIntersectionChanged(main_frame_intersection_rect);
+      observer.OnMainFrameRectangleChanged(main_frame_rect);
     }
   }
 }
@@ -5239,7 +5239,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // Ensure we will propagate the main frame and viewport rect when the main
   // frame commits even if the rect does not change across navigations.
   if (IsMainFrame()) {
-    main_frame_intersection_rect_.reset();
+    main_frame_rect_.reset();
     main_frame_viewport_rect_.reset();
   }
 

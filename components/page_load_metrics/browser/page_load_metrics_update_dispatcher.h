@@ -154,9 +154,7 @@ class PageLoadMetricsUpdateDispatcher {
         const std::vector<mojom::ResourceDataUpdatePtr>& resources) = 0;
     virtual void UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
                                       const mojom::CpuTiming& timing) = 0;
-    virtual void OnMainFrameIntersectionRectChanged(
-        content::RenderFrameHost* rfh,
-        const gfx::Rect& main_frame_intersection_rect) = 0;
+    virtual void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) = 0;
     virtual void OnMainFrameViewportRectChanged(
         const gfx::Rect& main_frame_viewport_rect) = 0;
     virtual void OnMainFrameAdRectsChanged(
@@ -299,9 +297,7 @@ class PageLoadMetricsUpdateDispatcher {
       content::RenderFrameHost* render_frame_host,
       const std::vector<mojom::EventTimingPtr>& event_timings);
 
-  void MaybeUpdateMainFrameIntersectionRect(
-      content::RenderFrameHost* render_frame_host,
-      const mojom::FrameMetadataPtr& frame_metadata);
+  void MaybeUpdateMainFrameRect(const mojom::FrameMetadataPtr& frame_metadata);
   void MaybeUpdateMainFrameViewportRect(
       const mojom::FrameMetadataPtr& frame_metadata);
 
@@ -368,9 +364,9 @@ class PageLoadMetricsUpdateDispatcher {
   PageRenderData page_render_data_;
   PageRenderData main_frame_render_data_;
 
-  // The last main frame intersection rects dispatched to page load metrics
+  // The last main frame document rect dispatched to page load metrics
   // observers.
-  std::map<content::FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
+  std::optional<gfx::Rect> main_frame_rect_;
 
   // The last main frame viewport rect dispatched to page load metrics
   // observers.

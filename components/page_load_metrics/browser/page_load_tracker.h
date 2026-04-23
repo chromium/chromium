@@ -240,9 +240,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;
   void UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
                             const mojom::CpuTiming& timing) override;
-  void OnMainFrameIntersectionRectChanged(
-      content::RenderFrameHost* rfh,
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(

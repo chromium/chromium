@@ -1165,12 +1165,9 @@ void PageLoadTracker::UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
   }
 }
 
-void PageLoadTracker::OnMainFrameIntersectionRectChanged(
-    content::RenderFrameHost* rfh,
-    const gfx::Rect& main_frame_intersection_rect) {
+void PageLoadTracker::OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) {
   for (const auto& observer : observers_) {
-    observer->OnMainFrameIntersectionRectChanged(rfh,
-                                                 main_frame_intersection_rect);
+    observer->OnMainFrameRectChanged(main_frame_rect);
   }
 }
 

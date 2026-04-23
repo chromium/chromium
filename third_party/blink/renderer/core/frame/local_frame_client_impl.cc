@@ -1178,11 +1178,10 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
   web_frame_->Client()->FocusedElementChanged(element);
 }
 
-void LocalFrameClientImpl::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection_rect) {
+void LocalFrameClientImpl::OnMainFrameRectangleChanged(
+    const gfx::Rect& main_frame_rect) {
   DCHECK(web_frame_->Client());
-  web_frame_->Client()->OnMainFrameIntersectionChanged(
-      main_frame_intersection_rect);
+  web_frame_->Client()->OnMainFrameRectangleChanged(main_frame_rect);
 }
 
 void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(

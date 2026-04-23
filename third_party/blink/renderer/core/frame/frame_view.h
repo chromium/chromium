@@ -49,7 +49,6 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool CanThrottleRenderingForPropagation() const;
 
   bool IsFrameView() const override { return true; }
-  virtual bool ShouldReportMainFrameIntersection() const { return false; }
 
   Frame& GetFrame() const;
   std::optional<mojom::blink::FrameVisibility> GetFrameVisibility() const {

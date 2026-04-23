@@ -191,10 +191,9 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
   }
 }
 
-void FakePageTimingSender::PageTimingValidator::
-    VerifyExpectedMainFrameIntersectionRect() const {
-  EXPECT_EQ(expected_main_frame_intersection_rect_,
-            actual_main_frame_intersection_rect_);
+void FakePageTimingSender::PageTimingValidator::VerifyExpectedMainFrameRect()
+    const {
+  EXPECT_EQ(expected_main_frame_rect_, actual_main_frame_rect_);
 }
 
 void FakePageTimingSender::PageTimingValidator::
@@ -238,7 +237,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     actual_render_data_.new_layout_shifts.emplace_back(entry.Clone());
   }
 
-  actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
+  actual_main_frame_rect_ = metadata->main_frame_rect;
   actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;
 
   for (const mojom::EventTimingPtr& user_interaction : event_timings) {
@@ -253,7 +252,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedCpuTimings();
   VerifyExpectedFeatures();
   VerifyExpectedRenderData();
-  VerifyExpectedMainFrameIntersectionRect();
+  VerifyExpectedMainFrameRect();
   VerifyExpectedMainFrameViewportRect();
   VerifyExpectedSubresourceLoadMetrics();
   VerifyExpectedSoftNavigationMetrics();

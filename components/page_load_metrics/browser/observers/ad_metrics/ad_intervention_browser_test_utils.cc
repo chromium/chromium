@@ -91,7 +91,7 @@ void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
   // The intersections returned by the renderer are scaled to the device's
   // scale factor.
   gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
-  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
+  waiter->AddMainFrameRectExpectation(scaled_rect);
 }
 
 // Navigate to |url| in |web_contents| and wait until we see the first

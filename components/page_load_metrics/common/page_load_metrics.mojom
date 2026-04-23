@@ -248,25 +248,21 @@ struct FrameMetadata {
   // These are packed blink::LoadingBehaviorFlag enums.
   int32 behavior_flags = 0;
 
-  // For the main frame, the rect is the main frame document size (at (0,0));
-  // for a subframe, the rect is frame's intersection rect with the main frame
-  // in the main frame's coordinate system, and is an empty rect when there is
-  // no intersection with the main frame. This is only set for the first time
-  // the intersection rectangle is initially computed, and for any subsequent
-  // changes, and is null otherwise (i.e. hasn't changed).
-  gfx.mojom.Rect? main_frame_intersection_rect;
+  // The main frame's document rectangle, originating at (0,0) and encapsulating
+  // the document's dimensions. Set only for the outermost main frame when
+  // initially computed or upon subsequent changes. Null if unchanged.
+  gfx.mojom.Rect? main_frame_rect;
 
-  // The main frame's viewport rectangle (encapsulating the dimensions and the
-  // scroll position) in the main frame's coordinate system. This is only set
-  // for the main frame, for the first time the viewport rectangle is initially
-  // computed, and for any subsequent changes, and is null otherwise (i.e.
-  // hasn't changed).
+  // The main frame's viewport rectangle (encapsulating dimensions and
+  // scroll position) in the main frame's coordinate system. Set only for the
+  // outermost main frame when initially computed or upon subsequent changes.
+  // Null if unchanged.
   gfx.mojom.Rect? main_frame_viewport_rect;
 
   // A map of ad element node IDs to their bounding rectangles in the main
-  // frame's coordinate system. Empty rectangles are used to signal the removal
-  // of the element. This is only populated for the main frame, for the first
-  // time each rectangle is initially computed and for any subsequent changes.
+  // frame's coordinate system. An empty rectangle signals the removal of an
+  // element. Populated only for the outermost main frame when a rectangle is
+  // initially computed or subsequently changed.
   map<int32, gfx.mojom.Rect> main_frame_ad_rects;
 
   // Detected versions of JavaScript frameworks in the page.

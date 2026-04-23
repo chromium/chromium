@@ -85,8 +85,7 @@ class PageTimingMetricsSender {
                                       int request_id,
                                       base::ByteCount encoded_body_length,
                                       const std::string& mime_type);
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection_rect);
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect);
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect);
   void OnMainFrameAdRectangleChanged(int element_id, const gfx::Rect& ad_rect);

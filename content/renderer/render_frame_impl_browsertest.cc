@@ -237,7 +237,7 @@ class RenderFrameTestObserver : public RenderFrameObserver {
   explicit RenderFrameTestObserver(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame),
         visible_(false),
-        last_intersection_rect_(-1, -1, -1, -1) {}
+        last_main_frame_rect_(-1, -1, -1, -1) {}
 
   ~RenderFrameTestObserver() override {}
 
@@ -245,23 +245,24 @@ class RenderFrameTestObserver : public RenderFrameObserver {
   void WasShown() override { visible_ = true; }
   void WasHidden() override { visible_ = false; }
   void OnDestruct() override { delete this; }
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& intersection_rect) override {
-    last_intersection_rect_ = intersection_rect;
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override {
+    last_main_frame_rect_ = main_frame_rect;
   }
   void OnMainFrameViewportRectangleChanged(
-      const gfx::Rect& viewport_rect) override {
-    last_viewport_rect_ = viewport_rect;
+      const gfx::Rect& main_frame_viewport_rect) override {
+    last_main_frame_viewport_rect_ = main_frame_viewport_rect;
   }
 
   bool visible() const { return visible_; }
-  gfx::Rect last_intersection_rect() const { return last_intersection_rect_; }
-  gfx::Rect last_viewport_rect() const { return last_viewport_rect_; }
+  gfx::Rect last_main_frame_rect() const { return last_main_frame_rect_; }
+  gfx::Rect last_main_frame_viewport_rect() const {
+    return last_main_frame_viewport_rect_;
+  }
 
  private:
   bool visible_;
-  gfx::Rect last_intersection_rect_;
-  gfx::Rect last_viewport_rect_;
+  gfx::Rect last_main_frame_rect_;
+  gfx::Rect last_main_frame_viewport_rect_;
 };
 
 // Verify that a frame with a WebRemoteFrame as a parent has its own
@@ -509,27 +510,35 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
   }
 }
 
-TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
-  RenderFrameTestObserver observer(&child_frame());
-  gfx::Rect mainframe_intersection(0, 0, 200, 140);
-  child_frame().OnMainFrameIntersectionChanged(mainframe_intersection);
-  // Setting a new frame intersection in a local frame triggers the render frame
-  // observer call.
-  EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
+TEST_F(RenderFrameImplTest, MainFrameRectRecorded) {
+  RenderFrameTestObserver observer(GetMainRenderFrame());
+  gfx::Rect main_frame_rect(0, 0, 200, 140);
+  GetMainRenderFrame()->OnMainFrameRectangleChanged(main_frame_rect);
+  EXPECT_EQ(observer.last_main_frame_rect(), main_frame_rect);
+
+  // After a navigation, the notification of `main_frame_rect` should be
+  // propagated to `RenderFrameTestObserver` again for the new document.
+  LoadHTML(kParentFrameHTML);
+  RenderFrameTestObserver observer2(GetMainRenderFrame());
+  GetMainRenderFrame()->OnMainFrameRectangleChanged(main_frame_rect);
+  EXPECT_EQ(observer2.last_main_frame_rect(), main_frame_rect);
 }
 
 TEST_F(RenderFrameImplTest, MainFrameViewportRectRecorded) {
   RenderFrameTestObserver observer(GetMainRenderFrame());
-  gfx::Rect mainframe_viewport(0, 0, 200, 140);
-  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
-  EXPECT_EQ(observer.last_viewport_rect(), mainframe_viewport);
+  gfx::Rect main_frame_viewport_rect(0, 0, 200, 140);
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(
+      main_frame_viewport_rect);
+  EXPECT_EQ(observer.last_main_frame_viewport_rect(), main_frame_viewport_rect);
 
-  // After a navigation, the notification of `mainframe_viewport` should be
-  // propagated to `RenderFrameTestObserver` again for the new document.
+  // After a navigation, the notification of `main_frame_viewport_rect` should
+  // be propagated to `RenderFrameTestObserver` again for the new document.
   LoadHTML(kParentFrameHTML);
   RenderFrameTestObserver observer2(GetMainRenderFrame());
-  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
-  EXPECT_EQ(observer2.last_viewport_rect(), mainframe_viewport);
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(
+      main_frame_viewport_rect);
+  EXPECT_EQ(observer2.last_main_frame_viewport_rect(),
+            main_frame_viewport_rect);
 }
 
 // Used to annotate the source of an interface request.

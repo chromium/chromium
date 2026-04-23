@@ -221,9 +221,9 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
       ->DidLoadFromMemoryCache(response_url, encoded_body_length, mime_type);
 }
 
-void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection_rect) {
-  metadata_->main_frame_intersection_rect = main_frame_intersection_rect;
+void PageTimingMetricsSender::OnMainFrameRectangleChanged(
+    const gfx::Rect& main_frame_rect) {
+  metadata_->main_frame_rect = main_frame_rect;
   EnsureSendTimer();
 }
 
@@ -356,7 +356,7 @@ void PageTimingMetricsSender::SendNow() {
 
   event_timings_.clear();
   new_features_.clear();
-  metadata_->main_frame_intersection_rect.reset();
+  metadata_->main_frame_rect.reset();
   metadata_->main_frame_viewport_rect.reset();
   metadata_->main_frame_ad_rects.clear();
   last_cpu_timing_->task_time = base::TimeDelta();

@@ -1787,7 +1787,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   page_load_metrics::mojom::FrameMetadata metadata1;
-  metadata1.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata1.main_frame_rect = gfx::Rect(0, 0, 1, 100);
   metadata1.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
   tester_->SimulateMetadataUpdate(metadata1, main_frame);
 
@@ -1845,7 +1845,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata.main_frame_rect = gfx::Rect(0, 0, 1, 100);
   metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
   tester_->SimulateMetadataUpdate(metadata, main_frame);
 
@@ -1892,7 +1892,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata.main_frame_rect = gfx::Rect(0, 0, 1, 100);
   metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
   tester_->SimulateMetadataUpdate(metadata, main_frame);
 

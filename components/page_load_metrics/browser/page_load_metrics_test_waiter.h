@@ -79,23 +79,23 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // size update of |size|.
   void AddFrameSizeExpectation(const gfx::Size& size);
 
-  // Add a main frame intersection expectation. Expects that a frame
-  // receives an intersection update with a main frame intersection
-  // of |rect|. Subsequent calls overwrite unmet expectations.
-  void AddMainFrameIntersectionExpectation(const gfx::Rect& rect);
+  // Add a main frame rectangle expectation. Expects that a frame receives an
+  // update with main frame rectangle `rect`. Subsequent calls overwrite unmet
+  // expectations.
+  void AddMainFrameRectExpectation(const gfx::Rect& rect);
 
-  // Indicates that we expect at least one main frame intersection update, with
-  // any rect allowed.
-  // TODO(skobes): Unify this API with AddMainFrameIntersectionExpectation.
-  void SetMainFrameIntersectionExpectation();
+  // Indicates that we expect at least one main frame rectangle update, with any
+  // rect allowed.
+  // TODO(skobes): Unify this API with AddMainFrameRectExpectation.
+  void SetMainFrameRectExpectation();
 
   // Indicates that we expect at least one notification for the main frame ad
   // rectangles update, with any rect allowed.
   void SetMainFrameAdRectsExpectation();
 
-  // Add a main frame viewport intersection expectation. Expects that the
-  // mainframe receives its viewport rectangle in the main frame document's
-  // coornidate. Subsequent calls overwrite unmet expectations.
+  // Add a main frame viewport rectangle expectation. Expects that the main
+  // frame receives its viewport rectangle in the main frame's coordinate
+  // system. Subsequent calls overwrite unmet expectations.
   void AddMainFrameViewportRectExpectation(const gfx::Rect& rect);
 
   // Add a single WebFeature expectation.
@@ -302,9 +302,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);
 
-  void OnMainFrameIntersectionRectChanged(
-      content::RenderFrameHost* rfh,
-      const gfx::Rect& main_frame_intersection_rect);
+  void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect);
 
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect);
@@ -331,7 +329,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool UseCounterExpectationsSatisfied() const;
   bool SubframeNavigationExpectationsSatisfied() const;
   bool SubframeDataExpectationsSatisfied() const;
-  bool MainFrameIntersectionExpectationsSatisfied() const;
+  bool MainFrameRectExpectationsSatisfied() const;
   bool MainFrameViewportRectExpectationsSatisfied() const;
   bool MainFrameAdRectsExpectationsSatisfied() const;
   bool LayoutShiftExpectationsSatisfied() const;
@@ -360,9 +358,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     bool subframe_navigation_ = false;
     bool subframe_data_ = false;
     std::set<gfx::Size, FrameSizeComparator> frame_sizes_;
-    bool did_set_main_frame_intersection_ = false;
+    bool did_set_main_frame_rect_ = false;
     bool did_observed_main_frame_ad_rects_ = false;
-    std::vector<gfx::Rect> main_frame_intersections_;
+    std::optional<gfx::Rect> main_frame_rect_;
     std::optional<gfx::Rect> main_frame_viewport_rect_;
     uint64_t num_layout_shifts_ = 0;
     bool on_complete_ = false;

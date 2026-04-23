@@ -566,8 +566,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidChangeSelection(bool is_empty_selection,
                           blink::SyncCondition force_sync) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectangleChanged(int element_id,
@@ -1492,9 +1491,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // kError severity.
   bool want_error_message_stack_trace_ = false;
 
-  // Used for tracking a frame's main frame document intersection and
-  // replicating it to the browser when it changes.
-  std::optional<gfx::Rect> main_frame_intersection_rect_;
+  // Used for tracking a frame's main frame document rectangle and replicating
+  // it to the browser when it changes.
+  std::optional<gfx::Rect> main_frame_rect_;
 
   // Used for tracking the main frame viewport rectangle (i.e. dimensions and
   // scroll offset) within the main frame document.

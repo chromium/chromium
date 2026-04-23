@@ -543,26 +543,22 @@ class BLINK_EXPORT WebLocalFrameClient {
   // focused element, |to_element| is the newly focused one. Either can be null.
   virtual void FocusedElementChanged(const WebElement& element) {}
 
-  // For the main frame, called when the main frame's dimensions have changed,
-  // e.g. resizing a tab causes the document width to change; loading additional
-  // content causes the document height to increase; explicitly changing the
-  // height of the body element.
-  //
-  // For a subframe, called when the intersection rect between the main frame
-  // and the subframe has changed, e.g. the subframe is initially added; the
-  // subframe's position is updated explicitly or inherently (e.g. sticky
-  // position while the page is being scrolled).
-  virtual void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection_rect) {}
+  // Called when the main frame's document rectangle changed, e.g. resizing a
+  // tab causes the document width to change, or loading additional content
+  // causes the document height to increase. Only invoked on the outermost main
+  // frame.
+  virtual void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) {}
 
   // Called when the main frame's viewport rectangle (the viewport dimensions
   // and the scroll position) changed, e.g. the user scrolled the main frame or
-  // the viewport dimensions themselves changed. Only invoked on the main frame.
+  // the viewport dimensions themselves changed. Only invoked on the outermost
+  // main frame.
   virtual void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) {}
 
   // Called when an ad element's geometry changed. An empty `ad_rect` is used to
-  // signal the removal of the element. Only invoked on the main frame.
+  // signal the removal of the element. Only invoked on the outermost main
+  // frame.
   virtual void OnMainFrameAdRectangleChanged(int element_id,
                                              const gfx::Rect& ad_rect) {}
 

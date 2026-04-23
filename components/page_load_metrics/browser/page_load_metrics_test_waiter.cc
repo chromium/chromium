@@ -79,9 +79,7 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle) override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
-  void OnMainFrameIntersectionRectChanged(
-      content::RenderFrameHost* rfh,
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(
@@ -181,14 +179,14 @@ void PageLoadMetricsTestWaiter::AddFrameSizeExpectation(const gfx::Size& size) {
   expected_.frame_sizes_.insert(size);
 }
 
-void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation(
+void PageLoadMetricsTestWaiter::AddMainFrameRectExpectation(
     const gfx::Rect& rect) {
-  expected_.did_set_main_frame_intersection_ = true;
-  expected_.main_frame_intersections_.push_back(rect);
+  expected_.did_set_main_frame_rect_ = true;
+  expected_.main_frame_rect_ = rect;
 }
 
-void PageLoadMetricsTestWaiter::SetMainFrameIntersectionExpectation() {
-  expected_.did_set_main_frame_intersection_ = true;
+void PageLoadMetricsTestWaiter::SetMainFrameRectExpectation() {
+  expected_.did_set_main_frame_rect_ = true;
 }
 
 void PageLoadMetricsTestWaiter::SetMainFrameAdRectsExpectation() {
@@ -448,11 +446,10 @@ void PageLoadMetricsTestWaiter::OnFeaturesUsageObserved(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnMainFrameIntersectionRectChanged(
-    content::RenderFrameHost* rfh,
-    const gfx::Rect& main_frame_intersection_rect) {
-  observed_.did_set_main_frame_intersection_ = true;
-  observed_.main_frame_intersections_.push_back(main_frame_intersection_rect);
+void PageLoadMetricsTestWaiter::OnMainFrameRectChanged(
+    const gfx::Rect& main_frame_rect) {
+  observed_.did_set_main_frame_rect_ = true;
+  observed_.main_frame_rect_ = main_frame_rect;
 
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
@@ -688,25 +685,16 @@ bool PageLoadMetricsTestWaiter::SubframeDataExpectationsSatisfied() const {
   return !expected_.subframe_data_ || observed_.subframe_data_;
 }
 
-bool PageLoadMetricsTestWaiter::MainFrameIntersectionExpectationsSatisfied()
-    const {
-  if (!expected_.did_set_main_frame_intersection_)
+bool PageLoadMetricsTestWaiter::MainFrameRectExpectationsSatisfied() const {
+  if (!expected_.did_set_main_frame_rect_) {
     return true;
-  if (!observed_.did_set_main_frame_intersection_)
-    return false;
-
-  // All expectations must be observed, in the same order.
-  // But extra observations are ok.
-  auto it = observed_.main_frame_intersections_.begin();
-  for (const gfx::Rect& expected : expected_.main_frame_intersections_) {
-    while (true) {
-      if (it == observed_.main_frame_intersections_.end())
-        return false;
-      if (*it++ == expected)
-        break;
-    }
   }
-  return true;
+  if (!observed_.did_set_main_frame_rect_) {
+    return false;
+  }
+
+  return !expected_.main_frame_rect_ ||
+         observed_.main_frame_rect_ == expected_.main_frame_rect_;
 }
 
 bool PageLoadMetricsTestWaiter::MainFrameViewportRectExpectationsSatisfied()
@@ -780,7 +768,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          IsSubset(expected_.frame_sizes_, observed_.frame_sizes_) &&
          LoadingBehaviorExpectationsSatisfied() &&
          CpuTimeExpectationsSatisfied() &&
-         MainFrameIntersectionExpectationsSatisfied() &&
+         MainFrameRectExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
          MainFrameAdRectsExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
@@ -804,7 +792,7 @@ void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
   EXPECT_TRUE(IsSubset(expected_.frame_sizes_, observed_.frame_sizes_));
   EXPECT_TRUE(LoadingBehaviorExpectationsSatisfied());
   EXPECT_TRUE(CpuTimeExpectationsSatisfied());
-  EXPECT_TRUE(MainFrameIntersectionExpectationsSatisfied());
+  EXPECT_TRUE(MainFrameRectExpectationsSatisfied());
   EXPECT_TRUE(MainFrameViewportRectExpectationsSatisfied());
 }
 
@@ -901,12 +889,10 @@ void WaiterMetricsObserver::OnFeaturesUsageObserved(
   }
 }
 
-void WaiterMetricsObserver::OnMainFrameIntersectionRectChanged(
-    content::RenderFrameHost* rfh,
-    const gfx::Rect& main_frame_intersection_rect) {
+void WaiterMetricsObserver::OnMainFrameRectChanged(
+    const gfx::Rect& main_frame_rect) {
   if (waiter_) {
-    waiter_->OnMainFrameIntersectionRectChanged(rfh,
-                                                main_frame_intersection_rect);
+    waiter_->OnMainFrameRectChanged(main_frame_rect);
   }
 }
 

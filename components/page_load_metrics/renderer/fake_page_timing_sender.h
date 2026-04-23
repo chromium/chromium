@@ -93,9 +93,8 @@ class FakePageTimingSender : public PageTimingSender {
     void UpdateExpectedSubresourceLoadMetrics(
         const blink::SubresourceLoadMetrics& subresource_load_metrics);
 
-    void UpdateExpectedMainFrameIntersectionRect(
-        const gfx::Rect& main_frame_intersection_rect) {
-      expected_main_frame_intersection_rect_ = main_frame_intersection_rect;
+    void UpdateExpectedMainFrameRect(const gfx::Rect& main_frame_rect) {
+      expected_main_frame_rect_ = main_frame_rect;
     }
 
     void UpdateExpectedMainFrameViewportRect(
@@ -107,7 +106,7 @@ class FakePageTimingSender : public PageTimingSender {
     // expected features provided via ExpectPageLoadFeatures.
     void VerifyExpectedFeatures() const;
     void VerifyExpectedRenderData() const;
-    void VerifyExpectedMainFrameIntersectionRect() const;
+    void VerifyExpectedMainFrameRect() const;
     void VerifyExpectedMainFrameViewportRect() const;
 
     const std::vector<mojom::PageLoadTimingPtr>& expected_timings() const {
@@ -149,8 +148,8 @@ class FakePageTimingSender : public PageTimingSender {
     std::set<blink::UseCounterFeature> actual_features_;
     mojom::FrameRenderDataUpdatePtr expected_render_data_;
     mojom::FrameRenderDataUpdate actual_render_data_;
-    std::optional<gfx::Rect> expected_main_frame_intersection_rect_;
-    std::optional<gfx::Rect> actual_main_frame_intersection_rect_;
+    std::optional<gfx::Rect> expected_main_frame_rect_;
+    std::optional<gfx::Rect> actual_main_frame_rect_;
     std::optional<gfx::Rect> expected_main_frame_viewport_rect_;
     std::optional<gfx::Rect> actual_main_frame_viewport_rect_;
     std::vector<mojom::EventTimingPtr> expected_event_timings_;

@@ -272,17 +272,6 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 
-  if (ShouldReportMainFrameIntersection()) {
-    gfx::Rect projected_rect = gfx::ToEnclosingRect(
-        main_frame_transform_matrix
-            .ProjectQuad(gfx::QuadF(gfx::RectF(mainframe_intersection)))
-            .BoundingBox());
-    // Return <0, 0, 0, 0> if there is no area.
-    if (projected_rect.IsEmpty())
-      projected_rect.set_origin(gfx::Point(0, 0));
-    GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
-  }
-
   // We don't throttle display:none iframes unless they are cross-origin,
   // because in practice they are sometimes used to drive UI logic.
   bool zero_viewport_intersection = viewport_intersection.IsEmpty();

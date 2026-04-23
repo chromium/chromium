@@ -493,16 +493,14 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
   OnMetricsSenderCreated();
 }
 
-void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
-    const gfx::Rect& main_frame_intersection_rect) {
+void MetricsRenderFrameObserver::OnMainFrameRectangleChanged(
+    const gfx::Rect& main_frame_rect) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
-        main_frame_intersection_rect);
+    page_timing_metrics_sender_->OnMainFrameRectangleChanged(main_frame_rect);
     return;
   }
 
-  main_frame_intersection_rect_before_metrics_sender_created_ =
-      main_frame_intersection_rect;
+  main_frame_rect_before_metrics_sender_created_ = main_frame_rect;
 }
 
 void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
@@ -581,10 +579,10 @@ void MetricsRenderFrameObserver::SendMetrics() {
 void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
   // Send the latest the frame intersection update, as otherwise we may miss
   // this information for a frame completely if there are no future updates.
-  if (main_frame_intersection_rect_before_metrics_sender_created_) {
-    page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
-        *main_frame_intersection_rect_before_metrics_sender_created_);
-    main_frame_intersection_rect_before_metrics_sender_created_.reset();
+  if (main_frame_rect_before_metrics_sender_created_) {
+    page_timing_metrics_sender_->OnMainFrameRectangleChanged(
+        *main_frame_rect_before_metrics_sender_created_);
+    main_frame_rect_before_metrics_sender_created_.reset();
   }
 }
 

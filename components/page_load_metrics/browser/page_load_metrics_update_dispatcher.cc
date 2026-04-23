@@ -592,8 +592,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
   // possibly from other subframes.
   subframe_metadata_->behavior_flags |= subframe_metadata->behavior_flags;
   client_->OnSubframeMetadataChanged(render_frame_host, *subframe_metadata);
-
-  MaybeUpdateMainFrameIntersectionRect(render_frame_host, subframe_metadata);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
@@ -632,39 +630,17 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationMetrics(
   }
 }
 
-void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameIntersectionRect(
-    content::RenderFrameHost* render_frame_host,
+void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameRect(
     const mojom::FrameMetadataPtr& frame_metadata) {
-  // Handle intersection updates if included in the metadata.
-  if (!frame_metadata->main_frame_intersection_rect)
-    return;
-
-  // Do not notify intersections for untracked loads,
-  // subframe_navigation_start_offset_ excludes untracked loads.
-  // TODO(crbug.com/40679417): Document definition of untracked loads in page
-  // load metrics.
-  const content::FrameTreeNodeId frame_tree_node_id =
-      render_frame_host->GetFrameTreeNodeId();
-  bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
-  if (!is_main_frame &&
-      subframe_navigation_start_offset_.find(frame_tree_node_id) ==
-          subframe_navigation_start_offset_.end()) {
+  // Handle main frame rect updates if included in the metadata.
+  if (!frame_metadata->main_frame_rect) {
     return;
   }
 
-  auto existing_intersection_it =
-      main_frame_intersection_rects_.find(frame_tree_node_id);
-
-  // Check if we already have a frame intersection rect for the frame, dispatch
-  // updates for the first frame intersection rect or if the intersection has
-  // changed.
-  if (existing_intersection_it == main_frame_intersection_rects_.end() ||
-      existing_intersection_it->second !=
-          *frame_metadata->main_frame_intersection_rect) {
-    main_frame_intersection_rects_[frame_tree_node_id] =
-        *frame_metadata->main_frame_intersection_rect;
-    client_->OnMainFrameIntersectionRectChanged(
-        render_frame_host, *frame_metadata->main_frame_intersection_rect);
+  if (!main_frame_rect_ ||
+      *frame_metadata->main_frame_rect != *main_frame_rect_) {
+    main_frame_rect_ = *frame_metadata->main_frame_rect;
+    client_->OnMainFrameRectChanged(*main_frame_rect_);
   }
 }
 
@@ -753,8 +729,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
   client_->OnMainFrameMetadataChanged();
 
   if (!main_frame_metadata_.is_null()) {
-    MaybeUpdateMainFrameIntersectionRect(render_frame_host,
-                                         main_frame_metadata_);
+    MaybeUpdateMainFrameRect(main_frame_metadata_);
     MaybeUpdateMainFrameViewportRect(main_frame_metadata_);
 
     client_->OnMainFrameAdRectsChanged(

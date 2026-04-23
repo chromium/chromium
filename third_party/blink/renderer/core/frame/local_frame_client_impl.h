@@ -259,8 +259,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   void FocusedElementChanged(Element* element) override;
 
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override;
 
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;

@@ -7717,51 +7717,6 @@ TEST_F(WebFrameTest, ReloadIframe) {
   EXPECT_EQ(mojom::FetchCacheMode::kDefault, new_child_client->GetCacheMode());
 }
 
-class TestMainFrameIntersectionChanged
-    : public frame_test_helpers::TestWebFrameClient {
- public:
-  TestMainFrameIntersectionChanged() = default;
-  ~TestMainFrameIntersectionChanged() override = default;
-
-  // frame_test_helpers::TestWebFrameClient:
-  void OnMainFrameIntersectionChanged(
-      const gfx::Rect& intersection_rect) override {
-    main_frame_intersection_ = intersection_rect;
-  }
-
-  gfx::Rect MainFrameIntersection() const { return main_frame_intersection_; }
-
- private:
-  gfx::Rect main_frame_intersection_;
-};
-
-TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
-  TestMainFrameIntersectionChanged client;
-  frame_test_helpers::WebViewHelper helper;
-  helper.InitializeRemote();
-
-  WebLocalFrameImpl* local_frame =
-      helper.CreateLocalChild(*helper.RemoteMainFrame(), "frameName",
-                              WebFrameOwnerProperties(), nullptr, &client);
-
-  WebFrameWidget* widget = local_frame->FrameWidget();
-  ASSERT_TRUE(widget);
-
-  gfx::Rect viewport_intersection(0, 11, 200, 89);
-  gfx::Rect mainframe_intersection(0, 0, 200, 140);
-  blink::mojom::FrameOcclusionState occlusion_state =
-      blink::mojom::FrameOcclusionState::kUnknown;
-  gfx::Transform transform;
-  transform.Translate(100, 100);
-
-  auto intersection_state = blink::mojom::blink::ViewportIntersectionState::New(
-      viewport_intersection, mainframe_intersection, gfx::Rect(),
-      occlusion_state, gfx::Size(), gfx::Point(), transform);
-  static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
-      std::move(intersection_state));
-  EXPECT_EQ(client.MainFrameIntersection(), gfx::Rect(100, 100, 200, 140));
-}
-
 class TestSameDocumentWithImageWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:

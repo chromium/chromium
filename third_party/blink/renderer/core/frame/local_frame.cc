@@ -2517,20 +2517,6 @@ void LocalFrame::SetViewportIntersectionFromParent(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
   DCHECK(IsLocalRoot());
   DCHECK(!IsOutermostMainFrame());
-  // Notify the render frame observers when the main frame intersection or the
-  // transform changes.
-  if (intersection_state_.main_frame_intersection !=
-          intersection_state.main_frame_intersection ||
-      intersection_state_.main_frame_transform !=
-          intersection_state.main_frame_transform) {
-    gfx::Rect rect = intersection_state.main_frame_transform.MapRect(
-        intersection_state.main_frame_intersection);
-
-    // Return <0, 0, 0, 0> if there is no area.
-    if (rect.IsEmpty())
-      rect.set_origin(gfx::Point(0, 0));
-    Client()->OnMainFrameIntersectionChanged(rect);
-  }
 
   // Viewport intersection state needs to be updated when remote ancestor
   // frames and their respective scroll positions, clips, etc change.

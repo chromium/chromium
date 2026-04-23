@@ -139,9 +139,7 @@ class AdsPageLoadMetricsObserver
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) override;
-  void OnMainFrameIntersectionRectChanged(
-      content::RenderFrameHost* render_frame_host,
-      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(
