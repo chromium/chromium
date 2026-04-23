@@ -4148,6 +4148,7 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       break;
     case ax::mojom::Event::kEnabledChanged:
       OnEnabledChanged();
+      OnReadonlyChanged();
       break;
     case ax::mojom::Event::kTextChanged:
       OnNameChanged();
