@@ -67,7 +67,7 @@ inline constexpr char kNtpBrowserPromoMaxSessionsPerTermName[] =
 
 inline constexpr char kNtpBrowserPromoMaxTermsName[] = "max-terms";
 inline constexpr int kDefaultNtpBrowserPromoMaxTerms = 3;
-inline constexpr int kDefaultNtpBrowserPromoMaxSessionsPerTerm = 3;
+inline constexpr int kDefaultNtpBrowserPromoMaxSessionsPerTerm = 2;
 
 inline constexpr char kNtpBrowserPromoClickedHideDurationName[] =
     "clicked-duration";

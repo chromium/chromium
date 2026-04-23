@@ -16388,7 +16388,9 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "promo-type": "simple"
+                        "max-terms": "3",
+                        "promo-type": "simple",
+                        "session-rotation": "2"
                     },
                     "enable_features": [
                         "EnableNtpBrowserPromos"
