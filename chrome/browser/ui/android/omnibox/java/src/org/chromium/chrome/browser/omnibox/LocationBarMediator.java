@@ -404,6 +404,7 @@ class LocationBarMediator
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
         mCallbackController.destroy();
+        endInputInternal();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);

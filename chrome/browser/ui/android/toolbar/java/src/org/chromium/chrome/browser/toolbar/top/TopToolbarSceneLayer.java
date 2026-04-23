@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 /** A SceneLayer to render the top toolbar. This is the "view" piece of the top toolbar overlay. */
 @JNINamespace("android")
 @NullMarked
-class TopToolbarSceneLayer extends SceneOverlayLayer {
+public class TopToolbarSceneLayer extends SceneOverlayLayer {
     /** Pointer to native TopToolbarSceneLayer. */
     private long mNativePtr;
 
@@ -105,7 +105,7 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(TopToolbarSceneLayer self);
 
         void setContentTree(long nativeTopToolbarSceneLayer, SceneLayer contentTree);

@@ -47,4 +47,10 @@ specific_include_rules = {
   'ToolbarColors.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
   ],
+  '.*Test\\.java': [
+    "+chrome/android",
+    "+ui/android",
+    "+components",
+    "+base",
+  ],
 }

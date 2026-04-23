@@ -193,7 +193,6 @@ public class LocationBarMediatorTest {
     @Mock private AddToHomescreenCoordinator mAddToHomescreenCoordinator;
     @Mock private PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
     @Mock private LocationBarFocusScrimHandler mScrimHandler;
-
     @Mock private LensController mLensController;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -392,6 +391,19 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testDestroyEndsInput() {
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+
+        mMediator.beginInput(input);
+        assertTrue(mSessionState.isSessionActive());
+        assertTrue(input.getRequestTypeSupplier().hasObservers());
+
+        mMediator.destroy();
+        assertFalse(mSessionState.isSessionActive());
+        assertFalse(input.getRequestTypeSupplier().hasObservers());
+    }
+
+    @Test
     public void testOnTabLoadingNtp() {
         mMediator.onNtpStartedLoading();
         verify(mLocationBarLayout).onNtpStartedLoading();
@@ -399,7 +411,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_focused() {
-        var state = getSession();
+        var state = mSessionState;
         var input = state.getAutocompleteInput();
         input.setUserText("modified text").setInitialUserText("initial text");
         mMediator.beginInput(input);
@@ -478,7 +490,7 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
-        var state = getSession();
+        var state = mSessionState;
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch, true);
         verify(mStatusCoordinator, times(2)).onDefaultMatchClassified(true);
@@ -504,7 +516,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         mMediator.onUrlFocusChange(true);
 
-        var state = getSession();
+        var state = mSessionState;
         var input = state.getAutocompleteInput();
 
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
@@ -988,7 +1000,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         mMediator.onUrlFocusChange(true);
 
-        var input = getSession().getAutocompleteInput();
+        var input = mSessionState.getAutocompleteInput();
         input.setUserText("some text");
         input.setInitialUserText("initial text");
 
@@ -1791,7 +1803,7 @@ public class LocationBarMediatorTest {
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(true);
 
-        var state = getSession();
+        var state = mSessionState;
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mNavigateButtonIsVisible);
 
@@ -1806,7 +1818,7 @@ public class LocationBarMediatorTest {
     public void testBeginOrResumeInput_updatesModeImmediately() {
         mMediator.onFinishNativeInitialization();
         mMediator.setProfile(mProfile);
-        FuseboxSessionState state = getSession();
+        FuseboxSessionState state = mSessionState;
 
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         mMediator.onUrlFocusChange(true);
@@ -1902,7 +1914,7 @@ public class LocationBarMediatorTest {
         String newText = "new text";
         final int newSelectionStart = 2;
         final int newSelectionEnd = 6;
-        var newState = getSession();
+        var newState = mSessionState;
         newState.getAutocompleteInput().setUserText(newText);
         newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
         newState.activate(mProfileSupplier, null);
@@ -2294,10 +2306,9 @@ public class LocationBarMediatorTest {
                 .getOmniboxHintText(eq(AutocompleteRequestType.AI_MODE), any());
 
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
-        FuseboxSessionState state = getSession();
         clearInvocations(mUrlCoordinator);
 
-        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         verify(mUrlCoordinator).setUrlBarHintText(eq(aiHint));
 
         clearInvocations(mUrlCoordinator);
@@ -2417,9 +2428,5 @@ public class LocationBarMediatorTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mScrimHandler).updateScrimVisualState();
-    }
-
-    private FuseboxSessionState getSession() {
-        return mSessionState;
     }
 }
