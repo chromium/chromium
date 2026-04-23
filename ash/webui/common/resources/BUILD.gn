@@ -733,7 +733,7 @@ js_library("web_ui_listener_behavior") {
 }
 
 js_library("webui_resource_test") {
-  externs_list = [ "//ui/webui/resources/js/dom_automation_controller.js" ]
+  externs_list = [ "dom_automation_controller.js" ]
 }
 
 js_library("util") {
