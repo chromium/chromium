@@ -1584,6 +1584,7 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     // Note: The client might report damage outside the root surface content
     // rect (e.g. from a filter), so we must intersect with the content rect.
     gfx::Rect damage_rect = tree.RootRenderSurface()->GetDamageRect();
+    damage_rect.Subtract(viewport_damage_rect);
     damage_rect.Intersect(tree.RootRenderSurface()->content_rect());
     update->root_layer_damage_rect = damage_rect;
   }
