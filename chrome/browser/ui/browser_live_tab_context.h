@@ -114,7 +114,6 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   // such a Browser exists.
   static sessions::LiveTabContext* FindContextWithID(SessionID desired_id);
 
-  // see chrome::FindBrowserWithGroup
   // Returns the LiveTabContext of the Browser containing the group with ID
   // |group| if such a Browser exists within the given |profile|.
   static sessions::LiveTabContext* FindContextWithGroup(

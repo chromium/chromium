@@ -23,10 +23,6 @@ namespace content {
 class WebContents;
 }
 
-namespace tab_groups {
-class TabGroupId;
-}
-
 // Collection of functions to find Browsers based on various criteria.
 //
 // WARNING: Most functions in this file should not be used.
@@ -119,13 +115,6 @@ Browser* FindBrowserWithProfile(const Profile* profile);
 // to be found via this method.
 // WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithTab(const content::WebContents* web_contents);
-
-// Returns the browser containing the group with ID `group` within the given
-// `profile`. If the specified profile is nullptr, returns any browser
-// containing a group with the given group ID. Returns nullptr if no such
-// browser currently exists.
-// WARNING: Do not use this method. See comment at top of file.
-Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile);
 
 // Returns the browser owned by `profile` whose window was most recently active.
 // Returns nullptr if no such browser currently exists.
