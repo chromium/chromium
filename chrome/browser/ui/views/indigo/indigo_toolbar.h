@@ -10,18 +10,22 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/class_property.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/view_tracker.h"
 
 namespace views {
-class ToggleImageButton;
 class View;
 }  // namespace views
 
+DECLARE_UI_CLASS_PROPERTY_TYPE(gfx::Point*)
+
 namespace indigo {
+
+extern const ui::ClassProperty<gfx::Point*>* const kIndigoToolbarOffsetKey;
 
 // Owns and manages a toolbar widget (and its contents) for Indigo. This widget
 // is collapsible (using an expand/collapse control) and closable, in addition
@@ -34,6 +38,7 @@ class IndigoToolbar {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExpandButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExpandedContainerElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegenerateButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReplacePhotoButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeletePhotoButtonElementId);
@@ -56,7 +61,10 @@ class IndigoToolbar {
   IndigoToolbar& operator=(const IndigoToolbar&) = delete;
   ~IndigoToolbar();
 
-  void Show(gfx::NativeView parent_view);
+  // `parent_view` should be the ContentsContainerView in practice (except in
+  // unit tests), and this toolbar's view coordinates with it to arrange its
+  // layout.
+  void Show(views::View* parent_view);
 
   // Shows the toolbar at a position computed by the given callback.
   // The callback `toolbar_origin_func` receives the preferred size of the
@@ -65,11 +73,14 @@ class IndigoToolbar {
   // view) where the toolbar should be placed. This is useful when the
   // positioning depends on the toolbar's preferred size, which is only known
   // after layout.
+  //
+  // `parent_view` should be the ContentsContainerView, as described above,
+  // except in unit tests.
   void ShowAt(
-      gfx::NativeView parent_view,
+      views::View* parent_view,
       base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func);
 
-  void ShowInside(gfx::NativeView parent_view, const gfx::Rect& rect);
+  void ShowInside(views::View* parent_view, const gfx::Rect& rect);
   void Hide();
 
  private:
@@ -85,14 +96,10 @@ class IndigoToolbar {
   void OnReplacePhotoClicked();
   void OnDeletePhotoClicked();
 
-  void OnWidgetClosed(views::Widget::ClosedReason reason);
-
   raw_ptr<Delegate> delegate_;
-  std::unique_ptr<views::Widget> widget_;
+  views::ViewTracker view_tracker_;
 
   bool is_expanded_ = false;
-  raw_ptr<views::View> expanded_container_ = nullptr;
-  raw_ptr<views::ToggleImageButton> expand_button_ = nullptr;
 };
 
 }  // namespace indigo

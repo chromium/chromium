@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -33,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/view.h"
 
 namespace indigo {
 
@@ -128,7 +130,12 @@ void IndigoPageActionController::InvokeAction() {
     if (!toolbar_) {
       toolbar_ = std::make_unique<IndigoToolbar>(this);
     }
-    toolbar_->Show(web_contents->GetNativeView());
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+        tab().GetBrowserWindowInterface());
+    if (browser_view) {
+      toolbar_->Show(
+          browser_view->GetContentsContainerViewFor(tab().GetContents()));
+    }
     return;
   }
 
@@ -170,7 +177,16 @@ void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
 
   if (!toolbar_) {
     toolbar_ = std::make_unique<IndigoToolbar>(this);
-    toolbar_->ShowInside(web_contents->GetNativeView(), rect);
+  }
+  auto* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab().GetBrowserWindowInterface());
+  if (browser_view) {
+    auto* contents_container =
+        browser_view->GetContentsContainerViewFor(tab().GetContents());
+    auto* contents_webview = contents_container->contents_view();
+    gfx::Rect container_rect = views::View::ConvertRectToTarget(
+        contents_webview, contents_container, rect);
+    toolbar_->ShowInside(contents_container, container_rect);
   }
 }
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -46,6 +47,52 @@ const char kHtmlBody[] = R"(
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 
+// Caveat: This observer applies insets, so it will miss layout changes that
+// only affect the border/insets but not the content bounds.
+class ViewContentBoundsObserver : public views::ViewObserver,
+                                  public ui::test::StateObserver<gfx::Rect> {
+ public:
+  explicit ViewContentBoundsObserver(const raw_ptr<views::View>& view)
+      : view_(view) {
+    observation_.Observe(view);
+  }
+
+  // ui::test::StateObserver:
+  gfx::Rect GetStateObserverInitialState() const override {
+    return GetContentBounds();
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    OnStateObserverStateChanged(GetContentBounds());
+  }
+  void OnViewIsDeleting(views::View* view) override {
+    view_ = nullptr;
+    observation_.Reset();
+  }
+
+ private:
+  gfx::Rect GetContentBounds() const {
+    gfx::Rect bounds = view_->GetBoundsInScreen();
+    bounds.Inset(view_->GetInsets());
+    return bounds;
+  }
+
+  raw_ptr<views::View> view_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewContentBoundsObserver,
+                                    kToolbarBoundsState);
+
+MATCHER_P(IsCloseToTopRightOf, image_bounds_ref, "") {
+  const gfx::Rect& image_bounds = image_bounds_ref.get();
+  return std::abs(arg.right() - image_bounds.right()) <= 30 &&
+         arg.right() <= image_bounds.right() &&
+         std::abs(arg.y() - image_bounds.y()) <= 30 &&
+         arg.y() >= image_bounds.y();
+}
+
 class IndigoBrowserTest : public InteractiveBrowserTest {
  public:
   IndigoBrowserTest() {
@@ -53,13 +100,6 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
         {features::kIndigo, blink::features::kImageReplacement}, {});
   }
   ~IndigoBrowserTest() override = default;
-
-  gfx::Rect GetContainerBounds() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetContainerBounds();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
@@ -98,41 +138,31 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-// TODO(crbug.com/504741803): Re-enable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ToolbarPositioning DISABLED_ToolbarPositioning
-#else
-#define MAYBE_ToolbarPositioning ToolbarPositioning
-#endif
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, MAYBE_ToolbarPositioning) {
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
-  gfx::Rect toolbar_bounds;
-  gfx::Rect image_bounds;
+  raw_ptr<views::View> toolbar_view = nullptr;
+  gfx::Rect image_bounds{50, 50, 512, 512};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       WaitForShow(kIndigoPageActionIconElementId),
       PressButton(kIndigoPageActionIconElementId),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
 
-      Do(base::BindLambdaForTesting([&]() {
-        gfx::Rect container_bounds = GetContainerBounds();
-        image_bounds = gfx::Rect(container_bounds.x() + 50,
-                                 container_bounds.y() + 50, 512, 512);
-      })),
+      AfterShow(IndigoToolbar::kToolbarElementId,
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  toolbar_view = AsView(el);
+                })),
+      ObserveState(kToolbarBoundsState, std::ref(toolbar_view)),
 
-      WithView(IndigoToolbar::kToolbarElementId,
-               base::BindLambdaForTesting([&](views::View* view) {
-                 toolbar_bounds = view->GetBoundsInScreen();
-                 toolbar_bounds.Inset(view->GetInsets());
-               })),
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
 
-      Do(base::BindLambdaForTesting([&]() {
-        EXPECT_NEAR(image_bounds.right(), toolbar_bounds.right(), 30);
-        EXPECT_GE(image_bounds.right(), toolbar_bounds.right());
-        EXPECT_NEAR(image_bounds.y(), toolbar_bounds.y(), 30);
-        EXPECT_LE(image_bounds.y(), toolbar_bounds.y());
-      })));
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))));
 }
 
 class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
@@ -143,35 +173,31 @@ class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, MAYBE_ToolbarPositioning) {
+IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
-  gfx::Rect toolbar_bounds;
-  gfx::Rect image_bounds;
+  raw_ptr<views::View> toolbar_view = nullptr;
+  gfx::Rect image_bounds{50, 50, 512, 512};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       WaitForShow(kIndigoPageActionIconElementId),
       PressButton(kIndigoPageActionIconElementId),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
 
-      Do(base::BindLambdaForTesting([&]() {
-        gfx::Rect container_bounds = GetContainerBounds();
-        image_bounds = gfx::Rect(container_bounds.x() + 50,
-                                 container_bounds.y() + 50, 512, 512);
-      })),
+      AfterShow(IndigoToolbar::kToolbarElementId,
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  toolbar_view = AsView(el);
+                })),
+      ObserveState(kToolbarBoundsState, std::ref(toolbar_view)),
 
-      WithView(IndigoToolbar::kToolbarElementId,
-               base::BindLambdaForTesting([&](views::View* view) {
-                 toolbar_bounds = view->GetBoundsInScreen();
-                 toolbar_bounds.Inset(view->GetInsets());
-               })),
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
 
-      Do(base::BindLambdaForTesting([&]() {
-        EXPECT_NEAR(image_bounds.right(), toolbar_bounds.right(), 30);
-        EXPECT_GE(image_bounds.right(), toolbar_bounds.right());
-        EXPECT_NEAR(image_bounds.y(), toolbar_bounds.y(), 30);
-        EXPECT_LE(image_bounds.y(), toolbar_bounds.y());
-      })));
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))));
 }
 
 }  // namespace

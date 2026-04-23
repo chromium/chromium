@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/search/ntp_features.h"
@@ -101,6 +103,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   watermark_view_ =
       AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
 
+  // `indigo_toolbar_view_` dynamically adds itself after `watermark_view_`.
+
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
     auto ai_overlay_dialog_view =
         std::make_unique<views::WebView>(browser_view->GetProfile());
@@ -170,6 +174,18 @@ ContentsContainerView::~ContentsContainerView() {
     auto overlay_view = RemoveChildViewT(read_anything_immersive_overlay_view_);
     read_anything_immersive_overlay_view_ = nullptr;
   }
+}
+
+void ContentsContainerView::SetIndigoToolbarView(
+    std::unique_ptr<views::View> view) {
+  if (indigo_toolbar_view_) {
+    RemoveChildViewT(std::exchange(indigo_toolbar_view_, nullptr));
+  }
+  if (view) {
+    size_t watermark_index = GetIndexOf(watermark_view_).value();
+    indigo_toolbar_view_ = AddChildViewAt(std::move(view), watermark_index + 1);
+  }
+  InvalidateLayout();
 }
 
 std::vector<views::View*> ContentsContainerView::GetAccessiblePanes() {
@@ -679,6 +695,15 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
         read_anything_immersive_overlay_view_.get(),
         read_anything_immersive_overlay_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
+  }
+
+  if (indigo_toolbar_view_ && indigo_toolbar_view_->GetVisible()) {
+    const gfx::Point* offset =
+        indigo_toolbar_view_->GetProperty(indigo::kIndigoToolbarOffsetKey);
+    gfx::Size preferred_size = indigo_toolbar_view_->GetPreferredSize();
+    layouts.child_layouts.emplace_back(
+        indigo_toolbar_view_.get(), indigo_toolbar_view_->GetVisible(),
+        gfx::Rect(*offset, preferred_size), views::SizeBounds(preferred_size));
   }
 
   if (mini_toolbar_) {
