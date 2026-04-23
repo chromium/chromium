@@ -161,13 +161,12 @@ TextDecorationInfo::TextDecorationInfo(
                           !font_override_ &&
                           ShouldUseDecoratingBox(target_style)),
       is_svg_text_(is_svg_text) {
-  for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++)
-    union_all_lines_ |= AppliedDecoration(i).Lines();
-  for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++) {
-    if (AppliedDecoration(i).Style() == ETextDecorationStyle::kDotted ||
-        AppliedDecoration(i).Style() == ETextDecorationStyle::kDashed) {
+  for (wtf_size_t i = 0; i < AppliedDecorationCount(); ++i) {
+    const auto& decoration = AppliedDecoration(i);
+    union_all_lines_ |= decoration.Lines();
+    if (!antialias_ && (decoration.Style() == ETextDecorationStyle::kDotted ||
+                        decoration.Style() == ETextDecorationStyle::kDashed)) {
       antialias_ = true;
-      break;
     }
   }
 }
