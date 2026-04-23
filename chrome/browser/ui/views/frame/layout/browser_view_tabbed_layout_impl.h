@@ -149,6 +149,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // expand animation.
   mutable double last_expand_on_hover_ = 0.0;
   mutable double last_bottom_corner_value_ = 1.0;
+  mutable int last_vertical_tab_strip_width_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
