@@ -11,6 +11,10 @@ namespace ash::help_app::prefs {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHelpAppHasCompletedNewDeviceChecklist, false);
   registry->RegisterBooleanPref(kHelpAppHasVisitedHowToPage, false);
+  registry->RegisterIntegerPref(kHelpAppNotificationLastShownMilestone, -10);
+  registry->RegisterBooleanPref(kHelpAppShouldShowGetStarted, false);
+  registry->RegisterBooleanPref(kHelpAppShouldShowParentalControl, false);
+  registry->RegisterBooleanPref(kHelpAppTabletModeDuringOobe, false);
 }
 
 }  // namespace ash::help_app::prefs

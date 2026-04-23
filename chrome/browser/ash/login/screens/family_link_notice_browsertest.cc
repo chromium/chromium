@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
@@ -71,7 +71,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
     WizardController::default_controller()->PrepareFirstRunPrefs();
     help_app_pref_fal_ =
         ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-            prefs::kHelpAppShouldShowParentalControl);
+            ash::help_app::prefs::kHelpAppShouldShowParentalControl);
 
     original_callback_.Run(result);
     return result;

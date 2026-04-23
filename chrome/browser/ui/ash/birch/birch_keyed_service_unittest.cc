@@ -16,6 +16,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -781,7 +782,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 1u);
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                ::prefs::kHelpAppNotificationLastShownMilestone),
+                ash::help_app::prefs::kHelpAppNotificationLastShownMilestone),
             GetCurrentMilestone());
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
                 ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
@@ -797,7 +798,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                ::prefs::kHelpAppNotificationLastShownMilestone),
+                ash::help_app::prefs::kHelpAppNotificationLastShownMilestone),
             GetCurrentMilestone());
   EXPECT_TRUE(
       GetProfile()

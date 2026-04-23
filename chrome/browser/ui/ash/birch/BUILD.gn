@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/constants",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//base",
     "//base/test:test_support",
     "//base/version_info",

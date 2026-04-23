@@ -136,6 +136,7 @@ static_library("login") {
     "//ash",
     "//ash/constants",
     "//ash/strings",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//build:branding_buildflags",
     "//cc/base",
     "//chrome/app/vector_icons",

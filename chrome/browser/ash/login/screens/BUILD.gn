@@ -482,6 +482,7 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",

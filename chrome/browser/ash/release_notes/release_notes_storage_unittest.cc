@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -118,7 +119,7 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesOldProfile) {
 TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
   SetUpProfile();
   profile_.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   EXPECT_EQ(true, release_notes_storage_->ShouldNotify());
 }
@@ -128,7 +129,8 @@ TEST_F(ReleaseNotesStorageTest,
        ShouldNotShowReleaseNotesIfShownInCurrentChromeVersion) {
   SetUpProfile();
   profile_.get()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, CurrentMilestone());
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone,
+      CurrentMilestone());
 
   EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
@@ -141,8 +143,9 @@ TEST_F(ReleaseNotesStorageTest, ReleaseNotesShouldOnlyBeNotifiedOnce) {
 
   release_notes_storage_->MarkNotificationShown();
 
-  EXPECT_NE(20, profile_.get()->GetPrefs()->GetInteger(
-                    prefs::kHelpAppNotificationLastShownMilestone));
+  EXPECT_NE(20,
+            profile_.get()->GetPrefs()->GetInteger(
+                ash::help_app::prefs::kHelpAppNotificationLastShownMilestone));
   EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }
 

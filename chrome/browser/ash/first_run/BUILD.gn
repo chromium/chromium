@@ -16,6 +16,7 @@ static_library("first_run") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//base",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",

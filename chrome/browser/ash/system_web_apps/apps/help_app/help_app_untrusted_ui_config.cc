@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "base/check_is_test.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -187,15 +187,16 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   PrefService* pref_service = profile->GetPrefs();
 
   // Add state from the OOBE flow.
-  source->AddBoolean(
-      "shouldShowGetStarted",
-      pref_service->GetBoolean(prefs::kHelpAppShouldShowGetStarted));
+  source->AddBoolean("shouldShowGetStarted",
+                     pref_service->GetBoolean(
+                         ash::help_app::prefs::kHelpAppShouldShowGetStarted));
   source->AddBoolean(
       "shouldShowParentalControl",
-      pref_service->GetBoolean(prefs::kHelpAppShouldShowParentalControl));
-  source->AddBoolean(
-      "tabletModeDuringOOBE",
-      pref_service->GetBoolean(prefs::kHelpAppTabletModeDuringOobe));
+      pref_service->GetBoolean(
+          ash::help_app::prefs::kHelpAppShouldShowParentalControl));
+  source->AddBoolean("tabletModeDuringOOBE",
+                     pref_service->GetBoolean(
+                         ash::help_app::prefs::kHelpAppTabletModeDuringOobe));
   // Checks if any of the MultiDevice features (e.g. Instant Tethering,
   // Messages, Smart Lock) is allowed on this device.
   source->AddBoolean(

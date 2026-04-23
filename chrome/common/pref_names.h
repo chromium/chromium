@@ -616,10 +616,6 @@ inline constexpr char kLastChildScreenTimeSaved[] =
 inline constexpr char kLastChildScreenTimeReset[] =
     "last_child_screen_time_reset";
 
-// Last milestone on which a Help App notification was shown.
-inline constexpr char kHelpAppNotificationLastShownMilestone[] =
-    "help_app_notification_last_shown_milestone";
-
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =
@@ -2395,21 +2391,6 @@ inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
     "device_robot_refresh_token_v2.any-api";
 inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
     "device_refresh_token_is_v3_used.any-api";
-
-// Pref name for whether we should show the Getting Started module in the Help
-// app.
-inline constexpr char kHelpAppShouldShowGetStarted[] =
-    "help_app.should_show_get_started";
-
-// Pref name for whether we should show the Parental Control module in the Help
-// app.
-inline constexpr char kHelpAppShouldShowParentalControl[] =
-    "help_app.should_show_parental_control";
-
-// Pref name for whether the device was in tablet mode when going through
-// the OOBE.
-inline constexpr char kHelpAppTabletModeDuringOobe[] =
-    "help_app.tablet_mode_during_oobe";
 
 // A dictionary containing server-provided device state pulled form the cloud
 // after recovery.

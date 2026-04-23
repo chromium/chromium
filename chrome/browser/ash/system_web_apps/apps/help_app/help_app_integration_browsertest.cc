@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
   profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             0);
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
   std::make_unique<HelpAppNotificationController>(profile())
       ->MaybeShowReleaseNotesNotification();
 
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
   std::make_unique<HelpAppNotificationController>(profile())
       ->MaybeShowReleaseNotesNotification();
 
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2SetHasCompletedNewDeviceChecklist) {
   WaitForTestSystemAppInstall();
   profile()->GetPrefs()->SetBoolean(
-      help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, false);
+      ash::help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, false);
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 
   constexpr char kScript[] = R"(
@@ -610,11 +610,11 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_TRUE(content::ExecJs(
       SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   WaitForPrefValue(profile()->GetPrefs(),
-                   help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist,
+                   ash::help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist,
                    base::Value(true));
 
   EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
-                help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist),
+                ash::help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist),
             true);
 }
 
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2SetHasVisitedHowToPage) {
   WaitForTestSystemAppInstall();
   profile()->GetPrefs()->SetBoolean(
-      help_app::prefs::kHelpAppHasVisitedHowToPage, false);
+      ash::help_app::prefs::kHelpAppHasVisitedHowToPage, false);
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 
   constexpr char kScript[] = R"(
@@ -636,11 +636,11 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_TRUE(content::ExecJs(
       SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
   WaitForPrefValue(profile()->GetPrefs(),
-                   help_app::prefs::kHelpAppHasVisitedHowToPage,
+                   ash::help_app::prefs::kHelpAppHasVisitedHowToPage,
                    base::Value(true));
 
   EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
-                help_app::prefs::kHelpAppHasVisitedHowToPage),
+                ash::help_app::prefs::kHelpAppHasVisitedHowToPage),
             true);
 }
 

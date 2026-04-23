@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 
 class Profile;
-class PrefRegistrySimple;
 
 namespace ash {
 
@@ -20,9 +19,6 @@ class ReleaseNotesNotification;
 // Class to show notifications under the Help App.
 class HelpAppNotificationController {
  public:
-  // Registers profile prefs.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   explicit HelpAppNotificationController(Profile* profile);
   HelpAppNotificationController(const HelpAppNotificationController&) = delete;
   HelpAppNotificationController& operator=(

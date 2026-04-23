@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +108,7 @@ TEST_P(ReleaseNotesNotificationTest, DoNotShowReleaseNotesNotification) {
   // Set the pref to the last shown milestone to ensure release notes do not
   // show.
   profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone,
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone,
       version_info::GetVersion().components()[0]);
 
   release_notes_notification_->MaybeShowReleaseNotes();
@@ -120,7 +121,7 @@ TEST_P(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
 
   // Set the pref to an older milestone to ensure release notes do show.
   profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
+      ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   release_notes_notification_->MaybeShowReleaseNotes();
 

@@ -26,6 +26,7 @@ static_library("release_notes") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ash/profiles",
@@ -61,6 +62,7 @@ source_set("unit_tests") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",

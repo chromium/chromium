@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/first_run/first_run.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -117,10 +118,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // users will always see the welcome app on a new device.
   // See crbug.com/41337695
   registry->RegisterBooleanPref(prefs::kFirstRunTutorialShown, false);
-  registry->RegisterBooleanPref(prefs::kHelpAppShouldShowGetStarted, false);
-  registry->RegisterBooleanPref(prefs::kHelpAppShouldShowParentalControl,
-                                false);
-  registry->RegisterBooleanPref(prefs::kHelpAppTabletModeDuringOobe, false);
 }
 
 bool ShouldLaunchHelpApp(Profile* profile) {
@@ -128,10 +125,12 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   // Even if we don't launch the help app now, define the preferences for what
   // should be shown in the app when it is launched.
-  profile->GetPrefs()->SetBoolean(prefs::kHelpAppShouldShowGetStarted,
-                                  ShouldShowGetStarted(profile, user_manager));
-  profile->GetPrefs()->SetBoolean(prefs::kHelpAppTabletModeDuringOobe,
-                                  display::Screen::Get()->InTabletMode());
+  profile->GetPrefs()->SetBoolean(
+      ash::help_app::prefs::kHelpAppShouldShowGetStarted,
+      ShouldShowGetStarted(profile, user_manager));
+  profile->GetPrefs()->SetBoolean(
+      ash::help_app::prefs::kHelpAppTabletModeDuringOobe,
+      display::Screen::Get()->InTabletMode());
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();

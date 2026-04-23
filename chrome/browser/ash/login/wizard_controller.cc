@@ -17,6 +17,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -3824,8 +3825,9 @@ void WizardController::PrepareFirstRunPrefs() {
   bool shouldShowParentalControl =
       wizard_context_->sign_in_as_child && !profile->IsChild() &&
       !profile->GetProfilePolicyConnector()->IsManaged();
-  profile->GetPrefs()->SetBoolean(::prefs::kHelpAppShouldShowParentalControl,
-                                  shouldShowParentalControl);
+  profile->GetPrefs()->SetBoolean(
+      ash::help_app::prefs::kHelpAppShouldShowParentalControl,
+      shouldShowParentalControl);
 }
 
 PrefService* WizardController::GetLocalState() {

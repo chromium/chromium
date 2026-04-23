@@ -19,6 +19,25 @@ inline constexpr char kHelpAppHasCompletedNewDeviceChecklist[] =
 inline constexpr char kHelpAppHasVisitedHowToPage[] =
     "help_app.has_visited_how_to_page";
 
+// Last milestone on which a Help App notification was shown.
+inline constexpr char kHelpAppNotificationLastShownMilestone[] =
+    "help_app_notification_last_shown_milestone";
+
+// Pref name for whether we should show the Getting Started module in the Help
+// app.
+inline constexpr char kHelpAppShouldShowGetStarted[] =
+    "help_app.should_show_get_started";
+
+// Pref name for whether we should show the Parental Control module in the Help
+// app.
+inline constexpr char kHelpAppShouldShowParentalControl[] =
+    "help_app.should_show_parental_control";
+
+// Pref name for whether the device was in tablet mode when going through
+// the OOBE.
+inline constexpr char kHelpAppTabletModeDuringOobe[] =
+    "help_app.tablet_mode_during_oobe";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace ash::help_app::prefs
