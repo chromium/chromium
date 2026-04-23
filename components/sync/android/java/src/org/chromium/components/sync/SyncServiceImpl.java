@@ -445,8 +445,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         void acknowledgeBookmarksLimitExceededError(
                 long nativeSyncServiceAndroidBridge, int source);
 
-        boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
-
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
 
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
