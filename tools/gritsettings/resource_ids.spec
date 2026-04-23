@@ -479,7 +479,7 @@
     "includes": [4040],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/indigo/resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
+    "META": {"sizes": {"includes": [20],}},
     "includes": [4043],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/indigo_internals/resources.grd": {

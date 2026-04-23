@@ -3262,6 +3262,15 @@ Chromium is unable to recover your settings.
       <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">
         Indigo
       </message>
+      <message name="IDS_INDIGO_TEXT_LAYER_STEP_1" desc="The text for step 1 of the Indigo text layer." translateable="false">
+        Loading (1/3)...
+      </message>
+      <message name="IDS_INDIGO_TEXT_LAYER_STEP_2" desc="The text for step 2 of the Indigo text layer." translateable="false">
+        Loading (2/3)...
+      </message>
+      <message name="IDS_INDIGO_TEXT_LAYER_STEP_3" desc="The text for step 3 of the Indigo text layer." translateable="false">
+        Loading (3/3)...
+      </message>
     </messages>
   </release>
 </grit>

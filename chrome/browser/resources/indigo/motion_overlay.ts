@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './text_overlay.js';
+
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './motion_overlay.css.js';
 import {getHtml} from './motion_overlay.html.js';
+import type {IndigoTextOverlayElement} from './text_overlay.js';
 
 const LOADING_CIRCLES_START_DELAY_MS: number = 1300;
 const FINISHED_TIMEOUT_MS: number = 2000;
+const TEXT_OVERLAY_START_DELAY_MS: number = 1000;
 
 export interface IndigoMotionOverlayElement {
   $: {
@@ -18,6 +22,7 @@ export interface IndigoMotionOverlayElement {
     swipeEllipse2: HTMLElement,
     loadingCircleDark: HTMLElement,
     loadingCircleLight: HTMLElement,
+    textOverlay: IndigoTextOverlayElement,
   };
 }
 
@@ -72,12 +77,18 @@ export class IndigoMotionOverlayElement extends CrLitElement {
     this.loadingTimeout_ = window.setTimeout(() => {
       this.showLoadingCircles_ = true;
     }, LOADING_CIRCLES_START_DELAY_MS);
+
+    window.setTimeout(() => {
+      this.$.textOverlay.startSequence();
+    }, TEXT_OVERLAY_START_DELAY_MS);
   }
 
   private startExitAnimation_() {
     if (this.loadingTimeout_) {
       window.clearTimeout(this.loadingTimeout_);
     }
+
+    this.$.textOverlay.stopSequence();
 
     // This is to handle a scenario where the exit animation is started before
     // the entry animation has completed. In this case, we want the exit

@@ -1,0 +1,26 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  color: rgb(11, 87, 208);
+  display: flex;
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+div {
+  text-align: center;
+}

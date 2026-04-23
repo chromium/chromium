@@ -19,6 +19,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "motion_overlay.css",
+    "text_overlay.css",
   ]
 
   ts_files = [
@@ -26,6 +27,8 @@ build_webui("build") {
     "app.ts",
     "motion_overlay.html.ts",
     "motion_overlay.ts",
+    "text_overlay.html.ts",
+    "text_overlay.ts",
   ]
 
   ts_deps = [ "//third_party/lit/v3_0:build_ts" ]

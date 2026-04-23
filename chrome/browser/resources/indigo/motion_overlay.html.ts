@@ -14,6 +14,7 @@ export function getHtml(this: IndigoMotionOverlayElement) {
 <div id="swipeEllipse2"></div>
 <div id="loadingCircleDark"></div>
 <div id="loadingCircleLight"></div>
+<indigo-text-overlay id="textOverlay"></indigo-text-overlay>
 <!--_html_template_end_-->`;
   // clang-format on
 }

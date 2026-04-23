@@ -36,6 +36,12 @@ base::DictValue GetStrings() {
   dict.Set("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
   dict.Set("language", l10n_util::GetLanguage(application_locale));
   dict.Set("indigoTitle", l10n_util::GetStringUTF16(IDS_INDIGO_TITLE));
+  dict.Set("textLayerStep1",
+           l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_1));
+  dict.Set("textLayerStep2",
+           l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_2));
+  dict.Set("textLayerStep3",
+           l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_3));
   return dict;
 }
 
