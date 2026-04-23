@@ -9729,6 +9729,9 @@ crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/n
 # Gardener 2026-04-15
 crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-image-same-src.html [ Failure Pass ]
 
+crbug.com/407751293 http/tests/devtools/device-mode/device-mode-switching-devices.js [ Failure Pass ]
+crbug.com/407751293 http/tests/devtools/device-mode/device-mode-toolbar.js [ Failure Pass ]
+
 # Gardener 2026-04-16
 # Skipped on Mac because native overlay scrollbars can hide before the second
 # drag, causing scrollPromise to time out. Coverage retained on other platforms
