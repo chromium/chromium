@@ -394,12 +394,16 @@ void TabAndroid::InitWebContents(
   // Renderer. We need to start tracking the content-to-visible time now. On
   // Android the tab controller does not send a visibility change until later
   // on, at which point it is too late to attempt to track tab changes for
-  // unloaded frames.
-  web_contents_->SetTabSwitchStartTime(
-      base::TimeTicks::Now(),
-      resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
-          web_contents_.get()),
-      /*had_saved_frame_at_start=*/false);
+  // unloaded frames. If the tab is created in the background, its visibility
+  // will be HIDDEN and the tab switch start time will be recorded when it's
+  // made visible in OnShow.
+  if (web_contents_->GetVisibility() != content::Visibility::HIDDEN) {
+    web_contents_->SetTabSwitchStartTime(
+        base::TimeTicks::Now(),
+        resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
+            web_contents_.get()),
+        /*had_saved_frame_at_start=*/false);
+  }
 
   const SessionID session_id =
       sessions::SessionTabHelper::IdForTab(web_contents_.get());
