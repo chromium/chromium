@@ -1515,6 +1515,11 @@ class GapAccumulator {
     cross_gaps_aggregator_ =
         GapSegmentStateAggregator(/*cell_count=*/row_track_count - 1);
 
+    if (row_track_count > 2) {
+      // With `n` tracks, we have `n - 1` gaps.
+      main_gaps_.ReserveInitialCapacity(row_track_count - 1);
+    }
+
     // CSS Gaps[1] defines an intersection point to exist in the center of gaps.
     // Hence, we get the midpoint for each row gap for the derivation of
     // intersection points. The first gap ends at the second track, and the last
@@ -1561,6 +1566,11 @@ class GapAccumulator {
     // each column in the grid.
     main_gaps_aggregator_ =
         GapSegmentStateAggregator(/*cell_count=*/col_track_count - 1);
+
+    if (col_track_count > 2) {
+      // With `n` tracks, we have `n - 1` gaps.
+      cross_gaps_.ReserveInitialCapacity(col_track_count - 1);
+    }
 
     // CSS Gaps defines an intersection point to exist in the center
     // of gaps. Hence, we get the midpoint for each column gap for the

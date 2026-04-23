@@ -138,6 +138,7 @@ class CORE_EXPORT FlexGapAccumulator {
             border_scrollbar_padding_inline_start) {
     cross_gaps_.ReserveInitialCapacity(num_flex_items);
     main_gaps_.ReserveInitialCapacity(num_lines - 1);
+    cross_gap_sizes_.ReserveInitialCapacity(num_lines);
   }
 
   const GapGeometry* BuildGapGeometry(
