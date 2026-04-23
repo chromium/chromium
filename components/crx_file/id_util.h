@@ -32,7 +32,7 @@ std::string GenerateId(base::span<const uint8_t> input);
 
 // Generates an ID from a HEX string. The same input string will always generate
 // the same output ID.
-std::string GenerateIdFromHex(const std::string& input);
+std::string GenerateIdFromHex(std::string_view input);
 
 // Generates an ID from the first `kIdSize` bytes of a SHA256 hash.
 // `span` must be at least `kIdSize` bytes.
@@ -43,7 +43,7 @@ std::string GenerateIdFromHash(base::span<const uint8_t> hash);
 std::string GenerateIdForPath(const base::FilePath& path);
 
 // Returns the hash of an extension ID in hex.
-std::string HashedIdInHex(const std::string& id);
+std::string HashedIdInHex(std::string_view id);
 
 // Normalizes the path for use by the extension. On Windows, this will make
 // sure the drive letter is uppercase.

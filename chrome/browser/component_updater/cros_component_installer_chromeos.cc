@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <string_view>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -76,7 +77,7 @@ void FinishCustomUninstallOnUIThread(const std::string& name) {
       name, base::BindOnce(&LogCustomUninstall));
 }
 
-std::string GenerateId(const std::string& sha2hashstr) {
+std::string GenerateId(std::string_view sha2hashstr) {
   // kIdSize is the count of a pair of hex in the sha2hash array.
   // In string representation of sha2hash, size is doubled since each hex is
   // represented by a single char.
