@@ -132,7 +132,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
 
   // Enough memory for both allocations.
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
-  manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
 
   memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory1.Unlock(0, 0);
@@ -160,7 +160,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
 
   // Just enough memory for one allocation.
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(6));
-  manager_->SetMemoryLimit(memory2.mapped_size());
+  manager_->SetMaxBytes(memory2.mapped_size());
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
   // LRU allocation should still be resident.
@@ -187,7 +187,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
 
   // Not enough memory for one allocation.
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
-  manager_->SetMemoryLimit(memory.mapped_size() - 1);
+  manager_->SetMaxBytes(memory.mapped_size() - 1);
   // We need to enforce memory policy as our memory usage is currently above
   // the limit.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
@@ -242,7 +242,7 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   // Make sure the manager is able to reduce memory after the segment 1 was
   // deleted.
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
-  manager_->SetMemoryLimit(0);
+  manager_->SetMaxBytes(0);
 
   // Unlock segment 2.
   memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
@@ -268,7 +268,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
 
   // Allow two segments to be resident so moderate pressure should trim to one.
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
-  manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
   memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory1.Unlock(0, 0);
   memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
@@ -310,7 +310,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   ASSERT_TRUE(memory2.Map(kDataSize));
 
   manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
-  manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
+  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
   memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory1.Unlock(0, 0);
   memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
@@ -347,21 +347,21 @@ class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
   std::unique_ptr<DiscardableSharedMemoryManager> manager_;
 };
 
-class SetMemoryLimitRunner : public base::DelegateSimpleThread::Delegate {
+class SetMaxBytesRunner : public base::DelegateSimpleThread::Delegate {
  public:
-  SetMemoryLimitRunner(DiscardableSharedMemoryManager* manager, size_t limit)
-      : manager_(manager), limit_(limit) {}
-  ~SetMemoryLimitRunner() override = default;
+  SetMaxBytesRunner(DiscardableSharedMemoryManager* manager, size_t bytes)
+      : manager_(manager), bytes_(bytes) {}
+  ~SetMaxBytesRunner() override = default;
 
-  void Run() override { manager_->SetMemoryLimit(limit_); }
+  void Run() override { manager_->SetMaxBytes(bytes_); }
 
  private:
   const raw_ptr<DiscardableSharedMemoryManager> manager_;
-  const size_t limit_;
+  const size_t bytes_;
 };
 
 TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
-       SetMemoryLimitOnSimpleThread) {
+       SetMaxBytesOnSimpleThread) {
   constexpr int kDataSize = 1024;
 
   base::UnsafeSharedMemoryRegion shared_region;
@@ -369,10 +369,10 @@ TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
       kInvalidUniqueID, kDataSize, 0, &shared_region);
   ASSERT_TRUE(shared_region.IsValid());
 
-  // Set the memory limit to a value that will require EnforceMemoryPolicy()
+  // Set the max bytes to a value that will require EnforceMemoryPolicy()
   // to be schedule on a thread without a message loop.
-  SetMemoryLimitRunner runner(manager_.get(), kDataSize - 1);
-  base::DelegateSimpleThread thread(&runner, "memory_limit_setter");
+  SetMaxBytesRunner runner(manager_.get(), kDataSize - 1);
+  base::DelegateSimpleThread thread(&runner, "max_bytes_setter");
   thread.Start();
   thread.Join();
 }

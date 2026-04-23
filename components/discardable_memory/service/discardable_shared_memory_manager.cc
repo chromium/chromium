@@ -157,28 +157,28 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
   bool is_locked_;
 };
 
-// Returns the default memory limit to use for discardable memory, taking
-// the amount physical memory available and other platform specific constraints
-// into account.
-uint64_t GetDefaultMemoryLimit() {
+// Returns the default maximum number of bytes to use for discardable memory,
+// taking the amount physical memory available and other platform specific
+// constraints into account.
+uint64_t GetDefaultMaxBytes() {
   const uint64_t kMegabyte = 1024ull * 1024;
 
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Bypass IsLowEndDevice() check and fix max_default_memory_limit to 64MB on
+  // Bypass IsLowEndDevice() check and fix default_max_bytes to 64MB on
   // Chromecast devices. Set value here as IsLowEndDevice() is used on some, but
   // not all Chromecast devices.
-  uint64_t max_default_memory_limit = 64 * kMegabyte;
+  uint64_t default_max_bytes = 64 * kMegabyte;
 #else
 #if BUILDFLAG(IS_ANDROID)
   // Limits the number of FDs used to 32, assuming a 4MB allocation size.
-  uint64_t max_default_memory_limit = 128 * kMegabyte;
+  uint64_t default_max_bytes = 128 * kMegabyte;
 #else
-  uint64_t max_default_memory_limit = 512 * kMegabyte;
+  uint64_t default_max_bytes = 512 * kMegabyte;
 #endif
 
   // Use 1/8th of discardable memory on low-end devices.
   if (base::SysInfo::IsLowEndDevice())
-    max_default_memory_limit /= 8;
+    default_max_bytes /= 8;
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -197,15 +197,15 @@ uint64_t GetDefaultMemoryLimit() {
     }
 
     // Allow 1/2 of available shmem dir space to be used for discardable memory.
-    max_default_memory_limit =
-        std::min(max_default_memory_limit,
+    default_max_bytes =
+        std::min(default_max_bytes,
                  static_cast<uint64_t>(shmem_dir_amount_of_free_space / 2));
   }
 #endif
 
   // Allow 25% of physical memory to be used for discardable memory.
   return std::min(
-      max_default_memory_limit,
+      default_max_bytes,
       base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() / 4);
 }
 
@@ -226,8 +226,8 @@ DiscardableSharedMemoryManager::MemorySegment::~MemorySegment() = default;
 
 DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
     : next_client_id_(1),
-      default_memory_limit_(GetDefaultMemoryLimit()),
-      memory_limit_(default_memory_limit_),
+      default_max_bytes_(GetDefaultMaxBytes()),
+      max_bytes_(default_max_bytes_),
       bytes_allocated_(0),
       // Current thread might not have a task runner in tests.
       enforce_memory_policy_task_runner_(
@@ -243,7 +243,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
   DCHECK(!g_instance)
       << "A DiscardableSharedMemoryManager already exists in this process.";
   g_instance = this;
-  DCHECK_NE(memory_limit_, 0u);
+  DCHECK_NE(max_bytes_, 0u);
   enforce_memory_policy_callback_ =
       base::BindRepeating(&DiscardableSharedMemoryManager::EnforceMemoryPolicy,
                           weak_ptr_factory_.GetWeakPtr());
@@ -424,18 +424,18 @@ void DiscardableSharedMemoryManager::ClientRemoved(int client_id) {
     BytesAllocatedChanged(bytes_allocated_);
 }
 
-void DiscardableSharedMemoryManager::SetMemoryLimit(size_t limit) {
+void DiscardableSharedMemoryManager::SetMaxBytes(size_t bytes) {
   base::AutoLock lock(lock_);
 
-  memory_limit_ = limit;
-  ReduceMemoryUsageUntilWithinMemoryLimit();
+  max_bytes_ = bytes;
+  ReduceMemoryUsageUntilWithinMaxBytes();
 }
 
 void DiscardableSharedMemoryManager::EnforceMemoryPolicy() {
   base::AutoLock lock(lock_);
 
   enforce_memory_policy_pending_ = false;
-  ReduceMemoryUsageUntilWithinMemoryLimit();
+  ReduceMemoryUsageUntilWithinMaxBytes();
 }
 
 size_t DiscardableSharedMemoryManager::GetBytesAllocated() const {
@@ -470,18 +470,20 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   }
 
   // Memory usage must be reduced to prevent the addition of |size| from
-  // taking usage above the limit. Usage should be reduced to 0 in cases
-  // where |size| is greater than the limit.
-  size_t limit = 0;
+  // taking usage above the max bytes. Usage should be reduced to 0 in
+  // cases where |size| is greater than the max bytes.
+  size_t max_bytes_before_allocation = 0;
   // Note: the actual mapped size can be larger than requested and cause
-  // |bytes_allocated_| to temporarily be larger than |memory_limit_|. The
+  // |bytes_allocated_| to temporarily be larger than |max_bytes_|. The
   // error is minimized by incrementing |bytes_allocated_| with the actual
   // mapped size rather than |size| below.
-  if (size < memory_limit_)
-    limit = memory_limit_ - size;
+  if (size < max_bytes_) {
+    max_bytes_before_allocation = max_bytes_ - size;
+  }
 
-  if (bytes_allocated_ > limit)
-    ReduceMemoryUsageUntilWithinLimit(limit);
+  if (bytes_allocated_ > max_bytes_before_allocation) {
+    ReduceMemoryUsageUntilWithinBytes(max_bytes_before_allocation);
+  }
 
   std::unique_ptr<base::DiscardableSharedMemory> memory(
       new base::DiscardableSharedMemory);
@@ -509,8 +511,9 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   segments_.push_back(segment.get());
   std::push_heap(segments_.begin(), segments_.end(), CompareMemoryUsageTime);
 
-  if (bytes_allocated_ > memory_limit_)
+  if (bytes_allocated_ > max_bytes_) {
     ScheduleEnforceMemoryPolicy();
+  }
 }
 
 void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
@@ -536,22 +539,24 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
     BytesAllocatedChanged(bytes_allocated_);
 }
 
-void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMemoryLimit() {
+void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMaxBytes() {
   lock_.AssertAcquired();
 
-  if (bytes_allocated_ <= memory_limit_)
+  if (bytes_allocated_ <= max_bytes_) {
     return;
+  }
 
-  ReduceMemoryUsageUntilWithinLimit(memory_limit_);
-  if (bytes_allocated_ > memory_limit_)
+  ReduceMemoryUsageUntilWithinBytes(max_bytes_);
+  if (bytes_allocated_ > max_bytes_) {
     ScheduleEnforceMemoryPolicy();
+  }
 }
 
-void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinLimit(
-    size_t limit) {
+void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinBytes(
+    size_t bytes) {
   TRACE_EVENT1("renderer_host",
                "DiscardableSharedMemoryManager::"
-               "ReduceMemoryUsageUntilWithinLimit",
+               "ReduceMemoryUsageUntilWithinBytes",
                "bytes_allocated", bytes_allocated_);
 
   // Usage time of currently locked segments are updated to this time and
@@ -562,8 +567,9 @@ void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinLimit(
   lock_.AssertAcquired();
   size_t bytes_allocated_before_purging = bytes_allocated_;
   while (!segments_.empty()) {
-    if (bytes_allocated_ <= limit)
+    if (bytes_allocated_ <= bytes) {
       break;
+    }
 
     // Stop eviction attempts when the LRU segment is currently in use.
     if (segments_.front()->memory()->last_known_usage() >= current_time)
@@ -678,12 +684,12 @@ void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
     case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      // Purge memory until usage is within half of |memory_limit_|.
-      ReduceMemoryUsageUntilWithinLimit(memory_limit_ / 2);
+      // Purge memory until usage is within half of |max_bytes_|.
+      ReduceMemoryUsageUntilWithinBytes(max_bytes_ / 2);
       break;
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // Purge everything possible when pressure is critical.
-      ReduceMemoryUsageUntilWithinLimit(0);
+      ReduceMemoryUsageUntilWithinBytes(0);
       break;
   }
 }
