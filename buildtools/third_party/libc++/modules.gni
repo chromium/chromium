@@ -69,18 +69,6 @@ if (use_clang_modules) {
         ]
       }
 
-      # Any complex target-specific logic needs to go in here.
-      # The modularize tool supports simple attributes, but not conditional
-      # logic.
-      if (target_name == "std_stdatomic_h" && use_cxx23) {
-        # In cxx23, stdatomic.h uses libcxx's stdatomic rather than the
-        # builtin.
-        if (!is_win) {
-          public_deps -= [ ":_Builtin_stdatomic" ]
-        }
-        public_deps += [ ":std" ]
-      }
-
       if (is_apple && target_name == "libunwind") {
         # Apple's libunwind.h #includes ptrauth.h.
         public_deps += [ ":ptrauth" ]

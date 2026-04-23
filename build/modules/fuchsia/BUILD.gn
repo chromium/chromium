@@ -41,14 +41,10 @@ builtin_module("_Builtin_stdalign") {
 builtin_module("_Builtin_stdarg") {
 }
 
-builtin_module("_Builtin_stdatomic") {
-  public_deps = [
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-  ]
+builtin_module("_Builtin_stdbool") {
 }
 
-builtin_module("_Builtin_stdbool") {
+builtin_module("_Builtin_stdckdint") {
 }
 
 builtin_module("_Builtin_stdcountof") {
@@ -95,13 +91,17 @@ libcxx_module("std") {
 }
 
 libcxx_module("std_complex_h") {
-  public_deps = [ ":std" ]
+  public_deps = [
+    ":std",
+    ":sys_stage1",
+  ]
 }
 
 libcxx_module("std_core") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":sys_stage1",
   ]
 }
 
@@ -118,13 +118,17 @@ libcxx_module("std_fenv_h") {
 }
 
 libcxx_module("std_float_h") {
-  public_deps = [ ":_Builtin_float" ]
+  public_deps = [
+    ":_Builtin_float",
+    ":sys_stage1",
+  ]
 }
 
 libcxx_module("std_inttypes_h") {
   public_deps = [
     ":_Builtin_inttypes",
     ":_Builtin_stdint",
+    ":sys_stage1",
   ]
 }
 
@@ -144,7 +148,10 @@ libcxx_module("std_private_mbstate_t") {
 }
 
 libcxx_module("std_stdatomic_h") {
-  public_deps = [ ":_Builtin_stdatomic" ]
+  public_deps = [
+    ":std",
+    ":sys_stage1",
+  ]
 }
 
 libcxx_module("std_string_h") {
@@ -155,7 +162,10 @@ libcxx_module("std_string_h") {
 }
 
 libcxx_module("std_tgmath_h") {
-  public_deps = [ ":std" ]
+  public_deps = [
+    ":std",
+    ":sys_stage1",
+  ]
 }
 
 libcxx_module("std_uchar_h") {
@@ -182,8 +192,8 @@ group("all_modules") {
     ":_Builtin_limits",
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
-    ":_Builtin_stdatomic",
     ":_Builtin_stdbool",
+    ":_Builtin_stdckdint",
     ":_Builtin_stdcountof",
     ":_Builtin_stddef",
     ":_Builtin_stddef_wint_t",

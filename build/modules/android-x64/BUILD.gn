@@ -48,16 +48,10 @@ builtin_module("_Builtin_stdalign") {
 builtin_module("_Builtin_stdarg") {
 }
 
-builtin_module("_Builtin_stdatomic") {
-  public_deps = [
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":std",
-    ":sys_stage1",
-  ]
+builtin_module("_Builtin_stdbool") {
 }
 
-builtin_module("_Builtin_stdbool") {
+builtin_module("_Builtin_stdckdint") {
 }
 
 builtin_module("_Builtin_stdcountof") {
@@ -172,7 +166,6 @@ libcxx_module("std_private_mbstate_t") {
 
 libcxx_module("std_stdatomic_h") {
   public_deps = [
-    ":_Builtin_stdatomic",
     ":std",
     ":sys_stage1",
   ]
@@ -229,8 +222,8 @@ group("all_modules") {
     ":_Builtin_limits",
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
-    ":_Builtin_stdatomic",
     ":_Builtin_stdbool",
+    ":_Builtin_stdckdint",
     ":_Builtin_stdcountof",
     ":_Builtin_stddef",
     ":_Builtin_stddef_wint_t",

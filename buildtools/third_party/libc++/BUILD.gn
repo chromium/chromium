@@ -268,15 +268,10 @@ if (use_clang_modules && use_unified_system_module) {
   builtin_module("_Builtin_stdarg") {
   }
 
-  builtin_module("_Builtin_stdatomic") {
-    public_deps = [
-      ":_Builtin_stddef",
-      ":_Builtin_stdint",
-      ":sysroot_stdatomic",
-    ]
+  builtin_module("_Builtin_stdbool") {
   }
 
-  builtin_module("_Builtin_stdbool") {
+  builtin_module("_Builtin_stdckdint") {
   }
 
   builtin_module("_Builtin_stddef") {
@@ -301,8 +296,8 @@ if (use_clang_modules && use_unified_system_module) {
       "//buildtools/third_party/libc++:_Builtin_limits",
       "//buildtools/third_party/libc++:_Builtin_stdalign",
       "//buildtools/third_party/libc++:_Builtin_stdarg",
-      "//buildtools/third_party/libc++:_Builtin_stdatomic",
       "//buildtools/third_party/libc++:_Builtin_stdbool",
+      "//buildtools/third_party/libc++:_Builtin_stdckdint",
       "//buildtools/third_party/libc++:_Builtin_stddef",
       "//buildtools/third_party/libc++:_Builtin_stdint",
       "//buildtools/third_party/libc++:_Builtin_unwind",
@@ -399,11 +394,7 @@ if (use_clang_modules && use_unified_system_module) {
   }
 
   libcxx_module("std_stdatomic_h") {
-    public_deps = [
-      ":_Builtin_stdatomic",
-      ":std_config",
-      ":sysroot_stdint",
-    ]
+    public_deps = [ ":std" ]
   }
 
   libcxx_module("std_string_h") {
