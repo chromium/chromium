@@ -83,7 +83,7 @@ bool ShouldIgnorePermissionRequest(
   // - Omnibox Popup is an embedded WebUI that itself may request permissions.
   const GURL visible_url = web_contents->GetVisibleURL();
   const GURL committed_url = web_contents->GetLastCommittedURL();
-  if (visible_url == GURL(chrome::kChromeUINewTabURL) ||
+  if (visible_url == chrome::ChromeUINewTabURLAsGURL() ||
       committed_url.host() == chrome::kChromeUIOmniboxPopupHost ||
       committed_url.host() == chrome::kChromeUIContextualTasksHost) {
     return false;
