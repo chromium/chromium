@@ -58,6 +58,19 @@ struct StructTraits<unexportable_keys::mojom::UnexportableKeyIdDataView,
   static bool Read(unexportable_keys::mojom::UnexportableKeyIdDataView data,
                    unexportable_keys::UnexportableKeyId* output);
 };
+
+template <>
+struct StructTraits<unexportable_keys::mojom::UnexportableSigningKeyIdDataView,
+                    unexportable_keys::UnexportableSigningKeyId> {
+  static const base::UnguessableToken& key_id(
+      const unexportable_keys::UnexportableSigningKeyId& input) {
+    return input.value();
+  }
+
+  static bool Read(
+      unexportable_keys::mojom::UnexportableSigningKeyIdDataView data,
+      unexportable_keys::UnexportableSigningKeyId* output);
+};
 }  // namespace mojo
 
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_MOJOM_UNEXPORTABLE_KEYS_MOJOM_TRAITS_H_

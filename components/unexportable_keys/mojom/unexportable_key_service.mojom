@@ -58,6 +58,10 @@ struct UnexportableKeyId {
   mojo_base.mojom.UnguessableToken key_id;
 };
 
+struct UnexportableSigningKeyId {
+  mojo_base.mojom.UnguessableToken key_id;
+};
+
 // A struct that holds the new key id, as well as metadata like the wrapped
 // key, or the key's algorithm.
 struct NewKeyData {

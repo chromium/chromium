@@ -144,4 +144,18 @@ bool StructTraits<unexportable_keys::mojom::UnexportableKeyIdDataView,
   *output = unexportable_keys::UnexportableKeyId(key_id);
   return true;
 }
+
+bool StructTraits<unexportable_keys::mojom::UnexportableSigningKeyIdDataView,
+                  unexportable_keys::UnexportableSigningKeyId>::
+    Read(unexportable_keys::mojom::UnexportableSigningKeyIdDataView data,
+         unexportable_keys::UnexportableSigningKeyId* output) {
+  base::UnguessableToken key_id;
+  if (!data.ReadKeyId(&key_id)) {
+    // Failed to read the underlying UnguessableToken.
+    return false;
+  }
+  // Construct the base::TokenType from the UnguessableToken.
+  *output = unexportable_keys::UnexportableSigningKeyId(key_id);
+  return true;
+}
 }  // namespace mojo
