@@ -2038,6 +2038,7 @@ class LocationBarMediator
                 mCurrentInput.getUserText(), mCurrentInput.getInitialUserText())) {
             // Second ESC keypress should reset the input to its initial state, if it's different.
             revertChanges();
+            updateButtonVisibility();
         } else {
             // Third ESC keypress should terminate input.
             endInput();

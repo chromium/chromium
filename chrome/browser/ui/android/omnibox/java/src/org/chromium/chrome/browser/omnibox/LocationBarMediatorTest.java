@@ -1015,7 +1015,9 @@ public class LocationBarMediatorTest {
         {
             // Step 2: expect content to be reverted if suggestions are already cleared.
             doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
+            Mockito.clearInvocations(mLocationBarLayout);
             assertTrue(mMediator.handleEscPress());
+            verify(mLocationBarLayout).setDeleteButtonVisibility(false);
             assertEquals(input.getUserText(), input.getInitialUserText());
             verify(mAutocompleteCoordinator, never()).endInput();
         }
