@@ -74,6 +74,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
@@ -5047,6 +5048,67 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GroupSingleTabInSplitView) {
   EXPECT_TRUE(browser()->tab_strip_model()->GetSplitForTab(1).has_value());
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+class ExtensionTabsWebContentsDiscardDisabledTest : public ExtensionTabsTest {
+ public:
+  ExtensionTabsWebContentsDiscardDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsWebContentsDiscardDisabledTest,
+                       OnReplacedEvent) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "onReplaced Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js"
+    }
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.tabs.create({"url": "about:blank"}, function(tab) {
+      chrome.tabs.onReplaced.addListener(function(new_tab_id, old_tab_id) {
+        if (old_tab_id === tab.id && new_tab_id !== tab.id) {
+          chrome.test.sendMessage("success");
+        } else {
+          chrome.test.sendMessage("failure");
+        }
+      });
+      chrome.test.sendMessage("ready");
+    });
+  )");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  ExtensionTestMessageListener success_listener("success");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Wait for the JS to create the tab and attach its listener.
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Do the replacement on the last tab (the one the extension just created).
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  int target_index = tab_strip_model->count() - 1;
+
+  auto new_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          browser()->profile(),
+          content::SiteInstance::Create(browser()->profile())));
+
+  auto old_contents = tab_strip_model->DiscardWebContentsAt(
+      target_index, std::move(new_contents));
+
+  // Wait for the JS test to catch the event and send "success".
+  ASSERT_TRUE(success_listener.WaitUntilSatisfied());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

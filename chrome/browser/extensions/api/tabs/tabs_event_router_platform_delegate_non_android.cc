@@ -108,28 +108,6 @@ void TabsEventRouterPlatformDelegate::OnBrowserCreated(
   }
 }
 
-void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  switch (change.type()) {
-    case TabStripModelChange::kInserted:
-    case TabStripModelChange::kMoved:
-    case TabStripModelChange::kRemoved:
-    case TabStripModelChange::kSelectionOnly: {
-      // These are handled via the TabsEventRouter's observation of
-      // TabListInterface.
-      break;
-    }
-    case TabStripModelChange::kReplaced: {
-      auto* replace = change.GetReplace();
-      DispatchTabReplacedAt(replace->old_contents, replace->new_contents,
-                            replace->index);
-      break;
-    }
-  }
-}
-
 void TabsEventRouterPlatformDelegate::OnTabGroupChanged(
     const TabGroupChange& change) {
   // Maintain the previous tabstrip observation call sequence for extension so
@@ -225,31 +203,6 @@ void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
     router_->DispatchTabUpdatedEvent(
         lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
         std::move(changed_property_names));
-  }
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    int index) {
-  // Notify listeners that the next tabs closing or being added are due to
-  // WebContents being swapped.
-  const int new_tab_id = ExtensionTabUtil::GetTabId(new_contents);
-  const int old_tab_id = ExtensionTabUtil::GetTabId(old_contents);
-  base::ListValue args;
-  args.Append(new_tab_id);
-  args.Append(old_tab_id);
-
-  router_->DispatchEvent(
-      Profile::FromBrowserContext(new_contents->GetBrowserContext()),
-      events::TABS_ON_REPLACED, api::tabs::OnReplaced::kEventName,
-      std::move(args), EventRouter::UserGestureState::kUnknown);
-
-  router_->UnregisterForTabNotifications(*old_contents,
-                                         /*expect_registered=*/true);
-
-  if (!router_->GetTabEntry(*new_contents)) {
-    router_->RegisterForTabNotifications(*new_contents, index);
   }
 }
 

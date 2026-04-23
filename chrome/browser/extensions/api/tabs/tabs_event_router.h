@@ -206,6 +206,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   void OnHighlightedTabsChanged(
       TabListInterface& tab_list,
       const std::set<tabs::TabInterface*>& highlighted_tabs) override;
+  void OnWebContentsReplaced(TabListInterface& tab_list,
+                             tabs::TabInterface* tab,
+                             content::WebContents* old_contents,
+                             content::WebContents* new_contents) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // ZoomObserver:

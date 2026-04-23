@@ -600,7 +600,15 @@ void TabListBridge::OnTabStripModelChanged(
                             change.GetMove()->to_index);
       }
       break;
-    case TabStripModelChange::kReplaced:
+    case TabStripModelChange::kReplaced: {
+      auto* replace = change.GetReplace();
+      tabs::TabInterface* tab = tab_strip_->GetTabAtIndex(replace->index);
+      for (auto& observer : observers_) {
+        observer.OnWebContentsReplaced(*this, tab, replace->old_contents,
+                                       replace->new_contents);
+      }
+      break;
+    }
     case TabStripModelChange::kSelectionOnly:
       break;
   }

@@ -572,6 +572,32 @@ void TabsEventRouter::OnHighlightedTabsChanged(
                 EventRouter::UserGestureState::kUnknown);
 }
 
+void TabsEventRouter::OnWebContentsReplaced(
+    TabListInterface& tab_list,
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  // Notify listeners that the next tabs closing or being added are due to
+  // WebContents being swapped.
+  const int new_tab_id = ExtensionTabUtil::GetTabId(new_contents);
+  const int old_tab_id = ExtensionTabUtil::GetTabId(old_contents);
+  base::ListValue args;
+  args.Append(new_tab_id);
+  args.Append(old_tab_id);
+
+  DispatchEvent(Profile::FromBrowserContext(new_contents->GetBrowserContext()),
+                events::TABS_ON_REPLACED, api::tabs::OnReplaced::kEventName,
+                std::move(args), EventRouter::UserGestureState::kUnknown);
+
+  UnregisterForTabNotifications(*old_contents,
+                                /*expect_registered=*/true);
+
+  if (!GetTabEntry(*new_contents)) {
+    RegisterForTabNotifications(*new_contents,
+                                tab_list.GetIndexOfTab(tab->GetHandle()));
+  }
+}
+
 void TabsEventRouter::OnTabListDestroyed(TabListInterface& tab_list) {
   tab_list_observations_.RemoveObservation(&tab_list);
 }

@@ -14,6 +14,10 @@ namespace tabs {
 class TabInterface;
 }
 
+namespace content {
+class WebContents;
+}
+
 class TabListInterface;
 
 // An observer for events that may occur on a TabListInterface, irrespective of
@@ -57,6 +61,15 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   virtual void OnHighlightedTabsChanged(
       TabListInterface& tab_list,
       const std::set<tabs::TabInterface*>& highlighted_tabs) {}
+
+  // Called when the WebContents of a tab is replaced. This is used on Desktop
+  // to maintain backwards compatibility with the old discard path.
+  // `old_contents` is the WebContents being replaced, and `new_contents` is the
+  // WebContents that is replacing it.
+  virtual void OnWebContentsReplaced(TabListInterface& tab_list,
+                                     tabs::TabInterface* tab,
+                                     content::WebContents* old_contents,
+                                     content::WebContents* new_contents) {}
 
   // Called when the TabListInterface is destroyed.
   virtual void OnTabListDestroyed(TabListInterface& tab_list) {}

@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -24,6 +25,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +41,7 @@ struct Event {
     ACTIVE_TAB_CHANGED,
     TAB_REMOVED,
     TAB_MOVED,
+    TAB_REPLACED,
   };
 
   Event(Type type, raw_ptr<tabs::TabInterface> tab)
@@ -56,6 +59,10 @@ struct Event {
   // Used for TAB_MOVED events.
   int from_index = -1;
   int to_index = -1;
+
+  // Used for TAB_REPLACED events.
+  raw_ptr<content::WebContents> old_contents = nullptr;
+  raw_ptr<content::WebContents> new_contents = nullptr;
 };
 
 // A fake implementation of TabListInterfaceObserver that records callback
@@ -108,6 +115,16 @@ class FakeObserver : public TabListInterfaceObserver {
     Event event(Event::Type::TAB_MOVED, tab);
     event.from_index = from_index;
     event.to_index = to_index;
+    events_.push_back(std::move(event));
+  }
+
+  void OnWebContentsReplaced(TabListInterface& tab_list,
+                             tabs::TabInterface* tab,
+                             content::WebContents* old_contents,
+                             content::WebContents* new_contents) override {
+    Event event(Event::Type::TAB_REPLACED, tab);
+    event.old_contents = old_contents;
+    event.new_contents = new_contents;
     events_.push_back(std::move(event));
   }
 
@@ -1241,4 +1258,48 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, IsTabListEditable) {
   // Since one tab list is ineditable, the global check should not allow
   // editing.
   EXPECT_FALSE(TabListInterface::CanEditTabList(*profile));
+}
+
+class TabListBridgeWebContentsDiscardDisabledBrowserTest
+    : public TabListBridgeBrowserTest {
+ public:
+  TabListBridgeWebContentsDiscardDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kWebContentsDiscard);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeWebContentsDiscardDisabledBrowserTest,
+                       WebContentsReplaced) {
+  const GURL url1("http://one.example");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  FakeObserver observer(tab_list_interface);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  content::WebContents* old_contents = tab_strip_model->GetWebContentsAt(0);
+
+  auto new_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          browser()->profile(),
+          content::SiteInstance::Create(browser()->profile())));
+  content::WebContents* new_contents_ptr = new_contents.get();
+
+  // Replace the WebContents.
+  auto discarded_contents =
+      tab_strip_model->DiscardWebContentsAt(0, std::move(new_contents));
+
+  // We should have received one TAB_REPLACED event.
+  auto event = observer.ReadEvent(Event::Type::TAB_REPLACED);
+  EXPECT_EQ(old_contents, event.old_contents);
+  EXPECT_EQ(new_contents_ptr, event.new_contents);
 }
