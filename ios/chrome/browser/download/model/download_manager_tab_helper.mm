@@ -433,8 +433,6 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
               weak_ptr_factory_.GetWeakPtr())));
 
   // Send the download file for enterprise DLP download content scanning.
-  // TODO(crbug.com/501456247): Update the cloudBinaryUploadsService with
-  // cloudBinaryUploadsServiceBase once the desktop refactor is done.
   files_request_handler_ = std::make_unique<
       enterprise_connectors::FilesRequestHandlerBase>(
       content_analysis_info_.get(),
