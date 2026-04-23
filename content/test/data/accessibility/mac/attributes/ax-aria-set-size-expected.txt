@@ -1,8 +1,8 @@
-item_numeric.accessibilityAttributeNames.has(AXARIASetSize)='yes'
+item_numeric.accessibilityAttributeNames.has(AXARIASetSize)='no'
 item_numeric.accessibilityAttributeValue(AXARIASetSize)=3
-item_null.accessibilityAttributeNames.has(AXARIASetSize)='yes'
+item_null.accessibilityAttributeNames.has(AXARIASetSize)='no'
 item_null.accessibilityAttributeValue(AXARIASetSize)=NULL
-set_null.accessibilityAttributeNames.has(AXARIASetSize)='yes'
+set_null.accessibilityAttributeNames.has(AXARIASetSize)='no'
 set_null.accessibilityAttributeValue(AXARIASetSize)=NULL
 not_applicable.accessibilityAttributeNames.has(AXARIASetSize)='no'
 not_applicable.accessibilityAttributeValue(AXARIASetSize)=NULL

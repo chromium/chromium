@@ -1,33 +1,33 @@
 AXWebArea
 ++AXHeading AXTitle='My Documents' AXValue=3
 ++++AXStaticText AXValue='My Documents'
-++AXOutline AXARIASetSize=2 AXTitleUIElement=:2
-++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=0 AXTitle='Projects'
+++AXOutline AXTitleUIElement=:2
+++++AXRow AXSubrole=AXOutlineRow AXIndex=0 AXTitle='Projects'
 ++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Projects'
-++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=3
-++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=3 AXIndex=1 AXTitle='project-1.docx'
+++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++AXRow AXSubrole=AXOutlineRow AXIndex=1 AXTitle='project-1.docx'
 ++++++++++AXStaticText AXValue='%E2%97%A6 '
 ++++++++++AXStaticText AXValue='project-1.docx'
-++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=2 AXARIASetSize=3 AXIndex=2 AXTitle='Project 3'
+++++++++AXRow AXSubrole=AXOutlineRow AXIndex=2 AXTitle='Project 3'
 ++++++++++AXStaticText AXValue='%E2%97%A6 '
 ++++++++++AXStaticText AXValue='Project 3'
-++++++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=1
-++++++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=1 AXIndex=3 AXTitle='project-3A.docx'
+++++++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++++++AXRow AXSubrole=AXOutlineRow AXIndex=3 AXTitle='project-3A.docx'
 ++++++++++++++AXStaticText AXValue='%E2%96%A0 '
 ++++++++++++++AXStaticText AXValue='project-3A.docx'
-++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=3 AXARIASetSize=3 AXIndex=4 AXTitle='project-4.docx'
+++++++++AXRow AXSubrole=AXOutlineRow AXIndex=4 AXTitle='project-4.docx'
 ++++++++++AXStaticText AXValue='%E2%97%A6 '
 ++++++++++AXStaticText AXValue='project-4.docx'
-++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=5 AXTitle='Reports File or Folder Selected: '
+++++AXRow AXSubrole=AXOutlineRow AXIndex=5 AXTitle='Reports File or Folder Selected: '
 ++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Reports'
-++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=1
-++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=1 AXIndex=6 AXTitle='report-1'
+++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++AXRow AXSubrole=AXOutlineRow AXIndex=6 AXTitle='report-1'
 ++++++++++AXStaticText AXValue='%E2%97%A6 '
 ++++++++++AXStaticText AXValue='report-1'
-++++++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=1
-++++++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=1 AXIndex=7 AXTitle='report-1A.docx'
+++++++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++++++AXRow AXSubrole=AXOutlineRow AXIndex=7 AXTitle='report-1A.docx'
 ++++++++++++++AXStaticText AXValue='%E2%96%A0 '
 ++++++++++++++AXStaticText AXValue='report-1A.docx'
 ++++++AXGroup

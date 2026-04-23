@@ -1,4 +1,4 @@
-item_numeric.accessibilityAttributeNames.has(AXARIAPosInSet)='yes'
+item_numeric.accessibilityAttributeNames.has(AXARIAPosInSet)='no'
 item_numeric.accessibilityAttributeValue(AXARIAPosInSet)=1
 item_null.accessibilityAttributeNames.has(AXARIAPosInSet)='yes'
 item_null.accessibilityAttributeValue(AXARIAPosInSet)=NULL

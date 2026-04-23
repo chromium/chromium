@@ -1675,10 +1675,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
   if (ui::IsMenuItem(role))
     [axAttributes addObject:@"AXMenuItemMarkChar"];
-  if (ui::IsItemLike(role))
-    [axAttributes addObjectsFromArray:@[ @"AXARIAPosInSet", @"AXARIASetSize" ]];
-  if (ui::IsSetLike(role))
-    [axAttributes addObject:@"AXARIASetSize"];
+  // Only expose AXARIAPosInSet/AXARIASetSize when explicit ARIA attributes
+  // are present. Exposing computed values for plain HTML items (e.g. <li>)
+  // causes VoiceOver to use its ARIA code path instead of its native
+  // children-counting logic, which results in the position announcement
+  // being dropped for the last item in the list. WebKit/Safari only exposes
+  // these attributes when explicit aria-posinset/aria-setsize are set.
+  if (ui::IsItemLike(role) &&
+      _node->HasIntAttribute(ax::mojom::IntAttribute::kPosInSet)) {
+    [axAttributes addObject:NSAccessibilityARIAPosInSetAttribute];
+  }
+  if (ui::IsSetLike(role) &&
+      _node->HasIntAttribute(ax::mojom::IntAttribute::kSetSize)) {
+    [axAttributes addObject:NSAccessibilityARIASetSizeAttribute];
+  }
 
   if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
     [axAttributes addObjectsFromArray:@[

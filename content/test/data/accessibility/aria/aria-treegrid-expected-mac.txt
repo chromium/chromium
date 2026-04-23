@@ -1,5 +1,5 @@
 AXWebArea
-++AXTable AXARIASetSize=3
+++AXTable
 ++++AXRow AXIndex=0 AXTitle='Cell 1, row 1, level 1 Cell 2, row 1, level 1'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell 1, row 1, level 1'
@@ -55,7 +55,7 @@ AXWebArea
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell 2, row 3, level 1'
 ++++AXGroup
-++AXTable AXARIASetSize=5
+++AXTable
 ++++AXRow AXIndex=0 AXTitle='Cell 1, row 1, rowgroup 1, level 1'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell 1, row 1, rowgroup 1, level 1'
@@ -107,7 +107,7 @@ AXWebArea
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell 3, row 1, rowgroup 2, level 2'
 ++++AXGroup
-++AXTable AXARIASetSize=5
+++AXTable
 ++++AXRow AXIndex=0 AXTitle='Cell 1, row 1, rowgroup 1, level 1'
 ++++++AXStaticText AXValue='Cell 1, row 1, rowgroup 1, level 1'
 ++++AXRow AXIndex=1 AXTitle='Cell 1, row 2, rowgroup 1, level 1'
