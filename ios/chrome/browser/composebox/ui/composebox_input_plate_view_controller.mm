@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
@@ -1356,7 +1357,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIAction* createImageAction = [self
       actionWithTitle:[_state.strings
                           menuLabelForTool:ComposeboxMode::kImageGeneration]
-                image:[self bananaIcon]
+                image:GetBananaIcon(kSymbolActionPointSize)
                hidden:[_state isToolHidden:ComposeboxMode::kImageGeneration]
              disabled:[_state isToolDisabled:ComposeboxMode::kImageGeneration]
              selected:_state.activeTool == ComposeboxMode::kImageGeneration
@@ -1737,28 +1738,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       CGSizeMake(self.view.bounds.size.width, inputHeight);
 }
 
-/// Generates a banana icon image to be used in the UI.
-- (UIImage*)bananaIcon {
-  CGFloat iconPadding = 4.0;
-  CGSize size = CGSizeMake(kSymbolActionPointSize + iconPadding,
-                           kSymbolActionPointSize + iconPadding);
-
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:size];
-  UIImage* image = [renderer
-      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
-        CGRect rect = CGRectMake(0, 0, size.width, size.height);
-        UIFont* font = [UIFont systemFontOfSize:kSymbolActionPointSize];
-        NSDictionary* attributes = @{
-          NSFontAttributeName : font,
-          NSForegroundColorAttributeName : UIColor.blackColor
-        };
-        [@"🍌" drawInRect:rect withAttributes:attributes];
-      }];
-
-  return image;
-}
-
 // Returns a base configuration for a mode indicator button.
 - (UIButtonConfiguration*)modeIndicatorButtonConfigWithTitle:(NSString*)title
                                                        image:(UIImage*)image {
@@ -1789,8 +1768,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   NSString* title =
       [_state.strings chipLabelForTool:ComposeboxMode::kImageGeneration];
-  UIButtonConfiguration* config =
-      [self modeIndicatorButtonConfigWithTitle:title image:[self bananaIcon]];
+  UIButtonConfiguration* config = [self
+      modeIndicatorButtonConfigWithTitle:title
+                                   image:GetBananaIcon(kSymbolActionPointSize)];
   config.contentInsets = kImageGenerationButtonInsets;
   config.background.backgroundColor =
       [_theme imageGenerationButtonBackgroundColor];

@@ -36,6 +36,7 @@ source_set("ui") {
   ]
   deps = [
     ":ui_constants",
+    ":ui_util",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
@@ -77,6 +78,15 @@ source_set("ui_constants") {
     "composebox_ui_constants.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "composebox_ui_util.h",
+    "composebox_ui_util.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
