@@ -205,9 +205,10 @@ BASE_DECLARE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment);
 #endif  // BUILDFLAG(IS_ANDROID)
-
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableOneTimeCodeHeuristics);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSaveToWalletFromSettings);
 #if BUILDFLAG(IS_ANDROID)
