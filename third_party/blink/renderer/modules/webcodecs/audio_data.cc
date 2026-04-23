@@ -109,8 +109,15 @@ template <typename SampleType>
 void CopyToInterleaved(uint8_t* dest_data,
                        const std::vector<uint8_t*>& src_channels_data,
                        const int frame_offset,
-                       const int frames_to_copy) {
+                       const int frames_to_copy,
+                       ExceptionState& exception_state) {
   const int channels = static_cast<int>(src_channels_data.size());
+
+  if (!base::CheckMul(frames_to_copy, channels).IsValid<int>()) {
+    exception_state.ThrowTypeError(
+        "Provided options cause overflow when calculating offset.");
+    return;
+  }
 
   SampleType* dest = reinterpret_cast<SampleType*>(dest_data);
   UNSAFE_TODO({
@@ -542,7 +549,7 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
 
   // Interleave data.
   if (!media::IsInterleaved(src_format) && media::IsInterleaved(dest_format)) {
-    CopyToInterleaved(dest_wrapper, copy_to_options);
+    CopyToInterleaved(dest_wrapper, copy_to_options, exception_state);
     return;
   }
 
@@ -704,7 +711,8 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
 }
 
 void AudioData::CopyToInterleaved(base::span<uint8_t> dest,
-                                  AudioDataCopyToOptions* copy_to_options) {
+                                  AudioDataCopyToOptions* copy_to_options,
+                                  ExceptionState& exception_state) {
   const media::SampleFormat src_format = data_->sample_format();
   const media::SampleFormat dest_format =
       BlinkFormatToMediaFormat(copy_to_options->format());
@@ -725,19 +733,22 @@ void AudioData::CopyToInterleaved(base::span<uint8_t> dest,
   switch (dest_format) {
     case media::kSampleFormatU8:
       ::blink::CopyToInterleaved<uint8_t>(dest.data(), channel_data,
-                                          frame_offset, frames_to_copy);
+                                          frame_offset, frames_to_copy,
+                                          exception_state);
       return;
     case media::kSampleFormatS16:
       ::blink::CopyToInterleaved<int16_t>(dest.data(), channel_data,
-                                          frame_offset, frames_to_copy);
+                                          frame_offset, frames_to_copy,
+                                          exception_state);
       return;
     case media::kSampleFormatS32:
       ::blink::CopyToInterleaved<int32_t>(dest.data(), channel_data,
-                                          frame_offset, frames_to_copy);
+                                          frame_offset, frames_to_copy,
+                                          exception_state);
       return;
     case media::kSampleFormatF32:
       ::blink::CopyToInterleaved<float>(dest.data(), channel_data, frame_offset,
-                                        frames_to_copy);
+                                        frames_to_copy, exception_state);
       return;
     default:
       NOTREACHED();
