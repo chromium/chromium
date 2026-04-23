@@ -8,10 +8,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/windows_version.h"
 #include "build/buildflag.h"
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
@@ -22,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1466,5 +1471,123 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_FUCHSIA)
+
+using HandleType = FileSystemAccessPermissionContext::HandleType;
+
+class FileSystemAccessObserverCrossOriginTokenBypassTest
+    : public FileSystemAccessObserverBrowserTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    FileSystemAccessObserverBrowserTestBase::SetUpOnMainThread();
+  }
+
+  FileSystemAccessManagerImpl* GetManager() {
+    auto* partition =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
+    return partition->GetFileSystemAccessManager();
+  }
+
+  GURL GetURL(std::string_view relative_url) {
+    return embedded_test_server()->GetURL(relative_url);
+  }
+
+  GURL GetURL(std::string_view hostname, std::string_view relative_url) {
+    return embedded_test_server()->GetURL(hostname, relative_url);
+  }
+};
+
+// Checks that tokens from an unexpected origin cannot be used to create an
+// observer. https://crbug.com/499917177
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverCrossOriginTokenBypassTest,
+                       ObserveRefusesCrossOriginToken) {
+  base::FilePath dir_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("victim"), &dir_path));
+  }
+
+  // Victim site.
+  GURL url_victim = GetURL("a.com", "/title1.html");
+  const url::Origin origin_victim = url::Origin::Create(url_victim);
+  const blink::StorageKey key_victim =
+      blink::StorageKey::CreateFirstParty(origin_victim);
+  // Attacker site.
+  GURL url_attacker = GetURL("b.com", "/title1.html");
+  const url::Origin origin_attacker = url::Origin::Create(url_attacker);
+  const blink::StorageKey key_attacker =
+      blink::StorageKey::CreateFirstParty(origin_attacker);
+  ASSERT_NE(origin_victim, origin_attacker);
+
+  // Navigate to get a valid RFH (used for binding contexts).
+  ASSERT_TRUE(NavigateToURL(shell(), url_victim));
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+
+  auto* manager = GetManager();
+  ASSERT_TRUE(manager);
+
+  const storage::FileSystemURL dir_url =
+      manager->CreateFileSystemURLFromPath(PathInfo(dir_path));
+
+  auto read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      PathInfo(dir_path));
+  auto write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      PathInfo(dir_path));
+  FileSystemAccessManagerImpl::SharedHandleState handle_state(read_grant,
+                                                              write_grant);
+
+  // Create a directory handle owned by origin A.
+  FileSystemAccessManagerImpl::BindingContext victim_context(
+      key_victim, url_victim, rfh->GetGlobalId());
+  auto dir_handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager, victim_context, dir_url, handle_state);
+
+  // Create a registered transfer token from the directory handle.
+  // Using CreateTransferToken ensures the token is inserted into the
+  // manager's transfer_tokens_ map so that ResolveTransferToken can find it.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager->CreateTransferToken(*dir_handle,
+                               token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Create a context with B's key but A's URL.
+  FileSystemAccessManagerImpl::BindingContext attacker_context(
+      key_attacker, url_victim, rfh->GetGlobalId());
+
+  // Bind an ObserverHost with origin B's context.
+  mojo::Remote<blink::mojom::FileSystemAccessObserverHost> observer_host;
+  manager->watcher_manager().BindObserverHost(
+      attacker_context, observer_host.BindNewPipeAndPassReceiver());
+
+  // --- The exploit: Observe() with A's token from B's host ---
+  base::RunLoop run_loop;
+  blink::mojom::FileSystemAccessStatus observe_status;
+  observer_host->Observe(
+      std::move(token_remote), /*is_recursive=*/true,
+      base::BindLambdaForTesting(
+          [&](blink::mojom::FileSystemAccessErrorPtr result,
+              mojo::PendingReceiver<blink::mojom::FileSystemAccessObserver>
+                  receiver) {
+            observe_status = result->status;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // THE BUG: Observe() succeeds despite origin mismatch.
+  //
+  // DidResolveTransferTokenToObserve does not call IsValidTransferToken
+  // to check the token origin against the binding context origin.
+  // Compare with DidResolveTransferTokenForFileHandle (manager_impl.cc:1442)
+  // and DidResolveTransferTokenForDirectoryHandle (manager_impl.cc:1467)
+  // which both call IsValidTransferToken and reject cross-origin tokens.
+  ASSERT_EQ(observe_status,
+            blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+}
 
 }  // namespace content
