@@ -3695,6 +3695,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.Occlusion.CalculateDuration" units="ms"
+    expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration of the calculateOcclusion function in
+    WindowOcclusionTracker. Emitted when window position changes or windows are
+    redrawn.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.Occlusion.CalculateResult"
     enum="WindowOcclusionCalculateResult" expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

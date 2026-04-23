@@ -99,6 +99,26 @@ public class WindowOcclusionTrackerUnitTest {
     }
 
     @Test
+    public void testCalculateDurationMetric() {
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        when(mZOrderTracker.getWindowZOrder())
+                .thenAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(Duration.ofMillis(10));
+                            return zOrder;
+                        });
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.MultiWindow.Occlusion.CalculateDuration", 10)
+                        .build();
+
+        mOcclusionTracker.calculateOcclusion();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testSingleViewNoRectDefaultsUnoccluded() {
         // View outside of display bounds
         View view = createView(DISPLAY_WIDTH + 10, 0, 100, 100);

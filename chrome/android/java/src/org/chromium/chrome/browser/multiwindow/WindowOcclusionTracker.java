@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.RegionIterator;
-import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -17,6 +16,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -139,7 +140,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             return;
         }
 
-        long now = SystemClock.uptimeMillis();
+        long now = TimeUtils.uptimeMillis();
         long nextCalculateOcclusionTimeMs =
                 mLastCalculateOcclusionTimeMs + mCalculateOcclusionRateLimitMs;
 
@@ -159,35 +160,37 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
     @VisibleForTesting
     void calculateOcclusion() {
-        mLastCalculateOcclusionTimeMs = SystemClock.uptimeMillis();
+        mLastCalculateOcclusionTimeMs = TimeUtils.uptimeMillis();
 
-        final SparseArray<List<ActivityWindowAndroid>> zOrder =
-                mWindowZOrderTracker.getWindowZOrder();
+        try (TimingMetric t = WindowOcclusionMetrics.getCalculateDurationTimer()) {
+            final SparseArray<List<ActivityWindowAndroid>> zOrder =
+                    mWindowZOrderTracker.getWindowZOrder();
 
-        for (int i = 0; i < zOrder.size(); i++) {
-            int displayId = zOrder.keyAt(i);
-            List<ActivityWindowAndroid> windows = zOrder.valueAt(i);
-            if (windows.size() < 2) {
-                if (windows.size() == 1) {
-                    windows.get(0).setOccluded(false, null, null);
+            for (int i = 0; i < zOrder.size(); i++) {
+                int displayId = zOrder.keyAt(i);
+                List<ActivityWindowAndroid> windows = zOrder.valueAt(i);
+                if (windows.size() < 2) {
+                    if (windows.size() == 1) {
+                        windows.get(0).setOccluded(false, null, null);
+                    }
+                    continue;
                 }
-                continue;
+
+                DisplayAndroid displayAndroid = windows.get(0).getDisplay();
+                int displayWidth = displayAndroid.getDisplayWidth();
+                int displayHeight = displayAndroid.getDisplayHeight();
+
+                if (DEBUG_LOGGING) {
+                    Log.i(
+                            TAG,
+                            "Display size for display ID %d: %d x %d",
+                            displayId,
+                            displayWidth,
+                            displayHeight);
+                }
+
+                calculateOcclusionForDisplay(windows, displayWidth, displayHeight);
             }
-
-            DisplayAndroid displayAndroid = windows.get(0).getDisplay();
-            int displayWidth = displayAndroid.getDisplayWidth();
-            int displayHeight = displayAndroid.getDisplayHeight();
-
-            if (DEBUG_LOGGING) {
-                Log.i(
-                        TAG,
-                        "Display size for display ID %d: %d x %d",
-                        displayId,
-                        displayWidth,
-                        displayHeight);
-            }
-
-            calculateOcclusionForDisplay(windows, displayWidth, displayHeight);
         }
     }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
@@ -43,6 +44,10 @@ class WindowOcclusionMetrics {
     /* package */ static void recordCalculateResult(@CalculateResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
                 getMetricName("CalculateResult"), result, CalculateResult.NUM_ENTRIES);
+    }
+
+    /* package */ static TimingMetric getCalculateDurationTimer() {
+        return TimingMetric.shortThreadTime(getMetricName("CalculateDuration"));
     }
 
     private static String getMetricName(String metricName) {
