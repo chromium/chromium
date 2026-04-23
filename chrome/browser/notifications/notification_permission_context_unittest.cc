@@ -121,8 +121,7 @@ class NotificationPermissionContextTest
                             ContentSetting setting) {
     context->UpdateSetting(
         permissions::PermissionRequestData(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                ContentSettingsType::NOTIFICATIONS),
+            permissions::RequestType::kNotifications,
             /*user_gesture=*/true, requesting_origin, embedding_origin),
         setting, /*is_one_time=*/false);
   }
@@ -316,8 +315,9 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
   auto permission_status = PermissionStatus::ASK;
   context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::NOTIFICATIONS),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           request_id,
           /*user_gesture=*/true, requesting_origin, embedding_origin),
       base::BindOnce(&StorePermissionStatus, &permission_status));
@@ -415,8 +415,9 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::NOTIFICATIONS),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           id, /*user_gesture=*/true, url),
       base::DoNothing());
 
@@ -488,15 +489,17 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::NOTIFICATIONS),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           id1,
           /*user_gesture=*/true, url),
       base::DoNothing());
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::NOTIFICATIONS),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           id2,
           /*user_gesture=*/true, url),
       base::DoNothing());

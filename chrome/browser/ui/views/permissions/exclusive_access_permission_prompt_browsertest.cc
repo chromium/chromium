@@ -71,8 +71,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   std::unique_ptr<permissions::PermissionRequest> CreateKeyboardRequest() {
     return std::make_unique<permissions::PermissionRequest>(
         std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                ContentSettingsType::KEYBOARD_LOCK),
+            permissions::RequestType::kKeyboardLock,
             /*user_gesture=*/false, GURL("https://example.com")),
         keyboard_callback_.Get());
   }
@@ -83,8 +82,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   std::unique_ptr<permissions::PermissionRequest> CreatePointerRequest() {
     return std::make_unique<permissions::PermissionRequest>(
         std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                ContentSettingsType::POINTER_LOCK),
+            permissions::RequestType::kPointerLock,
             /*user_gesture=*/false, GURL("https://example.com")),
         pointer_callback_.Get());
   }

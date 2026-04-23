@@ -15,6 +15,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/gurl.h"
 
@@ -67,16 +68,15 @@ TEST_F(PermissionRequestDataTest, GeolocationApproximateAccuracy) {
       blink::mojom::PermissionDescriptor::New(
           blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, nullptr);
   std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
-  permissions.push_back(std::move(descriptor));
+  permissions.push_back(descriptor.Clone());
 
   content::PermissionRequestDescription request_description(
       std::move(permissions), /*user_gesture=*/true, origin);
 
-  PermissionRequestData request_data(&geolocation_context, id,
-                                     request_description, origin);
+  PermissionRequestData request_data(id, request_description, origin);
 
   EXPECT_EQ(GeolocationAccuracy::kApproximate,
-            request_data.requested_geolocation_accuracy);
+            request_data.GetRequestedGeolocationAccuracy());
 }
 
 TEST_F(PermissionRequestDataTest, GeolocationPreciseAccuracy) {
@@ -96,10 +96,10 @@ TEST_F(PermissionRequestDataTest, GeolocationPreciseAccuracy) {
   content::PermissionRequestDescription request_description(
       std::move(permissions), /*user_gesture=*/true, origin);
 
-  PermissionRequestData request_data(&geolocation_context, id,
-                                     request_description, origin);
+  PermissionRequestData request_data(id, request_description, origin);
 
-  EXPECT_FALSE(request_data.requested_geolocation_accuracy.has_value());
+  EXPECT_EQ(GeolocationAccuracy::kPrecise,
+            request_data.GetRequestedGeolocationAccuracy());
 }
 
 }  // namespace permissions

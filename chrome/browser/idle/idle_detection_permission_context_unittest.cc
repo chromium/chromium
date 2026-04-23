@@ -12,9 +12,11 @@
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
 namespace {
 
@@ -84,8 +86,9 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::IDLE_DETECTION),
+          blink::mojom::PermissionDescriptor::New(
+              blink::mojom::PermissionName::IDLE_DETECTION,
+              /*extension=*/nullptr),
           id,
           /*user_gesture=*/true, url),
       base::DoNothing());
@@ -157,14 +160,16 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::IDLE_DETECTION),
+          blink::mojom::PermissionDescriptor::New(
+              blink::mojom::PermissionName::IDLE_DETECTION,
+              /*extension=*/nullptr),
           id1, /*user_gesture=*/true, url),
       base::DoNothing());
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::IDLE_DETECTION),
+          blink::mojom::PermissionDescriptor::New(
+              blink::mojom::PermissionName::IDLE_DETECTION,
+              /*extension=*/nullptr),
           id2, /*user_gesture=*/true, url),
       base::DoNothing());
 

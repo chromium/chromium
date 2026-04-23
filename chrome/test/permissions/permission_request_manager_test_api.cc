@@ -38,9 +38,7 @@ void PermissionRequestManagerTestApi::AddSimpleRequest(
       source_frame,
       std::make_unique<permissions::PermissionRequest>(
           std::make_unique<permissions::PermissionRequestData>(
-              std::make_unique<permissions::ContentSettingPermissionResolver>(
-                  permissions::RequestTypeToContentSettingsType(type).value()),
-              /*user_gesture=*/user_gesture, permission_request_origin_),
+              type, /*user_gesture=*/user_gesture, permission_request_origin_),
           base::DoNothing()));
 }
 

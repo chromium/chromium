@@ -221,8 +221,11 @@ class StorageAccessGrantPermissionContextTest
   std::unique_ptr<permissions::PermissionRequestData> MakePermissionRequestData(
       bool user_gesture) {
     return std::make_unique<permissions::PermissionRequestData>(
-        std::make_unique<permissions::ContentSettingPermissionResolver>(
-            ContentSettingsType::STORAGE_ACCESS),
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(
+                permissions::PermissionUtil::
+                    ContentSettingsTypeToPermissionType(
+                        ContentSettingsType::STORAGE_ACCESS)),
         CreateFakeID(), user_gesture, GetRequesterURL(), GetTopLevelURL());
   }
 
@@ -581,8 +584,11 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
       content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
       permission_context()->DecidePermissionForTesting(
           std::make_unique<permissions::PermissionRequestData>(
-              std::make_unique<permissions::ContentSettingPermissionResolver>(
-                  ContentSettingsType::STORAGE_ACCESS),
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              ContentSettingsType::STORAGE_ACCESS)),
               fake_id,
               /*user_gesture=*/true, requesting_origin,
               GetDummyEmbeddingUrl(grant_id)),
@@ -660,8 +666,11 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   base::test::TestFuture<content::PermissionResult> future;
   permission_context()->DecidePermissionForTesting(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::STORAGE_ACCESS),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  permissions::PermissionUtil::
+                      ContentSettingsTypeToPermissionType(
+                          ContentSettingsType::STORAGE_ACCESS)),
           CreateFakeID(), /*user_gesture=*/true, alternate_requester_url,
           GetTopLevelURL()),
       future.GetCallback());

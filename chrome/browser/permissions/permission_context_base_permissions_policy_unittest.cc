@@ -140,9 +140,8 @@ class PermissionContextBasePermissionsPolicyTest
         rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
         std::make_unique<permissions::PermissionRequestData>(
-            pcb->CreatePermissionResolver(
-                content::PermissionDescriptorUtil::
-                    CreatePermissionDescriptorForPermissionType(permission)),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(permission),
             id, /*user_gesture=*/true, rfh->GetLastCommittedURL()),
         base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,

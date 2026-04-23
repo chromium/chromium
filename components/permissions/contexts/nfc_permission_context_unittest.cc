@@ -94,8 +94,10 @@ void NfcPermissionContextTests::RequestNfcPermission(
     bool user_gesture) {
   nfc_permission_context_->RequestPermission(
       std::make_unique<PermissionRequestData>(
-          std::make_unique<ContentSettingPermissionResolver>(
-              ContentSettingsType::MIDI_SYSEX),
+          blink::mojom::PermissionDescriptor::New(
+              blink::mojom::PermissionName::MIDI,
+              blink::mojom::PermissionDescriptorExtension::NewMidi(
+                  blink::mojom::MidiPermissionDescriptor::New(true))),
           id, user_gesture, requesting_frame),
       base::BindOnce(&NfcPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));

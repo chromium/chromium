@@ -279,9 +279,10 @@ void PermissionContextBase::RequestPermission(
   }
   // Status is either {ASK} or it's {GRANT/DENY and ignorable}.
   if (content_settings_type_ == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-    if (request_data->requested_geolocation_accuracy.has_value() &&
-        *request_data->requested_geolocation_accuracy ==
-            GeolocationAccuracy::kApproximate) {
+    std::optional<GeolocationAccuracy> requested_geolocation_accuracy =
+        request_data->GetRequestedGeolocationAccuracy();
+    CHECK(requested_geolocation_accuracy.has_value());
+    if (*requested_geolocation_accuracy == GeolocationAccuracy::kApproximate) {
       request_data->WithGeolocationPromptType(
           GeolocationPromptType::kApproximateOnly);
     } else {
@@ -354,7 +355,9 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
         PermissionStatus::GRANTED,
         content::PermissionStatusSource::HEURISTIC_GRANT);
   }
-  return GetPermissionStatus(*request_data.resolver, render_frame_host,
+  std::unique_ptr<PermissionResolver> resolver =
+      CreatePermissionResolver(request_data.permission_descriptor);
+  return GetPermissionStatus(*resolver, render_frame_host,
                              request_data.requesting_origin,
                              request_data.embedding_origin);
 }
@@ -785,9 +788,10 @@ void PermissionContextBase::NotifyPermissionSet(
   // status may have changed in the meantime
   PermissionSetting previous_value = GetPermissionStatusInternal(
       rfh, request_data.requesting_origin, request_data.embedding_origin);
+  std::unique_ptr<PermissionResolver> resolver =
+      CreatePermissionResolver(request_data.permission_descriptor);
   PermissionSetting new_value =
-      request_data.resolver->ComputePermissionDecisionResult(previous_value,
-                                                             decision);
+      resolver->ComputePermissionDecisionResult(previous_value, decision);
 
   if (persist) {
     // Clone new value, because we need it again for the callback.

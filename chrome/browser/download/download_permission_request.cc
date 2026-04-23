@@ -30,8 +30,7 @@ DownloadPermissionRequest::DownloadPermissionRequest(
     const url::Origin& requesting_origin)
     : PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
-              std::make_unique<permissions::ContentSettingPermissionResolver>(
-                  permissions::RequestType::kMultipleDownloads),
+              permissions::RequestType::kMultipleDownloads,
               /*user_gesture=*/false,
               requesting_origin.GetURL()),
           base::BindRepeating(&DownloadPermissionRequest::PermissionDecided,

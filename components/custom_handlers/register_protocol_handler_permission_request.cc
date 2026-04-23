@@ -30,8 +30,7 @@ RegisterProtocolHandlerPermissionRequest::
         base::ScopedClosureRunner fullscreen_block)
     : PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
-              std::make_unique<permissions::ContentSettingPermissionResolver>(
-                  permissions::RequestType::kRegisterProtocolHandler),
+              permissions::RequestType::kRegisterProtocolHandler,
               /*user_gesture=*/false,
               url.DeprecatedGetOriginAsURL()),
           base::BindRepeating(

@@ -175,8 +175,9 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     auto previous_content_setting = GetContentSettingStatusInternal(
         rfh, request_data.requesting_origin, request_data.embedding_origin);
     auto new_content_setting = std::get<ContentSetting>(
-        request_data.resolver->ComputePermissionDecisionResult(
-            previous_content_setting, decision));
+        CreatePermissionResolver(request_data.permission_descriptor)
+            ->ComputePermissionDecisionResult(previous_content_setting,
+                                              decision));
 
     UpdateSetting(
         request_data, new_content_setting,
@@ -268,7 +269,7 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
   // persisting permission.
   ContentSettingPermissionContextBase::NotifyPermissionSet(
       permissions::PermissionRequestData(
-          this, id,
+          id,
           content::PermissionRequestDescription(
               content::PermissionDescriptorUtil::
                   CreatePermissionDescriptorForPermissionType(

@@ -92,9 +92,7 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
       permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::PAYMENT_HANDLER),
-          id, /*user_gesture=*/true, url),
+          /*permission_descriptor=*/nullptr, id, /*user_gesture=*/true, url),
       base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                      base::Unretained(&permission_context)));
 

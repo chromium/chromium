@@ -31,6 +31,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/url_util.h"
 
 namespace permissions {
@@ -262,10 +264,14 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     prompt_factory_->set_response_type(decision);
   }
 
-  void TestAskAndDecide_TestContent(ContentSettingsType content_settings_type,
-                                    ContentSetting decision) {
+  void TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptorPtr permission_descriptor,
+      ContentSetting decision) {
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
     ukm::TestAutoSetUkmRecorder ukm_recorder;
+    ContentSettingsType content_settings_type =
+        PermissionUtil::PermissionTypeToContentSettingsType(
+            blink::PermissionDescriptorToPermissionType(permission_descriptor));
     TestPermissionContext permission_context(browser_context(),
                                              content_settings_type);
     GURL url("https://www.google.com");
@@ -280,9 +286,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::Unretained(this), &permission_context, id, url, decision));
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                content_settings_type),
-            id,
+            std::move(permission_descriptor), id,
             /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
@@ -367,9 +371,16 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
   void DismissMultipleTimesAndExpectBlock(
       const GURL& url,
-      ContentSettingsType content_settings_type,
+      blink::mojom::PermissionName permission_name,
       uint32_t iterations) {
     base::HistogramTester histograms;
+
+    blink::mojom::PermissionDescriptorPtr permission_descriptor =
+        blink::mojom::PermissionDescriptor::New(permission_name,
+                                                /*extension=*/nullptr);
+    ContentSettingsType content_settings_type =
+        PermissionUtil::PermissionTypeToContentSettingsType(
+            blink::PermissionDescriptorToPermissionType(permission_descriptor));
 
     // Dismiss |iterations| times. The final dismiss should change the decision
     // from dismiss to block, and hence change the persisted content setting.
@@ -386,11 +397,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          CONTENT_SETTING_ASK));
 
       permission_context.RequestPermission(
-          std::make_unique<PermissionRequestData>(
-              std::make_unique<ContentSettingPermissionResolver>(
-                  content_settings_type),
-              id,
-              /*user_gesture=*/true, url),
+          std::make_unique<PermissionRequestData>(permission_descriptor.Clone(),
+                                                  id,
+                                                  /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
       histograms.ExpectTotalCount(
@@ -450,10 +459,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                content_settings_type),
-            id,
-            /*user_gesture=*/true, url),
+            blink::mojom::PermissionDescriptor::New(permission_name,
+                                                    /*extension=*/nullptr),
+            id, /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -478,10 +486,10 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     base::HistogramTester histograms;
 
     // Sanity check independence per permission type by checking two of them.
-    DismissMultipleTimesAndExpectBlock(url, ContentSettingsType::GEOLOCATION,
-                                       3);
-    DismissMultipleTimesAndExpectBlock(url, ContentSettingsType::NOTIFICATIONS,
-                                       3);
+    DismissMultipleTimesAndExpectBlock(
+        url, blink::mojom::PermissionName::GEOLOCATION, 3);
+    DismissMultipleTimesAndExpectBlock(
+        url, blink::mojom::PermissionName::NOTIFICATIONS, 3);
   }
 
   void TestVariationBlockOnSeveralDismissals_TestContent() {
@@ -502,8 +510,10 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          CONTENT_SETTING_ASK));
       permission_context.RequestPermission(
           std::make_unique<PermissionRequestData>(
-              std::make_unique<ContentSettingPermissionResolver>(
-                  ContentSettingsType::MIDI_SYSEX),
+              blink::mojom::PermissionDescriptor::New(
+                  blink::mojom::PermissionName::MIDI,
+                  blink::mojom::PermissionDescriptorExtension::NewMidi(
+                      blink::mojom::MidiPermissionDescriptor::New(true))),
               id,
               /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -580,8 +590,10 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                          CONTENT_SETTING_ASK));
       permission_context.RequestPermission(
           std::make_unique<PermissionRequestData>(
-              std::make_unique<ContentSettingPermissionResolver>(
-                  ContentSettingsType::MIDI_SYSEX),
+              blink::mojom::PermissionDescriptor::New(
+                  blink::mojom::PermissionName::MIDI,
+                  blink::mojom::PermissionDescriptorExtension::NewMidi(
+                      blink::mojom::MidiPermissionDescriptor::New(true))),
               id,
               /*user_gesture=*/true, url),
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -649,8 +661,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         PermissionRequestID::RequestLocalId());
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                content_settings_type),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    permissions::PermissionUtil::
+                        ContentSettingsTypeToPermissionType(
+                            content_settings_type)),
             id,
             /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -683,8 +698,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                content_settings_type),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    permissions::PermissionUtil::
+                        ContentSettingsTypeToPermissionType(
+                            content_settings_type)),
             id,
             /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -770,8 +788,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     // Request a permission without setting the callback to DecidePermission.
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                ContentSettingsType::GEOLOCATION),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    permissions::PermissionUtil::
+                        ContentSettingsTypeToPermissionType(
+                            ContentSettingsType::GEOLOCATION)),
             id1,
             /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -785,8 +806,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::Unretained(this), &permission_context, id1, url, response));
     permission_context.RequestPermission(
         std::make_unique<PermissionRequestData>(
-            std::make_unique<ContentSettingPermissionResolver>(
-                ContentSettingsType::GEOLOCATION),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    permissions::PermissionUtil::
+                        ContentSettingsTypeToPermissionType(
+                            ContentSettingsType::GEOLOCATION)),
             id2,
             /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -857,22 +881,30 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 // Simulates clicking Accept. The permission should be granted and
 // saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndGrant) {
-  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
-                               CONTENT_SETTING_ALLOW);
+  TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptor::New(
+          blink::mojom::PermissionName::NOTIFICATIONS, /*extension=*/nullptr),
+      CONTENT_SETTING_ALLOW);
 }
 
 // Simulates clicking Block. The permission should be denied and
 // saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndBlock) {
-  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
-                               CONTENT_SETTING_BLOCK);
+  TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptor::New(
+          blink::mojom::PermissionName::GEOLOCATION, /*extension=*/nullptr),
+      CONTENT_SETTING_BLOCK);
 }
 
 // Simulates clicking Dismiss (X) in the prompt.
 // The permission should be denied but not saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndDismiss) {
-  TestAskAndDecide_TestContent(ContentSettingsType::MIDI_SYSEX,
-                               CONTENT_SETTING_ASK);
+  TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptor::New(
+          blink::mojom::PermissionName::MIDI,
+          blink::mojom::PermissionDescriptorExtension::NewMidi(
+              blink::mojom::MidiPermissionDescriptor::New(true))),
+      CONTENT_SETTING_ASK);
 }
 
 // Simulates clicking Dismiss (X) in the prompt with the block on too
@@ -1042,8 +1074,10 @@ TEST_F(PermissionContextBaseTests,
       PermissionRequestID::RequestLocalId());
 
   auto request_data = std::make_unique<PermissionRequestData>(
-      std::make_unique<ContentSettingPermissionResolver>(
-          ContentSettingsType::NOTIFICATIONS),
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
+                  ContentSettingsType::NOTIFICATIONS)),
       id,
       /*user_gesture=*/
       true, url);
@@ -1072,8 +1106,10 @@ TEST_F(PermissionContextBaseTests,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PermissionContextBaseTests, ExpirationAllow) {
   base::Time now = base::Time::Now();
-  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
-                               CONTENT_SETTING_ALLOW);
+  TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptor::New(
+          blink::mojom::PermissionName::GEOLOCATION, /*extension=*/nullptr),
+      CONTENT_SETTING_ALLOW);
 
   GURL primary_url("https://www.google.com");
   GURL secondary_url;
@@ -1088,8 +1124,10 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
 }
 
 TEST_F(PermissionContextBaseTests, ExpirationBlock) {
-  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
-                               CONTENT_SETTING_BLOCK);
+  TestAskAndDecide_TestContent(
+      blink::mojom::PermissionDescriptor::New(
+          blink::mojom::PermissionName::GEOLOCATION, /*extension=*/nullptr),
+      CONTENT_SETTING_BLOCK);
 
   GURL primary_url("https://www.google.com");
   GURL secondary_url;

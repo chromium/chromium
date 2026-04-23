@@ -12,7 +12,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_resolver.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,8 +24,6 @@ struct PermissionRequestDescription;
 
 namespace permissions {
 
-class PermissionContextBase;
-
 enum class GeolocationPromptType {
   kApproximateOrPrecise,
   kApproximateOnly,
@@ -35,7 +33,6 @@ enum class GeolocationPromptType {
 // Holds information about `permissions::PermissionRequest`
 struct PermissionRequestData {
   PermissionRequestData(
-      PermissionContextBase* context,
       const PermissionRequestID& id,
       const content::PermissionRequestDescription& request_description,
       const GURL& canonical_requesting_origin,
@@ -43,20 +40,44 @@ struct PermissionRequestData {
       int request_description_permission_index = 0);
 
   PermissionRequestData(
-      std::unique_ptr<permissions::PermissionResolver> resolver,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const PermissionRequestID& id,
       bool user_gesture,
       const GURL& requesting_origin,
       const GURL& embedding_origin = GURL());
 
+  PermissionRequestData(RequestType request_type,
+                        bool user_gesture,
+                        const GURL& requesting_origin,
+                        const GURL& embedding_origin = GURL());
+
+ private:
   PermissionRequestData(
-      std::unique_ptr<permissions::PermissionResolver> resolver,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      const PermissionRequestID& id,
       bool user_gesture,
       const GURL& requesting_origin,
-      const GURL& embedding_origin = GURL());
+      const GURL& embedding_origin,
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+          embedded_permission_request_descriptor,
+      std::vector<std::string> requested_audio_capture_device_ids,
+      std::vector<std::string> requested_video_capture_device_ids);
 
-  PermissionRequestData& operator=(const PermissionRequestData&) = delete;
-  PermissionRequestData(const PermissionRequestData&) = delete;
+  PermissionRequestData(
+      std::optional<RequestType> request_type,
+      blink::mojom::PermissionDescriptorPtr permission_descriptor,
+      const PermissionRequestID& id,
+      bool user_gesture,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+          embedded_permission_request_descriptor,
+      std::vector<std::string> requested_audio_capture_device_ids,
+      std::vector<std::string> requested_video_capture_device_ids,
+      std::optional<GeolocationPromptType> geolocation_prompt_type);
+
+ public:
+  PermissionRequestData Clone() const;
 
   PermissionRequestData& operator=(PermissionRequestData&&);
   PermissionRequestData(PermissionRequestData&&);
@@ -115,11 +136,13 @@ struct PermissionRequestData {
     return std::nullopt;
   }
 
+  std::optional<GeolocationAccuracy> GetRequestedGeolocationAccuracy() const;
+
   // The request type if it exists.
   std::optional<RequestType> request_type;
 
-  // The permission resolver associated with the request.
-  std::unique_ptr<permissions::PermissionResolver> resolver;
+  // The permission descriptor.
+  blink::mojom::PermissionDescriptorPtr permission_descriptor;
 
   //  Uniquely identifier of particular permission request.
   PermissionRequestID id;
@@ -142,7 +165,6 @@ struct PermissionRequestData {
   std::vector<std::string> requested_video_capture_device_ids;
 
   std::optional<GeolocationPromptType> geolocation_prompt_type;
-  std::optional<GeolocationAccuracy> requested_geolocation_accuracy;
 };
 
 }  // namespace permissions

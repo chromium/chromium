@@ -32,6 +32,7 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
 namespace {
 
@@ -94,8 +95,9 @@ class TopLevelStorageAccessPermissionContextTest
     base::test::TestFuture<content::PermissionResult> future;
     permission_context->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+            blink::mojom::PermissionDescriptor::New(
+                blink::mojom::PermissionName::TOP_LEVEL_STORAGE_ACCESS,
+                /*extension=*/nullptr),
             CreateFakeID(), user_gesture, requester_url, embedding_url),
         future.GetCallback());
     return future.Get().status;

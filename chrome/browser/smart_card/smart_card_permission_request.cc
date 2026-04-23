@@ -24,8 +24,7 @@ SmartCardPermissionRequest::SmartCardPermissionRequest(
     ResultCallback result_callback)
     : permissions::PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
-              std::make_unique<permissions::ContentSettingPermissionResolver>(
-                  ContentSettingsType::SMART_CARD_DATA),
+              permissions::RequestType::kSmartCard,
               /*user_gesture=*/false,
               requesting_origin.GetURL()),
           base::BindRepeating(&SmartCardPermissionRequest::OnPermissionDecided,

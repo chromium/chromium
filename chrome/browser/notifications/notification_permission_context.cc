@@ -221,7 +221,7 @@ void NotificationPermissionContext::DecidePermission(
         base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
                        weak_factory_ui_thread_.GetWeakPtr(),
                        permissions::PermissionRequestData(
-                           this, request_data->id,
+                           request_data->id,
                            content::PermissionRequestDescription(
                                content::PermissionDescriptorUtil::
                                    CreatePermissionDescriptorForPermissionType(

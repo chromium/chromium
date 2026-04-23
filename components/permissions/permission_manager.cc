@@ -258,7 +258,7 @@ void PermissionManager::RequestPermissionsInternal(
 
     context->RequestPermission(
         std::make_unique<PermissionRequestData>(
-            context, request_id, request_description,
+            request_id, request_description,
             canonical_requesting_origin.DeprecatedGetOriginAsURL(), GURL(), i),
         base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponse,

@@ -3081,16 +3081,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentPermission) {
 
   PersistentStoragePermissionContext persistent_permission(GetProfile());
   persistent_permission.UpdateSetting(
-      permissions::PermissionRequestData(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::PERSISTENT_STORAGE),
-          /*user_gesture=*/true, kOrigin1, GURL()),
+      permissions::PermissionRequestData(permissions::RequestType::kDiskQuota,
+                                         /*user_gesture=*/true, kOrigin1,
+                                         GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
   persistent_permission.UpdateSetting(
-      permissions::PermissionRequestData(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::PERSISTENT_STORAGE),
-          /*user_gesture=*/true, kOrigin2, GURL()),
+      permissions::PermissionRequestData(permissions::RequestType::kDiskQuota,
+                                         /*user_gesture=*/true, kOrigin2,
+                                         GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
 
   // Clear all except for origin1 and origin3.
@@ -3132,10 +3130,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   PersistentStoragePermissionContext persistent_permission(GetProfile());
   persistent_permission.UpdateSetting(
-      permissions::PermissionRequestData(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::PERSISTENT_STORAGE),
-          /*user_gesture=*/true, GURL("http://host1.com:1"), GURL()),
+      permissions::PermissionRequestData(permissions::RequestType::kDiskQuota,
+                                         /*user_gesture=*/true,
+                                         GURL("http://host1.com:1"), GURL()),
       CONTENT_SETTING_ALLOW,
       /*is_one_time=*/false);
   ContentSettingsForOneType host_settings =

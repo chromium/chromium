@@ -22,6 +22,7 @@
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/resolvers/permission_resolver.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -49,16 +50,20 @@ void PersistentStoragePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+#if DCHECK_IS_ON()
+  std::unique_ptr<permissions::PermissionResolver> resolver =
+      CreatePermissionResolver(/*permission_descriptor=*/nullptr);
   DCHECK_NE(PermissionStatus::GRANTED,
-            GetPermissionStatus(
-                *request_data->resolver, nullptr /* render_frame_host */,
-                request_data->requesting_origin, request_data->embedding_origin)
+            GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
+                                request_data->requesting_origin,
+                                request_data->embedding_origin)
                 .status);
   DCHECK_NE(PermissionStatus::DENIED,
-            GetPermissionStatus(
-                *request_data->resolver, nullptr /* render_frame_host */,
-                request_data->requesting_origin, request_data->embedding_origin)
+            GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
+                                request_data->requesting_origin,
+                                request_data->embedding_origin)
                 .status);
+#endif
 
   // Durable is only allowed to be granted to the top-level origin. Embedding
   // origin is the last committed navigation origin to the web contents.

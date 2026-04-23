@@ -39,6 +39,7 @@
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/resolvers/permission_resolver.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/btm_service.h"
@@ -711,9 +712,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     }
   }
 
+  std::unique_ptr<permissions::PermissionResolver> resolver =
+      CreatePermissionResolver(request_data.permission_descriptor);
   if (!persist) {
     std::move(callback).Run(content::PermissionResult(
-        request_data.resolver->DeterminePermissionStatus(content_setting),
+        resolver->DeterminePermissionStatus(content_setting),
         content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
@@ -758,11 +761,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
       ->GetCookieManagerForBrowserProcess()
       ->SetContentSettings(
           ContentSettingsType::STORAGE_ACCESS, grants,
-          base::BindOnce(std::move(callback),
-                         content::PermissionResult(
-                             request_data.resolver->DeterminePermissionStatus(
-                                 content_setting),
-                             content::PermissionStatusSource::UNSPECIFIED)));
+          base::BindOnce(
+              std::move(callback),
+              content::PermissionResult(
+                  resolver->DeterminePermissionStatus(content_setting),
+                  content::PermissionStatusSource::UNSPECIFIED)));
 }
 
 void StorageAccessGrantPermissionContext::UpdateSetting(

@@ -49,8 +49,9 @@ class BackgroundSyncPermissionContextTest
         permissions::PermissionRequestID::RequestLocalId());
     permission_context->RequestPermission(
         std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                ContentSettingsType::BACKGROUND_SYNC),
+            blink::mojom::PermissionDescriptor::New(
+                blink::mojom::PermissionName::BACKGROUND_SYNC,
+                /*extension=*/nullptr),
             id, /*user_gesture=*/false, url),
         base::BindOnce(
             &BackgroundSyncPermissionContextTest::TrackPermissionDecision,

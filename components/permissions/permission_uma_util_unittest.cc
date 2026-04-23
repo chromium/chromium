@@ -108,10 +108,8 @@ std::unique_ptr<permissions::PermissionRequest> CreateRequest(
     permissions::RequestType type,
     const char* url) {
   return std::make_unique<permissions::PermissionRequest>(
-      std::make_unique<PermissionRequestData>(
-          std::make_unique<ContentSettingPermissionResolver>(
-              RequestTypeToContentSettingsType(type).value()),
-          /*user_gesture=*/true, GURL(url)),
+      std::make_unique<PermissionRequestData>(type, /*user_gesture=*/true,
+                                              GURL(url)),
       base::BindRepeating([](const PermissionPromptDecision&,
                              const PermissionRequestData&) {}));
 }

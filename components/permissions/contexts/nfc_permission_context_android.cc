@@ -81,12 +81,12 @@ void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
     bool persist,
     PermissionDecision decision) {
   NfcPermissionContext::NotifyPermissionSet(
-      PermissionRequestData(this, id,
-                            content::PermissionRequestDescription(
-                                content::PermissionDescriptorUtil::
-                                    CreatePermissionDescriptorForPermissionType(
-                                        blink::PermissionType::NFC)),
-                            requesting_origin, embedding_origin),
+      PermissionRequestData(content::PermissionDescriptorUtil::
+                                CreatePermissionDescriptorForPermissionType(
+                                    blink::PermissionType::NFC),
+                            id,
+                            /*user_gesture=*/false, requesting_origin,
+                            embedding_origin),
       std::move(callback), persist,
       PermissionPromptDecision{.overall_decision = decision,
                                .prompt_options = std::monostate(),

@@ -76,8 +76,7 @@ MockPermissionRequest::MockPermissionRequest(
     : MockPermissionRequest(
           [&] {
             auto data = std::make_unique<PermissionRequestData>(
-                std::make_unique<ContentSettingPermissionResolver>(
-                    request_type),
+                request_type,
                 /*user_gesture=*/gesture_type ==
                     PermissionRequestGestureType::GESTURE,
                 requesting_origin);

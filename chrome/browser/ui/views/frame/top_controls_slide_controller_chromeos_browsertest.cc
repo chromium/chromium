@@ -1388,8 +1388,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
                     const permissions::PermissionRequestData&) {};
   auto permission_request = std::make_unique<permissions::PermissionRequest>(
       std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::GEOLOCATION),
+          permissions::RequestType::kGeolocation,
           /*user_gesture*/ true, url),
       base::BindRepeating(decided));
   auto* permission_manager =

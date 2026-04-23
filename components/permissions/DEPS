@@ -50,6 +50,7 @@ include_rules = [
   "+third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h",
   "+third_party/blink/public/mojom/permissions/permission.mojom.h",
   "+third_party/blink/public/mojom/permissions/permission.mojom-forward.h",
+  "+third_party/blink/public/mojom/permissions/permission.mojom-shared.h",
   "+third_party/blink/public/mojom/permissions_policy",
   "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/mojom/quota",

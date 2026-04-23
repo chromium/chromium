@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -85,8 +86,10 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
       permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
       std::make_unique<PermissionRequestData>(
-          std::make_unique<ContentSettingPermissionResolver>(
-              ContentSettingsType::MIDI_SYSEX),
+          blink::mojom::PermissionDescriptor::New(
+              blink::mojom::PermissionName::MIDI,
+              blink::mojom::PermissionDescriptorExtension::NewMidi(
+                  blink::mojom::MidiPermissionDescriptor::New(true))),
           id, /*user_gesture=*/true, url),
       base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                      base::Unretained(&permission_context)));

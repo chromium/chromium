@@ -83,8 +83,7 @@ class PerDeviceProvisioningPermissionRequest final
       base::OnceCallback<void(bool)> callback)
       : PermissionRequest(
             std::make_unique<permissions::PermissionRequestData>(
-                std::make_unique<permissions::ContentSettingPermissionResolver>(
-                    ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER),
+                permissions::RequestType::kProtectedMediaIdentifier,
                 /*user_gesture=*/false,
                 origin.GetURL()),
             base::BindRepeating(

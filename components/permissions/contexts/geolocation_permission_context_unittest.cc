@@ -287,21 +287,10 @@ void GeolocationPermissionContextTestsBase::RequestGeolocationPermission(
     bool user_gesture,
     bool embedded_permission_element_initiated,
     blink::mojom::PermissionName permission_name) {
-  std::unique_ptr<PermissionResolver> resolver =
-      geolocation_permission_context_->CreatePermissionResolver(
-          blink::mojom::PermissionDescriptor::New(permission_name,
-                                                  /*extension=*/nullptr));
   auto request_data = std::make_unique<permissions::PermissionRequestData>(
-      std::move(resolver), id, user_gesture, requesting_frame);
-
-  if (permission_name ==
-      blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE) {
-    request_data->requested_geolocation_accuracy =
-        GeolocationAccuracy::kApproximate;
-  } else if (permission_name == blink::mojom::PermissionName::GEOLOCATION) {
-    request_data->requested_geolocation_accuracy =
-        GeolocationAccuracy::kPrecise;
-  }
+      blink::mojom::PermissionDescriptor::New(permission_name,
+                                              /*extension=*/nullptr),
+      id, user_gesture, requesting_frame);
 
   if (embedded_permission_element_initiated) {
     request_data->embedded_permission_request_descriptor =
