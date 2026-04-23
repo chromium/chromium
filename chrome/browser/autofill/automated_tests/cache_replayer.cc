@@ -130,7 +130,7 @@ ErrorOr<std::string> GetQueryParameter(const GURL& url) {
   }
   size_t slash = value.find('/', strlen(kApiServerQueryPath));
   if (slash != std::string::npos) {
-    return base::ok(value.substr(slash + 1));
+    return base::ok(std::move(value).substr(slash + 1));
   } else {
     return base::unexpected(
         "could not get any value from query path in Query GET URL: " +
@@ -140,12 +140,14 @@ ErrorOr<std::string> GetQueryParameter(const GURL& url) {
 
 // Returns whether the |url| points to a GET or POST query, or neither.
 RequestType GetRequestTypeFromURL(const GURL& url) {
+  std::string url_path = url.GetPath();
   if (url.GetHost() != kApiServerDomain ||
-      url.GetPath().find(kApiServerQueryPath) != 0) {
+      url_path.find(kApiServerQueryPath) != 0) {
     return RequestType::kNone;
   }
 
-  std::string path = url.GetPath().substr(strlen(kApiServerQueryPath));
+  std::string_view path =
+      std::string_view(url_path).substr(strlen(kApiServerQueryPath));
   return path == ":get" || path == ":get/" ? RequestType::kQueryProtoPOST
                                            : RequestType::kQueryProtoGET;
 }
@@ -254,7 +256,7 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
     return base::unexpected(
         "Unable to retrieve serialized request from WPR request_node");
   }
-  std::string http_text = SplitHTTP(decoded_request_text).second;
+  std::string http_text = std::move(SplitHTTP(decoded_request_text).second);
   return PeelAutofillPageResourceQueryRequestWrapper(http_text).and_then(
       ParseProtoContents<AutofillPageQueryRequest>);
 }
@@ -278,7 +280,7 @@ ErrorOr<AutofillQueryResponse> GetAutofillResponseFromRequestNode(
   }
 
   // Eventual response needs header information, so lift that as well.
-  *response_header_text = http_pair.first;
+  *response_header_text = std::move(http_pair.first);
 
   // The Api Environment expects the response to be base64 encoded.
   std::string tmp;
@@ -388,7 +390,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
         if (RetrieveValueFromRequestNode(request.GetDict(),
                                          "SerializedResponse",
                                          &compressed_response_text)) {
-          (*cache_to_fill)[key] = compressed_response_text;
+          (*cache_to_fill)[key] = std::move(compressed_response_text);
           VLOG(2) << "Cached response content for key: " << key;
           continue;
         }
@@ -596,16 +598,16 @@ AutofillServerBehaviorType ParseAutofillServerBehaviorType() {
 
 // Gives a pair that contains the HTTP text split in 2, where the first
 // element is the HTTP head and the second element is the HTTP body.
-std::pair<std::string, std::string> SplitHTTP(const std::string& http_text) {
+std::pair<std::string, std::string> SplitHTTP(std::string_view http_text) {
   const size_t split_index = http_text.find(kHTTPBodySep);
   if (split_index != std::string::npos) {
-    const size_t sep_length = std::string(kHTTPBodySep).size();
-    std::string head = http_text.substr(0, split_index);
-    std::string body =
+    const size_t sep_length = std::string_view(kHTTPBodySep).size();
+    std::string_view head = http_text.substr(0, split_index);
+    std::string_view body =
         http_text.substr(split_index + sep_length, std::string::npos);
-    return std::make_pair(std::move(head), std::move(body));
+    return std::pair<std::string, std::string>(head, body);
   }
-  return std::make_pair("", "");
+  return {std::string(), std::string()};
 }
 
 // Streams in text format. For consistency, taken from anonymous namespace in

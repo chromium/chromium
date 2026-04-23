@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -21,7 +22,7 @@ using ServerCache = std::map<std::string, std::string>;
 // Splits raw HTTP request text into a pair, where the first element represent
 // the head with headers and the second element represents the body that
 // contains the data payload.
-std::pair<std::string, std::string> SplitHTTP(const std::string& http_text);
+std::pair<std::string, std::string> SplitHTTP(std::string_view http_text);
 
 // Streams in text format. For consistency, taken from anonymous namespace in
 // components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
