@@ -3268,16 +3268,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_JavaScriptUrlNotAllowed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // An extension with access to www.example.com.
-  // TODO(crbug.com/371432155): Use the semantic extension builder and Manifest
-  // V3.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetManifest(base::DictValue()
-                           .Set("name", "Extension with a host permission")
-                           .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Set("permissions", base::ListValue().Append(
-                                                   "http://www.example.com/*")))
+      ExtensionBuilder("Extension with a host permission")
+          .AddHostPermission("http://www.example.com/*")
           .Build();
   auto function = base::MakeRefCounted<TabsUpdateFunction>();
   function->set_extension(extension.get());
