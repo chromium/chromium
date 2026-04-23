@@ -86,7 +86,8 @@ void GeneratedIconFixCommand::StartWithLock(
   icon_downloader_->Start(
       &lock_->shared_web_contents(), icon_urls,
       base::BindOnce(&GeneratedIconFixCommand::OnIconsDownloaded,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      IconDownloaderOptions{.download_page_favicons = false});
 }
 
 void GeneratedIconFixCommand::OnIconsDownloaded(
