@@ -72,6 +72,7 @@ specific_include_rules = {
   "chrome_main_parts\.(h|mm)": [
     "+components/memory_system",
     "+components/sampling_profiler",
+    "+ios/chrome/browser/tracing/ios_tracing_controller.h",
   ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

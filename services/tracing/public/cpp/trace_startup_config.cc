@@ -16,12 +16,12 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory_switch.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -31,6 +31,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/early_trace_event_binding.h"
+#endif
+
+#if BUILDFLAG(USE_BLINK)
+#include "base/memory/shared_memory_switch.h"
 #endif
 
 namespace tracing {
@@ -86,8 +90,14 @@ constexpr std::string_view kDefaultStartupCategories[] = {
 
 // static
 TraceStartupConfig& TraceStartupConfig::GetInstance() {
-  static base::NoDestructor<TraceStartupConfig> g_instance;
-  return *g_instance;
+  static base::NoDestructor<TraceStartupConfig> instance;
+  return *instance;
+}
+
+// static
+void TraceStartupConfig::ResetForTesting() {
+  GetInstance().Clear();
+  GetInstance().Initialize();
 }
 
 // static
@@ -130,6 +140,10 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
 }
 
 TraceStartupConfig::TraceStartupConfig() {
+  Initialize();
+}
+
+void TraceStartupConfig::Initialize() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const std::string value =
       command_line->GetSwitchValueASCII(switches::kTraceStartupOwner);
@@ -152,6 +166,15 @@ TraceStartupConfig::TraceStartupConfig() {
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
     CHECK(GetResultFile().empty());
   }
+}
+
+void TraceStartupConfig::Clear() {
+  is_enabled_ = false;
+  perfetto_config_ = perfetto::TraceConfig();
+  result_file_ = base::FilePath();
+  session_owner_ = SessionOwner::kTracingController;
+  session_adopted_ = false;
+  output_format_ = OutputFormat::kProto;
 }
 
 TraceStartupConfig::~TraceStartupConfig() = default;
@@ -278,6 +301,7 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 }
 
 bool TraceStartupConfig::EnableFromConfigHandle() {
+#if BUILDFLAG(USE_BLINK)
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kTraceConfigHandle)) {
     return false;
@@ -305,6 +329,9 @@ bool TraceStartupConfig::EnableFromConfigHandle() {
   }
   is_enabled_ = true;
   return true;
+#else
+  return false;
+#endif
 }
 
 bool TraceStartupConfig::EnableFromJsonConfigFile() {

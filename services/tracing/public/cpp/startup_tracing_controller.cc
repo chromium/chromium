@@ -29,7 +29,9 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#if !BUILDFLAG(IS_IOS)
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
+#endif
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -72,11 +74,13 @@ class EmergencyTraceFinalisationCoordinator {
     return *instance;
   }
 
+  static void ResetForTesting() { GetInstance().Reset(); }
+
   void OnTracingStarted(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::OnceClosure stop_tracing) {
-    tracing_started_.Set();
+    tracing_started_.store(true, std::memory_order_release);
     base::AutoLock lock(lock_);
     startup_tracing_controller_task_runner_ = std::move(task_runner);
     io_task_runner_ = std::move(io_task_runner);
@@ -90,7 +94,7 @@ class EmergencyTraceFinalisationCoordinator {
   void StopAndBlockUntilStopped() {
     // If DCHECK fires before tracing has started, there isn't much for us to
     // do.
-    if (!tracing_started_.IsSet()) {
+    if (!tracing_started_.load(std::memory_order_acquire)) {
       return;
     }
 
@@ -132,8 +136,21 @@ class EmergencyTraceFinalisationCoordinator {
   }
 
  private:
+  friend class base::NoDestructor<EmergencyTraceFinalisationCoordinator>;
+
+  EmergencyTraceFinalisationCoordinator() = default;
+
+  void Reset() {
+    tracing_started_.store(false, std::memory_order_release);
+    finalisation_.Reset();
+    base::AutoLock lock(lock_);
+    startup_tracing_controller_task_runner_.reset();
+    io_task_runner_.reset();
+    stop_tracing_.Reset();
+  }
+
   base::WaitableEvent finalisation_;
-  base::AtomicFlag tracing_started_;
+  std::atomic<bool> tracing_started_{false};
 
   base::Lock lock_;
   scoped_refptr<base::SequencedTaskRunner>
@@ -160,8 +177,13 @@ class StartupTracingController::BackgroundTracer {
         output_file_(output_file),
         output_format_(output_format),
         on_tracing_finished_(std::move(on_tracing_finished)) {
+#if BUILDFLAG(IS_IOS)
+    tracing_session_ =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kInProcessBackend);
+#else
     tracing_session_ =
         perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
+#endif
 
     if (write_mode_ == WriteMode::kStreaming) {
 #if !BUILDFLAG(IS_WIN)
@@ -259,6 +281,7 @@ class StartupTracingController::BackgroundTracer {
       return;
     }
 
+#if !BUILDFLAG(IS_IOS)
     // For JSON, we need to extract raw data from the packet.
     if (!trace_packet_tokenizer_) {
       trace_packet_tokenizer_ =
@@ -273,6 +296,9 @@ class StartupTracingController::BackgroundTracer {
             reinterpret_cast<const uint8_t*>(slice.start), slice.size)));
       }
     }
+#else
+    NOTREACHED() << "JSON output is not supported on iOS";
+#endif
   }
 
   // Open |file_| for writing and set |written_to_file_| accordingly.
@@ -350,7 +376,9 @@ class StartupTracingController::BackgroundTracer {
 
   // Tokenizer to extract the json data from the data received from the tracing
   // service.
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<tracing::TracePacketTokenizer> trace_packet_tokenizer_;
+#endif
 
   base::OnceClosure on_tracing_finished_;
 
@@ -570,6 +598,12 @@ void StartupTracingController::ShutdownAndWaitForStopIfNeeded() {
 
   WaitUntilStopped();
 }
+
+// static
+void StartupTracingController::ResetForTesting() {
+  EmergencyTraceFinalisationCoordinator::ResetForTesting();  // IN-TEST
+}
+
 // static
 void StartupTracingController::EmergencyStop() {
   ::tracing::EmergencyTraceFinalisationCoordinator::GetInstance()

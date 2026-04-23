@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracing") {
+  sources = [
+    "ios_tracing_controller.h",
+    "ios_tracing_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/tracing:tracing_config",
+    "//services/tracing/public/cpp",
+    "//third_party/perfetto:libperfetto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_tracing_controller_unittest.mm" ]
+  deps = [
+    ":tracing",
+    "//base/test:test_support",
+    "//base/test:test_trace_processor",
+    "//services/tracing/public/cpp",
+    "//testing/gtest",
+    "//third_party/perfetto:libperfetto",
+  ]
+}

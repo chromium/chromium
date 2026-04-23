@@ -70,38 +70,40 @@ if (is_win) {
   }
 }
 
-component("tracing_metrics") {
-  sources = [
-    "common/background_tracing_metrics_provider.cc",
-    "common/background_tracing_metrics_provider.h",
-    "common/system_profile_metadata_recorder.cc",
-    "common/system_profile_metadata_recorder.h",
-    "tracing_export.h",
-  ]
+if (!is_ios) {
+  component("tracing_metrics") {
+    sources = [
+      "common/background_tracing_metrics_provider.cc",
+      "common/background_tracing_metrics_provider.h",
+      "common/system_profile_metadata_recorder.cc",
+      "common/system_profile_metadata_recorder.h",
+      "tracing_export.h",
+    ]
 
-  defines = [ "TRACING_IMPLEMENTATION" ]
+    defines = [ "TRACING_IMPLEMENTATION" ]
 
-  deps = [
-    "//base",
-    "//components/metrics:content",
-    "//content/public/browser",
-    "//third_party/metrics_proto",
-  ]
-}
+    deps = [
+      "//base",
+      "//components/metrics:content",
+      "//content/public/browser",
+      "//third_party/metrics_proto",
+    ]
+  }
 
-component("background_tracing_utils") {
-  sources = [
-    "common/background_tracing_utils.cc",
-    "common/background_tracing_utils.h",
-  ]
+  component("background_tracing_utils") {
+    sources = [
+      "common/background_tracing_utils.cc",
+      "common/background_tracing_utils.h",
+    ]
 
-  defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
+    defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
 
-  deps = [
-    ":tracing_config",
-    "//base",
-    "//content/public/browser",
-  ]
+    deps = [
+      ":tracing_config",
+      "//base",
+      "//content/public/browser",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -114,10 +116,10 @@ source_set("unit_tests") {
     "//third_party/snappy",
   ]
 
-  sources = [
-    "common/background_tracing_state_manager_unittest.cc",
-    "common/background_tracing_utils_unittest.cc",
-  ]
+  sources = [ "common/background_tracing_state_manager_unittest.cc" ]
+  if (!is_ios) {
+    sources += [ "common/background_tracing_utils_unittest.cc" ]
+  }
   if (is_android) {
     sources += [ "common/graphics_memory_dump_provider_android_unittest.cc" ]
     deps += [ ":graphics_provider" ]
@@ -142,14 +144,19 @@ source_set("unit_tests") {
     ]
   }
   deps += [
-    ":background_tracing_utils",
     ":tracing_config",
     "//base/test:proto_test_support",
     "//components/metrics",
     "//components/prefs:test_support",
-    "//content/public/browser",
-    "//content/test:test_support",
   ]
+
+  if (!is_ios) {
+    deps += [
+      ":background_tracing_utils",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
 }
 
 test("tracing_perftests") {

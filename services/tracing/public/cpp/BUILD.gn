@@ -28,17 +28,7 @@ source_set("traced_process") {
   ]
 }
 
-# On iOS we don't support tracing so we only include the minimum needed
-# to support a fake typed TRACE_EVENT macro. However this means we don't have
-# any .cc files and thus on iOS it needs to be a source_set and not a
-# component. |tracing_lib_type| decides which version to build.
-if (use_blink) {
-  tracing_lib_type = "component"
-} else {
-  tracing_lib_type = "source_set"
-}
-
-target(tracing_lib_type, "cpp") {
+target("component", "cpp") {
   sources = [
     "perfetto/common_data_sources.cc",
     "perfetto/common_data_sources.h",
@@ -49,6 +39,8 @@ target(tracing_lib_type, "cpp") {
     "perfetto/histogram_samples_data_source.cc",
     "perfetto/histogram_samples_data_source.h",
     "perfetto/macros.h",
+    "perfetto/perfetto_config.cc",
+    "perfetto/perfetto_config.h",
     "perfetto/perfetto_data_source_names.h",
     "perfetto/trace_string_lookup.cc",
     "perfetto/trace_string_lookup.h",
@@ -56,16 +48,30 @@ target(tracing_lib_type, "cpp") {
     "perfetto/track_name_recorder.h",
     "stack_sampling/tracing_sampler_profiler.cc",
     "stack_sampling/tracing_sampler_profiler.h",
+    "startup_tracing_controller.cc",
+    "startup_tracing_controller.h",
     "system_metrics_sampler.cc",
     "system_metrics_sampler.h",
+    "trace_startup_config.cc",
+    "trace_startup_config.h",
   ]
+
+  if (!is_ios) {
+    sources += [
+      "perfetto/trace_packet_tokenizer.cc",
+      "perfetto/trace_packet_tokenizer.h",
+    ]
+  }
 
   defines = [ "IS_TRACING_CPP_IMPL" ]
   output_name = "tracing_cpp"
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/tracing:tracing_config",
+  ]
 
   deps = [
     ":buildflags",
@@ -75,6 +81,7 @@ target(tracing_lib_type, "cpp") {
     "//components/system_cpu",
     "//third_party/icu:icui18n",
     "//third_party/perfetto/include/perfetto/protozero",
+    "//third_party/snappy",
   ]
 
   all_dependent_configs = []
@@ -84,8 +91,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/interning_index.h",
       "perfetto/metadata_data_source.cc",
       "perfetto/metadata_data_source.h",
-      "perfetto/perfetto_config.cc",
-      "perfetto/perfetto_config.h",
       "perfetto/perfetto_session.cc",
       "perfetto/perfetto_session.h",
       "perfetto/perfetto_traced_process.cc",
@@ -95,16 +100,10 @@ target(tracing_lib_type, "cpp") {
       "perfetto/shared_memory.cc",
       "perfetto/shared_memory.h",
       "perfetto/system_trace_writer.h",
-      "perfetto/trace_packet_tokenizer.cc",
-      "perfetto/trace_packet_tokenizer.h",
       "perfetto/traced_value_proto_writer.cc",
       "perfetto/traced_value_proto_writer.h",
-      "startup_tracing_controller.cc",
-      "startup_tracing_controller.h",
       "trace_startup.cc",
       "trace_startup.h",
-      "trace_startup_config.cc",
-      "trace_startup_config.h",
       "traced_process_impl.cc",
       "traced_process_impl.h",
       "tracing_features.cc",
@@ -138,7 +137,6 @@ target(tracing_lib_type, "cpp") {
     }
 
     public_deps += [
-      "//components/tracing:tracing_config",
       "//mojo/public/cpp/bindings",
       "//services/tracing/public/mojom",
     ]

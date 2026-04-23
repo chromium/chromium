@@ -609,6 +609,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled:unit_tests",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons:unit_tests",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen:unit_tests",
+    "//ios/chrome/browser/tracing:unit_tests",
     "//ios/chrome/browser/translate/model:unit_tests",
     "//ios/chrome/browser/unit_conversion/model:unit_tests",
     "//ios/chrome/browser/unit_conversion/ui_bundled:unit_tests",

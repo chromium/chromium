@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
@@ -188,6 +189,10 @@ void IOSChromeMainParts::ApplyFeatureList() {
 }
 
 void IOSChromeMainParts::PreCreateThreads() {
+  // Initialize Perfetto tracing before threads are spawned so the
+  // TrackNameRecorder can capture and name the new background threads.
+  IOSTracingController::CreateInstance();
+
   // Create and start the stack sampling profiler if CANARY or DEV. The warning
   // below doesn't apply.
   const version_info::Channel channel = ::GetChannel();

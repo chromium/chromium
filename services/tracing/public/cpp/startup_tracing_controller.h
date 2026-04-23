@@ -90,6 +90,8 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
     should_continue_on_shutdown_ = true;
   }
 
+  static void ResetForTesting();
+
  private:
   void Stop(base::OnceClosure on_finished_callback);
 

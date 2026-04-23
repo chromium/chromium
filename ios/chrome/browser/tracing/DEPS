@@ -1,0 +1,9 @@
+include_rules = [
+  "+services/tracing/public/cpp/startup_tracing_controller.h",
+  "+components/tracing/common/tracing_switches.h",
+  "+services/tracing/public/cpp/perfetto",
+  "+services/tracing/public/cpp/stack_sampling",
+  "+services/tracing/public/cpp/system_metrics_sampler.h",
+  "+services/tracing/public/cpp/trace_startup_config.h",
+  "+third_party/perfetto/protos/perfetto/config",
+]

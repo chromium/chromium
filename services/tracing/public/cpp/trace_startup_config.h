@@ -104,6 +104,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
 
   static TraceStartupConfig& GetInstance();
 
+  static void ResetForTesting();
+
   ~TraceStartupConfig();
 
   TraceStartupConfig(const TraceStartupConfig&) = delete;
@@ -153,6 +155,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceStartupConfig {
   constexpr static int kDefaultStartupDurationInSeconds = 5;
 
   TraceStartupConfig();
+
+  void Initialize();
+  void Clear();
 
   bool EnableFromCommandLine();
   bool EnableFromJsonConfigFile();
