@@ -93,7 +93,7 @@ class AutoPipSettingHelper {
   // safe to call at any time.  It is up to our caller to make sure that we are
   // destroyed if `settings_map` is.
   AutoPipSettingHelper(
-      const GURL& origin,
+      content::WebContents* web_contents,
       HostContentSettingsMap* settings_map,
       permissions::PermissionDecisionAutoBlockerBase* auto_blocker);
   ~AutoPipSettingHelper();
@@ -170,6 +170,7 @@ class AutoPipSettingHelper {
       std::optional<ukm::SourceId> source_id,
       PromptResult result) const;
 
+  const raw_ptr<content::WebContents> web_contents_;
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   const raw_ptr<permissions::PermissionDecisionAutoBlockerBase> auto_blocker_ =

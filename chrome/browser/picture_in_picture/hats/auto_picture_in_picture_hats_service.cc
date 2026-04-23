@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -112,7 +113,32 @@ void AutoPictureInPictureHatsService::SetPromptResult(
 }
 
 void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
-  if (!active_window_context_ || !active_window_context_->prompt_result) {
+  if (!active_window_context_) {
+    return;
+  }
+
+  if (active_window_context_->window_duration) {
+    return;
+  }
+
+  active_window_context_->window_duration =
+      clock_->NowTicks() - active_window_context_->start_time;
+}
+
+void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
+    content::WebContents* web_contents) {
+  if (!active_window_context_) {
+    return;
+  }
+
+  // If the window is still open, we should not clear the context yet.
+  if (!active_window_context_->window_duration) {
+    return;
+  }
+
+  // If the window is closed but we never got a prompt result, we cannot launch
+  // a survey. Clear context and return.
+  if (!active_window_context_->prompt_result) {
     active_window_context_ = std::nullopt;
     return;
   }
@@ -150,10 +176,10 @@ void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
   product_specific_string_data["AutoPip Reason"] =
       AutoPipReasonToString(auto_pip_trigger_reason);
 
-  base::TimeDelta duration =
-      clock_->NowTicks() - active_window_context_->start_time;
   product_specific_string_data["Pip window duration"] =
-      base::NumberToString(duration.InSeconds()) + "s";
+      base::NumberToString(
+          active_window_context_->window_duration->InSeconds()) +
+      "s";
 
   // Record Opener site URL only if UKM is enabled for this profile.
   const bool is_ukm_enabled = profile_->GetPrefs()->GetBoolean(
@@ -170,10 +196,10 @@ void AutoPictureInPictureHatsService::AutoPictureInPictureWindowClosed() {
         PromptResultToString(permission_prompt_result);
   }
 
-  hats_service->LaunchSurvey(actual_trigger, base::DoNothing(),
-                             base::DoNothing(), {},
-                             product_specific_string_data);
+  hats_service->LaunchSurveyForWebContents(actual_trigger, web_contents, {},
+                                           product_specific_string_data);
 
+  // Clear the context after a successful launch.
   active_window_context_ = std::nullopt;
 }
 

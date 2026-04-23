@@ -13,15 +13,19 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/views/test/views_test_base.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
@@ -72,13 +76,22 @@ class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
 };
 
 class AutoPipSettingHelperTest
-    : public views::ViewsTestBase,
+    : public ChromeViewsTestBase,
       public testing::WithParamInterface<TestParams> {
  public:
   AutoPipSettingHelperTest() = default;
 
   void SetUp() override {
-    ViewsTestBase::SetUp();
+    ChromeViewsTestBase::SetUp();
+
+    profile_ = std::make_unique<TestingProfile>();
+    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
+
+    test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    content::WebContentsTester::For(test_web_contents_.get())
+        ->NavigateAndCommit(origin_);
+
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
@@ -99,16 +112,18 @@ class AutoPipSettingHelperTest
         false /* restore_session */, true /* should_record_metrics */);
 
     setting_helper_ = std::make_unique<AutoPipSettingHelper>(
-        origin_, settings_map_.get(), &auto_blocker());
+        test_web_contents_.get(), settings_map_.get(), &auto_blocker());
   }
 
   void TearDown() override {
+    setting_overlay_tracker_.SetView(nullptr);
+    setting_helper_.reset();
     anchor_view_widget_.reset();
     parent_widget_.reset();
-    setting_overlay_ = nullptr;
     widget_.reset();
-    setting_helper_.reset();
-    ViewsTestBase::TearDown();
+    test_web_contents_.reset();
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
     settings_map_->ShutdownOnUIThread();
   }
 
@@ -116,7 +131,9 @@ class AutoPipSettingHelperTest
 
   AutoPipSettingHelper* setting_helper() { return setting_helper_.get(); }
   AutoPipSettingOverlayView* setting_overlay() const {
-    return setting_overlay_;
+    return const_cast<AutoPipSettingOverlayView*>(
+        static_cast<const AutoPipSettingOverlayView*>(
+            setting_overlay_tracker_.view()));
   }
 
   AutoPipSettingView* setting_view() const {
@@ -135,17 +152,18 @@ class AutoPipSettingHelperTest
       AutoPipReason auto_pip_reason = AutoPipReason::kUnknown) {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
-    auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
+    auto overlay_view = setting_helper_->CreateOverlayViewIfNeeded(
         close_cb_.Get(), auto_pip_reason, std::nullopt, anchor_view,
         views::BubbleBorder::TOP_CENTER);
-    if (setting_overlay) {
-      setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
-          widget_->SetContentsView(std::move(setting_overlay)));
+    if (overlay_view) {
+      auto* overlay_ptr = overlay_view.get();
+      widget_->SetContentsView(std::move(overlay_view));
+      setting_overlay_tracker_.SetView(overlay_ptr);
     } else {
-      setting_overlay_ = nullptr;
+      setting_overlay_tracker_.SetView(nullptr);
     }
 
-    return setting_overlay_;
+    return setting_overlay();
   }
 
   void set_content_setting(ContentSetting new_setting) {
@@ -185,8 +203,12 @@ class AutoPipSettingHelperTest
  private:
   base::MockOnceCallback<void()> close_cb_;
 
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
+  std::unique_ptr<content::WebContents> test_web_contents_;
+
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
+  views::ViewTracker setting_overlay_tracker_;
   std::unique_ptr<views::Widget> parent_widget_;
   std::unique_ptr<views::Widget> anchor_view_widget_;
 

@@ -132,9 +132,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureHatsEnabledBrowserTest,
       PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
       GURL("https://example.com"));
   autopip_hats_service->SetPromptResult(PromptResult::kAllowOnce);
+  autopip_hats_service->AutoPictureInPictureWindowClosed();
 
   EXPECT_CALL(*hats_service,
-              LaunchSurvey(kHatsSurveyTriggerAutoPipAllowed, _, _, _, _, _, _));
+              LaunchSurveyForWebContents(kHatsSurveyTriggerAutoPipAllowed, _, _,
+                                         _, _, _, _, _));
 
-  autopip_hats_service->AutoPictureInPictureWindowClosed();
+  autopip_hats_service->MaybeLaunchSurvey(
+      browser()->tab_strip_model()->GetActiveWebContents());
 }

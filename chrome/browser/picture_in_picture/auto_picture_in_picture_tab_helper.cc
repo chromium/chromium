@@ -31,6 +31,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h"
+#include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -315,6 +317,14 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
   total_browser_initiated_pip_time_for_session_ = std::nullopt;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+AutoPictureInPictureHatsService* AutoPictureInPictureTabHelper::GetHatsService()
+    const {
+  return AutoPictureInPictureHatsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     bool is_in_picture_in_picture) {
   if (is_in_picture_in_picture_ == is_in_picture_in_picture) {
@@ -324,6 +334,19 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
   blocked_due_to_content_setting_ = false;
 
   if (!is_in_picture_in_picture_) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* hats_service = GetHatsService()) {
+      // This call will be a no-op for non-autopip windows, since the autopip
+      // HaTS service active window context (`active_window_context_`) is only
+      // set for autopip windows. Without an active window context, calling
+      // `AutoPictureInPictureWindowClosed` or `MaybeLaunchSurvey` is a no-op.
+      hats_service->AutoPictureInPictureWindowClosed();
+      if (is_tab_activated_) {
+        hats_service->MaybeLaunchSurvey(web_contents());
+      }
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     is_in_auto_picture_in_picture_ = false;
     MaybeRecordPictureInPictureChanged(false);
     MaybeStartOrStopObservingTabStrip();
@@ -336,6 +359,14 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     current_pip_playback_time_ = base::TimeDelta();
     is_in_auto_picture_in_picture_ = true;
     auto_picture_in_picture_activation_time_ = base::TimeTicks();
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* hats_service = GetHatsService()) {
+      hats_service->AutoPictureInPictureWindowOpened(
+          auto_pip_trigger_reason_, web_contents()->GetLastCommittedURL());
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     MaybeRecordPictureInPictureChanged(true);
 
     // If the tab is activated by the time auto picture-in-picture fires, we
@@ -963,6 +994,16 @@ void AutoPictureInPictureTabHelper::OnTabBecameActive() {
   // As a result, the outgoing tab notifies the incoming tab unconditionally, so
   // that the incoming tab has the opportunity to close pip.
   MaybeExitAutoPictureInPicture();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // This call will be a no-op for non-autopip windows, since the autopip HaTS
+  // service active window context (`active_window_context_`) is only set for
+  // autopip windows. Without an active window context, calling
+  // `MaybeLaunchSurvey` is a no-op.
+  if (auto* hats_service = GetHatsService()) {
+    hats_service->MaybeLaunchSurvey(web_contents());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);

@@ -18,6 +18,10 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class Profile;
 
 // Service responsible for managing Happiness Tracking Surveys (HaTS) for
@@ -41,6 +45,9 @@ class AutoPictureInPictureHatsService : public KeyedService {
     GURL origin;
     std::optional<AutoPipSettingHelper::PromptResult> prompt_result;
     base::TimeTicks start_time;
+
+    // The duration the PiP window was open. Set when the window is closed.
+    std::optional<base::TimeDelta> window_duration;
   };
 
   explicit AutoPictureInPictureHatsService(Profile* profile);
@@ -61,9 +68,13 @@ class AutoPictureInPictureHatsService : public KeyedService {
   void SetPromptResult(AutoPipSettingHelper::PromptResult result);
 
   // Notifies the service that the Auto Picture-in-Picture window has been
-  // closed. This allows the service to determine if a HaTS survey should be
-  // shown based on the window session.
+  // closed. This allows the service to compute the final session duration.
   void AutoPictureInPictureWindowClosed();
+
+  // Attempts to launch a HaTS survey for the session that just ended. This
+  // should be called when the opener tab is visible and ready to display the
+  // survey bubble. `web_contents` is the opener tab.
+  void MaybeLaunchSurvey(content::WebContents* web_contents);
 
   const std::optional<ActiveWindowContext>&
   get_active_window_context_for_testing() const {

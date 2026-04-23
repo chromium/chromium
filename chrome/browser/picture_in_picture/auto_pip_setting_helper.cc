@@ -23,6 +23,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h"
+#include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
 #endif
 
 // static
@@ -31,15 +33,16 @@ AutoPipSettingHelper::CreateForWebContents(
     content::WebContents* web_contents,
     HostContentSettingsMap* settings_map,
     permissions::PermissionDecisionAutoBlockerBase* auto_blocker) {
-  return std::make_unique<AutoPipSettingHelper>(
-      web_contents->GetLastCommittedURL(), settings_map, auto_blocker);
+  return std::make_unique<AutoPipSettingHelper>(web_contents, settings_map,
+                                                auto_blocker);
 }
 
 AutoPipSettingHelper::AutoPipSettingHelper(
-    const GURL& origin,
+    content::WebContents* web_contents,
     HostContentSettingsMap* settings_map,
     permissions::PermissionDecisionAutoBlockerBase* auto_blocker)
-    : origin_(origin),
+    : web_contents_(web_contents),
+      origin_(web_contents->GetLastCommittedURL()),
       settings_map_(settings_map),
       auto_blocker_(auto_blocker) {}
 
@@ -207,6 +210,17 @@ void AutoPipSettingHelper::RecordResult(
     PromptResult result,
     media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (web_contents_) {
+    if (auto* hats_service =
+            AutoPictureInPictureHatsServiceFactory::GetForProfile(
+                Profile::FromBrowserContext(
+                    web_contents_->GetBrowserContext()))) {
+      hats_service->SetPromptResult(result);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResultV2",
                                 result);
   switch (auto_pip_reason) {

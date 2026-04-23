@@ -30,6 +30,7 @@ namespace permissions {
 class PermissionDecisionAutoBlockerBase;
 }  // namespace permissions
 
+class AutoPictureInPictureHatsService;
 class AutoPictureInPictureTabObserverHelperBase;
 class AutoPipSettingOverlayView;
 class HostContentSettingsMap;
@@ -330,6 +331,11 @@ class AutoPictureInPictureTabHelper
   // conferencing or media playback. This metric is recorded during the tab
   // helper destruction.
   void MaybeRecordTotalPipTimeForSession();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the auto picture in picture HaTS service.
+  AutoPictureInPictureHatsService* GetHatsService() const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
