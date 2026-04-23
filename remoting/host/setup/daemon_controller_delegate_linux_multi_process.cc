@@ -25,21 +25,7 @@
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
-
 namespace {
-
-// Returns the config path that is the source of truth. It may contain sensitive
-// information, and may not be readable by the current user.
-base::FilePath GetPrivilegedConfigPath() {
-  return GetMultiProcessHostGlobalConfigDir().Append(kDefaultHostConfigFile);
-}
-
-// Returns a config path that can be access by an unprivileged user. Note that
-// the returned config file could still contain sensitive information.
-base::FilePath GetUnprivilegedConfigPath() {
-  return GetMultiProcessHostGlobalConfigDir().Append(
-      kDefaultUnprivilegedConfigFileName);
-}
 
 // Runs a systemctl command with the given arguments. Returns true if the
 // command succeeded (i.e. exit code is 0), and false otherwise.
@@ -92,7 +78,8 @@ bool WriteConfigs(const base::DictValue& full_config) {
   }
 
   // Write full config.
-  base::FilePath config_path = GetPrivilegedConfigPath();
+  base::FilePath config_path =
+      DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath();
   if (!HostConfigToJsonFile(full_config, config_path)) {
     LOG(ERROR) << "Failed to update config file: " << config_path.value();
     return false;
@@ -115,7 +102,8 @@ bool WriteConfigs(const base::DictValue& full_config) {
       unprivileged_config.Set(key, value->Clone());
     }
   }
-  base::FilePath unprivileged_path = GetUnprivilegedConfigPath();
+  base::FilePath unprivileged_path =
+      DaemonControllerDelegateLinuxMultiProcess::GetUnprivilegedConfigPath();
   if (!HostConfigToJsonFile(unprivileged_config, unprivileged_path)) {
     LOG(ERROR) << "Failed to update unprivileged config file: "
                << unprivileged_path.value();
@@ -134,6 +122,19 @@ bool WriteConfigs(const base::DictValue& full_config) {
 }
 
 }  // namespace
+
+// static
+base::FilePath
+DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath() {
+  return GetMultiProcessHostGlobalConfigDir().Append(kDefaultHostConfigFile);
+}
+
+// static
+base::FilePath
+DaemonControllerDelegateLinuxMultiProcess::GetUnprivilegedConfigPath() {
+  return GetMultiProcessHostGlobalConfigDir().Append(
+      kDefaultUnprivilegedConfigFileName);
+}
 
 DaemonControllerDelegateLinuxMultiProcess::
     DaemonControllerDelegateLinuxMultiProcess() = default;
@@ -212,7 +213,8 @@ void DaemonControllerDelegateLinuxMultiProcess::UpdateConfig(
     return;
   }
 
-  base::FilePath config_path = GetPrivilegedConfigPath();
+  base::FilePath config_path =
+      DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath();
   std::optional<base::DictValue> full_config(
       HostConfigFromJsonFile(config_path));
   if (!full_config.has_value()) {

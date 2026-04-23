@@ -48,15 +48,6 @@ const char kHostConfigSwitchName[] = "host-config";
 
 bool start_host_after_setup = true;
 
-base::FilePath GetConfigPath() {
-  base::CommandLine* current_process = base::CommandLine::ForCurrentProcess();
-  if (current_process->HasSwitch(kHostConfigSwitchName)) {
-    return current_process->GetSwitchValuePath(kHostConfigSwitchName);
-  }
-  std::string filename = GetHostHash() + ".json";
-  return GetConfigDir().Append(filename);
-}
-
 bool GetScriptPath(base::FilePath* result) {
 #ifndef NDEBUG
   base::FilePath out_dir;
@@ -105,6 +96,15 @@ bool RunHostScript(const std::vector<std::string>& args) {
 }
 
 }  // namespace
+
+// static
+base::FilePath DaemonControllerDelegateLinuxSingleProcess::GetConfigPath() {
+  base::CommandLine* current_process = base::CommandLine::ForCurrentProcess();
+  if (current_process->HasSwitch(kHostConfigSwitchName)) {
+    return current_process->GetSwitchValuePath(kHostConfigSwitchName);
+  }
+  return GetConfigDir().Append(GetHostHash() + ".json");
+}
 
 DaemonControllerDelegateLinuxSingleProcess::
     DaemonControllerDelegateLinuxSingleProcess() = default;

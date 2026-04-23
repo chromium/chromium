@@ -4,6 +4,8 @@
 
 #include "remoting/host/pairing_registry_delegate_linux.h"
 
+#include <unistd.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "remoting/base/branding.h"
+#include "remoting/base/passwd_utils.h"
 #include "remoting/base/username.h"
 
 namespace {
@@ -219,6 +222,45 @@ bool PairingRegistryDelegateLinux::Delete(const std::string& client_id) {
 base::FilePath PairingRegistryDelegateLinux::GetDefaultRegistryPath() {
   base::FilePath config_dir = remoting::GetConfigDir();
   return config_dir.Append(kRegistryDirectory);
+}
+
+// static
+bool PairingRegistryDelegateLinux::SetupMultiProcessPairingRegistry() {
+  // The pairing directory is under the config directory, which is owned by
+  // root, so we need to create the pairing directory and change its owner to
+  // the network process user.
+  base::FilePath pairing_dir = GetDefaultRegistryPath();
+
+  // Create the directory if it doesn't exist.
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(pairing_dir, &error)) {
+    LOG(ERROR) << "Failed to create pairing registry directory: "
+               << base::File::ErrorToString(error);
+    return false;
+  }
+
+  // Set the owner to the network process user.
+  auto user_info = GetPasswdUserInfo(GetNetworkProcessUsername());
+  if (!user_info.has_value()) {
+    LOG(ERROR) << "Failed to get network process user info: "
+               << user_info.error();
+    return false;
+  }
+
+  if (HANDLE_EINTR(chown(pairing_dir.value().c_str(), user_info->uid,
+                         user_info->gid)) != 0) {
+    PLOG(ERROR) << "Failed to chown pairing registry directory to "
+                << GetNetworkProcessUsername();
+    return false;
+  }
+
+  // Set permissions to 755 to allow any users to read the unprivileged pairing
+  // files.
+  if (!base::SetPosixFilePermissions(pairing_dir, 0755)) {
+    LOG(ERROR) << "Failed to set permissions on pairing registry directory";
+    return false;
+  }
+  return true;
 }
 
 std::unique_ptr<PairingRegistry::Delegate> CreatePairingRegistryDelegate() {

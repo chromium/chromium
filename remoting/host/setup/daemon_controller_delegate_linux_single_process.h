@@ -24,6 +24,9 @@ class DaemonControllerDelegateLinuxSingleProcess
 
   ~DaemonControllerDelegateLinuxSingleProcess() override;
 
+  // Returns the path to the host configuration file.
+  static base::FilePath GetConfigPath();
+
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
   std::optional<base::DictValue> GetConfig() override;

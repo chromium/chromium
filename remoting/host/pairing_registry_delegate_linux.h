@@ -47,6 +47,11 @@ class PairingRegistryDelegateLinux
   // paired clients.
   static base::FilePath GetDefaultRegistryPath();
 
+  // Creates the pairing registry directory and sets the correct owner and
+  // permissions for the multi-process host.
+  // Must be run as root.
+  static bool SetupMultiProcessPairingRegistry();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PairingRegistryDelegateLinuxTest, SaveAndLoad);
   FRIEND_TEST_ALL_PREFIXES(PairingRegistryDelegateLinuxTest, Stateless);
