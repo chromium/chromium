@@ -56,31 +56,30 @@ bool HTMLSubmitButtonBehavior::IsEffectivelyDisabled() const {
   return disabled_ || (internals && internals->IsActuallyDisabled());
 }
 
-HTMLFormElement* HTMLSubmitButtonBehavior::form(
+ElementInternals* HTMLSubmitButtonBehavior::GetInternalsOrThrow(
     ExceptionState& exception_state) const {
   ElementInternals* internals = GetElementInternals();
   if (!internals) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The behavior is not attached to an element.");
-    return nullptr;
   }
+  return internals;
+}
+
+HTMLFormElement* HTMLSubmitButtonBehavior::form(
+    ExceptionState& exception_state) const {
+  ElementInternals* internals = GetInternalsOrThrow(exception_state);
   // Use ListedElement::Form() from the internals.
-  return internals->Form();
+  return internals ? internals->Form() : nullptr;
 }
 
 LabelsNodeList* HTMLSubmitButtonBehavior::labels(
     ExceptionState& exception_state) const {
-  ElementInternals* internals = GetElementInternals();
-  if (!internals) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The behavior is not attached to an element.");
-    return nullptr;
-  }
+  ElementInternals* internals = GetInternalsOrThrow(exception_state);
   // Delegate to ElementInternals::labels() which handles form-associated
   // custom element labels.
-  return internals->labels(exception_state);
+  return internals ? internals->labels(exception_state) : nullptr;
 }
 
 void HTMLSubmitButtonBehavior::Trace(Visitor* visitor) const {
