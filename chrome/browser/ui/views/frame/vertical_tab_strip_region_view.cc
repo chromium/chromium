@@ -441,6 +441,17 @@ void VerticalTabStripRegionView::SetCaptionButtonWidthForLayout(
   top_button_container_->SetCaptionButtonWidthForLayout(caption_button_width);
 }
 
+void VerticalTabStripRegionView::SetIsExitingExpandOnHoverForLayout(
+    bool is_exiting_expand_on_hover) {
+  top_button_container_->SetIsExitingExpandOnHoverForLayout(
+      is_exiting_expand_on_hover);
+}
+
+bool VerticalTabStripRegionView::WillWrapDueToOverflow(
+    int available_width) const {
+  return top_button_container_->WillWrapDueToOverflow(available_width);
+}
+
 TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
   if (!drag_handler_) {

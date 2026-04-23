@@ -1177,6 +1177,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         std::max(0, toolbar_height));
     views().vertical_tab_strip_region_view->SetCaptionButtonWidthForLayout(
         std::max(0, caption_button_width));
+
+    const int padding =
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+    const int target_width =
+        views().vertical_tab_strip_region_view->uncollapsed_width();
+    const bool will_wrap_at_destination =
+        views().vertical_tab_strip_region_view->WillWrapDueToOverflow(
+            target_width - 2 * padding);
+
+    views().vertical_tab_strip_region_view->SetIsExitingExpandOnHoverForLayout(
+        vertical_tab_strip_animation.current_motion &&
+        vertical_tab_strip_animation.expand_on_hover > 0.0 &&
+        vertical_tab_strip_animation.top_offset > 0 &&
+        will_wrap_at_destination);
   }
 
   return layout;

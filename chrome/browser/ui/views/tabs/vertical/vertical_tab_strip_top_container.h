@@ -82,6 +82,8 @@ class VerticalTabStripTopContainer : public views::View,
   // aligned to the leading, top corner.
   void SetToolbarHeightForLayout(int toolbar_height);
   void SetCaptionButtonWidthForLayout(int caption_button_width);
+  void SetIsExitingExpandOnHoverForLayout(bool is_exiting_expand_on_hover);
+  bool WillWrapDueToOverflow(int available_width) const;
 
  private:
   void OnCollapseButtonContextMenuClosed();
@@ -115,6 +117,10 @@ class VerticalTabStripTopContainer : public views::View,
   // rendered inside of it becaused that area is reserved for outside UI
   // elements.
   int caption_button_width_ = 0;
+  // This is true when the width of the tab strip needs to shrink while exiting
+  // the expand-on-hover animation. This is because the final state needs to be
+  // within the wrapped state bounds when leading caption buttons are present.
+  bool is_exiting_expand_on_hover_ = false;
 
   // This is updated during layout calculation and then applied during layout.
   mutable views::LayoutOrientation combo_button_orientation_ =

@@ -107,6 +107,8 @@ class VerticalTabStripRegionView final
   // aligned to the leading, top corner.
   void SetToolbarHeightForLayout(int toolbar_height);
   void SetCaptionButtonWidthForLayout(int caption_button_width);
+  void SetIsExitingExpandOnHoverForLayout(bool is_exiting_expand_on_hover);
+  bool WillWrapDueToOverflow(int available_width) const;
 
   TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
 

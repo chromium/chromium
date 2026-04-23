@@ -33,10 +33,6 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
-namespace {
-constexpr int kComboButtonCollapsedPadding = 2;
-}
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     VerticalTabStripTopContainer,
     kToggleVerticalTabsExpandOnHoverElementId);
@@ -169,6 +165,10 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
         const gfx::Size pref_size =
             combo_button_->GetPreferredSizeForOrientation(
                 combo_button_orientation_);
+
+        const int kComboButtonCollapsedPadding = GetLayoutConstant(
+            LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
+
         // When collapsed the combo button should fill the width (excluding
         // padding), this is especially relevant when in the expand-on-hover
         // state.
@@ -200,17 +200,19 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // horizontally. The exact y-level of the buttons depends on if they can lay
     // on one line or not.
     combo_button_orientation_ = views::LayoutOrientation::kHorizontal;
-    const int padding =
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
 
     const int baseline_height = GetBaselineMinHeight();
     host_size.SetToMax(gfx::Size(0, baseline_height));
 
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
-    const bool wrapped_due_to_overflow =
-        size_bounds.width().is_bounded() && caption_button_width_ > 0 &&
-        GetPreferredWidth() + caption_button_width_ >= available_width;
+    const bool wrapped_due_to_overflow = size_bounds.width().is_bounded() &&
+                                         WillWrapDueToOverflow(available_width);
+
+    const int left_alignment =
+        (wrapped_due_to_overflow || is_exiting_expand_on_hover_)
+            ? 0
+            : caption_button_width_;
 
     int y_baseline = host_size.height() / 2;
     // If there is not enough space for all of the buttons to be on the same
@@ -229,7 +231,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     int current_y = 0;
     if (unfocus_button_ && unfocus_button_->GetVisible()) {
       const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
-      gfx::Rect bounds(wrapped_due_to_overflow ? 0 : caption_button_width_,
+      gfx::Rect bounds(left_alignment,
                        std::max(0, y_baseline - pref_size.height() / 2),
                        pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(unfocus_button_.get(),
@@ -242,10 +244,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     if (collapse_button_ && collapse_button_->GetVisible()) {
       const gfx::Size pref_size = collapse_button_->GetPreferredSize();
-      const int x = layout.child_layouts.empty()
-                        ? (wrapped_due_to_overflow ? 0 : caption_button_width_)
-                        : layout.child_layouts.back().bounds.right() + padding;
-      gfx::Rect bounds(x, std::max(0, y_baseline - pref_size.height() / 2),
+      gfx::Rect bounds(left_alignment,
+                       std::max(0, y_baseline - pref_size.height() / 2),
                        pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(collapse_button_.get(),
                                         collapse_button_->GetVisible(), bounds);
@@ -408,6 +408,21 @@ void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
   }
   caption_button_width_ = caption_button_width;
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
+void VerticalTabStripTopContainer::SetIsExitingExpandOnHoverForLayout(
+    bool is_exiting_expand_on_hover) {
+  if (is_exiting_expand_on_hover_ == is_exiting_expand_on_hover) {
+    return;
+  }
+  is_exiting_expand_on_hover_ = is_exiting_expand_on_hover;
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
+
+bool VerticalTabStripTopContainer::WillWrapDueToOverflow(
+    int available_width) const {
+  return caption_button_width_ > 0 &&
+         GetPreferredWidth() + caption_button_width_ >= available_width;
 }
 
 void VerticalTabStripTopContainer::OnCollapseButtonContextMenuClosed() {
