@@ -703,8 +703,17 @@ INSTANTIATE_TEST_SUITE_P(
       return prefix + name;
     });
 
+// TODO(crbug.com/505527138): The tests are flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
+  DISABLED_ClassicContextMenuUploadTriggersAimPopup
+#else
+#define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
+  ClassicContextMenuUploadTriggersAimPopup
+#endif  // BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
-                       ClassicContextMenuUploadTriggersAimPopup) {
+                       MAYBE_ClassicContextMenuUploadTriggersAimPopup) {
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);
