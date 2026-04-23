@@ -153,6 +153,10 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // are blocked, empty on one side, or have columns on both sides.
   void UpdateCrossGapSegmentStates();
 
+  // Finalizes the per-segment state of the main gap above the row just
+  // appended to `columns_per_row_`, when applicable.
+  void FinalizeMainGapSegmentStateForCurrentRow(wtf_size_t cols_in_row);
+
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
   // we'll keep the unpositioned marker around, so that we can retry with a
@@ -336,10 +340,10 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   bool has_processed_first_child_ = false;
 
   // This is the number of columns in each row, where the index in the vector
-  // indicates the index of the row of columns. Keep in mind, that this used
-  // used for gap decorations, which treats the area behind a spanner as a
-  // segment. Therefore, this vector also includes spanners as "rows" but marked
-  // as having `kNotFound` columns.
+  // indicates the index of the row of columns. Keep in mind, that this is used
+  // for gap decorations, which treats the area behind a spanner as a segment.
+  // Therefore, this vector also includes spanners as "rows" but marked as
+  // having `kNotFound` columns.
   // TODO(crbug.com/440123087): Since the number of optionals for gap
   // decorations has grown, explore encapsulating the logic in an `Accumulator`
   // class similar to `Flex` and `Grid`.

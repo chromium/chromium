@@ -1547,6 +1547,49 @@ void ColumnLayoutAlgorithm::AddNumberOfColumnsForCurrentRow(
     columns_per_row_ = Vector<wtf_size_t>();
   }
   columns_per_row_->push_back(cols_in_row);
+
+  FinalizeMainGapSegmentStateForCurrentRow(cols_in_row);
+}
+
+void ColumnLayoutAlgorithm::FinalizeMainGapSegmentStateForCurrentRow(
+    wtf_size_t cols_in_row) {
+  // Now that we know the column count of the row, we can finalize the gap
+  // segment state of the main gap directly above it (if any).
+  if (cols_in_row == kNotFound || main_gaps_.empty() ||
+      main_gaps_.back().IsSpannerMainGap()) {
+    return;
+  }
+
+  // Walk back to the last column row (skipping any interleaved spanner rows).
+  // The current entry is at the back; start one before it.
+  CHECK_GE(columns_per_row_->size(), 2u);
+  wtf_size_t prev_index = columns_per_row_->size() - 2;
+  while ((*columns_per_row_)[prev_index] == kNotFound) {
+    if (prev_index == 0) {
+      // No preceding column row exists; the gap is between this row and a
+      // spanner above. Nothing to do.
+      return;
+    }
+    --prev_index;
+  }
+
+  const wtf_size_t cols_above = (*columns_per_row_)[prev_index];
+  if (cols_above == cols_in_row) {
+    return;
+  }
+
+  const wtf_size_t shorter_row_cols = std::min(cols_above, cols_in_row);
+  const wtf_size_t longer_row_cols = std::max(cols_above, cols_in_row);
+  const GapSegmentState state =
+      (cols_above > cols_in_row)
+          ? GapSegmentState(GapSegmentState::kEmptyAfter)
+          : GapSegmentState(GapSegmentState::kEmptyBefore);
+  // We set the range between `shorter_row_cols` and `longer_row_cols` because
+  // that's the range of the segments that will have `EmptyAfter`. If row N has
+  // 4 columns and row N + 1 has 2 columns, the row segments that will be
+  // `EmptyAfter` will be the segments between 2 and 4.
+  main_gaps_.back().AddGapSegmentStateRange(
+      GapSegmentStateRange(shorter_row_cols, longer_row_cols, state));
 }
 
 void ColumnLayoutAlgorithm::UpdateCrossGapSegmentStates() {

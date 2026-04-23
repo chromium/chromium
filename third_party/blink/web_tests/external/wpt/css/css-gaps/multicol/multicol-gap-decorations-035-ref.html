@@ -31,21 +31,19 @@
         width: 60px;
     }
 
+    /* Row rule (gold) — paints across all three column slots with `around`. */
     .row-gap {
         position: absolute;
         height: 2px;
-        width: 60px;
         background: gold;
-        left: 2px;
         top: 66px;
     }
 
+    /* Column rules (blue). */
     .column-gap {
         position: absolute;
-        height: 60px;
         width: 10px;
         background: blue;
-        top: 2px;
     }
 </style>
 
@@ -55,6 +53,16 @@
     <div class="items"></div>
 </div>
 <div class="last-item"></div>
-<div class="column-gap" style="left:62px;"></div>
-<div class="column-gap" style="left:132px;"></div>
-<div class="row-gap"></div>
+
+<!-- Row 0 column rules (full row height). -->
+<div class="column-gap" style="left:62px; top:2px; height:60px;"></div>
+<div class="column-gap" style="left:132px; top:2px; height:60px;"></div>
+
+<!-- Row 1 column rule between existing col 0 and missing col 1 (kEmptyAfter,
+     paints with `around`). The rule between the two missing slots is omitted. -->
+<div class="column-gap" style="left:62px; top:72px; height:60px;"></div>
+
+<!-- Row rule segments above each column slot. -->
+<div class="row-gap" style="left:2px; width:60px;"></div>
+<div class="row-gap" style="left:72px; width:60px;"></div>
+<div class="row-gap" style="left:142px; width:60px;"></div>
