@@ -107,6 +107,28 @@ def _PruneGitFiles(git_files, paths):
   return pruned_list
 
 
+def _RunGitLsFiles(cwd=None):
+  """Runs git ls-files in the given working directory.
+
+  Args:
+    cwd: Optional working directory for the git command.
+  """
+  args = []
+  if sys.platform == 'win32':
+    args.append('git.bat')
+  else:
+    args.append('git')
+  args.append('ls-files')
+  command = subprocess.Popen(args,
+                             cwd=cwd,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+  output, err = command.communicate()
+  if command.returncode != 0:
+    return []
+  return output.decode('utf-8').splitlines()
+
+
 def _GetFilesFromGit(paths=None):
   """Gets the list of files in the git repository if |paths| includes prefix
   path filters or is empty. All complete filenames in |paths| are also included
@@ -124,16 +146,28 @@ def _GetFilesFromGit(paths=None):
     else:
       partial_paths.append(real_path)
   if partial_paths or not files:
-    args = []
-    if sys.platform == 'win32':
-      args.append('git.bat')
-    else:
-      args.append('git')
-    args.append('ls-files')
-    command = subprocess.Popen(args, stdout=subprocess.PIPE)
-    output, _ = command.communicate()
-    output = output.decode('utf-8')
-    git_files = [os.path.realpath(p) for p in output.splitlines()]
+    git_files = [os.path.realpath(p) for p in _RunGitLsFiles()]
+
+    # Some rewrites target submodules (e.g. dawn, skia, angle, webrtc, ...), so
+    # if they are specifically passed as an argument, we should also call
+    # git ls-files there.
+    for p in partial_paths:
+      # Walk up the directory tree to find if this path is within a submodule
+      curr = p
+      submodule_root = None
+      while curr and curr != os.path.dirname(curr):
+        if os.path.exists(os.path.join(curr, '.git')):
+          submodule_root = curr
+          break
+        curr = os.path.dirname(curr)
+
+      if submodule_root:
+        submodule_files = _RunGitLsFiles(cwd=submodule_root)
+        git_files.extend([
+            os.path.realpath(os.path.join(submodule_root, f))
+            for f in submodule_files
+        ])
+
     if partial_paths:
       git_files = _PruneGitFiles(git_files, partial_paths)
     files.extend(git_files)
