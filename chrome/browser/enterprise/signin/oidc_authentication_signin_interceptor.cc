@@ -663,7 +663,7 @@ void OidcAuthenticationSigninInterceptor::FinalizeSigninInterception() {
 void OidcAuthenticationSigninInterceptor::
     CreateBrowserAfterSigninInterception() {
   // Open a new browser.
-  NavigateParams params(profile_, GURL(chrome::kChromeUINewTabURL),
+  NavigateParams params(profile_, chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
   VLOG_POLICY(2, OIDC_ENROLLMENT) << "New browser created";

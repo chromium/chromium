@@ -192,7 +192,7 @@ void ProfileTokenWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     content::WebContents* intercepted_contents) {
   DCHECK(intercepted_contents);
 
-  GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
+  GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();
   if (intercepted_contents) {
     url_to_open = intercepted_contents->GetLastCommittedURL();
     intercepted_contents->Close();
