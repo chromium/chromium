@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.when;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.MatrixCursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 
@@ -39,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachm
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /** Unit tests for {@link FuseboxAttachmentDetailsFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,7 +62,8 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     }
 
     @Test
-    public void testFetchAttachmentDetails_forImage() throws FileNotFoundException {
+    public void testFetchAttachmentDetails_forImageWithThumbnail()
+            throws FileNotFoundException, IOException {
         Uri attachmentUri = Uri.parse("content://media/external/1");
         byte[] expectedData = new byte[] {1, 2, 3};
         String expectedTitle = "photo.png";
@@ -72,6 +77,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         cursor.addRow(new Object[] {expectedTitle});
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
+
+        Bitmap thumbnail = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
 
         FuseboxAttachmentDetailsFetcher fetcher =
                 new FuseboxAttachmentDetailsFetcher(
@@ -93,6 +101,8 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         assertEquals(expectedMimeType, attachment.mimeType);
         assertArrayEquals(expectedData, attachment.data);
         assertEquals(FuseboxAttachmentButtonType.GALLERY, attachment.buttonType);
+        assertNotNull(attachment.thumbnail);
+        assertEquals(thumbnail, ((BitmapDrawable) attachment.thumbnail).getBitmap());
     }
 
     @Test
@@ -169,5 +179,45 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         assertEquals(expectedMimeType, attachment.mimeType);
         assertArrayEquals(expectedData, attachment.data);
         assertEquals(FuseboxAttachmentButtonType.FILES, attachment.buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_forImageNoThumbnail() throws Exception {
+        Uri attachmentUri = Uri.parse("content://media/external/1");
+        byte[] expectedData = new byte[] {1, 2, 3};
+        String expectedTitle = "photo.png";
+        String expectedMimeType = "image/png";
+
+        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
+        when(mContentResolver.openInputStream(attachmentUri))
+                .thenReturn(new ByteArrayInputStream(expectedData));
+
+        MatrixCursor cursor = new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME});
+        cursor.addRow(new Object[] {expectedTitle});
+        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(cursor);
+
+        when(mContentResolver.loadThumbnail(any(), any(), any())).thenThrow(new IOException());
+
+        FuseboxAttachmentDetailsFetcher fetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        attachmentUri,
+                        mCallback,
+                        FuseboxAttachmentButtonType.GALLERY);
+
+        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(mAttachmentCaptor.capture());
+        FuseboxAttachment attachment = mAttachmentCaptor.getValue();
+
+        assertNotNull(attachment);
+        assertEquals(FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL, attachment.type);
+        assertEquals(expectedTitle, attachment.title);
+        assertEquals(expectedMimeType, attachment.mimeType);
+        assertArrayEquals(expectedData, attachment.data);
+        assertEquals(FuseboxAttachmentButtonType.GALLERY, attachment.buttonType);
     }
 }

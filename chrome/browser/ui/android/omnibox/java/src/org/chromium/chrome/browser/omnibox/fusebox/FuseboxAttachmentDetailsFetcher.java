@@ -133,13 +133,20 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         FuseboxAttachment attachment =
                 switch (MimeTypeUtils.getTypeFromMimeType(mimeType)) {
                     case MimeTypeUtils.Type.IMAGE ->
-                            FuseboxAttachment.forImage(
-                                    mThumbnail,
-                                    assumeNonNull(mTitle),
-                                    mimeType,
-                                    assumeNonNull(mData),
-                                    mStartTime,
-                                    mButtonType);
+                            mThumbnail != null
+                                    ? FuseboxAttachment.forImage(
+                                            mThumbnail,
+                                            assumeNonNull(mTitle),
+                                            mimeType,
+                                            assumeNonNull(mData),
+                                            mStartTime,
+                                            mButtonType)
+                                    : FuseboxAttachment.forImageNoThumbnail(
+                                            assumeNonNull(mTitle),
+                                            mimeType,
+                                            assumeNonNull(mData),
+                                            mStartTime,
+                                            mButtonType);
                     case MimeTypeUtils.Type.PDF ->
                             FuseboxAttachment.forPdf(
                                     mThumbnail,

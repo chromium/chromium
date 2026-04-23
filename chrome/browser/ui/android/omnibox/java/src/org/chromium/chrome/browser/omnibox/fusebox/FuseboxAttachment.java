@@ -92,6 +92,25 @@ public final class FuseboxAttachment extends ListItem {
                 buttonType);
     }
 
+    /** Creates a FuseboxAttachment for an image without a thumbnail. */
+    public static FuseboxAttachment forImageNoThumbnail(
+            String title,
+            String mimeType,
+            byte[] data,
+            long startTime,
+            @FuseboxAttachmentButtonType int buttonType) {
+        return new FuseboxAttachment(
+                FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
+                /* thumbnail= */ null,
+                title,
+                mimeType,
+                data,
+                /* tab= */ null,
+                /* bypassTabCache= */ false,
+                startTime,
+                buttonType);
+    }
+
     /** Creates a FuseboxAttachment for a file. */
     public static FuseboxAttachment forFile(
             @Nullable Drawable thumbnail,

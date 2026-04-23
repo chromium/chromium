@@ -343,6 +343,7 @@ android_resources("java_resources") {
     "java/res/drawable/fusebox_popup_bg_tinted_on_dark_bg.xml",
     "java/res/drawable/ic_add_round_20dp_with_inset.xml",
     "java/res/drawable/ic_attach_file_24dp.xml",
+    "java/res/drawable/ic_attach_image_24dp.xml",
     "java/res/drawable/ic_attach_pdf_24dp.xml",
     "java/res/drawable/ic_book_round.xml",
     "java/res/drawable/ic_equals_sign_round.xml",

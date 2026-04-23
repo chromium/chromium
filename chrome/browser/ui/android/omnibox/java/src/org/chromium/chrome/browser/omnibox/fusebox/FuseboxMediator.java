@@ -510,7 +510,9 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION;
 
         // Permit image reselection when image generation is picked.
-        if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE && isImageGenerationUsed) {
+        if ((attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE
+                        || attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL)
+                && isImageGenerationUsed) {
             return false;
         }
 
@@ -553,7 +555,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             if (listItem.type == FuseboxAttachmentType.ATTACHMENT_PDF) {
                 return false;
             }
-            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE
+                    || listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL) {
                 imageCount++;
             }
         }

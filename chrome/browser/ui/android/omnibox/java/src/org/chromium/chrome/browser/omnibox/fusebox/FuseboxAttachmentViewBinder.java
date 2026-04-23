@@ -83,6 +83,8 @@ class FuseboxAttachmentViewBinder {
 
         return switch (attachment.type) {
             case FuseboxAttachmentType.ATTACHMENT_IMAGE -> imageThumbnail(attachment);
+            case FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL ->
+                    imageFallbackThumbnail(context, brandedColorScheme);
             case FuseboxAttachmentType.ATTACHMENT_FILE ->
                     fileThumbnail(context, brandedColorScheme);
             case FuseboxAttachmentType.ATTACHMENT_PDF -> pdfThumbnail(context);
@@ -90,6 +92,14 @@ class FuseboxAttachmentViewBinder {
                     tabThumbnail(context, brandedColorScheme, attachment);
             default -> null;
         };
+    }
+
+    private static Drawable imageFallbackThumbnail(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        Drawable fileIcon =
+                OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_image_24dp);
+        fileIcon.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        return fileIcon;
     }
 
     private static @Nullable Drawable imageThumbnail(FuseboxAttachment attachment) {
