@@ -24,7 +24,7 @@ class MockSkillsService : public SkillsService {
               GetSkills,
               (),
               (const));
-  MOCK_METHOD(const SkillIdToProtoMap&, Get1PSkills, (), (const, override));
+  MOCK_METHOD(const SkillProtoList&, Get1PSkills, (), (const, override));
   MOCK_METHOD(const std::vector<std::string>&,
               Get1PTopics,
               (),
@@ -56,7 +56,7 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(void, FetchDiscoverySkills, ());
   MOCK_METHOD(void, RefreshDiscoverySkills, ());
   MOCK_METHOD(void,
-              Handle1pSkillsMap,
+              Handle1pSkills,
               (std::unique_ptr<FirstPartySkillData>),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*));

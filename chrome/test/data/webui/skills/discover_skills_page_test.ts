@@ -74,8 +74,7 @@ suite('DiscoverSkillsPage', function() {
     assertEquals(2, titles.length);
     assertTrue(!!titles[0]);
     assertTrue(!!titles[1]);
-    assertEquals(
-        loadTimeData.getString('topPicksTitle'), titles[0].textContent.trim());
+    assertEquals('Selected by Chrome', titles[0].textContent.trim());
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
         titles[1].textContent.trim());
@@ -323,5 +322,28 @@ suite('DiscoverSkillsPage', function() {
         await browserProxy.handler.whenCalled('recordSkillsManagementAction');
     assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
     assertEquals(SkillsManagementAction.kEmptySearch, args[1]);
+  });
+
+  test('ShowsPartnerSkillsCorrectly', async function() {
+    await setFirstPartySkills({
+      'Partner picks': [
+        {id: '1', name: 'Partner 1'},
+        {id: '2', name: 'Partner 2'},
+        {id: '3', name: 'Partner 3'},
+        {id: '4', name: 'Partner 4'},
+      ],
+    });
+
+    const partnerContainer =
+        page.shadowRoot.querySelector<HTMLElement>('#partnerSkillsContainer');
+    assertTrue(!!partnerContainer);
+
+    const cards = partnerContainer.querySelectorAll('skill-card');
+    assertEquals(3, cards.length);
+
+    const titles = page.shadowRoot.querySelectorAll('.page-title');
+    assertEquals(2, titles.length);
+    assertTrue(!!titles[0]);
+    assertEquals('Partner Spotlight', titles[0].textContent.trim());
   });
 });

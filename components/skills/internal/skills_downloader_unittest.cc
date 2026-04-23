@@ -89,12 +89,12 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkills) {
   auto result = FetchDiscoverySkillsSync();
 
   ASSERT_TRUE(result);
-  ASSERT_EQ(result->skills_map.size(), 1u);
+  ASSERT_EQ(result->skills_list.size(), 1u);
 
-  auto it = result->skills_map.find("test-id");
-  ASSERT_NE(it, result->skills_map.end());
-  EXPECT_EQ(it->second.name(), "/test-skill");
-  EXPECT_EQ(it->second.image_url(), "https://example.com/some-image.png");
+  const auto& skill = result->skills_list[0];
+  EXPECT_EQ(skill.id(), "test-id");
+  EXPECT_EQ(skill.name(), "/test-skill");
+  EXPECT_EQ(skill.image_url(), "https://example.com/some-image.png");
 
   ASSERT_EQ(result->topics_list.size(), 1u);
   EXPECT_EQ(result->topics_list[0], "test-topic");
@@ -119,7 +119,7 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkillsWithRetry) {
   auto result = FetchDiscoverySkillsSync();
 
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->skills_map.begin()->first, "test-id");
+  EXPECT_EQ(result->skills_list.begin()->id(), "test-id");
 }
 
 TEST_F(SkillsDownloaderTest, ReturnsInvalidProtocolBuffer) {

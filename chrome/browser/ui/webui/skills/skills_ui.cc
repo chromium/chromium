@@ -49,6 +49,9 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean(
       "isAutocompleteEnabled",
       base::FeatureList::IsEnabled(features::kSkillsAutocomplete));
+  source->AddBoolean(
+      "isPartnerPicksEnabled",
+      base::FeatureList::IsEnabled(features::kSkillsPartnerPicks));
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
@@ -57,6 +60,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"delete", IDS_SKILL_PAGE_USER_SKILLS_DELETE},
       {"add", IDS_ADD},
       {"browseSkillsTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE},
+      // TODO(b/503394871): Remove this string.
       {"topPicksTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE},
       {"firstPartyAddSkillErrorToast",
        IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST},

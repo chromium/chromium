@@ -16,9 +16,18 @@ ${this.shouldShowNoSearchResults_() ? html`
   <error-page error-type="${ErrorType.NO_SEARCH_RESULTS}"></error-page>
 ` : html`
 ${this.topSkills_().length > 0 ? html`
-<h2 class="page-title">$i18n{topPicksTitle}</h2>
+<h2 class="page-title">Selected by Chrome</h2>
 <div class="skill-cards-container">
   ${this.topSkills_().map(skill => html`
+    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
+        class="${skill.imageUrl ? 'skill-with-image' : ''}"
+        .saveDisabled="${this.shouldDisableSave_(skill)}">
+    </skill-card>`)}
+</div>` : ''}
+${this.partnerSkills_().length > 0 ? html`
+<h2 class="page-title" id="partnerSkillsTitle">Partner Spotlight</h2>
+<div class="skill-cards-container" id="partnerSkillsContainer">
+  ${this.partnerSkills_().map(skill => html`
     <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
         class="${skill.imageUrl ? 'skill-with-image' : ''}"
         .saveDisabled="${this.shouldDisableSave_(skill)}">
