@@ -227,7 +227,7 @@ public class TabBottomSheetCoordinator {
                         if (mSheetEventsCallback == null) {
                             return;
                         }
-                        setToFixedHeight();
+                        setToFixedHeightOrFallback();
 
                         boolean isSheetHeightSufficient =
                                 mMediator.isSheetHeightSufficient(
@@ -363,10 +363,14 @@ public class TabBottomSheetCoordinator {
                     mExpectingLayoutChange = false;
                 }
                 if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
-                    if (mInitialContainerSizeChanged) setToFlexibleHeight();
+                    if (mInitialContainerSizeChanged) {
+                        setToFlexibleHeight();
+                    } else {
+                        setToFixedHeightOrFallback();
+                    }
                     mInitialContainerSizeChanged = true;
                 } else {
-                    setToFixedHeight();
+                    setToFixedHeightOrFallback();
                 }
             }
 
@@ -421,9 +425,26 @@ public class TabBottomSheetCoordinator {
         mMediator.setToFlexibleHeight();
     }
 
-    private void setToFixedHeight() {
+    private void setToFixedHeightOrFallback() {
         if (mWindowAndroid.getWindow() == null) return;
-        mMediator.setToFixedHeight((int) (getVisibleViewportHeight() * getDefaultHeightRatio()));
+        @Px int fixedHeight = (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
+
+        // The bottom sheet controller max offset calculations may not be correct without the
+        // sheet content being set to a fixed height first.
+        mMediator.setToFixedHeight(fixedHeight);
+
+        int newFixedHeight = Math.min(fixedHeight, mBottomSheetController.getMaxOffset());
+        if (newFixedHeight != fixedHeight) {
+            fixedHeight = newFixedHeight;
+            mMediator.setToFixedHeight(fixedHeight);
+        }
+
+        // In the case the bottom sheet is unable to set to our desired fixed height, fallback to
+        // use of flexible heights.
+        if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+                && mBottomSheetController.getContainerHeight() != fixedHeight) {
+            setToFlexibleHeight();
+        }
     }
 
     private int getVisibleViewportHeight() {
