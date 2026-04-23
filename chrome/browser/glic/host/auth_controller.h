@@ -71,7 +71,6 @@ class AuthController : public signin::IdentityManager::Observer {
   base::WeakPtr<AuthController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  void SyncCookiesIfRequired(base::OnceCallback<void(bool)> callback);
   void CookieSyncDone(base::OnceCallback<void(bool)> callback,
                       bool sync_success);
   void CookieSyncBeforeLoadDone(
@@ -82,7 +81,6 @@ class AuthController : public signin::IdentityManager::Observer {
   base::OnceClosure after_signin_callback_;
   base::TimeTicks after_signin_callback_expiration_time_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  std::optional<base::TimeTicks> last_cookie_sync_time_;
   std::unique_ptr<GlicCookieSynchronizer> cookie_synchronizer_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
