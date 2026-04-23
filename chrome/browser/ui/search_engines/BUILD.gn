@@ -7,7 +7,6 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("search_engines") {
   public = [
     "edit_search_engine_controller.h",
-    "keyword_editor_controller.h",
     "search_engine_tab_helper.h",
     "template_url_table_model.h",
   ]
@@ -27,10 +26,14 @@ source_set("search_engines") {
 
   sources = [
     "edit_search_engine_controller.cc",
-    "keyword_editor_controller.cc",
     "search_engine_tab_helper.cc",
     "template_url_table_model.cc",
   ]
+
+  if (!is_android) {
+    public += [ "keyword_editor_controller.h" ]
+    sources += [ "keyword_editor_controller.cc" ]
+  }
 
   deps = [
     "//base:i18n",
@@ -68,7 +71,10 @@ source_set("search_engines") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "keyword_editor_controller_unittest.cc" ]
+
+  if (!is_android) {
+    sources = [ "keyword_editor_controller_unittest.cc" ]
+  }
 
   deps = [
     ":search_engines",

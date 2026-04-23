@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -51,10 +50,14 @@ bool ShouldUpdateTemplateURL(TemplateURLService* url_model,
 
 KeywordEditorController::KeywordEditorController(Profile* profile)
     : url_model_(TemplateURLServiceFactory::GetForProfile(profile)) {
-  bool ai_mode_enabled = OmniboxFieldTrial::IsAimStarterPackEnabled(
-      AimEligibilityServiceFactory::GetForProfile(profile));
-  table_model_ = std::make_unique<TemplateURLTableModel>(
-      url_model_, internal::GetDisabledStarterPackIds(ai_mode_enabled));
+  url_model_->Load();
+
+  if (!base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)) {
+    bool ai_mode_enabled = OmniboxFieldTrial::IsAimStarterPackEnabled(
+        AimEligibilityServiceFactory::GetForProfile(profile));
+    table_model_ = std::make_unique<TemplateURLTableModel>(
+        url_model_, internal::GetDisabledStarterPackIds(ai_mode_enabled));
+  }
 }
 
 KeywordEditorController::~KeywordEditorController() = default;
@@ -110,12 +113,10 @@ bool KeywordEditorController::CanMakeDefault(const TemplateURL* url) const {
 }
 
 bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate) &&
       IsPrepopulatedEngine(url)) {
     return false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return (url->type() == TemplateURL::NORMAL) &&
          (url != url_model_->GetDefaultSearchProvider()) &&
@@ -195,10 +196,15 @@ TemplateURL* KeywordEditorController::GetTemplateURL(TemplateURLID id) {
 }
 
 TemplateURL* KeywordEditorController::GetTemplateURLForIndex(int index) {
+  CHECK(!base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
   return table_model_->GetTemplateURL(index);
 }
 
-void KeywordEditorController::UpdateIdToTemplateURLMapping() {
+void KeywordEditorController::Refresh() {
+  if (!base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)) {
+    table_model_->Reload();
+  }
+
   TemplateURLService::TemplateURLVector urls = url_model_->GetTemplateURLs();
   id_to_turl_.clear();
   id_to_turl_.reserve(urls.size());

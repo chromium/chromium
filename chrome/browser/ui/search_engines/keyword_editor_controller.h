@@ -98,7 +98,7 @@ class KeywordEditorController {
 
   TemplateURLTableModel* table_model() { return table_model_.get(); }
 
-  void UpdateIdToTemplateURLMapping();
+  void Refresh();
 
  private:
   raw_ptr<TemplateURLService> url_model_;
