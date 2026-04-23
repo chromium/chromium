@@ -99,6 +99,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/trace_packet_tokenizer.h",
       "perfetto/traced_value_proto_writer.cc",
       "perfetto/traced_value_proto_writer.h",
+      "startup_tracing_controller.cc",
+      "startup_tracing_controller.h",
       "trace_startup.cc",
       "trace_startup.h",
       "trace_startup_config.cc",

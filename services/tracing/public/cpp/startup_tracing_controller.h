@@ -2,24 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
-#define CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
+#ifndef SERVICES_TRACING_PUBLIC_CPP_STARTUP_TRACING_CONTROLLER_H_
+#define SERVICES_TRACING_PUBLIC_CPP_STARTUP_TRACING_CONTROLLER_H_
 
+#include <string_view>
+
+#include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "content/common/content_export.h"
+#include "build/build_config.h"
 
-namespace content {
+namespace tracing {
 
 // Class responsible for starting and stopping startup tracing as configured by
 // StartupTracingConfig. All interactions with it are limited to UI thread, but
 // the actual logic lives on a background ThreadPool sequence.
-class CONTENT_EXPORT StartupTracingController {
+class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
  public:
-  StartupTracingController();
-  ~StartupTracingController();
+#if BUILDFLAG(IS_ANDROID)
+  // Signature of the callback used to generate a path on Android.
+  // The callback should return a FilePath matching the given basename.
+  using AndroidPathGeneratorCallback =
+      base::RepeatingCallback<base::FilePath(std::string_view)>;
+#endif
 
-  static StartupTracingController& GetInstance();
+  StartupTracingController(
+#if BUILDFLAG(IS_ANDROID)
+      AndroidPathGeneratorCallback android_path_generator_callback,
+#endif
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+  ~StartupTracingController();
 
   // Stop the trace recording, write the trace to disk and block until complete.
   // Intended to be used in the situation when the browser process is going to
@@ -42,7 +58,7 @@ class CONTENT_EXPORT StartupTracingController {
     kUseTemporaryFile,
     kWriteDirectly,
   };
-  void SetUsingTemporaryFile(TempFilePolicy temp_file_policy);
+  static void SetUsingTemporaryFile(TempFilePolicy temp_file_policy);
 
   // Set default basename for the trace output file to allow //content embedders
   // to customise it using some metadata (like test names).
@@ -61,11 +77,12 @@ class CONTENT_EXPORT StartupTracingController {
     kAppendAppropriate,
     kNone,
   };
-  void SetDefaultBasename(std::string basename, ExtensionType extension_type);
+  static void SetDefaultBasename(std::string basename,
+                                 ExtensionType extension_type);
   // As the test harness calls SetDefaultBasename, expose ForTest() version for
   // the tests checking the StartupTracingController logic itself.
-  void SetDefaultBasenameForTest(std::string basename,
-                                 ExtensionType extension_type);
+  static void SetDefaultBasenameForTest(std::string basename,  // IN-TEST
+                                        ExtensionType extension_type);
 
   bool is_finished_for_testing() const { return state_ == State::kStopped; }
 
@@ -78,6 +95,7 @@ class CONTENT_EXPORT StartupTracingController {
 
   void OnStoppedOnUIThread();
 
+  base::FilePath BasenameToPath(std::string_view basename);
   base::FilePath GetOutputPath();
 
   enum class State {
@@ -95,21 +113,19 @@ class CONTENT_EXPORT StartupTracingController {
   base::OnceClosure on_tracing_finished_;
   base::FilePath output_file_;
 
-  std::string default_basename_;
-  bool basename_for_test_set_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  AndroidPathGeneratorCallback android_path_generator_callback_;
+#endif
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+
   // Used for testing only
   bool should_continue_on_shutdown_ = false;
 
-  // Write directly to trace file on iOS since there might not be a graceful
-  // shutdown for tracing to stop with continuous background tracing.
-  TempFilePolicy temp_file_policy_ =
-#if BUILDFLAG(IS_IOS)
-      TempFilePolicy::kWriteDirectly;
-#else
-      TempFilePolicy::kUseTemporaryFile;
-#endif
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<StartupTracingController> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace tracing
 
-#endif  // CONTENT_BROWSER_TRACING_STARTUP_TRACING_CONTROLLER_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_STARTUP_TRACING_CONTROLLER_H_

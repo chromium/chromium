@@ -16,11 +16,12 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/browser/tracing/startup_tracing_controller.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/tracing/perfetto/privacy_filtering_check.h"
+#include "services/tracing/public/cpp/startup_tracing_controller.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -225,9 +226,12 @@ class StartupTracingTest
       // calling SetDefaultBasenameForTest, which forces the creation of
       // TraceStartupConfig, which queries the command line flags and
       // stores the snapshot.
-      StartupTracingController::GetInstance().SetDefaultBasenameForTest(
+      tracing::StartupTracingController::SetDefaultBasenameForTest(
           "trace1",
-          StartupTracingController::ExtensionType::kAppendAppropriate);
+          tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
+    } else {
+      // Fallback to explicitly initializing it if we don't set a basename
+      tracing::TraceStartupConfig::GetInstance();
     }
   }
 
@@ -298,12 +302,15 @@ class StartupTracingTest
   void Wait() {
     if (GetFinishType() == FinishType::kWaitForTimeout) {
       WaitForCondition(base::BindRepeating([]() {
-                         return StartupTracingController::GetInstance()
-                             .is_finished_for_testing();
+                         return BrowserMainLoop::GetInstance()
+                             ->startup_tracing_controller()
+                             ->is_finished_for_testing();
                        }),
                        "finish file write");
     } else {
-      StartupTracingController::GetInstance().WaitUntilStopped();
+      BrowserMainLoop::GetInstance()
+          ->startup_tracing_controller()
+          ->WaitUntilStopped();
     }
   }
 
@@ -338,8 +345,9 @@ IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
 
   if (GetOutputLocation() ==
       OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop) {
-    StartupTracingController::GetInstance().SetDefaultBasenameForTest(
-        "trace2", StartupTracingController::ExtensionType::kAppendAppropriate);
+    tracing::StartupTracingController::SetDefaultBasenameForTest(
+        "trace2",
+        tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
   }
 
   Wait();
@@ -351,8 +359,9 @@ IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
 // crbug.com/1041392.
 IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_ContinueAtShutdown) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
-  StartupTracingController::GetInstance()
-      .set_continue_on_shutdown_for_testing();
+  BrowserMainLoop::GetInstance()
+      ->startup_tracing_controller()
+      ->set_continue_on_shutdown_for_testing();
 }
 
 class EmergencyStopTracingTest : public StartupTracingTest {};
@@ -374,7 +383,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
-  StartupTracingController::EmergencyStop();
+  tracing::StartupTracingController::EmergencyStop();
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
@@ -392,11 +401,12 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
 
   base::RunLoop run_loop;
 
-  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                               StartupTracingController::EmergencyStop();
-                               CheckOutput(expected_path, output_type);
-                               run_loop.Quit();
-                             }));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        tracing::StartupTracingController::EmergencyStop();
+        CheckOutput(expected_path, output_type);
+        run_loop.Quit();
+      }));
 
   run_loop.Run();
 }
@@ -416,16 +426,18 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPoolTwice) {
   base::RunLoop run_loop1;
   base::RunLoop run_loop2;
 
-  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                               StartupTracingController::EmergencyStop();
-                               CheckOutput(expected_path, output_type);
-                               run_loop1.Quit();
-                             }));
-  base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                               StartupTracingController::EmergencyStop();
-                               CheckOutput(expected_path, output_type);
-                               run_loop2.Quit();
-                             }));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        tracing::StartupTracingController::EmergencyStop();
+        CheckOutput(expected_path, output_type);
+        run_loop1.Quit();
+      }));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        tracing::StartupTracingController::EmergencyStop();
+        CheckOutput(expected_path, output_type);
+        run_loop2.Quit();
+      }));
 
   run_loop1.Run();
   run_loop2.Run();

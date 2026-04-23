@@ -56,7 +56,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
-#include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -89,6 +88,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "services/tracing/public/cpp/startup_tracing_controller.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ui_base_features.h"
@@ -574,13 +574,13 @@ void BrowserTestBase::SetUp() {
 
   // If tracing is enabled, customise the output filename based on the name of
   // the test.
-  StartupTracingController::GetInstance().SetDefaultBasename(
+  tracing::StartupTracingController::SetDefaultBasename(
       GetDefaultTraceBasename(TraceBasenameType::kWithoutTestStatus),
-      StartupTracingController::ExtensionType::kAppendAppropriate);
+      tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
   // Write to the provided file directly to recover at least some data when the
   // test crashes or times out.
-  StartupTracingController::GetInstance().SetUsingTemporaryFile(
-      StartupTracingController::TempFilePolicy::kWriteDirectly);
+  tracing::StartupTracingController::SetUsingTemporaryFile(
+      tracing::StartupTracingController::TempFilePolicy::kWriteDirectly);
   // Set a logging handler to flush a trace before crashing the test when
   // hitting a DCHECK / LOG(FATAL).
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -593,7 +593,7 @@ void BrowserTestBase::SetUp() {
       // calling this to ensure that the message is still printed if something
       // goes wrong.
       if (severity == logging::LOGGING_FATAL)
-        StartupTracingController::EmergencyStop();
+        tracing::StartupTracingController::EmergencyStop();
       return false;
     });
   }
@@ -1041,14 +1041,18 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   content::RunAllPendingInMessageLoop();
 
   // Update the trace output filename to include the test result.
-  StartupTracingController::GetInstance().SetDefaultBasename(
+  tracing::StartupTracingController::SetDefaultBasename(
       GetDefaultTraceBasename(TraceBasenameType::kWithTestStatus),
-      StartupTracingController::ExtensionType::kAppendAppropriate);
+      tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, browser main runner is not shut down, so stop trace recording
   // here.
-  StartupTracingController::GetInstance().WaitUntilStopped();
+  CHECK(BrowserMainLoop::GetInstance());
+  CHECK(BrowserMainLoop::GetInstance()->startup_tracing_controller());
+  BrowserMainLoop::GetInstance()
+      ->startup_tracing_controller()
+      ->WaitUntilStopped();
 #endif
 }
 

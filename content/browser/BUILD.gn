@@ -2351,8 +2351,6 @@ source_set("browser") {
     "tracing/file_tracing_provider_impl.h",
     "tracing/memory_instrumentation_util.cc",
     "tracing/memory_instrumentation_util.h",
-    "tracing/startup_tracing_controller.cc",
-    "tracing/startup_tracing_controller.h",
     "tracing/trace_report_database.cc",
     "tracing/trace_report_database.h",
     "tracing/trace_upload_list.h",

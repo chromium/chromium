@@ -21,13 +21,10 @@
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
-#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/gfx/font_util.h"
@@ -164,8 +161,6 @@ void BrowserMainRunnerImpl::Shutdown() {
 
   main_loop_->PreShutdown();
 
-  // Finalize the startup tracing session if it is still active.
-  StartupTracingController::GetInstance().ShutdownAndWaitForStopIfNeeded();
 
   {
     // The trace event has to stay between profiler creation and destruction.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/startup_tracing_controller.h"
+#include "services/tracing/public/cpp/startup_tracing_controller.h"
 
 #include <string>
 #include <string_view>
@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -27,8 +28,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
@@ -36,15 +35,32 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/android/tracing_controller_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_IOS)
 #include "base/apple/foundation_util.h"
-#endif  // BUILDFLAG(IS_IOS)
+#endif
 
-namespace content {
+namespace tracing {
+
+namespace {
+
+StartupTracingController::TempFilePolicy g_temp_file_policy =
+#if BUILDFLAG(IS_IOS)
+    StartupTracingController::TempFilePolicy::kWriteDirectly;
+#else
+    StartupTracingController::TempFilePolicy::kUseTemporaryFile;
+#endif
+
+std::string& GetGlobalDefaultBasename() {
+  static base::NoDestructor<std::string> basename;
+  return *basename;
+}
+
+bool& GetGlobalBasenameForTestSet() {
+  static bool basename_for_test_set = false;
+  return basename_for_test_set;
+}
+
+}  // namespace
 
 // A helper class responsible for coordinating emergency trace finalisation
 // (e.g. when the process is about to be killed), which can be initiated from
@@ -52,15 +68,18 @@ namespace content {
 class EmergencyTraceFinalisationCoordinator {
  public:
   static EmergencyTraceFinalisationCoordinator& GetInstance() {
-    static base::NoDestructor<EmergencyTraceFinalisationCoordinator> g_instance;
-    return *g_instance;
+    static base::NoDestructor<EmergencyTraceFinalisationCoordinator> instance;
+    return *instance;
   }
 
-  void OnTracingStarted(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                        base::OnceClosure stop_tracing) {
+  void OnTracingStarted(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      base::OnceClosure stop_tracing) {
     tracing_started_.Set();
     base::AutoLock lock(lock_);
     startup_tracing_controller_task_runner_ = std::move(task_runner);
+    io_task_runner_ = std::move(io_task_runner);
     stop_tracing_ = std::move(stop_tracing);
   }
 
@@ -71,15 +90,25 @@ class EmergencyTraceFinalisationCoordinator {
   void StopAndBlockUntilStopped() {
     // If DCHECK fires before tracing has started, there isn't much for us to
     // do.
-    if (!tracing_started_.IsSet())
+    if (!tracing_started_.IsSet()) {
       return;
+    }
 
     base::OnceClosure stop_tracing;
     scoped_refptr<base::SequencedTaskRunner> task_runner;
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner;
     {
       base::AutoLock lock(lock_);
       task_runner = startup_tracing_controller_task_runner_;
+      io_task_runner = io_task_runner_;
       stop_tracing = std::move(stop_tracing_);
+    }
+
+    if (io_task_runner && io_task_runner->RunsTasksInCurrentSequence()) {
+      VLOG(0)
+          << "Emergency tracing stop request from IO thread is ignored - not "
+             "possible to finalise trace without running tasks on IO thread";
+      return;
     }
 
     if (task_runner->RunsTasksInCurrentSequence()) {
@@ -88,8 +117,9 @@ class EmergencyTraceFinalisationCoordinator {
       return;
     }
 
-    if (stop_tracing)
+    if (stop_tracing) {
       task_runner->PostTask(FROM_HERE, std::move(stop_tracing));
+    }
 
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
 
@@ -108,6 +138,7 @@ class EmergencyTraceFinalisationCoordinator {
   base::Lock lock_;
   scoped_refptr<base::SequencedTaskRunner>
       startup_tracing_controller_task_runner_ GUARDED_BY(lock_);
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_ GUARDED_BY(lock_);
   base::OnceClosure stop_tracing_ GUARDED_BY(lock_);
 };
 
@@ -120,6 +151,7 @@ class StartupTracingController::BackgroundTracer {
                    base::FilePath output_file,
                    tracing::TraceStartupConfig::OutputFormat output_format,
                    perfetto::TraceConfig trace_config,
+                   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
                    base::OnceClosure on_tracing_finished)
       : state_(State::kTracing),
         write_mode_(write_mode),
@@ -146,7 +178,7 @@ class StartupTracingController::BackgroundTracer {
     // EmergencyTraceFinalisationController should be set up before it to catch
     // DCHECKs early.
     EmergencyTraceFinalisationCoordinator::GetInstance().OnTracingStarted(
-        task_runner_,
+        task_runner_, std::move(io_task_runner),
         base::BindOnce(&BackgroundTracer::Stop, weak_ptr_factory_.GetWeakPtr(),
                        std::nullopt));
 
@@ -167,8 +199,9 @@ class StartupTracingController::BackgroundTracer {
     }
     state_ = State::kStopping;
 
-    if (output_file)
+    if (output_file) {
       output_file_ = output_file.value();
+    }
     tracing_session_->StopBlocking();
   }
 
@@ -202,8 +235,9 @@ class StartupTracingController::BackgroundTracer {
         [this](perfetto::TracingSession::ReadTraceCallbackArgs args) {
           WriteData(args.data, args.size);
 
-          if (args.has_more)
+          if (args.has_more) {
             return;
+          }
 
           Finalise();
         });
@@ -248,8 +282,9 @@ class StartupTracingController::BackgroundTracer {
     if (temp_file_policy_ == TempFilePolicy::kUseTemporaryFile) {
       file_ = base::CreateAndOpenTemporaryFileInDir(path.DirName(),
                                                     &written_to_file_);
-      if (file_.IsValid())
+      if (file_.IsValid()) {
         return;
+      }
 
       VLOG(1) << "Failed to create temporary file, using file '" << path
               << "' directly instead";
@@ -261,8 +296,9 @@ class StartupTracingController::BackgroundTracer {
                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     written_to_file_ = output_file_;
 
-    if (!file_.IsValid())
+    if (!file_.IsValid()) {
       LOG(ERROR) << "Startup tracing failed: couldn't open file: " << path;
+    }
   }
 
   // Close the file and rename if needed.
@@ -325,22 +361,14 @@ class StartupTracingController::BackgroundTracer {
   base::WeakPtrFactory<BackgroundTracer> weak_ptr_factory_{this};
 };
 
-// static
-StartupTracingController& StartupTracingController::GetInstance() {
-  // Note: no DCHECK_CURRENTLY_ON, as it can be called prior to initialisation
-  // of BrowserThreads.
-
-  static base::NoDestructor<StartupTracingController> g_instance;
-  return *g_instance;
-}
-
-namespace {
-
-base::FilePath BasenameToPath(std::string_view basename) {
+base::FilePath StartupTracingController::BasenameToPath(
+    std::string_view basename) {
 #if BUILDFLAG(IS_ANDROID)
-  return TracingControllerAndroid::GenerateTracingFilePath(basename);
-#elif BUILDFLAG(IS_IOS)
-  // On iOS blink, write to the documents directory associated with the app.
+  if (android_path_generator_callback_) {
+    return android_path_generator_callback_.Run(basename);
+  }
+#endif
+#if BUILDFLAG(IS_IOS)
   return base::apple::GetUserDocumentPath().AppendASCII(basename);
 #else
   // Default to saving the startup trace into the current dir.
@@ -348,9 +376,19 @@ base::FilePath BasenameToPath(std::string_view basename) {
 #endif
 }
 
-}  // namespace
+StartupTracingController::StartupTracingController(
+#if BUILDFLAG(IS_ANDROID)
+    AndroidPathGeneratorCallback android_path_generator_callback,
+#endif
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    :
+#if BUILDFLAG(IS_ANDROID)
+      android_path_generator_callback_(
+          std::move(android_path_generator_callback)),
+#endif
+      io_task_runner_(std::move(io_task_runner)) {
+}
 
-StartupTracingController::StartupTracingController() = default;
 StartupTracingController::~StartupTracingController() = default;
 
 base::FilePath StartupTracingController::GetOutputPath() {
@@ -358,15 +396,17 @@ base::FilePath StartupTracingController::GetOutputPath() {
 
   base::FilePath path_from_config =
       tracing::TraceStartupConfig::GetInstance().GetResultFile();
-  if (!path_from_config.empty())
+  if (!path_from_config.empty()) {
     return path_from_config;
+  }
 
   // If --trace-startup-file is specified, use it.
   if (command_line->HasSwitch(switches::kTraceStartupFile)) {
     base::FilePath result =
         command_line->GetSwitchValuePath(switches::kTraceStartupFile);
-    if (result.empty())
+    if (result.empty()) {
       return BasenameToPath("chrometrace.log");
+    }
     return result;
   }
 
@@ -379,17 +419,19 @@ base::FilePath StartupTracingController::GetOutputPath() {
   }
 
   // If a non-directory path is specified, use it.
-  if (!result.empty() && !result.EndsWithSeparator())
+  if (!result.empty() && !result.EndsWithSeparator()) {
     return result;
+  }
 
-  std::string_view basename = default_basename_;
+  std::string_view basename = GetGlobalDefaultBasename();
   if (basename.empty()) {
     basename = "chrometrace.log";
   }
 
   // If a non-empty directory is specified, use it.
-  if (!result.empty())
+  if (!result.empty()) {
     return result.AppendASCII(basename);
+  }
 
   // If the directory is empty, go through BasenameToPath to generate a valid
   // path on Android.
@@ -397,7 +439,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
 }
 
 void StartupTracingController::StartIfNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kRunning);
 
   auto& trace_startup_config = tracing::TraceStartupConfig::GetInstance();
@@ -436,20 +478,16 @@ void StartupTracingController::StartIfNeeded() {
       tracing::TraceStartupConfig::GetInstance().GetPerfettoConfig();
 
   background_tracer_ = base::SequenceBound<BackgroundTracer>(
-      std::move(background_task_runner), write_mode, temp_file_policy_,
-      GetOutputPath(), output_format, perfetto_config,
-      base::BindOnce(
-          [](StartupTracingController* controller) {
-            GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE,
-                base::BindOnce(&StartupTracingController::OnStoppedOnUIThread,
-                               base::Unretained(controller)));
-          },
-          this));
+      std::move(background_task_runner), write_mode, g_temp_file_policy,
+      GetOutputPath(), output_format, perfetto_config, io_task_runner_,
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&StartupTracingController::OnStoppedOnUIThread,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void StartupTracingController::Stop(base::OnceClosure on_tracing_finished) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ != State::kRunning) {
     // Both kStopped and kNotRunning are valid states.
@@ -465,23 +503,25 @@ void StartupTracingController::Stop(base::OnceClosure on_tracing_finished) {
 }
 
 void StartupTracingController::OnStoppedOnUIThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kRunning);
   state_ = State::kStopped;
   background_tracer_.Reset();
 
-  if (on_tracing_finished_)
+  if (on_tracing_finished_) {
     std::move(on_tracing_finished_).Run();
+  }
 
   tracing::TraceStartupConfig::GetInstance().SetDisabled();
 }
 
+// static
 void StartupTracingController::SetUsingTemporaryFile(
     StartupTracingController::TempFilePolicy temp_file_policy) {
-  DCHECK_EQ(state_, State::kNotEnabled) << "Should be called before Start()";
-  temp_file_policy_ = temp_file_policy;
+  g_temp_file_policy = temp_file_policy;
 }
 
+// static
 void StartupTracingController::SetDefaultBasename(
     std::string basename,
     ExtensionType extension_type) {
@@ -489,8 +529,9 @@ void StartupTracingController::SetDefaultBasename(
     return;
   }
 
-  if (basename_for_test_set_)
+  if (GetGlobalBasenameForTestSet()) {
     return;
+  }
 
   if (extension_type == ExtensionType::kAppendAppropriate) {
     switch (tracing::TraceStartupConfig::GetInstance().GetOutputFormat()) {
@@ -502,44 +543,37 @@ void StartupTracingController::SetDefaultBasename(
         break;
     }
   }
-  default_basename_ = std::move(basename);
+  GetGlobalDefaultBasename() = std::move(basename);
 }
 
-void StartupTracingController::SetDefaultBasenameForTest(
+// static
+void StartupTracingController::SetDefaultBasenameForTest(  // IN-TEST
     std::string basename,
     ExtensionType extension_type) {
-  basename_for_test_set_ = false;
+  GetGlobalBasenameForTestSet() = false;
   SetDefaultBasename(std::move(basename), extension_type);
-  basename_for_test_set_ = true;
+  GetGlobalBasenameForTestSet() = true;
 }
 
 void StartupTracingController::WaitUntilStopped() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::RunLoop run_loop;
   Stop(run_loop.QuitClosure());
   run_loop.Run();
 }
 
 void StartupTracingController::ShutdownAndWaitForStopIfNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (should_continue_on_shutdown_)
-    return;
-
-  WaitUntilStopped();
-}
-
-// static
-void StartupTracingController::EmergencyStop() {
-  if (GetIOThreadTaskRunner({})->RunsTasksInCurrentSequence()) {
-    VLOG(0) << "Emergency tracing stop request from IO thread is ignored - not "
-               "possible to finalise trace without running tasks on IO thread";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (should_continue_on_shutdown_) {
     return;
   }
 
-  EmergencyTraceFinalisationCoordinator::GetInstance()
+  WaitUntilStopped();
+}
+// static
+void StartupTracingController::EmergencyStop() {
+  ::tracing::EmergencyTraceFinalisationCoordinator::GetInstance()
       .StopAndBlockUntilStopped();
 }
 
-}  // namespace content
+}  // namespace tracing
