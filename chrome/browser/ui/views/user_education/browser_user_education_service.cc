@@ -634,7 +634,7 @@ void MaybeRegisterChromeFeaturePromos(
                   if (web_contents &&
                       web_contents->GetURL() != browser->GetNewTabURL()) {
                     NavigateParams params(browser->profile(),
-                                          GURL(chrome::kChromeUINewTabPageURL),
+                                          chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);
                     params.disposition =
                         WindowOpenDisposition::NEW_FOREGROUND_TAB;

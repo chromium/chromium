@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
   constexpr char kTabCloseButtonId[] = "Tab Close Button";
   RunTestSequence(
-      AddInstrumentedTab(kNewTabPageId, GURL(chrome::kChromeUINewTabPageURL)),
+      AddInstrumentedTab(kNewTabPageId, chrome::ChromeUINewTabPageURLAsGURL()),
       StartTutorial(kNewTabPageId),
       NameViewRelative(kTabStripElementId, kTabCloseButtonId,
                        [](TabStrip* tab_strip) {
