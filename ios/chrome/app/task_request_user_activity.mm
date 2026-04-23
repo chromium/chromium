@@ -13,9 +13,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
@@ -31,6 +33,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -51,6 +54,7 @@
 #import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
+#import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -410,6 +414,66 @@ std::vector<GURL> GURLVectorWithNSURLArray(NSArray<NSURL*>* intent_urls) {
   return urls;
 }
 
+// Focuses the omnibox.
+void FocusOmniboxWithBrowser(Browser* browser) {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler showComposebox];
+}
+
+// Generates a GURL for a given search query using the default search provider.
+GURL GenerateResultGURLFromSearchQuery(NSString* search_query,
+                                       ProfileIOS* profile) {
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
+  const TemplateURL* default_url =
+      template_url_service->GetDefaultSearchProvider();
+  if (default_url && !default_url->url().empty() &&
+      default_url->url_ref().IsValid(
+          template_url_service->search_terms_data())) {
+    std::u16string query_string = base::SysNSStringToUTF16(search_query);
+    TemplateURLRef::SearchTermsArgs search_args(query_string);
+    return GURL(default_url->url_ref().ReplaceSearchTerms(
+        search_args, template_url_service->search_terms_data()));
+  }
+  return GURL();
+}
+
+// Callback taking a Browser pointer.
+using CallbackWithBrowser = base::OnceCallback<void(Browser*)>;
+
+// Struct used as the return type for GetURLAndCallbackFromSearchInChromeIntent.
+struct URLAndCallback {
+  GURL url;
+  CallbackWithBrowser callback;
+};
+
+// Returns the URL to open for a `SearchInChromeIntent`. If a search phrase is
+// not provided or is invalid, the URL defaults to `kChromeUINewTabURL` and
+// `callback` is set to focus the omnibox.
+URLAndCallback GetURLAndCallbackFromSearchInChromeIntent(
+    INIntent* interaction_intent,
+    ProfileIOS* profile) {
+  GURL url_to_open(kChromeUINewTabURL);
+  SearchInChromeIntent* intent =
+      base::apple::ObjCCastStrict<SearchInChromeIntent>(interaction_intent);
+  if (!intent) {
+    return {url_to_open, {}};
+  }
+
+  NSString* search_phrase = intent.searchPhrase;
+  if (search_phrase.length > 0) {
+    GURL generated_url =
+        GenerateResultGURLFromSearchQuery(search_phrase, profile);
+    if (generated_url.is_valid()) {
+      url_to_open = generated_url;
+    }
+  } else {
+    return {url_to_open, base::BindOnce(&FocusOmniboxWithBrowser)};
+  }
+  return {url_to_open, {}};
+}
+
 // Returns the list of URLs from an `OpenInChromeIncognitoIntent`.
 std::vector<GURL> GetURLsFromOpenInIncognitoIntent(INIntent* intent) {
   OpenInChromeIncognitoIntent* incognito_intent =
@@ -476,9 +540,15 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
     case UserActivityType::kSpotlight:
       // TODO(crbug.com/492115056): Add implementation.
       break;
-    case UserActivityType::kSearchInChrome:
-      // TODO(crbug.com/492115056): Add implementation.
+    case UserActivityType::kSearchInChrome: {
+      URLAndCallback urlAndCallback = GetURLAndCallbackFromSearchInChromeIntent(
+          _userActivity.interaction.intent, sceneState.profileState.profile);
+      [self openURLs:{urlAndCallback.url}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:std::move(urlAndCallback.callback)];
       break;
+    }
     case UserActivityType::kOpenInChrome:
       [self openURLs:GetURLsFromOpenInChromeIntent(
                          _userActivity.interaction.intent)
@@ -614,7 +684,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
 - (void)openURLs:(const std::vector<GURL>&)URLs
       sceneState:(SceneState*)sceneState
       targetMode:(ApplicationModeForTabOpening)targetMode
-      completion:(base::OnceCallback<void(Browser*)>)callback {
+      completion:(CallbackWithBrowser)callback {
   Browser* browser = GetBrowserForTargetMode(sceneState, targetMode);
   if (!browser) {
     return;
@@ -623,8 +693,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   ProceduralBlock completion = nil;
   if (callback) {
     completion = base::CallbackToBlock(base::BindOnce(
-        [](base::OnceCallback<void(Browser*)> callback,
-           base::WeakPtr<Browser> weak_browser) {
+        [](CallbackWithBrowser callback, base::WeakPtr<Browser> weak_browser) {
           if (Browser* browser = weak_browser.get()) {
             std::move(callback).Run(browser);
           }
