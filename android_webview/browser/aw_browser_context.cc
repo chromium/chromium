@@ -268,10 +268,6 @@ base::FilePath AwBrowserContext::GetHttpCachePath() {
   return http_cache_path_;
 }
 
-base::FilePath AwBrowserContext::GetHttpServerPropertiesPath() {
-  return GetPath().Append(FILE_PATH_LITERAL("Network Persistent State"));
-}
-
 base::FilePath AwBrowserContext::GetPrefStorePath() {
   return GetPath().Append(FILE_PATH_LITERAL("Preferences"));
 }
@@ -609,7 +605,7 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   if (base::FeatureList::IsEnabled(
           features::kWebViewPersistHttpServerProperties)) {
     context_params->file_paths->http_server_properties_file_name =
-        GetHttpServerPropertiesPath();
+        base::FilePath(FILE_PATH_LITERAL("Network Persistent State"));
   }
   base::FilePath cookie_path = AwBrowserContext::GetCookieStorePath();
   context_params->file_paths->data_directory = cookie_path.DirName();

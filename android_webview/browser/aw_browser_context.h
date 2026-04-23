@@ -90,7 +90,6 @@ class AwBrowserContext : public content::BrowserContext,
       content::WebContents* web_contents);
 
   base::FilePath GetHttpCachePath();
-  base::FilePath GetHttpServerPropertiesPath();
   base::FilePath GetPrefStorePath();
   base::FilePath GetCookieStorePath();
   static base::FilePath BuildStoragePath(const base::FilePath& relative_path);

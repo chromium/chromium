@@ -61,6 +61,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewMoveWorkToProviderInit,
     &features::kWebViewOptInToGmsBindServiceOptimization,
     &features::kWebViewPassNullFaviconToOnPageStarted,
+    &features::kWebViewPersistHttpServerProperties,
     &features::kWebViewPrefetchNativeLibrary,
     &features::kWebViewPrefetchOffTheMainThread,
     &features::kWebViewRecordAppCacheHistograms,

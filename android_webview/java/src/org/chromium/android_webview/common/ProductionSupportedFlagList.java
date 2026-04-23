@@ -1379,6 +1379,9 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP,
                 "When enabled, after start up the thread pool in PostTask.java"
                         + " will be shutdown so it doesn't consume resources when not needed."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PERSIST_HTTP_SERVER_PROPERTIES,
+                "When enabled, WebView will save Alt-Svc information across sessions.")
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
