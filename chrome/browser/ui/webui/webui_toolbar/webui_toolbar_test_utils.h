@@ -88,6 +88,10 @@ class MockToolbarUIServiceDelegate
               (override));
   MOCK_METHOD(void, OnHomeButtonDropUrl, (const GURL&), (override));
   MOCK_METHOD(void, OnHomeButtonDropFile, (const gfx::PointF&), (override));
+  MOCK_METHOD(void,
+              OnOmniboxAction,
+              (toolbar_ui_api::mojom::OmniboxActionPtr action_ptr),
+              (override));
 };
 
 class MockBrowserControlsServiceDelegate

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
@@ -101,14 +102,12 @@ void WebUIReadOnlyOmnibox::SetWindowTextAndCaretPos(const std::u16string& text,
                                                     bool update_popup,
                                                     bool notify_text_changed) {
   text_ = text;
-  text_strike_through_.SetMax(text_.size());
-  text_colors_.SetMax(text_.size());
-  text_strike_through_.ClearAndSetInitialValue(false);
-  text_colors_.ClearAndSetInitialValue(
-      toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);
   selection_ = gfx::Range(caret_pos);
+  ResetFormatting();
 
-  // TODO(crbug.com/474060468): update_popup?
+  if (update_popup) {
+    UpdatePopup();
+  }
 
   if (notify_text_changed) {
     TextChanged();
@@ -151,7 +150,15 @@ void WebUIReadOnlyOmnibox::SelectAll(bool reversed) {
 }
 
 void WebUIReadOnlyOmnibox::UpdatePopup() {
-  NOTIMPLEMENTED();
+  controller()->edit_model()->UpdateInput(
+      /*prevent_inline_autocomplete=*/selection_.GetMin() != text_.size());
+}
+
+void WebUIReadOnlyOmnibox::RevertAll() {
+  OmniboxView::RevertAll();
+  if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kRevertAll);
+  }
 }
 
 void WebUIReadOnlyOmnibox::SetFocus(bool is_user_initiated) {
@@ -290,4 +297,12 @@ WebUIReadOnlyOmnibox::ComputeMojoState() const {
 
 void WebUIReadOnlyOmnibox::RequestUpdateWebUI() {
   update_propagator_->PropagateOmniboxUpdate(ComputeMojoState());
+}
+
+void WebUIReadOnlyOmnibox::ResetFormatting() {
+  text_strike_through_.SetMax(text_.size());
+  text_colors_.SetMax(text_.size());
+  text_strike_through_.ClearAndSetInitialValue(false);
+  text_colors_.ClearAndSetInitialValue(
+      toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);
 }

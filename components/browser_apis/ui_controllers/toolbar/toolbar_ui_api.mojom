@@ -43,6 +43,10 @@ interface ToolbarUIService {
                   gfx.mojom.RectF bounds_in_css_pixels,
                   ui.mojom.MenuSourceType source);
 
+  // Handles user interaction with the readonly omnibox, delegating to the
+  // popup as appropriate.
+  OnOmniboxAction(OmniboxAction action);
+
   // Called when the page finishes initialization.
   OnPageInitialized();
 

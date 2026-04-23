@@ -6,7 +6,8 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OmniboxTextColor, ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('ReadonlyOmnibox', function() {
   let omnibox: ReadonlyOmniboxElement;
@@ -55,6 +56,7 @@ suite('ReadonlyOmnibox', function() {
     };
     await microtasksFinished();
     assertEquals('Hello', omnibox.$.textContainer.textContent);
+    assertEquals('Hello', omnibox.$.textInput.value);
 
     // Now set to blank
     omnibox.omniboxViewState = {
@@ -64,6 +66,7 @@ suite('ReadonlyOmnibox', function() {
     };
     await microtasksFinished();
     assertEquals('', omnibox.$.textContainer.textContent);
+    assertEquals('', omnibox.$.textInput.value);
   });
 
   test('Setting text with multiple pieces', async () => {
@@ -85,14 +88,7 @@ suite('ReadonlyOmnibox', function() {
     };
     await microtasksFinished();
     assertEquals('Hello', omnibox.$.textContainer.textContent);
-
-    // Also exercise the textChildren() helper a bit.
-    const textNodes: Text[] = omnibox.textChildren();
-    assertEquals(2, textNodes.length);
-    assertTrue(!!textNodes[0]);
-    assertEquals('He', textNodes[0].nodeValue);
-    assertTrue(!!textNodes[1]);
-    assertEquals('llo', textNodes[1].nodeValue);
+    assertEquals('Hello', omnibox.$.textInput.value);
   });
 
   test('Text formatting', async () => {
@@ -144,6 +140,7 @@ suite('ReadonlyOmnibox', function() {
     };
     await microtasksFinished();
     assertEquals('A0A1B0B1C0C1D0D1', omnibox.$.textContainer.textContent);
+    assertEquals('A0A1B0B1C0C1D0D1', omnibox.$.textInput.value);
     const pieces = getTextPieces();
     assertEquals(8, pieces.length);
     checkPiece(pieces[0], 'A0', false, 'rgb(0, 255, 255)');
@@ -154,106 +151,6 @@ suite('ReadonlyOmnibox', function() {
     checkPiece(pieces[5], 'C1', true, 'rgb(0, 0, 255)');
     checkPiece(pieces[6], 'D0', false, 'rgb(255, 0, 0)');
     checkPiece(pieces[7], 'D1', true, 'rgb(255, 0, 0)');
-  });
-
-  test('Range conversion helpers', () => {
-    const div = document.createElement('div');
-    const comments: Comment[] = [];
-    const text: Text[] = [];
-    for (let i = 0; i < 4; ++i) {
-      const c = document.createComment('c' + i);
-      comments.push(c);
-      div.appendChild(c);
-      const t = document.createTextNode('t' + i);
-      div.appendChild(t);
-      text.push(t);
-    }
-    const c = document.createComment('c4');
-    comments.push(c);
-    div.appendChild(c);
-
-    // Nodes:  c0  t0  c1  t1  c2  t2  c3  t3  c4
-    // Text:      "t0"    "t1"    "t2"    "t3"
-    // Offsets:    01      23      45      67
-
-    const fullText = 't0t1t2t3';
-    assertEquals(fullText, div.textContent);
-
-    {
-      // Select everything inside the div, using it rather than child nodes
-      // for specifying start and end.
-      const r1 = document.createRange();
-      r1.setStart(div, 0);
-      r1.setEnd(div, div.childNodes.length);
-      assertEquals(fullText, r1.toString());
-      const b1 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r1);
-      const e1 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r1);
-      assertEquals(0, b1);
-      assertEquals(8, e1);
-    }
-
-    {
-      // Selection starts in the middle of a comment node, and ends in the
-      // middle of a text node.
-      const r2 = document.createRange();
-      r2.setStart(comments[0]!, 1);
-      r2.setEnd(text[3]!, 1);
-      assertEquals('t0t1t2t', r2.toString());
-      const b2 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r2);
-      const e2 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r2);
-      assertEquals(0, b2);
-      assertEquals(7, e2);
-    }
-
-    {
-      // Selection starts at the end of a text node, and ends at beginning of
-      // a comment node.
-      const r3 = document.createRange();
-      r3.setStart(text[1]!, 2);
-      r3.setEnd(comments[4]!, 0);
-      assertEquals('t2t3', r3.toString());
-      const b3 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r3);
-      const e3 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r3);
-      assertEquals(4, b3);
-      assertEquals(8, e3);
-    }
-
-    {
-      // Selection is a portion of a text node.
-      const r4 = document.createRange();
-      r4.setStart(text[1]!, 1);
-      r4.setEnd(text[1]!, 2);
-      assertEquals('1', r4.toString());
-      const b4 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r4);
-      const e4 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r4);
-      assertEquals(3, b4);
-      assertEquals(4, e4);
-    }
-
-    {
-      // Caret at end of a text node.
-      const r5 = document.createRange();
-      r5.setStart(text[2]!, 2);
-      r5.setEnd(text[2]!, 2);
-      assertEquals('', r5.toString());
-      const b5 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r5);
-      const e5 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r5);
-      assertEquals(6, b5);
-      assertEquals(6, e5);
-    }
-
-    {
-      // Selection inside comment node; we interpret it as caret between the
-      // two surrounding pieces of text.
-      const r6 = document.createRange();
-      r6.setStart(comments[2]!, 1);
-      r6.setEnd(comments[2]!, 2);
-      assertEquals('', r6.toString());
-      const b6 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(text, r6);
-      const e6 = ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(text, r6);
-      assertEquals(4, b6);
-      assertEquals(4, e6);
-    }
   });
 
   test('RTL mode handling', async () => {
@@ -277,6 +174,7 @@ suite('ReadonlyOmnibox', function() {
     await microtasksFinished();
     assertEquals(
         'example.com/articles/1/', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
 
     const omniboxBounds = omnibox.getBoundingClientRect();
     const pieces = getTextPieces();

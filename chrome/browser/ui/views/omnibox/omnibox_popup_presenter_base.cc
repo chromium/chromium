@@ -186,6 +186,10 @@ views::View* OmniboxPopupPresenterBase::GetUIContainer() const {
   return GetResultsFrame()->GetContents();
 }
 
+views::View* OmniboxPopupPresenterBase::GetOuterView() {
+  return GetResultsFrame();
+}
+
 OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::GetWebUIContent()
     const {
   return omnibox_popup_webui_content_;

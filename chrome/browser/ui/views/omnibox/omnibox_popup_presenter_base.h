@@ -73,6 +73,9 @@ class OmniboxPopupPresenterBase {
     return *presenter_delegate_;
   }
 
+  // Outermost view in the hierarchy; used for hit testing.
+  views::View* GetOuterView();
+
  protected:
   // The container for the WebUI WebView.
   views::View* GetUIContainer() const;

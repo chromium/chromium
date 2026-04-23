@@ -459,6 +459,13 @@ void WebUIToolbarWebView::InvokePinnedToolbarAction(
   pinned_toolbar_actions_.Invoke(action_id);
 }
 
+void WebUIToolbarWebView::OnOmniboxAction(
+    toolbar_ui_api::mojom::OmniboxActionPtr action) {
+  if (location_bar_) {
+    location_bar_->OnOmniboxAction(std::move(action));
+  }
+}
+
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
 }

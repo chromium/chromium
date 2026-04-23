@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
@@ -114,7 +116,12 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
       ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
           ui::kElementBoundsChangedEvent, kLocationBarElementId,
           BrowserElements::From(browser_)->GetContext(),
-          base::BindRepeating(&WebUILocationBar::OnMoved,
+          base::BindRepeating(&WebUILocationBar::OnMovedOrShown,
+                              base::Unretained(this)));
+  shown_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kLocationBarElementId, BrowserElements::From(browser_)->GetContext(),
+          base::BindRepeating(&WebUILocationBar::OnMovedOrShown,
                               base::Unretained(this)));
 
   is_initialized_ = true;
@@ -123,6 +130,47 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
 void WebUILocationBar::PropagateOmniboxUpdate(
     toolbar_ui_api::mojom::OmniboxViewStatePtr omnibox_state) {
   toolbar_view_->OnOmniboxViewStateChanged(std::move(omnibox_state));
+}
+
+void WebUILocationBar::OnOmniboxAction(
+    toolbar_ui_api::mojom::OmniboxActionPtr action) {
+  switch (action->name) {
+    case toolbar_ui_api::mojom::OmniboxActionName::kFocus:
+      // TODO(crbug.com/500653057): Key state, though Views impl doesn't have
+      // it.
+      omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+      break;
+    case toolbar_ui_api::mojom::OmniboxActionName::kBlur:
+      omnibox_controller_->edit_model()->OnKillFocus();
+      if (auto* popup_closer =
+              omnibox_controller_->client()->GetOmniboxPopupCloser()) {
+        popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
+      }
+      break;
+    case toolbar_ui_api::mojom::OmniboxActionName::kTextInput:
+      omnibox_view_->SetUserText(base::UTF8ToUTF16(action->text));
+      break;
+    case toolbar_ui_api::mojom::OmniboxActionName::kKeyDown:
+      // TODO(crbug.com/500653057): Handle modifier keys.
+      // TODO(crbug.com/500653057): Convert to DomKey (with some caching
+      // since the converter is slow) once the JS end is more selective about
+      // what it sends.
+      if (action->text == "Enter") {
+        omnibox_controller_->edit_model()->OpenCurrentSelection(
+            base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
+            /*via_keyboard=*/true);
+      } else if (action->text == "Escape") {
+        omnibox_controller_->edit_model()->OnEscapeKeyPressed();
+      } else if (action->text == "ArrowUp") {
+        omnibox_controller_->edit_model()->OnUpOrDownPressed(false, false);
+      } else if (action->text == "ArrowDown") {
+        omnibox_controller_->edit_model()->OnUpOrDownPressed(true, false);
+      }
+      // And a bunch of subtler stuff.
+      break;
+  }
+
+  UpdateLocationBarFlagsState();
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
@@ -167,8 +215,20 @@ OmniboxController* WebUILocationBar::GetOmniboxController() {
 }
 
 bool WebUILocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
-  NOTIMPLEMENTED();
-  return false;
+  if (event->type() != ui::EventType::kMousePressed) {
+    return false;
+  }
+
+  if (BoundsInScreen().Contains(event->root_location())) {
+    return false;
+  }
+
+  auto* const view = static_cast<views::View*>(event->target());
+  if (omnibox_popup_view_->presenter()->GetOuterView()->Contains(view)) {
+    return false;
+  }
+
+  return true;
 }
 
 ChipController* WebUILocationBar::GetChipController() {
@@ -252,7 +312,11 @@ gfx::Rect WebUILocationBar::Bounds() const {
 gfx::Rect WebUILocationBar::BoundsInScreen() const {
   ui::TrackedElement* anchor =
       BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
-  return anchor ? anchor->GetScreenBounds() : gfx::Rect();
+  // Fallback to our parent container's bounds if we haven't gotten ours
+  // yet; this should be correct for vertical margin computation, and start
+  // the popup creation with something reasonable.
+  return anchor ? anchor->GetScreenBounds()
+                : toolbar_view_->GetBoundsInScreen();
 }
 
 gfx::Size WebUILocationBar::MinimumSize() const {
@@ -275,6 +339,7 @@ void WebUILocationBar::Update(content::WebContents* contents) {
   }
 
   OnChanged();
+  UpdateLocationBarFlagsState();
 }
 
 void WebUILocationBar::UpdateLhsChipsState() {
@@ -448,6 +513,13 @@ OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
   return nullptr;
 }
 
-void WebUILocationBar::OnMoved(ui::TrackedElement*) {
+void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {
   NotifyBoundsChanged();
+}
+
+void WebUILocationBar::UpdateLocationBarFlagsState() {
+  auto location_bar_flags = toolbar_ui_api::mojom::LocationBarFlags::New();
+  location_bar_flags->user_input_in_progress =
+      omnibox_controller_->edit_model()->user_input_in_progress();
+  toolbar_view_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
 }

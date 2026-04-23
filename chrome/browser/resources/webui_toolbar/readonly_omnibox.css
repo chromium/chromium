@@ -8,8 +8,13 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  /* To help make things line up nicely between the rich-text readonly view and
+   * the interactive <input>, we give everything here the same height. This is
+   * a bit less than the height of the location bar so it can draw the focus
+   * ring without us painting over it. */
+  --omnibox-height: calc(var(--location-bar-height) - 4px);
   align-self: center;
-  background-color: transparent;
+  background-color: inherit;
   border: none;
   color: var(--color-omnibox-text);
   display: flex;
@@ -17,6 +22,7 @@
   font-family: var(--omnibox-primary-font-family);
   font-size: var(--omnibox-primary-font-size);
   font-weight: var(--omnibox-primary-font-weight);
+  height: var(--omnibox-height);
 }
 
 /* #textContainerWrap exists to fill up space in a way that's sensitive to
@@ -24,7 +30,11 @@
  */
 #textContainerWrap {
   display: flex;
+  background-color: inherit;
   flex: 1;
+  height: var(--omnibox-height);
+  /* We want to position textInput off of us */
+  position: relative;
   /* Giving this a width makes flex shrink it to fit available space when this
    * is too long. The exact value will get replaced by whatever flex computes
    */
@@ -32,34 +42,40 @@
 }
 
 #textContainer {
+  /* We paint both possible widgets with opaque backgrounds and use z-index to
+     select which one shows
+   */
+  background-color: inherit;
   flex: 0 1 min-content;
+  height: var(--omnibox-height);
   outline: none;
   overflow: hidden;
+  pointer-events: none;
   text-overflow: ellipsis;
   text-wrap: nowrap;
+  z-index: 1;
+}
+
+#textContainer span {
+  line-height: var(--omnibox-height);
+  vertical-align: middle;
 }
 
 #textContainer.force-ltr {
   direction: ltr;
 }
 
-/* Need to consider document focus here as well, hence :focus-visible */
-#textContainer:focus-visible {
-  text-overflow: clip;
-  overflow: hidden;
-}
-
-#textContainer::selection {
+#textInput::selection {
   background-color: var(--color-omnibox-selection-background);
   color: var(--color-omnibox-selection-foreground);
 }
 
 /* We don't want URLs spellchecked */
-#textContainer::spelling-error {
+#textInput::spelling-error {
   text-decoration: none;
 }
 
-#textContainer::grammar-error {
+#textInput::grammar-error {
   text-decoration: none;
 }
 
@@ -77,4 +93,20 @@
 
 #textContainer .strikethrough {
   text-decoration: line-through;
+}
+
+#textInput {
+  appearance: none;
+  background-color: inherit;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  height: var(--omnibox-height);
+  outline: none;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }

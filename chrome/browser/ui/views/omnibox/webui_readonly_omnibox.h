@@ -28,8 +28,8 @@ class WebContents;
 
 // WebUI-implementation of OmniboxView, which happens to be readonly,
 // as it counts on the popup to handle the editing.
-// TODO(crbug.com/474060468): Rename it in a manner more consistent with other
-// classes here.
+// TODO(crbug.com/500653057): Rename it in a manner more consistent with other
+// classes here. It's also no longer read-only!
 class WebUIReadOnlyOmnibox : public OmniboxView {
  public:
   class UpdatePropagator {
@@ -64,6 +64,7 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   bool IsSelectAll() const override;
   gfx::Range GetSelectionBounds() const override;
   void SelectAll(bool reversed) override;
+  void RevertAll() override;
   void UpdatePopup() override;
   void SetFocus(bool is_user_initiated) override;
   bool AimButtonVisible() const override;
@@ -89,6 +90,7 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
 
  private:
   void RequestUpdateWebUI();
+  void ResetFormatting();
 
   raw_ref<UpdatePropagator> update_propagator_;
 

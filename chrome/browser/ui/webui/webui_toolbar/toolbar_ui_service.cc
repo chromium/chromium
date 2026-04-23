@@ -81,6 +81,13 @@ void ToolbarUIService::ShowContextMenu(
   }
 }
 
+void ToolbarUIService::OnOmniboxAction(
+    toolbar_ui_api::mojom::OmniboxActionPtr action) {
+  if (delegate_) {
+    delegate_->OnOmniboxAction(std::move(action));
+  }
+}
+
 void ToolbarUIService::OnPageInitialized() {
   if (delegate_) {
     delegate_->OnPageInitialized();

@@ -19,7 +19,7 @@
 
 class Browser;
 class OmniboxController;
-class OmniboxPopupView;
+class OmniboxPopupViewWebUI;
 class PermissionDashboardController;
 class PermissionDashboardView;
 class Profile;
@@ -39,6 +39,9 @@ class WebUILocationBar : public LocationBar,
   // WebUIReadOnlyOmnibox::UpdatePropagator:
   void PropagateOmniboxUpdate(
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
+
+  // Called from WebUIToolbarWebView:
+  void OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action);
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,
@@ -101,10 +104,16 @@ class WebUILocationBar : public LocationBar,
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
 
+  OmniboxPopupViewWebUI* GetOmniboxPopupViewForTesting() {
+    return omnibox_popup_view_.get();
+  }
+
  private:
   friend class WebUILocationBarTest;
 
-  void OnMoved(ui::TrackedElement* element);
+  void OnMovedOrShown(ui::TrackedElement* element);
+
+  void UpdateLocationBarFlagsState();
 
   // Updates the state of the LHS location bar chips (e.g. security chip) and
   // pushes it to the WebUI.
@@ -118,6 +127,7 @@ class WebUILocationBar : public LocationBar,
   raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
 
   ui::ElementTracker::Subscription moved_subscription_;
+  ui::ElementTracker::Subscription shown_subscription_;
 
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;
@@ -125,7 +135,7 @@ class WebUILocationBar : public LocationBar,
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
-  std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
+  std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
 
   WebUIContentSettingImageControl content_setting_image_control_;
 

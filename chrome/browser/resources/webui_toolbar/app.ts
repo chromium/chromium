@@ -25,24 +25,31 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 // Helper so tests can find what they needed when optimization is on.
 // This should probably be a separate file, but rollup support only
 // handles 2 at most now.
-import {LhsChipIdentifier, OmniboxTextColor, SecurityChipIcon} from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {
+  LhsChipIdentifier,
+  OmniboxActionName,
+  OmniboxTextColor,
+  SecurityChipIcon,
+} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {OmniboxAction, LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 
 export {
   BrowserProxyImpl,
+  LhsChipIdentifier,
   LocationBarElement,
+  LocationIconElement,
+  OmniboxActionName,
   OmniboxTextColor,
   ReadonlyOmniboxElement,
-  TrackedElementManager,
   SecurityChipIcon,
-  LhsChipIdentifier,
-  LocationIconElement,
+  TrackedElementManager,
 };
 export type {
-    LocationBarState,
+  LocationBarState,
+  OmniboxAction,
 };
 // clang-format on
 

@@ -11725,6 +11725,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/frame/vertical_tab_strip_region_view_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
         "../browser/ui/views/keyboard_access_interactive_uitest.cc",
+        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest.cc",
         "../browser/ui/views/media_router/media_router_ui_interactive_uitest.cc",
         "../browser/ui/views/menu_controller_interactive_uitest.cc",
         "../browser/ui/views/menu_interactive_uitest.cc",
@@ -11870,6 +11871,7 @@ if (!is_android && !is_chromeos_device) {
         "//ui/views",
         "//ui/views:test_support",
         "//ui/views:views_interactive_ui_tests",
+        "//ui/webui/tracked_element:test_support",
       ]
 
       if (enable_pdf) {
