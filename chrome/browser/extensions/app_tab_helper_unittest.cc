@@ -7,8 +7,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_contents_tester.h"
@@ -24,42 +22,24 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
     ExtensionServiceTestWithInstall::SetUp();
     InitializeEmptyExtensionService();
 
-    std::unique_ptr<content::WebContents> web_contents(
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-    web_contents_tester_ = content::WebContentsTester::For(web_contents.get());
-    AppTabHelper::CreateForWebContents(web_contents.get());
-    app_tab_helper_ = AppTabHelper::FromWebContents(web_contents.get());
-    browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                    true);
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    web_contents_tester_ = content::WebContentsTester::For(web_contents_.get());
+    AppTabHelper::CreateForWebContents(web_contents_.get());
+    app_tab_helper_ = AppTabHelper::FromWebContents(web_contents_.get());
   }
 
   void TearDown() override {
     app_tab_helper_ = nullptr;
     web_contents_tester_ = nullptr;
-    // Remove any tabs in the tab strip to avoid test crashes.
-    if (browser_) {
-      while (!browser_->tab_strip_model()->empty()) {
-        browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-      }
-      browser_.reset();
-    }
+    web_contents_.reset();
     ExtensionServiceTestWithInstall::TearDown();
-  }
-
-  Browser* browser() {
-    if (!browser_) {
-      Browser::CreateParams params(profile(), true);
-      auto browser_window = std::make_unique<TestBrowserWindow>();
-      params.window = browser_window.release();
-      browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
-    }
-    return browser_.get();
   }
 
   AppTabHelper* app_tab_helper() { return app_tab_helper_; }
 
  private:
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<content::WebContents> web_contents_;
 
   raw_ptr<content::WebContentsTester> web_contents_tester_ = nullptr;
   raw_ptr<AppTabHelper> app_tab_helper_ = nullptr;
