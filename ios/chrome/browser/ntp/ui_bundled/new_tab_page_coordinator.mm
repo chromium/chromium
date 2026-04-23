@@ -160,6 +160,7 @@
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
                                      AuthenticationServiceObserving,
+                                     ComposeboxMenuCoordinatorDelegate,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
@@ -1541,6 +1542,14 @@
   [self stopAccountMenuCoordinator];
 }
 
+#pragma mark - ComposeboxMenuCoordinatorDelegate
+
+- (void)composeboxMenuCoordinatorDidDismissMenu:
+    (ComposeboxMenuCoordinator*)composeboxMenuCoordinator {
+  [_composeboxMenuCoordinator stop];
+  _composeboxMenuCoordinator = nil;
+}
+
 #pragma mark - Private
 
 // Opens the AIM web page.
@@ -1982,11 +1991,11 @@
 
   if (IsComposeboxPlusButtonBottomSheet()) {
     [_composeboxMenuCoordinator stop];
-    // TODO(crbug.com/505386922): Add entrypoint and delegate to cleanup the
-    // coordinator on dismissal.
+    // TODO(crbug.com/505386922): Add entrypoint.
     _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
+    _composeboxMenuCoordinator.delegate = self;
     [_composeboxMenuCoordinator start];
   } else if (MaybeShowComposebox(self.browser,
                                  ComposeboxEntrypoint::kNTPPlusButton)) {

@@ -7,6 +7,9 @@
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_mediator.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_view_controller.h"
 
+@interface ComposeboxMenuCoordinator () <UISheetPresentationControllerDelegate>
+@end
+
 @implementation ComposeboxMenuCoordinator {
   ComposeboxMenuViewController* _viewController;
   ComposeboxMenuMediator* _mediator;
@@ -17,6 +20,8 @@
   _mediator = [[ComposeboxMenuMediator alloc] init];
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
+  _viewController.sheetPresentationController.delegate = self;
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -26,6 +31,13 @@
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   _mediator = nil;
+}
+
+#pragma mark - UISheetPresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
 }
 
 @end

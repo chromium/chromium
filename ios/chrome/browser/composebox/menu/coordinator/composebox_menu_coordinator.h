@@ -7,8 +7,22 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ComposeboxMenuCoordinator;
+
+// Delegate for events of `ComposeboxMenuCoordinator`.
+@protocol ComposeboxMenuCoordinatorDelegate <NSObject>
+
+// Called when the menu presentation finishes.
+- (void)composeboxMenuCoordinatorDidDismissMenu:
+    (ComposeboxMenuCoordinator*)composeboxMenuCoordinator;
+
+@end
+
 // Coordinator for the composebox menu on the New Tab Page.
 @interface ComposeboxMenuCoordinator : ChromeCoordinator
+
+// The delegate for this coordinator.
+@property(nonatomic, weak) id<ComposeboxMenuCoordinatorDelegate> delegate;
 
 @end
 
