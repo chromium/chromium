@@ -30,7 +30,7 @@ declare_args() {
       toolkit_views && (is_win || is_mac || is_linux || is_chromeos) &&
       !is_castos
 
-  enterprise_screenshot_protection = is_win || is_mac
+  enterprise_screenshot_protection = is_win || is_mac || is_ios
 
   enterprise_telomere_reporting = is_win || is_mac || is_linux
 
