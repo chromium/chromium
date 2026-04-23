@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROME_FOR_TESTING_PREFS_H_
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace chrome_for_testing {
 namespace prefs {
@@ -22,10 +23,27 @@ inline constexpr char kEnableSearchEngineChoiceDialog[] =
 inline constexpr char kEnableVirtualClipboard[] =
     "chrome_for_testing.enable_virtual_clipboard";
 
+// List of required components names and, optionally, their versions. Default is
+// empty. Component names can be specified as patterns with * and ? wildcards.
+inline constexpr char kRequiredComponents[] =
+    "chrome_for_testing.required_components";
+
+// Required components directory. Default is none, so components are installed
+// in the user data directory.
+inline constexpr char kRequiredComponentsDir[] =
+    "chrome_for_testing.required_components_dir";
+
+// Required components update timeout. Default is 15 seconds.
+inline constexpr char kRequiredComponentsUpdateTimeout[] =
+    "chrome_for_testing.required_components_update_timeout";
+
 }  // namespace prefs
 
 // Register Chrome for Testing prefs.
 void RegisterPrefs(PrefRegistrySimple* registry);
+
+// Reset Chrome for Testing prefs to default values.
+void ClearPrefs(PrefService* pref_service);
 
 }  // namespace chrome_for_testing
 

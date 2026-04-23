@@ -51,6 +51,7 @@ source_set("browser") {
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/headless",
+    "//components/component_updater:component_updater_paths",
     "//components/headless/clipboard",
     "//components/prefs",
   ]
@@ -65,6 +66,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
+    "//components/component_updater:component_updater_paths",
     "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
