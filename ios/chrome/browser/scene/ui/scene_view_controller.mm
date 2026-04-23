@@ -566,6 +566,15 @@
 
   CGRect contentFrame = UIEdgeInsetsInsetRect(frame, insets);
   _appContentContainerView.frame = contentFrame;
+  if (self.layoutState.containedLayoutActive && !IsChromeNextIaEnabled()) {
+    // When the Assistant side panel is active, use bounds to avoid a double
+    // shift of the origin.
+    // However, when IsChromeNextIaEnabled() is true, the view hierarchy is
+    // inverted (when fullscreen refactor is disabled). In that mode, we must
+    // use frame to avoid misplacing the view at the left edge.
+    _appContentView.frame = _appContentContainerView.bounds;
+    return;
+  }
   _appContentView.frame = _appContentContainerView.frame;
 }
 
