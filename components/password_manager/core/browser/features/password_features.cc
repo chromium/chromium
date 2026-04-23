@@ -158,12 +158,6 @@ BASE_FEATURE(kPasswordFormClientsideClassifier,
 BASE_FEATURE(kPasswordFormGroupedAffiliations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kPasswordGenerationChunking,
-             "PasswordGenerationChunkPassword",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kPasswordManagerLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreventPasswordManagerOnFederatedLogin,

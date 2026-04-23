@@ -176,12 +176,6 @@ BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// Enables "chunking" generated passwords by adding hyphens every 4 characters
-// to make them more readable.
-BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolutionOnDesktop);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -307,58 +305,6 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
   // applied.
   EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-class PasswordGeneratorChunkingTest : public testing::Test {
- public:
-  PasswordGeneratorChunkingTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordGenerationChunking);
-  }
-  ~PasswordGeneratorChunkingTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PasswordGeneratorChunkingTest, ChunkedWithDifferentMaxLengths) {
-  PasswordRequirementsSpec spec;
-  spec.set_min_length(0);
-  spec.mutable_symbols()->set_character_set("-");
-
-  for (uint32_t max_length = 9; max_length <= kDefaultPasswordLength;
-       max_length++) {
-    spec.set_max_length(max_length);
-    std::u16string password = GeneratePassword(spec);
-
-    // Check every 5th char is a dash except when it's a last char.
-    for (uint32_t i = 4; i < max_length; i += 5) {
-      if (i < max_length - 1) {
-        EXPECT_EQ(password[i], '-');
-      }
-    }
-    EXPECT_NE(password[max_length - 1], '-');
-  }
-}
-
-TEST_F(PasswordGeneratorChunkingTest, DashDisallowed) {
-  PasswordRequirementsSpec spec;
-  spec.set_min_length(0);
-  spec.set_max_length(kDefaultPasswordLength);
-  spec.mutable_symbols()->set_character_set("");
-
-  EXPECT_TRUE(GeneratePassword(spec).find('-') == std::string::npos);
-}
-
-TEST_F(PasswordGeneratorChunkingTest, TooShortMaxLength) {
-  PasswordRequirementsSpec spec;
-  spec.set_min_length(0);
-  spec.set_max_length(8);
-  spec.mutable_symbols()->set_character_set("-");
-
-  EXPECT_TRUE(GeneratePassword(spec).find('-') == std::string::npos);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
