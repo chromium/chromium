@@ -35,15 +35,9 @@
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "crypto/aead.h"
-#include "crypto/evp.h"
+#include "crypto/encrypt.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
-#include "third_party/boringssl/src/include/openssl/aead.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/err.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
-#include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace credential_provider {
 
@@ -102,12 +96,6 @@ bool Base64DecodeCryptographicKey(const std::string& cryptographic_key,
   return true;
 }
 
-// Callback to log password encryption/decryption errors.
-static int LogBoringSSLError(const char* str, size_t len, void* ctx) {
-  LOGFN(ERROR) << std::string_view(str, len);
-  return 1;
-}
-
 // PadSecret pads the given |secret| with kPaddingChar and serializes the padded
 // secret into JSON along with original secret length.
 bool PadSecret(const std::string& secret, std::string* out) {
@@ -161,16 +149,11 @@ bool UnpadSecret(const std::string& serialized_padded_secret,
 std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
     const std::string& public_key_spki,
     const std::string& secret) {
-  bssl::UniquePtr<EVP_PKEY> public_key =
-      crypto::evp::PublicKeyFromBytes(base::as_byte_span(public_key_spki));
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          base::as_byte_span(public_key_spki));
   if (!public_key) {
-    ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
-    return std::nullopt;
-  }
-
-  RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
-  if (!rsa) {
-    ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
+    LOGFN(ERROR) << "Failed to parse public key from SPKI";
     return std::nullopt;
   }
 
@@ -181,22 +164,16 @@ std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
       base::span(session_key_with_nonce).split_at(kSessionKeyLength);
 
   // Encrypt the session key with the RSA public key.
-  size_t rsa_len;
-  std::vector<uint8_t> ciphertext(RSA_size(rsa));
-  if (!RSA_encrypt(rsa, &rsa_len, ciphertext.data(), ciphertext.size(),
-                   session_key_with_nonce.data(), session_key_with_nonce.size(),
-                   RSA_PKCS1_OAEP_PADDING)) {
-    ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
-    return std::nullopt;
-  }
+  std::vector<uint8_t> ciphertext = crypto::encrypt::Encrypt(
+      crypto::encrypt::RSA_OAEP_SHA1, *public_key, session_key_with_nonce);
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(session_key);
   std::vector<uint8_t> sealed_secret =
       aead.Seal(base::as_byte_span(secret), nonce, /*ad=*/{});
 
-  ciphertext.insert(ciphertext.end(), sealed_secret.data(),
-                    sealed_secret.data() + sealed_secret.size());
+  ciphertext.insert(ciphertext.end(), sealed_secret.begin(),
+                    sealed_secret.end());
   return ciphertext;
 }
 
@@ -205,49 +182,45 @@ std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
 std::optional<std::string> PrivateKeyDecrypt(
     const std::string& private_key,
     base::span<const uint8_t> ciphertext) {
-  CBS priv_key_cbs;
-  CBS_init(&priv_key_cbs, reinterpret_cast<const uint8_t*>(&private_key[0]),
-           private_key.size());
-  bssl::UniquePtr<EVP_PKEY> priv_key(EVP_parse_private_key(&priv_key_cbs));
-  if (!priv_key || CBS_len(&priv_key_cbs)) {
-    ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
+  std::optional<crypto::keypair::PrivateKey> priv_key =
+      crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+          base::as_byte_span(private_key));
+  if (!priv_key || !priv_key->IsRsa()) {
+    LOGFN(ERROR) << "Failed to parse RSA private key from PKCS#8";
     return std::nullopt;
   }
 
-  RSA* rsa = EVP_PKEY_get0_RSA(priv_key.get());
-  if (!rsa) {
-    LOGFN(ERROR) << "No RSA is found in EVP_PKEY_get0_RSA";
-    return std::nullopt;
-  }
-  const size_t rsa_size = RSA_size(rsa);
+  size_t rsa_size = crypto::encrypt::GetCiphertextSize(*priv_key);
   if (ciphertext.size() < rsa_size) {
     LOGFN(ERROR) << "Incorrect RSA size for given cipher text";
     return std::nullopt;
   }
 
   // Decrypt the encrypted session key using given provided key.
-  std::vector<uint8_t> session_key_with_nonce(rsa_size);
-  size_t session_key_with_nonce_len;
-  if (!RSA_decrypt(rsa, &session_key_with_nonce_len,
-                   session_key_with_nonce.data(), session_key_with_nonce.size(),
-                   ciphertext.data(), rsa_size, RSA_PKCS1_OAEP_PADDING)) {
-    ERR_print_errors_cb(&LogBoringSSLError, /*unused*/ nullptr);
+  std::optional<std::vector<uint8_t>> session_key_with_nonce =
+      crypto::encrypt::Decrypt(crypto::encrypt::RSA_OAEP_SHA1, *priv_key,
+                               ciphertext.subspan(0u, rsa_size));
+  if (!session_key_with_nonce) {
+    LOGFN(ERROR) << "Failed to decrypt session key";
     return std::nullopt;
   }
-  session_key_with_nonce.resize(session_key_with_nonce_len);
 
-  std::string session_key(session_key_with_nonce.data(),
-                          session_key_with_nonce.data() + kSessionKeyLength);
+  if (session_key_with_nonce->size() != kSessionKeyLength + kNonceLength) {
+    LOGFN(ERROR) << "Decrypted session key has incorrect size";
+    return std::nullopt;
+  }
+
+  auto [session_key, nonce] =
+      base::span(*session_key_with_nonce).split_at(kSessionKeyLength);
 
   std::string plaintext;
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(&session_key);
+  aead.Init(session_key);
   aead.Open(
       std::string_view(reinterpret_cast<const char*>(&ciphertext[rsa_size]),
                        ciphertext.size() - rsa_size),
-      std::string_view(reinterpret_cast<const char*>(
-                           &session_key_with_nonce[kSessionKeyLength]),
-                       kNonceLength),
+      std::string_view(reinterpret_cast<const char*>(nonce.data()),
+                       nonce.size()),
       /*ad=*/"", &plaintext);
 
   return plaintext;
