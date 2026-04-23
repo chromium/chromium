@@ -1211,6 +1211,8 @@ coverage_builder(
         ),
     ],
     # TODO(crbug.com/449026537): Remove elevated timeout once performance improves.
+    # Note: execution timeout should be no different from what is defined below
+    # for linux-centipede-fuzz-coverage builder.
     execution_timeout = 48 * time.hour,
     notifies = ["chrome-fuzzing-core"],
     properties = {
@@ -1266,7 +1268,9 @@ coverage_builder(
     contact_team_email = "chrome-fuzzing-core@google.com",
     # TODO(crbug.com/449026537): Remove elevated timeout once performance
     # improves.
-    execution_timeout = 24 * time.hour,
+    # Note: execution timeout should be no different from what is defined above
+    # for linux-fuzz-coverage builder.
+    execution_timeout = 48 * time.hour,
     notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
