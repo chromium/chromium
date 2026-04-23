@@ -39,6 +39,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -155,6 +156,12 @@ void LocalAuthFactorsPolicyController::OnAllowedAuthFactorsPrefUpdated() {
     // If the pref is not managed, it means the admin has not set a policy, and
     // thus no action is needed from this handler. Also, it prevents unintended
     // behavior if the preference were to be modified by non-policy means.
+    return;
+  }
+
+  user_manager::KnownUser known_user(
+      user_manager::UserManager::Get()->GetLocalState());
+  if (known_user.IsUsingSAML(account_id_)) {
     return;
   }
 

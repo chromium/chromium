@@ -140,6 +140,10 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
     AssertReauthReason(user.account_id, expected_reason);
   }
 
+  Profile* GetProfile(const AccountId& account_id) {
+    return ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  }
+
   const LoginManagerMixin::TestUserInfo local_password_and_pin_user_{
       LoginManagerMixin::CreateEnterpriseAccountId(1),
       UserAuthConfig::Create(
@@ -169,9 +173,10 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
       UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})
           .RequireReauth(/*require_reauth=*/false)};
 
-  Profile* GetProfile(const AccountId& account_id) {
-    return ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  }
+  const LoginManagerMixin::TestUserInfo saml_user_{
+      LoginManagerMixin::CreateEnterpriseAccountId(6),
+      UserAuthConfig::Create({AshAuthFactor::kLocalPassword})
+          .RequireReauth(/*require_reauth=*/false)};
 
   base::test::TestFuture<void> on_pref_processed_future_;
   base::test::TestFuture<void> on_notification_shown_future_;
@@ -180,7 +185,7 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   LoginManagerMixin login_mixin_{
       &mixin_host_,
       {local_password_and_pin_user_, pin_only_user_, local_password_only_user_,
-       gaia_password_and_pin_user_, gaia_password_user_},
+       gaia_password_and_pin_user_, gaia_password_user_, saml_user_},
       &fake_gaia_,
       &cryptohome_};
   std::unique_ptr<base::AutoReset<bool>> ignore_sync_errors_for_test_;
@@ -340,6 +345,13 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
 
   // Notification should be dismissed.
   EXPECT_FALSE(tester.GetNotification(notification_id).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       NoForceReauthForSAMLUser) {
+  user_manager::KnownUser(g_browser_process->local_state())
+      .UpdateUsingSAML(saml_user_.account_id, true);
+  PerformLoginAndVerifyPolicyEnforcement(saml_user_, ReauthReason::kNone);
 }
 
 }  // namespace ash
