@@ -116,11 +116,11 @@ final class SigninPromoViewBinder {
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
             // We use View.INVISIBLE instead of View.GONE to ensure that the layout height remains
             // consistent even when the button is hidden.
-            int dismissButtonVisibility =
-                    model.get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON)
-                            ? View.INVISIBLE
-                            : View.VISIBLE;
-            view.getDismissButton().setVisibility(dismissButtonVisibility);
+            boolean shouldHideDismissButton =
+                    model.get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON);
+            view.getDismissButton()
+                    .setVisibility(shouldHideDismissButton ? View.INVISIBLE : View.VISIBLE);
+            view.getDismissButton().setEnabled(!shouldHideDismissButton);
         } else if (key == SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR) {
             if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                 if (model.get(SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR)) {
