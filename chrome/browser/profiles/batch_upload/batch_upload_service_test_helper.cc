@@ -37,6 +37,14 @@ BatchUploadServiceTestHelper::BatchUploadServiceTestHelper() {
                  base::OnceCallback<void(
                      std::map<syncer::DataType, syncer::LocalDataDescription>)>
                      callback) {
+            if (return_description_on_request_) {
+              // Put the callback in a queue to be fired via
+              // `FireReturnDescriptionRequest()`;
+              request_callback_queue_.push(std::move(callback));
+              return;
+            }
+
+            // Fire callback immediately.
             std::move(callback).Run(returned_descriptions_);
           });
 }
@@ -104,4 +112,18 @@ syncer::LocalDataDescription&
 BatchUploadServiceTestHelper::GetReturnDescription(syncer::DataType type) {
   CHECK(returned_descriptions_.contains(type));
   return returned_descriptions_[type];
+}
+
+void BatchUploadServiceTestHelper::SetReturnDescriptionOnRequest(
+    bool return_description_on_request) {
+  return_description_on_request_ = return_description_on_request;
+}
+
+void BatchUploadServiceTestHelper::FireReturnDescriptionRequest() {
+  CHECK(return_description_on_request_);
+  CHECK(!request_callback_queue_.empty());
+
+  // Fire the first request in the queue.
+  std::move(request_callback_queue_.front()).Run(returned_descriptions_);
+  request_callback_queue_.pop();
 }
