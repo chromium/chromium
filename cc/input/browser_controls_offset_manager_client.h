@@ -27,6 +27,7 @@ class CC_EXPORT BrowserControlsOffsetManagerClient {
   virtual bool HaveRootScrollNode() const = 0;
   virtual void SetNeedsCommit() = 0;
   virtual base::TimeDelta CurrentFrameInterval() const = 0;
+  virtual float RenderedDeviceScaleFactor() const = 0;
 
  protected:
   virtual ~BrowserControlsOffsetManagerClient() {}

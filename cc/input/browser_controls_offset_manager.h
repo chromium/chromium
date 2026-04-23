@@ -188,6 +188,15 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // region. The value should be between 0 and 1.
   float SnapAnimationCanHideRegionHeight(float slowness) const;
 
+  // Returns the magnitude of scroll delta in a single scroll sequence required
+  // to trigger the snap animation.
+  //
+  // `slowness` is a multiplier that controls how much the trigger threshold
+  // changes relative to the reference threshold, where a higher value means
+  // a larger threshold and a lower value means a smaller threshold. The value
+  // should be between 0 and 1.
+  float SnapAnimationThreshold(float slowness) const;
+
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
                                float controls_show_threshold,
@@ -215,15 +224,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
   void ScrollBySnap(const gfx::Vector2dF& pending_delta, bool is_inertial);
-
-  // Returns the magnitude of scroll delta in a single scroll sequence required
-  // to trigger the snap animation.
-  //
-  // `slowness` is a multiplier that controls how much the trigger threshold
-  // changes relative to the height of the controls, where a higher value means
-  // a larger threshold and a lower value means a smaller threshold. The value
-  // should be between 0 and 1.
-  float SnapAnimationThreshold(float slowness) const;
   float ControlsAnimatedHeight() const;
 
   // The client manages the lifecycle of this.

@@ -141,6 +141,8 @@ class MockBrowserControlsOffsetManagerClient
     return base::Seconds(1) / kDeviceFramesPerSecond;
   }
 
+  float RenderedDeviceScaleFactor() const override { return 1.0f; }
+
  private:
   FakeImplTaskRunnerProvider task_runner_provider_;
   TestTaskGraphRunner task_graph_runner_;
@@ -1921,6 +1923,12 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
     return scroll_delta;
   }
 
+  // Returns a large scroll delta that is guaranteed to trigger the snap
+  // animation when the top of the page is in the can-hide region.
+  float LargeScrollDelta() {
+    return client_.manager()->SnapAnimationThreshold(/*slowness=*/1.0f);
+  }
+
   constexpr static float kControlsHeight = 100.0f;
 
   MockBrowserControlsOffsetManagerClient client_;
@@ -1935,7 +1943,7 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start well inside in the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   {
     // Controls should hide at the end of this scroll sequence.
@@ -1944,15 +1952,15 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
     // behavior is:
     //   1. Scrolling down in the can-hide region should hide the browser
     //   controls.
-    //   2. Scrolling up so that net scroll is equal to controls height should
-    //   show controls.
+    //   2. Scrolling up so that net scroll is equal to maximum trigger
+    //   threshold should show controls.
     //   3. The controls cannot be hidden more than once per scroll, unless the
     //   scroll is inertial, so scrolling down normally should have no effect.
-    EXPECT_TRUE(
-        ScrollDidAnimate(kControlsHeight, AnimationDirection::kHidingControls));
-    EXPECT_TRUE(ScrollDidAnimate(-2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
+    EXPECT_TRUE(ScrollDidAnimate(-2 * LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
-    EXPECT_TRUE(ScrollDidNotAnimate(2 * kControlsHeight));
+    EXPECT_TRUE(ScrollDidNotAnimate(2 * LargeScrollDelta()));
   }
 }
 
@@ -1963,13 +1971,13 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start in the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   {
     ScrollSequence scroll_sequence(this);
     // Hide the browser controls.
-    EXPECT_TRUE(
-        ScrollDidAnimate(kControlsHeight, AnimationDirection::kHidingControls));
+    EXPECT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
   }
 
   {
@@ -1978,18 +1986,18 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
     // behavior is:
     //   1. Scrolling up in the can-hide region should show the browser
     //   controls.
-    //   2. Scrolling down so that net scroll is equal to controls height should
-    //   hide controls.
+    //   2. Scrolling down so that net scroll is equal to maximum trigger
+    //   threshold should hide controls.
     //   3. The controls can be shown more than once per scroll, so scrolling
     //   up should show the controls again.
     //   4. The controls cannot be hidden more than once per scroll if the
     //   scroll is inertial, so an inertial scroll down should hide the
     //   controls.
-    EXPECT_TRUE(ScrollDidAnimate(-kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(-LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
-    EXPECT_TRUE(ScrollDidAnimate(2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(2 * LargeScrollDelta(),
                                  AnimationDirection::kHidingControls));
-    EXPECT_TRUE(ScrollDidAnimate(-2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(-2 * LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
   }
 }
@@ -2001,13 +2009,13 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start in the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   {
     ScrollSequence scroll_sequence(this);
     // Hide the browser controls.
-    EXPECT_TRUE(
-        ScrollDidAnimate(kControlsHeight, AnimationDirection::kHidingControls));
+    EXPECT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
   }
 
   {
@@ -2016,19 +2024,19 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
     // behavior is:
     //   1. Scrolling up in the can-hide region should show the browser
     //   controls.
-    //   2. Scrolling down so that net scroll is equal to controls height should
-    //   hide controls.
+    //   2. Scrolling down so that net scroll is equal to maximum trigger
+    //   threshold should hide controls.
     //   3. The controls can be shown more than once per scroll, so scrolling
     //   up should show the controls again.
     //   4. The controls can be hidden more than once per scroll if the scroll
     //   is inertial.
-    EXPECT_TRUE(ScrollDidAnimate(-kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(-LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
-    EXPECT_TRUE(ScrollDidAnimate(2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(2 * LargeScrollDelta(),
                                  AnimationDirection::kHidingControls));
-    EXPECT_TRUE(ScrollDidAnimate(-2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(-2 * LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
-    EXPECT_TRUE(ScrollDidAnimate(2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(2 * LargeScrollDelta(),
                                  AnimationDirection::kHidingControls,
                                  base::Milliseconds(1),
                                  /*is_inertial=*/true));
@@ -2118,7 +2126,7 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start well inside in the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   ASSERT_EQ(manager->TopControlsShownRatio(), 1.0f);
   float trigger_threshold_slow_scroll = MeasureScrollDeltaToHide(
@@ -2130,7 +2138,7 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   {
     ScrollSequence scroll_sequence(this);
     // Show the browser controls.
-    EXPECT_TRUE(ScrollDidAnimate(-kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(-LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
   }
   ASSERT_EQ(manager->TopControlsShownRatio(), 1.0f);
@@ -2149,11 +2157,12 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   BrowserControlsOffsetManager* manager = client_.manager();
 
   client_.SetViewportScrollOffset(
-      0.0f, manager->SnapAnimationCanHideRegionHeight(1.0f) + kControlsHeight);
+      0.0f,
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + LargeScrollDelta());
   {
     ScrollSequence scroll_sequence(this);
-    ASSERT_TRUE(
-        ScrollDidAnimate(kControlsHeight, AnimationDirection::kHidingControls));
+    ASSERT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
   }
 
   // Scroll up in discrete scrolls until the top of the page is just outside the
@@ -2180,18 +2189,18 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start well inside in the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   {
     // Controls should not hide at the end of this scroll sequence since the
     // scroll velocity is on the opposite direction of hiding the controls.
     ScrollSequence scroll_sequence(this);
-    EXPECT_TRUE(
-        ScrollDidAnimate(kControlsHeight, AnimationDirection::kHidingControls));
-    EXPECT_TRUE(ScrollDidAnimate(-2 * kControlsHeight,
+    EXPECT_TRUE(ScrollDidAnimate(LargeScrollDelta(),
+                                 AnimationDirection::kHidingControls));
+    EXPECT_TRUE(ScrollDidAnimate(-2 * LargeScrollDelta(),
                                  AnimationDirection::kShowingControls));
-    EXPECT_TRUE(ScrollDidNotAnimate(3 * kControlsHeight));
-    EXPECT_TRUE(ScrollDidNotAnimate(-kControlsHeight));
+    EXPECT_TRUE(ScrollDidNotAnimate(2 * LargeScrollDelta()));
+    EXPECT_TRUE(ScrollDidNotAnimate(-LargeScrollDelta()));
   }
 }
 
@@ -2202,14 +2211,14 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   // Start well inside the can-hide region.
   client_.SetViewportScrollOffset(
       0.0f,
-      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * kControlsHeight);
+      manager->SnapAnimationCanHideRegionHeight(1.0f) + 2 * LargeScrollDelta());
 
   // Trigger a hide animation by scrolling down. `ScrollDidAnimate` is not used
   // here because we want to simulate the user scrolling up and down in
   // succession, and we need to be able to inspect the state of the controls
   // after the first scroll but before the second scroll is triggered.
   manager->ScrollBegin();
-  ScrollBy(kControlsHeight, base::Milliseconds(1), /*is_inertial=*/false);
+  ScrollBy(LargeScrollDelta(), base::Milliseconds(1), /*is_inertial=*/false);
   manager->ScrollEnd();
 
   // A hide animation should be running.

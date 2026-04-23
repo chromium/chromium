@@ -48,8 +48,8 @@ static_assert(
 static_assert(kAlwaysShownRegionMultiplier > 0.0f,
               "Always shown region must be non-zero to minimize the chance of "
               "shifting the web contents when controls are shown.");
-constexpr float kSnapAnimationThresholdMinMultiplier = 0.15f;
-constexpr float kSnapAnimationThresholdMaxMultiplier = 0.75f;
+constexpr float kSnapAnimationThresholdMinMultiplier = 0.2f;
+constexpr float kSnapAnimationReferenceThresholdDp = 30.0f;
 
 float NormalizeShownRatio(float value, float min_shown_ratio) {
   if (min_shown_ratio == 1.0f) {
@@ -246,14 +246,19 @@ float BrowserControlsOffsetManager::SnapAnimationThreshold(
   DCHECK_GE(slowness, 0.0f);
   DCHECK_LE(slowness, 1.0f);
 
+  // Using a fixed reference threshold makes the experience consistent under
+  // browser states that can greatly increase the height of the controls (e.g.
+  // tab groups)
+  const float reference_threshold =
+      client_->RenderedDeviceScaleFactor() * kSnapAnimationReferenceThresholdDp;
+
   // Scale the threshold based on the animation duration. Start the animation
   // early when the animation duration is short, and late when the animation
   // duration is long. This gives the appearance of a consistent, responsive
   // threshold.
-  return ControlsAnimatedHeight() *
-         gfx::Tween::FloatValueBetween(slowness,
-                                       kSnapAnimationThresholdMinMultiplier,
-                                       kSnapAnimationThresholdMaxMultiplier);
+  return reference_threshold *
+         gfx::Tween::FloatValueBetween(
+             slowness, kSnapAnimationThresholdMinMultiplier, 1.0f);
 }
 
 void BrowserControlsOffsetManager::UpdateBrowserControlsState(
