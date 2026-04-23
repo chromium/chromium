@@ -1385,7 +1385,11 @@ public final class ProductionSupportedFlagList {
                         + " will be shutdown so it doesn't consume resources when not needed."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PERSIST_HTTP_SERVER_PROPERTIES,
-                "When enabled, WebView will save Alt-Svc information across sessions.")
+                "When enabled, WebView will save Alt-Svc information across sessions."),
+        Flag.baseFeature(
+                "BaseLockTrySpin",
+                "When enabled, base::Lock will try to acquire the lock in user space multiple times"
+                        + " before blocking in the kernel.")
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
