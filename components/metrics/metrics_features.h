@@ -33,6 +33,12 @@ BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
 // See: android_webview/browser/metrics/aw_metrics_service_client.cc
 BASE_DECLARE_FEATURE(kMetricsLogTrimming);
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether various metrics services (UMA, UKM, etc.) should upload logs
+// through a JobScheduler on Android.
+BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Creates the ProfileMetricsService, which can be used to log per-profile UMA
 // histograms.
 // Enabled by default - intended as a kill-switch.

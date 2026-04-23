@@ -140,7 +140,7 @@ GURL MetricsServiceClient::GetInsecureMetricsServerUrl() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool MetricsServiceClient::IsJobSchedulerSupported() const {
-  return true;
+  return base::FeatureList::IsEnabled(features::kMetricsLogJobSchedulerUpload);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
