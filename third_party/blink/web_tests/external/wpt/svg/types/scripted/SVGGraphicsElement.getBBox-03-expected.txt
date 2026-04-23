@@ -5,10 +5,10 @@ This is a testharness.js-based test.
   assert_equals: rect2: x expected 0 but got 1
 [FAIL] circle
   assert_equals: circle: x expected 0 but got 1
-[FAIL] ellipse1
-  assert_equals: ellipse1: x expected 0 but got -9
-[FAIL] ellipse2
-  assert_equals: ellipse2: x expected 0 but got 1
+[FAIL] ellipse3
+  assert_equals: ellipse3: x expected 0 but got 1
+[FAIL] ellipse4
+  assert_equals: ellipse4: x expected 0 but got 1
 [FAIL] image3
   assert_equals: image3: x expected 0 but got 1
 [FAIL] image4

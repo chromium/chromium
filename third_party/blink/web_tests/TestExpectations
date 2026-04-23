@@ -2749,6 +2749,8 @@ crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
+virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
 crbug.com/505118033 virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]
 crbug.com/504767674 [ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-change.tentative.window.html [ Pass Timeout ]
 crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-classic-data.meta/unset/websocket.https.html [ Skip Timeout ]
@@ -9751,4 +9753,4 @@ crbug.com/504423491 [ Debug Linux ] virtual/connection-allowlist/external/wpt/co
 
 # Gardener 2026-04-23
 crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/452662753 [ Release Linux ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
+crbug.com/452662753 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
