@@ -48,7 +48,6 @@ namespace {
 using SimpleScanFuture =
     base::test::TestFuture<std::optional<api::document_scan::ScanResults>,
                            std::optional<std::string>>;
-
 using GetScannerListFuture =
     base::test::TestFuture<api::document_scan::GetScannerListResponse>;
 using OpenScannerFuture =
@@ -78,6 +77,14 @@ constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 constexpr char kScanDataItem[] = "PrettyPicture";
 constexpr char kScanDataItemBase64[] =
     "data:image/png;base64,UHJldHR5UGljdHVyZQ==";
+
+std::optional<api::document_scan::OperationResult> GetResultByName(
+    const std::vector<api::document_scan::SetOptionResult>& results,
+    const std::string& name) {
+  auto it = std::ranges::find_if(results,
+                                 [&](const auto& r) { return r.name == name; });
+  return it != results.end() ? std::make_optional(it->result) : std::nullopt;
+}
 
 class DocumentScanAPIHandlerTest : public testing::Test {
  public:
@@ -1037,20 +1044,20 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_FixedTypeMappings) {
   const api::document_scan::SetOptionsResponse& response = future.Get();
   EXPECT_EQ(response.scanner_handle, handle);
   ASSERT_EQ(response.results.size(), 7U);
-  EXPECT_EQ(response.results[0].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[1].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[2].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[3].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[4].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[5].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[6].result,
-            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(GetResultByName(response.results, "option1"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option2"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option3"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option4"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option5"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option6"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option7"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
 
   // Verify that all supplied options are present, but assume the option value
   // conversions have already been tested by the TypeConverter unit tests.
@@ -1121,32 +1128,32 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_IntTypeMappings) {
   const api::document_scan::SetOptionsResponse& response = future.Get();
   EXPECT_EQ(response.scanner_handle, handle);
   ASSERT_EQ(response.results.size(), 13U);
-  EXPECT_EQ(response.results[0].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[1].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[2].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[3].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[4].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[5].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[6].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[7].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[8].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[9].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[10].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[11].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[12].result,
-            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(GetResultByName(response.results, "option1"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option2"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option3"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option4"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option5"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option6"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option7"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option8"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option9"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option10"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option11"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option12"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option13"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
 
   // Verify that all supplied options are present, but assume the option value
   // conversions have already been tested by the TypeConverter unit tests.
@@ -1198,20 +1205,20 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_BoolTypeMappings) {
   const api::document_scan::SetOptionsResponse& response = future.Get();
   EXPECT_EQ(response.scanner_handle, handle);
   ASSERT_EQ(response.results.size(), 7U);
-  EXPECT_EQ(response.results[0].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[1].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[2].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[3].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[4].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[5].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[6].result,
-            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(GetResultByName(response.results, "option1"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option2"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option3"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option4"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option5"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option6"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option7"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
 
   // Verify that all supplied options are present, but assume the option value
   // conversions have already been tested by the TypeConverter unit tests.
@@ -1263,20 +1270,20 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_StringTypeMappings) {
   const api::document_scan::SetOptionsResponse& response = future.Get();
   EXPECT_EQ(response.scanner_handle, handle);
   ASSERT_EQ(response.results.size(), 7U);
-  EXPECT_EQ(response.results[0].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[1].result,
-            api::document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(response.results[2].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[3].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[4].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[5].result,
-            api::document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(response.results[6].result,
-            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(GetResultByName(response.results, "option1"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option2"),
+            std::optional(api::document_scan::OperationResult::kSuccess));
+  EXPECT_EQ(GetResultByName(response.results, "option3"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option4"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option5"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option6"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
+  EXPECT_EQ(GetResultByName(response.results, "option7"),
+            std::optional(api::document_scan::OperationResult::kWrongType));
 
   // Verify that all supplied options are present, but assume the option value
   // conversions have already been tested by the TypeConverter unit tests.

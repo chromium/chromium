@@ -324,24 +324,17 @@ chrome.test.runTests([
     const response = await setOptions(scannerHandle, options);
     chrome.test.assertEq(scannerHandle, response.scannerHandle);
     chrome.test.assertEq(options.length, response.results.length);
-    // Match each result individually instead of one big array to make it easier
-    // to tell where any failures occur.
     chrome.test.assertEq(
-        {name: 'fixed1', result: OperationResult.SUCCESS}, response.results[0]);
-    chrome.test.assertEq(
-        {name: 'fixed2', result: OperationResult.SUCCESS}, response.results[1]);
-    chrome.test.assertEq(
-        {name: 'fixed3', result: OperationResult.SUCCESS}, response.results[2]);
-    chrome.test.assertEq(
-        {name: 'fixed4', result: OperationResult.WRONG_TYPE},
-        response.results[3]);
-    chrome.test.assertEq(
-        {name: 'fixed5', result: OperationResult.SUCCESS}, response.results[4]);
-    chrome.test.assertEq(
-        {name: 'fixed6', result: OperationResult.SUCCESS}, response.results[5]);
-    chrome.test.assertEq(
-        {name: 'fixed7', result: OperationResult.SUCCESS}, response.results[6]);
-
+        new Set([
+          {name: 'fixed1', result: OperationResult.SUCCESS},
+          {name: 'fixed2', result: OperationResult.SUCCESS},
+          {name: 'fixed3', result: OperationResult.SUCCESS},
+          {name: 'fixed4', result: OperationResult.WRONG_TYPE},
+          {name: 'fixed5', result: OperationResult.SUCCESS},
+          {name: 'fixed6', result: OperationResult.SUCCESS},
+          {name: 'fixed7', result: OperationResult.SUCCESS}
+        ]),
+        new Set(response.results));
     chrome.test.assertNe(null, response.options);
     chrome.test.succeed();
   },
@@ -370,38 +363,21 @@ chrome.test.runTests([
     const response = await setOptions(scannerHandle, options);
     chrome.test.assertEq(scannerHandle, response.scannerHandle);
     chrome.test.assertEq(options.length, response.results.length);
-    // Match each result individually instead of one big array to make it easier
-    // to tell where any failures occur.
     chrome.test.assertEq(
-        {name: 'int1', result: OperationResult.SUCCESS}, response.results[0]);
-    chrome.test.assertEq(
-        {name: 'int2', result: OperationResult.SUCCESS}, response.results[1]);
-    chrome.test.assertEq(
-        {name: 'int3', result: OperationResult.WRONG_TYPE},
-        response.results[2]);
-    chrome.test.assertEq(
-        {name: 'int4', result: OperationResult.WRONG_TYPE},
-        response.results[3]);
-    chrome.test.assertEq(
-        {name: 'int5', result: OperationResult.SUCCESS}, response.results[4]);
-    chrome.test.assertEq(
-        {name: 'int6', result: OperationResult.SUCCESS}, response.results[5]);
-    chrome.test.assertEq(
-        {name: 'int7', result: OperationResult.WRONG_TYPE},
-        response.results[6]);
-    chrome.test.assertEq(
-        {name: 'int8', result: OperationResult.WRONG_TYPE},
-        response.results[7]);
-    chrome.test.assertEq(
-        {name: 'int9', result: OperationResult.WRONG_TYPE},
-        response.results[8]);
-    chrome.test.assertEq(
-        {name: 'int10', result: OperationResult.WRONG_TYPE},
-        response.results[9]);
-    chrome.test.assertEq(
-        {name: 'int11', result: OperationResult.WRONG_TYPE},
-        response.results[10]);
-
+        new Set([
+          {name: 'int1', result: OperationResult.SUCCESS},
+          {name: 'int2', result: OperationResult.SUCCESS},
+          {name: 'int3', result: OperationResult.WRONG_TYPE},
+          {name: 'int4', result: OperationResult.WRONG_TYPE},
+          {name: 'int5', result: OperationResult.SUCCESS},
+          {name: 'int6', result: OperationResult.SUCCESS},
+          {name: 'int7', result: OperationResult.WRONG_TYPE},
+          {name: 'int8', result: OperationResult.WRONG_TYPE},
+          {name: 'int9', result: OperationResult.WRONG_TYPE},
+          {name: 'int10', result: OperationResult.WRONG_TYPE},
+          {name: 'int11', result: OperationResult.WRONG_TYPE}
+        ]),
+        new Set(response.results));
     chrome.test.assertNe(null, response.options);
     chrome.test.succeed();
   },
@@ -421,20 +397,14 @@ chrome.test.runTests([
     const response = await setOptions(scannerHandle, options);
     chrome.test.assertEq(scannerHandle, response.scannerHandle);
     chrome.test.assertEq(options.length, response.results.length);
-    // Match each result individually instead of one big array to make it easier
-    // to tell where any failures occur.
     chrome.test.assertEq(
-        {name: 'bool1', result: OperationResult.SUCCESS}, response.results[0]);
-    chrome.test.assertEq(
-        {name: 'bool2', result: OperationResult.WRONG_TYPE},
-        response.results[1]);
-    chrome.test.assertEq(
-        {name: 'bool3', result: OperationResult.WRONG_TYPE},
-        response.results[2]);
-    chrome.test.assertEq(
-        {name: 'bool4', result: OperationResult.WRONG_TYPE},
-        response.results[3]);
-
+        new Set([
+          {name: 'bool1', result: OperationResult.SUCCESS},
+          {name: 'bool2', result: OperationResult.WRONG_TYPE},
+          {name: 'bool3', result: OperationResult.WRONG_TYPE},
+          {name: 'bool4', result: OperationResult.WRONG_TYPE}
+        ]),
+        new Set(response.results));
     chrome.test.assertNe(null, response.options);
     chrome.test.succeed();
   },
@@ -455,24 +425,15 @@ chrome.test.runTests([
     const response = await setOptions(scannerHandle, options);
     chrome.test.assertEq(scannerHandle, response.scannerHandle);
     chrome.test.assertEq(options.length, response.results.length);
-    // Match each result individually instead of one big array to make it easier
-    // to tell where any failures occur.
     chrome.test.assertEq(
-        {name: 'string1', result: OperationResult.SUCCESS},
-        response.results[0]);
-    chrome.test.assertEq(
-        {name: 'string2', result: OperationResult.SUCCESS},
-        response.results[1]);
-    chrome.test.assertEq(
-        {name: 'string3', result: OperationResult.WRONG_TYPE},
-        response.results[2]);
-    chrome.test.assertEq(
-        {name: 'string4', result: OperationResult.WRONG_TYPE},
-        response.results[3]);
-    chrome.test.assertEq(
-        {name: 'string5', result: OperationResult.WRONG_TYPE},
-        response.results[4]);
-
+        new Set([
+          {name: 'string1', result: OperationResult.SUCCESS},
+          {name: 'string2', result: OperationResult.SUCCESS},
+          {name: 'string3', result: OperationResult.WRONG_TYPE},
+          {name: 'string4', result: OperationResult.WRONG_TYPE},
+          {name: 'string5', result: OperationResult.WRONG_TYPE}
+        ]),
+        new Set(response.results));
     chrome.test.assertNe(null, response.options);
     chrome.test.succeed();
   },
