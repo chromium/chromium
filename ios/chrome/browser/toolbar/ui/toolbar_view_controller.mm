@@ -607,7 +607,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   locationBarBackground.layer.cornerRadius = kLocationBarHeight / 2.0;
 
   locationBarBackground.backgroundColor =
-      ToolbarLocationBarBackgroundColor(_incognito);
+      ToolbarElementBackgroundColor(_incognito);
 
   ConfigureShadowForToolbarButton(locationBarBackground);
 

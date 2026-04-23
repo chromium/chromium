@@ -1189,7 +1189,8 @@
   ToolbarViewController* toolbarViewController =
       [[ToolbarViewController alloc] initInIncognito:incognito
                                          topPosition:topPosition];
-  toolbarViewController.buttonFactory = [[ToolbarButtonFactory alloc] init];
+  toolbarViewController.buttonFactory =
+      [[ToolbarButtonFactory alloc] initWithIncognito:incognito];
   toolbarViewController.mutator = mediator;
   toolbarViewController.browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);

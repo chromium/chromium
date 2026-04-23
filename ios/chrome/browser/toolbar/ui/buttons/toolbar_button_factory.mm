@@ -17,7 +17,17 @@ namespace {
 constexpr CGFloat kDefaultSymbolPointSize = 19;
 }  // namespace
 
-@implementation ToolbarButtonFactory
+@implementation ToolbarButtonFactory {
+  BOOL _incognito;
+}
+
+- (instancetype)initWithIncognito:(BOOL)incognito {
+  self = [super init];
+  if (self) {
+    _incognito = incognito;
+  }
+  return self;
+}
 
 - (ToolbarButton*)makeBackButton {
   ToolbarButton* button = [self toolbarButtonForImageNamed:kBackSymbol
@@ -67,7 +77,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
         constraintEqualToAnchor:backButton.heightAnchor]
   ]];
 
-  buttonsContainer.backgroundColor = ToolbarButtonColor();
+  buttonsContainer.backgroundColor = ToolbarElementBackgroundColor(_incognito);
   ConfigureCornerRadiusForToolbarButtonContainer(
       buttonsContainer, buttonsContainer.traitCollection);
   buttonsContainer.clipsToBounds = YES;
@@ -150,13 +160,17 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 - (ToolbarButton*)toolbarButtonForImageNamed:(NSString*)imageName
                                 defaultImage:(BOOL)defaultImage {
   if (defaultImage) {
-    return [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-      return DefaultSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
-    }];
+    return [[ToolbarButton alloc]
+        initWithImageLoader:^UIImage* {
+          return DefaultSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+        }
+                  incognito:_incognito];
   }
-  return [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return CustomSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
-  }];
+  return [[ToolbarButton alloc]
+      initWithImageLoader:^UIImage* {
+        return CustomSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+      }
+                incognito:_incognito];
 }
 
 @end

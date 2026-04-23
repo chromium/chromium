@@ -12,6 +12,9 @@
 // Factory for creating toolbar buttons.
 @interface ToolbarButtonFactory : NSObject
 
+- (instancetype)initWithIncognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 // Creates a back button.
 - (ToolbarButton*)makeBackButton;
 

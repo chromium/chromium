@@ -13,7 +13,10 @@ constexpr CGFloat kShadowOpacity = 0.12;
 constexpr CGFloat kShadowYOffset = 1;
 }  // namespace
 
-UIColor* ToolbarButtonColor() {
+UIColor* ToolbarElementBackgroundColor(bool incognito) {
+  if (incognito) {
+    return [UIColor colorNamed:kStaticGrey900Color];
+  }
   return [UIColor
       colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
         if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
@@ -21,13 +24,6 @@ UIColor* ToolbarButtonColor() {
         }
         return [UIColor colorNamed:kStaticGrey300Color];
       }];
-}
-
-UIColor* ToolbarLocationBarBackgroundColor(bool incognito) {
-  if (incognito) {
-    return [UIColor colorNamed:kStaticGrey900Color];
-  }
-  return ToolbarButtonColor();
 }
 
 void ConfigureShadowForToolbarButton(UIView* button) {

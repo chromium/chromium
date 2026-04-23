@@ -41,7 +41,8 @@ UIColor* NormalTintColor() {
 
 @synthesize image = _image;
 
-- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader {
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+                          incognito:(BOOL)incognito {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _imageLoader = [imageLoader copy];
@@ -53,7 +54,7 @@ UIColor* NormalTintColor() {
 
     _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    _backgroundView.backgroundColor = ToolbarButtonColor();
+    _backgroundView.backgroundColor = ToolbarElementBackgroundColor(incognito);
     _backgroundView.userInteractionEnabled = NO;
     _backgroundView.clipsToBounds = YES;
     [self insertSubview:_backgroundView belowSubview:self.imageView];

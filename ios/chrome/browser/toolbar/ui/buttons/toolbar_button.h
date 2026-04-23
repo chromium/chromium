@@ -27,7 +27,8 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 @property(nonatomic, assign) BOOL hasBlueDot;
 
 // The `imageLoader` for this button.
-- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+                          incognito:(BOOL)incognito;
 
 @end
 
