@@ -151,11 +151,42 @@ ContextualTasksButton::ContextualTasksButton(
   CHECK(controller);
   panel_controller_observation_.Observe(controller);
 
+  ImmersiveModeController* immersive_mode_controller =
+      ImmersiveModeController::From(browser_window_interface_);
+  if (immersive_mode_controller) {
+    immersive_mode_observation_.Observe(immersive_mode_controller);
+  }
+
+  auto* vertical_tab_strip_controller =
+      tabs::VerticalTabStripStateController::From(browser_window_interface_);
+  if (vertical_tab_strip_controller) {
+    vertical_tabs_subscription_ =
+        vertical_tab_strip_controller->RegisterOnModeChanged(
+            base::BindRepeating(
+                [](ContextualTasksButton* button,
+                   tabs::VerticalTabStripStateController*) {
+                  button->UpdateColorsAndInsets();
+                },
+                base::Unretained(this)));
+  }
+
   OnSidePanelAlignmentChanged();
   MaybeUpdateVisibility();
 }
 
 ContextualTasksButton::~ContextualTasksButton() = default;
+
+void ContextualTasksButton::OnImmersiveFullscreenEntered() {
+  UpdateColorsAndInsets();
+}
+
+void ContextualTasksButton::OnImmersiveFullscreenExited() {
+  UpdateColorsAndInsets();
+}
+
+void ContextualTasksButton::OnImmersiveModeControllerDestroyed() {
+  immersive_mode_observation_.Reset();
+}
 
 void ContextualTasksButton::OnButtonPress() {
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
