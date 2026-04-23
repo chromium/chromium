@@ -156,7 +156,6 @@ const char kOAuth2TokenExchangeURL[] = "/oauth2/v4/token";
 const char kOAuth2TokenRevokeURL[] = "/o/oauth2/revoke";
 const char kSecondaryEmail[] = "secondary_email@example.com";
 const char kSigninURL[] = "/signin";
-const char kSigninWithOutageInDiceURL[] = "/signin/outage";
 const char kSyncDuringOAuthOutageURL[] = "/sync/outage";
 const char kSignoutURL[] = "/signout";
 const char kAddAccountURL[] = "/AddSession";
@@ -229,7 +228,6 @@ std::unique_ptr<HttpResponse> HandleSigninURL(
     const HttpRequest& request) {
   if (!net::test_server::ShouldHandle(request, kSigninURL) &&
       !net::test_server::ShouldHandle(request, kChromeSyncEndpointURL) &&
-      !net::test_server::ShouldHandle(request, kSigninWithOutageInDiceURL) &&
       !net::test_server::ShouldHandle(request, kAddAccountURL)) {
     return nullptr;
   }
@@ -247,23 +245,24 @@ std::unique_ptr<HttpResponse> HandleSigninURL(
   // Add the SIGNIN dice header.
   std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
   if (header_value != kNoDiceRequestHeader) {
-    if (net::test_server::ShouldHandle(request, kSigninWithOutageInDiceURL)) {
-      http_response->AddCustomHeader(
-          kDiceResponseHeader,
-          base::StringPrintf(
-              "action=SIGNIN,authuser=1,id=%s,email=%s,"
-              "no_authorization_code=true",
-              signin::GetTestGaiaIdForEmail(main_email).ToString().c_str(),
-              main_email.c_str()));
+    GURL url = request.GetURL();
+    std::string_view query = url.query();
+    bool is_outage = (query.find("outage=true") != std::string::npos);
+
+    std::string header_value_to_add;
+    if (is_outage) {
+      header_value_to_add = base::StringPrintf(
+          "action=SIGNIN,authuser=1,id=%s,email=%s,no_authorization_code=true",
+          signin::GetTestGaiaIdForEmail(main_email).ToString().c_str(),
+          main_email.c_str());
     } else {
-      http_response->AddCustomHeader(
-          kDiceResponseHeader,
-          base::StringPrintf(
-              "action=SIGNIN,authuser=1,id=%s,email=%s,authorization_code=%s,"
-              "eligible_for_token_binding=ES256 RS256",
-              signin::GetTestGaiaIdForEmail(main_email).ToString().c_str(),
-              main_email.c_str(), kAuthorizationCode));
+      header_value_to_add = base::StringPrintf(
+          "action=SIGNIN,authuser=1,id=%s,email=%s,authorization_code=%s,"
+          "eligible_for_token_binding=ES256 RS256",
+          signin::GetTestGaiaIdForEmail(main_email).ToString().c_str(),
+          main_email.c_str(), kAuthorizationCode);
     }
+    http_response->AddCustomHeader(kDiceResponseHeader, header_value_to_add);
   }
 
   // When hitting the Chrome Sync endpoint, redirect to kEnableSyncURL, which
@@ -877,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   dice_response_handler->SetTaskRunner(task_runner);
-  NavigateToURL(kSigninWithOutageInDiceURL);
+  NavigateToURL(base::StrCat({kSigninURL, "?outage=true"}));
   // Check that the Dice request header was sent.
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
@@ -909,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   dice_response_handler->SetTaskRunner(task_runner);
-  NavigateToURL(kSigninWithOutageInDiceURL);
+  NavigateToURL(base::StrCat({kSigninURL, "?outage=true"}));
   // Check that the Dice request header was sent.
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
