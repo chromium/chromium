@@ -296,6 +296,46 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
+    public void testOnNightModeStateChanged_RecreatesView() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+        AutoPictureInPicturePermissionController controller = mTabHelper.getPermissionController();
+        Assert.assertNotNull(controller);
+
+        ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+        Assert.assertEquals(2, rootView.getChildCount());
+        AutoPipPermissionDialogView firstView =
+                (AutoPipPermissionDialogView) rootView.getChildAt(1);
+
+        // Trigger night mode state change.
+        controller.onNightModeStateChanged();
+
+        // Verify the view was recreated.
+        Assert.assertEquals(2, rootView.getChildCount());
+        AutoPipPermissionDialogView secondView =
+                (AutoPipPermissionDialogView) rootView.getChildAt(1);
+        Assert.assertNotSame(
+                "The dialog view should be recreated on theme change", firstView, secondView);
+    }
+
+    @Test
+    public void testWebContentsDestruction_CleansUpController() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+        Assert.assertNotNull(mTabHelper.getPermissionController());
+
+        // Destroy the TabHelper (which happens when WebContents is destroyed).
+        mTabHelper.destroy();
+
+        // Verify the controller is dismissed and reference cleared.
+        Assert.assertNull(mTabHelper.getPermissionController());
+    }
+
+    @Test
     public void testHandleWindowDestruction_CallsNativeMethodAndDismisses() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
         AutoPictureInPicturePermissionController.showPromptIfNeeded(

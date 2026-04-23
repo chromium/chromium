@@ -142,5 +142,9 @@ public class AutoPictureInPictureTabHelper implements UserData {
     @Override
     public void destroy() {
         mWebContentsObserver.observe(null);
+        if (mPermissionController != null) {
+            mPermissionController.dismiss();
+            mPermissionController = null;
+        }
     }
 }
