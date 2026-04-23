@@ -1633,6 +1633,16 @@ ci.builder(
             "very_limited_capacity_bot",
         ],
         per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 24,
+                ),
+            ),
             "remoting_unittests": targets.remove(
                 reason = "Not supported on Linux arm64",
             ),
