@@ -405,11 +405,10 @@ void GPUCommandEncoder::writeTimestamp(DawnObject<wgpu::QuerySet>* querySet,
   V8GPUFeatureName::Enum requiredFeatureEnum =
       V8GPUFeatureName::Enum::kTimestampQuery;
   if (!device_->features()->Has(requiredFeatureEnum)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(
-        String::Format("Use of the writeTimestamp() method requires the '%s' "
-                       "feature to be enabled on %s.",
-                       V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-                       device_->GetFormattedLabel().c_str())));
+    exception_state.ThrowTypeError(StrCat(
+        {"Use of the writeTimestamp() method requires the '",
+         V8GPUFeatureName(requiredFeatureEnum).AsStringView(),
+         "' feature to be enabled on ", device_->GetFormattedLabel(), "."}));
     return;
   }
   GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);

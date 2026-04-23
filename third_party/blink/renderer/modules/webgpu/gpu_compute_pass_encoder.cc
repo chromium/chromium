@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -116,14 +117,13 @@ void GPUComputePassEncoder::writeTimestamp(
     const DawnObject<wgpu::QuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
-  V8GPUFeatureName::Enum requiredFeatureEnum =
+  constexpr auto kRequiredFeatureEnum =
       V8GPUFeatureName::Enum::kChromiumExperimentalTimestampQueryInsidePasses;
-  if (!device_->features()->Has(requiredFeatureEnum)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
-        "Use of the writeTimestamp() method on compute pass requires the '%s' "
-        "feature to be enabled on %s.",
-        V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-        device_->GetFormattedLabel().c_str())));
+  if (!device_->features()->Has(kRequiredFeatureEnum)) {
+    exception_state.ThrowTypeError(StrCat(
+        {"Use of the writeTimestamp() method on compute pass requires the '",
+         V8GPUFeatureName(kRequiredFeatureEnum).AsStringView(),
+         "' feature to be enabled on ", device_->GetFormattedLabel(), "."}));
     return;
   }
   GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);

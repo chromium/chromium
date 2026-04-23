@@ -121,9 +121,9 @@ void ConvertToDawnType(const GPUTextureViewDescriptor* webgpu_desc,
 // "b", "a", "0", or "1".
 bool ValidateSwizzle(const String& swizzle, ExceptionState& exception_state) {
   if (swizzle.length() != 4) {
-    exception_state.ThrowTypeError(String::Format(
-        "Swizzle ('%s') must be exactly a four-character string.",
-        swizzle.Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({"Swizzle ('", swizzle,
+                "') must be exactly a four-character string."}));
     return false;
   }
 
@@ -131,10 +131,10 @@ bool ValidateSwizzle(const String& swizzle, ExceptionState& exception_state) {
       AsDawnEnum(swizzle[1]) == wgpu::ComponentSwizzle::Undefined ||
       AsDawnEnum(swizzle[2]) == wgpu::ComponentSwizzle::Undefined ||
       AsDawnEnum(swizzle[3]) == wgpu::ComponentSwizzle::Undefined) {
-    exception_state.ThrowTypeError(String::Format(
-        "Swizzle ('%s') must contain only 'r', 'g', 'b', 'a', '0', "
-        "or '1' characters.",
-        swizzle.Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({"Swizzle ('", swizzle,
+                "') must contain only 'r', 'g', 'b', 'a', '0', "
+                "or '1' characters."}));
     return false;
   }
 

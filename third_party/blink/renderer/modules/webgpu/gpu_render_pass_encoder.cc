@@ -150,16 +150,14 @@ void GPURenderPassEncoder::multiDrawIndirect(
     DawnObject<wgpu::Buffer>* drawCountBuffer,
     uint64_t drawCountBufferOffset,
     ExceptionState& exception_state) {
-  V8GPUFeatureName::Enum requiredFeatureEnum =
+  constexpr auto kRequiredFeatureEnum =
       V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
 
-  if (!device_->features()->Has(requiredFeatureEnum)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(
-        String::Format("Use of the multiDrawIndirect() method on render pass "
-                       "requires the '%s' "
-                       "feature to be enabled on %s.",
-                       V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-                       device_->GetFormattedLabel().c_str())));
+  if (!device_->features()->Has(kRequiredFeatureEnum)) {
+    exception_state.ThrowTypeError(StrCat(
+        {"Use of the multiDrawIndirect() method on render pass requires the '",
+         V8GPUFeatureName(kRequiredFeatureEnum).AsStringView(),
+         "' feature to be enabled on ", device_->GetFormattedLabel(), "."}));
     return;
   }
   GetHandle().MultiDrawIndirect(
@@ -194,16 +192,15 @@ void GPURenderPassEncoder::multiDrawIndexedIndirect(
     DawnObject<wgpu::Buffer>* drawCountBuffer,
     uint64_t drawCountBufferOffset,
     ExceptionState& exception_state) {
-  V8GPUFeatureName::Enum requiredFeatureEnum =
+  constexpr auto kRequiredFeatureEnum =
       V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
 
-  if (!device_->features()->Has(requiredFeatureEnum)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
-        "Use of the multiDrawIndexedIndirect() method on render pass "
-        "requires the '%s' "
-        "feature to be enabled on %s.",
-        V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-        device_->GetFormattedLabel().c_str())));
+  if (!device_->features()->Has(kRequiredFeatureEnum)) {
+    exception_state.ThrowTypeError(StrCat(
+        {"Use of the multiDrawIndexedIndirect() method on render pass requires "
+         "the '",
+         V8GPUFeatureName(kRequiredFeatureEnum).AsStringView(),
+         "' feature to be enabled on ", device_->GetFormattedLabel(), "."}));
     return;
   }
   GetHandle().MultiDrawIndexedIndirect(
@@ -223,15 +220,16 @@ void GPURenderPassEncoder::writeTimestamp(
     const DawnObject<wgpu::QuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
-  V8GPUFeatureName::Enum requiredFeatureEnum =
+  constexpr auto kRequiredFeatureEnum =
       V8GPUFeatureName::Enum::kChromiumExperimentalTimestampQueryInsidePasses;
 
-  if (!device_->features()->Has(requiredFeatureEnum)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
-        "Use of the writeTimestamp() method on render pass requires the '%s' "
-        "feature to be enabled on %s.",
-        V8GPUFeatureName(requiredFeatureEnum).AsCStr(),
-        device_->GetFormattedLabel().c_str())));
+  if (!device_->features()->Has(kRequiredFeatureEnum)) {
+    exception_state.ThrowTypeError(StrCat(
+        {"Use of the writeTimestamp() method on render pass requires the '",
+         V8GPUFeatureName(kRequiredFeatureEnum).AsStringView(),
+         "' "
+         "feature to be enabled on ",
+         device_->GetFormattedLabel(), "."}));
     return;
   }
   GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);

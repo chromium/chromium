@@ -165,7 +165,7 @@ class GPUDevice final : public EventTarget,
   ExecutionContext* GetExecutionContext() const override;
 
   bool IsDestroyed() const;
-  std::string GetFormattedLabel() const;
+  String GetFormattedLabel() const;
   void InjectError(wgpu::ErrorType type, const char* message);
   void AddConsoleWarning(const String& message);
   void AddConsoleWarning(const char* message);

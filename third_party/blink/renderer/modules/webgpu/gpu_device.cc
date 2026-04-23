@@ -225,11 +225,10 @@ bool GPUDevice::IsDestroyed() const {
   return destroyed_;
 }
 
-std::string GPUDevice::GetFormattedLabel() const {
-  std::string deviceLabel =
-      label().empty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
-
-  return deviceLabel;
+String GPUDevice::GetFormattedLabel() const {
+  String device_label =
+      label().empty() ? "[Device]" : StrCat({"[Device \"", label(), "\"]"});
+  return device_label;
 }
 
 void GPUDevice::InjectError(wgpu::ErrorType type, const char* message) {
@@ -304,25 +303,25 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
 // browsers that haven't yet implemented the feature.
 bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                            ExceptionState& exception_state) {
-  auto requiredFeatureOptional =
+  auto required_feature_optional =
       RequiredFeatureForTextureFormat(format.AsEnum());
-
-  if (!requiredFeatureOptional) {
+  if (!required_feature_optional) {
     return true;
   }
 
-  V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
-
-  if (features_->Has(requiredFeatureEnum)) {
+  V8GPUFeatureName::Enum required_feature_enum =
+      required_feature_optional.value();
+  if (features_->Has(required_feature_enum)) {
     return true;
   }
 
-  V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
-
-  exception_state.ThrowTypeError(UNSAFE_TODO(String::Format(
-      "Use of the '%s' texture format requires the '%s' feature "
-      "to be enabled on %s.",
-      format.AsCStr(), requiredFeature.AsCStr(), GetFormattedLabel().c_str())));
+  V8GPUFeatureName required_feature = V8GPUFeatureName(required_feature_enum);
+  exception_state.ThrowTypeError(StrCat({"Use of the '", format.AsStringView(),
+                                         "' texture format requires the '",
+                                         required_feature.AsStringView(),
+                                         "' feature "
+                                         "to be enabled on ",
+                                         GetFormattedLabel(), "."}));
   return false;
 }
 
@@ -331,26 +330,23 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
 // browsers that haven't yet implemented the feature.
 bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
                                     ExceptionState& exception_state) {
-  auto requiredFeatureOptional =
+  auto required_feature_optional =
       RequiredFeatureForBlendFactor(blend_factor.AsEnum());
-
-  if (!requiredFeatureOptional) {
+  if (!required_feature_optional) {
     return true;
   }
 
-  V8GPUFeatureName::Enum requiredFeatureEnum = requiredFeatureOptional.value();
-
-  if (features_->Has(requiredFeatureEnum)) {
+  V8GPUFeatureName::Enum required_feature_enum =
+      required_feature_optional.value();
+  if (features_->Has(required_feature_enum)) {
     return true;
   }
 
-  V8GPUFeatureName requiredFeature = V8GPUFeatureName(requiredFeatureEnum);
-
-  exception_state.ThrowTypeError(UNSAFE_TODO(
-      String::Format("Use of the '%s' blend factor requires the '%s' feature "
-                     "to be enabled on %s.",
-                     blend_factor.AsCStr(), requiredFeature.AsCStr(),
-                     GetFormattedLabel().c_str())));
+  V8GPUFeatureName required_feature = V8GPUFeatureName(required_feature_enum);
+  exception_state.ThrowTypeError(
+      StrCat({"Use of the '", blend_factor.AsStringView(),
+              "' blend factor requires the '", required_feature.AsStringView(),
+              "' feature to be enabled on ", GetFormattedLabel(), "."}));
   return false;
 }
 
@@ -664,19 +660,17 @@ GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
 
 GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
                                        ExceptionState& exception_state) {
-  const V8GPUFeatureName::Enum kTimestampQuery =
-      V8GPUFeatureName::Enum::kTimestampQuery;
-  const V8GPUFeatureName::Enum kTimestampQueryInsidePasses =
+  constexpr auto kTimestampQuery = V8GPUFeatureName::Enum::kTimestampQuery;
+  constexpr auto kTimestampQueryInsidePasses =
       V8GPUFeatureName::Enum::kChromiumExperimentalTimestampQueryInsidePasses;
   if (descriptor->type() == V8GPUQueryType::Enum::kTimestamp &&
       !features_->Has(kTimestampQuery) &&
       !features_->Has(kTimestampQueryInsidePasses)) {
-    exception_state.ThrowTypeError(UNSAFE_TODO(
-        String::Format("Use of timestamp queries requires the '%s' or '%s' "
-                       "feature to be enabled on %s.",
-                       V8GPUFeatureName(kTimestampQuery).AsCStr(),
-                       V8GPUFeatureName(kTimestampQueryInsidePasses).AsCStr(),
-                       GetFormattedLabel().c_str())));
+    exception_state.ThrowTypeError(
+        StrCat({"Use of timestamp queries requires the '",
+                V8GPUFeatureName(kTimestampQuery).AsStringView(), "' or '",
+                V8GPUFeatureName(kTimestampQueryInsidePasses).AsStringView(),
+                "' feature to be enabled on ", GetFormattedLabel(), "."}));
     return nullptr;
   }
   return GPUQuerySet::Create(this, descriptor);
