@@ -45,11 +45,11 @@ class PermissionDashboardView : public views::View,
 
  private:
   // This chip is used to display in-use left-hand side activity indicators.
-  raw_ptr<PermissionChipView> anchored_chip_ = nullptr;
+  raw_ptr<PermissionChipView> indicator_chip_ = nullptr;
   // This chip is used to display a permission request and blockade indicator.
-  raw_ptr<PermissionChipView> secondary_chip_ = nullptr;
+  raw_ptr<PermissionChipView> request_chip_ = nullptr;
   // TODO(crbug.com/324449830): Remove `chip_divider_view_` and
-  // implement a custom background for `secondary_chip_` with a concave oval
+  // implement a custom background for `request_chip_` with a concave oval
   // from the left side.
   raw_ptr<views::View> chip_divider_view_ = nullptr;
 };
