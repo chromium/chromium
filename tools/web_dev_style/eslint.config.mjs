@@ -87,6 +87,21 @@ const noRestrictedImportsPaths = [
     name: '//webui-test/chai.js',
     message: 'Use chrome://webui-test/chai_assert.js instead.',
   },
+  {
+    name: 'chrome://resources/cr_components/composebox/composebox.js',
+    message:
+        'Prevent new composebox usage until it is cleaned up. See crbug.com/497887993.',
+  },
+  {
+    name: '//resources/cr_components/composebox/composebox.js',
+    message:
+        'Prevent new composebox usage until it is cleaned up. See crbug.com/497887993.',
+  },
+  {
+    name: 'chrome-untrusted://resources/cr_components/composebox/composebox.js',
+    message:
+        'Prevent new composebox usage until it is cleaned up. See crbug.com/497887993.',
+  },
 ];
 
 export default [
@@ -561,6 +576,32 @@ export default [
         'error', {
           'ts-ignore': true,
           'ts-nocheck': true,
+        }
+      ],
+    },
+  },
+  {
+    // TODO(crbug.com/497887993): Allow existing usages of composebox.ts until
+    // the shared composebox files are cleaned up.
+    files: [
+      'chrome/browser/resources/contextual_tasks/composebox.ts',
+      'chrome/browser/resources/contextual_tasks/onboarding_tooltip.ts',
+      'chrome/browser/resources/lens/overlay/side_panel/side_panel_app.ts',
+      'chrome/browser/resources/new_tab_page/app.ts',
+      'chrome/browser/resources/new_tab_page/lazy_load.ts',
+      'chrome/browser/resources/omnibox_popup/aim_app.ts',
+      'chrome/test/data/webui/contextual_tasks/composebox_misc_inputs_test.ts',
+      'chrome/test/data/webui/cr_components/composebox/composebox_drag_drop_test.ts',
+      'chrome/test/data/webui/cr_components/composebox/composebox_input_placeholder_test.ts',
+      'chrome/test/data/webui/cr_components/composebox/composebox_test.ts',
+      'chrome/test/data/webui/cr_components/composebox/composebox_voice_search_test.ts',
+      'chrome/test/data/webui/lens/side_panel/composebox_test.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error', {
+          paths: noRestrictedImportsPaths.filter(
+              path => !path.name.includes('composebox')),
         }
       ],
     },
