@@ -6,6 +6,7 @@ package org.chromium.components.omnibox;
 
 import android.content.SharedPreferences;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.IntDef;
 
@@ -14,7 +15,6 @@ import com.google.android.gms.location.Priority;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
@@ -424,18 +424,14 @@ public class OmniboxFeatures {
             return sIsDesktopModeForTesting;
         }
 
-        if (sDiagInputConnection.getValue()) {
-            // TODO(crbug.com/492224343): Remove diagnostics once we understand the edge case.
-            Log.i(
-                    TAG,
-                    "Desktop mode check: A:%b K:%b M:%b S:%b",
-                    DeviceInput.supportsAlphabeticKeyboard(),
-                    DeviceInput.supportsKeyboard(ContextUtils.getApplicationContext()),
-                    DeviceInput.supportsPrecisionPointer(),
-                    DeviceFormFactor.isTablet());
-        }
+        // Migrate this to appropriate DisplayMetrics-based DeviceFormFactor logic once one is
+        // available.
+        DisplayMetrics dm = ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+        float widthDp = dm.widthPixels / dm.density;
 
-        return DeviceInput.supportsAlphabeticKeyboard() && DeviceInput.supportsPrecisionPointer();
+        return widthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+                && DeviceInput.supportsAlphabeticKeyboard()
+                && DeviceInput.supportsPrecisionPointer();
     }
 
     /**
