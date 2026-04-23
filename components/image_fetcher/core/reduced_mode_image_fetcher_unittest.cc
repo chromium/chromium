@@ -23,6 +23,7 @@
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 #include "components/image_fetcher/core/cached_image_fetcher.h"
+#include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
@@ -99,8 +100,10 @@ class ReducedModeImageFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
+    auto decoder = std::make_unique<FakeImageDecoder>();
+    fake_image_decoder_ = decoder.get();
     image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-        /* ImageDecoder */ nullptr, shared_factory_);
+        std::move(decoder), shared_factory_);
     cached_image_fetcher_ = std::make_unique<CachedImageFetcher>(
         image_fetcher_.get(), image_cache_, /* read_only */ false);
     reduced_mode_image_fetcher_ =
@@ -110,6 +113,14 @@ class ReducedModeImageFetcherTest : public testing::Test {
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  void PerformFetch(ImageDataFetcherCallback callback) {
+    reduced_mode_image_fetcher()->FetchImageAndData(
+        kImageUrl, std::move(callback), ImageFetcherCallback(),
+        ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+    db()->LoadCallback(true);
+    RunUntilIdle();
+  }
 
   void VerifyCacheHit() {
     RunUntilIdle();
@@ -138,6 +149,9 @@ class ReducedModeImageFetcherTest : public testing::Test {
   }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
+  std::map<std::string, CachedImageMetadataProto>& metadata_store() {
+    return metadata_store_;
+  }
 
   MOCK_METHOD(void, OnImageLoaded, (bool, std::string), ());
 
@@ -146,6 +160,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;
+  raw_ptr<FakeImageDecoder> fake_image_decoder_;
   std::unique_ptr<ImageFetcher> cached_image_fetcher_;
   std::unique_ptr<ReducedModeImageFetcher> reduced_mode_image_fetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -176,6 +191,36 @@ TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
                            /* needs_transcoding */ false,
                            /* expiration_interval */ std::nullopt);
   VerifyCacheHit();
+}
+
+TEST_F(ReducedModeImageFetcherTest, FetchImageFromNetworkAndCacheReadBack) {
+  std::string test_data = "raw_image_data";
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), test_data);
+
+  // Confirm cache is empty at first.
+  ASSERT_EQ(metadata_store().size(), 0u);
+
+  // Fetch image (should go to network because cache is empty).
+  base::MockCallback<ImageDataFetcherCallback> data_callback1;
+  // Verify that the fetched data matches the raw image data exactly.
+  EXPECT_CALL(data_callback1, Run(test_data, _));
+  PerformFetch(data_callback1.Get());
+
+  // Confirm there is 1 element in the cache after fetch.
+  EXPECT_EQ(metadata_store().size(), 1u);
+
+  // Clear responses to ensure the next fetch doesn't hit the network.
+  test_url_loader_factory()->ClearResponses();
+
+  // Fetch image again (should hit cache).
+  base::MockCallback<ImageDataFetcherCallback> data_callback2;
+  // Verify that the cached data returned is identical to the original raw data.
+  EXPECT_CALL(data_callback2, Run(test_data, _));
+  PerformFetch(data_callback2.Get());
+
+  // Verify that the cache was hit.
+  histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
+                                       ImageFetcherEvent::kCacheHit, 1);
 }
 
 }  // namespace image_fetcher
