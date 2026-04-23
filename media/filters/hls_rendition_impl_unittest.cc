@@ -1171,4 +1171,53 @@ TEST_F(HlsRenditionImplUnittest, TestGapSegmentIsSkipped) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsRenditionImplUnittest, TestManifestUpdateWaitWithEmptyQueue) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kSingleSegmentPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  // Consume the only segment.
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RequireAppend(base::as_byte_span(tscontent));
+  // Initially ranges are empty, so it will fetch.
+  // After fetch, we say ranges are [0, 2).
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  // Now QueueSize is 0. Exhausted is true.
+  // Clear ranges to trigger the "Consider re-requesting" branch in CheckState.
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillRepeatedly(Return(Ranges<base::TimeDelta>()));
+
+  // Since last manifest update was at T=0, and target duration is 2s,
+  // it should return a delay of 2s and NOT fetch.
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri(_, _, _)).Times(0);
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(2)));
+  task_environment_.RunUntilIdle();
+
+  // Advance time by 1s.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Remaining wait is 1s.
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(1)));
+  task_environment_.RunUntilIdle();
+
+  // Advance time by another 1.1s. Total 2.1s since last update.
+  task_environment_.FastForwardBy(base::Milliseconds(1100));
+  // Should fetch now.
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+      .WillOnce([](std::string role, GURL uri, HlsDemuxerStatusCallback cb) {
+        std::move(cb).Run(OkStatus());
+      });
+  // Since delay was 0, and update_duration is ~0, it returns 0.
+  rendition->CheckState(base::Seconds(0), 1.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace media

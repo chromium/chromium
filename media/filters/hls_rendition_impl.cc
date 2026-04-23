@@ -285,12 +285,13 @@ void HlsRenditionImpl::MaybeFetchManifestUpdates(
   // to reload the Playlist file again, measured from the last time the client
   // began loading the Playlist file.
   auto since_last_manifest = base::TimeTicks::Now() - last_download_time_;
-  auto update_after = segments_->QueueSize() * segments_->GetMaxDuration();
+  auto update_after =
+      std::max(size_t{1}, segments_->QueueSize()) * segments_->GetMaxDuration();
   if (since_last_manifest > update_after) {
     FetchManifestUpdates(std::move(cb), delay);
     return;
   }
-  std::move(cb).Run(delay);
+  std::move(cb).Run(std::max(delay, update_after - since_last_manifest));
 }
 
 base::TimeDelta HlsRenditionImpl::GetIdealBufferSize() const {
