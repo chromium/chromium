@@ -16,7 +16,6 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "asan-v8-sandbox-testing",
-                "archive_schema_version": 0,
                 "archive_subdir": "v8-sandbox-testing",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan"
