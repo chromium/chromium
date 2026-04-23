@@ -78,7 +78,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
 
   struct CachedKeyData {
     CachedKeyData();
-    explicit CachedKeyData(const mojom::NewKeyDataPtr& new_key_data);
+    explicit CachedKeyData(const mojom::NewKeyMetadataPtr& metadata);
 
     CachedKeyData(const CachedKeyData& other);
     CachedKeyData& operator=(const CachedKeyData& other);
@@ -97,12 +97,12 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
   void OnSigningKeyGenerated(
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           original_callback,
-      ServiceErrorOr<mojom::NewKeyDataPtr> result);
+      ServiceErrorOr<mojom::NewSigningKeyDataPtr> result);
 
   void OnSigningKeyLoaded(
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           original_callback,
-      ServiceErrorOr<mojom::NewKeyDataPtr> result);
+      ServiceErrorOr<mojom::NewSigningKeyDataPtr> result);
 
   void OnGetAllKeysForGarbageCollection(
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>

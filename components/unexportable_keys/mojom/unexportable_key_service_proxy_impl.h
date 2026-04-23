@@ -52,7 +52,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
                              BackgroundTaskPriority priority,
                              FromWrappedSigningKeyCallback callback) override;
 
-  void Sign(const UnexportableKeyId& token,
+  void Sign(const UnexportableSigningKeyId& key_id,
             const std::vector<uint8_t>& data,
             BackgroundTaskPriority priority,
             SignCallback callback) override;

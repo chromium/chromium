@@ -41,31 +41,48 @@ ServiceErrorOr<std::optional<T>> AdaptOperationNotSupported(
   });
 }
 
-ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    const ServiceErrorOr<UnexportableSigningKeyId> error_or_key_id) {
-  ASSIGN_OR_RETURN(UnexportableSigningKeyId key_id, error_or_key_id);
-  auto new_key_data = mojom::NewKeyData::New();
-  new_key_data->key_id = key_id;
-
-  ASSIGN_OR_RETURN(new_key_data->algorithm,
-                   unexportable_key_service.GetAlgorithm(key_id));
-  ASSIGN_OR_RETURN(new_key_data->wrapped_key,
-                   unexportable_key_service.GetWrappedKey(key_id));
-  ASSIGN_OR_RETURN(new_key_data->subject_public_key_info,
-                   unexportable_key_service.GetSubjectPublicKeyInfo(key_id));
-  ASSIGN_OR_RETURN(
-      new_key_data->key_tag,
-      AdaptOperationNotSupported(unexportable_key_service.GetKeyTag(key_id)));
-  ASSIGN_OR_RETURN(new_key_data->creation_time,
-                   AdaptOperationNotSupported(
-                       unexportable_key_service.GetCreationTime(key_id)));
-  return new_key_data;
-}
-
 ServiceErrorOr<uint64_t> AdaptSizeType(ServiceErrorOr<size_t> result) {
   return result.transform(
       [](size_t r) { return base::strict_cast<uint64_t>(r); });
+}
+
+ServiceErrorOr<mojom::NewKeyMetadataPtr> PopulateKeyMetadata(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    UnexportableKeyId key_id) {
+  auto metadata = mojom::NewKeyMetadata::New();
+  ASSIGN_OR_RETURN(metadata->algorithm,
+                   unexportable_key_service.GetAlgorithm(key_id));
+  ASSIGN_OR_RETURN(metadata->wrapped_key,
+                   unexportable_key_service.GetWrappedKey(key_id));
+  ASSIGN_OR_RETURN(metadata->subject_public_key_info,
+                   unexportable_key_service.GetSubjectPublicKeyInfo(key_id));
+  ASSIGN_OR_RETURN(
+      metadata->key_tag,
+      AdaptOperationNotSupported(unexportable_key_service.GetKeyTag(key_id)));
+  ASSIGN_OR_RETURN(metadata->creation_time,
+                   AdaptOperationNotSupported(
+                       unexportable_key_service.GetCreationTime(key_id)));
+  return metadata;
+}
+
+ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    UnexportableKeyId key_id) {
+  auto data = mojom::NewKeyData::New();
+  data->key_id = key_id;
+  ASSIGN_OR_RETURN(data->metadata,
+                   PopulateKeyMetadata(unexportable_key_service, key_id));
+  return data;
+}
+
+ServiceErrorOr<mojom::NewSigningKeyDataPtr> PopulateNewSigningKeyData(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const ServiceErrorOr<UnexportableSigningKeyId> error_or_key_id) {
+  auto data = mojom::NewSigningKeyData::New();
+  ASSIGN_OR_RETURN(data->key_id, error_or_key_id);
+  ASSIGN_OR_RETURN(data->metadata,
+                   PopulateKeyMetadata(unexportable_key_service, data->key_id));
+  return data;
 }
 
 ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> PopulateAllNewKeyData(
@@ -75,10 +92,8 @@ ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> PopulateAllNewKeyData(
   std::vector<mojom::NewKeyDataPtr> new_key_data;
   new_key_data.reserve(key_ids.size());
   for (UnexportableKeyId key_id : key_ids) {
-    ASSIGN_OR_RETURN(mojom::NewKeyDataPtr data,
-                     PopulateNewKeyData(unexportable_key_service,
-                                        UnexportableSigningKeyId(key_id)));
-    new_key_data.push_back(std::move(data));
+    ASSIGN_OR_RETURN(new_key_data.emplace_back(),
+                     PopulateNewKeyData(unexportable_key_service, key_id));
   }
   return new_key_data;
 }
@@ -99,7 +114,8 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateSigningKey(
     GenerateSigningKeyCallback callback) {
   unexportable_key_service_->GenerateSigningKeySlowlyAsync(
       acceptable_algorithms, priority,
-      base::BindOnce(PopulateNewKeyData, std::ref(*unexportable_key_service_))
+      base::BindOnce(PopulateNewSigningKeyData,
+                     std::ref(*unexportable_key_service_))
           .Then(std::move(callback)));
 }
 
@@ -113,19 +129,18 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(
   }
   unexportable_key_service_->FromWrappedSigningKeySlowlyAsync(
       wrapped_key, priority,
-      base::BindOnce(PopulateNewKeyData, std::ref(*unexportable_key_service_))
+      base::BindOnce(PopulateNewSigningKeyData,
+                     std::ref(*unexportable_key_service_))
           .Then(std::move(callback)));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
-    const UnexportableKeyId& key_id,
+    const UnexportableSigningKeyId& key_id,
     const std::vector<uint8_t>& data,
     BackgroundTaskPriority priority,
     SignCallback callback) {
-  unexportable_key_service_->SignSlowlyAsync(
-      // TODO(crbug.com/501307307): Remove explicit cast once we pass signing
-      // key IDs to `UnexportableKeyServiceProxyImpl::Sign`.
-      UnexportableSigningKeyId(key_id), data, priority, std::move(callback));
+  unexportable_key_service_->SignSlowlyAsync(key_id, data, priority,
+                                             std::move(callback));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::

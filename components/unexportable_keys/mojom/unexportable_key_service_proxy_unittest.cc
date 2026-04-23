@@ -65,10 +65,11 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyReturnsError) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1};
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kKeyNotFound));
 }
 
@@ -106,17 +107,19 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeySuccess) {
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   ASSERT_TRUE(res.has_value());
 
-  const mojom::NewKeyDataPtr& new_key_data = *res;
+  const mojom::NewSigningKeyDataPtr& new_key_data = *res;
   EXPECT_THAT(new_key_data->key_id, Eq(key_id));
-  EXPECT_THAT(new_key_data->algorithm, Eq(algo));
-  EXPECT_THAT(new_key_data->wrapped_key, Eq(wrapped_key));
-  EXPECT_THAT(new_key_data->subject_public_key_info, Eq(pub_key_info));
+  EXPECT_THAT(new_key_data->metadata->algorithm, Eq(algo));
+  EXPECT_THAT(new_key_data->metadata->wrapped_key, Eq(wrapped_key));
+  EXPECT_THAT(new_key_data->metadata->subject_public_key_info,
+              Eq(pub_key_info));
 }
 
 TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetAlgorithmError) {
@@ -144,9 +147,10 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetAlgorithmError) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
@@ -177,10 +181,11 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetWrappedKeyError) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kKeyNotFound));
 }
 
@@ -211,10 +216,11 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetSubjectPublicKeyInfoError) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
@@ -234,11 +240,12 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyReturnsError) {
       .WillOnce(
           RunOnceCallback<2>(base::unexpected(ServiceError::kKeyNotFound)));
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kKeyNotFound));
 }
 
@@ -269,18 +276,20 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeySuccess) {
   EXPECT_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillOnce(Return(pub_key_info));
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   ASSERT_TRUE(res.has_value());
 
-  const mojom::NewKeyDataPtr& new_key_data = *res;
+  const mojom::NewSigningKeyDataPtr& new_key_data = *res;
   EXPECT_THAT(new_key_data->key_id, Eq(key_id));
-  EXPECT_THAT(new_key_data->algorithm, Eq(algo));
-  EXPECT_THAT(new_key_data->wrapped_key, Eq(wrapped_key_result));
-  EXPECT_THAT(new_key_data->subject_public_key_info, Eq(pub_key_info));
+  EXPECT_THAT(new_key_data->metadata->algorithm, Eq(algo));
+  EXPECT_THAT(new_key_data->metadata->wrapped_key, Eq(wrapped_key_result));
+  EXPECT_THAT(new_key_data->metadata->subject_public_key_info,
+              Eq(pub_key_info));
 }
 
 TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetAlgorithmError) {
@@ -306,11 +315,12 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetAlgorithmError) {
   ON_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillByDefault(Return(std::vector<uint8_t>{0xAA, 0xBB}));
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
@@ -339,11 +349,12 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetWrappedKeyError) {
   ON_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillByDefault(Return(std::vector<uint8_t>{0xAA, 0xBB, 0xCC}));
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kKeyNotFound));
 }
 
@@ -373,11 +384,12 @@ TEST(UnexportableKeyServiceProxyTest,
   EXPECT_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillOnce(Return(base::unexpected(ServiceError::kCryptoApiFailed)));
 
-  TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>> future;
+  TestFuture<base::expected<mojom::NewSigningKeyDataPtr, ServiceError>> future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
 
-  const base::expected<mojom::NewKeyDataPtr, ServiceError>& res = future.Get();
+  const base::expected<mojom::NewSigningKeyDataPtr, ServiceError>& res =
+      future.Get();
   EXPECT_THAT(res, ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
@@ -394,7 +406,8 @@ TEST(UnexportableKeyServiceProxyTest, TooLongWrappedSigningKey) {
 
   const std::vector<uint8_t> test_wrapped_key(kMaxWrappedKeySize + 1);
 
-  base::test::TestFuture<base::expected<mojom::NewKeyDataPtr, ServiceError>>
+  base::test::TestFuture<
+      base::expected<mojom::NewSigningKeyDataPtr, ServiceError>>
       future;
   uks_remote->FromWrappedSigningKey(test_wrapped_key, kTestPriority,
                                     future.GetCallback());
@@ -413,8 +426,7 @@ TEST(UnexportableKeyServiceProxyTest, SignSuccess) {
 
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
-  const base::UnguessableToken test_token = base::UnguessableToken::Create();
-  const UnexportableKeyId key_id(test_token);
+  const UnexportableSigningKeyId key_id;
   const std::vector<uint8_t> test_data = {0x01, 0x02, 0x03};
   const std::vector<uint8_t> expected_signature = {0xAA, 0xBB, 0xCC, 0xDD};
 
@@ -437,9 +449,7 @@ TEST(UnexportableKeyServiceProxyTest, SignError) {
 
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
-
-  const base::UnguessableToken test_token = base::UnguessableToken::Create();
-  const UnexportableKeyId key_id(test_token);
+  const UnexportableSigningKeyId key_id;
   const std::vector<uint8_t> test_data = {0xFF, 0xEE};
   const ServiceError expected_error = ServiceError::kKeyNotFound;
 
@@ -529,8 +539,7 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeysSuccess) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken test_token = base::UnguessableToken::Create();
-  UnexportableKeyId key_id(test_token);
+  UnexportableKeyId key_id;
 
   EXPECT_CALL(mock_uks,
               DeleteKeysSlowlyAsync(ElementsAre(key_id), kTestPriority, _))
@@ -552,8 +561,7 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeysError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken test_token = base::UnguessableToken::Create();
-  UnexportableKeyId key_id(test_token);
+  UnexportableKeyId key_id;
   ServiceError expected_error = ServiceError::kKeyNotFound;
 
   EXPECT_CALL(mock_uks,

@@ -62,15 +62,25 @@ struct UnexportableSigningKeyId {
   mojo_base.mojom.UnguessableToken key_id;
 };
 
-// A struct that holds the new key id, as well as metadata like the wrapped
-// key, or the key's algorithm.
-struct NewKeyData {
-  UnexportableKeyId key_id;
+// A struct that holds metadata about an unexportable key.
+struct NewKeyMetadata {
   array<uint8> subject_public_key_info;
   array<uint8> wrapped_key;
   SignatureAlgorithm algorithm;
   string? key_tag;
   mojo_base.mojom.Time? creation_time;
+};
+
+// A struct that holds a key ID and its metadata.
+struct NewKeyData {
+  UnexportableKeyId key_id;
+  NewKeyMetadata metadata;
+};
+
+// A struct that holds a signing key ID and its metadata.
+struct NewSigningKeyData {
+  UnexportableSigningKeyId key_id;
+  NewKeyMetadata metadata;
 };
 
 // Interface for proxying calls to UnexportableKeyService from less privileged
@@ -82,24 +92,24 @@ interface UnexportableKeyService {
   //
   // The first supported value of `acceptable_algorithms` determines the type of
   // the key. The task will be executed at the requested priority. In success, a
-  // NewKeyData struct will be returned. If there was a failure a ServiceError
-  // will be returned instead.
+  // NewSigningKeyData struct will be returned. If there was a failure a
+  // ServiceError will be returned instead.
   GenerateSigningKey(array<SignatureAlgorithm> acceptable_algorithms,
                      BackgroundTaskPriority priority)
-      => result<NewKeyData, ServiceError>;
+      => result<NewSigningKeyData, ServiceError>;
 
   // Loads a key from the wrapped_key object. The task will be executed at
-  // the requested priority. In success, a NewKeyData struct will be
+  // the requested priority. In success, a NewSigningKeyData struct will be
   // returned. If there was a failure a ServiceError will be returned instead.
   FromWrappedSigningKey(
       array<uint8> wrapped_key, BackgroundTaskPriority priority)
-      => result<NewKeyData, ServiceError>;
+      => result<NewSigningKeyData, ServiceError>;
 
   // Signs the data using the key identified by key_id, at the requested
   // priority. Retries up to max_retries times before returning an error. In
   // success the serialized signature will be returned. If there was a
   // failure a ServiceError will be returned instead.
-  Sign(UnexportableKeyId key_id,
+  Sign(UnexportableSigningKeyId key_id,
        array<uint8> data,
        BackgroundTaskPriority priority) => result<array<uint8>, ServiceError>;
 
