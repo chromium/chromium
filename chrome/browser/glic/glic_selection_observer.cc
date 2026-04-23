@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_selection_observer.h"
 
+#include <set>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -86,10 +88,14 @@ GlicSelectionObserver::~GlicSelectionObserver() {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
 
+  std::set<content::RenderWidgetHost*> unique_rwhs;
   for (const auto& [frame_id, rwh] : rwh_by_frame_) {
     if (rwh) {
-      rwh->RemoveInputEventObserver(this);
+      unique_rwhs.insert(rwh);
     }
+  }
+  for (auto* rwh : unique_rwhs) {
+    rwh->RemoveInputEventObserver(this);
   }
   rwh_by_frame_.clear();
 }
@@ -100,8 +106,17 @@ void GlicSelectionObserver::RenderFrameCreated(
     return;
   }
   if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
+    bool already_observing = false;
+    for (const auto& pair : rwh_by_frame_) {
+      if (pair.second == rwh) {
+        already_observing = true;
+        break;
+      }
+    }
     if (rwh_by_frame_.insert({render_frame_host->GetGlobalId(), rwh}).second) {
-      rwh->AddInputEventObserver(this);
+      if (!already_observing) {
+        rwh->AddInputEventObserver(this);
+      }
     }
   }
 }
@@ -110,10 +125,19 @@ void GlicSelectionObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   auto it = rwh_by_frame_.find(render_frame_host->GetGlobalId());
   if (it != rwh_by_frame_.end()) {
-    if (it->second) {
-      it->second->RemoveInputEventObserver(this);
-    }
+    content::RenderWidgetHost* rwh = it->second;
     rwh_by_frame_.erase(it);
+
+    bool still_observing = false;
+    for (const auto& pair : rwh_by_frame_) {
+      if (pair.second == rwh) {
+        still_observing = true;
+        break;
+      }
+    }
+    if (!still_observing && rwh) {
+      rwh->RemoveInputEventObserver(this);
+    }
   }
 }
 
