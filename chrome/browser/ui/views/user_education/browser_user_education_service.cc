@@ -1109,6 +1109,20 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_READING_LIST_IN_SIDE_PANEL_PROMO_PINNING)
           .SetHighlightedMenuItem(BookmarkSubMenuModel::kReadingListMenuItem)));
 
+  // kIPHReadingModeKeyboardShortcutFeature:
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHReadingModeKeyboardShortcutFeature,
+          kReadAnythingViewModeElementId,
+          IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_BODY,
+          IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_SCREENREADER,
+          user_education::FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kNone)
+          .SetInAnyContext(true)
+          .SetMetadata(147, "martinglopez@google.com",
+                       "Triggered to educate users about the keyboard shortcut "
+                       "for Reading Mode.")));
+
   // kIPHReadingModeSidePanelFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(

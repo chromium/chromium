@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -19,11 +21,13 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -195,6 +199,15 @@ void ReadAnythingController::OnEntryShown(
     is_presentation_transitioning_ = false;
   } else {
     entry_shown_timestamp_ = base::TimeTicks::Now();
+  }
+
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    if (GetPresentationState() == PresentationState::kInImmersiveOverlay ||
+        GetPresentationState() == PresentationState::kInSidePanel) {
+      user_ed->MaybeShowFeaturePromo(
+          feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+    }
   }
 }
 
@@ -415,6 +428,15 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
 }
 
 void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
+  if (trigger == ReadAnythingOpenTrigger::kKeyboardShortcut) {
+    if (auto* user_ed = BrowserUserEducationInterface::From(
+            tab_->GetBrowserWindowInterface())) {
+      user_ed->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHReadingModeKeyboardShortcutFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    }
+  }
+
   PresentationState state = GetPresentationState();
   if (state == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);

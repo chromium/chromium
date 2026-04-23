@@ -20,6 +20,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
@@ -115,7 +116,7 @@ const flexWrapTypical = 'nowrap';
 const flexWrapOverflow = 'wrap';
 
 const ReadAnythingToolbarElementBase =
-    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
+    HelpBubbleMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   static get is() {
@@ -273,6 +274,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       clearTimeout(this.spinnerDebouncerCallbackHandle_);
     }
     super.disconnectedCallback();
+  }
+
+  override firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
+    this.registerHelpBubble(
+        'kReadAnythingViewModeElementId', '#toolbarContainer');
   }
 
   override updated(changedProperties: PropertyValues<this>) {

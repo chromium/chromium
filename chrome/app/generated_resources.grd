@@ -9829,6 +9829,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL" desc="Dropdown option for turning off line focus.">
         Off
       </message>
+      <if expr="is_macosx">
+        <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_BODY" desc="Text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
+          Open reading mode faster with a shortcut. Press ⌥ + ⌘ + R to toggle reading mode.
+        </message>
+        <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
+          Open reading mode faster with a shortcut. Press ⌥ + ⌘ + R to toggle reading mode.
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_BODY" desc="Text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
+          Open reading mode faster with a shortcut. Press Alt + Shift + R to toggle reading mode.
+        </message>
+        <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
+          Open reading mode faster with a shortcut. Press Alt + Shift + R to toggle reading mode.
+        </message>
+      </if>
       <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
         Getting ready
       </message>

@@ -135,6 +135,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelThreadsActivityButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kProjectsPanelThreadsActivityGeminiItemElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelViewElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kReadAnythingViewModeElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRecordButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadButtonElementId);
