@@ -187,9 +187,9 @@ public class CollaborationTestUtils {
     /** Signs in and sets selected types for tab groups. */
     public void setUpSyncAndSignIn() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
-        mSyncTestRule.enableDataType(UserSelectableType.TABS);
-        mSyncTestRule.enableDataType(UserSelectableType.SAVED_TAB_GROUPS);
+        mSyncTestRule.setSelectedType(UserSelectableType.HISTORY, true);
+        mSyncTestRule.setSelectedType(UserSelectableType.TABS, true);
+        mSyncTestRule.setSelectedType(UserSelectableType.SAVED_TAB_GROUPS, true);
     }
 
     /** Returns the local tab group id. */

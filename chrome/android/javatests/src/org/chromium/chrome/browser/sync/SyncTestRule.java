@@ -43,6 +43,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -273,23 +274,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         SyncTestUtil.triggerSync();
     }
 
-    /*
-     * Enables the Sync data type in USER_SELECTABLE_TYPES.
+    /**
+     * Sets an individual type selection.
+     *
+     * @param type The type that should be enabled or disabled.
+     * @param isTypeOn Set to true if the type should be enabled, false otherwise.
      */
-    public void enableDataType(final int userSelectableType) {
+    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSyncService.setSelectedType(userSelectableType, true);
-                });
-    }
-
-    /*
-     * Disables the Sync data type in USER_SELECTABLE_TYPES.
-     */
-    public void disableDataType(final int userSelectableType) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSyncService.setSelectedType(userSelectableType, false);
+                    mSyncService.setSelectedType(type, isTypeOn);
                 });
     }
 

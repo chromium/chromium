@@ -387,7 +387,7 @@ public class BookmarksTest {
     @LargeTest
     @Feature({"Sync"})
     public void testDisabledNoDownloadBookmark() throws Exception {
-        mSyncTestRule.disableDataType(UserSelectableType.BOOKMARKS);
+        mSyncTestRule.setSelectedType(UserSelectableType.BOOKMARKS, false);
         addServerBookmark(TITLE, URL);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         assertClientBookmarkCount(0);

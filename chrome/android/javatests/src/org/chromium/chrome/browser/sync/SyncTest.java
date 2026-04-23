@@ -115,12 +115,12 @@ public class SyncTest {
         waitForIsSyncingUnencryptedUrls(true);
 
         // isSyncingUnencryptedUrls() should return false when history is disabled.
-        mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
+        mSyncTestRule.setSelectedType(UserSelectableType.HISTORY, false);
         waitForIsSyncingUnencryptedUrls(false);
 
         // Now enable history datatypes and verify that isSyncingUnencryptedUrls() returns true
         // again.
-        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
+        mSyncTestRule.setSelectedType(UserSelectableType.HISTORY, true);
         waitForIsSyncingUnencryptedUrls(true);
     }
 
@@ -143,12 +143,12 @@ public class SyncTest {
         waitForIsSyncingUnencryptedUrls(true);
 
         // isSyncingUnencryptedUrls() should return false when history is disabled.
-        mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
+        mSyncTestRule.setSelectedType(UserSelectableType.HISTORY, false);
         waitForIsSyncingUnencryptedUrls(false);
 
         // Now enable history datatype and verify that isSyncingUnencryptedUrls() returns true
         // again.
-        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
+        mSyncTestRule.setSelectedType(UserSelectableType.HISTORY, true);
         waitForIsSyncingUnencryptedUrls(true);
     }
 
