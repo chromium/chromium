@@ -11,6 +11,8 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 
@@ -48,6 +50,13 @@ ActivityCompatibilityMode CompatibleModeForActivityType(
       [activity_type isEqualToString:kSiriManageSettings] ||
       [activity_type isEqualToString:kSiriOpenLensFromIntents]) {
     return ActivityCompatibilityMode::kRegularAndIncognito;
+  }
+  if (@available(iOS 26, *)) {
+    if (CredentialExchangeEnabled() &&
+        [activity_type isEqualToString:[CredentialImportManager
+                                           credentialExchangeActivity]]) {
+      return ActivityCompatibilityMode::kRegularAndIncognito;
+    }
   }
   if ([activity_type isEqualToString:kSiriShortcutOpenInChrome] ||
       [activity_type isEqualToString:kSiriOpenRecentTabs] ||

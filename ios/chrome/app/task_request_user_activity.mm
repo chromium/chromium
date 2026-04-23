@@ -330,6 +330,15 @@ void RunSafetyCheckWithBrowser(Browser* browser) {
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
 
+// Shows the password manager for credential import.
+void ShowPasswordManagerForCredentialImportWithBrowser(NSUUID* uuid,
+                                                       Browser* browser)
+    API_AVAILABLE(ios(26.0)) {
+  id<SettingsCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+  [handler showPasswordManagerForCredentialImport:uuid];
+}
+
 // Starts voice search.
 void OpenVoiceSearchWithBrowser(Browser* browser) {
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
@@ -673,9 +682,21 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
           targetMode:ApplicationModeForTabOpening::NORMAL
           completion:base::BindOnce(&OpenClearBrowsingDataWithBrowser)];
       break;
-    case UserActivityType::kCredentialExchange:
-      // TODO(crbug.com/492115056): Add implementation.
+    case UserActivityType::kCredentialExchange: {
+      if (@available(iOS 26, *)) {
+        if (NSUUID* UUID = base::apple::ObjCCast<NSUUID>([_userActivity.userInfo
+                objectForKey:[CredentialImportManager
+                                 credentialImportToken]])) {
+          [self openURLs:{}
+              sceneState:sceneState
+              targetMode:_targetMode
+              completion:base::BindOnce(
+                             &ShowPasswordManagerForCredentialImportWithBrowser,
+                             UUID)];
+        }
+      }
       break;
+    }
     case UserActivityType::kInvalid:
       NOTREACHED();
   }

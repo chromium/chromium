@@ -41,6 +41,8 @@ source_set("user_activity_compatibility_util") {
     "//components/crash/core/common",
     "//components/handoff",
     "//components/prefs",
+    "//ios/chrome/browser/credential_exchange/model:credential_import_manager_swift",
+    "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/policy/model:policy_util",
   ]
 }
