@@ -7,7 +7,11 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/registry_watcher.h"
+#endif
 
 namespace default_browser {
 

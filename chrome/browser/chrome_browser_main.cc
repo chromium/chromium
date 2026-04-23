@@ -170,13 +170,8 @@
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
-#include "chrome/browser/win/browser_util.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_RLZ)
-#include "base/time/time.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
@@ -250,6 +245,7 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
 #include "chrome/browser/webnn/win_app_runtime_installer.h"
+#include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_select_file_dialog_factory.h"
 #include "chrome/browser/win/parental_controls.h"
 #include "ui/shell_dialogs/select_file_dialog.h"

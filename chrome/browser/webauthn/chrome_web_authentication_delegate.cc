@@ -57,7 +57,6 @@
 #include "content/public/browser/web_contents.h"
 #include "crypto/unexportable_key.h"
 #include "device/fido/enclave/constants.h"
-#include "device/fido/mac/credential_metadata.h"
 #include "device/fido/public/features.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -78,6 +77,10 @@
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "device/fido/mac/credential_metadata.h"
 #endif
 
 namespace {

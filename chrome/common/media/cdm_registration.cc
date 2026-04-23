@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/version.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "components/cdm/common/buildflags.h"
 #include "content/public/common/cdm_info.h"
@@ -45,6 +44,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/cdm/common/android_cdm_registration.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PLAYREADY)
 #include "base/file_version_info_win.h"

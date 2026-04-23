@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "audio_capture_permission_checker_mac.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -72,6 +71,11 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker_mac.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
 #endif

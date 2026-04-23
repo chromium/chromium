@@ -118,12 +118,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/child/child_process_sandbox_support_impl_win.h"
+#include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/font_data/font_data_manager.h"
 #include "skia/ext/font_utils.h"
-#include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
