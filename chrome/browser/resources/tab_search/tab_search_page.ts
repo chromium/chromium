@@ -611,6 +611,19 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       return;
     }
 
+    // <if expr="is_macosx">
+    const lowerKey = e.key.toLowerCase();
+
+    if (e.ctrlKey && (lowerKey === 'n' || lowerKey === 'p')) {
+      const mappedKey = lowerKey === 'n' ? 'ArrowDown' : 'ArrowUp';
+      this.$.tabsList.navigate(mappedKey);
+
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+    // </if>
+
     if (selectorNavigationKeys.includes(e.key)) {
       this.$.tabsList.navigate(e.key);
 
