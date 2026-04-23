@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
 #include <array>
@@ -1500,6 +1501,9 @@ TEST_F(AudioContextTest, DISABLED_AudioWorkletTerminatedOnClose) {
   audio_context->closeContext(script_state, exception_state);
 
   EXPECT_TRUE(proxy->AskedToTerminate());
+
+  // Wait for worker thread to shut down to avoid race on g_platform.
+  proxy->GetBackingWorkerThread()->WaitForShutdownForTesting();
 }
 
 TEST_F(AudioContextTest, ChannelCountRunning) {
