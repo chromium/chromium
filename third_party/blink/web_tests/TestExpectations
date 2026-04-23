@@ -9748,3 +9748,4 @@ crbug.com/504423491 [ Debug Linux ] virtual/connection-allowlist/external/wpt/co
 
 # Gardener 2026-04-23
 crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
+crbug.com/452662753 [ Release Linux ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
