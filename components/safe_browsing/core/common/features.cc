@@ -368,6 +368,13 @@ constexpr base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval{
     &kNotificationTelemetrySwb, "NotificationTelemetrySwbPollingInterval",
     /*default_value=*/60};
 
+BASE_FEATURE(kProactivePasswordProtection,
+             "ProactivePasswordProtection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<double> kCsdProactivePasswordProtectionSampleRate{
+    &kProactivePasswordProtection, "CsdProactivePasswordProtectionSampleRate",
+    0.0};
+
 BASE_FEATURE(kRedWarningSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kRedWarningSurveyTriggerId{
     &kRedWarningSurvey, "RedWarningSurveyTriggerId", /*default_value=*/""};
@@ -467,6 +474,7 @@ base::ListValue GetFeatureStatusList() {
       &kLocalListsUseSBv5,
       &kMigrateEnhancedSbUserToEnhancedBundle,
       &kNotificationTelemetrySwb,
+      &kProactivePasswordProtection,
       &kReportNotificationContentDetectionData,
       &kShowManualNotificationRevocationsSafetyHub,
       &kShowWarningsForSuspiciousNotifications,
@@ -487,6 +495,8 @@ base::ListValue GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
+  param_list.Append(kCsdProactivePasswordProtectionSampleRate.Get());
+  param_list.Append(kCsdProactivePasswordProtectionSampleRate.name);
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
   param_list.Append(kHashPrefixRealTimeLookupsKeyFetchUrl.Get());

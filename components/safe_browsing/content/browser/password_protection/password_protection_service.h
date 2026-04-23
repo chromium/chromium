@@ -113,6 +113,11 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
           matching_reused_credentials,
       bool password_field_exists);
 
+  // Triggers a client side detection scan if the proactive password protection
+  // feature is enabled.
+  virtual void MaybeTriggerClientSideDetectionScan(
+      content::WebContents* web_contents);
+
   // Starts a request to check if the current page is a potential phishing site
   // for one time password filling.
   void MaybeStartOtpPhishingRequest(

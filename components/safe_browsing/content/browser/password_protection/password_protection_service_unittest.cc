@@ -457,6 +457,37 @@ TEST_F(PasswordProtectionServiceTest, NoSendPingPrivateIpHostname) {
       GURL("http://192.168.1.1"), reused_password_type));
 }
 
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartPasswordFieldOnFocusRequest_TriggersCSD) {
+  GURL main_frame_url(kTargetUrl);
+  GURL password_form_action(kFormActionUrl);
+  GURL password_form_frame_url(kPasswordFrameUrl);
+
+  EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _))
+      .WillRepeatedly(Return(true));
+
+  // Delegate MaybeStartPasswordFieldOnFocusRequest to real implementation.
+  EXPECT_CALL(*password_protection_service_,
+              MaybeStartPasswordFieldOnFocusRequest(_, _, _, _))
+      .WillOnce([this](content::WebContents* web_contents,
+                       const GURL& main_frame_url,
+                       const GURL& password_form_action,
+                       const GURL& password_form_frame_url) {
+        password_protection_service_
+            ->PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
+                web_contents, main_frame_url, password_form_action,
+                password_form_frame_url);
+      });
+
+  EXPECT_CALL(*password_protection_service_,
+              MaybeTriggerClientSideDetectionScan(web_contents_.get()))
+      .Times(1);
+
+  password_protection_service_->MaybeStartPasswordFieldOnFocusRequest(
+      web_contents_.get(), main_frame_url, password_form_action,
+      password_form_frame_url);
+}
+
 class PasswordProtectionServiceBaseTest
     : public ::testing::TestWithParam<bool> {
  public:

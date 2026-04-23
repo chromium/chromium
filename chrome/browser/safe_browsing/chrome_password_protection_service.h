@@ -133,6 +133,9 @@ class ChromePasswordProtectionService
   void ShowInterstitial(content::WebContents* web_contents,
                         ReusedPasswordAccountType password_type) override;
 
+  void MaybeTriggerClientSideDetectionScan(
+      content::WebContents* web_contents) override;
+
   // Called when user interacts with password protection UIs.
   void OnUserAction(content::WebContents* web_contents,
                     ReusedPasswordAccountType password_type,

@@ -224,6 +224,10 @@ class ClientSideDetectionHost
   // the report dialog view.
   void ReportUnsafeSite(SkBitmap screenshot, base::OnceClosure callback);
 
+  // Called when an unfamiliar login page is detected (e.g. via password field
+  // focus).
+  void OnUnfamiliarLoginPageDetected();
+
   // Sets a callback to be notified when preclassification is started.
   void set_preclassification_started_callback_for_testing(
       const PreclassificationStarted& callback) {

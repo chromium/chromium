@@ -363,6 +363,7 @@ class FakePhishingDetector : public mojom::PhishingDetector {
       safe_browsing::mojom::ClientSideDetectionType request_type,
       StartPhishingDetectionCallback callback) override {
     url_ = url;
+    request_type_ = request_type;
     phishing_detection_started_ = true;
 
     // The callback must be run before destruction, so send a minimal
@@ -386,16 +387,23 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   void Reset() {
     phishing_detection_started_ = false;
     url_ = GURL();
+    request_type_ = std::nullopt;
   }
 
   bool phishing_detection_started() const {
     return phishing_detection_started_;
   }
 
+  std::optional<safe_browsing::mojom::ClientSideDetectionType>
+  last_request_type() const {
+    return request_type_;
+  }
+
  private:
   mojo::AssociatedReceiverSet<mojom::PhishingDetector> receivers_;
   bool phishing_detection_started_ = false;
   GURL url_;
+  std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type_;
 };
 
 class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
@@ -672,6 +680,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "ImageEmbeddingMatch";
       case safe_browsing::ClientSideDetectionType::USER_REPORT:
         return "UserReport";
+      case safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
+        return "UnfamiliarLoginPage";
     }
   }
 
@@ -964,6 +974,133 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
   EXPECT_TRUE(future.IsReady());
 
   fake_phishing_detector_.CheckMessage(&url);
+}
+
+TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageTriggersClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kProactivePasswordProtection,
+      {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  GURL url("http://example.com/");
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                &kFalse);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.Reset();
+
+  // Trigger UNFAMILIAR_LOGIN_PAGE.
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, &kFalse,
+                                &kFalse);
+  csd_host_->OnUnfamiliarLoginPageDetected();
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.CheckMessage(&url);
+  EXPECT_EQ(safe_browsing::mojom::ClientSideDetectionType::kUnfamiliarLoginPage,
+            fake_phishing_detector_.last_request_type());
+}
+
+TEST_F(ClientSideDetectionHostTest, UnfamiliarLoginPageSampleRate) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  GURL url("http://example.com/");
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                &kFalse);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  {
+    // Set sample rate to 0.0 (always stop).
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kProactivePasswordProtection,
+        {{kCsdProactivePasswordProtectionSampleRate.name, "0.0"}});
+
+    fake_phishing_detector_.Reset();
+
+    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, &kFalse,
+                                  &kFalse);
+    csd_host_->OnUnfamiliarLoginPageDetected();
+    WaitAndCheckPreClassificationChecks();
+
+    EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
+  }
+
+  fake_phishing_detector_.Reset();
+
+  {
+    // Set sample rate to 1.0 (always proceed).
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kProactivePasswordProtection,
+        {{kCsdProactivePasswordProtectionSampleRate.name, "1.0"}});
+
+    ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, &kFalse,
+                                  &kFalse);
+    csd_host_->OnUnfamiliarLoginPageDetected();
+    WaitAndCheckPreClassificationChecks();
+
+    EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
+  }
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       UnfamiliarLoginPage_NoEnhancedProtection_NoTrigger) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{kProactivePasswordProtection,
+                             {{kCsdProactivePasswordProtectionSampleRate.name,
+                               "1.0"}}}},
+      /*disabled_features=*/{kClientSideDetectionOnlyESBClassification});
+
+  // Disable Enhanced Protection.
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  GURL url("http://example.com/");
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                &kFalse);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.Reset();
+
+  // Trigger UNFAMILIAR_LOGIN_PAGE.
+  csd_host_->OnUnfamiliarLoginPageDetected();
+
+  base::RunLoop().RunUntilIdle();
+
+  // Should NOT trigger.
+  EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {

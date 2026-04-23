@@ -78,6 +78,8 @@ std::string_view GetRequestTypeName(
       return "ImageEmbeddingMatch";
     case safe_browsing::mojom::ClientSideDetectionType::kUserReport:
       return "UserReport";
+    case safe_browsing::mojom::ClientSideDetectionType::kUnfamiliarLoginPage:
+      return "UnfamiliarLoginPage";
   }
 }
 

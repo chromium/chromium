@@ -1396,6 +1396,8 @@ enum ClientSideDetectionType {
   IMAGE_EMBEDDING_MATCH = 10;
   // User reported an unsafe site.
   USER_REPORT = 11;
+  // Unfamiliar login page triggered.
+  UNFAMILIAR_LOGIN_PAGE = 12;
 }
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideDetectionType,/tools/metrics/histograms/metadata/sb_client/histograms.xml:ClientSideDetectionRequestType)

@@ -160,6 +160,8 @@ enum ClientSideDetectionType {
   kImageEmbeddingMatch,
   // User reported an unsafe site.
   kUserReport,
+  // Unfamiliar login page triggered.
+  kUnfamiliarLoginPage,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/histograms.xml:ClassifierRequestType)

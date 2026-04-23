@@ -247,6 +247,7 @@ int GetClientSideDetectionTypeTier(ClientSideDetectionType type) {
     case ClientSideDetectionType::VIBRATION_API:
     case ClientSideDetectionType::CLIPBOARD_COPY_API:
     case ClientSideDetectionType::CREDIT_CARD_FORM:
+    case ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
       return 2;
     case ClientSideDetectionType::TRIGGER_MODELS:
     case ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:

@@ -19128,6 +19128,28 @@
             ]
         }
     ],
+    "ProactivePasswordProtection": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CsdProactivePasswordProtectionSampleRate": "1.0"
+                    },
+                    "enable_features": [
+                        "ProactivePasswordProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProbeStylusWritingInBackground": [
         {
             "platforms": [

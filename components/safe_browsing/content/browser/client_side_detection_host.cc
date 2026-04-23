@@ -183,6 +183,8 @@ std::string_view GetRequestTypeName(
       return "ImageEmbeddingMatch";
     case safe_browsing::ClientSideDetectionType::USER_REPORT:
       return "UserReport";
+    case safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
+      return "UnfamiliarLoginPage";
   }
 }
 
@@ -211,6 +213,9 @@ safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
     case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
       return safe_browsing::mojom::ClientSideDetectionType::
           kImageEmbeddingMatch;
+    case safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
+      return safe_browsing::mojom::ClientSideDetectionType::
+          kUnfamiliarLoginPage;
     case safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
     case safe_browsing::ClientSideDetectionType::USER_REPORT:
@@ -592,6 +597,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       switch (phishing_detection_request_type_) {
         case CREDIT_CARD_FORM:
         case CLIPBOARD_COPY_API:
+        case UNFAMILIAR_LOGIN_PAGE:
           base::UmaHistogramBoolean(
               base::StrCat(
                   {"SBClientPhishing.MatchCSDAllowlistOn",
@@ -728,6 +734,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         return base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get();
       case CREDIT_CARD_FORM:
         return base::RandDouble() >= kCsdCreditCardFormSampleRate.Get();
+      case UNFAMILIAR_LOGIN_PAGE:
+        return base::RandDouble() >=
+               kCsdProactivePasswordProtectionSampleRate.Get();
       default:
         break;
     }
@@ -937,6 +946,13 @@ void ClientSideDetectionHost::ReportUnsafeSite(SkBitmap screenshot,
                      weak_factory_.GetWeakPtr()));
 
   MaybeStartPreClassification(ClientSideDetectionType::USER_REPORT);
+}
+
+void ClientSideDetectionHost::OnUnfamiliarLoginPageDetected() {
+  if (base::FeatureList::IsEnabled(kProactivePasswordProtection) &&
+      safe_browsing::IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    MaybeStartPreClassification(ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE);
+  }
 }
 
 void ClientSideDetectionHost::MaybeStartPreClassification(

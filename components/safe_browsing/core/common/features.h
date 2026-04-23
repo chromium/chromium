@@ -374,6 +374,12 @@ extern const base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval;
 // Determines whether CSBRRs are sent to Safe Browsing.
 extern const base::FeatureParam<bool> kNotificationTelemetrySwbSendReports;
 
+// Enables proactive password protection, which triggers a CSD scan when
+// focusing on a password field.
+BASE_DECLARE_FEATURE(kProactivePasswordProtection);
+extern const base::FeatureParam<double>
+    kCsdProactivePasswordProtectionSampleRate;
+
 // Enables HaTS surveys for users encountering red warnings.
 BASE_DECLARE_FEATURE(kRedWarningSurvey);
 // Specifies whether we want to show HaTS surveys based on if the user bypassed

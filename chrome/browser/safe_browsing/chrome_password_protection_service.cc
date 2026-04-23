@@ -58,10 +58,12 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
@@ -593,6 +595,15 @@ void ChromePasswordProtectionService::ShowInterstitial(
 
   LogWarningAction(WarningUIType::INTERSTITIAL, WarningAction::SHOWN,
                    password_type);
+}
+
+void ChromePasswordProtectionService::MaybeTriggerClientSideDetectionScan(
+    content::WebContents* web_contents) {
+  SafeBrowsingTabObserver* tab_observer =
+      SafeBrowsingTabObserver::FromWebContents(web_contents);
+  if (tab_observer && tab_observer->client_side_detection_host()) {
+    tab_observer->client_side_detection_host()->OnUnfamiliarLoginPageDetected();
+  }
 }
 
 void ChromePasswordProtectionService::OnUserAction(

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
-#include "content/public/browser/browser_thread.h"
 
 #include <stddef.h>
 
@@ -16,8 +15,10 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
@@ -71,6 +72,7 @@ void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
           PasswordType::PASSWORD_TYPE_UNKNOWN,
           /*username=*/"");
   if (CanSendPing(trigger_type, main_frame_url, reused_password_account_type)) {
+    MaybeTriggerClientSideDetectionScan(web_contents);
     StartRequest(web_contents, main_frame_url, password_form_action,
                  password_form_frame_url, /* username */ "",
                  PasswordType::PASSWORD_TYPE_UNKNOWN,
@@ -325,5 +327,8 @@ void PasswordProtectionService::ResumeDeferredNavigationsIfNeeded(
       static_cast<PasswordProtectionRequestContent*>(request);
   request_content->ResumeDeferredNavigations();
 }
+
+void PasswordProtectionService::MaybeTriggerClientSideDetectionScan(
+    content::WebContents* web_contents) {}
 
 }  // namespace safe_browsing
