@@ -10078,6 +10078,7 @@ test("unit_tests") {
   if (enable_pdf) {
     sources += [
       "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api_unittest.cc",
+      "../browser/pdf/mime_handler_stream_manager_pdf_unittest.cc",
       "../browser/pdf/mime_handler_stream_manager_unittest.cc",
       "../common/pdf_util_unittest.cc",
     ]
@@ -10085,11 +10086,11 @@ test("unit_tests") {
       "//base",
       "//chrome/browser/extensions/api/pdf_viewer_private",
       "//chrome/browser/pdf",
-      "//chrome/browser/pdf:pdf_test_utils",
       "//extensions/browser",
       "//extensions/browser/mime_handler:mime_handler_stream_delegate",
       "//extensions/browser/mime_handler:stream_container",
       "//extensions/browser/mime_handler:stream_info",
+      "//extensions/browser/mime_handler:test_helpers",
       "//net",
       "//pdf:content_restriction",
       "//pdf:features",

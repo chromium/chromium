@@ -111,19 +111,3 @@ source_set("pdf_extension_test_utils") {
     "//testing/gtest",
   ]
 }
-
-source_set("pdf_test_utils") {
-  testonly = true
-  sources = [
-    "pdf_test_util.cc",
-    "pdf_test_util.h",
-  ]
-  deps = [
-    "//base",
-    "//extensions/browser",
-    "//extensions/browser/mime_handler:stream_container",
-    "//net",
-    "//services/network/public/mojom:url_loader_base",
-    "//url",
-  ]
-}

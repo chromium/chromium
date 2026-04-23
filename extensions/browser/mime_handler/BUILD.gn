@@ -60,6 +60,28 @@ source_set("stream_info") {
     "//base",
   ]
 }
+
+source_set("test_helpers") {
+  testonly = true
+  sources = [
+    "mime_handler_test_helpers.cc",
+    "mime_handler_test_helpers.h",
+    "mock_mime_handler_stream_delegate.cc",
+    "mock_mime_handler_stream_delegate.h",
+  ]
+  public_deps = [
+    ":mime_handler_stream_delegate",
+    "//testing/gmock",
+  ]
+  deps = [
+    ":stream_container",
+    "//base",
+    "//net",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
 source_set("stream_container") {
   sources = [
     "stream_container.cc",

@@ -7,9 +7,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
-#include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -18,9 +15,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
+#include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
-#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -38,43 +36,12 @@ using ::testing::SaveArg;
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
 
-class MockMimeHandlerStreamDelegate
-    : public extensions::MimeHandlerStreamDelegate {
- public:
-  MockMimeHandlerStreamDelegate() = default;
-  ~MockMimeHandlerStreamDelegate() override = default;
-
-  MOCK_METHOD(bool, ShouldSetUpPostMessage, (), (const, override));
-  MOCK_METHOD(void,
-              OnPostMessageSetUp,
-              (content::RenderFrameHost*),
-              (override));
-  MOCK_METHOD(void,
-              OnExtensionFrameFinished,
-              (content::NavigationHandle*, extensions::StreamInfo*),
-              (override));
-  MOCK_METHOD(void,
-              ValidateContentFrameHost,
-              (content::RenderFrameHost*, extensions::StreamInfo*),
-              (override));
-  MOCK_METHOD(void,
-              OnStreamClaimed,
-              (content::RenderFrameHost*, extensions::StreamInfo*),
-              (override));
-  MOCK_METHOD(bool, PluginCanSave, (), (const, override));
-  MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
-};
+using extensions::mime_handler::MockMimeHandlerStreamDelegate;
 
 }  // namespace
 
 class MimeHandlerStreamManagerTest : public ChromeRenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
-    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
   void TearDown() override {
     ChromeRenderViewHostTestHarness::web_contents()->RemoveUserData(
         MimeHandlerStreamManager::UserDataKey());
@@ -109,9 +76,6 @@ class MimeHandlerStreamManagerTest : public ChromeRenderViewHostTestHarness {
     parent_host_tester->InitializeRenderFrameIfNeeded();
     return parent_host_tester->AppendChild(frame_name);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify adding and getting an `extensions::StreamContainer`.
@@ -122,9 +86,10 @@ TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamContainer) {
       embedder_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
@@ -154,12 +119,14 @@ TEST_F(MimeHandlerStreamManagerTest,
       embedder_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->AddStreamContainer(frame_tree_node_id, "internal_id2",
-                              pdf_test_util::GenerateSampleStreamContainer(2),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id1",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id2",
+      extensions::mime_handler::GenerateSampleStreamContainer(2),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   base::WeakPtr<extensions::StreamContainer> result =
@@ -184,10 +151,10 @@ TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamInvalidURL) {
       NavigateAndCommit(main_rfh(), GURL("https://nonmatching_url"));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
@@ -202,13 +169,14 @@ TEST_F(MimeHandlerStreamManagerTest, AddMultipleStreamContainers) {
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(), "internal_id2",
-                              pdf_test_util::GenerateSampleStreamContainer(2),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id1",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->AddStreamContainer(
+      child_host->GetFrameTreeNodeId(), "internal_id2",
+      extensions::mime_handler::GenerateSampleStreamContainer(2),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->ClaimStreamInfoForTesting(child_host);
 
@@ -256,10 +224,10 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfExtensionHost) {
   auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -307,10 +275,10 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfContentHost) {
   auto* other_host = CreateChildRenderFrameHost(extension_host, "other host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -347,13 +315,14 @@ TEST_F(MimeHandlerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->AddStreamContainer(child_host->GetFrameTreeNodeId(), "internal_id2",
-                              pdf_test_util::GenerateSampleStreamContainer(2),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id1",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->AddStreamContainer(
+      child_host->GetFrameTreeNodeId(), "internal_id2",
+      extensions::mime_handler::GenerateSampleStreamContainer(2),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->ClaimStreamInfoForTesting(child_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
@@ -376,9 +345,10 @@ TEST_F(MimeHandlerStreamManagerTest, DeleteUnclaimedStreamInfo) {
       unclaimed_embedder_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   EXPECT_FALSE(manager->GetStreamContainer(unclaimed_embedder_host));
 
   manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
@@ -394,9 +364,10 @@ TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(), "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      actual_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(actual_host);
   ASSERT_TRUE(manager->GetStreamContainer(actual_host));
 
@@ -418,9 +389,10 @@ TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(), "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      actual_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
 
   // The stream hasn't been claimed, so the stream container can't be retrieved.
   ASSERT_FALSE(manager->GetStreamContainer(actual_host));
@@ -446,9 +418,10 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   auto* new_host = CreateChildRenderFrameHost(old_host, "new host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(old_host->GetFrameTreeNodeId(), "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      old_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(old_host);
   ASSERT_TRUE(manager->GetStreamContainer(old_host));
 
@@ -485,10 +458,10 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   auto* new_host = CreateChildRenderFrameHost(embedder_host, "new host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -541,10 +514,10 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -597,7 +570,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -627,9 +601,10 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderFrameDeleted) {
       embedder_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      frame_tree_node_id, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -649,10 +624,10 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
       extension_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -682,10 +657,10 @@ TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
       content_host->GetFrameTreeNodeId();
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -702,150 +677,6 @@ TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// Starting the navigation for the content host should set the content host
-// frame tree node ID.
-TEST_F(MimeHandlerStreamManagerTest,
-       DidStartNavigationSetContentHostFrameTreeNodeId) {
-  content::RenderFrameHost* embedder_host =
-      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
-  content::FrameTreeNodeId content_frame_tree_node_id =
-      pdf_host->GetFrameTreeNodeId();
-
-  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->ClaimStreamInfoForTesting(embedder_host);
-  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  // Deleting the frame using frame tree node ID shouldn't trigger the stream
-  // deletion, since the content host frame tree node ID hasn't been set.
-  manager->FrameDeleted(pdf_host->GetFrameTreeNodeId());
-
-  ASSERT_TRUE(mime_handler_stream_manager());
-
-  NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
-                                                            pdf_host);
-
-  // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
-  // as the PDF frame host.
-  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
-  navigation_handle.set_render_frame_host(pdf_host);
-
-  // Start the navigation. The content host frame tree node ID should now be
-  // set.
-  manager->DidStartNavigation(&navigation_handle);
-
-  ASSERT_TRUE(mime_handler_stream_manager());
-
-  // Deleting the frame should now trigger stream deletion, as the content host
-  // frame tree node ID has been set.
-  manager->FrameDeleted(content_frame_tree_node_id);
-
-  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
-  // itself.
-  EXPECT_FALSE(mime_handler_stream_manager());
-}
-
-// `MimeHandlerStreamManager` should register a subresource
-// override if the navigation handle is for a PDF content frame.
-TEST_F(MimeHandlerStreamManagerTest,
-       ReadyToCommitNavigationSubresourceOverride) {
-  content::RenderFrameHost* embedder_host =
-      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
-
-  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->ClaimStreamInfoForTesting(embedder_host);
-  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  NiceMock<content::MockNavigationHandle> navigation_handle;
-
-  // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
-  // as the PDF frame host.
-  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
-  navigation_handle.set_render_frame_host(pdf_host);
-  navigation_handle.set_url(GURL("navigation_handle_url"));
-
-  EXPECT_CALL(navigation_handle, RegisterSubresourceOverride);
-  manager->ReadyToCommitNavigation(&navigation_handle);
-
-  // The stream should persist after the PDF load to provide postMessage support
-  // and PDF saving.
-  ASSERT_EQ(manager, mime_handler_stream_manager());
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
-}
-
-// `MimeHandlerStreamManager` should be able to handle registering multiple
-// subresource override for multiple PDF streams.
-TEST_F(MimeHandlerStreamManagerTest,
-       ReadyToCommitNavigationSubresourceOverrideMultipleStreams) {
-  content::RenderFrameHost* embedder_host1 =
-      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host1 =
-      CreateChildRenderFrameHost(embedder_host1, "extension host1");
-  auto* pdf_host1 = CreateChildRenderFrameHost(extension_host1, "pdf host");
-
-  auto* embedder_host2 =
-      CreateChildRenderFrameHost(embedder_host1, "embedder host2");
-  embedder_host2 = NavigateAndCommit(embedder_host2, GURL(kOriginalUrl2));
-  auto* extension_host2 =
-      CreateChildRenderFrameHost(embedder_host2, "extension host2");
-  auto* pdf_host2 = CreateChildRenderFrameHost(extension_host2, "pdf host2");
-
-  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host1->GetFrameTreeNodeId(),
-                              "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->AddStreamContainer(embedder_host2->GetFrameTreeNodeId(),
-                              "internal_id2",
-                              pdf_test_util::GenerateSampleStreamContainer(2),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->ClaimStreamInfoForTesting(main_rfh());
-  manager->ClaimStreamInfoForTesting(embedder_host2);
-  ASSERT_TRUE(manager->GetStreamContainer(main_rfh()));
-  ASSERT_TRUE(manager->GetStreamContainer(embedder_host2));
-
-  NiceMock<content::MockNavigationHandle> navigation_handle1;
-
-  // Set `navigation_handle1`'s frame host to a grandchild frame host. This acts
-  // as the PDF frame host.
-  ON_CALL(navigation_handle1, IsPdf).WillByDefault(Return(true));
-  navigation_handle1.set_render_frame_host(pdf_host1);
-  navigation_handle1.set_url(GURL("navigation_handle_url"));
-
-  EXPECT_CALL(navigation_handle1, RegisterSubresourceOverride);
-  manager->ReadyToCommitNavigation(&navigation_handle1);
-
-  NiceMock<content::MockNavigationHandle> navigation_handle2;
-
-  // Set `navigation_handle2`'s frame host to a grandchild frame host. This acts
-  // as the PDF frame host.
-  ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
-  navigation_handle2.set_render_frame_host(pdf_host2);
-  navigation_handle2.set_url(GURL("navigation_handle_url"));
-
-  EXPECT_CALL(navigation_handle2, RegisterSubresourceOverride);
-  manager->ReadyToCommitNavigation(&navigation_handle2);
-
-  // The streams should persist after the PDF load to provide postMessage
-  // support and PDF saving.
-  ASSERT_EQ(manager, mime_handler_stream_manager());
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host1));
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host2));
-}
-
 // The initial load should claim the stream.
 TEST_F(MimeHandlerStreamManagerTest,
        ReadyToCommitNavigationCallsOnStreamClaimed) {
@@ -859,7 +690,8 @@ TEST_F(MimeHandlerStreamManagerTest,
       .WillOnce(SaveArg<1>(&captured_stream_info));
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
 
   NiceMock<content::MockNavigationHandle> navigation_handle;
   navigation_handle.set_render_frame_host(embedder_host);
@@ -883,7 +715,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   EXPECT_CALL(*delegate_ptr, OnStreamClaimed(_, _)).Times(0);
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
 
   NiceMock<content::MockNavigationHandle> navigation_handle;
   navigation_handle.set_render_frame_host(unrelated_host);
@@ -898,10 +731,10 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
 
   NiceMock<content::MockNavigationHandle> navigation_handle1;
@@ -930,10 +763,10 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   EXPECT_TRUE(mime_handler_stream_manager());
 
   // Re-add a duplicate stream.
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
 
   NiceMock<content::MockNavigationHandle> navigation_handle3;
   navigation_handle3.set_render_frame_host(embedder_host);
@@ -957,7 +790,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -993,7 +827,8 @@ TEST_P(MimeHandlerStreamManagerPostMessageTest,
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetContentFrameTreeNodeIdForTesting(
       embedder_host, content_host->GetFrameTreeNodeId());
@@ -1024,10 +859,10 @@ TEST_F(MimeHandlerStreamManagerTest,
       CreateChildRenderFrameHost(embedder_host, "extension host");
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
@@ -1040,77 +875,24 @@ TEST_F(MimeHandlerStreamManagerTest,
   EXPECT_FALSE(manager->DidPdfExtensionFinishNavigation(embedder_host));
 }
 
-// If the PDF URL is reloaded during a PDF load, `MimeHandlerStreamManager`
-// should ignore the initial PDF content frame navigation.
-TEST_F(MimeHandlerStreamManagerTest,
-       DidFinishNavigationReloadOverlappingNavigations) {
-  const GURL pdf_url(kOriginalUrl1);
-
-  // Set up the first PDF load and initial PDF content navigation handle.
-  content::RenderFrameHost* embedder_host =
-      NavigateAndCommit(main_rfh(), pdf_url);
-  auto* extension_host1 =
-      CreateChildRenderFrameHost(embedder_host, "extension host1");
-  auto* pdf_host1 = CreateChildRenderFrameHost(extension_host1, "pdf host1");
-
-  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->ClaimStreamInfoForTesting(embedder_host);
-  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
-                                               pdf_host1->GetFrameTreeNodeId());
-
-  NiceMock<content::MockNavigationHandle> navigation_handle1(pdf_url,
-                                                             pdf_host1);
-  ON_CALL(navigation_handle1, IsPdf).WillByDefault(Return(true));
-
-  // Before processing the initial PDF content navigation handle, "reload" the
-  // URL. The embedder host will stay the same, but there will be a new PDF
-  // content frame and navigation handle. The stream info will be overridden.
-  // Do not use `NavigateAndCommit()` here, as it would delete `manager` (which
-  // does not happen in production code).
-  auto* extension_host2 =
-      CreateChildRenderFrameHost(embedder_host, "extension host2");
-  auto* pdf_host2 = CreateChildRenderFrameHost(extension_host2, "pdf host2");
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id1",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
-  manager->ClaimStreamInfoForTesting(embedder_host);
-  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
-                                               pdf_host2->GetFrameTreeNodeId());
-
-  NiceMock<content::MockNavigationHandle> navigation_handle2(pdf_url,
-                                                             pdf_host2);
-  ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
-
-  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
-
-  // The initial PDF content navigation should not update any stream state.
-  manager->DidFinishNavigation(&navigation_handle1);
-  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
-
-  // The new, correct PDF content navigation should update the stream state.
-  manager->DidFinishNavigation(&navigation_handle2);
-  EXPECT_TRUE(manager->DidPdfContentNavigate(embedder_host));
-}
-
 // Verify `MimeHandlerStreamManager::PluginCanSave()` defaults to false
 // and `MimeHandlerStreamManager::SetPluginCanSave()` updates the value.
 TEST_F(MimeHandlerStreamManagerTest, PluginCanSave) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  bool plugin_can_save = false;
+  ON_CALL(*delegate, PluginCanSave).WillByDefault([&]() {
+    return plugin_can_save;
+  });
+  ON_CALL(*delegate, SetPluginCanSave).WillByDefault([&](bool can_save) {
+    plugin_can_save = can_save;
+  });
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1135,10 +917,18 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveUnknownHost) {
   other_host = NavigateAndCommit(other_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  bool plugin_can_save = false;
+  ON_CALL(*delegate, PluginCanSave).WillByDefault([&]() {
+    return plugin_can_save;
+  });
+  ON_CALL(*delegate, SetPluginCanSave).WillByDefault([&](bool can_save) {
+    plugin_can_save = can_save;
+  });
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1157,10 +947,18 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveViaDelegate) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
-                              "internal_id",
-                              pdf_test_util::GenerateSampleStreamContainer(1),
-                              std::make_unique<PdfHandlerStreamDelegate>());
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  bool plugin_can_save = false;
+  ON_CALL(*delegate, PluginCanSave).WillByDefault([&]() {
+    return plugin_can_save;
+  });
+  ON_CALL(*delegate, SetPluginCanSave).WillByDefault([&](bool can_save) {
+    plugin_can_save = can_save;
+  });
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
@@ -1178,11 +976,12 @@ TEST_F(MimeHandlerStreamManagerTest, AddStreamContainerWithDelegate) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  auto delegate = std::make_unique<PdfHandlerStreamDelegate>();
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
   auto* delegate_ptr = delegate.get();
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);

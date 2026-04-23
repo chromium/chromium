@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/pdf_test_util.h"
+#include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "url/gurl.h"
 
-namespace pdf_test_util {
+namespace extensions::mime_handler {
 
 std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
     int container_number) {
@@ -38,4 +38,4 @@ std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
       std::move(transferrable_loader), original_url);
 }
 
-}  // namespace pdf_test_util
+}  // namespace extensions::mime_handler
