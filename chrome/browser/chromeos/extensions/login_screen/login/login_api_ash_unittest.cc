@@ -75,16 +75,18 @@ const char kLaunchSamlUserSessionArguments[] =
 
 class MockExistingUserController : public ash::ExistingUserController {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage` and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   MockExistingUserController(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
       : ash::ExistingUserController(local_state,
                                     application_locale_storage,
-                                    std::move(shared_url_loader_factory)) {}
+                                    std::move(shared_url_loader_factory),
+                                    browser_policy_connector_ash) {}
 
   MockExistingUserController(const MockExistingUserController&) = delete;
 
@@ -198,7 +200,10 @@ class LoginApiUnittest : public ExtensionApiUnittest {
             TestingBrowserProcess::GetGlobal()
                 ->GetFeatures()
                 ->application_locale_storage(),
-            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+            TestingBrowserProcess::GetGlobal()
+                ->platform_part()
+                ->browser_policy_connector_ash());
     mock_lock_handler_ = std::make_unique<MockLoginApiLockHandler>();
     // Set `LOGIN_PRIMARY` as the default state.
 

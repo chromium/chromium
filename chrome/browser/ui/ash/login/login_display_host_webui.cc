@@ -1098,7 +1098,7 @@ void LoginDisplayHostWebUI::OnLoginPromptVisible() {
 void LoginDisplayHostWebUI::CreateExistingUserController() {
   existing_user_controller_ = std::make_unique<ExistingUserController>(
       &local_state_.get(), &application_locale_storage_.get(),
-      shared_url_loader_factory_);
+      shared_url_loader_factory_, &browser_policy_connector_ash_.get());
 }
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {

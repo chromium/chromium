@@ -219,7 +219,8 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     existing_user_controller_ = std::make_unique<ExistingUserController>(
         g_browser_process->local_state(),
         g_browser_process->GetFeatures()->application_locale_storage(),
-        g_browser_process->shared_url_loader_factory());
+        g_browser_process->shared_url_loader_factory(),
+        g_browser_process->platform_part()->browser_policy_connector_ash());
     EXPECT_CALL(*mock_login_display_host_, GetExistingUserController())
         .Times(AnyNumber())
         .WillRepeatedly(Return(existing_user_controller_.get()));

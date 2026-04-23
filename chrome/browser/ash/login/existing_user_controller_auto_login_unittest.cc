@@ -60,7 +60,10 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
 
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
