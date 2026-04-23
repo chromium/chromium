@@ -276,6 +276,8 @@
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
+      "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
+      "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
   },
   "boringssl_crypto_tests": {

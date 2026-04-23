@@ -328,6 +328,8 @@ targets.binaries.generated_script(
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
     merge = targets.merge(
         script = "//third_party/blink/tools/merge_web_test_results.py",

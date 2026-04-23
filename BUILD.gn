@@ -1385,17 +1385,7 @@ if (use_blink && !is_cronet_build) {
     args = _common_web_test_args
 
     # Use --wpt-only to skip tests under web_tests/virtual/
-    args += [
-      "--wpt-only",
-      "--inverted-test-launcher-filter-file",
-      "@WrappedPath(" +
-          rebase_path("//third_party/blink/web_tests/TestLists/chrome.filter",
-                      root_out_dir) + ")",
-      "--test-launcher-filter-file",
-      "@WrappedPath(" + rebase_path(
-              "//third_party/blink/web_tests/TestLists/content_shell.filter",
-              root_out_dir) + ")",
-    ]
+    args += [ "--wpt-only" ]
 
     data_deps = [
       ":blink_web_tests_support_data",
