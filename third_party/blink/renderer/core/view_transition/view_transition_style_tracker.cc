@@ -1856,12 +1856,8 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
   if (!scope_box->IsLayoutView()) {
     DCHECK(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled());
 
-    // TODO(crbug.com/394052227): Should we force compositing on the scope?
-    // If we do, its paint offset will always be zero.
-
     // Adjust for the scope element's borders and scrollbars.
     transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
-    transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
   }
 
   return transform;
