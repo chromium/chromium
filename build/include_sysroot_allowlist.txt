@@ -6,24 +6,49 @@
 # ie. If you add 'android/foo.h', it will silently ignore it on non-android
 # platforms.
 
-# go/keep-sorted start
-alloca.h
-assert.h
-avx512dqintrin.h
-endian.h
-features.h
-linux/limits.h
-locale.h
-pthread.h
-sched.h
-setjmp.h
-signal.h
-stdio.h
-strings.h
-sys/cdefs.h
-sys/select.h
-sys/types.h
-sys/ucontext.h
-time.h
+# Syntax: <path>[, <attribute>=<condition>[, ...]]
+# If an attribute is provided without a condition, it is assumed to be
+# unconditionally true
+# Supported attributes:
+# * Textual: Under what conditions the header should be textual
+# * Lazy: If true, the header is only added to the modulemap if it is included
+#   by another header.
+
+
+# Keep this list of headers alphabetically sorted, but comments should remain
+# attached to the entry under them, and blank lines should be preserved.
+
+# Include loop with sys/cdefs.h
+android/api-level.h, textual
+
+# We need posix_types_32.h to define __kernel_mode_t in the same TU. This way
+# it appears as an override rather than a second definition.
+asm-generic/posix_types.h, textual, lazy
+
+# Inherently textual
+assert.h, textual
+
+# This isn't guarded, so it needs to be textual to prevent duplicate
+# definitions.
+bits/mbstate_t.h, textual=False, lazy
+
+# If this is textual it complains that pid_types isn't accessible from sched.h
+bits/timespec.h, textual=False, lazy
+
+# See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
+# if linux/limits.h is non-textual, then limits.h undefs the limits.h
+# defined in the linux/limits.h module.
+# Thus, limits.h exports an undef.
+# if it's textual, limits.h undefs something it defined itself.
+limits.h, textual
+
+# See above comment about limits.h
+linux/limits.h, textual
+
+# In an include loop with features.h, but not on android
+sys/cdefs.h, textual=not is_android
+
 unistd.h
-# go/keep-sorted end
+
+# include_next works differently with modules
+wchar.h, textual

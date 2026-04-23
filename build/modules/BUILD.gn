@@ -84,5 +84,7 @@ if (use_unified_system_module) {
     configs -= [ "//build/config/coverage:default_coverage" ]
 
     deps = [ ":system_modulemap" ]
+
+    defines = [ "_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS" ]
   }
 }

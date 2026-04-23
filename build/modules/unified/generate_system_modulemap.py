@@ -33,44 +33,20 @@ _CPU_ARG = {
 _DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
 _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
 
+# Pre-C++23, libc++'s stdatomic.h includes the builtin stdatomic.h
+# But since then, it does not, and thus _Builtin_stdatomic is inaccessible.
+# This tool correctly says not to include the sysroot's stdatomic.h, but it is
+# used by the inaccessible _Builtin_stdatomic module, so we need to manually
+# remove it so it compiles.
+_STRIP = re.compile(r'\nmodule _Builtin_stdatomic \[system\] \{.*?\}\n',
+                    re.MULTILINE | re.DOTALL)
+
 
 # Path.absolute() only exists in python 3.11, gmacs still have python3.9
 # Similar to Path.resolve() but doesn't follow symlinks.
 def _absolute(p: pathlib.Path) -> pathlib.Path:
   return pathlib.Path(os.path.abspath(p))
 
-
-# These headers are known to be textual.
-_FORCE_TEXTUAL = {
-    # Inherently textual
-    'assert.h',
-    'stddef.h',
-    'stdio.h',
-    'stdlib.h',
-
-    # Include loop with features.h
-    'sys/cdefs.h',
-
-    # #include_next works differently with modules
-    'wchar.h',
-
-    # Required to be textual to compile properly.
-    'android/legacy_stdlib_inlines.h',
-    'android/legacy_threads_inlines.h',
-    'asm-generic/bitsperlong.h',
-    'asm-generic/posix_types.h',
-    'asm-generic/unistd.h',
-    'asm/posix_types.h',
-    'bits/threads_inlines.h',
-
-    # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
-    # if linux/limits.h is non-textual, then limits.h undefs the limits.h
-    # defined in the linux/limits.h module.
-    # Thus, limits.h exports an undef.
-    # if it's textual, limits.h undefs something it defined itself.
-    'linux/limits.h',
-    'limits.h',
-}
 
 # We consider sysroot headers to be, by default, private.
 # If we defaulted to public, a header included transitively in one configuration
@@ -81,12 +57,44 @@ _FORCE_TEXTUAL = {
 #
 # Thus, this is a list of *every* sysroot file directly included by chromium to
 # be precompiled.
-_ALLOWLIST_PATH = pathlib.Path(
-    __file__).parent / '../../include_sysroot_allowlist.txt'
-_PUBLIC_SYSROOT_HEADERS = [
-    line.strip() for line in _ALLOWLIST_PATH.read_text().split('\n')
-    if line and not line.startswith("#")
-]
+def parse_allowlist():
+  path = pathlib.Path(__file__).parent / '../../include_sysroot_allowlist.txt'
+  lines = [
+      line.strip() for line in path.read_text().split('\n')
+      if line and not line.startswith('#')
+  ]
+  force_textual = {}
+  allowlist = {}
+  last_path = None
+  for line in lines:
+    path, *attrs = line.split(", ")
+    if last_path is not None and path <= last_path:
+      raise ValueError(
+          f"Allowlist is not sorted. {path} should be before {last_path}")
+    last_path = path
+
+    textual = None
+    lazy = None
+    for attr in attrs:
+      if attr == 'textual':
+        textual = 'True'
+      elif attr.startswith('textual='):
+        textual = attr[8:]
+      elif attr == 'lazy':
+        lazy = 'True'
+      elif attr.startswith('lazy='):
+        lazy = attr[5:]
+      else:
+        raise ValueError(
+            f"Unknown attribute {repr(attr)} in allowlist for {path}")
+    allowlist[path] = lazy
+    if textual is not None:
+      force_textual[path] = textual
+
+  return allowlist, force_textual
+
+
+_HEADERS, _FORCE_TEXTUAL = parse_allowlist()
 
 # Disabled headers are present in modulemaps, but we should assume that they are
 # unable to be used (note that this inherently means they must be textual).
@@ -142,13 +150,6 @@ class Header:
   private: bool
   textual: bool
   requires: list[str] = dataclasses.field(default_factory=list)
-
-
-def _should_be_textual(short_path: pathlib.Path) -> bool:
-  """Returns whether a header should be marked textual."""
-  if 'bits' in short_path.parts:
-    return True
-  return str(short_path) in _FORCE_TEXTUAL
 
 
 def parse_modulemap(
@@ -220,6 +221,15 @@ def calculate_transitive_headers(clang_args: list[str],
   Returns a list of all headers discovered that are part of the sysroot.
   """
   sysroot = _absolute(sysroot)
+  context = {
+      'is_linux': target_os == 'linux',
+      'is_android': target_os == 'android',
+      'is_ios': target_os == 'ios',
+      'is_mac': target_os == 'mac',
+      'is_apple': target_os == 'mac' or target_os == 'ios',
+      'is_fuchsia': target_os == 'fuchsia',
+      'is_win': target_os == 'win',
+  }
   with tempfile.TemporaryDirectory() as tmpdir:
     tmpdir_path = pathlib.Path(tmpdir)
     source_file = tmpdir_path / 'dummy.cpp'
@@ -233,12 +243,13 @@ def calculate_transitive_headers(clang_args: list[str],
             if all(_requires_met(r, target_os, target_cpu) for r in h.requires):
               f.write(f'#include <{h.path}>\n')
           input_headers.add(include_dir / h.path)
-      for h in extra_public_headers:
+      for h, lazy in extra_public_headers.items():
         # Intentionally do this so that headers such as android/* just do
         # nothing on non-android platforms instead of erroring out.
-        f.write(f'#if __has_include(<{h}>)\n')
-        f.write(f'#include <{h}>\n')
-        f.write(f'#endif\n')
+        if lazy is None or not eval(lazy, context):
+          f.write(f'#if __has_include(<{h}>)\n')
+          f.write(f'#include <{h}>\n')
+          f.write(f'#endif\n')
 
     cmd = clang_args + [
         # We only need to preprocess for performance reasons, and don't even
@@ -292,7 +303,10 @@ cd "{os.getcwd()}"
         rel = str(full.relative_to(sysroot))
         rel = _STRIP_PREFIX.sub('', rel)
         private = rel not in extra_public_headers
-        textual = _should_be_textual(pathlib.Path(rel))
+        if rel in _FORCE_TEXTUAL:
+          textual = eval(_FORCE_TEXTUAL[rel], context)
+        else:
+          textual = 'bits' in pathlib.Path(rel).parts
       except ValueError:
         # relative_to raises ValueError if it's outside the sysroot
         # It must be incorrectly missing from the modulemap.
@@ -327,7 +341,7 @@ def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
       mm_content = mm_content.replace(
           '@LIBCXX_CONFIG_SITE_MODULE_ENTRY@ // generated via CMake',
           f'textual header "{custom_header_prefix}/__config_site"')
-      s.write(mm_content)
+      s.write(_STRIP.sub('', mm_content))
       s.write('\n')
 
     for header in headers:
@@ -398,7 +412,7 @@ def main(args):
       ],
       include_dirs=[parse_modulemap(mm) for mm in args.modulemap],
       sysroot=args.sysroot,
-      extra_public_headers=_PUBLIC_SYSROOT_HEADERS,
+      extra_public_headers=_HEADERS,
       target_os=args.os,
       target_cpu=args.cpu,
       debug=args.debug,
