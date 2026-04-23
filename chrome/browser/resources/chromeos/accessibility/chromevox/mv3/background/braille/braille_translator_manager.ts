@@ -26,6 +26,7 @@ export class BrailleTranslatorManager {
   private defaultTranslator_: BrailleTranslator|null = null;
   private uncontractedTableId_: string|null = null;
   private uncontractedTranslator_: BrailleTranslator|null = null;
+  private tenjiTranslatorFactory_: (() => TenjiTranslator)|null = null;
 
   static instance: BrailleTranslatorManager;
 
@@ -105,7 +106,9 @@ export class BrailleTranslatorManager {
     // case that does not rely on liblouis tables.
     if (!(this.defaultTranslator_ instanceof TenjiTranslator) &&
         this.useTenjiTranslator_(brailleTable)) {
-      const tenjiTranslator = new TenjiTranslator();
+      const tenjiTranslator = this.tenjiTranslatorFactory_ ?
+          this.tenjiTranslatorFactory_() :
+          new TenjiTranslator();
       try {
         await tenjiTranslator.init();
         this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
@@ -283,6 +286,15 @@ export class BrailleTranslatorManager {
   /** Loads liblouis tables and returns a promise resolved when loaded. */
   async loadTablesForTest(): Promise<void> {
     await this.fetchTables_();
+  }
+
+  /**
+   * Overrides the TenjiTranslator factory used in refresh(). The factory is
+   * invoked once per refresh() call that would normally construct a
+   * TenjiTranslator. Pass a factory whose init() rejects to simulate failures.
+   */
+  setTenjiTranslatorFactoryForTest(factory: () => TenjiTranslator): void {
+    this.tenjiTranslatorFactory_ = factory;
   }
 }
 

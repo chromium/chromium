@@ -107,3 +107,92 @@ TEST_F(
         this.manager.refresh('en-ueb-g2');
       });
     });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithTenjiTableId',
+    function() {
+      this.addChangeListener(function() {
+        this.addChangeListener(function() {
+          assertTrue(
+              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertNotEquals(null, this.manager.getExpandingTranslator());
+          assertEquals(null, this.manager.getUncontractedTranslator());
+        });
+        this.manager.refresh('ja-tenji');
+      });
+    });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithTenjiTableIdAgain',
+    function() {
+      this.addChangeListener(function() {
+        this.addChangeListener(function() {
+          // After switching to Tenji, refreshing with the same table id should
+          // return early without firing the change listener.
+          this.manager.addChangeListener(function() {
+            assertNotReached('Refresh should not be called without a change.');
+          });
+          this.manager.refresh('ja-tenji');
+        });
+        this.manager.refresh('ja-tenji');
+      });
+    });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testRefreshFromTenjiToLiblouisTable', function() {
+      this.addChangeListener(function() {
+        this.addChangeListener(function() {
+          assertTrue(
+              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          this.addChangeListener(function() {
+            assertFalse(
+                this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+            assertEquals(
+                'en-ueb-g2', this.manager.getDefaultTranslator().table.id);
+          });
+          this.manager.refresh('en-ueb-g2');
+        });
+        this.manager.refresh('ja-tenji');
+      });
+    });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testRefreshWithJapaneseLocaleAndNoTableId', function() {
+      this.addChangeListener(function() {
+        // Simulate a Japanese UI locale so that refresh('') picks
+        // TenjiTranslator.
+        const origGetMessage = chrome.i18n.getMessage;
+        chrome.i18n.getMessage = (key) =>
+            key === '@@ui_locale' ? 'ja' : origGetMessage(key);
+        this.addChangeListener(function() {
+          chrome.i18n.getMessage = origGetMessage;
+          assertTrue(
+              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertEquals(null, this.manager.getUncontractedTranslator());
+          assertNotEquals(null, this.manager.getExpandingTranslator());
+        });
+        this.manager.refresh('');
+      });
+    });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testTenjiInitFailureFallsBackToJaKantenji', function() {
+      this.addChangeListener(function() {
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => ({
+              init() {
+                return Promise.reject(new Error('Fake init failure'));
+              },
+            }));
+        this.addChangeListener(function() {
+          assertFalse(
+              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertEquals(
+              'ja-kantenji', this.manager.getDefaultTranslator().table.id);
+        });
+        this.manager.refresh('ja-tenji');
+      });
+    });

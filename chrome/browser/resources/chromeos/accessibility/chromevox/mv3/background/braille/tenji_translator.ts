@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BackTranslateCallback, BrailleTranslator, TranslateCallback} from './braille_translator.js';
 
 export class TenjiTranslator implements BrailleTranslator {
@@ -24,3 +26,5 @@ export class TenjiTranslator implements BrailleTranslator {
     callback(null);
   }
 }
+
+TestImportManager.exportForTesting(TenjiTranslator);
