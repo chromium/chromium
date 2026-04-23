@@ -142,6 +142,11 @@
       var(--color-composebox-tab-selector-button-selected));
 }
 
+.dropdown-item[disabled] #multi-tab-add,
+.dropdown-item[disabled] #multi-tab-check {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
+}
+
 #model-check {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
