@@ -49,6 +49,10 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text);
 
+  // Dismisses the selection UI (widget and/or nudge).
+  // Virtual for testing.
+  virtual void DismissUI(bool keep_nudge);
+
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

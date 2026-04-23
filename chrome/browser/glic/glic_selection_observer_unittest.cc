@@ -14,6 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -34,15 +35,26 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     update_count_++;
   }
 
+  void DismissUI(bool keep_nudge) override {
+    dismiss_ui_called_ = true;
+    dismiss_ui_kept_nudge_ = keep_nudge;
+    GlicSelectionObserver::DismissUI(keep_nudge);
+  }
+
   const std::optional<std::u16string>& last_processed_text() const {
     return last_processed_text_;
   }
 
   int update_count() const { return update_count_; }
 
+  bool dismiss_ui_called() const { return dismiss_ui_called_; }
+  bool dismiss_ui_kept_nudge() const { return dismiss_ui_kept_nudge_; }
+
   void Reset() {
     last_processed_text_.reset();
     update_count_ = 0;
+    dismiss_ui_called_ = false;
+    dismiss_ui_kept_nudge_ = false;
   }
 
   // Expose methods for testing.
@@ -53,6 +65,8 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
+  bool dismiss_ui_called_ = false;
+  bool dismiss_ui_kept_nudge_ = false;
 };
 
 }  // namespace
@@ -81,6 +95,10 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestGlicSelectionObserver> observer_;
 
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
+
+  content::RenderWidgetHost* GetRenderWidgetHost() {
+    return web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  }
 
   size_t GetRwhByFrameCount() const { return observer_->rwh_by_frame_.size(); }
 };
@@ -286,6 +304,65 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"Mouse Selection", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+
+  // Keyboard events should dismiss UI with keep_nudge = false.
+  // The nudge should be dismissed.
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillOnce(testing::Return(nullptr));
+  blink::WebKeyboardEvent key_event(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, key_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  observer->Reset();
+
+  // Mouse clicks should dismiss UI with keep_nudge = false.
+  // The nudge should be dismissed.
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillOnce(testing::Return(nullptr));
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  observer->Reset();
+
+  // Scroll events should dismiss UI with keep_nudge = true.
+  // The nudge should NOT be dismissed.
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface()).Times(0);
+  blink::WebMouseWheelEvent scroll_event(
+      blink::WebInputEvent::Type::kMouseWheel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, scroll_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_TRUE(observer->dismiss_ui_kept_nudge());
+  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  observer->Reset();
 }
 
 }  // namespace glic

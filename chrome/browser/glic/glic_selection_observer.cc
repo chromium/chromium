@@ -175,24 +175,6 @@ void GlicSelectionObserver::OnInputEvent(
     return;
   }
 
-  auto dismiss_ui = [this]() {
-    if (selection_widget_) {
-      selection_widget_->CloseWithReason(
-          views::Widget::ClosedReason::kLostFocus);
-    }
-    if (auto* tab_interface =
-            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
-      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
-          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                       /*anchored_message_text=*/std::string(),
-                                       GlicNudgeActivity::kNudgeDismissed,
-                                       base::DoNothing());
-        }
-      }
-    }
-  };
-
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kMouseDown:
     case blink::WebInputEvent::Type::kPointerDown:
@@ -210,7 +192,7 @@ void GlicSelectionObserver::OnInputEvent(
 
       is_key_selection_ = false;
       bounds_retry_count_ = 0;
-      dismiss_ui();
+      DismissUI(/*keep_nudge=*/false);
 
       // Workaround for a bug in Blink: when a user single-clicks directly on
       // top of an existing selection, Blink collapses the selection on MouseUp
@@ -248,12 +230,12 @@ void GlicSelectionObserver::OnInputEvent(
     case blink::WebInputEvent::Type::kRawKeyDown:
     case blink::WebInputEvent::Type::kKeyDown:
       is_key_selection_ = true;
-      dismiss_ui();
+      DismissUI(/*keep_nudge=*/false);
       break;
 
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
-      dismiss_ui();
+      DismissUI(/*keep_nudge=*/true);
       break;
 
     default:
@@ -299,6 +281,28 @@ void GlicSelectionObserver::OnTextSelectionChanged(
   selection_debounce_timer_.Start(
       FROM_HERE, kSelectionProcessingDelay, this,
       &GlicSelectionObserver::ProcessPendingSelection);
+}
+
+void GlicSelectionObserver::DismissUI(bool keep_nudge) {
+  if (selection_widget_) {
+    selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  }
+  // Only dismiss the nudge if this is NOT a scroll event.
+  // The nudge lives in the toolbar and doesn't need to be hidden when
+  // scrolling.
+  if (!keep_nudge) {
+    if (auto* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
+        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
+          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
+                                       /*anchored_message_text=*/std::string(),
+                                       GlicNudgeActivity::kNudgeDismissed,
+                                       base::DoNothing());
+        }
+      }
+    }
+  }
 }
 
 void GlicSelectionObserver::ProcessPendingSelection() {
