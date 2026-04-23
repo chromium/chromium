@@ -5,6 +5,7 @@
 #include "net/http/http_stream_key.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/types/optional_ref.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -27,6 +28,7 @@ HttpStreamKey::HttpStreamKey(
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool disable_cert_network_fetches,
+    handles::NetworkHandle target_network,
     base::optional_ref<const AlternativeService> alt_service)
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
@@ -37,6 +39,7 @@ HttpStreamKey::HttpStreamKey(
               : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy),
       disable_cert_network_fetches_(disable_cert_network_fetches),
+      target_network_(target_network),
       alt_service_(alt_service.CopyAsOptional()) {
   CHECK(socket_tag_ == SocketTag()) << "Socket tag is not supported yet";
 
@@ -57,10 +60,12 @@ bool HttpStreamKey::operator==(const HttpStreamKey& other) const = default;
 bool HttpStreamKey::operator<(const HttpStreamKey& other) const {
   return std::tie(destination_, privacy_mode_, socket_tag_,
                   network_anonymization_key_, secure_dns_policy_,
-                  disable_cert_network_fetches_, alt_service_) <
+                  disable_cert_network_fetches_, alt_service_,
+                  target_network_) <
          std::tie(other.destination_, other.privacy_mode_, other.socket_tag_,
                   other.network_anonymization_key_, other.secure_dns_policy_,
-                  other.disable_cert_network_fetches_, other.alt_service_);
+                  other.disable_cert_network_fetches_, other.alt_service_,
+                  other.target_network_);
 }
 
 std::string HttpStreamKey::ToString() const {
@@ -70,6 +75,9 @@ std::string HttpStreamKey::ToString() const {
            secure_dns_policy_),
        ClientSocketPool::GroupId::GetPrivacyModeGroupIdPrefix(privacy_mode_),
        destination_.Serialize(),
+       (target_network_ != handles::kInvalidNetworkHandle
+            ? base::StrCat({"[", base::ToString(target_network_), "]"})
+            : ""),
        NetworkAnonymizationKey::IsPartitioningEnabled()
            ? base::StrCat(
                  {" <", network_anonymization_key_.ToDebugString(), ">"})
@@ -85,6 +93,7 @@ base::DictValue HttpStreamKey::ToValue() const {
   dict.Set("secure_dns_policy",
            SecureDnsPolicyToDebugString(secure_dns_policy_));
   dict.Set("disable_cert_network_fetches", disable_cert_network_fetches_);
+  dict.Set("target_network", base::ToString(target_network_));
   return dict;
 }
 

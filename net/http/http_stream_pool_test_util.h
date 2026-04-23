@@ -323,6 +323,11 @@ class StreamKeyBuilder {
     return *this;
   }
 
+  StreamKeyBuilder& set_target_network(handles::NetworkHandle target_network) {
+    target_network_ = target_network;
+    return *this;
+  }
+
   HttpStreamKey Build() const;
 
  private:
@@ -331,6 +336,7 @@ class StreamKeyBuilder {
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool disable_cert_network_fetches_ = true;
   std::optional<AlternativeService> alt_service_;
+  handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 };
 
 // An HttpStreamPool::Job::Delegate implementation for tests.

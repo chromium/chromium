@@ -28,6 +28,7 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
     NextProtoSet allowed_alpns,
     int load_flags,
     ProxyInfo proxy_info,
+    handles::NetworkHandle target_network,
     NetLogWithSource factory_job_controller_net_log)
     : destination(std::move(destination)),
       privacy_mode(privacy_mode),
@@ -42,6 +43,7 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
       allowed_alpns(allowed_alpns),
       load_flags(load_flags),
       proxy_info(std::move(proxy_info)),
+      target_network(target_network),
       factory_job_controller_net_log(
           std::move(factory_job_controller_net_log)) {}
 

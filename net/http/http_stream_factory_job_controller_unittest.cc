@@ -7549,7 +7549,7 @@ TEST_F(HttpStreamFactoryJobControllerPoolTest, PreconnectSync) {
   const HttpStreamKey stream_key(
       url::SchemeHostPort("http", "www.example.com", 80), PRIVACY_MODE_DISABLED,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-      /*disable_cert_network_fetches=*/false);
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
   HttpStreamPool::Group& group = pool()->GetOrCreateGroupForTesting(stream_key);
   group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
 

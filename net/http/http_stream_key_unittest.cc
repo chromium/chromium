@@ -28,29 +28,34 @@ static const url::SchemeHostPort kHost("https", "www.example.com", 443);
 TEST(HttpStreamKeyTest, Equality) {
   HttpStreamKey key(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true);
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle);
 
   EXPECT_EQ(key,
             HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                          /*disable_cert_network_fetches=*/true));
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle));
 
   EXPECT_NE(key,
             HttpStreamKey(url::SchemeHostPort("https", "othersite", 443),
                           PRIVACY_MODE_DISABLED, SocketTag(),
                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                          /*disable_cert_network_fetches=*/true));
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle));
 
   EXPECT_NE(key,
             HttpStreamKey(kHost, PRIVACY_MODE_ENABLED, SocketTag(),
                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                          /*disable_cert_network_fetches=*/true));
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle));
 
   HttpStreamKey anonymized_key(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                                NetworkAnonymizationKey::CreateSameSite(
                                    SchemefulSite(GURL("http://a.test/"))),
                                SecureDnsPolicy::kAllow,
-                               /*disable_cert_network_fetches=*/true);
+                               /*disable_cert_network_fetches=*/true,
+                               handles::kInvalidNetworkHandle);
   if (NetworkAnonymizationKey::IsPartitioningEnabled()) {
     EXPECT_NE(key, anonymized_key);
   } else {
@@ -60,39 +65,53 @@ TEST(HttpStreamKeyTest, Equality) {
   EXPECT_NE(key,
             HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                           NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                          /*disable_cert_network_fetches=*/true));
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle));
 
   EXPECT_NE(key,
             HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                          /*disable_cert_network_fetches=*/false));
+                          /*disable_cert_network_fetches=*/false,
+                          handles::kInvalidNetworkHandle));
 }
 
 TEST(HttpStreamKeyTest, OrderedSet) {
   const std::vector<HttpStreamKey> stream_keys = {
       HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true),
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle),
       HttpStreamKey(url::SchemeHostPort("https", "othersite", 443),
                     PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true),
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle),
       HttpStreamKey(kHost, PRIVACY_MODE_ENABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true),
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle),
       // This has different network_anonymization_key, but it's the same as the
       // first one when anonymization is disabled.
       HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey::CreateSameSite(
                         SchemefulSite(GURL("http://a.test/"))),
                     SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true),
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle),
       HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                    /*disable_cert_network_fetches=*/true),
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle),
       HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/false),
+                    /*disable_cert_network_fetches=*/false,
+                    handles::kInvalidNetworkHandle),
+      HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true, 1),
+      HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true, 2),
   };
 
   const std::set<HttpStreamKey> key_set(stream_keys.begin(), stream_keys.end());
@@ -117,14 +136,15 @@ TEST(HttpStreamKeyTest, Anonymization) {
 
     const HttpStreamKey key(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
                             NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                            /*disable_cert_network_fetches=*/true);
+                            /*disable_cert_network_fetches=*/true,
+                            handles::kInvalidNetworkHandle);
 
     const HttpStreamKey anonymized_key(
         kHost, PRIVACY_MODE_DISABLED, SocketTag(),
         NetworkAnonymizationKey::CreateSameSite(
             SchemefulSite(GURL("http://a.test/"))),
         SecureDnsPolicy::kAllow,
-        /*disable_cert_network_fetches=*/true);
+        /*disable_cert_network_fetches=*/true, handles::kInvalidNetworkHandle);
 
     if (enabled) {
       EXPECT_NE(key, anonymized_key);
@@ -134,6 +154,25 @@ TEST(HttpStreamKeyTest, Anonymization) {
   }
 }
 
+TEST(HttpStreamKeyTest, TargetNetworkEquality) {
+  const HttpStreamKey key(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle);
+
+  const HttpStreamKey target_network_1_key(
+      kHost, PRIVACY_MODE_DISABLED, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/true, 1);
+  const HttpStreamKey target_network_2_key(
+      kHost, PRIVACY_MODE_DISABLED, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/true, 2);
+
+  EXPECT_NE(key, target_network_1_key);
+  EXPECT_NE(target_network_1_key, target_network_2_key);
+}
+
 TEST(HttpStreamKeyTest, ToSpdySessionKey) {
   const url::SchemeHostPort kHttpHost("http", "example.com", 80);
   const url::SchemeHostPort kHttpsHost("https", "example.com", 443);
@@ -141,14 +180,16 @@ TEST(HttpStreamKeyTest, ToSpdySessionKey) {
   SpdySessionKey http_key =
       HttpStreamKey(kHttpHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle)
           .CalculateSpdySessionKey();
   ASSERT_TRUE(http_key.host_port_pair().IsEmpty());
 
   SpdySessionKey https_key =
       HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle)
           .CalculateSpdySessionKey();
   ASSERT_EQ(https_key,
             SpdySessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
@@ -156,6 +197,28 @@ TEST(HttpStreamKeyTest, ToSpdySessionKey) {
                            SessionUsage::kDestination, SocketTag(),
                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                            /*disable_cert_verification_network_fetches=*/true));
+}
+
+TEST(HttpStreamKeyTest, ToSpdySessionKeyWithTargetNetworkEquality) {
+  const HttpStreamKey key(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*disable_cert_network_fetches=*/true,
+                          handles::kInvalidNetworkHandle);
+  const HttpStreamKey target_network_1_key(
+      kHost, PRIVACY_MODE_DISABLED, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/true, 1);
+  const HttpStreamKey target_network_2_key(
+      kHost, PRIVACY_MODE_DISABLED, SocketTag(), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/true, 2);
+
+  // TODO(https://crbug.com/495684670): Update these assertions to _NE once
+  //  SpdySessionKey supports target_network.
+  ASSERT_EQ(key.CalculateSpdySessionKey(),
+            target_network_1_key.CalculateSpdySessionKey());
+  ASSERT_EQ(target_network_1_key.CalculateSpdySessionKey(),
+            target_network_2_key.CalculateSpdySessionKey());
 }
 
 TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
@@ -170,7 +233,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
   QuicSessionAliasKey http_key =
       HttpStreamKey(kHttpHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle)
           .CalculateQuicSessionAliasKey();
   EXPECT_TRUE(http_key.session_key().host().empty());
   EXPECT_FALSE(http_key.destination().IsValid());
@@ -178,7 +242,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
   QuicSessionAliasKey https_key =
       HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle)
           .CalculateQuicSessionAliasKey();
   EXPECT_EQ(https_key.session_key(),
             QuicSessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
@@ -193,7 +258,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
   QuicSessionAliasKey https_key_with_h2_alt_service =
       HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true, kHttp2AltService)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle, kHttp2AltService)
           .CalculateQuicSessionAliasKey();
   EXPECT_TRUE(https_key_with_h2_alt_service.session_key().host().empty());
   EXPECT_FALSE(https_key_with_h2_alt_service.destination().IsValid());
@@ -201,7 +267,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
   QuicSessionAliasKey different_origin_key =
       HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                    /*disable_cert_network_fetches=*/true, kQuicAltService)
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle, kQuicAltService)
           .CalculateQuicSessionAliasKey();
   EXPECT_EQ(different_origin_key.session_key(),
             QuicSessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
@@ -211,6 +278,31 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
                            /*require_dns_https_alpn=*/false,
                            /*disable_cert_verification_network_fetches=*/true));
   EXPECT_EQ(different_origin_key.destination(), kHttpsAliasHost);
+}
+
+TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKeyTargetNetworkEquality) {
+  QuicSessionAliasKey key =
+      HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true,
+                    handles::kInvalidNetworkHandle)
+          .CalculateQuicSessionAliasKey();
+
+  QuicSessionAliasKey target_network_1_key =
+      HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true, 1)
+          .CalculateQuicSessionAliasKey();
+  QuicSessionAliasKey target_network_2_key =
+      HttpStreamKey(kHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true, 2)
+          .CalculateQuicSessionAliasKey();
+
+  // TODO(https://crbug.com/495684670): Update these assertions to _NE once
+  // QuicSessionAliasKey supports target_network.
+  EXPECT_EQ(key, target_network_1_key);
+  EXPECT_EQ(target_network_1_key, target_network_2_key);
 }
 
 }  // namespace net

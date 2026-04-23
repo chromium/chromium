@@ -46,7 +46,8 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
                           SocketTag(),
                           NetworkAnonymizationKey(),
                           SecureDnsPolicy::kAllow,
-                          /*disable_cert_network_fetches=*/false) {
+                          /*disable_cert_network_fetches=*/false,
+                          handles::kInvalidNetworkHandle) {
     feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
     session_deps_.ignore_ip_address_changes = false;
     InitializePool();

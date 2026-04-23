@@ -1638,7 +1638,8 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, disable_cert_network_fetches,
       advertised_alt_svc_.info, advertised_alt_svc_.state, allowed_alpns,
-      request_info_.load_flags, proxy_info_, net_log_);
+      request_info_.load_flags, proxy_info_, request_info_.target_network,
+      net_log_);
   if (is_preconnect_) {
     auto split_callback = base::SplitOnceCallback(
         base::IgnoreArgs<int>(std::move(preconnect_callback_)));

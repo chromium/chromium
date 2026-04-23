@@ -16059,7 +16059,8 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
               NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-              /*disable_cert_network_fetches=*/false),
+              /*disable_cert_network_fetches=*/false,
+              handles::kInvalidNetworkHandle),
           false,
       },
       {
@@ -16074,7 +16075,8 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
               NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-              /*disable_cert_network_fetches=*/false),
+              /*disable_cert_network_fetches=*/false,
+              handles::kInvalidNetworkHandle),
           false,
       },
 
@@ -16091,7 +16093,8 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
               NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-              /*disable_cert_network_fetches=*/false),
+              /*disable_cert_network_fetches=*/false,
+              handles::kInvalidNetworkHandle),
           true,
       },
       {
@@ -16107,7 +16110,8 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
                                             "[2001:1418:13:1::25]", 443),
                         PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                        /*disable_cert_network_fetches=*/false),
+                        /*disable_cert_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle),
           true,
       },
       {
@@ -16123,7 +16127,8 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
                                             "host.with.alternate", 443),
                         PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                        /*disable_cert_network_fetches=*/false),
+                        /*disable_cert_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle),
           true,
       },
   };

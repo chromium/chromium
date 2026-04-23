@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -43,6 +44,7 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
       NetworkAnonymizationKey network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       bool disable_cert_network_fetches,
+      handles::NetworkHandle target_network,
       base::optional_ref<const AlternativeService> alt_service = std::nullopt);
 
   ~HttpStreamKey();
@@ -68,6 +70,8 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   bool disable_cert_network_fetches() const {
     return disable_cert_network_fetches_;
   }
+
+  handles::NetworkHandle target_network() const { return target_network_; }
 
   std::string ToString() const;
 
@@ -106,6 +110,7 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   NetworkAnonymizationKey network_anonymization_key_;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool disable_cert_network_fetches_ = false;
+  handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
   std::optional<AlternativeService> alt_service_;
 };
 

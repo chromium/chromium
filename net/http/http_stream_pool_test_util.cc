@@ -423,21 +423,23 @@ StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
   privacy_mode_ = key.privacy_mode();
   secure_dns_policy_ = key.secure_dns_policy();
   disable_cert_network_fetches_ = key.disable_cert_network_fetches();
+  target_network_ = key.target_network();
   return *this;
 }
 
 HttpStreamKey StreamKeyBuilder::Build() const {
   return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
                        NetworkAnonymizationKey(), secure_dns_policy_,
-                       disable_cert_network_fetches_, alt_service_);
+                       disable_cert_network_fetches_, target_network_,
+                       alt_service_);
 }
 
 HttpStreamKey GroupIdToHttpStreamKey(
     const ClientSocketPool::GroupId& group_id) {
-  return HttpStreamKey(group_id.destination(), group_id.privacy_mode(),
-                       SocketTag(), group_id.network_anonymization_key(),
-                       group_id.secure_dns_policy(),
-                       group_id.disable_cert_network_fetches());
+  return HttpStreamKey(
+      group_id.destination(), group_id.privacy_mode(), SocketTag(),
+      group_id.network_anonymization_key(), group_id.secure_dns_policy(),
+      group_id.disable_cert_network_fetches(), group_id.target_network());
 }
 
 void WaitForAttemptManagerComplete(

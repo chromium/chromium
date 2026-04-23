@@ -159,7 +159,7 @@ class Preconnector {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, AdvertisedAltSvcState::kUnknown,
-            allowed_alpns_, load_flags_, proxy_info_,
+            allowed_alpns_, load_flags_, proxy_info_, target_network_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
@@ -200,6 +200,7 @@ class Preconnector {
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   int load_flags_ = 0;
+  handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 
   std::optional<int> result_;
   base::OnceClosure wait_result_closure_;
@@ -301,7 +302,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, AdvertisedAltSvcState::kUnknown,
-            allowed_alpns_, load_flags_, proxy_info_,
+            allowed_alpns_, load_flags_, proxy_info_, target_network_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
@@ -447,6 +448,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   int load_flags_ = 0;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
+  handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 
   std::unique_ptr<HttpStreamRequest> request_;
 
@@ -1988,15 +1990,15 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
   pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
 
-  const HttpStreamKey key_a(url::SchemeHostPort("http", "a.test", 80),
-                            PRIVACY_MODE_DISABLED, SocketTag(),
-                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                            /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey key_a(
+      url::SchemeHostPort("http", "a.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
 
-  const HttpStreamKey key_b(url::SchemeHostPort("http", "b.test", 80),
-                            PRIVACY_MODE_DISABLED, SocketTag(),
-                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                            /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey key_b(
+      url::SchemeHostPort("http", "b.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
 
   // Create HttpStreams up to the group limit in group A.
   Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
@@ -2485,15 +2487,15 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
   pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
 
-  const HttpStreamKey key_a(url::SchemeHostPort("http", "a.test", 80),
-                            PRIVACY_MODE_DISABLED, SocketTag(),
-                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                            /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey key_a(
+      url::SchemeHostPort("http", "a.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
 
-  const HttpStreamKey key_b(url::SchemeHostPort("http", "b.test", 80),
-                            PRIVACY_MODE_DISABLED, SocketTag(),
-                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                            /*disable_cert_network_fetches=*/false);
+  const HttpStreamKey key_b(
+      url::SchemeHostPort("http", "b.test", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false, handles::kInvalidNetworkHandle);
 
   // Add idle streams up to the group's limit in group A.
   Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
