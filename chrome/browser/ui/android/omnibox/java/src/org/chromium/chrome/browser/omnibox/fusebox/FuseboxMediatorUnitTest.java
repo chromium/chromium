@@ -272,6 +272,16 @@ public class FuseboxMediatorUnitTest {
                             new byte[0],
                             SystemClock.elapsedRealtime(),
                             FuseboxAttachmentButtonType.CAMERA);
+        } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_PDF) {
+            doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
+            attachment =
+                    FuseboxAttachment.forPdf(
+                            /* thumbnail= */ null,
+                            title,
+                            "application/pdf",
+                            new byte[0],
+                            SystemClock.elapsedRealtime(),
+                            FuseboxAttachmentButtonType.FILES);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -958,6 +968,14 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
+        assertEquals(1, mAttachments.size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
+        assertEquals(0, mAttachments.size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+
+        addAttachment("title", "token-pdf", FuseboxAttachmentType.ATTACHMENT_PDF);
         assertEquals(1, mAttachments.size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 

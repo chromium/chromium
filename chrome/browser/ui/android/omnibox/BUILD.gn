@@ -483,6 +483,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/BottomSheetRectProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/DynamicRectProviderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentDetailsFetcherUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentModelListUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentRecyclerViewUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentUnitTest.java",

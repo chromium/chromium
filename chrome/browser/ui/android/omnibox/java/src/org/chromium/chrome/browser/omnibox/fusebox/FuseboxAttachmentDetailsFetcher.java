@@ -22,8 +22,8 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,6 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private final Uri mUri;
-    private final @FuseboxAttachmentType int mType;
     private final Callback<FuseboxAttachment> mCallback;
     private final long mStartTime = SystemClock.elapsedRealtime();
     private final @FuseboxAttachmentButtonType int mButtonType;
@@ -55,13 +54,11 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
             Context context,
             ContentResolver contentResolver,
             Uri uri,
-            @FuseboxAttachmentType int type,
             Callback<FuseboxAttachment> callback,
             @FuseboxAttachmentButtonType int buttonType) {
         mContext = context;
         mContentResolver = contentResolver;
         mUri = uri;
-        mType = type;
         mCallback = callback;
         mButtonType = buttonType;
     }
@@ -131,26 +128,36 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     protected void onPostExecute(Boolean result) {
         if (result == null || !result) return;
 
-        FuseboxAttachment attachment;
-        if (mType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
-            attachment =
-                    FuseboxAttachment.forImage(
-                            assumeNonNull(mThumbnail),
-                            assumeNonNull(mTitle),
-                            assumeNonNull(mMimeType),
-                            assumeNonNull(mData),
-                            mStartTime,
-                            mButtonType);
-        } else {
-            attachment =
-                    FuseboxAttachment.forFile(
-                            assumeNonNull(mThumbnail),
-                            assumeNonNull(mTitle),
-                            assumeNonNull(mMimeType),
-                            assumeNonNull(mData),
-                            mStartTime,
-                            mButtonType);
-        }
+        String mimeType = assumeNonNull(mMimeType);
+
+        FuseboxAttachment attachment =
+                switch (MimeTypeUtils.getTypeFromMimeType(mimeType)) {
+                    case MimeTypeUtils.Type.IMAGE ->
+                            FuseboxAttachment.forImage(
+                                    mThumbnail,
+                                    assumeNonNull(mTitle),
+                                    mimeType,
+                                    assumeNonNull(mData),
+                                    mStartTime,
+                                    mButtonType);
+                    case MimeTypeUtils.Type.PDF ->
+                            FuseboxAttachment.forPdf(
+                                    mThumbnail,
+                                    assumeNonNull(mTitle),
+                                    mimeType,
+                                    assumeNonNull(mData),
+                                    mStartTime,
+                                    mButtonType);
+                    default ->
+                            FuseboxAttachment.forFile(
+                                    mThumbnail,
+                                    assumeNonNull(mTitle),
+                                    mimeType,
+                                    assumeNonNull(mData),
+                                    mStartTime,
+                                    mButtonType);
+                };
+
         mCallback.onResult(attachment);
     }
 }

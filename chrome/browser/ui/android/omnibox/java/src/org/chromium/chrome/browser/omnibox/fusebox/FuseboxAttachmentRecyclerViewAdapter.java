@@ -20,13 +20,15 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
     @IntDef({
         FuseboxAttachmentType.ATTACHMENT_FILE,
         FuseboxAttachmentType.ATTACHMENT_IMAGE,
-        FuseboxAttachmentType.ATTACHMENT_TAB
+        FuseboxAttachmentType.ATTACHMENT_TAB,
+        FuseboxAttachmentType.ATTACHMENT_PDF
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FuseboxAttachmentType {
         int ATTACHMENT_FILE = 0;
         int ATTACHMENT_IMAGE = 1;
         int ATTACHMENT_TAB = 2;
+        int ATTACHMENT_PDF = 3;
     }
 
     FuseboxAttachmentRecyclerViewAdapter(ModelList data) {
@@ -49,6 +51,14 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentViewBinder::bind);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
+                (parent) -> {
+                    return parent.getContext()
+                            .getSystemService(android.view.LayoutInflater.class)
+                            .inflate(R.layout.fusebox_attachment_layout, parent, false);
+                },
+                FuseboxAttachmentViewBinder::bind);
+        registerType(
+                FuseboxAttachmentType.ATTACHMENT_PDF,
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)

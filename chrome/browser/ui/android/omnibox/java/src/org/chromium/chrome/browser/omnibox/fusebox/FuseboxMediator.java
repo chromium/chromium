@@ -550,6 +550,9 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             if (listItem.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
                 return false;
             }
+            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_PDF) {
+                return false;
+            }
             if (listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
                 imageCount++;
             }
@@ -777,7 +780,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                         for (var uri : uris) {
                             fetchAttachmentDetails(
                                     uri,
-                                    FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                     this::uploadAndAddAttachment,
                                     FuseboxAttachmentButtonType.GALLERY);
                         }
@@ -818,7 +820,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                         for (var uri : uris) {
                             fetchAttachmentDetails(
                                     uri,
-                                    FuseboxAttachmentType.ATTACHMENT_FILE,
                                     this::uploadAndAddAttachment,
                                     FuseboxAttachmentButtonType.FILES);
                         }
@@ -867,11 +868,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     @VisibleForTesting
     void fetchAttachmentDetails(
             Uri uri,
-            @FuseboxAttachmentType int type,
             Callback<FuseboxAttachment> callback,
             @FuseboxAttachmentButtonType int buttonType) {
         new FuseboxAttachmentDetailsFetcher(
-                        mContext, mContext.getContentResolver(), uri, type, callback, buttonType)
+                        mContext, mContext.getContentResolver(), uri, callback, buttonType)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 

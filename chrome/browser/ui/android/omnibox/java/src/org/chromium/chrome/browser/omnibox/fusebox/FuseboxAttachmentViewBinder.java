@@ -21,11 +21,11 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -75,47 +75,60 @@ class FuseboxAttachmentViewBinder {
         view.setLayoutParams(layoutParams);
     }
 
-    static Drawable getThumbnailDrawable(
+    static @Nullable Drawable getThumbnailDrawable(
             PropertyModel model, FuseboxAttachment attachment, Context context) {
 
         @BrandedColorScheme
         int brandedColorScheme = model.get(FuseboxAttachmentProperties.COLOR_SCHEME);
 
-        switch (attachment.type) {
-            case FuseboxAttachmentType.ATTACHMENT_IMAGE:
-            case FuseboxAttachmentType.ATTACHMENT_FILE:
-                if (attachment.thumbnail != null) {
-                    return attachment.thumbnail;
-                }
-                if (MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(attachment.mimeType)) {
-                    return OmniboxResourceProvider.getDrawable(
-                            context, R.drawable.ic_attach_pdf_24dp);
-                }
-                break;
-            case FuseboxAttachmentType.ATTACHMENT_TAB:
-                Bitmap favicon =
-                        OmniboxResourceProvider.getFaviconBitmapForTab(
-                                assumeNonNull(attachment.tab));
-                Drawable drawable =
-                        FuseboxTabUtils.getDrawableForTabFavicon(
-                                context,
-                                favicon,
-                                context.getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.fusebox_attachment_visible_height));
-                // Only the fallback needs to be tinted, website favicons should be unchanged.
-                if (favicon == null) {
-                    drawable.setTint(
-                            OmniboxResourceProvider.getDefaultIconColor(
-                                    context, brandedColorScheme));
-                }
-                return drawable;
-        }
+        return switch (attachment.type) {
+            case FuseboxAttachmentType.ATTACHMENT_IMAGE -> imageThumbnail(attachment);
+            case FuseboxAttachmentType.ATTACHMENT_FILE ->
+                    fileThumbnail(context, brandedColorScheme);
+            case FuseboxAttachmentType.ATTACHMENT_PDF -> pdfThumbnail(context);
+            case FuseboxAttachmentType.ATTACHMENT_TAB ->
+                    tabThumbnail(context, brandedColorScheme, attachment);
+            default -> null;
+        };
+    }
 
-        Drawable fallback =
+    private static @Nullable Drawable imageThumbnail(FuseboxAttachment attachment) {
+        if (attachment.thumbnail != null) {
+            return attachment.thumbnail;
+        }
+        return null;
+    }
+
+    private static Drawable fileThumbnail(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        Drawable fileIcon =
                 OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_file_24dp);
-        fallback.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
-        return fallback;
+        fileIcon.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        return fileIcon;
+    }
+
+    private static Drawable pdfThumbnail(Context context) {
+        return OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_pdf_24dp);
+    }
+
+    private static Drawable tabThumbnail(
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            FuseboxAttachment attachment) {
+        Bitmap favicon =
+                OmniboxResourceProvider.getFaviconBitmapForTab(assumeNonNull(attachment.tab));
+        Drawable drawable =
+                FuseboxTabUtils.getDrawableForTabFavicon(
+                        context,
+                        favicon,
+                        context.getResources()
+                                .getDimensionPixelSize(R.dimen.fusebox_attachment_visible_height));
+        // Only the fallback needs to be tinted, website favicons should be unchanged.
+        if (favicon == null) {
+            drawable.setTint(
+                    OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        }
+        return drawable;
     }
 
     private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {

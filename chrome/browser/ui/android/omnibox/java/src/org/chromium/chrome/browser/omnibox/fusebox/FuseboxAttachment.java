@@ -112,6 +112,26 @@ public final class FuseboxAttachment extends ListItem {
                 buttonType);
     }
 
+    /** Creates a FuseboxAttachment for a PDF. */
+    public static FuseboxAttachment forPdf(
+            @Nullable Drawable thumbnail,
+            String title,
+            String mimeType,
+            byte[] data,
+            long startTime,
+            @FuseboxAttachmentButtonType int buttonType) {
+        return new FuseboxAttachment(
+                FuseboxAttachmentType.ATTACHMENT_PDF,
+                thumbnail,
+                title,
+                mimeType,
+                data,
+                /* tab= */ null,
+                /* bypassTabCache= */ false,
+                startTime,
+                buttonType);
+    }
+
     /** Creates a FuseboxAttachment for a tab. */
     public static FuseboxAttachment forTab(
             Tab tab,

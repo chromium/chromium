@@ -9,6 +9,7 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -32,6 +33,18 @@ public class MimeTypeUtils {
     /** The MIME type for pdf. */
     public static final String PDF_MIME_TYPE = "application/pdf";
 
+    /** The MIME type prefix for any image. */
+    public static final String IMAGE_PREFIX_MIME_TYPE = "image/";
+
+    /** The MIME type prefix for any text file. */
+    public static final String TEXT_PREFIX_MIME_TYPE = "text/";
+
+    /** The MIME type prefix for any audio. */
+    public static final String AUDIO_PREFIX_MIME_TYPE = "audio/";
+
+    /** The MIME type prefix for any video. */
+    public static final String VIDEO_PREFIX_MIME_TYPE = "video/";
+
     /** The MIME type for any file type. */
     public static final String ALL_FILE_TYPES_MIME_TYPE = "*/*";
 
@@ -54,30 +67,34 @@ public class MimeTypeUtils {
     public static final int NUM_MIME_TYPE_ENTRIES = 6;
 
     /**
+     * @param mimeType A string representing the MIME type (e.g., "image/png").
+     * @return The corresponding {@link Type}.
+     */
+    public static @Type int getTypeFromMimeType(@Nullable String mimeType) {
+        if (mimeType == null) return Type.UNKNOWN;
+        if (mimeType.startsWith(TEXT_PREFIX_MIME_TYPE)) {
+            return Type.TEXT;
+        } else if (mimeType.startsWith(IMAGE_PREFIX_MIME_TYPE)) {
+            return Type.IMAGE;
+        } else if (mimeType.startsWith(AUDIO_PREFIX_MIME_TYPE)) {
+            return Type.AUDIO;
+        } else if (mimeType.startsWith(VIDEO_PREFIX_MIME_TYPE)) {
+            return Type.VIDEO;
+        } else if (mimeType.equals(PDF_MIME_TYPE)) {
+            return Type.PDF;
+        }
+        return Type.UNKNOWN;
+    }
+
+    /**
      * @param url A {@link GURL} for which to determine the mime type.
      * @return The mime type, based on the extension of the {@code url}.
      */
     public static @Type int getMimeTypeForUrl(GURL url) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(url.getSpec());
-        @Type int mimeType = Type.UNKNOWN;
-        if (extension != null) {
-            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (type != null) {
-                if (type.startsWith("text")) {
-                    mimeType = Type.TEXT;
-                } else if (type.startsWith("image")) {
-                    mimeType = Type.IMAGE;
-                } else if (type.startsWith("audio")) {
-                    mimeType = Type.AUDIO;
-                } else if (type.startsWith("video")) {
-                    mimeType = Type.VIDEO;
-                } else if (type.equals("application/pdf")) {
-                    mimeType = Type.PDF;
-                }
-            }
-        }
-
-        return mimeType;
+        if (extension == null) return Type.UNKNOWN;
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        return getTypeFromMimeType(type);
     }
 
     public static boolean clipDescriptionHasBrowserContent(ClipDescription clipDescription) {

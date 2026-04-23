@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
@@ -52,9 +53,11 @@ public class FuseboxAttachmentViewBinderUnitTest {
     private ActivityController<TestActivity> mActivityController;
     private PropertyModel mModel;
     private View mView;
+    private Context mContext;
 
     @Before
     public void setUp() {
+        OmniboxResourceProvider.invalidateDrawableCache();
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
@@ -64,6 +67,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
         mView.setLayoutParams(new LayoutParams(100, 100));
         PropertyModelChangeProcessor.create(mModel, mView, FuseboxAttachmentViewBinder::bind);
+        mContext = mView.getContext();
     }
 
     @After
@@ -75,10 +79,10 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetThumbnail() {
         FuseboxAttachment attachment =
-                FuseboxAttachment.forFile(
+                FuseboxAttachment.forImage(
                         mDrawable,
                         "Test",
-                        "text/plain",
+                        "image/png",
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
@@ -184,11 +188,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
     }
 
     @Test
-    public void testGetThumbnailDrawable() {
-        Context context = mView.getContext();
-
-        // File attachment with thumbnail.
-        FuseboxAttachment fileWithThumb =
+    public void testGetThumbnailDrawable_FileWithThumb_ReturnsPaperclipIcon() {
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(
                         mDrawable,
                         "File",
@@ -196,12 +197,17 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
-        assertEquals(
-                mDrawable,
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, fileWithThumb, context));
 
-        // File attachment without thumbnail (fallback).
-        FuseboxAttachment fileNoThumb =
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_attach_file_24dp, shadowOf(thumbnail).getCreatedFromResId());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_FileNoThumb_ReturnsPaperclipIcon() {
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(
                         /* thumbnail= */ null,
                         "File",
@@ -209,13 +215,17 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
-        Drawable fallback =
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, fileNoThumb, context);
-        assertNotNull(fallback);
-        assertNotEquals(mDrawable, fallback);
 
-        // Image attachment with thumbnail.
-        FuseboxAttachment imageWithThumb =
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_attach_file_24dp, shadowOf(thumbnail).getCreatedFromResId());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_ImageWithThumb_ReturnsThumb() {
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forImage(
                         mDrawable,
                         "Image",
@@ -223,12 +233,16 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.CAMERA);
-        assertEquals(
-                mDrawable,
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, imageWithThumb, context));
 
-        // Image attachment without thumbnail (fallback).
-        FuseboxAttachment imageNoThumb =
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertEquals(mDrawable, thumbnail);
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_ImageNoThumb_ReturnsNull() {
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forImage(
                         /* thumbnail= */ null,
                         "Image",
@@ -236,38 +250,86 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.CAMERA);
-        Drawable imageFallback =
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, imageNoThumb, context);
-        assertNotNull(imageFallback);
-        assertNotEquals(mDrawable, imageFallback);
 
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNull(thumbnail);
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_PdfWithThumb_ReturnsPdfIcon() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forPdf(
+                        mDrawable,
+                        "Pdf",
+                        "application/pdf",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
+
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_attach_pdf_24dp, shadowOf(thumbnail).getCreatedFromResId());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_PdfNoThumb_ReturnsPdfIcon() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forPdf(
+                        /* thumbnail= */ null,
+                        "Pdf",
+                        "application/pdf",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
+
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_attach_pdf_24dp, shadowOf(thumbnail).getCreatedFromResId());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_TabWithFavicon_ReturnsFavicon() {
         // Tab attachment with favicon.
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         OmniboxResourceProvider.setTabFaviconFactory(t -> bitmap);
         doReturn(1).when(mTab).getId();
         doReturn("Title").when(mTab).getTitle();
 
-        FuseboxAttachment tabAttachment =
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        context.getResources(),
+                        mContext.getResources(),
                         FuseboxAttachmentButtonType.TAB_PICKER);
-        Drawable tabDrawable =
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, tabAttachment, context);
-        assertNotNull(tabDrawable);
 
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_TabNoFavicon_ReturnsGlobeIcon() {
         // Tab attachment without favicon (fallback).
         OmniboxResourceProvider.setTabFaviconFactory(t -> null);
-        FuseboxAttachment tabAttachmentNoFavicon =
+
+        FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        context.getResources(),
+                        mContext.getResources(),
                         FuseboxAttachmentButtonType.TAB_PICKER);
-        Drawable tabDrawableNoFavicon =
-                FuseboxAttachmentViewBinder.getThumbnailDrawable(
-                        mModel, tabAttachmentNoFavicon, context);
-        assertNotNull(tabDrawableNoFavicon);
+
+        Drawable thumbnail =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_globe_24dp, shadowOf(thumbnail).getCreatedFromResId());
     }
 }
