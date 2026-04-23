@@ -1,5 +1,4 @@
 {
-  "GPU FYI Mac arm64 Builder (asan)": {},
   "Mac FYI Retina Release ASAN (Apple M2)": {
     "gtest_tests": [
       {
