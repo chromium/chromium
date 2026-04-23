@@ -42,7 +42,7 @@ TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
       StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
 
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), output[0].url);
   EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   EXPECT_EQ(input[1], output[1].url);
   EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
@@ -193,12 +193,12 @@ TEST(StartupTabProviderTest, GetNewTabPageTabsForState) {
       StartupTabProviderImpl::GetNewTabPageTabsForState(pref_default);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), output[0].url);
 
   output = StartupTabProviderImpl::GetNewTabPageTabsForState(pref_urls);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), output[0].url);
 }
 
 TEST(StartupTabProviderTest, GetNewTabPageTabsForState_Negative) {

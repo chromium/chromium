@@ -197,7 +197,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_Incognito) {
   // Check for the actual NTP URL, rather than the sentinel returned by the
   // fake, because the Provider is ignored entirely when short-circuited by
   // incognito logic.
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output.tabs[0].url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), output.tabs[0].url);
 }
 
 // Also only show the New Tab Page after a crash, except if there is a
@@ -222,7 +222,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_Crash) {
   // Check for the actual NTP URL, rather than the sentinel returned by the
   // fake, because the Provider is ignored entirely when short-circuited by
   // the post-crash logic.
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output.tabs[0].url);
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), output.tabs[0].url);
 }
 
 // If initial preferences specify content, this should block all other

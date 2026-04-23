@@ -594,7 +594,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
       return {std::move(tabs), launch_result};
     }
 
-    return {StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL))}),
+    return {StartupTabs({StartupTab(chrome::ChromeUINewTabURLAsGURL())}),
             launch_result};
   }
 
@@ -721,7 +721,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   browser = OpenTabsInBrowser(
       browser, process_startup,
       (tabs.empty()
-           ? StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL))})
+           ? StartupTabs({StartupTab(chrome::ChromeUINewTabURLAsGURL())})
            : tabs),
       (behavior == BrowserOpenBehavior::USE_EXISTING_AND_OVERWRITE_ACTIVE_TAB
            ? (TabOverWrite::kYes)

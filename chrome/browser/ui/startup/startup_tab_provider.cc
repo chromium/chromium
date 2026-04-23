@@ -209,7 +209,7 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
     tabs.reserve(first_run_tabs.size());
     for (GURL url : first_run_tabs) {
       if (url.host() == kNewTabUrlHost) {
-        url = GURL(chrome::kChromeUINewTabURL);
+        url = chrome::ChromeUINewTabURLAsGURL();
       }
       if (IsWelcomePageUrl(url)) {
         // These URLs are still referenced from some of the installers. As
@@ -269,7 +269,7 @@ StartupTabs StartupTabProviderImpl::GetNewTabPageTabsForState(
     const SessionStartupPref& pref) {
   StartupTabs tabs;
   if (!pref.ShouldRestoreLastSession()) {
-    tabs.emplace_back(GURL(chrome::kChromeUINewTabURL));
+    tabs.emplace_back(chrome::ChromeUINewTabURLAsGURL());
   }
   return tabs;
 }
