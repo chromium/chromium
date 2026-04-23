@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/bubble/public",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/composebox/coordinator",
+  "+ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/context_menu/ui_bundled/link_preview",

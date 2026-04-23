@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -302,6 +303,8 @@
   SearchEngineLogoMediator* _searchEngineLogoMediator;
   // The Safari data import used by the content suggestions.
   SafariDataImportExportCoordinator* _safariDataImportExportCoordinator;
+  // The coordinator showing the multimodal composebox menu.
+  ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -1969,15 +1972,28 @@
 - (void)openMultimodalActionsMenu {
   [self.NTPMetricsRecorder recordPlusButtonTapped];
   [self dismissCustomizationMenu];
-  if (!IsComposeboxAIMDisabled() &&
-      _aimEligibilityService->IsFuseboxEligible() &&
-      MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPPlusButton)) {
-    return;
-  }
 
   // Fallback to opening AIM if eligibility changed in the meantime and the NTP
   // was not reloaded since.
-  [self openAIMWeb];
+  if (IsComposeboxAIMDisabled() ||
+      !_aimEligibilityService->IsFuseboxEligible()) {
+    [self openAIMWeb];
+  }
+
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [_composeboxMenuCoordinator stop];
+    // TODO(crbug.com/505386922): Add entrypoint and delegate to cleanup the
+    // coordinator on dismissal.
+    _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [_composeboxMenuCoordinator start];
+  } else if (MaybeShowComposebox(self.browser,
+                                 ComposeboxEntrypoint::kNTPPlusButton)) {
+    return;
+  } else {
+    [self openAIMWeb];
+  }
 }
 
 #pragma mark - TabGridStateObserver
