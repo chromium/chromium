@@ -922,7 +922,7 @@ public final class ToolbarTabletUnitTest {
                         padding + 7 * buttonWidth + locationBarMidWidth, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(PADDING, MENU, TAB_SWITCHER, BACK, INCOGNITO_INDICATOR, ADAPTIVE_BUTTON));
+                Set.of(PADDING, MENU, TAB_SWITCHER, BACK, INCOGNITO_INDICATOR, SIGNIN_BUTTON));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(
@@ -1149,7 +1149,7 @@ public final class ToolbarTabletUnitTest {
                         padding + 7 * buttonWidth + locationBarMidWidth, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(PADDING, MENU, TAB_SWITCHER, BACK, INCOGNITO_INDICATOR, ADAPTIVE_BUTTON));
+                Set.of(PADDING, MENU, TAB_SWITCHER, BACK, INCOGNITO_INDICATOR, SIGNIN_BUTTON));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(
