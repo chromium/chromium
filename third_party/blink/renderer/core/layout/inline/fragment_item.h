@@ -26,6 +26,7 @@ namespace blink {
 class FragmentItems;
 class InlinePaintContext;
 class PhysicalBoxFragment;
+class UsedFont;
 struct FitTextScale;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
@@ -565,6 +566,8 @@ class CORE_EXPORT FragmentItem final {
   // This returns Style().GetFont() for an FragmentItem not for
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
+  // Returns a used font for painting this item.
+  const UsedFont GetUsedFont() const;
 
   // Returns a paint-time text scaling factor for text-fit property.
   float GetFitTextScale() const;

@@ -248,7 +248,8 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
       }
       DCHECK(item);
       inline_context_->PushDecoratingBox(
-          item->ContentOffsetInContainerFragment(), style, &decorations);
+          item->ContentOffsetInContainerFragment(), style, item->GetUsedFont(),
+          &decorations);
     }
 
     InlinePaintContext* inline_context_;
@@ -320,6 +321,7 @@ void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
 
   const FragmentItem& line_item = *line_cursor.Current();
   const ComputedStyle& style = line_item.Style();
+  const UsedFont& used_font = line_item.GetUsedFont();
   const AppliedTextDecorationVector& applied_text_decorations =
       style.AppliedTextDecorations();
   line_decorations_ = last_decorations_ = &applied_text_decorations;
@@ -333,9 +335,9 @@ void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   // Compute the offset of the non-existent anonymous inline box.
   PhysicalOffset offset = line_item.OffsetInContainerFragment();
   if (const PhysicalLineBoxFragment* fragment = line_item.LineBoxFragment()) {
-    if (const SimpleFontData* font = style.GetFont()->PrimaryFont()) {
+    if (used_font.PrimaryFont()) {
       offset.top += fragment->Metrics().ascent;
-      offset.top -= font->GetFontMetrics().FixedAscent();
+      offset.top -= used_font.FixedAscent();
     }
   }
 
@@ -344,8 +346,10 @@ void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   // the in-flow children. See
   // https://drafts.csswg.org/css-text-decor-3/#line-decoration, EXAMPLE 1 in
   // the spec, and crbug.com/855589.
-  for (wtf_size_t i = 0; i < applied_text_decorations.size(); ++i)
-    decorating_boxes_.emplace_back(offset, style, &applied_text_decorations);
+  for (wtf_size_t i = 0; i < applied_text_decorations.size(); ++i) {
+    decorating_boxes_.emplace_back(offset, style, used_font,
+                                   &applied_text_decorations);
+  }
 }
 
 void InlinePaintContext::ClearLineBox() {

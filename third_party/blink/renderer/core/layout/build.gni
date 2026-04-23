@@ -332,6 +332,8 @@ blink_core_sources_layout = [
   "inline/text_offset_range.h",
   "inline/transformed_string.cc",
   "inline/transformed_string.h",
+  "inline/used_font.cc",
+  "inline/used_font.h",
   "layout_algorithm.h",
   "layout_block.cc",
   "layout_block.h",

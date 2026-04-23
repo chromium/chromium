@@ -70,6 +70,7 @@ void LineInfo::Reset() {
   end_item_index_ = 0;
   end_offset_for_justify_ = 0;
 
+  text_fit_scale_ = 1.0f;
   text_align_ = ETextAlign::kLeft;
   base_direction_ = TextDirection::kLtr;
 
