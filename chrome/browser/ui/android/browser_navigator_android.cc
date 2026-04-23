@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/browser_navigator.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/tab_android.h"
@@ -24,24 +23,11 @@
 
 namespace {
 
-// Returns true if inserting WebContents via `contents_to_insert` is supported.
-// TODO(crbug.com/477944342): Expand the scenarios where we support it.
-bool SupportsContentsToInsert(NavigateParams* params) {
-  switch (params->disposition) {
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      return true;
-    default:
-      return false;
-  }
-}
-
 // Returns true if NavigateParams are valid, false otherwise.
 bool ValidNavigateParams(NavigateParams* params) {
   // TODO (crbug.com/441594986) Confirm this is correct.
   DCHECK(params->browser);
-  DCHECK(!params->contents_to_insert || SupportsContentsToInsert(params));
+  DCHECK(!params->navigated_or_inserted_contents);
   DCHECK(!params->switch_to_singleton_tab);
 
   if (!params->initiating_profile) {
@@ -68,6 +54,12 @@ bool ValidNavigateParams(NavigateParams* params) {
       (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
        params->disposition == WindowOpenDisposition::CURRENT_TAB)) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  // Pre-fill navigated_or_inserted_contents. This is used as a flag
+  // downstream to determine if contents_to_insert was provided.
+  if (params->contents_to_insert) {
+    params->navigated_or_inserted_contents = params->contents_to_insert.get();
   }
 
   return true;
@@ -123,10 +115,11 @@ void TrySwitchToMatchingTab(NavigateParams* params) {
 }
 
 // Helper to create/locate windows.
+// If params->contents_to_insert is non-null, std::move() will be called on it.
 void GetOrCreateBrowserWindowForDisposition(
     NavigateParams* params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
-  raw_ptr<Profile> profile = params->initiating_profile;
+  Profile* profile = params->initiating_profile;
   switch (params->disposition) {
     case WindowOpenDisposition::OFF_THE_RECORD:
       // The existing profile was already checked and is not OTR
@@ -135,6 +128,7 @@ void GetOrCreateBrowserWindowForDisposition(
       [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW: {
       BrowserWindowCreateParams create_params(*profile, params->user_gesture);
+      create_params.web_contents = std::move(params->contents_to_insert);
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
@@ -142,6 +136,7 @@ void GetOrCreateBrowserWindowForDisposition(
       BrowserWindowCreateParams create_params(
           BrowserWindowInterface::Type::TYPE_POPUP, *profile,
           params->user_gesture);
+      create_params.web_contents = std::move(params->contents_to_insert);
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
@@ -219,11 +214,62 @@ TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
   return TabLaunchType::FROM_CHROME_UI;
 }
 
+// Helper to create a new tab.
+// If params->contents_to_insert is non-null, std::move() will be called on it.
+tabs::TabInterface* CreateNewTab(NavigateParams* params) {
+  // On Android, TabListInterface is TabModel.
+  TabModel* tab_model =
+      static_cast<TabModel*>(TabListInterface::From(params->browser));
+  if (!tab_model) {
+    return nullptr;
+  }
+
+  // Select the TabLaunchType.
+  TabModel::TabLaunchType launch_type = GetTabLaunchType(params);
+
+  // Identify parent tab.
+  // Parent tab is set to nullptr to avoid adjacency overrides when
+  // launching from the Omnibox (where we always append to the end).
+  TabAndroid* parent = nullptr;
+
+  if (params->source_contents &&
+      launch_type != TabModel::TabLaunchType::FROM_OMNIBOX) {
+    parent = TabAndroid::FromWebContents(params->source_contents);
+  }
+
+  // Use the supplied WebContents or create a new one.
+  std::unique_ptr<content::WebContents> web_contents;
+  if (params->contents_to_insert) {
+    web_contents = std::move(params->contents_to_insert);
+  } else {
+    content::WebContents::CreateParams create_params(
+        params->initiating_profile);
+    web_contents = content::WebContents::Create(create_params);
+  }
+
+  // Create a new tab.
+  tabs::TabInterface* new_tab = tab_model->CreateTab(
+      parent, std::move(web_contents), params->tabstrip_index, launch_type,
+      /*should_pin=*/false);
+
+  // Early out if Java tab creation failed.
+  if (!new_tab || !new_tab->GetContents()) {
+    return nullptr;
+  }
+
+  // Bring the new tab to the foreground if necessary.
+  if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    tab_model->ActivateTab(new_tab->GetHandle());
+  }
+
+  // The new tab's WebContents is the target for our navigation.
+  params->source_contents = new_tab->GetContents();
+  return new_tab;
+}
+
 // Helper to create/locate tabs.
 // If params->contents_to_insert is non-null, std::move() will be called on it.
-raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
-    NavigateParams* params) {
-  // On Android, TabListInterface is TabModel.
+tabs::TabInterface* GetOrCreateTabForDisposition(NavigateParams* params) {
   TabModel* tab_model =
       static_cast<TabModel*>(TabListInterface::From(params->browser));
   if (!tab_model) {
@@ -233,49 +279,15 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
   switch (params->disposition) {
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB: {
-      // Select the TabLaunchType.
-      TabModel::TabLaunchType launch_type = GetTabLaunchType(params);
-
-      // Identify parent tab.
-      // Parent tab is set to nullptr to avoid adjacency overrides when
-      // launching from the Omnibox (where we always append to the end).
-      TabAndroid* parent = nullptr;
-
-      if (params->source_contents &&
-          launch_type != TabModel::TabLaunchType::FROM_OMNIBOX) {
-        parent = TabAndroid::FromWebContents(params->source_contents);
-      }
-
-      // Use the supplied WebContents or create a new one.
-      std::unique_ptr<content::WebContents> web_contents;
-      if (params->contents_to_insert) {
-        web_contents = std::move(params->contents_to_insert);
-      } else {
-        content::WebContents::CreateParams create_params(
-            params->initiating_profile);
-        web_contents = content::WebContents::Create(create_params);
-      }
-
-      // Create a new tab.
-      tabs::TabInterface* new_tab = tab_model->CreateTab(
-          parent, std::move(web_contents), params->tabstrip_index, launch_type,
-          /*should_pin=*/false);
-
-      if (!new_tab || !new_tab->GetContents()) {
-        return nullptr;
-      }
-
-      // Bring the new tab to the foreground if necessary.
-      if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-        tab_model->ActivateTab(new_tab->GetHandle());
-      }
-
-      // The new tab's WebContents is the target for our navigation.
-      params->source_contents = new_tab->GetContents();
-      return new_tab;
-    }
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return CreateNewTab(params);
     case WindowOpenDisposition::CURRENT_TAB:
+      // CURRENT_TAB with contents_to_insert is handled the same as
+      // NEW_FOREGROUND_TAB.
+      if (params->contents_to_insert) {
+        return CreateNewTab(params);
+      }
+      // Otherwise, return the source tab.
       if (params->source_contents) {
         return tabs::TabInterface::GetFromContents(params->source_contents);
       }
@@ -291,14 +303,14 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     case WindowOpenDisposition::NEW_WINDOW: {
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
-      raw_ptr<tabs::TabInterface> active_tab = tab_model->GetActiveTab();
+      tabs::TabInterface* active_tab = tab_model->GetActiveTab();
       CHECK(active_tab);
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }
     case WindowOpenDisposition::IGNORE_ACTION: {
       if (!params->source_contents) {
-        raw_ptr<tabs::TabInterface> active_tab = tab_model->GetActiveTab();
+        tabs::TabInterface* active_tab = tab_model->GetActiveTab();
         if (active_tab) {
           params->source_contents = active_tab->GetContents();
         }
@@ -314,12 +326,15 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
 
 base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
     NavigateParams* params) {
-  bool is_contents_inserted = params->contents_to_insert != nullptr;
-
+  bool is_contents_inserted = params->navigated_or_inserted_contents != nullptr;
   tabs::TabInterface* tab = GetOrCreateTabForDisposition(params);
   if (!tab || !tab->GetContents()) {
     // WindowOpenDisposition::IGNORE_ACTION exits here.
     return nullptr;
+  }
+
+  if (is_contents_inserted) {
+    DCHECK_EQ(params->navigated_or_inserted_contents, tab->GetContents());
   }
 
   params->navigated_or_inserted_contents = tab->GetContents();
@@ -376,6 +391,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (!ValidNavigateParams(params)) {
     return nullptr;
   }
+
   // Only handles dispositions that do not create new windows.
   if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       params->disposition != WindowOpenDisposition::IGNORE_ACTION &&
