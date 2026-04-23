@@ -733,9 +733,9 @@ interface AutotestPrivate {
   // Will contain device policies and policies from the active profile.
   // The policy values are formatted as they would be for exporting in
   // chrome://policy.
-  // |Returns|: |all_policies| will be the full list of policies as returned by
+  // |Returns|: `allPolicies` will be the full list of policies as returned by
   // the DictionaryPolicyConversions.ToValue function.
-  // |PromiseValue|: all_policies
+  // |PromiseValue|: allPolicies
   [requiredCallback] static Promise<any> getAllEnterprisePolicies();
 
   // Refreshes the Enterprise Policies.
@@ -833,7 +833,7 @@ interface AutotestPrivate {
   static Promise<sequence<DOMString>> getDefaultPinnedAppIds();
 
   // Returns the number of system web apps that should be installed.
-  // |Returns|: Callback invoked to report the number of system web apps that
+  // |Returns|: Promise that resolves with the number of system web apps that
   // should be installed.
   // |PromiseValue|: systemWebApps
   [requiredCallback]
@@ -871,17 +871,17 @@ interface AutotestPrivate {
 
   // Enable/disable the Play Store.
   // |enabled|: if set, enable the Play Store.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setPlayStoreEnabled(boolean enabled);
 
   // Get text from ui::Clipboard.
-  // |Returns|: Called with result.
+  // |Returns|: Promise that resolves with the result.
   // |PromiseValue|: data
   [requiredCallback] static Promise<DOMString> getClipboardTextData();
 
   // Set text in ui::Clipbaord.
-  // |Returns|: Called when operation is complete.
+  // |Returns|: Promise that resolves when operation is complete.
   [requiredCallback]
   static Promise<undefined> setClipboardTextData(DOMString data);
 
@@ -889,7 +889,7 @@ interface AutotestPrivate {
   // vm / container and create sshfs mount.  The installer launches the
   // crostini terminal app on completion.  The installer expects that
   // crostini is not already installed.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> runCrostiniInstaller();
 
   // Run the crostini uninstaller GUI to remove the default crostini
@@ -898,23 +898,23 @@ interface AutotestPrivate {
 
   // Enable/disable Crostini in preferences.
   // |enabled|: Enable Crostini.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setCrostiniEnabled(boolean enabled);
 
   // Export the crostini container.
   // |path|: The path in Downloads to save the export.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> exportCrostini(DOMString path);
 
   // Import the crostini container.
   // |path|: The path in Downloads to read the import.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> importCrostini(DOMString path);
 
   // Returns whether crostini could ever be allowed.
-  // |Returns|: Called with a boolean indicating if crostini can ever be allowed
-  // in the current profile.
+  // |Returns|: Promise that resolves with a boolean indicating if crostini can
+  // ever be allowed in the current profile.
   // |PromiseValue|: canBeAllowed
   [requiredCallback] static Promise<boolean> couldAllowCrostini();
 
@@ -930,7 +930,7 @@ interface AutotestPrivate {
   static undefined showPluginVMInstaller();
 
   // Installs Borealis without showing the normal installer UI.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> installBorealis();
 
   // Register a component with ComponentManagerAsh.
@@ -943,15 +943,15 @@ interface AutotestPrivate {
   [requiredCallback] static Promise<DOMString> takeScreenshot();
 
   // Tasks a screenshot for a display.
-  // |display_id|: the display id of the display.
-  // |Returns|: called when the operation has completed.
+  // |displayId|: the display id of the display.
+  // |Returns|: Promise that resolves when the operation has completed.
   // |PromiseValue|: base64Png
   [requiredCallback]
-  static Promise<DOMString> takeScreenshotForDisplay(DOMString display_id);
+  static Promise<DOMString> takeScreenshotForDisplay(DOMString displayId);
 
   // Triggers an on-demand update of smart dim component and checks whether
   // it's successfully loaded by smart dim ml_agent.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> loadSmartDimComponent();
 
   // Whether the local list of installed ARC packages has been refreshed for
@@ -961,22 +961,22 @@ interface AutotestPrivate {
 
   // Set value for the specified user pref in the pref tree.
   [requiredCallback]
-  static Promise<undefined> setAllowedPref(DOMString pref_name, any value);
+  static Promise<undefined> setAllowedPref(DOMString prefName, any value);
 
   // Clears value for the specified user pref in the pref tree.
   [requiredCallback]
-  static Promise<undefined> clearAllowedPref(DOMString pref_name);
+  static Promise<undefined> clearAllowedPref(DOMString prefName);
 
   // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
   // Set value for the specified user pref in the pref tree.
   [requiredCallback]
-  static Promise<undefined> setWhitelistedPref(DOMString pref_name, any value);
+  static Promise<undefined> setWhitelistedPref(DOMString prefName, any value);
 
   // Enable/disable a Crostini app's "scaled" property.
   // |appId|: The Crostini application ID.
   // |scaled|: The app is "scaled" when shown, which means it uses low display
   //           density.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setCrostiniAppScaled(DOMString appId,
                                                  boolean scaled);
@@ -995,7 +995,7 @@ interface AutotestPrivate {
   // possible to physically switch to/from tablet mode since that
   // functionality will be disabled.
   // |enabled|: if set, enable tablet mode.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   // |PromiseValue|: enabled
   [requiredCallback]
   static Promise<boolean> setTabletModeEnabled(boolean enabled);
@@ -1024,7 +1024,7 @@ interface AutotestPrivate {
   // Set the shelf auto hide behavior.
   // |displayId|: display that contains the shelf.
   // |behavior|: an enum of "always", "never" or "hidden".
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setShelfAutoHideBehavior(DOMString displayId,
                                                      DOMString behavior);
@@ -1039,7 +1039,7 @@ interface AutotestPrivate {
   // Set the shelf alignment.
   // |displayId|: display that contains the shelf.
   // |alignment|: the type of alignment to set.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setShelfAlignment(DOMString displayId,
                                               ShelfAlignmentType alignment);
@@ -1057,7 +1057,7 @@ interface AutotestPrivate {
 
   // Enter or exit the overview mode.
   // |start|: whether entering to or exiting from the overview mode.
-  // |Returns|: called after the overview mode switch finishes.
+  // |Returns|: Promise that resolves after the overview mode switch finishes.
   // |PromiseValue|: finished
   [requiredCallback]
   static Promise<boolean> setOverviewModeState(boolean start);
@@ -1069,28 +1069,28 @@ interface AutotestPrivate {
   // color and theme to these values.
   // |color|: the int color of the system ui.
   // |theme|: the theme of the system ui.
-  // |Returns|: callback to deliver sendArcOverlayColor result.
+  // |Returns|: Promise that resolves with the sendArcOverlayColor result.
   // |PromiseValue|: result
   [requiredCallback]
   static Promise<boolean> sendArcOverlayColor(long color, ThemeStyle theme);
 
   // Start ARC performance tracing for the active ARC app window.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> arcAppTracingStart();
 
   // Stop ARC performance tracing if it was started and analyze results.
-  // |Returns|: callback to deliver tracing results.
+  // |Returns|: Promise that resolves with tracing results.
   // |PromiseValue|: info
   [requiredCallback]
   static Promise<ArcAppTracingInfo> arcAppTracingStopAndAnalyze();
 
   // Swap the windows in the split view.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> swapWindowsInSplitView();
 
   // Set ARC app window focused.
   // |packageName|: the package name of the ARC app window.
-  // |Returns|: called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setArcAppWindowFocus(DOMString packageName);
 
@@ -1099,7 +1099,7 @@ interface AutotestPrivate {
   // true if the display's rotation is same as |rotation|, or false otherwise.
   // |displayId|: display that contains the shelf.
   // |rotation|: the target rotation.
-  // |Returns|: called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   // |PromiseValue|: success
   [requiredCallback]
   static Promise<boolean> waitForDisplayRotation(DOMString displayId,
@@ -1107,8 +1107,8 @@ interface AutotestPrivate {
 
   // Get information on all application windows. Callback will be called
   // with the list of |AppWindowInfo| dictionary.
-  // |Returns|: called with window list.
-  // |PromiseValue|: window_list
+  // |Returns|: Promise that resolves with window list.
+  // |PromiseValue|: windowList
   [requiredCallback] static Promise<sequence<AppWindowInfo>> getAppWindowList();
 
   // Send WM event to change the app window's window state.
@@ -1116,8 +1116,8 @@ interface AutotestPrivate {
   // |change|: WM event type to send to the app window.
   // |wait|: whether the method should wait for the window state to change
   // before returning.
-  // |Returns|: called when the window state is changed if |wait| is true.
-  //             Otherwise, called right after the WM event is sent.
+  // |Returns|: Promise that resolves when the window state is changed if |wait|
+  // is true. Otherwise, resolves right after the WM event is sent.
   // |PromiseValue|: currentType
   [requiredCallback]
   static Promise<WindowStateType> setAppWindowState(
@@ -1127,25 +1127,25 @@ interface AutotestPrivate {
 
   // Activate app window given by "id".
   // |id|: the id of the window
-  // |Returns|: called when the window is requested to activate.
+  // |Returns|: Promise that resolves when the window is requested to activate.
   [requiredCallback] static Promise<undefined> activateAppWindow(long id);
 
   // Closes an app window given by "id".
   // |id|: the id of the window
-  // |Returns|: called when the window is requested to close.
+  // |Returns|: Promise that resolves when the window is requested to close.
   [requiredCallback] static Promise<undefined> closeAppWindow(long id);
 
   // Installs the Progressive Web App (PWA) that is in the current URL.
-  // |timeout_ms|: Timeout in milliseconds for the operation to complete.
-  // |Returns|: called when the operation has completed. Passes the app Id
-  //             of the recently installed PWA as argument.
+  // |timeoutMs|: Timeout in milliseconds for the operation to complete.
+  // |Returns|: Promise that resolves when the operation has completed with the
+  // app Id of the recently installed PWA.
   // |PromiseValue|: appId
   [requiredCallback]
-  static Promise<DOMString> installPWAForCurrentURL(long timeout_ms);
+  static Promise<DOMString> installPWAForCurrentURL(long timeoutMs);
 
   // Activates shortcut.
   // |accelerator|: the accelerator to activate.
-  // |Returns|: called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   // |PromiseValue|: success
   [requiredCallback]
   static Promise<boolean> activateAccelerator(Accelerator accelerator);
@@ -1153,7 +1153,7 @@ interface AutotestPrivate {
   // Wwait until the launcher is transitionto the |launcherState|, if it's not
   // in that state.
   // |launcherState|: the target launcher state.
-  // |Returns|: called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> waitForLauncherState(
       LauncherStateType launcherState);
@@ -1161,36 +1161,39 @@ interface AutotestPrivate {
   // Wait until overview has transitioned to |overviewState|, if it is not in
   // that state.
   // |overviewState|: the target overview state.
-  // |Returns|: called when overview has reached |overviewState|.
+  // |Returns|: Promise that resolves when overview has reached |overviewState|.
   [requiredCallback]
   static Promise<undefined> waitForOverviewState(
       OverviewStateType overviewState);
 
   // Creates a new desk if the maximum number of desks has not been reached.
-  // |Returns|: called to indicate success or failure.
+  // |Returns|: Promise that resolves with a boolean to indicate success or
+  // failure.
   // |PromiseValue|: success
   [requiredCallback] static Promise<boolean> createNewDesk();
 
   // Activates the desk at the given |index| triggering the activate-desk
   // animation.
   // |index|: the zero-based index of the desk desired to be activated.
-  // |Returns|: called indicating success when the animation completes, or
-  // failure when the desk at |index| is already the active desk.
+  // |Returns|: Promise that resolves with a boolean indicating success when the
+  // animation completes, or failure when the desk at |index| is already the
+  // active desk.
   // |PromiseValue|: success
   [requiredCallback] static Promise<boolean> activateDeskAtIndex(long index);
 
   // Removes the currently active desk and triggers the remove-desk animation.
-  // |Returns|: called indicating success when the animation completes, or
-  // failure if the currently active desk is the last available desk
-  // which cannot be removed.
+  // |Returns|: Promise that resolves with a boolean indicating success when the
+  // animation completes, or failure if the currently active desk is the last
+  // available desk which cannot be removed.
   // |PromiseValue|: success
   [requiredCallback] static Promise<boolean> removeActiveDesk();
 
   // Activates the desk at the given |index| by chaining multiple
   // activate-desk animations.
   // |index|: the zero-based index of the desk desired to be activated.
-  // |Returns|: called indicating success when the animation completes, or
-  // failure when the desk at |index| is already the active desk.
+  // |Returns|: Promise that resolves with a boolean indicating success when the
+  // animation completes, or failure when the desk at |index| is already the
+  // active desk.
   // |PromiseValue|: success
   [requiredCallback]
   static Promise<boolean> activateAdjacentDesksToTargetIndex(long index);
@@ -1207,41 +1210,41 @@ interface AutotestPrivate {
 
   // Create mouse events to cause a mouse click.
   // |button|: the mouse button for the click event.
-  // |Returns|: called after the mouse click finishes.
+  // |Returns|: Promise that resolves after the mouse click finishes.
   [requiredCallback] static Promise<undefined> mouseClick(MouseButton button);
 
   // Create a mouse event to cause mouse pressing. The mouse button stays
   // in the pressed state.
   // |button|: the mouse button to be pressed.
-  // |Returns|: called after the mouse pressed event is handled.
+  // |Returns|: Promise that resolves after the mouse pressed event is handled.
   [requiredCallback] static Promise<undefined> mousePress(MouseButton button);
 
   // Create a mouse event to release a mouse button. This does nothing and
   // returns immediately if the specified button is not pressed.
   // |button|: the mouse button to be released.
-  // |Returns|: called after the mouse is released.
+  // |Returns|: Promise that resolves after the mouse is released.
   [requiredCallback] static Promise<undefined> mouseRelease(MouseButton button);
 
   // Create mouse events to move a mouse cursor to the location. This can
   // cause a dragging if a button is pressed. It starts from the last mouse
   // location.
   // |location|: the target location (in screen coordinate).
-  // |duration_in_ms|: the duration (in milliseconds) for the mouse movement.
+  // |durationInMs|: the duration (in milliseconds) for the mouse movement.
   //    The mouse will move linearly. 0 means moving immediately.
-  // |Returns|: called after the mouse move finishes.
+  // |Returns|: Promise that resolves after the mouse move finishes.
   [requiredCallback]
   static Promise<undefined> mouseMove(Location location,
-                                      double duration_in_ms);
+                                      double durationInMs);
 
   // Enable/disable metrics reporting in preferences.
   // |enabled|: Enable metrics reporting.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> setMetricsEnabled(boolean enabled);
 
   // Sends ARC touch mode enabled or disabled.
   // |enable|: whether enabled touch mode.
-  // |Returns|: called when action performed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback] static Promise<undefined> setArcTouchMode(boolean enabled);
 
   // Fetches ui information of scrollable shelf view for the given shelf state.
@@ -1263,7 +1266,7 @@ interface AutotestPrivate {
   // |id|: the id of the window.
   // |bounds|: bounds the window should be set to.
   // |displayId|: id of display to move the window to.
-  // |Returns|: called when the window bounds are changed.
+  // |Returns|: Promise that resolves when the window bounds are changed.
   // |PromiseValue|: result
   [requiredCallback]
   static Promise<SetWindowBoundsResult> setWindowBounds(long id,
@@ -1282,7 +1285,7 @@ interface AutotestPrivate {
   // Stops smoothness tracking for a display and report the smoothness. If the
   // display id is not specified, the primary display is used. Otherwise, the
   // display specified by the display id is used.
-  // |Returns|: Callback invoked to report the smoothness after
+  // |Returns|: Promise that resolves with the smoothness after
   // StopSmoothnessTracking is called.
   // |PromiseValue|: data
   [requiredCallback]
@@ -1295,14 +1298,14 @@ interface AutotestPrivate {
   // Waits for the completion of photo transition animation in ambient mode.
   // |numCompletions|: number of completions of the animation.
   // |timeout|: the timeout in seconds.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> waitForAmbientPhotoAnimation(long numCompletions,
                                                          long timeout);
 
   // Waits for ambient video to successfully start playback.
   // |timeout|: the timeout in seconds.
-  // |Returns|: Called when the operation has completed.
+  // |Returns|: Promise that resolves when the operation has completed.
   [requiredCallback]
   static Promise<undefined> waitForAmbientVideo(long timeout);
 
@@ -1319,7 +1322,7 @@ interface AutotestPrivate {
 
   // Stops ui::ThroughputTracker data collection and reports the collected data
   // since the start or the last GetThroughtputTrackerData call.
-  // |Returns|: Callback invoked to report the collection ui::ThroughputTracker
+  // |Returns|: Promise that resolves with the collection ui::ThroughputTracker
   // data after stopThroughputTrackerDataCollection is called.
   // |PromiseValue|: data
   [requiredCallback]
@@ -1327,7 +1330,7 @@ interface AutotestPrivate {
   stopThroughputTrackerDataCollection();
 
   // Reports the currently collected animation data.
-  // |Returns|: Callback invoked to report the currently collected
+  // |Returns|: Promise that resolves with the currently collected
   // ui::ThroughputTracker animation data. Note that the data reported is
   // removed to avoid reporting duplicated data.
   // |PromiseValue|: data
@@ -1337,7 +1340,7 @@ interface AutotestPrivate {
 
   // Gets the smoothness of a display. If the display id is not specified, the
   // primary display is used.
-  // |Returns|: Callback invoked to return the smoothness percentage after
+  // |Returns|: Promise that resolves with the smoothness percentage after
   // getDisplaySmoothness is called.
   // |PromiseValue|: smoothness
   [requiredCallback]
@@ -1354,7 +1357,7 @@ interface AutotestPrivate {
 
   // Stops ui::LoginEventRecorder data collection and reports all the collected
   // data.
-  // |Returns|: Callback invoked to report the collection ui::LoginEventRecorder
+  // |Returns|: Promise that resolves with the collection ui::LoginEventRecorder
   // data after getLoginEventRecorderLoginEvents is called.
   // |PromiseValue|: data
   [requiredCallback]
@@ -1369,27 +1372,27 @@ interface AutotestPrivate {
       boolean darkModeEnabled);
 
   // Fetches an access token from Chrome.
-  // |Returns|: Reponse callback for <code>getAccessToken</code>.
+  // |Returns|: Promise that resolves with the access token data.
   // |PromiseValue|: data
   [requiredCallback]
   static Promise<GetAccessTokenData> getAccessToken(
       GetAccessTokenParams accessTokenParams);
 
   // Returns whether the current input method is ready to accept key events.
-  // |Returns|: Callback invoked to report whether the current input method is
+  // |Returns|: Promise that resolves with whether the current input method is
   // ready to accept key events from the test.
   // |PromiseValue|: isReady
   [requiredCallback] static Promise<boolean> isInputMethodReadyForTesting();
 
   // Creates a temporary directory visible under the Fusebox mount point.
-  // |Returns|: Callback invoked when the temporary directory was made.
+  // |Returns|: Promise that resolves when the temporary directory was made.
   // |PromiseValue|: data
   [requiredCallback]
   static Promise<MakeFuseboxTempDirData> makeFuseboxTempDir();
 
   // Removes a temporary directory visible under the Fusebox mount point. The
   // fuseboxFilePath argument was returned by the MakeFuseboxTempDirCallback.
-  // |Returns|: Callback invoked when the temporary directory was removed.
+  // |Returns|: Promise that resolves when the temporary directory was removed.
   [requiredCallback]
   static Promise<undefined> removeFuseboxTempDir(DOMString fuseboxFilePath);
 
@@ -1426,20 +1429,21 @@ interface AutotestPrivate {
 
   // Install a bruschetta VM.
   [requiredCallback]
-  static Promise<undefined> installBruschetta(DOMString vm_name);
+  static Promise<undefined> installBruschetta(DOMString vmName);
 
   // Delete a bruschetta VM.
   [requiredCallback]
-  static Promise<undefined> removeBruschetta(DOMString vm_name);
+  static Promise<undefined> removeBruschetta(DOMString vmName);
 
   // Returns whether a base::Feature is enabled. The state may change because
   // a Chrome uprev into ChromeOS changed the default feature state.
   // |PromiseValue|: enabled
   [requiredCallback]
-  static Promise<boolean> isFeatureEnabled(DOMString feature_name);
+  static Promise<boolean> isFeatureEnabled(DOMString featureName);
 
   // Returns keyboard layout used for current input method.
-  // |Returns|: Response callback for current input method keyboard layout.
+  // |Returns|: Promise that resolves with the current input method keyboard
+  // layout.
   // |PromiseValue|: data
   [requiredCallback]
   static Promise<GetCurrentInputMethodDescriptorData>
@@ -1467,17 +1471,17 @@ interface AutotestPrivate {
 
   // ARC set interactive enable/disable state.
   // |enabled|: Enable ARC interactive.
-  // |Returns|: Called when the operation sent to ARC by mojo.
+  // |Returns|: Promise that resolves when the operation is sent to ARC by mojo.
   [requiredCallback]
   static Promise<undefined> setArcInteractiveState(boolean enabled);
 
   // Returns whether a field trial exists and has been activated.
-  // |Returns|: Response callback to report if a field trial exists and has been
-  // activated.
+  // |Returns|: Promise that resolves with a boolean indicating if a field trial
+  // exists and has been activated.
   // |PromiseValue|: active
   [requiredCallback]
-  static Promise<boolean> isFieldTrialActive(DOMString trial_name,
-                                             DOMString group_name);
+  static Promise<boolean> isFieldTrialActive(DOMString trialName,
+                                             DOMString groupName);
 
   // ARC get wakefulness mode.
   // |PromiseValue|: mode
@@ -1491,7 +1495,7 @@ interface AutotestPrivate {
   // Gets the chrome://device-log entries for a given type or all types.
   // |type|: A string like "printer" to fetch a specific type, or an empty
   // string to fetch all entries.
-  // |Returns|: Called with the logs as a single string.
+  // |Returns|: Promose that resolves with the logs as a single string.
   // |PromiseValue|: data
   [requiredCallback]
   static Promise<DOMString> getDeviceEventLog(DOMString type);
