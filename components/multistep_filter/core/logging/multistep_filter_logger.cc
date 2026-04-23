@@ -10,10 +10,10 @@
 namespace multistep_filter {
 
 ScopedLogMessage::ScopedLogMessage(MultistepFilterLogRouter* logger,
-                                   base::Uuid nav_id,
+                                   int64_t navigation_id,
                                    LogEventType type,
                                    std::string_view source_etld_plus_1)
-    : logger_(logger), entry_(std::move(nav_id), type, source_etld_plus_1) {}
+    : logger_(logger), entry_(navigation_id, type, source_etld_plus_1) {}
 
 ScopedLogMessage::~ScopedLogMessage() {
   if (logger_) {

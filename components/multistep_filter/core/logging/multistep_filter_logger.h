@@ -22,7 +22,7 @@ class ScopedLogMessage {
 
  public:
   ScopedLogMessage(MultistepFilterLogRouter* logger,
-                   base::Uuid nav_id,
+                   int64_t navigation_id,
                    LogEventType type,
                    std::string_view source_etld_plus_1);
   ~ScopedLogMessage();
@@ -50,12 +50,12 @@ class ScopedLogMessage {
 // Uses a for loop to avoid dangling-else and empty-if-block warnings while
 // supporting chaining of .WithDetail() calls.
 // Evaluates 'logger' only once.
-#define MULTISTEP_FILTER_LOG(logger, nav_id, type, source_etld_plus_1) \
-  for (multistep_filter::MultistepFilterLogRouter* multistep_logger_ = \
-           (logger);                                                   \
-       multistep_logger_ && multistep_logger_->IsLoggingEnabled();     \
-       multistep_logger_ = nullptr)                                    \
-  multistep_filter::ScopedLogMessage(multistep_logger_, nav_id, type,  \
+#define MULTISTEP_FILTER_LOG(logger, navigation_id, type, source_etld_plus_1) \
+  for (multistep_filter::MultistepFilterLogRouter* multistep_logger_ =        \
+           (logger);                                                          \
+       multistep_logger_ && multistep_logger_->IsLoggingEnabled();            \
+       multistep_logger_ = nullptr)                                           \
+  multistep_filter::ScopedLogMessage(multistep_logger_, navigation_id, type,  \
                                      source_etld_plus_1)
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_LOGGER_H_

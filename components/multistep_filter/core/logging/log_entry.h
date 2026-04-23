@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "base/values.h"
 
 namespace multistep_filter {
@@ -39,7 +38,7 @@ struct LogEntry {
   // The time when the logged event occurred.
   base::Time timestamp = base::Time::Now();
   // A unique identifier for the navigation this event belongs to.
-  base::Uuid navigation_id;
+  int64_t navigation_id;
   // The type of event that occurred.
   LogEventType event_type = LogEventType::kNavigationStarted;
   // The effective Top-Level Domain plus one (eTLD+1) of the page where the
@@ -48,7 +47,7 @@ struct LogEntry {
   // Additional key-value details associated with the event.
   base::DictValue details;
 
-  LogEntry(base::Uuid nav_id,
+  LogEntry(int64_t navigation_id,
            LogEventType type,
            std::string_view source_etld_plus_1);
   LogEntry(LogEntry&& other) noexcept;
@@ -66,7 +65,7 @@ struct LogEntry {
  private:
   // Internal constructor used for cloning.
   LogEntry(base::Time time,
-           base::Uuid nav_id,
+           int64_t navigation_id,
            LogEventType type,
            std::string_view source_etld_plus_1);
 };

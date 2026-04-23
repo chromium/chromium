@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -53,19 +54,19 @@ constexpr std::string_view LogEventTypeToString(LogEventType type) {
 
 }  // namespace
 
-LogEntry::LogEntry(base::Uuid nav_id,
+LogEntry::LogEntry(int64_t navigation_id,
                    LogEventType type,
                    std::string_view source_etld_plus_1)
-    : navigation_id(std::move(nav_id)),
+    : navigation_id(navigation_id),
       event_type(type),
       source_etld_plus_1(source_etld_plus_1) {}
 
 LogEntry::LogEntry(base::Time time,
-                   base::Uuid nav_id,
+                   int64_t navigation_id,
                    LogEventType type,
                    std::string_view source_etld_plus_1)
     : timestamp(time),
-      navigation_id(std::move(nav_id)),
+      navigation_id(navigation_id),
       event_type(type),
       source_etld_plus_1(source_etld_plus_1) {}
 
@@ -84,7 +85,7 @@ LogEntry LogEntry::Clone() const {
 base::Value LogEntry::ToValue() const {
   base::DictValue dict;
   dict.Set("timestamp", timestamp.InSecondsFSinceUnixEpoch());
-  dict.Set("navigation_id", navigation_id.AsLowercaseString());
+  dict.Set("navigation_id", base::NumberToString(navigation_id));
   dict.Set("event_type", LogEventTypeToString(event_type));
   dict.Set("source_etld_plus_1", source_etld_plus_1);
   dict.Set("details", details.Clone());
