@@ -358,6 +358,9 @@ class Typeref(object):
       properties['type'] = 'binary'
       # We force the APIs to specify instanceOf since ArrayBufferView isn't an
       # instantiable type, therefore we don't specify isInstanceOf here.
+      instance_of = self.parent.GetProperty('instanceOf')
+      if instance_of:
+        properties['isInstanceOf'] = instance_of
     elif self.parent.GetPropertyLocal('Union'):
       properties['choices'] = [
           Typeref(node.GetProperty('TYPEREF'), node,

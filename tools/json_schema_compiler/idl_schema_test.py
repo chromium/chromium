@@ -438,6 +438,18 @@ class IdlSchemaTest(unittest.TestCase):
     self.assertEqual(True, baz_type['properties']['foo']['optional'])
     self.assertEqual('FooType', baz_type['properties']['foo']['$ref'])
 
+  def testArrayBufferTypes(self):
+    schema = idl_schema.Load('test/idl_binary_types.idl')[0]
+
+    array_buffer_type = getType(schema, 'ArrayBufferTestType')
+    self.assertEqual('binary', array_buffer_type['properties']['x']['type'])
+    self.assertEqual('ArrayBuffer',
+                     array_buffer_type['properties']['x']['isInstanceOf'])
+
+    self.assertEqual('binary', array_buffer_type['properties']['y']['type'])
+    self.assertEqual('Uint8Array',
+                     array_buffer_type['properties']['y']['isInstanceOf'])
+
   def testObjectTypesWithUnions(self):
     schema = idl_schema.Load('test/idl_object_types.idl')[0]
 
