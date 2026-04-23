@@ -367,7 +367,8 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool include_shadow_roots)
+                                 bool include_shadow_roots,
+                                 CustomElementRegistry* registry)
     : HTMLTreeBuilder(parser,
                       document,
                       parser_content_policy,
@@ -375,7 +376,7 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                       include_shadow_roots,
                       nullptr,
                       nullptr,
-                      nullptr,
+                      registry,
                       nullptr,
                       nullptr) {}
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,

@@ -106,6 +106,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
  public:
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
+                     CustomElementRegistry* registry,
                      ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
   HTMLDocumentParser(DocumentFragment* fragment_target,
                      Element* context_element,

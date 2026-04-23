@@ -1274,16 +1274,28 @@ Element* HTMLConstructionSite::CreateElement(
     // intended parent is a template element, which means it will create a
     // document fragment, the custom element registry should be null.
     if (open_elements_.StackDepth() > 1) {
-      if (IsA<HTMLTemplateElement>(CurrentNode())) {
+      if ((IsA<HTMLTemplateElement>(CurrentNode()) && is_parsing_fragment_) ||
+          document.IsTemplateDocument()) {
+        // Template content documents have no browsing context, so no registry
+        // can exist. This covers both direct children of <template> and deeper
+        // descendants inside template content.
         registry = nullptr;
-      } else {
+      } else if (is_parsing_fragment_ ||
+                 document.ScopedCustomElementRegistryUsed() ||
+                 &document != document_) {
+        // Only perform the per-element registry lookup when it may differ from
+        // the cached custom_element_registry_: during fragment parsing, when
+        // scoped registries are in use, or when a script has moved the current
+        // node to a different document mid-parse (stale cached registry).
         registry = CurrentElement()->customElementRegistry();
       }
     }
     // If the token has the "customelementregistry" content attribute, override
     // the registry to null. This allows declarative opt-out from the default
     // registry during parsing.
-    if (token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+    if (registry &&
+        token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+      document.SetScopedCustomElementRegistryUsed();
       registry = nullptr;
     }
   }
@@ -1349,7 +1361,7 @@ Element* HTMLConstructionSite::CreateElement(
       // to control this behavior of explicitly setting null registry.
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
           document, tag_name, GetCreateElementFlags(), is, registry,
-          /*wait_for_registry=*/!registry && is_parsing_fragment_);
+          /*wait_for_registry=*/!registry);
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.

@@ -3387,6 +3387,18 @@ void Document::Shutdown() {
   ViewTransitionUtils::ForEachTransition(
       *this, [](ViewTransition& transition) { transition.SkipTransition(); });
 
+  // Preserve the global custom element registry on the TreeScope before the
+  // window reference is cleared. This ensures that
+  // Document.customElementRegistry continues to return the correct registry
+  // even after the document's browsing context is destroyed (e.g., when an
+  // iframe is removed from the DOM).
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      dom_window_) {
+    if (CustomElementRegistry* registry = dom_window_->MaybeCustomElements()) {
+      SetCustomElementRegistry(registry);
+    }
+  }
+
   // This is required, as our LocalFrame might delete itself as soon as it
   // detaches us. However, this violates Node::detachLayoutTree() semantics, as
   // it's never possible to re-attach. Eventually Document::detachLayoutTree()
@@ -3570,8 +3582,12 @@ CanvasFontCache* Document::GetCanvasFontCache() {
 
 DocumentParser* Document::CreateParser() {
   if (auto* html_document = DynamicTo<HTMLDocument>(this)) {
-    return MakeGarbageCollected<HTMLDocumentParser>(*html_document,
-                                                    parser_sync_policy_);
+    CustomElementRegistry* registry = nullptr;
+    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+      registry = CustomElementRegistry::DefaultRegistry(*this);
+    }
+    return MakeGarbageCollected<HTMLDocumentParser>(
+        *html_document, parser_sync_policy_, registry);
   }
 
   data_->using_rust_xml_parser_ = false;
