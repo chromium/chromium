@@ -284,7 +284,7 @@ void SystemGeolocationSourceWin::AccessListenerHelper::PollPermissionStatus() {
 SystemGeolocationSourceWin::SystemGeolocationSourceWin() {
   access_listener_helper_ = base::SequenceBound<AccessListenerHelper>(
       base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       weak_factory_.GetWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
