@@ -35,5 +35,6 @@ declare_args() {
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr =
       enable_openxr || enable_cardboard || enable_arcore ||
-      (is_linux && !is_castos && (current_cpu == "x64" || current_cpu == "x86"))
+      (is_linux && !is_castos &&
+       (current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm64"))
 }

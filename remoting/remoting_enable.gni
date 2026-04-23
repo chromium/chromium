@@ -11,5 +11,5 @@ if (is_ios) {
 
 declare_args() {
   enable_remoting = !is_castos && !is_android && !is_ios && !is_fuchsia &&
-                    (!is_linux || (target_cpu != "arm64" && use_gtk))
+                    (!is_linux || use_gtk)
 }

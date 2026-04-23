@@ -1572,14 +1572,6 @@ ci.builder(
             # if/when the full resources are delivered.
             "very_limited_capacity_bot",
         ],
-        per_test_modifications = {
-            "remoting_unittests": targets.remove(
-                reason = "Not supported on Linux arm64",
-            ),
-            "vr_common_unittests": targets.remove(
-                reason = "Not supported on Linux arm64",
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1642,12 +1634,6 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 24,
                 ),
-            ),
-            "remoting_unittests": targets.remove(
-                reason = "Not supported on Linux arm64",
-            ),
-            "vr_common_unittests": targets.remove(
-                reason = "Not supported on Linux arm64",
             ),
         },
     ),
