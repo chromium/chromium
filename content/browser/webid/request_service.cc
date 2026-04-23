@@ -1349,6 +1349,23 @@ void RequestService::NotifyAutofillSuggestionAccepted(
     OnFederatedTokenReceivedCallback callback) {
   token_received_callback_for_autofill_ = std::move(callback);
 
+  auto get_info_it = token_request_get_infos_.find(idp);
+  auto idp_info_it = idp_infos_.find(idp);
+  bool is_account_id_valid =
+      std::ranges::any_of(accounts_, [&](const auto& account) {
+        return account->identity_provider->idp_metadata.config_url == idp &&
+               account->id == account_id;
+      });
+
+  if (get_info_it == token_request_get_infos_.end() ||
+      idp_info_it == idp_infos_.end() || !is_account_id_valid) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(token_received_callback_for_autofill_),
+                       false));
+    return;
+  }
+
   // Currently the verified email flow opens a modal UI upon notification and
   // the autofill dropdown UI gets dismissed immediately. i.e. it doesn't need a
   // valid callback. However, if a user is presented a full federated account,
@@ -1364,14 +1381,6 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   // know whether this is a sign-in or sign-up moment (e.g. wouldn't have a
   // approved_clients array). We should figure out how to reconcile these two
   // modes.
-  auto get_info_it = token_request_get_infos_.find(idp);
-  if (get_info_it == token_request_get_infos_.end()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(token_received_callback_for_autofill_),
-                       false));
-    return;
-  }
 
   // TODO(crbug.com/412640661): Currently, in order to skip the account chooser
   // and go straight to the disclosure UI, we have to call ShowLoadingDialog()

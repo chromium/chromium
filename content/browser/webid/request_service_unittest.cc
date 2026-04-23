@@ -8990,7 +8990,18 @@ TEST_F(RequestServiceTest, DisconnectDeniedByPermissionsPolicy) {
             bad_message_observer.WaitForBadMessage());
 }
 
-TEST_F(RequestServiceTest, NotifyAutofillSuggestionAcceptedWithUnknownIdp) {
+struct NotifyAutofillTestParams {
+  bool unknown_idp;
+  bool show_modal;
+};
+
+class RequestServiceNotifyAutofillParamTest
+    : public RequestServiceTest,
+      public ::testing::WithParamInterface<NotifyAutofillTestParams> {};
+
+TEST_P(RequestServiceNotifyAutofillParamTest,
+       NotifyAutofillSuggestionAccepted) {
+  NotifyAutofillTestParams params = GetParam();
   auto dialog_controller =
       std::make_unique<TestDialogController>(kConfigurationValid);
 
@@ -8998,9 +9009,11 @@ TEST_F(RequestServiceTest, NotifyAutofillSuggestionAcceptedWithUnknownIdp) {
   federated_auth_request_impl_->SetDialogControllerForTests(
       std::move(dialog_controller));
 
-  // Call NotifyAutofillSuggestionAccepted with an IDP that is not in
-  // token_request_get_infos_.
-  GURL unknown_idp("https://unknownidp.example/");
+  GURL idp = params.unknown_idp ? GURL("https://unknownidp.example/")
+                                : GURL(kProviderUrlFull);
+  std::string account_id =
+      params.unknown_idp ? "account_id" : "unknown_account_id";
+
   std::optional<bool> callback_result;
   base::RunLoop run_loop;
   RequestService::OnFederatedTokenReceivedCallback callback = base::BindOnce(
@@ -9013,7 +9026,7 @@ TEST_F(RequestServiceTest, NotifyAutofillSuggestionAcceptedWithUnknownIdp) {
 
   // This should return early and not crash.
   federated_auth_request_impl_->NotifyAutofillSuggestionAccepted(
-      unknown_idp, "account_id", /*show_modal=*/true, std::move(callback));
+      idp, account_id, params.show_modal, std::move(callback));
 
   run_loop.Run();
 
@@ -9022,5 +9035,17 @@ TEST_F(RequestServiceTest, NotifyAutofillSuggestionAcceptedWithUnknownIdp) {
   // Verify that the callback was called with false.
   EXPECT_EQ(callback_result, false);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    RequestServiceNotifyAutofillParamTest,
+    ::testing::Values(NotifyAutofillTestParams{/*unknown_idp=*/true,
+                                               /*show_modal=*/true},
+                      NotifyAutofillTestParams{/*unknown_idp=*/true,
+                                               /*show_modal=*/false},
+                      NotifyAutofillTestParams{/*unknown_idp=*/false,
+                                               /*show_modal=*/true},
+                      NotifyAutofillTestParams{/*unknown_idp=*/false,
+                                               /*show_modal=*/false}));
 
 }  // namespace content::webid
