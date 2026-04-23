@@ -311,7 +311,7 @@ public class WebApkUtils {
     }
 
     /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */
-    @SuppressLint("NewApi") // See crbug.com/1081331 for context.
+    @SuppressLint("NewApi") // See crbug.com/40130475 for context.
     public static @Nullable ComponentName fetchTopActivityComponent(Context context, int taskId) {
         ActivityManager manager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

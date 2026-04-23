@@ -29,7 +29,7 @@ public class HostBrowserUtils {
     public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";
 
     // Action for launching {@link WebappLauncherActivity}.
-    // TODO(hanxi): crbug.com/737556. Replaces this string with the new WebAPK launch action after
+    // TODO(hanxi): crbug.com/40527863. Replaces this string with the new WebAPK launch action after
     // it is propagated to all the Chrome's channels.
     public static final String ACTION_START_WEBAPK =
             "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";

@@ -78,7 +78,7 @@ public class HostBrowserLauncher {
         // Only pass on the start time if:
         // - The WebAPK is not already running.
         // - No user action was required between launching the webapk and chrome starting up.
-        //   See https://crbug.com/842023
+        //   See https://crbug.com/40575903
         if (!params.wasDialogShown() && params.getLaunchTimeMs() >= 0) {
             intent.putExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, params.getLaunchTimeMs());
         }
