@@ -314,9 +314,9 @@ bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
     return false;
   }
 
-  // Allow the PDF extension frame and PDF content frame to use JavaScript.
-  if (mime_handler_stream_manager->IsPdfExtensionHost(render_frame_host) ||
-      mime_handler_stream_manager->IsPdfContentHost(render_frame_host)) {
+  // Allow the MIME handler extension frame and content frame to use JavaScript.
+  if (mime_handler_stream_manager->IsExtensionHost(render_frame_host) ||
+      mime_handler_stream_manager->IsContentHost(render_frame_host)) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)

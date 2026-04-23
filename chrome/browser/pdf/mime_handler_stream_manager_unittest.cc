@@ -208,13 +208,13 @@ TEST_F(MimeHandlerStreamManagerTest, AddMultipleStreamContainers) {
   EXPECT_TRUE(mime_handler_stream_manager());
 }
 
-// `MimeHandlerStreamManager::IsPdfExtensionHost()` should correctly identify
-// the PDF extension hosts.
-TEST_F(MimeHandlerStreamManagerTest, IsPdfExtensionHost) {
+// `MimeHandlerStreamManager::IsExtensionHost()` should correctly identify
+// the extension hosts.
+TEST_F(MimeHandlerStreamManagerTest, IsExtensionHost) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
-  // In a PDF load, there's an RFH for the extension frame for the initial
+  // During a load, there's an RFH for the extension frame for the initial
   // about:blank navigation. This RFH will always be replaced by
   // `extension_host`.
   auto* about_blank_host =
@@ -238,9 +238,9 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfExtensionHost) {
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, about_blank_host->GetFrameTreeNodeId());
 
-  // `about_blank_host` should be considered a PDF content host, even if it
-  // isn't navigating to the original PDF URL.
-  EXPECT_TRUE(manager->IsPdfExtensionHost(about_blank_host));
+  // `about_blank_host` should be considered an extension host, even if it isn't
+  // navigating to the original URL.
+  EXPECT_TRUE(manager->IsExtensionHost(about_blank_host));
 
   // Now, set the extension frame tree node ID to the actual extension frame
   // tree node ID, which will be the same ID as `about_blank_host` in real
@@ -248,15 +248,15 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfExtensionHost) {
   manager->SetExtensionFrameTreeNodeIdForTesting(
       embedder_host, extension_host->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(manager->IsPdfExtensionHost(extension_host));
+  EXPECT_TRUE(manager->IsExtensionHost(extension_host));
 
-  // Unrelated hosts shouldn't be considered PDF content hosts.
-  EXPECT_FALSE(manager->IsPdfExtensionHost(other_host));
+  // Unrelated hosts shouldn't be considered extension hosts.
+  EXPECT_FALSE(manager->IsExtensionHost(other_host));
 }
 
-// `MimeHandlerStreamManager::IsPdfContentHost()` should correctly identify the
-// PDF content hosts.
-TEST_F(MimeHandlerStreamManagerTest, IsPdfContentHost) {
+// `MimeHandlerStreamManager::IsContentHost()` should correctly identify the
+// content hosts.
+TEST_F(MimeHandlerStreamManagerTest, IsContentHost) {
   const GURL pdf_url = GURL(kOriginalUrl1);
 
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
@@ -264,7 +264,7 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfContentHost) {
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
 
-  // In a PDF load, there's an RFH for the content frame for the initial
+  // During a load, there's an RFH for the content frame for the initial
   // stream URL navigation. This RFH will always be replaced by
   // `content_host`.
   auto* stream_url_host =
@@ -291,19 +291,19 @@ TEST_F(MimeHandlerStreamManagerTest, IsPdfContentHost) {
   manager->SetContentFrameTreeNodeIdForTesting(
       embedder_host, stream_url_host->GetFrameTreeNodeId());
 
-  // `stream_url_host` should be considered a PDF content host, even if it isn't
-  // navigating to the original PDF URL.
-  EXPECT_TRUE(manager->IsPdfContentHost(stream_url_host));
+  // `stream_url_host` should be considered a content host, even if it isn't
+  // navigating to the original URL.
+  EXPECT_TRUE(manager->IsContentHost(stream_url_host));
 
   // Now, set the content frame tree node ID to the actual content frame tree
   // node ID, which will be the same as `stream_url_host` in real situations.
   manager->SetContentFrameTreeNodeIdForTesting(
       embedder_host, content_host->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(manager->IsPdfContentHost(content_host));
+  EXPECT_TRUE(manager->IsContentHost(content_host));
 
-  // Unrelated hosts shouldn't be considered PDF content hosts.
-  EXPECT_FALSE(manager->IsPdfContentHost(other_host));
+  // Unrelated hosts shouldn't be considered content hosts.
+  EXPECT_FALSE(manager->IsContentHost(other_host));
 }
 
 // If multiple `extensions::StreamContainer`s exist, then deleting one stream
@@ -440,13 +440,13 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// If the PDF extension host changes to a different host, the stream should be
+// If the extension host changes to a different host, the stream should be
 // deleted.
 TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
-  // In a PDF load, there's an RFH for the extension frame for the initial
+  // During a load, there's an RFH for the extension frame for the initial
   // about:blank navigation. This RFH will always be replaced by
   // `extension_host` and shouldn't trigger stream deletion. Both hosts should
   // share the same frame name.
@@ -493,7 +493,7 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// If the PDF content host changes to a different host, the stream should be
+// If the content host changes to a different host, the stream should be
 // deleted.
 TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   const GURL pdf_url = GURL(kOriginalUrl1);
@@ -503,7 +503,7 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
 
-  // In a PDF load, there's an RFH for the content frame for the initial
+  // During a load, there's an RFH for the content frame for the initial
   // stream URL navigation. This RFH will always be replaced by
   // `content_host` and shouldn't trigger stream deletion.
   auto* stream_url_host =
@@ -524,7 +524,7 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
   // The extension host needs to have the PDF extension origin so that
-  // `IsPdfContentHost()` can walk up to the embedder via the extension frame.
+  // `IsContentHost()` can walk up to the embedder via the extension frame.
   content::OverrideLastCommittedOrigin(
       extension_host,
       url::Origin::Create(GURL(
@@ -557,7 +557,7 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
-       ContentRenderFrameHostChangedCallsValidateContentFrameHost) {
+       ContentHostChangedCallsValidateContentFrameHost) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
@@ -614,7 +614,7 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderFrameDeleted) {
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// If the PDF extension frame is deleted, the stream should be deleted.
+// If the extension frame is deleted, the stream should be deleted.
 TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
@@ -644,7 +644,7 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// If the PDF content frame is deleted, the stream should be deleted.
+// If the content frame is deleted, the stream should be deleted.
 TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
@@ -752,8 +752,8 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
 
   // Committing a navigation again shouldn't try to claim a stream again if
   // there isn't a new stream. The stream should remain the same. This can occur
-  // if a page contains an embed to a PDF, and the embed later navigates to
-  // another URL.
+  // if a page contains an embed to a handled URL, and the embed later navigates
+  // to another URL.
   manager->ReadyToCommitNavigation(&navigation_handle2);
   base::WeakPtr<extensions::StreamContainer> same_stream =
       manager->GetStreamContainer(embedder_host);
@@ -772,7 +772,7 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   navigation_handle3.set_render_frame_host(embedder_host);
 
   // If a new stream exists for the same frame tree node ID, allow claiming the
-  // new stream. This can occur if a full page PDF viewer refreshes.
+  // new stream. This can occur if a full page MIME handler refreshes.
   manager->ReadyToCommitNavigation(&navigation_handle3);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(original_stream);
@@ -872,7 +872,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   navigation_handle.set_has_committed(true);
   manager->DidFinishNavigation(&navigation_handle);
 
-  EXPECT_FALSE(manager->DidPdfExtensionFinishNavigation(embedder_host));
+  EXPECT_FALSE(manager->DidExtensionFrameFinishNavigation(embedder_host));
 }
 
 // Verify `MimeHandlerStreamManager::PluginCanSave()` defaults to false

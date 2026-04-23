@@ -4254,7 +4254,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   CreateTestMimeHandlerStreamManager(web_contents2);
   auto* test_mime_handler_stream_manager2 =
       GetTestMimeHandlerStreamManager(web_contents2);
-  test_mime_handler_stream_manager2->DelayNextPdfExtensionNavigation();
+  test_mime_handler_stream_manager2->DelayNextExtensionNavigation();
 
   // Navigate to the PDF URL. Pause before the PDF extension loads. Navigating
   // with `ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP` only waits for the
@@ -4264,7 +4264,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::RenderFrameHost* embedder_host2 =
       web_contents2->GetPrimaryMainFrame();
-  test_mime_handler_stream_manager2->WaitUntilPdfExtensionNavigationStarted(
+  test_mime_handler_stream_manager2->WaitUntilExtensionNavigationStarted(
       embedder_host2);
 
   // Close the first tab, destroying the first PDF while the second PDF is in
@@ -4280,7 +4280,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Resume the PDF load and ensure the second PDF loads without crashing.
-  test_mime_handler_stream_manager2->ResumePdfExtensionNavigation(
+  test_mime_handler_stream_manager2->ResumeExtensionNavigation(
       embedder_host2);
   ASSERT_TRUE(
       test_mime_handler_stream_manager2->WaitUntilPdfLoaded(embedder_host2));
@@ -4346,7 +4346,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   CreateTestMimeHandlerStreamManager(incognito_contents);
   auto* test_mime_handler_stream_manager =
       GetTestMimeHandlerStreamManager(incognito_contents);
-  test_mime_handler_stream_manager->DelayNextPdfExtensionNavigation();
+  test_mime_handler_stream_manager->DelayNextExtensionNavigation();
 
   // Navigate the Incognito window to a page with a PDF embedded in an iframe.
   content::TestNavigationObserver navigation_observer(incognito_contents);
@@ -4371,7 +4371,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   GURL stream_url(stream->stream_url());
 
   // Resume the PDF extension URL navigation.
-  test_mime_handler_stream_manager->ResumePdfExtensionNavigation(embedder_host);
+  test_mime_handler_stream_manager->ResumeExtensionNavigation(embedder_host);
 
   // Use TestNavigationManager to wait for first yield after running
   // DidStartNavigation throttles.  This should be precisely after the
@@ -4425,14 +4425,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   CreateTestMimeHandlerStreamManager(web_contents);
   auto* test_mime_handler_stream_manager =
       GetTestMimeHandlerStreamManager(web_contents);
-  test_mime_handler_stream_manager->DelayNextPdfExtensionNavigation();
+  test_mime_handler_stream_manager->DelayNextExtensionNavigation();
 
   // Navigate to the PDF URL and wait for the PDF extension navigation to start.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), main_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
-  test_mime_handler_stream_manager->WaitUntilPdfExtensionNavigationStarted(
+  test_mime_handler_stream_manager->WaitUntilExtensionNavigationStarted(
       primary_main_frame);
 
   // The PDF.LoadStatus2 metric should not be incremented yet.
@@ -4440,7 +4440,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
 
   // Finish loading the PDF.
-  test_mime_handler_stream_manager->ResumePdfExtensionNavigation(
+  test_mime_handler_stream_manager->ResumeExtensionNavigation(
       primary_main_frame);
   EXPECT_TRUE(
       test_mime_handler_stream_manager->WaitUntilPdfLoaded(primary_main_frame));

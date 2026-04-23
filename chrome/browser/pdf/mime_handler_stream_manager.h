@@ -28,23 +28,24 @@ class StreamContainer;
 
 namespace pdf {
 
-// `MimeHandlerStreamManager` is used for PDF navigation. It tracks all
-// PDF navigation events in a `content::WebContents`. It handles multiple PDF
-// viewer instances in a single `content::WebContents`. It is responsible for:
-// 1. Storing the `extensions::StreamContainer` PDF data.
-// 2. Observing for the PDF frames either navigating or closing (including by
-//    crashing). This is necessary to ensure that streams that aren't claimed
-//    are not leaked, by deleting the stream if any of those events occur.
-// 3. Observing for the RFH created by the PDF embedder RFH to load the PDF
+// `MimeHandlerStreamManager` is used for MIME handler navigation. It tracks all
+// MIME handler navigation events in a `content::WebContents`. It handles
+// multiple MIME handler instances in a single `content::WebContents`. It is
+// responsible for:
+// 1. Storing the `extensions::StreamContainer` stream data.
+// 2. Observing for the MIME handler frames either navigating or closing
+//    (including by crashing). This is necessary to ensure that streams that
+//    aren't claimed are not leaked, by deleting the stream if any of those
+//    events occur.
+// 3. Observing for the RFH created by the embedder to load the MIME handler
 //    extension URL.
-// 4. Observing for the PDF content RFH to register the stream as a subresource
-//    override for the final PDF commit navigation and to set up postMessage
-//    support.
+// 4. Observing for content navigations and dispatching the content-frame
+//    handling to the stream delegate.
 // `MimeHandlerStreamManager` is scoped to the `content::WebContents` it tracks,
-// but it may also delete itself if all PDF streams are no longer used.
+// but it may also delete itself if all streams are no longer used.
 // `extensions::StreamContainer` objects are stored from
 // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until
-// the PDF viewer is no longer in use.
+// the MIME handler is no longer in use.
 //
 // Use `MimeHandlerStreamManager::Create()` to create an instance.
 // Use `MimeHandlerStreamManager::FromWebContents()` to get an instance.
@@ -52,13 +53,13 @@ class MimeHandlerStreamManager
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MimeHandlerStreamManager> {
  public:
-  // A factory interface used to generate test PDF stream managers.
+  // A factory interface used to generate test stream managers.
   class Factory {
    public:
     // If MimeHandlerStreamManager has a factory set, then
     // `MimeHandlerStreamManager::Create()` will automatically use
-    // `CreateMimeHandlerStreamManager()` to create the PDF stream manager if
-    // necessary for PDF navigations.
+    // `CreateMimeHandlerStreamManager()` to create the stream manager if
+    // necessary for MIME handler navigations.
     virtual void CreateMimeHandlerStreamManager(
         content::WebContents* contents) = 0;
 
@@ -66,7 +67,7 @@ class MimeHandlerStreamManager
     virtual ~Factory() = default;
   };
 
-  // Information about the PDF embedder RFH needed to store and retrieve stream
+  // Information about the embedder RFH needed to store and retrieve stream
   // containers.
   struct EmbedderHostInfo {
     // Need this comparator since this struct is used as a key in the
@@ -77,7 +78,7 @@ class MimeHandlerStreamManager
     // because entries are added during
     // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()`,
     // before the embedder's frame tree node has swapped from its previous RFH
-    // to the embedder RFH that will hold the PDF.
+    // to the embedder RFH that will host the MIME handler.
     content::FrameTreeNodeId frame_tree_node_id;
     content::GlobalRenderFrameHostId global_id;
   };
@@ -107,8 +108,9 @@ class MimeHandlerStreamManager
   // until the embedder host commits, at which point the `StreamContainer` is
   // tracked by both the frame tree node ID and the render frame host ID.
   // Replaces existing unclaimed entries with the same `frame_tree_node_id`.
-  // This can occur if an embedder frame navigating to a PDF starts navigating
-  // to another PDF URL before the original `StreamContainer` is claimed.
+  // This can occur if an embedder frame navigating to a handled URL starts
+  // navigating to another handled URL before the original `StreamContainer` is
+  // claimed.
   // `delegate` must not be null.
   void AddStreamContainer(
       content::FrameTreeNodeId frame_tree_node_id,
@@ -121,50 +123,48 @@ class MimeHandlerStreamManager
   base::WeakPtr<extensions::StreamContainer> GetStreamContainer(
       content::RenderFrameHost* embedder_host);
 
-  // Returns true if `render_frame_host` is an extension host for a PDF. During
-  // a PDF load, the initial RFH for the extension frame commits to the
-  // about:blank URL. Another RFH will then be chosen to host the extension.
+  // Returns true if `render_frame_host` is an extension host for a MIME
+  // handler. During a load, the initial RFH for the extension frame commits to
+  // the about:blank URL. Another RFH will then be chosen to host the extension.
   // This returns true for both hosts. Depending on what navigation step the
   // frame is on, callers can also check the last committed origin to
   // differentiate between the hosts.
-  bool IsPdfExtensionHost(
-      const content::RenderFrameHost* render_frame_host) const;
+  bool IsExtensionHost(const content::RenderFrameHost* render_frame_host) const;
 
-  // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
+  // Returns true if `frame_tree_node_id` is the frame tree node ID for the
   // extension frame under `embedder_host`, false otherwise.
-  bool IsPdfExtensionFrameTreeNodeId(
+  bool IsExtensionFrameTreeNodeId(
       const content::RenderFrameHost* embedder_host,
       content::FrameTreeNodeId frame_tree_node_id) const;
 
-  // Returns true if `embedder_host` has a PDF extension frame and it has
-  // already finished its navigation, false otherwise.
-  bool DidPdfExtensionFinishNavigation(
-      const content::RenderFrameHost* embedder_host) const;
-
-  // Returns true if `render_frame_host` is a content host for a PDF. During a
-  // PDF load, the initial RFH for the content frame attempts to navigate to the
-  // stream URL. Another RFH will then be chosen to host the content frame. This
-  // returns true for both hosts. Depending on what navigation step the frame is
-  // on, callers can also check the last committed URL to differentiate between
-  // the hosts.
-  bool IsPdfContentHost(
-      const content::RenderFrameHost* render_frame_host) const;
-
-  // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
-  // content frame under `embedder_host`, false otherwise.
-  bool IsPdfContentFrameTreeNodeId(
-      const content::RenderFrameHost* embedder_host,
-      content::FrameTreeNodeId frame_tree_node_id) const;
-
-  // Returns true if `embedder_host` has a PDF content frame and it has already
+  // Returns true if `embedder_host` has an extension frame and it has already
   // finished its navigation, false otherwise.
-  bool DidPdfContentNavigate(
+  bool DidExtensionFrameFinishNavigation(
       const content::RenderFrameHost* embedder_host) const;
 
-  // Returns whether the PDF plugin should handle save events.
+  // Returns true if `render_frame_host` is a content host for a MIME handler.
+  // During a load, the initial RFH for the content frame attempts to navigate
+  // to the stream URL. Another RFH will then be chosen to host the content
+  // frame. This returns true for both hosts. Depending on what navigation step
+  // the frame is on, callers can also check the last committed URL to
+  // differentiate between the hosts.
+  bool IsContentHost(const content::RenderFrameHost* render_frame_host) const;
+
+  // Returns true if `frame_tree_node_id` is the frame tree node ID for the
+  // content frame under `embedder_host`, false otherwise.
+  bool IsContentFrameTreeNodeId(
+      const content::RenderFrameHost* embedder_host,
+      content::FrameTreeNodeId frame_tree_node_id) const;
+
+  // Returns true if `embedder_host` has a content frame and it has already
+  // finished its navigation, false otherwise.
+  bool DidContentFrameFinishNavigation(
+      const content::RenderFrameHost* embedder_host) const;
+
+  // Returns whether the handler plugin should handle save events.
   bool PluginCanSave(const content::RenderFrameHost* embedder_host) const;
 
-  // Set whether the PDF plugin should handle save events.
+  // Set whether the handler plugin should handle save events.
   void SetPluginCanSave(content::RenderFrameHost* embedder_host,
                         bool plugin_can_save);
 
@@ -231,15 +231,15 @@ class MimeHandlerStreamManager
       content::NavigationHandle* navigation_handle);
 
   // Navigates the FrameTreeNode with ID `extension_host_frame_tree_node_id` to
-  // the PDF extension URL. Marks the PDF extension as navigated in
-  // `stream_info`, which must be non-null. `source_site_instance` should be the
-  // `content::SiteInstance` of the PDF embedder frame that will be initiating
-  // the navigation.
+  // the extension URL. Marks the extension as navigated in `stream_info`, which
+  // must be non-null. `source_site_instance` should be the
+  // `content::SiteInstance` of the embedder frame that will be initiating the
+  // navigation.
   //
   // Subclasses may override this for use in callbacks. If so, `global_id`,
-  // which is the ID for the intermediate about:blank host for the PDF extension
+  // which is the ID for the intermediate about:blank host for the extension
   // frame, can be used to get the other parameters safely.
-  virtual void NavigateToPdfExtensionUrl(
+  virtual void NavigateToExtensionUrl(
       content::FrameTreeNodeId extension_host_frame_tree_node_id,
       extensions::StreamInfo* stream_info,
       content::SiteInstance* source_site_instance,
@@ -248,6 +248,9 @@ class MimeHandlerStreamManager
  private:
   friend class content::WebContentsUserData<MimeHandlerStreamManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  using StreamInfoMap =
+      std::map<EmbedderHostInfo, std::unique_ptr<extensions::StreamInfo>>;
 
   // Mark an unclaimed stream info with the same frame tree node ID as
   // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the
@@ -260,17 +263,17 @@ class MimeHandlerStreamManager
   // deletes `this` if there are no remaining stream infos.
   void DeleteClaimedStreamInfo(content::RenderFrameHost* embedder_host);
 
-  // Intended to be called when a RenderFrameHost in the observed
-  // `content::WebContents` is replaced or deleted. If `render_frame_host` is a
-  // deleted PDF extension host, then delete the stream. Deletes `this` if there
-  // are no remaining streams. Returns true if the stream was deleted, false
-  // otherwise.
-  [[nodiscard]] bool MaybeDeleteStreamOnPdfExtensionHostChanged(
+  // Called when a RenderFrameHost in the observed WebContents is replaced or
+  // deleted. If `old_host` is an extension host, deletes the associated stream.
+  // The extension host is a generic concept — all MIME handlers have one.
+  // Deletes `this` if there are no remaining streams. Returns true if the
+  // stream was deleted, false otherwise.
+  [[nodiscard]] bool MaybeDeleteStreamOnExtensionHostChanged(
       content::RenderFrameHost* old_host);
 
-  // Same as `MaybeDeleteStreamOnPdfExtensionHostChanged()`, but for the content
-  // host.
-  [[nodiscard]] bool MaybeDeleteStreamOnPdfContentHostChanged(
+  // Same as above, but for the content host. The content host is optional —
+  // only some MIME handler types (e.g. OOPIF PDF) use a content frame.
+  [[nodiscard]] bool MaybeDeleteStreamOnContentHostChanged(
       content::RenderFrameHost* old_host);
 
   // Intended to be called during the PDF content frame's
@@ -290,8 +293,7 @@ class MimeHandlerStreamManager
       content::NavigationHandle* navigation_handle);
 
   // Stores stream info by embedder host info.
-  std::map<EmbedderHostInfo, std::unique_ptr<extensions::StreamInfo>>
-      stream_infos_;
+  StreamInfoMap stream_infos_;
 };
 
 }  // namespace pdf

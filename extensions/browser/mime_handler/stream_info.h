@@ -61,9 +61,9 @@ class StreamInfo {
 
   void SetDidExtensionFinishNavigation();
 
-  bool DidPdfExtensionStartNavigation() const;
+  bool DidExtensionStartNavigation() const;
 
-  bool DidPdfContentNavigate() const;
+  bool DidContentFrameFinishNavigation() const;
 
   content::FrameTreeNodeId extension_host_frame_tree_node_id() const {
     return extension_host_frame_tree_node_id_;

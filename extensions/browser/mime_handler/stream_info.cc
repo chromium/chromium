@@ -32,11 +32,11 @@ void StreamInfo::SetDidExtensionFinishNavigation() {
   did_extension_finish_navigation_ = true;
 }
 
-bool StreamInfo::DidPdfExtensionStartNavigation() const {
+bool StreamInfo::DidExtensionStartNavigation() const {
   return !!extension_host_frame_tree_node_id_;
 }
 
-bool StreamInfo::DidPdfContentNavigate() const {
+bool StreamInfo::DidContentFrameFinishNavigation() const {
   return container_manager_.is_bound();
 }
 

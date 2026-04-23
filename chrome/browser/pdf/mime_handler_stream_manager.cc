@@ -97,22 +97,22 @@ static int g_debug_ongoing_content_navigations = 0;
 
 // Manager crash keys.
 static crash_reporter::CrashKeyString<32> crash_key_manager_instances(
-    "pdf-manager-instances");
+    "mime-handler-manager-instances");
 static crash_reporter::CrashKeyString<32> crash_key_stream_count(
-    "pdf-stream-count");
+    "mime-handler-stream-count");
 static crash_reporter::CrashKeyString<32> crash_key_ongoing_content_navigations(
-    "pdf-ongoing-content-navigations");
+    "mime-handler-ongoing-content-navigations");
 
-// PDF extension navigation-specific crash key.
+// Extension navigation crash key.
 static crash_reporter::CrashKeyString<256> crash_key_did_finish_navigation_url(
-    "pdf-did-finish-navigation-url");
+    "mime-handler-did-finish-navigation-url");
 
-// PDF content navigation-specific crash keys.
+// Content navigation crash keys.
 static crash_reporter::CrashKeyString<6> crash_key_did_start_navigation(
-    "pdf-did-start-navigation");
+    "mime-handler-did-start-navigation");
 static crash_reporter::CrashKeyString<6>
     crash_key_did_start_navigation_with_parent(
-        "pdf-did-start-navigation-with-parent");
+        "mime-handler-did-start-navigation-with-parent");
 
 void SetManagerCrashKeys(size_t stream_count) {
   crash_key_manager_instances.Set(base::ToString(g_debug_manager_instances));
@@ -202,12 +202,12 @@ void MimeHandlerStreamManager::AddStreamContainer(
   CHECK(delegate);
 
   // If an entry with the same frame tree node ID already exists in
-  // `stream_infos_`, then a new PDF navigation has occurred. If the
-  // existing `StreamInfo` hasn't been claimed, replace the entry. This is safe,
-  // since `GetStreamContainer()` verifies the original PDF URL. If the existing
+  // `stream_infos_`, then a new navigation has occurred. If the existing
+  // `StreamInfo` hasn't been claimed, replace the entry. This is safe, since
+  // `GetStreamContainer()` verifies the original URL. If the existing
   // `StreamInfo` has been claimed, then it will eventually be deleted, and the
-  // new `StreamInfo` will be used instead. This can occur if a full page PDF
-  // viewer refreshes or navigates to another PDF URL.
+  // new `StreamInfo` will be used instead. This can occur if a full page MIME
+  // handler refreshes or navigates to another handled URL.
   auto embedder_host_info = GetUnclaimedEmbedderHostInfo(frame_tree_node_id);
   stream_infos_[embedder_host_info] = std::make_unique<extensions::StreamInfo>(
       internal_id, std::move(stream_container), std::move(delegate));
@@ -232,20 +232,19 @@ MimeHandlerStreamManager::GetStreamContainer(
   return stream_info->stream()->GetWeakPtr();
 }
 
-bool MimeHandlerStreamManager::IsPdfExtensionHost(
+bool MimeHandlerStreamManager::IsExtensionHost(
     const content::RenderFrameHost* render_frame_host) const {
-  // The PDF extension host should always have a parent host (the embedder
-  // host).
+  // The extension host should always have a parent host (the embedder host).
   const content::RenderFrameHost* parent_host = render_frame_host->GetParent();
   if (!parent_host) {
     return false;
   }
 
-  return IsPdfExtensionFrameTreeNodeId(parent_host,
-                                       render_frame_host->GetFrameTreeNodeId());
+  return IsExtensionFrameTreeNodeId(parent_host,
+                                    render_frame_host->GetFrameTreeNodeId());
 }
 
-bool MimeHandlerStreamManager::IsPdfExtensionFrameTreeNodeId(
+bool MimeHandlerStreamManager::IsExtensionFrameTreeNodeId(
     const content::RenderFrameHost* embedder_host,
     content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -253,34 +252,33 @@ bool MimeHandlerStreamManager::IsPdfExtensionFrameTreeNodeId(
          frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
 }
 
-bool MimeHandlerStreamManager::DidPdfExtensionFinishNavigation(
+bool MimeHandlerStreamManager::DidExtensionFrameFinishNavigation(
     const content::RenderFrameHost* embedder_host) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
   return stream_info && stream_info->did_extension_finish_navigation();
 }
 
-bool MimeHandlerStreamManager::IsPdfContentHost(
+bool MimeHandlerStreamManager::IsContentHost(
     const content::RenderFrameHost* render_frame_host) const {
-  // The PDF content host should always have a parent host.
+  // The content host should always have a parent host.
   content::RenderFrameHost* parent_host = render_frame_host->GetParent();
   if (!parent_host) {
     return false;
   }
 
-  // The parent host should always be the PDF extension host.
-  if (!IsPdfExtensionHost(parent_host)) {
+  // The parent host should always be the extension host.
+  if (!IsExtensionHost(parent_host)) {
     return false;
   }
 
-  // The PDF extension host should always have a parent host (the embedder
-  // host).
+  // The extension host should always have a parent host (the embedder host).
   content::RenderFrameHost* embedder_host = parent_host->GetParent();
   CHECK(embedder_host);
-  return IsPdfContentFrameTreeNodeId(embedder_host,
-                                     render_frame_host->GetFrameTreeNodeId());
+  return IsContentFrameTreeNodeId(embedder_host,
+                                  render_frame_host->GetFrameTreeNodeId());
 }
 
-bool MimeHandlerStreamManager::IsPdfContentFrameTreeNodeId(
+bool MimeHandlerStreamManager::IsContentFrameTreeNodeId(
     const content::RenderFrameHost* embedder_host,
     content::FrameTreeNodeId frame_tree_node_id) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -288,10 +286,10 @@ bool MimeHandlerStreamManager::IsPdfContentFrameTreeNodeId(
          frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
 }
 
-bool MimeHandlerStreamManager::DidPdfContentNavigate(
+bool MimeHandlerStreamManager::DidContentFrameFinishNavigation(
     const content::RenderFrameHost* embedder_host) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  return stream_info && stream_info->DidPdfContentNavigate();
+  return stream_info && stream_info->DidContentFrameFinishNavigation();
 }
 
 bool MimeHandlerStreamManager::PluginCanSave(
@@ -329,7 +327,7 @@ void MimeHandlerStreamManager::DeleteUnclaimedStreamInfo(
 
 void MimeHandlerStreamManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  // When the PDF embedder frame is deleted, delete its stream.
+  // When the embedder frame is deleted, delete its stream.
   if (GetClaimedStreamInfo(render_frame_host)) {
     DeleteClaimedStreamInfo(render_frame_host);
     // DO NOT add code past this point. `this` may have been deleted.
@@ -366,8 +364,8 @@ void MimeHandlerStreamManager::RenderFrameHostChanged(
     return;
   }
 
-  if (MaybeDeleteStreamOnPdfExtensionHostChanged(old_host) ||
-      MaybeDeleteStreamOnPdfContentHostChanged(old_host)) {
+  if (MaybeDeleteStreamOnExtensionHostChanged(old_host) ||
+      MaybeDeleteStreamOnContentHostChanged(old_host)) {
     // DO NOT add code past this point. `this` may have been deleted.
     return;
   }
@@ -378,28 +376,22 @@ void MimeHandlerStreamManager::RenderFrameHostChanged(
   }
 
   // The `old_host`'s `StreamInfo` should be deleted since this event could be
-  // triggered from navigating the embedder host to a non-PDF URL. If the
-  // embedder host is navigating to another PDF URL, then a new `StreamInfo`
-  // should have already been created and claimed by `new_host`, so it's still
-  // safe to delete `old_host`'s `StreamInfo`.
+  // triggered from navigating the embedder host to a non-MIME-handler URL. If
+  // the embedder host is navigating to another handled URL, then a new
+  // `StreamInfo` should have already been created and claimed by `new_host`, so
+  // it's still safe to delete `old_host`'s `StreamInfo`.
   DeleteClaimedStreamInfo(old_host);
   // DO NOT add code past this point. `this` may have been deleted.
 }
 
 void MimeHandlerStreamManager::FrameDeleted(
     content::FrameTreeNodeId frame_tree_node_id) {
-  // If a PDF host is deleted, delete the associated `StreamInfo`.
+  // If a MIME handler host is deleted, delete the associated `StreamInfo`.
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
     extensions::StreamInfo* stream_info = iter->second.get();
-    // Check if `frame_tree_node_id` is a PDF host's frame tree node ID.
-    //
-    // Deleting the stream for the extension host and the content host here
-    // should be almost equivalent to how
-    // `MaybeDeleteStreamOnPdfExtensionHostChanged()` and
-    // `MaybeDeleteStreamOnPdfContentHostChanged()` delete the stream. However,
-    // there is only a frame tree node ID here and not a
-    // `content::RenderFrameHost`, so deleting the stream requires iterating
-    // over all `StreamInfo` instances.
+    // Check if `frame_tree_node_id` matches the embedder, extension, or
+    // content host's frame tree node ID. The content host is optional and
+    // may not be present for all MIME handler types.
     if (frame_tree_node_id == iter->first.frame_tree_node_id ||
         frame_tree_node_id ==
             stream_info->extension_host_frame_tree_node_id() ||
@@ -501,8 +493,8 @@ void MimeHandlerStreamManager::DidFinishNavigation(
   }
 
   const GURL& url = navigation_handle->GetURL();
-  if (stream_info->DidPdfExtensionStartNavigation()) {
-    // If the extension host has already started its navigation to the PDF
+  if (stream_info->DidExtensionStartNavigation()) {
+    // If the extension host has already started its navigation to the handler
     // extension URL, set the extension as finished navigating. Ignore
     // navigations in other children of the embedder host. Ignore all other
     // URLs, which was shown to be possible in crbug.com/432497344.
@@ -523,10 +515,10 @@ void MimeHandlerStreamManager::DidFinishNavigation(
     return;
   }
 
-  // During PDF navigation, in the embedder host, an about:blank embed is
-  // inserted in a synthetic HTML document as a placeholder for the PDF
-  // extension. Navigate the about:blank embed to the PDF extension URL to load
-  // the PDF extension.
+  // During MIME handler navigation, in the embedder host, an about:blank embed
+  // is inserted in a synthetic HTML document as a placeholder for the handler
+  // extension. Navigate the about:blank embed to the handler extension URL to
+  // load the extension.
   if (!url.IsAboutBlank()) {
     return;
   }
@@ -545,9 +537,9 @@ void MimeHandlerStreamManager::DidFinishNavigation(
   stream_info->set_extension_host_frame_tree_node_id(
       extension_host_frame_tree_node_id);
 
-  NavigateToPdfExtensionUrl(extension_host_frame_tree_node_id, stream_info,
-                            embedder_host->GetSiteInstance(),
-                            about_blank_host->GetGlobalId());
+  NavigateToExtensionUrl(extension_host_frame_tree_node_id, stream_info,
+                         embedder_host->GetSiteInstance(),
+                         about_blank_host->GetGlobalId());
 }
 
 void MimeHandlerStreamManager::ClaimStreamInfoForTesting(
@@ -579,7 +571,7 @@ void MimeHandlerStreamManager::SetContentFrameTreeNodeIdForTesting(
   stream_info->set_content_host_frame_tree_node_id(frame_tree_node_id);
 }
 
-void MimeHandlerStreamManager::NavigateToPdfExtensionUrl(
+void MimeHandlerStreamManager::NavigateToExtensionUrl(
     content::FrameTreeNodeId extension_host_frame_tree_node_id,
     extensions::StreamInfo* stream_info,
     content::SiteInstance* source_site_instance,
@@ -654,16 +646,15 @@ void MimeHandlerStreamManager::DeleteClaimedStreamInfo(
   }
 }
 
-bool MimeHandlerStreamManager::MaybeDeleteStreamOnPdfExtensionHostChanged(
+bool MimeHandlerStreamManager::MaybeDeleteStreamOnExtensionHostChanged(
     content::RenderFrameHost* old_host) {
-  if (!IsPdfExtensionHost(old_host)) {
+  if (!IsExtensionHost(old_host)) {
     return false;
   }
 
-  // In a PDF load, the initial RFH for the PDF extension frame commits an
-  // initial about:blank URL. Don't delete the stream when this RFH changes.
-  // Another RFH will be chosen to host the PDF extension, with the PDF
-  // extension URL.
+  // The initial RFH for the extension frame may commit an about:blank URL.
+  // Don't delete the stream when this RFH changes. Another RFH will be chosen
+  // to host the extension, with the handler extension URL.
   if (old_host->GetLastCommittedURL().IsAboutBlank()) {
     return false;
   }
@@ -677,13 +668,13 @@ bool MimeHandlerStreamManager::MaybeDeleteStreamOnPdfExtensionHostChanged(
   return true;
 }
 
-bool MimeHandlerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged(
+bool MimeHandlerStreamManager::MaybeDeleteStreamOnContentHostChanged(
     content::RenderFrameHost* old_host) {
-  if (!IsPdfContentHost(old_host)) {
+  if (!IsContentHost(old_host)) {
     return false;
   }
 
-  // `IsPdfContentHost()` validated: parent is extension host, grandparent is
+  // `IsContentHost()` validated: parent is extension host, grandparent is
   // embedder.
   content::RenderFrameHost* embedder_host = old_host->GetParent()->GetParent();
   CHECK(embedder_host);
@@ -692,12 +683,11 @@ bool MimeHandlerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged(
   // Let the delegate validate content-frame invariants.
   stream_info->delegate()->ValidateContentFrameHost(old_host, stream_info);
 
-  // In a PDF load, the initial RFH for the PDF content frame is created for the
-  // navigation to the PDF stream URL. This navigation is canceled in
-  // `pdf::PdfNavigationThrottle::WillStartRequest()` and never commits. The
-  // initial RFH and the actual PDF content RFH have the same frame tree node
-  // ID, but the actual PDF content RFH commits its navigation to the original
-  // PDF URL. Don't delete the stream when the initial RFH changes.
+  // The initial RFH for the content frame is created for the navigation to the
+  // stream URL. This navigation may be canceled and never commits. The initial
+  // RFH and the actual content RFH have the same frame tree node ID, but the
+  // actual content RFH commits its navigation to the original URL. Don't delete
+  // the stream when the initial RFH changes.
   const GURL& url = old_host->GetLastCommittedURL();
   if (url.is_empty()) {
     return false;

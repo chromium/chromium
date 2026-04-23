@@ -316,15 +316,15 @@ TEST_F(MimeHandlerStreamManagerPdfTest,
                                                              pdf_host2);
   ON_CALL(navigation_handle2, IsPdf).WillByDefault(Return(true));
 
-  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
+  EXPECT_FALSE(manager->DidContentFrameFinishNavigation(embedder_host));
 
   // The initial content navigation should not update any stream state.
   manager->DidFinishNavigation(&navigation_handle1);
-  EXPECT_FALSE(manager->DidPdfContentNavigate(embedder_host));
+  EXPECT_FALSE(manager->DidContentFrameFinishNavigation(embedder_host));
 
   // The new, correct content navigation should update the stream state.
   manager->DidFinishNavigation(&navigation_handle2);
-  EXPECT_TRUE(manager->DidPdfContentNavigate(embedder_host));
+  EXPECT_TRUE(manager->DidContentFrameFinishNavigation(embedder_host));
 }
 
 }  // namespace pdf
