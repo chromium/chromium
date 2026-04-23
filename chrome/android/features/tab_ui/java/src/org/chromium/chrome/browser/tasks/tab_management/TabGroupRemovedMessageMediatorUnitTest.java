@@ -214,7 +214,8 @@ public class TabGroupRemovedMessageMediatorUnitTest {
     public void testDismissActionProvider_onEmptyList() {
         assertTrue(mModelList.isEmpty());
 
-        ServiceDismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
+        ServiceDismissActionProvider<@MessageType Integer> dismissProvider =
+                ignored -> mMediator.removeMessageCard();
         dismissProvider.dismiss(DISMISS_MSG_TYPE);
     }
 
@@ -227,7 +228,8 @@ public class TabGroupRemovedMessageMediatorUnitTest {
                         .build();
         mModelList.add(new ListItem(TAB_GROUP_REMOVED, wrongTypeModel));
 
-        ServiceDismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
+        ServiceDismissActionProvider<@MessageType Integer> dismissProvider =
+                ignored -> mMediator.removeMessageCard();
         dismissProvider.dismiss(DISMISS_MSG_TYPE);
 
         assertEquals(1, mModelList.size());

@@ -94,6 +94,7 @@ public class NewTabGroupDialogFacility<
     }
 
     @Override
+    @SuppressWarnings("unchecked") // Generic array creation for parameterized ViewElement[].
     public void declareExtraElements() {
         // Handles the case for when a new tab group is created on showing this dialog.
         if (mTabIdsToGroup == null) {

@@ -52,6 +52,12 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
         return PaneId.INCOGNITO_TAB_SWITCHER;
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // Covariant return: raw parent → parameterized subclass.
+    public TabSwitcherAppMenuFacility<IncognitoTabSwitcherStation> openAppMenu() {
+        return super.openAppMenu();
+    }
+
     /** Open a new tab using the New Tab action button. */
     public IncognitoNewTabPageStation openNewTab() {
         recheckActiveConditions();

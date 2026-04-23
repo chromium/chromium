@@ -254,7 +254,7 @@ public class UpdateMenuItemHelperTest {
                         AppMenuTestSupport.callOnItemClick(
                                 mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
 
-        Intents.intended(Matchers.allOf(IntentMatchers.hasData(TEST_MARKET_URL)));
+        Intents.intended(IntentMatchers.hasData(TEST_MARKET_URL));
 
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
         waitForAppMenuDimissedRunnable();

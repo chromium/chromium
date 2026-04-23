@@ -51,7 +51,7 @@ public class MetricsBridgeServiceTest {
             IMetricsBridgeService service =
                     IMetricsBridgeService.Stub.asInterface(helper.getBinder());
             service.recordMetrics(recordProto.toByteArray());
-            List<byte[]> retrievedDataList = service.retrieveNonembeddedMetrics();
+            List<?> retrievedDataList = service.retrieveNonembeddedMetrics();
 
             Assert.assertArrayEquals(
                     "retrieved byte data is different from the expected data",
@@ -79,7 +79,7 @@ public class MetricsBridgeServiceTest {
             IMetricsBridgeService service =
                     IMetricsBridgeService.Stub.asInterface(helper.getBinder());
             service.recordMetrics(recordProto.toByteArray());
-            List<byte[]> retrievedDataList = service.retrieveNonembeddedMetrics();
+            List<?> retrievedDataList = service.retrieveNonembeddedMetrics();
 
             Assert.assertNotNull("retrieved byte data from the service is null", retrievedDataList);
             Assert.assertArrayEquals(

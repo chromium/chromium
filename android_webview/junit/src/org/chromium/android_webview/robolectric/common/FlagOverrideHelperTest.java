@@ -42,6 +42,7 @@ public class FlagOverrideHelperTest {
         Flag.baseFeature("feature-2", "This is feature 2"),
     };
 
+    @SafeVarargs
     private <T> Set<T> arrayToSet(T... array) {
         return new HashSet<>(Arrays.asList(array));
     }

@@ -3045,6 +3045,7 @@ public class CustomTabActivityTest {
         var connection = Mockito.spy(CustomTabsConnection.getInstance());
         // Permit Omnibox for any upcoming intent(s).
         doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
+        @SuppressWarnings("unchecked") // mock() of generic Consumer type.
         Consumer<Tab> mockConsumer = Mockito.mock(Consumer.class);
         // Provide an alternate tap handler on any upcoming intent(s).
         doReturn(mockConsumer).when(connection).getAlternateOmniboxTapHandler(any());

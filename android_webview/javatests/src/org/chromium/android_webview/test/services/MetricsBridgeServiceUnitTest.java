@@ -103,7 +103,7 @@ public class MetricsBridgeServiceUnitTest {
         stub.recordMetrics(recordBooleanProto.toByteArray());
 
         // Block until all tasks are finished to make sure all records are written to file.
-        FutureTask<Object> blockTask = service.addTaskToBlock();
+        FutureTask<?> blockTask = service.addTaskToBlock();
         AwActivityTestRule.waitForFuture(blockTask);
 
         byte[] resultData = FileUtils.readStream(new FileInputStream(mTempFile));
@@ -148,7 +148,7 @@ public class MetricsBridgeServiceUnitTest {
         IBinder binder = service.onBind(null);
         IMetricsBridgeService stub = IMetricsBridgeService.Stub.asInterface(binder);
         stub.recordMetrics(recordBooleanProto.toByteArray());
-        List<byte[]> retrievedDataList = stub.retrieveNonembeddedMetrics();
+        List<?> retrievedDataList = stub.retrieveNonembeddedMetrics();
 
         byte[][] expectedData =
                 new byte[][] {

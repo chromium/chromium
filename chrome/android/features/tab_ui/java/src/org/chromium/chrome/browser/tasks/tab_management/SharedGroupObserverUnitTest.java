@@ -57,6 +57,11 @@ public class SharedGroupObserverUnitTest {
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mSyncObserverCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
+    @SafeVarargs
+    private static <T> void safeClearInvocations(T... mocks) {
+        Mockito.clearInvocations(mocks);
+    }
+
     @Test
     public void testDestroy() {
         SharedGroupObserver observer =
@@ -200,7 +205,7 @@ public class SharedGroupObserverUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.NOT_SHARED);
         assertNull(observer.getGroupMembersSupplier().get());
-        Mockito.clearInvocations(mOnSharedGroupStateChanged);
+        safeClearInvocations(mOnSharedGroupStateChanged);
 
         savedTabGroup.collaborationId = COLLABORATION_ID1;
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());

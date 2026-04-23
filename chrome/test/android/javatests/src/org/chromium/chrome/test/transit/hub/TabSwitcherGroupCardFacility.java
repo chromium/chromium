@@ -81,11 +81,11 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
     }
 
     /** Clicks the ("...") action button on a tab group to open the overflow menu. */
-    public TabSwitcherGroupCardAppMenuFacility openAppMenu() {
+    public TabSwitcherGroupCardAppMenuFacility<TabSwitcherStation> openAppMenu() {
         boolean isIncognito = mHostStation.isIncognito();
         return menuButtonElement
                 .clickTo()
-                .enterFacility(new TabSwitcherGroupCardAppMenuFacility(isIncognito, mTitle));
+                .enterFacility(new TabSwitcherGroupCardAppMenuFacility<>(isIncognito, mTitle));
     }
 
     /**

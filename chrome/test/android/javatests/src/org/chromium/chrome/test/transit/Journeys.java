@@ -271,6 +271,8 @@ public class Journeys {
         return new Pair<>(station, stationIncognito);
     }
 
+    // Each assignment to currentPage in the loop uses pageStationFactory, which produces T.
+    @SuppressWarnings("unchecked")
     private static <T extends CtaPageStation> T doCreateTabs(
             final CtaPageStation startingPage,
             List<String> urls,

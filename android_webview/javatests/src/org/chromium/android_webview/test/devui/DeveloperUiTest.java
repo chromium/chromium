@@ -230,6 +230,8 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @DisabledTest(message = "https://crbug.com/369532182")
+    // Hamcrest's allOf(Matcher...) has generic varargs; each call site uses multiple matchers.
+    @SuppressWarnings("unchecked")
     public void testMenuOptions_reportBug() throws Throwable {
         launchHomeFragment();
 

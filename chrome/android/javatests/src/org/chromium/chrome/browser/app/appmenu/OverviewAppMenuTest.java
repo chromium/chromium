@@ -70,7 +70,7 @@ public class OverviewAppMenuTest {
     @LargeTest
     @Feature({"Browser", "Main"})
     public void testAllMenuItems() {
-        TabSwitcherAppMenuFacility menu = mTabSwitcher.openAppMenu();
+        TabSwitcherAppMenuFacility<RegularTabSwitcherStation> menu = mTabSwitcher.openAppMenu();
 
         try {
             List<Integer> expectedItems =
@@ -89,7 +89,8 @@ public class OverviewAppMenuTest {
     public void testIncognitoAllMenuItems() {
         IncognitoTabSwitcherStation incognitoTabSwitcher =
                 mTabSwitcher.openAppMenu().openNewIncognitoTabOrWindow().openIncognitoTabSwitcher();
-        TabSwitcherAppMenuFacility menu = incognitoTabSwitcher.openAppMenu();
+        TabSwitcherAppMenuFacility<IncognitoTabSwitcherStation> menu =
+                incognitoTabSwitcher.openAppMenu();
 
         try {
             List<Integer> expectedItems = buildExpectedMenuItemIds(/* isIncognitoSwitcher= */ true);

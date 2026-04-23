@@ -61,6 +61,12 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         return PaneId.TAB_SWITCHER;
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // Covariant return: raw parent → parameterized subclass.
+    public TabSwitcherAppMenuFacility<RegularTabSwitcherStation> openAppMenu() {
+        return super.openAppMenu();
+    }
+
     /** Open a new tab using the New Tab action button. */
     public RegularNewTabPageStation openNewTab() {
         recheckActiveConditions();

@@ -261,6 +261,9 @@ public class ComponentsProviderServiceTest {
             Assert.assertNotNull(componentId + " should not return a null result Bundle", bundle);
             Assert.assertFalse(
                     componentId + " should not return an empty result Bundle", bundle.isEmpty());
+            // Bundle.getSerializable returns Serializable; parameterized cast is inherently
+            // unchecked.
+            @SuppressWarnings("unchecked")
             final HashMap<String, ParcelFileDescriptor> map =
                     (HashMap<String, ParcelFileDescriptor>)
                             bundle.getSerializable(ComponentsProviderService.KEY_RESULT);

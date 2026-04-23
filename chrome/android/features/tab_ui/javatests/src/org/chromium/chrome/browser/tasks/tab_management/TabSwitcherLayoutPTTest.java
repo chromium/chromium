@@ -740,7 +740,7 @@ public class TabSwitcherLayoutPTTest {
                 tabSwitcher.expectGroupCard(
                         List.of(firstTabId, secondTabId),
                         TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
-        UndoSnackbarFacility<RegularTabSwitcherStation> undoSnackbar =
+        UndoSnackbarFacility<TabSwitcherStation> undoSnackbar =
                 tabGroupCard.openAppMenu().closeRegularTabGroup();
         tabSwitcher.verifyTabSwitcherCardCount(0);
 

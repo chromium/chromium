@@ -252,7 +252,7 @@ public class IncognitoNotificationServiceTest {
 
     private static List<? extends StatusBarNotificationProxy> getActiveNotifications() {
         PayloadCallbackHelper<List<? extends StatusBarNotificationProxy>> helper =
-                new PayloadCallbackHelper();
+                new PayloadCallbackHelper<>();
         BaseNotificationManagerProxyFactory.create().getActiveNotifications(helper::notifyCalled);
         return helper.getOnlyPayloadBlocking();
     }

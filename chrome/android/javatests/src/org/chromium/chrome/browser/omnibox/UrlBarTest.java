@@ -575,6 +575,8 @@ public class UrlBarTest {
     @Test
     @SmallTest
     @DisabledTest(message = "Disabled because of b/333536371")
+    @SuppressWarnings(
+            "unchecked") // Mockito.clearInvocations() varargs on generic Callback<String>.
     public void testUrlTextChangeListener() {
         mUrlBar.setTextChangeListener(mUrlTextChangeListener);
 

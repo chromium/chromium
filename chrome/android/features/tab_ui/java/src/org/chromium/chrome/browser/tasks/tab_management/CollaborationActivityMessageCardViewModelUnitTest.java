@@ -25,6 +25,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -37,7 +38,7 @@ public class CollaborationActivityMessageCardViewModelUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActionProvider mActionHandler;
-    @Mock private ServiceDismissActionProvider mDismissHandler;
+    @Mock private ServiceDismissActionProvider<@MessageType Integer> mDismissHandler;
 
     private Context mContext;
     private CollaborationActivityMessageCardViewModel mModel;

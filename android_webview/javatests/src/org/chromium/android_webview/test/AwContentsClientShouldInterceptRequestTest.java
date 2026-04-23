@@ -1298,7 +1298,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Feature({"AndroidWebView", "Network"})
     public void testObserveCorsSuccess() throws Throwable {
         final List<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair("access-control-allow-origin", "http://some.origin.test"));
+        headers.add(new Pair<>("access-control-allow-origin", "http://some.origin.test"));
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", headers);
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
@@ -1317,7 +1317,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         final List<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair("access-control-allow-origin", "http://example.com"));
+        headers.add(new Pair<>("access-control-allow-origin", "http://example.com"));
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", headers);
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
@@ -1337,8 +1337,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         final List<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair("access-control-allow-origin", "http://some.origin.test"));
-        headers.add(new Pair("access-control-allow-methods", "PUT"));
+        headers.add(new Pair<>("access-control-allow-origin", "http://some.origin.test"));
+        headers.add(new Pair<>("access-control-allow-methods", "PUT"));
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", headers);
 
         // PUT is not a safelisted method and triggers a preflight.
@@ -1365,7 +1365,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         final List<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair("access-control-allow-origin", "http://some.origin.test"));
+        headers.add(new Pair<>("access-control-allow-origin", "http://some.origin.test"));
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", headers);
 
         // PUT is not a safelisted method and triggers a preflight.
@@ -1897,9 +1897,9 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         // Craft the expected CORS responses to pass.
         final String fetchPathToPass = "/pass";
         final String preflightTriggeringMethod = "PUT";
-        final List<Pair<String, String>> responseHeaders = new ArrayList<Pair<String, String>>();
-        responseHeaders.add(new Pair("Access-Control-Allow-Origin", customScheme));
-        responseHeaders.add(new Pair("Access-Control-Allow-Methods", preflightTriggeringMethod));
+        final List<Pair<String, String>> responseHeaders = new ArrayList<>();
+        responseHeaders.add(new Pair<>("Access-Control-Allow-Origin", customScheme));
+        responseHeaders.add(new Pair<>("Access-Control-Allow-Methods", preflightTriggeringMethod));
         final String fetchUrlToPass = mWebServer.setResponse(fetchPathToPass, "", responseHeaders);
 
         final Future<String> futureToPass =

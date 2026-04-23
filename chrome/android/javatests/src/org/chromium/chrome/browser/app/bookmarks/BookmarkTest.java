@@ -2292,7 +2292,7 @@ public class BookmarkTest {
         assertTrue(
                 "Found " + view.getClass() + " expected " + clazz,
                 clazz.isAssignableFrom(view.getClass()));
-        return (T) view;
+        return clazz.cast(view);
     }
 
     private ViewHolder getViewHolderAtIndex(int index) {

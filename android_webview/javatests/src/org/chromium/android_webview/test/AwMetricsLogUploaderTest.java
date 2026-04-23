@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
@@ -16,8 +15,12 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.PlatformServiceBridge;
@@ -47,6 +50,10 @@ public class AwMetricsLogUploaderTest {
             ChromeUserMetricsExtension.newBuilder().build();
 
     private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private LinkedBlockingQueue<IMetricsUploadService> mMockedResultsQueue;
 
     @Before
     public void setUp() {
@@ -88,12 +95,10 @@ public class AwMetricsLogUploaderTest {
     public void testSendingDataException_whenTimesOut() throws Throwable {
         // When the AwMetricsLogUploader attempts to wait for log results, an exception of our
         // choosing will be thrown.
-        final LinkedBlockingQueue<IMetricsUploadService> mockedResultsQueue =
-                mock(LinkedBlockingQueue.class);
-        when(mockedResultsQueue.poll(anyLong(), any())).thenReturn(null);
+        when(mMockedResultsQueue.poll(anyLong(), any())).thenReturn(null);
 
         AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
-        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsQueue);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mMockedResultsQueue);
 
         Assert.assertEquals(HttpURLConnection.HTTP_CLIENT_TIMEOUT, status);
     }
@@ -102,16 +107,14 @@ public class AwMetricsLogUploaderTest {
             throws Throwable {
         // When the AwMetricsLogUploader attempts to wait for log results, an exception of our
         // choosing will be thrown.
-        final LinkedBlockingQueue<IMetricsUploadService> mockedResultsQueue =
-                mock(LinkedBlockingQueue.class);
-        when(mockedResultsQueue.poll(anyLong(), any()))
+        when(mMockedResultsQueue.poll(anyLong(), any()))
                 .thenAnswer(
                         invocation -> {
                             throw exceptionThrown;
                         });
 
         AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
-        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mockedResultsQueue);
+        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mMockedResultsQueue);
 
         Assert.assertEquals(expectedStatus, status);
     }

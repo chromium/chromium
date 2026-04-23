@@ -146,8 +146,11 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     /** The {@link FullscreenManager.Observer} observing fullscreen mode. */
     private FullscreenManager.Observer mListener;
 
+    private final Class<T> mActivityClass;
+
     public DisplayCutoutTestRule(Class<T> activityClass) {
         super(activityClass);
+        mActivityClass = activityClass;
     }
 
     @Override
@@ -169,7 +172,7 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
     protected void startActivity() {
         ChromeTabbedActivityTestRule rule = new ChromeTabbedActivityTestRule();
         rule.startMainActivityOnBlankPage();
-        setActivity((T) rule.getActivity());
+        setActivity(mActivityClass.cast(rule.getActivity()));
     }
 
     @Override

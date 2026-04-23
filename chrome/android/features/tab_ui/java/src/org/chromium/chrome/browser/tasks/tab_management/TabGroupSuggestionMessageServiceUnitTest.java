@@ -91,6 +91,11 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
     private TabGroupSuggestionMessageService mTabGroupSuggestionMessageService;
 
+    @SafeVarargs
+    private static <T> void safeReset(T... mocks) {
+        reset(mocks);
+    }
+
     @Before
     public void setUp() {
         SuggestionMetricsServiceFactory.setForTesting(mSuggestionMetricsService);
@@ -148,7 +153,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
 
-        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
         verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
     }
 
@@ -158,7 +163,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 Collections.emptyList(), mSuggestionLifecycleObserver);
 
         verify(mTabGroupSuggestionMessageService, never())
-                .queueMessage(any(MessageModelFactory.class));
+                .queueMessage(mMessageDataCaptor.capture());
         verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
     }
 
@@ -169,13 +174,13 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds1, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
         verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
 
-        reset(mAddOnMessageAfterTabCallback);
+        safeReset(mAddOnMessageAfterTabCallback);
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds2, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
         verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
     }
 
@@ -186,7 +191,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
 
-        verify(mTabGroupSuggestionMessageService).queueMessage(any(MessageModelFactory.class));
+        verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
         verify(mAddOnMessageAfterTabCallback).onResult(TAB3_ID);
     }
 
@@ -351,7 +356,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 tabIds, mSuggestionLifecycleObserver);
         verify(mTabGroupSuggestionMessageService).queueMessage(mMessageDataCaptor.capture());
 
-        MessageModelFactory modelFactory = mMessageDataCaptor.getValue();
+        MessageModelFactory<@MessageType Integer> modelFactory = mMessageDataCaptor.getValue();
         PropertyModel model = modelFactory.build(mServiceDismissActionProvider);
 
         assertEquals(false, model.get(MessageCardViewProperties.IS_INCOGNITO));

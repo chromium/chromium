@@ -115,6 +115,8 @@ public class TabBinningUtil {
             if (expectedBin instanceof Integer tabId) {
                 sb.append(tabId);
             } else if (expectedBin instanceof List<?> list) {
+                // Callers pass List<Integer> via varargs Object[]; element type is not recoverable.
+                @SuppressWarnings("unchecked")
                 List<Integer> tabIdsInGroup = (List<Integer>) list;
                 sb.append("[");
                 String separator = "";

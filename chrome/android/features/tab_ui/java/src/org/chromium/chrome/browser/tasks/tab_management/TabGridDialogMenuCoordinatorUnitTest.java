@@ -68,7 +68,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
-    @Mock private OnItemClickedCallback mOnItemClickedCallback;
+    @Mock private OnItemClickedCallback<Token> mOnItemClickedCallback;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     @Captor private ArgumentCaptor<ModelList> mModelListCaptor;

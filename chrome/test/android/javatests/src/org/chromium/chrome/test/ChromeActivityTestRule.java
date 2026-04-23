@@ -355,7 +355,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public LoadUrlResult loadUrlInTab(String url, int pageTransition, Tab tab, long secondsToWait) {
         assertNotNull("Cannot load the URL in a null tab", tab);
-        AtomicReference<LoadUrlResult> result = new AtomicReference();
+        AtomicReference<LoadUrlResult> result = new AtomicReference<>();
 
         ChromeTabUtils.waitForTabPageLoaded(
                 tab,

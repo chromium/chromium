@@ -327,6 +327,8 @@ public class OmniboxTestUtils {
                     ModelList currentModels = mAutocomplete.getSuggestionModelListForTest();
                     for (int i = 0; i < currentModels.size(); i++) {
                         DropdownItemViewInfo info = (DropdownItemViewInfo) currentModels.get(i);
+                        // Callers are responsible for ensuring the view type matches T.
+                        @SuppressWarnings("unchecked")
                         T view = (T) dropdown.getDropdownItemViewForTest(i);
                         if (filter.apply(info) && view != null) {
                             result.set(

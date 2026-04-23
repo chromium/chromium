@@ -58,6 +58,7 @@ public class TabGroupColorPickerFacility<
     }
 
     /** Initializes and declares all the {@link ViewElement}s for the color chips in the palette. */
+    @SuppressWarnings("unchecked") // Generic array creation for parameterized ViewElement[].
     private void declareChipElements() {
         mChipElements = new ViewElement[TabGroupColorId.NUM_ENTRIES];
         for (int i = 0; i < TabGroupColorId.NUM_ENTRIES; i++) {

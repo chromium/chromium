@@ -162,6 +162,8 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
             matchers.add(instanceOf(BaseSuggestionView.class));
             matchers.add(isDescendantOfA(withId(R.id.omnibox_results_container)));
 
+            // Generic array creation is not permitted in Java; suppress the unchecked warning.
+            @SuppressWarnings("unchecked")
             Matcher<View>[] matchersArray = new Matcher[matchers.size()];
             matchers.toArray(matchersArray);
 

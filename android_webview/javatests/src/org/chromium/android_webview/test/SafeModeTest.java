@@ -732,6 +732,7 @@ public class SafeModeTest extends AwParameterizedTest {
         }
     }
 
+    @SafeVarargs
     private static <T> Set<T> asSet(T... values) {
         Set<T> set = new HashSet<>();
         for (T value : values) {

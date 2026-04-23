@@ -113,6 +113,8 @@ public class WebViewCrashInfoCollectorTest {
     /** Test that merging {@code CrashInfo} that has the same {@code localID} works correctly. */
     @Test
     @SmallTest
+    // Hamcrest's containsInAnyOrder/contains(Matcher...) uses generic varargs.
+    @SuppressWarnings("unchecked")
     public void testMergeDuplicates() {
         List<CrashInfo> testList =
                 Arrays.asList(
@@ -217,6 +219,8 @@ public class WebViewCrashInfoCollectorTest {
      */
     @Test
     @SmallTest
+    // Hamcrest's contains(Matcher...) uses generic varargs.
+    @SuppressWarnings("unchecked")
     public void testSortByRecentCaptureTime() {
         List<CrashInfo> testList =
                 Arrays.asList(
@@ -271,6 +275,8 @@ public class WebViewCrashInfoCollectorTest {
     /** Test loading, sort and filter crashes. */
     @Test
     @SmallTest
+    // Hamcrest's contains(Matcher...) uses generic varargs.
+    @SuppressWarnings("unchecked")
     public void testLoadCrashesInfoFilteredNoLimit() {
         List<CrashInfo> testList =
                 Arrays.asList(

@@ -126,7 +126,7 @@ public class InterceptNavigationDelegateTest {
                                         boolean hiddenCrossFrame,
                                         boolean isSandboxedFrame,
                                         boolean shouldRunAsync,
-                                        RequiredCallback resultCallback) {
+                                        RequiredCallback<Boolean> resultCallback) {
                                     mNavParamHistory.add(navigationHandle);
                                     super.shouldIgnoreNavigation(
                                             navigationHandle,

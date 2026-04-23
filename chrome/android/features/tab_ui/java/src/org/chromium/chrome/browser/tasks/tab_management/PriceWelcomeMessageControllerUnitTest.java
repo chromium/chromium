@@ -74,6 +74,11 @@ public class PriceWelcomeMessageControllerUnitTest {
     private PriceWelcomeMessageController mController;
     private MockTab mTab;
 
+    @SafeVarargs
+    private static <T> void safeReset(T... mocks) {
+        reset(mocks);
+    }
+
     @Before
     public void setUp() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
@@ -221,7 +226,7 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Test
     public void testBuild_priceAnnotationsEnabled() {
-        reset(mMessageCardProvider);
+        safeReset(mMessageCardProvider);
         var filterSupplier = ObservableSuppliers.<TabGroupModelFilter>createMonotonic();
         mController =
                 PriceWelcomeMessageController.build(
@@ -239,7 +244,7 @@ public class PriceWelcomeMessageControllerUnitTest {
     @Test
     public void testBuild_priceAnnotationsDisabled() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
-        reset(mMessageCardProvider);
+        safeReset(mMessageCardProvider);
         var filterSupplier = ObservableSuppliers.<TabGroupModelFilter>createMonotonic();
         mController =
                 PriceWelcomeMessageController.build(
