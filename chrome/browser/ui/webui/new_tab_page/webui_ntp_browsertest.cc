@@ -70,7 +70,7 @@ class WebContentsRemovedObserver : public TabStripModelObserver {
 };
 
 void ExpectIsWebUiNtp(content::WebContents* tab) {
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL).spec(),
+  EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL().spec(),
             EvalJs(tab, "window.location.href",
                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
@@ -112,14 +112,14 @@ class WebUiNtpBrowserTest : public InProcessBrowserTest {
 
 // Verify that the WebUI NTP commits in a SiteInstance with the WebUI URL.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, VerifySiteInstance) {
-  GURL ntp_url(chrome::kChromeUINewTabURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(ntp_url, web_contents->GetLastCommittedURL());
 
-  GURL webui_ntp_url(chrome::kChromeUINewTabPageURL);
+  const GURL& webui_ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
   ASSERT_EQ(
       webui_ntp_url,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, LoadsSuccessfullyWithoutTabModel) {
 
   // Load the NTP into the detached tab. The NTP should load without crashing.
   EXPECT_TRUE(content::NavigateToURL(extracted_contents.get(),
-                                     GURL(chrome::kChromeUINewTabURL)));
+                                     chrome::ChromeUINewTabURLAsGURL()));
 
   // Re-insert the tab into the tab strip.
   tab_strip_model->AppendWebContents(std::move(extracted_contents), true);
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, LoadsSuccessfullyWithoutTabModel) {
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, HandlesTabModelChanges) {
   // Add a new NTP tab to the browser tab strip.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), 1, true);
+  chrome::AddTabAt(browser(), chrome::ChromeUINewTabURLAsGURL(), 1, true);
   tabs::TabInterface* initial_tab = tab_strip_model->GetTabAtIndex(1);
   EXPECT_EQ(2, tab_strip_model->count());
 
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpEnterpriseShortcutsBrowserTest,
 
   // 2. Navigate to the New Tab Page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+      browser(), chrome::ChromeUINewTabPageURLAsGURL()));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

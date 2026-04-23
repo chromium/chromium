@@ -493,7 +493,7 @@ NewTabPageHandler::NewTabPageHandler(
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_details_(module_id_details),
       logger_(profile,
-              GURL(chrome::kChromeUINewTabPageURL),
+              chrome::ChromeUINewTabPageURLAsGURL(),
               ntp_navigation_start_time),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       microsoft_auth_service_(

@@ -918,7 +918,7 @@ NewTabPageUI::~NewTabPageUI() {
 // static
 bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
   return url.DeprecatedGetOriginAsURL() ==
-         GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
+         chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL();
 }
 
 // static
@@ -1238,7 +1238,7 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents(), GURL(chrome::kChromeUINewTabPageURL),
+      web_contents(), chrome::ChromeUINewTabPageURLAsGURL(),
       navigation_start_time_);
   UpdateMostVisitedTileTypes();
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
@@ -1358,7 +1358,7 @@ void NewTabPageUI::ClearContextualSessionHandle() {
 void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->GetURL() == GURL(chrome::kChromeUINewTabPageURL)) {
+      navigation_handle->GetURL() == chrome::ChromeUINewTabPageURLAsGURL()) {
     navigation_start_time_ = base::Time::Now();
 
     OnLoad();
