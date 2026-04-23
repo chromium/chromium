@@ -5,24 +5,39 @@
 #ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_
 #define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_
 
+#include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/device_notifications/device_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
+namespace extensions {
+class Extension;
+}
+
+class DeviceSystemTrayIconTestBase : public testing::Test {
  public:
   using OriginItem = std::tuple<url::Origin, int, std::string>;
   using ProfileItem = std::pair<Profile*, std::vector<OriginItem>>;
 
-  DeviceSystemTrayIconTestBase()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DeviceSystemTrayIconTestBase();
+  ~DeviceSystemTrayIconTestBase() override;
 
+  void SetUp() override;
   void TearDown() override;
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+  TestingProfileManager* profile_manager() { return profile_manager_.get(); }
+  TestingProfile* profile() { return profile_; }
 
   // Check if the device system tray icon is shown and all the action buttons
   // work correctly with the given |profile_connection_counts|.
@@ -96,6 +111,13 @@ class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   // Test the scenario of removing an extension.
   void TestExtensionRemoval();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_

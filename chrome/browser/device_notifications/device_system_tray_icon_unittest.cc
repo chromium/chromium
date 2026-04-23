@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -16,8 +18,8 @@
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,12 +60,23 @@ const std::string& GetExpectedOriginName(Profile* profile,
 
 }  // namespace
 
+DeviceSystemTrayIconTestBase::DeviceSystemTrayIconTestBase() = default;
+DeviceSystemTrayIconTestBase::~DeviceSystemTrayIconTestBase() = default;
+
+void DeviceSystemTrayIconTestBase::SetUp() {
+  profile_manager_ = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager_->SetUp());
+  profile_ = profile_manager_->CreateTestingProfile("default_profile");
+}
+
 void DeviceSystemTrayIconTestBase::TearDown() {
   // In a test environment, g_browser_process is set to null before
   // TestingBrowserProcess is destroyed. This ensures that the tray icon is
   // destroyed before g_browser_process becomes null.
   ResetTestingBrowserProcessSystemTrayIcon();
-  BrowserWithTestWindowTest::TearDown();
+  profile_ = nullptr;
+  profile_manager_.reset();
 }
 
 Profile* DeviceSystemTrayIconTestBase::CreateTestingProfile(
