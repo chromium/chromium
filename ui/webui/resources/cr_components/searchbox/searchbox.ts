@@ -12,7 +12,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './searchbox.css.js';
 import {getHtml} from './searchbox.html.js';
@@ -101,11 +101,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       // Private properties
       //========================================================================
 
-      enableThumbnailSizingTweaks_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
 
@@ -137,8 +132,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor placeholderText: string = '';
-  protected accessor enableThumbnailSizingTweaks_: boolean =
-      loadTimeData.getBoolean('enableThumbnailSizingTweaks');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -180,14 +173,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
     if (changedProperties.has('searchboxChromeRefreshTheming')) {
       this.useWebkitSearchIcons_ = this.searchboxChromeRefreshTheming;
-    }
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('result') ||
-        changedPrivateProperties.has('selectedMatchIndex')) {
-      this.selectedMatch = this.computeSelectedMatch_();
     }
   }
 
@@ -236,20 +221,12 @@ export class SearchboxElement extends SearchboxElementBase implements
     return true;
   }
 
-  queryInputAutocomplete() {
-    this.queryAutocomplete(this.$.input.inputElement.value, false);
-  }
-
   setInputText(text: string) {
     this.$.input.setInputText(text);
   }
 
   focusInput() {
     this.$.input.focus();
-  }
-
-  blurInput() {
-    this.$.input.blur();
   }
 
   selectAll() {
@@ -273,10 +250,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.onSearchboxInputTextUpdated(e, /*is_composing=*/ false);
   }
 
-  override onInputWrapperFocusout(e: FocusEvent) {
-    super.onInputWrapperFocusout(e);
-  }
-
   protected onVoiceSearchClick_() {
     this.dispatchEvent(new Event('open-voice-search'));
   }
@@ -289,18 +262,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   //============================================================================
   // Helpers
   //============================================================================
-
-  private computeSelectedMatch_(): AutocompleteMatch|null {
-    if (!this.result || !this.result.matches) {
-      return null;
-    }
-    return this.result.matches[this.selectedMatchIndex] || null;
-  }
-
-  protected inputHasMatches_(): boolean {
-    return !!this.result && !!this.result.matches &&
-        this.result.matches.length > 0;
-  }
 
   protected computePlaceholderText_(placeholderText: string): string {
     if (placeholderText) {
