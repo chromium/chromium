@@ -9496,10 +9496,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlassFrameDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kGlassFrame)},
 
-    {"glass-toolbar", flag_descriptions::kGlassToolbarName,
-     flag_descriptions::kGlassToolbarDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlassToolbar)},
-
     {"toolbar-glow-up", flag_descriptions::kToolbarGlowUpName,
      flag_descriptions::kToolbarGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarGlowUp)},

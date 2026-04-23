@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/browser/ui/views/toolbar/live_toolbar_background.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -429,12 +428,7 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
 
   // May be null for tests.
   if (browser_view) {
-    if (base::FeatureList::IsEnabled(features::kGlassToolbar)) {
-      SetBackground(
-          std::make_unique<LiveToolbarBackground>(browser_view, this));
-    } else {
-      SetBackground(std::make_unique<ThemedBackground>(browser_view));
-    }
+    SetBackground(std::make_unique<ThemedBackground>(browser_view));
   }
 
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,

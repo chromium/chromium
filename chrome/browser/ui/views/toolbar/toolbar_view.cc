@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
-#include "chrome/browser/ui/views/toolbar/live_toolbar_background.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
@@ -271,12 +270,6 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 
   if (display_mode_ == DisplayMode::kNormal) {
-    if (base::FeatureList::IsEnabled(features::kGlassToolbar)) {
-      auto background =
-          std::make_unique<LiveToolbarBackground>(browser_view_, this);
-      SetBackground(std::move(background));
-    }
-
     for (const auto& view_and_command : GetViewCommandMap()) {
       chrome::AddCommandObserver(browser_, view_and_command.second, this);
     }
@@ -349,12 +342,10 @@ void ToolbarView::Init() {
   }
 
   if (display_mode_ == DisplayMode::kNormal) {
-    if (!base::FeatureList::IsEnabled(features::kGlassToolbar)) {
-      SetBackground(std::make_unique<CustomCornersBackground>(
-          *this, *browser_view_,
-          /*primary_color=*/CustomCornersBackground::ToolbarTheme(),
-          /*corner_color=*/CustomCornersBackground::FrameTheme()));
-    }
+    SetBackground(std::make_unique<CustomCornersBackground>(
+        *this, *browser_view_,
+        /*primary_color=*/CustomCornersBackground::ToolbarTheme(),
+        /*corner_color=*/CustomCornersBackground::FrameTheme()));
   } else if (display_mode_ == DisplayMode::kCustomTab) {
     custom_tab_bar_ =
         AddChildView(std::make_unique<CustomTabBarView>(browser_view_, this));
@@ -366,9 +357,7 @@ void ToolbarView::Init() {
     // in popups.
     pinned_toolbar_actions_container_ = AddChildView(
         std::make_unique<PinnedToolbarActionsContainer>(browser_view_, this));
-    if (!base::FeatureList::IsEnabled(features::kGlassToolbar)) {
-      SetBackground(views::CreateSolidBackground(kColorLocationBarBackground));
-    }
+    SetBackground(views::CreateSolidBackground(kColorLocationBarBackground));
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)

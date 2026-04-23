@@ -1449,10 +1449,6 @@ inline constexpr char kGlassFrameName[] = "Glass Frame";
 inline constexpr char kGlassFrameDescription[] =
     "Enables a glass effect on the browser frame.";
 
-inline constexpr char kGlassToolbarName[] = "Glass Toolbar";
-inline constexpr char kGlassToolbarDescription[] =
-    "Enables a glass effect on the toolbar.";
-
 inline constexpr char kGlicActorName[] = "Glic actor";
 inline constexpr char kGlicActorDescription[] = "Enables the Glic actor.";
 inline constexpr char kGlicExperimentalTriggeringName[] =

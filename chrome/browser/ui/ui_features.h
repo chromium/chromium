@@ -31,7 +31,6 @@ BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 BASE_DECLARE_FEATURE(kEnableExtensionsMenuTeardownFix);
 
 BASE_DECLARE_FEATURE(kTabStripDeclutter);
-BASE_DECLARE_FEATURE(kGlassToolbar);
 
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
