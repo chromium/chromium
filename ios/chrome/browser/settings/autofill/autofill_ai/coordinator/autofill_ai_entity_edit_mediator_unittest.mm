@@ -30,6 +30,20 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+@interface FakeAutofillAIEntityEditMediatorDelegate
+    : NSObject <AutofillAIEntityEditMediatorDelegate>
+@property(nonatomic, assign) BOOL canPerformWalletSave;
+@end
+
+@implementation FakeAutofillAIEntityEditMediatorDelegate
+
+- (BOOL)mediator:(AutofillAIEntityEditMediator*)mediator
+    canPerformWalletSaveForType:(autofill::EntityType)type {
+  return self.canPerformWalletSave;
+}
+
+@end
+
 class AutofillAIEntityEditMediatorTest : public PlatformTest {
  protected:
   AutofillAIEntityEditMediatorTest() {
@@ -51,6 +65,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
     mock_wallet_pass_manager_ = std::make_unique<
         testing::StrictMock<autofill::MockWalletPassAccessManager>>();
 
+    fake_delegate_ = [[FakeAutofillAIEntityEditMediatorDelegate alloc] init];
+
     mockReauthModule_ = OCMProtocolMock(@protocol(ReauthenticationProtocol));
 
     // Sign in a primary account so IdentityManager can provide a valid GaiaId.
@@ -61,6 +77,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   void TearDown() override {
     mediator_ = nil;
     consumer_ = nil;
+    fake_delegate_ = nil;
     PlatformTest::TearDown();
   }
 
@@ -75,6 +92,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
                   reauthModule:mockReauthModule_
                      userEmail:nil];
     mediator_.consumer = consumer_;
+    mediator_.delegate = fake_delegate_;
   }
 
   // Helper method to create a mediator with a given entity instance and
@@ -111,6 +129,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   signin::IdentityTestEnvironment identity_test_env_;
   FakeAutofillAIEntityEditConsumer* consumer_;
   AutofillAIEntityEditMediator* mediator_;
+  FakeAutofillAIEntityEditMediatorDelegate* fake_delegate_;
   id mockReauthModule_;
 };
 
@@ -201,6 +220,7 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
           {.record_type =
                autofill::EntityInstance::RecordType::kServerWallet}));
   CreateMediator(instance);
+  fake_delegate_.canPerformWalletSave = YES;
 
   consent_auditor::ConsentAuditor::SessionId captured_session_id;
   EXPECT_CALL(fake_consent_auditor_, RecordWalletPrivatePassConsent)
@@ -242,6 +262,7 @@ TEST_F(AutofillAIEntityEditMediatorTest,
           {.record_type =
                autofill::EntityInstance::RecordType::kServerWallet}));
   CreateMediator(instance);
+  fake_delegate_.canPerformWalletSave = YES;
 
   // Expect the mock to be called and simulate a failure.
   EXPECT_CALL(*mock_wallet_pass_manager_,

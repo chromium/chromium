@@ -57,6 +57,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 }  // namespace
 
 @interface AutofillAIEntityEditCoordinator () <
+    AutofillAIEntityEditMediatorDelegate,
     AutofillAIEntityEditTableViewControllerDelegate,
     AutofillCountrySelectionTableViewControllerDelegate>
 
@@ -153,6 +154,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
   _viewController.mutator = _mediator;
   _viewController.mode = _editMode;
 
+  _mediator.delegate = self;
   _mediator.consumer = _viewController;
 
   CHECK(_baseNavigationController);
@@ -183,6 +185,15 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
     }
     _viewController = nil;
   }
+}
+
+#pragma mark - AutofillAIEntityEditMediatorDelegate
+
+- (BOOL)mediator:(AutofillAIEntityEditMediator*)mediator
+    canPerformWalletSaveForType:(autofill::EntityType)type {
+  return autofill::CanPerformAutofillAiAction(
+      self.browser->GetProfile(), autofill::AutofillAiAction::kImportToWallet,
+      type);
 }
 
 #pragma mark - AutofillAIEntityEditTableViewControllerDelegate

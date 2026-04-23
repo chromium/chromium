@@ -32,6 +32,14 @@ class IdentityManager;
 @class AutofillAIEntityCountryItem;
 @class AutofillAIEntityEditDateItem;
 
+@class AutofillAIEntityEditMediator;
+
+@protocol AutofillAIEntityEditMediatorDelegate <NSObject>
+// Asks the delegate if the given entity type can be saved to the wallet.
+- (BOOL)mediator:(AutofillAIEntityEditMediator*)mediator
+    canPerformWalletSaveForType:(autofill::EntityType)type;
+@end
+
 @interface AutofillAIEntityEditMediator : NSObject <AutofillAIEntityEditMutator>
 
 // The consumer of this mediator.
@@ -57,6 +65,8 @@ class IdentityManager;
 
 // Returns the URL to manage the Server Wallet item.
 - (GURL)walletManagementURL;
+
+@property(nonatomic, weak) id<AutofillAIEntityEditMediatorDelegate> delegate;
 
 @end
 
