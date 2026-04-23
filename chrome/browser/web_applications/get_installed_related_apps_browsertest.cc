@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(GetInstalledRelatedAppsBrowserTest, SameOriginSuccess) {
   // We override basic.json to include our dynamic ID.
   url_overrides_["/web_apps/basic.json"] = manifest;
 
-  InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  InstallWebAppInNewTabAndClose(browser(), app_url);
 
   // Navigate to the app page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
@@ -134,8 +134,7 @@ IN_PROC_BROWSER_TEST_F(GetInstalledRelatedAppsBrowserTest,
           {app_manifest_id.spec()}, nullptr);
 
   url_overrides_["/web_apps/basic.json"] = manifest;
-  webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), app_url);
 
   EXPECT_TRUE(
       provider().registrar_unsafe().IsUrlInAppExtendedScope(other_url, app_id));

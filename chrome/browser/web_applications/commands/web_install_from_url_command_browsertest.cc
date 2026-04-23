@@ -805,11 +805,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", background_doc_install_url).spec();
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Initiate another install request for the same background document.
   base::AutoReset<bool> auto_accept =
@@ -871,11 +868,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", background_doc_install_url).spec();
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Initiate another install request for the same background document.
   base::AutoReset<bool> auto_accept =
@@ -938,11 +932,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", background_doc_install_url).spec();
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Because we didn't install via web install, we'll be prompted to allow
   // permission before the launch.
@@ -1026,11 +1017,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", background_doc_install_url).spec();
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Create a redirect URL that redirects to the already installed app.
   GURL redirect_url = embedded_https_test_server().GetURL(
@@ -1065,11 +1053,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   const std::string manifest_id =
       GenerateManifestId("some_id", background_doc_install_url).spec();
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Because we didn't install via web install, we'll be prompted to allow
   // permission before the launch.

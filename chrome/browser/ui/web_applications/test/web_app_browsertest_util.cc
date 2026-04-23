@@ -94,20 +94,22 @@ namespace web_app {
 namespace {
 
 void AutoAcceptDialogCallback(
+    bool launch,
     base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::move(acceptance_callback)
-      .Run(
-          /*user_accepted=*/true, std::move(web_app_info),
-          base::BindOnce(
-              [](bool success, base::OnceClosure reparent_or_launch_app) {
-                if (success && reparent_or_launch_app) {
-                  std::move(reparent_or_launch_app).Run();
-                }
-              }));
+      .Run(/*user_accepted=*/true, std::move(web_app_info),
+           base::BindOnce(
+               [](bool launch, bool success,
+                  base::OnceClosure reparent_or_launch_app) {
+                 if (success && launch && reparent_or_launch_app) {
+                   std::move(reparent_or_launch_app).Run();
+                 }
+               },
+               launch));
 }
 
 // An utility that observes a `WebContents` instance to either finish loading
@@ -187,7 +189,9 @@ class WebContentsLoadAndManifestWaiter final
 
 }  // namespace
 
-webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
+webapps::AppId InstallWebAppFromPage(Browser* browser,
+                                     const GURL& app_url,
+                                     InstallWebAppOptions options) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, app_url));
 
   webapps::AppId app_id;
@@ -201,8 +205,9 @@ webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(&AutoAcceptDialogCallback), install_future.GetCallback(),
-      FallbackBehavior::kAllowFallbackDataAlways);
+      base::BindOnce(&AutoAcceptDialogCallback,
+                     options.launch_or_reparent_page_to_app),
+      install_future.GetCallback(), FallbackBehavior::kAllowFallbackDataAlways);
   if (!install_future.Wait()) {
     return webapps::AppId();
   }
@@ -231,24 +236,20 @@ Browser* InstallWebAppFromPageGetBrowser(Browser* browser,
   return app_browser;
 }
 
-webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
-                                                       const GURL& app_url) {
-  // Create new tab to navigate, install, automatically pop out and then
-  // close. This sequence avoids altering the browser window state it started
-  // with.
+webapps::AppId InstallWebAppInNewTabAndClose(Browser* browser,
+                                             const GURL& app_url) {
+  // Create new tab to navigate, install.
   chrome::AddTabAt(browser, app_url, /*index=*/-1,
                    /*foreground=*/true);
+  int tab_index = browser->tab_strip_model()->active_index();
 
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  webapps::AppId app_id = InstallWebAppFromPage(browser, app_url);
+  InstallWebAppOptions options;
+  options.launch_or_reparent_page_to_app = false;
+  webapps::AppId app_id = InstallWebAppFromPage(browser, app_url, options);
 
-  Browser* app_browser = browser_created_observer.Wait();
-  DCHECK_NE(app_browser, browser);
-  DCHECK(AppBrowserController::IsForWebApp(app_browser, app_id));
-  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
-      app_browser);
-  chrome::CloseWindow(app_browser);
-  browser_destroyed_observer.Wait();
+  // Cleanup the tab we created.
+  browser->tab_strip_model()->CloseWebContentsAt(tab_index,
+                                                 TabCloseTypes::CLOSE_NONE);
 
   return app_id;
 }
@@ -269,7 +270,7 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(&AutoAcceptDialogCallback),
+      base::BindOnce(&AutoAcceptDialogCallback, true),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const webapps::AppId& installed_app_id,
                                webapps::InstallResultCode code) {

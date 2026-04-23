@@ -122,8 +122,7 @@ class LinkCapturingNavigationThrottleBrowserTest
   }
 
   webapps::AppId InstallPwa() {
-    return web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(),
-                                                            start_url_);
+    return web_app::InstallWebAppInNewTabAndClose(browser(), start_url_);
   }
 
   void SetUpOnMainThread() override {

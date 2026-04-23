@@ -115,11 +115,9 @@ class DefaultLinkCapturingInteractiveUiTest
   std::tuple<webapps::AppId, webapps::AppId> InstallOuterAppAndInnerApp() {
     // The inner app must be installed first so that it is installable.
     webapps::AppId inner_app_id =
-        web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(),
-                                                         GetInnerNestedUrl());
+        web_app::InstallWebAppInNewTabAndClose(browser(), GetInnerNestedUrl());
     webapps::AppId outer_app_id =
-        web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(),
-                                                         GetOuterUrl());
+        web_app::InstallWebAppInNewTabAndClose(browser(), GetOuterUrl());
     return {outer_app_id, inner_app_id};
   }
 

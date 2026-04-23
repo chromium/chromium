@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
   // browser window.
 
   webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetInstalledUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetInstalledUrl());
 
   content::WebContents* to_reparent =
       browser()->tab_strip_model()->GetActiveWebContents();

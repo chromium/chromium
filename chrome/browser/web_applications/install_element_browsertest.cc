@@ -545,9 +545,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   // Install a background document and close the app window.
   const GURL background_doc_install_url =
       embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
-  webapps::AppId installed_app_id =
-      web_app::InstallWebAppFromPageAndCloseAppBrowser(
-          browser(), background_doc_install_url);
+  webapps::AppId installed_app_id = web_app::InstallWebAppInNewTabAndClose(
+      browser(), background_doc_install_url);
 
   // Generate the app id from the manifest id and verify it matches the app just
   // installed.
@@ -555,11 +554,9 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   webapps::AppId generated_app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_EQ(installed_app_id, generated_app_id);
 
-  // Verify that the app was installed and launched.
+  // Verify that the app was installed.
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       generated_app_id, WebAppFilter::LaunchableFromInstallApi()));
-  histograms.ExpectBucketCount("WebApp.LaunchSource",
-                               apps::LaunchSource::kFromReparenting, 1);
 
   // Now navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -610,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
       embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   const GURL manifest_id = embedded_https_test_server().GetURL(kCustomIdPageId);
 
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
+  webapps::AppId app_id = web_app::InstallWebAppInNewTabAndClose(
       browser(), background_doc_install_url);
   EXPECT_EQ(app_id, GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id)));
 

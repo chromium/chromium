@@ -435,8 +435,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
       .SetFaviconMonochromeReadCallbackForTesting(base::BindLambdaForTesting(
           [&](const webapps::AppId& cached_app_id) { run_loop.Quit(); }));
 
-  webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+  webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), start_url);
   run_loop.Run();
 
   Browser* app_browser = LaunchWebAppBrowser(app_id);

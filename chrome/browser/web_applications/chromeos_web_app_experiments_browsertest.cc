@@ -148,7 +148,7 @@ class ChromeOsWebAppExperimentsBrowserTest
     ChromeOsWebAppExperiments::SetScopeExtensionsForTesting(
         {extended_scope_.spec().c_str()});
 
-    app_id_ = InstallWebAppFromPageAndCloseAppBrowser(
+    app_id_ = InstallWebAppInNewTabAndClose(
         browser(), embedded_test_server()->GetURL(
                        "/web_apps/get_manifest.html?theme_color.json"));
     apps::AppReadinessWaiter(profile(), app_id_).Await();

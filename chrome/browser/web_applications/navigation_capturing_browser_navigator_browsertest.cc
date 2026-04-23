@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // browser to open a browser tab app in a tab, instead of the most recently
   // active browser.
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetLandingPage());
+      InstallWebAppInNewTabAndClose(browser(), GetLandingPage());
   // Change the web app's user display mode to kBrowser
   base::test::TestFuture<void> future;
   provider().scheduler().SetUserDisplayMode(
@@ -304,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 // `app_id` is the same.
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        NavigateBrowserUsedForNavigateExistingAppWindow) {
-  const webapps::AppId& app_id = InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), GetNavigateExistingUrl());
+  const webapps::AppId& app_id =
+      InstallWebAppInNewTabAndClose(browser(), GetNavigateExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        NavigateBrowserUsedForFocusExistingAppWindow) {
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        FocusExistingUsesLatestActivatedAppWindow) {
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        FocusExistingWithBrowserAvoidsOutOfScope) {
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        NavigateExistingIgnoresNonHtml) {
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -720,8 +720,8 @@ IN_PROC_BROWSER_TEST_F(
     NavigateBrowserUsedForNavigateExistingToAppBrowserTabStandalone) {
   // Test that the app browser provided in NavigateParams is used even if a
   // separate browser is populated with a matching tab.
-  const webapps::AppId& app_id = InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), GetNavigateExistingUrl());
+  const webapps::AppId& app_id =
+      InstallWebAppInNewTabAndClose(browser(), GetNavigateExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(
   // Test that the app browser provided in NavigateParams is used even if a
   // separate browser is populated with a matching tab.
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
@@ -859,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   // browser to open a browser tab app in a tab, instead of the most recently
   // active browser.
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetLandingPage());
+      InstallWebAppInNewTabAndClose(browser(), GetLandingPage());
   base::test::TestFuture<void> future;
   provider().scheduler().SetUserDisplayMode(
       app_id, mojom::UserDisplayMode::kBrowser, future.GetCallback());
@@ -924,9 +924,9 @@ IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
 
   // Install both apps.
   const webapps::AppId& source_app =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
-  const webapps::AppId& dest_app = InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), GetNavigateExistingUrl());
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
+  const webapps::AppId& dest_app =
+      InstallWebAppInNewTabAndClose(browser(), GetNavigateExistingUrl());
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), dest_app),
@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   // initially captured into an app window, only to be determined to need a
   // browser tabbed app after redirection.
   const webapps::AppId& app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetLandingPage());
+      InstallWebAppInNewTabAndClose(browser(), GetLandingPage());
   // Change the web app's user display mode to kBrowser
   base::test::TestFuture<void> future;
   provider().scheduler().SetUserDisplayMode(

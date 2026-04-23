@@ -118,7 +118,7 @@ class WebAppScopeExtensionsBrowserTest
     url_overrides_[manifest_url] = manifest_file;
     url_overrides_[association_url] = association_file;
 
-    webapps::AppId app_id = InstallWebAppFromPageAndCloseAppBrowser(
+    webapps::AppId app_id = InstallWebAppInNewTabAndClose(
         browser(),
         primary_server_.GetURL("/web_apps/get_manifest.html?manifest.json"));
 

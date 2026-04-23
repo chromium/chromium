@@ -110,8 +110,7 @@ class WebAppLinkCapturingBrowserTest
     GURL in_scope_2 = start_url.Resolve("page2.html");
     GURL scope = start_url.GetWithoutFilename();
 
-    webapps::AppId app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return std::make_tuple(app_id, in_scope_1, in_scope_2, scope);
   }
@@ -126,25 +125,23 @@ class WebAppLinkCapturingBrowserTest
   }
 
   // Note: This must be installed AFTER installing the nested app, as the
-  // `InstallWebAppFromPageAndCloseAppBrowser` function does a link-like
+  // `InstallWebAppInNewTabAndClose` function does a link-like
   // navigation to open the url, which would be captured by the parent app if
   // installed first.
   webapps::AppId InstallParentApp() {
     GURL start_url = GetParentAppUrl();
-    webapps::AppId app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 
   // Note: This must be installed BEFORE installing the parent app, as the
-  // `InstallWebAppFromPageAndCloseAppBrowser` function does a link-like
+  // `InstallWebAppInNewTabAndClose` function does a link-like
   // navigation to open the url, which would be captured by the parent app if
   // installed first.
   webapps::AppId InstallNestedApp() {
     GURL start_url = GetNestedAppUrl();
-    webapps::AppId app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }

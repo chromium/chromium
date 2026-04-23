@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
   base::test::TestFuture<void> test_future;
   provider().scheduler().SetUserDisplayMode(
       app_id, mojom::UserDisplayMode::kBrowser, test_future.GetCallback());
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
                   ->pending_update_info()
                   .has_value());
   const webapps::AppId new_installed_app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), update_url);
+      InstallWebAppInNewTabAndClose(browser(), update_url);
   ASSERT_EQ(new_installed_app_id, app_id);
   EXPECT_FALSE(provider()
                    .registrar_unsafe()
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
 
   EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
 
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+      InstallWebAppInNewTabAndClose(browser(), app_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.

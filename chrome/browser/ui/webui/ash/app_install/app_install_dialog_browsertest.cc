@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   EXPECT_TRUE(dialog_accepted_future.Get<bool>());
 
   // Install the app.
-  web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  web_app::InstallWebAppInNewTabAndClose(browser(), app_url);
   dialog_handle->SetInstallSucceeded();
 
   // Wait for the button text to say "Open app", which means it knows the app

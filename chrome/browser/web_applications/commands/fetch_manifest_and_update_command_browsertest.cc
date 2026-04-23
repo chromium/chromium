@@ -43,8 +43,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandTest, BasicUpdate) {
   webapps::ManifestId manifest_id = GenerateManifestIdFromStartUrlOnly(
       embedded_https_test_server().GetURL("/web_apps/basic.html"));
   GURL app_url = embedded_https_test_server().GetURL("/web_apps/basic.html");
-  webapps::AppId app_id =
-      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), app_url);
 
   EXPECT_EQ("Basic web app",
             provider().registrar_unsafe().GetAppShortName(app_id));

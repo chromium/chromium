@@ -64,8 +64,7 @@ class EnableLinkCapturingInfobarBrowserTest
     GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
     GURL in_scope_url = embedded_test_server()->GetURL("/web_apps/page1.html");
 
-    webapps::AppId app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return {app_id, in_scope_url};
   }
@@ -82,10 +81,10 @@ class EnableLinkCapturingInfobarBrowserTest
 
     // The inner app must be installed first so that it is installable.
     webapps::AppId inner_app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), inner_start_url);
+        InstallWebAppInNewTabAndClose(browser(), inner_start_url);
     apps::AppReadinessWaiter(profile(), inner_app_id).Await();
     webapps::AppId outer_app_id =
-        InstallWebAppFromPageAndCloseAppBrowser(browser(), outer_start_url);
+        InstallWebAppInNewTabAndClose(browser(), outer_start_url);
     apps::AppReadinessWaiter(profile(), outer_app_id).Await();
     return {outer_app_id, inner_app_id, inner_in_scope_url};
   }

@@ -291,11 +291,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), current_doc_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectUniqueSample("WebApp.LaunchSource",
-                                apps::LaunchSource::kFromReparenting, 1);
+  webapps::AppId app_id =
+      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   // Navigate again to the just installed current doc in the browser window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
@@ -319,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
   // Validate browser results.
   histograms.ExpectUniqueSample("WebApp.LaunchSource",
-                                apps::LaunchSource::kFromReparenting, 2);
+                                apps::LaunchSource::kFromReparenting, 1);
   histograms.ExpectBucketCount(
       kInstallResultUma,
       web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
@@ -346,11 +343,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), current_doc_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectUniqueSample("WebApp.LaunchSource",
-                                apps::LaunchSource::kFromReparenting, 1);
+  webapps::AppId app_id =
+      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   // Navigate again to the just installed current doc in the browser window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
@@ -388,11 +382,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), current_doc_url);
-  // Verify that the app was installed and launched.
-  histograms.ExpectUniqueSample("WebApp.LaunchSource",
-                                apps::LaunchSource::kFromReparenting, 1);
+  webapps::AppId app_id =
+      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   views::NamedWidgetShownWaiter intent_picker_bubble_shown(
       views::test::AnyWidgetTestPasskey{},
