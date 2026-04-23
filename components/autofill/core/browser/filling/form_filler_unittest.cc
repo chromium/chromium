@@ -25,6 +25,8 @@
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -2086,6 +2088,43 @@ TEST_F(FormFillerTest, FillAndRefillHaveSameFillId) {
   EXPECT_FALSE(initial_fill_id->is_empty());
   EXPECT_FALSE(refill_fill_id->is_empty());
   EXPECT_EQ(initial_fill_id, refill_fill_id);
+}
+
+// Tests that refills skip sensitive fields if the initial fill did not include
+// them.
+TEST_F(FormFillerTest, RefillSkipsSensitiveFieldsIfNotFilledInitially) {
+  CreditCard credit_card = test::GetCreditCard();
+  // Create form with a credit card name by making one with a name and number,
+  // then removing the number field. It will be readded after initial fill.
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .autocomplete_attribute = "cc-name"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"}}});
+  FormFieldData number_field = form.fields().back();
+  test_api(form).fields().pop_back();
+  FormsSeen({form});
+
+  // Initial fill.
+  form = AutofillForm(form, form.fields().front(), &credit_card);
+
+  // Now add the number field back to trigger refill.
+  test_api(form).fields().push_back(std::move(number_field));
+
+  // Expect refill, but expect NO new fields to be filled because number field
+  // is sensitive and was not filled initially.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce([&](mojom::FormActionType action_type,
+                    mojom::ActionPersistence action_persistence,
+                    base::span<const FormFieldData> data, const FillId& fill_id,
+                    bool supports_refill, const url::Origin& triggered_origin,
+                    const absl::flat_hash_map<FieldGlobalId, FieldType>&,
+                    const Section&) {
+        EXPECT_TRUE(data.empty());
+        return std::vector<FieldGlobalId>{};
+      });
+
+  FormsSeen({form});
 }
 
 // Tests that a programmatic refill can be triggered within the timeout.
