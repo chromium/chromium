@@ -658,3 +658,105 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
                        PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
+
+// TODO(https://crbug.com/449095632): Port to desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Tests the tabs.onUpdated events dispatched when moving a tab group from one
+// window to another.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
+  constexpr char kManifest[] = R"({
+    "name": "Move Group Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {"service_worker": "background.js"},
+    "permissions": ["tabs", "tabGroups"]
+  })";
+
+  constexpr char kBackgroundJs[] = R"(
+    chrome.test.runTests([
+      async function moveGroup() {
+        // Create other tabs in window 1 to add to a group.
+        await chrome.tabs.create({url: 'about:blank'});
+        await chrome.tabs.create({url: 'about:blank'});
+
+        // Get the tabs in window 1. There should now be three of them.
+        const tabs = await chrome.tabs.query({currentWindow: true});
+        chrome.test.assertEq(3, tabs.length);
+
+        // Create a tab group in window 1.
+        const groupId =
+            await chrome.tabs.group({tabIds: [tabs[1].id, tabs[2].id]});
+        console.warn('Group ID: ' + groupId);
+
+        // Create a new window.
+        const window2 = await chrome.windows.create({url: 'about:blank'});
+
+        const groupIdUpdateEvents = [];
+
+        // Set up a listener to monitor tabs.onUpdated events.
+        chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+          if (changeInfo.hasOwnProperty('groupId')) {
+            console.warn(`Tab: ${tab.id}, groupId: ${tab.groupId}`);
+            groupIdUpdateEvents.push({tabId: tab.id, groupId: tab.groupId});
+          }
+        });
+
+        // Moving a tab group between windows results in a "removed" and
+        // "created" event.
+        let groupRemovedEvent =
+            chrome.test.listenOnce(chrome.tabGroups.onRemoved);
+        let groupCreatedEvent =
+            chrome.test.listenOnce(chrome.tabGroups.onCreated);
+
+        // Move the tab group to window 2 and wait for it to process.
+        await chrome.tabGroups.move(groupId, {windowId: window2.id, index: 0});
+        await groupRemovedEvent;
+        await groupCreatedEvent;
+
+        // Wait for any pending events to come in.
+        await chrome.test.waitForRoundTrip('');
+
+        // Moving a tab group between windows is a destructive operation -- it
+        // destroys the group and then recreates it. As such, we expect four
+        // update events, two per tab: one to assign it to no group (-1) and
+        // another to reassign it to the same group ID it previously had.
+        const expectedGroupIdUpdateEvents = [
+          {tabId: tabs[1].id, groupId: -1},
+          {tabId: tabs[2].id, groupId: -1},
+          {tabId: tabs[1].id, groupId: groupId},
+          {tabId: tabs[2].id, groupId: groupId},
+        ];
+
+        // Event order might be non-deterministic, especially between the two
+        // tabs. Sort both the expected and actual array. The order here doesn't
+        // matter; it just matters that it's consistent.
+        const sortFunction = (a, b) => {
+          if (a.tabId != b.tabId) {
+            return a.tabId < b.tabId ? -1 : 1;
+          }
+          if (a.groupId != b.groupId) {
+            return a.groupId < b.groupId ? -1 : 1;
+          }
+          return 0;
+        };
+        expectedGroupIdUpdateEvents.sort(sortFunction);
+        groupIdUpdateEvents.sort(sortFunction);
+
+        chrome.test.assertEq(expectedGroupIdUpdateEvents,
+                             groupIdUpdateEvents);
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  extensions::ResultCatcher catcher;
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
