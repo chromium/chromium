@@ -322,7 +322,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
         TabListInterface::From(browser_window_interface);
     if (tab_list) {
       active_tab = tab_list->GetActiveTab();
-      if (active_tab) {
+      if (active_tab && !has_visual_selection) {
         tabs_to_recontextualize.push_back(active_tab->GetHandle().raw_value());
       }
     }
@@ -476,6 +476,9 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     create_client_to_aim_request_info->query_text_source =
         lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
     create_client_to_aim_request_info->query_start_time = base::Time::Now();
+    if (overlay_token) {
+      create_client_to_aim_request_info->overlay_token = overlay_token;
+    }
 
     create_client_to_aim_request_info->active_tool =
         GetInputState().active_tool;
@@ -750,6 +753,8 @@ void ContextualTasksComposeboxHandler::ClearFiles(
   pending_delayed_tab_ids_.clear();
   pending_context_uploads_.clear();
   pending_query_request_info_.reset();
+  visual_selection_token_.reset();
+  visual_selection_overlay_token_.reset();
 
   if (should_block_auto_suggested_tabs) {
     web_ui_interface_->GetAutoSuggestionManager()->OnAutoSuggestionDismissed();

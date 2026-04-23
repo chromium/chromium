@@ -813,7 +813,6 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     bool is_region_interaction =
         create_client_to_aim_request_info
             ->force_include_latest_interaction_request_data &&
-        create_client_to_aim_request_info->file_tokens.size() == 1 &&
         latest_interaction_request_data_ &&
         latest_interaction_request_data_->has_image_crop();
 
@@ -835,8 +834,11 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
           cluster_info_->search_session_id());
       lens_image_query_data->mutable_request_id()->CopyFrom(
           file_info->request_id.value());
+      bool is_overlay_token =
+          create_client_to_aim_request_info->overlay_token.has_value() &&
+          file_token == *create_client_to_aim_request_info->overlay_token;
       auto media_type =
-          is_region_interaction
+          (is_region_interaction && is_overlay_token)
               ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
               : file_info->request_id->media_type();
       lens_image_query_data->mutable_request_id()->set_media_type(media_type);
@@ -845,6 +847,21 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       if (visual_input_type !=
           lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN) {
         lens_image_query_data->set_visual_input_type(visual_input_type);
+      }
+
+      // Only force interaction data for region searches when the overlay is
+      // open.
+      std::optional<lens::LensOverlayVisualSearchInteractionData>
+          visual_search_interaction_data = ConstructVisualSearchInteractionData(
+              static_cast<const FileInfo*>(file_info),
+              create_client_to_aim_request_info->query_text, std::nullopt,
+              is_overlay_token
+                  ? create_client_to_aim_request_info
+                        ->force_include_latest_interaction_request_data
+                  : false);
+      if (visual_search_interaction_data.has_value()) {
+        lens_image_query_data->mutable_visual_search_interaction_data()
+            ->CopyFrom(visual_search_interaction_data.value());
       }
     }
 
@@ -856,31 +873,6 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
         added_inputs.turn_title_thumbnail_size() > 0) {
       submit_query->mutable_payload()->mutable_added_inputs()->CopyFrom(
           added_inputs);
-    }
-  }
-
-  // Add the latest visual search interaction data to the query if it exists.
-  // Only check the first file token since the interaction should be associated
-  // with the a single contextual input.
-  if (!create_client_to_aim_request_info->file_tokens.empty()) {
-    auto* file_info =
-        GetFileInfo(create_client_to_aim_request_info->file_tokens[0]);
-    if (file_info && IsValidContextUploadStatusForMultimodalRequest(
-                         file_info->upload_status)) {
-      std::optional<lens::LensOverlayVisualSearchInteractionData>
-          visual_search_interaction_data = ConstructVisualSearchInteractionData(
-              static_cast<const FileInfo*>(file_info),
-              create_client_to_aim_request_info->query_text, std::nullopt,
-              create_client_to_aim_request_info
-                  ->force_include_latest_interaction_request_data);
-      if (visual_search_interaction_data.has_value()) {
-        for (auto& lens_image_query_data :
-             *submit_query->mutable_payload()
-                  ->mutable_lens_image_query_data()) {
-          lens_image_query_data.mutable_visual_search_interaction_data()
-              ->CopyFrom(visual_search_interaction_data.value());
-        }
-      }
     }
   }
 
