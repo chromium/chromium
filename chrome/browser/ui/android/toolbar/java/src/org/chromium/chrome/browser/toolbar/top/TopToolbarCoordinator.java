@@ -1063,11 +1063,12 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // The control container can be larger than toolbarLayoutHeight + tabstrip height, e.g. when
         // the fusebox is visible. The capture does not always include this expanded height but when
         // it does, we need to account for it to avoid over-translating by the extra height.
+        int tabStripHeight = mToolbarLayout.getTabStripHeightFromResource();
         int maxControlContainerHeightMeasurement =
                 Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
         int minControlContainerHeightMeasurement =
                 Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
-        if (captureHeight >= maxControlContainerHeightMeasurement
+        if (captureHeight >= maxControlContainerHeightMeasurement + tabStripHeight
                 && mTabStripTransitionCoordinator != null) {
             // Capture includes extra height; use the full height.
             diff = captureHeight - maxControlContainerHeightMeasurement - hairlineHeight;
