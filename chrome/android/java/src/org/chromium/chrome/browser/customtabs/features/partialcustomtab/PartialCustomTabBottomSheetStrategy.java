@@ -1015,6 +1015,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void destroy() {
+        super.destroy();
         if (mContentScrollMayResizeTab) {
             var provider = mTouchEventProvider.get();
             if (provider != null) {
