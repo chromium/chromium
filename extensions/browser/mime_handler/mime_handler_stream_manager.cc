@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 
 #include <stdint.h>
 
@@ -22,7 +22,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
@@ -32,7 +31,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 
-namespace pdf {
+namespace extensions::mime_handler {
 
 namespace {
 
@@ -87,7 +86,7 @@ GetMimeHandlerViewContainerManager(content::RenderFrameHost* container_host) {
 
 // Debugging data for crbug.com/391459596.
 // TODO(crbug.com/391459596): Remove once fixed.
-struct PdfNavigationDebugData : public base::SupportsUserData::Data {
+struct MimeHandlerNavigationDebugData : public base::SupportsUserData::Data {
   bool did_start_navigation = false;
   bool did_start_navigation_with_parent = false;
 };
@@ -130,7 +129,7 @@ void SetContentNavigationCrashKeys(
     return;
   }
 
-  auto* debug_data = static_cast<PdfNavigationDebugData*>(data);
+  auto* debug_data = static_cast<MimeHandlerNavigationDebugData*>(data);
 
   crash_key_did_start_navigation.Set(
       base::ToString(debug_data->did_start_navigation));
@@ -423,7 +422,7 @@ void MimeHandlerStreamManager::DidStartNavigation(
   // `ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation`) see it set.
   if (IsContentFrameNavigation(navigation_handle)) {
     ++g_debug_ongoing_content_navigations;
-    auto debug_data = std::make_unique<PdfNavigationDebugData>();
+    auto debug_data = std::make_unique<MimeHandlerNavigationDebugData>();
     debug_data->did_start_navigation = true;
     debug_data->did_start_navigation_with_parent =
         navigation_handle->GetParentFrame();
@@ -542,27 +541,28 @@ void MimeHandlerStreamManager::DidFinishNavigation(
                          about_blank_host->GetGlobalId());
 }
 
-void MimeHandlerStreamManager::ClaimStreamInfoForTesting(
+void MimeHandlerStreamManager::ClaimStreamInfoForTesting(  // IN-TEST
     content::RenderFrameHost* embedder_host) {
   ClaimStreamInfo(embedder_host);
 }
 
 extensions::StreamInfo*
-MimeHandlerStreamManager::GetClaimedStreamInfoForTesting(
+MimeHandlerStreamManager::GetClaimedStreamInfoForTesting(  // IN-TEST
     content::RenderFrameHost* embedder_host) {
   return GetClaimedStreamInfo(embedder_host);
 }
 
-void MimeHandlerStreamManager::SetExtensionFrameTreeNodeIdForTesting(
-    content::RenderFrameHost* embedder_host,
-    content::FrameTreeNodeId frame_tree_node_id) {
+void MimeHandlerStreamManager::
+    SetExtensionFrameTreeNodeIdForTesting(  // IN-TEST
+        content::RenderFrameHost* embedder_host,
+        content::FrameTreeNodeId frame_tree_node_id) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
   CHECK(stream_info);
 
   stream_info->set_extension_host_frame_tree_node_id(frame_tree_node_id);
 }
 
-void MimeHandlerStreamManager::SetContentFrameTreeNodeIdForTesting(
+void MimeHandlerStreamManager::SetContentFrameTreeNodeIdForTesting(  // IN-TEST
     content::RenderFrameHost* embedder_host,
     content::FrameTreeNodeId frame_tree_node_id) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -787,4 +787,4 @@ void MimeHandlerStreamManager::SetStreamContentHostFrameTreeNodeId(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MimeHandlerStreamManager);
 
-}  // namespace pdf
+}  // namespace extensions::mime_handler

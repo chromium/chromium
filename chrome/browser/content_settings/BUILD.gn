@@ -130,7 +130,10 @@ source_set("impl") {
   }
 
   if (enable_pdf) {
-    deps += [ "//chrome/browser/pdf" ]
+    deps += [
+      "//chrome/browser/pdf",
+      "//extensions/browser/mime_handler",
+    ]
   }
 }
 

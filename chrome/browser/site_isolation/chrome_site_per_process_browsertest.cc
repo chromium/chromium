@@ -362,8 +362,9 @@ class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
   ~ChromeSitePerProcessOopifPDFTest() override = default;
 
   // Return value could be nullptr.
-  pdf::MimeHandlerStreamManager* GetMimeHandlerStreamManager() {
-    return pdf::MimeHandlerStreamManager::FromWebContents(
+  extensions::mime_handler::MimeHandlerStreamManager*
+  GetMimeHandlerStreamManager() {
+    return extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 

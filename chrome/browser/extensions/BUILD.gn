@@ -610,6 +610,7 @@ source_set("extensions") {
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/forced_extensions",
+    "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:stream_container",
     "//extensions/browser/updater",
     "//extensions/common",

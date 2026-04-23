@@ -16,7 +16,6 @@
 #include "base/test/run_until.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -46,6 +45,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2214,12 +2214,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   // Manually attach a MimeHandlerStreamManager to the contents. This simulates
   // the scenario where we identify the page as a PDF but the PDF frame has not
   // loaded yet, setting is_waiting_for_pdf_frame_ to true.
-  pdf::MimeHandlerStreamManager::Create(contents);
+  extensions::mime_handler::MimeHandlerStreamManager::Create(contents);
   handler_->OnActiveAXTreeIDChanged();
 
   // Remove MimeHandlerStreamManager so  subsequent navigations are treated as
   // normal pages.
-  contents->RemoveUserData(pdf::MimeHandlerStreamManager::UserDataKey());
+  contents->RemoveUserData(
+      extensions::mime_handler::MimeHandlerStreamManager::UserDataKey());
 
   // Verify that navigating to a normal page correctly resets the PDF waiting
   // state. If the state isn't reset, we would return early and be stuck in a

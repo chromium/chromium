@@ -9,9 +9,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -21,6 +21,8 @@ class WebContents;
 }  // namespace content
 
 namespace pdf {
+
+using extensions::mime_handler::MimeHandlerStreamManager;
 
 class TestMimeHandlerStreamManager : public MimeHandlerStreamManager {
  public:

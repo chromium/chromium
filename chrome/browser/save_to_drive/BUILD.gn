@@ -55,6 +55,7 @@ source_set("save_to_drive") {
     "//components/pdf/browser",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:stream_container",
     "//pdf:features",
   ]

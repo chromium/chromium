@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_
-#define CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_
+#ifndef EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_MANAGER_H_
+#define EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -22,11 +22,11 @@ class WebContents;
 }  // namespace content
 
 namespace extensions {
+
 class MimeHandlerStreamDelegate;
 class StreamContainer;
-}  // namespace extensions
 
-namespace pdf {
+namespace mime_handler {
 
 // `MimeHandlerStreamManager` is used for MIME handler navigation. It tracks all
 // MIME handler navigation events in a `content::WebContents`. It handles
@@ -296,6 +296,7 @@ class MimeHandlerStreamManager
   StreamInfoMap stream_infos_;
 };
 
-}  // namespace pdf
+}  // namespace mime_handler
+}  // namespace extensions
 
-#endif  // CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_
+#endif  // EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_MANAGER_H_

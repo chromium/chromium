@@ -6,7 +6,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
@@ -16,6 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -37,6 +37,7 @@ using ::testing::Return;
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
 
+using extensions::mime_handler::MimeHandlerStreamManager;
 using extensions::mime_handler::MockMimeHandlerStreamDelegate;
 
 }  // namespace

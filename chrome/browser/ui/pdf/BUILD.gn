@@ -24,6 +24,7 @@ source_set("pdf") {
     "//components/pdf/browser",
     "//components/tabs:public",
     "//extensions/browser",
+    "//extensions/browser/mime_handler",
     "//pdf:features",
   ]
 }

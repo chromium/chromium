@@ -37,7 +37,7 @@
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"  // nogncheck
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -306,10 +306,11 @@ bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
     return false;
   }
 
-  // There should be a `pdf::MimeHandlerStreamManager` if `render_frame_host`'s
+  // There should be a `MimeHandlerStreamManager` if `render_frame_host`'s
   // `content::WebContents` has a PDF.
   auto* mime_handler_stream_manager =
-      pdf::MimeHandlerStreamManager::FromRenderFrameHost(render_frame_host);
+      extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
+          render_frame_host);
   if (!mime_handler_stream_manager) {
     return false;
   }

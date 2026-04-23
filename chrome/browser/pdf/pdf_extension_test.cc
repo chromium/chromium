@@ -38,7 +38,6 @@
 #include "build/build_config.h"
 #include "cc/input/scroll_utils.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
@@ -107,6 +106,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -3279,7 +3279,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest, CancelPrerender) {
 
   PrerenderAndExpectCancellation(pdf_url);
   if (UseOopif()) {
-    EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
+    EXPECT_FALSE(
+        extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+            web_contents));
   } else {
     EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
   }
@@ -3305,7 +3307,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
 
   PrerenderAndExpectCancellation(pdf_url);
   if (UseOopif()) {
-    EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
+    EXPECT_FALSE(
+        extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+            web_contents));
   } else {
     EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
   }
@@ -3855,8 +3859,9 @@ class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
   bool UseOopif() const override { return true; }
 
-  pdf::MimeHandlerStreamManager* GetMimeHandlerStreamManager() {
-    return pdf::MimeHandlerStreamManager::FromWebContents(
+  extensions::mime_handler::MimeHandlerStreamManager*
+  GetMimeHandlerStreamManager() {
+    return extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
         GetActiveWebContents());
   }
 };
@@ -4117,7 +4122,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* web_contents = GetActiveWebContents();
-  EXPECT_TRUE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
+  EXPECT_TRUE(
+      extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+          web_contents));
 
   // Find the PDF extension frame, which is the parent of the content frame.
   content::RenderFrameHost* pdf_extensions_frame =
@@ -4133,7 +4140,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
 
   rfh_deleted_observer.WaitUntilDeleted();
   // The stream should no longer exist.
-  EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
+  EXPECT_FALSE(
+      extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+          web_contents));
 }
 
 // If the document.body of the PDF viewer is replaced, any subframes appended
@@ -4141,7 +4150,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* contents = GetActiveWebContents();
-  EXPECT_TRUE(pdf::MimeHandlerStreamManager::FromWebContents(contents));
+  EXPECT_TRUE(
+      extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+          contents));
 
   // Replace the document.body.
   EXPECT_TRUE(content::ExecJs(
@@ -4151,7 +4162,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
       "document.body = body;"));
 
   // The stream should no longer exist.
-  EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(contents));
+  EXPECT_FALSE(
+      extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+          contents));
 
   // The iframe should be able to navigate.
   content::TestNavigationObserver navigation_observer(contents);

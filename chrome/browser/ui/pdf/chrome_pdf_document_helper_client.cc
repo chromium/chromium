@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 
 namespace {
@@ -125,7 +125,7 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
     bool can_save) {
   if (chrome_pdf::features::IsOopifPdfEnabled()) {
     auto* mime_handler_stream_manager =
-        pdf::MimeHandlerStreamManager::FromWebContents(
+        extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
             content::WebContents::FromRenderFrameHost(render_frame_host));
     if (!mime_handler_stream_manager) {
       return;

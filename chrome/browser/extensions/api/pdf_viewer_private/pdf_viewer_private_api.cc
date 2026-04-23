@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -25,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -84,7 +84,8 @@ base::WeakPtr<StreamContainer> GetStreamContainer(
   }
 
   auto* mime_handler_stream_manager =
-      pdf::MimeHandlerStreamManager::FromRenderFrameHost(embedder_host);
+      mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
+          embedder_host);
   if (!mime_handler_stream_manager) {
     return nullptr;
   }

@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,6 +16,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/stream_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace pdf {

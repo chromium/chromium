@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/pdf/common/constants.h"
@@ -21,6 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
@@ -85,7 +85,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     scoped_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
     ChromeRenderViewHostTestHarness::SetUp();
 
-    pdf::MimeHandlerStreamManager::Create(web_contents());
+    mime_handler::MimeHandlerStreamManager::Create(web_contents());
 
     // For testing purposes, `main_rfh()` represents the extension's
     // embedder's frame host, while `extension_host` represents the
@@ -115,12 +115,13 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
     web_contents()->RemoveUserData(
-        pdf::MimeHandlerStreamManager::UserDataKey());
+        mime_handler::MimeHandlerStreamManager::UserDataKey());
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  pdf::MimeHandlerStreamManager* mime_handler_stream_manager() {
-    return pdf::MimeHandlerStreamManager::FromWebContents(web_contents());
+  mime_handler::MimeHandlerStreamManager* mime_handler_stream_manager() {
+    return mime_handler::MimeHandlerStreamManager::FromWebContents(
+        web_contents());
   }
 
   content::RenderFrameHost* extension_host() { return extension_host_; }
@@ -136,16 +137,16 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
   }
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
-  // Create a claimed stream container in `pdf::MimeHandlerStreamManager`. This
-  // updates `extension_host_`, since the navigation deletes the embedder frame
-  // host's child frame hosts.
+  // Create a claimed stream container in
+  // `mime_handler::MimeHandlerStreamManager`. This updates `extension_host_`,
+  // since the navigation deletes the embedder frame host's child frame hosts.
   void CreateAndClaimStreamContainer() {
     extension_host_ = nullptr;
 
     content::RenderFrameHost* embedder_host =
         content::NavigationSimulator::NavigateAndCommitFromDocument(
             GURL("https://original_url1"), main_rfh());
-    pdf::MimeHandlerStreamManager::Create(web_contents());
+    mime_handler::MimeHandlerStreamManager::Create(web_contents());
 
     auto* manager = mime_handler_stream_manager();
     manager->AddStreamContainer(

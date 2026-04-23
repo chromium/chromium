@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/url_constants.h"
@@ -33,6 +32,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "pdf/buildflags.h"
@@ -413,7 +413,8 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
   CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
   auto* mime_handler_stream_manager =
-      pdf::MimeHandlerStreamManager::FromRenderFrameHost(embedder_host);
+      extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
+          embedder_host);
   if (!mime_handler_stream_manager) {
     return false;
   }

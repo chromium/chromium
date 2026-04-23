@@ -28,6 +28,7 @@ source_set("pdf_viewer_private") {
     "//components/prefs",
     "//components/tabs:public",
     "//extensions/browser",
+    "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:stream_container",
     "//url",
   ]

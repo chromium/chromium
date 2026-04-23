@@ -5415,6 +5415,7 @@ static_library("ui") {
       # - c/b/ui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
       # - c/b/ui/webui/print_preview/print_preview_ui.cc
       "//chrome/browser/pdf",
+      "//extensions/browser/mime_handler",
 
       # TODO(crbug.com/340272378, crbug.com/372750819): Remove this dependency
       # when "PdfOopif" feature gets enabled by default or the following files

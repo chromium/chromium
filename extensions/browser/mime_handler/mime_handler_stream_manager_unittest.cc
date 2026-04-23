@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,6 +14,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -24,7 +24,7 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "url/gurl.h"
 
-namespace pdf {
+namespace extensions::mime_handler {
 
 namespace {
 
@@ -36,21 +36,19 @@ using ::testing::SaveArg;
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
 
-using extensions::mime_handler::MockMimeHandlerStreamDelegate;
-
 }  // namespace
 
-class MimeHandlerStreamManagerTest : public ChromeRenderViewHostTestHarness {
+class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
  protected:
   void TearDown() override {
-    ChromeRenderViewHostTestHarness::web_contents()->RemoveUserData(
+    content::RenderViewHostTestHarness::web_contents()->RemoveUserData(
         MimeHandlerStreamManager::UserDataKey());
-    ChromeRenderViewHostTestHarness::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   MimeHandlerStreamManager* mime_handler_stream_manager() {
     return MimeHandlerStreamManager::FromWebContents(
-        ChromeRenderViewHostTestHarness::web_contents());
+        content::RenderViewHostTestHarness::web_contents());
   }
 
   // Simulate a navigation and commit on `host`. The last committed URL will be
@@ -65,7 +63,7 @@ class MimeHandlerStreamManagerTest : public ChromeRenderViewHostTestHarness {
     // is the primary main frame, then the previous `MimeHandlerStreamManager`
     // may have been deleted as part of the above navigation.
     MimeHandlerStreamManager::Create(
-        ChromeRenderViewHostTestHarness::web_contents());
+        content::RenderViewHostTestHarness::web_contents());
     return new_host;
   }
 
@@ -989,4 +987,4 @@ TEST_F(MimeHandlerStreamManagerTest, AddStreamContainerWithDelegate) {
   EXPECT_EQ(stream_info->delegate(), delegate_ptr);
 }
 
-}  // namespace pdf
+}  // namespace extensions::mime_handler

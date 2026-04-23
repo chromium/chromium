@@ -757,6 +757,7 @@ static_library("test_support") {
       "../browser/pdf:pdf_extension_test_utils",
       "//components/pdf/browser",
       "//extensions/browser/api:extensions_api_client",
+      "//extensions/browser/mime_handler",
       "//pdf:features",
     ]
   }
@@ -1858,6 +1859,7 @@ source_set("platform_browser_tests") {
   if (enable_pdf) {
     deps += [
       "//chrome/browser/pdf:pdf_extension_test_utils",
+      "//extensions/browser/mime_handler",
       "//pdf:features",
     ]
   }
@@ -4293,6 +4295,7 @@ if (!is_android) {
         "//components/pdf/browser",
         "//components/pdf/common:constants",
         "//components/pdf/common:util",
+        "//extensions/browser/mime_handler",
         "//extensions/browser/mime_handler:stream_container",
         "//pdf:features",
         "//pdf/loader",
@@ -10079,7 +10082,6 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api_unittest.cc",
       "../browser/pdf/mime_handler_stream_manager_pdf_unittest.cc",
-      "../browser/pdf/mime_handler_stream_manager_unittest.cc",
       "../common/pdf_util_unittest.cc",
     ]
     deps += [
@@ -10087,9 +10089,8 @@ test("unit_tests") {
       "//chrome/browser/extensions/api/pdf_viewer_private",
       "//chrome/browser/pdf",
       "//extensions/browser",
-      "//extensions/browser/mime_handler:mime_handler_stream_delegate",
+      "//extensions/browser/mime_handler",
       "//extensions/browser/mime_handler:stream_container",
-      "//extensions/browser/mime_handler:stream_info",
       "//extensions/browser/mime_handler:test_helpers",
       "//net",
       "//pdf:content_restriction",
