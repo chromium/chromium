@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,6 +33,7 @@
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store_service.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -232,6 +234,41 @@ IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, UndoFromDeletionFlow) {
       WaitForElementEvent(
           kSkillsPageElementId, kNewSkillCardQuery,
           WebContentsInteractionTestUtil::StateChange::Type::kExists));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, DialogZoomModeDisabled) {
+  SignIn("testskills@gmail.com");
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  const InteractiveBrowserWindowTestApi::DeepQuery kAddButtonQuery{
+      "skills-app", "user-skills-page", "cr-button#addSkillButton"};
+
+  RunTestSequence(
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
+                         .Resolve(chrome::kChromeUISkillsYourSkillsPath)),
+      WaitForElementEvent(
+          kSkillsPageElementId, kAddButtonQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      ClickElement(kSkillsPageElementId, kAddButtonQuery),
+      InstrumentNonTabWebView(kSkillsDialogElementId,
+                              skills::SkillsDialogView::kSkillsDialogElementId),
+      Do([this]() {
+        views::View* web_view =
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                skills::SkillsDialogView::kSkillsDialogElementId,
+                BrowserView::GetBrowserViewForBrowser(browser())
+                    ->GetElementContext());
+        EXPECT_TRUE(web_view);
+        content::WebContents* web_contents =
+            static_cast<skills::SkillsDialogView*>(web_view->parent())
+                ->web_contents();
+        EXPECT_TRUE(web_contents);
+        zoom::ZoomController* zoom_controller =
+            zoom::ZoomController::FromWebContents(web_contents);
+        EXPECT_TRUE(zoom_controller);
+        EXPECT_EQ(zoom_controller->zoom_mode(),
+                  zoom::ZoomController::ZOOM_MODE_DISABLED);
+      }));
 }
 
 class SkillsPageScreenshotInteractiveUITest
