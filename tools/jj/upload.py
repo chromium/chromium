@@ -8,6 +8,7 @@ import argparse
 import json
 import logging
 import pathlib
+import subprocess
 import tempfile
 from util import jj_log
 from util import run_command
@@ -113,6 +114,16 @@ def main(args, unknown_args):
       logging.warning(
           'Change %s has no associated Bug. If this change has an associated ' +
           'bug, run `jj bug add [--inherit]`', name)
+
+  if not args.bypass_hooks:
+    jj_root = run_jj(['root'],
+                     ignore_working_copy=True,
+                     stdout=subprocess.PIPE,
+                     text=True).stdout.strip()
+    if not (pathlib.Path(jj_root) / '.git').exists():
+      logging.warning('`git cl presubmit` will be skipped because this is a '
+                      'standalone jj workspace that is not a git working tree')
+      args.bypass_hooks = True
 
   if not args.bypass_hooks:
     # Find the commits that `git cl presubmit` will actually run on
