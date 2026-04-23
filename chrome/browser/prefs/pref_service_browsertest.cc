@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/test/widget_test_api.h"
 
 typedef InProcessBrowserTest PreservedWindowPlacement;
 using ::testing::Optional;
@@ -50,16 +51,18 @@ IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
 #define MAYBE_Test Test
 #endif
 IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, MAYBE_Test) {
-#if BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP()
-        << "Skipping test because it fails with InitialWebUI enabled on Linux. "
-           "See b/464087732.";
-  }
-#endif
+  ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser()).Wait();
   gfx::Rect bounds = browser()->window()->GetRestoredBounds();
   gfx::Rect expected_bounds(window_frame);
+#if BUILDFLAG(IS_LINUX)
+  // On Linux/Mutter, window decorations can add a few pixels to bounds.
+  EXPECT_LE(std::abs(bounds.x() - expected_bounds.x()), 2);
+  EXPECT_LE(std::abs(bounds.width() - expected_bounds.width()), 4);
+  EXPECT_EQ(bounds.y(), expected_bounds.y());
+  EXPECT_EQ(bounds.height(), expected_bounds.height());
+#else
   ASSERT_EQ(expected_bounds.ToString(), bounds.ToString());
+#endif
 }
 
 class PreferenceServiceTest : public InProcessBrowserTest {
