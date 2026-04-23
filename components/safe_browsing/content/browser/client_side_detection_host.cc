@@ -485,6 +485,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     host_ = nullptr;
   }
 
+  bool ShouldClassifyForPhishing() const {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return !start_phishing_classification_cb_.is_null();
+  }
+
  private:
   friend class base::RefCountedThreadSafe<
       ClientSideDetectionHost::ShouldClassifyUrlRequest>;
@@ -500,11 +505,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     kCsdAndHighConfidenceMatch = 3,
     kMaxValue = kCsdAndHighConfidenceMatch
   };
-
-  bool ShouldClassifyForPhishing() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return !start_phishing_classification_cb_.is_null();
-  }
 
   void DontClassifyForPhishing(PreClassificationCheckResult reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -965,7 +965,9 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   // Cancel any pending classification request.
   // TODO(b/447359124): Support multiple classifications on the same page.
   if (classification_request_.get()) {
-    if (base::FeatureList::IsEnabled(kClientSideDetectionTierSystem)) {
+    // First check if there's an ongoing preclassification check.
+    if (classification_request_->ShouldClassifyForPhishing() &&
+        base::FeatureList::IsEnabled(kClientSideDetectionTierSystem)) {
       if (NewRequestTypeTierHigher(request_type)) {
         classification_request_->Cancel(request_type);
       } else {
@@ -978,6 +980,18 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
     } else {
       classification_request_->Cancel(request_type);
     }
+  }
+
+  // If there is a renderer classification going on and the incoming request
+  // type is not higher, do not let that cancel pending classification.
+  if (is_classifying_ &&
+      base::FeatureList::IsEnabled(kClientSideDetectionTierSystem) &&
+      !NewRequestTypeTierHigher(request_type)) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({"SBClientPhishing.BlockingRequestType.",
+                      GetRequestTypeName(request_type)}),
+        last_request_type_, ClientSideDetectionType_MAX + 1);
+    return;
   }
 
   if (!csd_service_) {
@@ -1043,6 +1057,7 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
         last_request_type_, ClientSideDetectionType_MAX + 1);
   }
   is_csd_running_ = false;
+  is_classifying_ = false;
   last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   should_send_as_force_request_ = false;
@@ -1494,6 +1509,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
       base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
     LogClientSideDetectionEvent(
         ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+    is_classifying_ = true;
     phishing_detector_->StartPhishingDetection(
         current_url_,
         GetClientSideDetectionMojomType(
@@ -1522,7 +1538,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
 
   LogClientSideDetectionEvent(
       ClientSideDetectionEvent::kImageClassificationBegin, request_type);
-
+  is_classifying_ = true;
   phishing_detector_->StartPhishingDetection(
       current_url_, GetClientSideDetectionMojomType(request_type),
       base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
@@ -1546,6 +1562,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   if (result != mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED) {
     LogClientSideDetectionEvent(
         ClientSideDetectionEvent::kImageClassificationComplete, request_type);
+    is_classifying_ = false;
   }
 
   ClientSideDetectionFeatureCache* feature_cache_map = nullptr;

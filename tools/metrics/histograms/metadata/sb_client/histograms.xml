@@ -490,7 +490,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the ongoing request type that blocked a new request of type
     {RequestType} due to the new request having a lower or same priority tier.
     Logged in ClientSideDetectionHost::MaybeStartPreClassification when a new
-    trigger occurs while another classification is already in progress.
+    trigger occurs while another classification is already in progress, whether
+    in preclassification check or renderer classification.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>

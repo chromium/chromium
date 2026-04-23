@@ -741,10 +741,11 @@ class ClientSideDetectionHost
   // when a user reports a site as unsafe.
   std::optional<SkBitmap> screenshot_;
 
-  // Tracks the state of the process running and the currently running
+  // Track the states of the processes running and the currently running
   // ClientSideDetectionType. This begins at the CLASSIFY bucket in
   // PreClassificationCheck until just prior to the network request being sent.
   bool is_csd_running_ = false;
+  bool is_classifying_ = false;
   ClientSideDetectionType last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
 
