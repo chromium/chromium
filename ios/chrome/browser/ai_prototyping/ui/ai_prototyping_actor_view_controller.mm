@@ -357,8 +357,8 @@ bool IsWebActuationTool(NSString* tool) {
   _framesAndContentNodesLabel.textColor = primaryColor;
 
   UIStackView* mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, toolStack, _tabIdContainer, _frameIdContainer, _jsonContainer,
-    buttonsStack, _responseContainer, _framesAndContentNodesLabel,
+    label, buttonsStack, toolStack, _tabIdContainer, _frameIdContainer,
+    _jsonContainer, _responseContainer, _framesAndContentNodesLabel,
     _framesAndContentNodesContainer
   ]];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
