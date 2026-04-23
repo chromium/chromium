@@ -1009,17 +1009,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="CrasNoiseCancellationStatus">
-  <summary>
-    List of status types of Noise Cancellation for the supported audio device.
-    This list should be aligned with CRAS:
-    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_alsa_io.c
-  </summary>
-  <int value="0" label="CRAS_NOISE_CANCELLATION_BLOCKED"/>
-  <int value="1" label="CRAS_NOISE_CANCELLATION_DISABLED"/>
-  <int value="2" label="CRAS_NOISE_CANCELLATION_ENABLED"/>
-</enum>
-
 <enum name="CrasStreamAddError">
   <summary>
     List of errors could happen when CRAS adds a stream to its audio thread.

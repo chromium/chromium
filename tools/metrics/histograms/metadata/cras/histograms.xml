@@ -297,17 +297,6 @@ This collects each top-level device metric type. For example,
   <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
-<histogram name="Cras.DeviceNoiseCancellationStatus{Device}"
-    enum="CrasNoiseCancellationStatus" expires_after="2025-02-10">
-  <owner>johnylin@chromium.org</owner>
-  <owner>chromeos-audio@google.com</owner>
-  <summary>
-    Record the staus of Noise Cancellation (blocked/disabled/enabled) for the
-    supported device. It is recorded when the device is opened.
-  </summary>
-  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
-</histogram>
-
 <histogram name="Cras.DeviceOpenStatus.Input{Device}"
     enum="CrasDeviceOpenStatus" expires_after="2026-08-16">
   <owner>yuhsuan@chromium.org</owner>
