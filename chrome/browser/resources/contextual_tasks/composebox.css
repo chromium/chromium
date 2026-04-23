@@ -344,6 +344,13 @@
   top: auto;
 }
 
+#composebox:not([submit-enabled])::part(submit) {
+  display: block; /* Override display: none from shared CSS */
+  opacity: 0;
+  transform: scale(0);
+  visibility: hidden;
+}
+
 #composebox[submit-enabled]::part(submit) {
   bottom: var(--composebox-icon-menu-bottom);
   display: block;
@@ -351,6 +358,13 @@
   inset-inline-start: auto;
   position: absolute;
   top: auto;
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+  transition:
+    opacity 100ms linear,
+    transform 100ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0ms;
 }
 
 /* TODO(crbug.com/454388827: - Color the tab chips to spec. */
@@ -603,4 +617,11 @@
 /* Needed for space between header and composebox. */
 :host([is-side-panel]) #composebox:not([show-dropdown]) {
   margin-top: 24px;
+}
+
+/* Disable animations if requested */
+@container style(--cr-animations-disabled: 1) {
+  #composebox::part(submit) {
+    transition: none;
+  }
 }
