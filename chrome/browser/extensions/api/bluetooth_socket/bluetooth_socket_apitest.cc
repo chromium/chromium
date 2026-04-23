@@ -9,6 +9,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/test/browser_test.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -16,10 +20,13 @@
 #include "device/bluetooth/test/mock_bluetooth_socket.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_api.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS));
+
+namespace {
 
 using device::BluetoothAdapter;
 using device::BluetoothAdapterFactory;
@@ -34,21 +41,23 @@ using extensions::ResultCatcher;
 
 namespace api = extensions::api;
 
-namespace {
-
-class BluetoothSocketApiTest : public extensions::ShellApiTest {
+class BluetoothSocketApiTest : public extensions::ExtensionApiTest {
  public:
-  BluetoothSocketApiTest() {}
+  BluetoothSocketApiTest() = default;
+  BluetoothSocketApiTest(const BluetoothSocketApiTest&) = delete;
+  BluetoothSocketApiTest& operator=(const BluetoothSocketApiTest&) = delete;
+  ~BluetoothSocketApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     empty_extension_ = extensions::ExtensionBuilder("Test").Build();
     SetUpMockAdapter();
   }
 
   void SetUpMockAdapter() {
     // The browser will clean this up when it is torn down.
-    mock_adapter_ = new testing::StrictMock<MockBluetoothAdapter>();
+    mock_adapter_ =
+        base::MakeRefCounted<testing::StrictMock<MockBluetoothAdapter>>();
     BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     mock_device1_ = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
@@ -60,7 +69,7 @@ class BluetoothSocketApiTest : public extensions::ShellApiTest {
   }
 
  protected:
-  scoped_refptr<testing::StrictMock<MockBluetoothAdapter> > mock_adapter_;
+  scoped_refptr<testing::StrictMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> mock_device1_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> mock_device2_;
 
@@ -68,12 +77,10 @@ class BluetoothSocketApiTest : public extensions::ShellApiTest {
   scoped_refptr<const Extension> empty_extension_;
 };
 
-}  // namespace
-
 // TODO(crbug.com/41266338): Flaky on many trybot platforms.
 IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser_context());
+  catcher.RestrictToBrowserContext(profile());
 
   // Return the right mock device object for the address used by the test,
   // return NULL for the "Device not found" test.
@@ -84,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
 
   // Return a mock socket object as a successful result to the connect() call.
   BluetoothUUID service_uuid("8e3ad063-db38-4289-aa8f-b30e4223cf40");
-  scoped_refptr<testing::StrictMock<MockBluetoothSocket> > mock_socket
-      = new testing::StrictMock<MockBluetoothSocket>();
+  auto mock_socket =
+      base::MakeRefCounted<testing::StrictMock<MockBluetoothSocket>>();
   EXPECT_CALL(*mock_device1_,
               ConnectToService(service_uuid, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(mock_socket));
@@ -100,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
 
   // Run the test.
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
-  scoped_refptr<const Extension> extension(
-      LoadApp("api_test/bluetooth_socket/connect"));
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.Append("bluetooth_socket/connect"));
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
@@ -111,30 +118,29 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser_context());
+  catcher.RestrictToBrowserContext(profile());
 
   // Return a mock socket object as a successful result to the create service
   // call.
   BluetoothUUID service_uuid("2de497f9-ab28-49db-b6d2-066ea69f1737");
-  scoped_refptr<testing::StrictMock<MockBluetoothSocket> > mock_server_socket
-      = new testing::StrictMock<MockBluetoothSocket>();
+  auto mock_server_socket =
+      base::MakeRefCounted<testing::StrictMock<MockBluetoothSocket>>();
   BluetoothAdapter::ServiceOptions service_options;
   service_options.name = "MyServiceName";
-  EXPECT_CALL(
-      *mock_adapter_,
-      CreateRfcommService(
-          service_uuid,
-          testing::Field(&BluetoothAdapter::ServiceOptions::name,
-                         testing::Eq("MyServiceName")),
-          testing::_, testing::_))
+  EXPECT_CALL(*mock_adapter_,
+              CreateRfcommService(
+                  service_uuid,
+                  testing::Field(&BluetoothAdapter::ServiceOptions::name,
+                                 testing::Eq("MyServiceName")),
+                  testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(mock_server_socket));
 
   // Since the socket is unpaused, expect a call to Accept() from the socket
   // dispatcher. We'll immediately send back another mock socket to represent
   // the client API. Further calls will return no data and behave as if
   // pending.
-  scoped_refptr<testing::StrictMock<MockBluetoothSocket> > mock_client_socket
-      = new testing::StrictMock<MockBluetoothSocket>();
+  auto mock_client_socket =
+      base::MakeRefCounted<testing::StrictMock<MockBluetoothSocket>>();
   EXPECT_CALL(*mock_server_socket, Accept(testing::_, testing::_))
       .Times(2)
       .WillOnce(base::test::RunOnceCallback<0>(mock_device1_.get(),
@@ -145,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
   // a client connection to it.
   ExtensionTestMessageListener socket_listening("ready",
                                                 ReplyBehavior::kWillReply);
-  scoped_refptr<const Extension> extension(
-      LoadApp("api_test/bluetooth_socket/listen"));
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.Append("bluetooth_socket/listen"));
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(socket_listening.WaitUntilSatisfied());
 
@@ -172,12 +178,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
 
 IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, PermissionDenied) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser_context());
+  catcher.RestrictToBrowserContext(profile());
 
   // Run the test.
-  scoped_refptr<const Extension> extension(
-      LoadApp("api_test/bluetooth_socket/permission_denied"));
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.Append("bluetooth_socket/permission_denied"));
   ASSERT_TRUE(extension.get());
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+
+}  // namespace

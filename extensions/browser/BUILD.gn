@@ -1328,7 +1328,6 @@ if (enable_extensions) {
 
     if (is_chromeos) {
       sources += [
-        "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
         "guest_view/app_view/app_view_apitest.cc",
       ]

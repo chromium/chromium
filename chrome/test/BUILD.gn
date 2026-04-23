@@ -4940,6 +4940,7 @@ if (!is_android) {
           "../browser/extensions/api/bluetooth/bluetooth_apitest.cc",
           "../browser/extensions/api/bluetooth/bluetooth_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
+          "../browser/extensions/api/bluetooth_socket/bluetooth_socket_apitest.cc",
           "../browser/extensions/api/cec_private/cec_private_ash_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
