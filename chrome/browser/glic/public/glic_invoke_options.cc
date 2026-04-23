@@ -47,12 +47,15 @@ Target::Target(
 
 GlicInvokeOptions::GlicInvokeOptions(
     glic::mojom::InvocationSource invocation_source)
-    : invocation_source(invocation_source) {}
+    : invocation_source(invocation_source),
+      actuation_timeout(base::Minutes(10)) {}
 
 GlicInvokeOptions::GlicInvokeOptions(
     Target target,
     glic::mojom::InvocationSource invocation_source)
-    : invocation_source(invocation_source), target(std::move(target)) {}
+    : invocation_source(invocation_source),
+      target(std::move(target)),
+      actuation_timeout(base::Minutes(10)) {}
 
 GlicInvokeOptions::~GlicInvokeOptions() = default;
 

@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -143,6 +144,59 @@ class WaitForFreCompletionTask : public GlicInvokeTask {
   raw_ptr<::Profile> profile_;
   mojom::FreOverride fre_override_;
   base::OnceClosure done_callback_;
+  base::CallbackListSubscription subscription_;
+};
+
+// Task that sends the invocation to the client.
+class SendToClientTask : public GlicInvokeTask {
+ public:
+  SendToClientTask(
+      GlicInstanceImpl* instance,
+      mojom::InvokeOptionsPtr mojo_options,
+      std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey);
+  ~SendToClientTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+ private:
+  void OnAck();
+
+  raw_ptr<GlicInstanceImpl> instance_;
+  mojom::InvokeOptionsPtr mojo_options_;
+  std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
+  base::OnceClosure done_callback_;
+  base::WeakPtrFactory<SendToClientTask> weak_ptr_factory_{this};
+};
+
+// Task that waits for actuation (both start and complete).
+class WaitForActuationTask : public GlicInvokeTask {
+ public:
+  WaitForActuationTask(GlicInstanceImpl* instance,
+                       base::TimeDelta start_timeout,
+                       base::TimeDelta complete_timeout,
+                       base::OnceCallback<void(GlicInvokeError)> error_callback,
+                       base::OnceClosure on_actuation_started);
+  ~WaitForActuationTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+ private:
+ private:
+  void OnTimeout();
+  void OnActuatingChanged(bool actuating);
+  void Update();
+
+  raw_ptr<GlicInstanceImpl> instance_;
+  base::TimeDelta start_timeout_;
+  base::TimeDelta complete_timeout_;
+  base::OnceCallback<void(GlicInvokeError)> error_callback_;
+  base::OnceClosure done_callback_;
+  base::OnceClosure on_actuation_started_;
+
+  base::OneShotTimer timer_;
+
+  bool task_started_ = false;
+  bool did_start_ = false;
+  bool did_finish_ = false;
+  bool complete_timeout_started_ = false;
   base::CallbackListSubscription subscription_;
 };
 
