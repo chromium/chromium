@@ -428,8 +428,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         float to_px = operand_pixels[2];
         float progress_value = (progress_px - from_px) / (to_px - from_px);
         float progress = std::clamp(progress_value, 0.f, 1.f);
-        return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(progress));
+        return MakeGarbageCollected<CalculationExpressionNumberNode>(progress);
       }
       return MakeGarbageCollected<CalculationExpressionOperationNode>(
           std::move(children), op);
