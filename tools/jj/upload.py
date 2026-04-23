@@ -37,14 +37,8 @@ def get_refspec_opts(args) -> list[str]:
   # Extra options that can be specified at push time. Doc:
   # https://gerrit-review.googlesource.com/Documentation/user-upload.html
   refspec_opts = []
-  if args.topic:
-    # Documentation on Gerrit topics is here:
-    # https://gerrit-review.googlesource.com/Documentation/user-upload.html#topic
-    refspec_opts.append(f'topic={args.topic}')
 
   # Code mostly stolen from `git_cl.py`
-  if args.private:
-    refspec_opts.append('private')
   if args.send_mail:
     refspec_opts.append('ready')
     refspec_opts.append('notify=ALL')
@@ -58,14 +52,12 @@ def get_refspec_opts(args) -> list[str]:
     refspec_opts.append('l=Commit-Queue+1')
   if args.title:
     refspec_opts.append(f'm={percent_encode_for_git_ref(args.title)}')
-  for cc in args.cc:
-    refspec_opts.append(f'cc={cc}')
   for reviewer in args.reviewers:
     refspec_opts.append(f'r={reviewer}')
   return refspec_opts
 
 
-def main(args):
+def main(args, unknown_args):
   logging.basicConfig(level=logging.getLevelNamesMapping()[args.verbosity])
 
   revs = args.revisions + args.revision
@@ -208,7 +200,7 @@ def main(args):
   cmd = [
       'gerrit', 'upload', '--remote', 'origin', '--remote-branch',
       args.target_branch + refspec_suffix
-  ]
+  ] + unknown_args
   for rev in revs:
     cmd.extend(['-r', rev])
   if args.upload:
@@ -261,10 +253,6 @@ if __name__ == '__main__':
                       action='append',
                       default=[],
                       help='reviewer email addresses')
-  parser.add_argument('--cc',
-                      action='append',
-                      default=[],
-                      help='cc email addresses')
   parser.add_argument('-s',
                       '--send-mail',
                       '--send-email',
@@ -276,9 +264,6 @@ if __name__ == '__main__':
                       metavar='TARGET',
                       help='Apply CL to remote branch TARGET.',
                       default='main')
-  parser.add_argument('--topic',
-                      default=None,
-                      help='Topic to specify when uploading')
 
   parser.add_argument(
       '-c',
@@ -313,8 +298,6 @@ if __name__ == '__main__':
   parser.add_argument('--enable-owners-override',
                       action='store_true',
                       help='Adds the Owners-Override label to your change.')
-  parser.add_argument('--private',
-                      action='store_true',
-                      help='Set the review private.')
 
-  main(parser.parse_args())
+  args, unknown_args = parser.parse_known_args()
+  main(args, unknown_args)
