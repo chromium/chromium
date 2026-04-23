@@ -2326,6 +2326,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 }
 
 // Tester class for the tabs.zoom* api functions.
+// TODO(https://crbug.com/505313377): Port these to desktop android. Currently,
+// zoom controllers are not created for tabs, so the functions always return
+// an error.
 class ExtensionTabsZoomTest : public ExtensionTabsTest {
  public:
   void SetUpOnMainThread() override;
