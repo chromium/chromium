@@ -134,6 +134,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_TRAVEL_LUGGAGE_AND_BAGS,
                     R.drawable.travel_luggage_and_bags)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_PERSON_CHECK, R.drawable.person_check)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_VEHICLE, R.drawable.directions_car)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SPARK, R.drawable.spark)
 // Note that R.drawable.google_wallet_24dp is always present, but the icon in
 // branded builds is different from the one in unbranded builds.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WALLET, R.drawable.google_wallet_24dp)
