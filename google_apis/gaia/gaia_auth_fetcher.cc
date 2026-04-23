@@ -83,7 +83,6 @@ ExtractOAuth2TokenPairResponse(const std::string& data) {
 
   return std::make_unique<const GaiaAuthConsumer::ClientOAuthResult>(
       *refresh_token, *access_token, *expires_in_secs,
-      service_flags.is_child_account,
       service_flags.is_under_advanced_protection, is_bound_to_key);
 }
 

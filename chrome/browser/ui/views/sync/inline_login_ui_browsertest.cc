@@ -323,7 +323,6 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
                                     const std::string& refresh_token) {
     GaiaAuthConsumer::ClientOAuthResult result(
         refresh_token, /*access_token=*/"", /*expires_in_secs=*/0,
-        /*is_child_account*/ false,
         /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false);
     consumer->OnClientOAuthSuccess(result);
     base::RunLoop().RunUntilIdle();

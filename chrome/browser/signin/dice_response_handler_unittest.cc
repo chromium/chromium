@@ -431,7 +431,7 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -490,7 +490,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithMtlsTokenBinding) {
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -526,7 +526,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
@@ -561,7 +561,7 @@ TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service and it is
   // unbound.
@@ -593,7 +593,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service and it is
   // unbound.
@@ -638,7 +638,7 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success with an unbound token.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -684,7 +684,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
@@ -776,11 +776,11 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   // Simulate GaiaAuthFetchers successes and check that tokens have been
   // inserted in the token service.
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(id_1));
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(id_2));
   EXPECT_EQ(identity_manager()->GetWrappedBindingKey(), kWrappedKey);
@@ -864,7 +864,7 @@ TEST_F(DiceResponseHandlerTest,
 
   // Simulate GaiaAuthFetcher success with the binding key being rejected.
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(id_1));
   EXPECT_FALSE(identity_manager()->HasAccountWithBoundRefreshToken(id_1));
@@ -910,7 +910,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1016,7 +1016,7 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_2));
@@ -1073,7 +1073,7 @@ TEST_F(DiceResponseHandlerTest, Reauth) {
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1139,7 +1139,7 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
 
   // Simulate GaiaAuthFetcher success for the first request.
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token_1", "access_token_1", 10, /*is_child_account=*/false,
+      "refresh_token_1", "access_token_1", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
   EXPECT_FALSE(identity_manager()
@@ -1150,7 +1150,7 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   // We set is_under_advanced_protection to true to verify that the second
   // request overwrites the first one.
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token_2", "access_token_2", 10, /*is_child_account=*/false,
+      "refresh_token_2", "access_token_2", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
   EXPECT_TRUE(identity_manager()
@@ -1195,7 +1195,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
   ASSERT_THAT(consumer_2, testing::NotNull());
   // Simulate GaiaAuthFetcher success for the first request.
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_1));
@@ -1204,7 +1204,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
                   .is_under_advanced_protection);
   // Simulate GaiaAuthFetcher success for the second request.
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_2));
@@ -1235,7 +1235,7 @@ TEST_F(DiceResponseHandlerTest,
   ASSERT_THAT(consumer, testing::NotNull());
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1282,7 +1282,7 @@ TEST_F(DiceResponseHandlerTest,
 
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1529,7 +1529,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
       1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
   // Allow the remaining fetcher to complete.
   consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token", "access_token", /*expires_in_secs=*/10,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());

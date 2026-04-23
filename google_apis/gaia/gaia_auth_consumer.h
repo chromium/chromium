@@ -22,7 +22,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthConsumer {
     ClientOAuthResult(const std::string& refresh_token,
                       const std::string& access_token,
                       int expires_in_secs,
-                      bool is_child_account,
                       bool is_under_advanced_protection,
                       bool is_bound_to_key);
     ClientOAuthResult(const ClientOAuthResult& other);
@@ -41,9 +40,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthConsumer {
 
     // The lifespan of |access_token| in seconds.
     int expires_in_secs;
-
-    // Whether the authenticated user is a child account.
-    bool is_child_account;
 
     // Whether the authenticated user is in advanced protection program.
     bool is_under_advanced_protection;

@@ -270,11 +270,10 @@ TEST_F(GaiaAuthFetcherTest, ServiceUnavailableShortError) {
 TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeSuccess) {
   MockGaiaConsumer consumer;
   EXPECT_CALL(consumer, OnClientOAuthCode("test-code")).Times(0);
-  EXPECT_CALL(
-      consumer,
-      OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-          "rt1", "at1", 3600, /*is_child_account=*/false,
-          /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false)))
+  EXPECT_CALL(consumer,
+              OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+                  "rt1", "at1", 3600, /*is_under_advanced_protection=*/false,
+                  /*is_bound_to_key=*/false)))
       .Times(1);
 
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
@@ -309,11 +308,10 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeDeviceId) {
 TEST_F(GaiaAuthFetcherTest,
        StartAuthCodeForOAuth2TokenExchangeBindingRegistrationToken) {
   MockGaiaConsumer consumer;
-  EXPECT_CALL(
-      consumer,
-      OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-          "rt1", "at1", 3600, /*is_child_account=*/false,
-          /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true)));
+  EXPECT_CALL(consumer,
+              OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+                  "rt1", "at1", 3600, /*is_under_advanced_protection=*/false,
+                  /*is_bound_to_key=*/true)));
 
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   auth.StartAuthCodeForOAuth2TokenExchange(
@@ -339,11 +337,10 @@ TEST_F(
     GaiaAuthFetcherTest,
     StartAuthCodeForOAuth2TokenExchangeBindingRegistrationTokenNoUserAgentHeaders) {
   MockGaiaConsumer consumer;
-  EXPECT_CALL(
-      consumer,
-      OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-          "rt1", "at1", 3600, /*is_child_account=*/false,
-          /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true)));
+  EXPECT_CALL(consumer,
+              OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+                  "rt1", "at1", 3600, /*is_under_advanced_protection=*/false,
+                  /*is_bound_to_key=*/true)));
 
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   auth.StartAuthCodeForOAuth2TokenExchange(

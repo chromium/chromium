@@ -188,8 +188,7 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   GaiaAuthConsumer::ClientOAuthResult GetFakeOAuthResult() {
     return GaiaAuthConsumer::ClientOAuthResult(
-        kFakeRefreshToken, /*access_token=*/"",
-        /*expires_in_secs=*/0, /*is_child_account=*/false,
+        kFakeRefreshToken, /*access_token=*/"", /*expires_in_secs=*/0,
         /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false);
   }
 
