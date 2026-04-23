@@ -519,6 +519,10 @@ bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
   return at_memory_controller_.OnSearchSubmitted(filter);
 }
 
+bool AutofillExternalDelegate::IsSearching() const {
+  return at_memory_controller_.IsSearching();
+}
+
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();

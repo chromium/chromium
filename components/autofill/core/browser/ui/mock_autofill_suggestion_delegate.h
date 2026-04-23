@@ -40,6 +40,7 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               OnSearchSubmitted,
               (const std::u16string& filter),
               (override));
+  MOCK_METHOD(bool, IsSearching, (), (const, override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
               (const Suggestion& suggestion),

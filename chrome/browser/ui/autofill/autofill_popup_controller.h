@@ -130,6 +130,10 @@ class AutofillPopupController : public AutofillSuggestionController {
   // this method should return `false` in the test environment.
   virtual bool IsViewVisibilityAcceptingThresholdEnabled() const = 0;
 
+  // Returns true if the controller is currently performing a search.
+  // TODO(crbug.com/504977286) Rename when launched.
+  virtual bool IsSearching() const = 0;
+
   // Called when a tabbed pane's tab is selected in the autofill dropdown.
   // `tab_index` and `tabbed_pane_tab_type` represent the index and the type of
   // the tab selected, respectively.

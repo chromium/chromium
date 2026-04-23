@@ -93,6 +93,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
+  bool IsSearching() const override;
 
   // Invoked when a password mapping is added.
   void OnAddPasswordFillData(const autofill::PasswordFormFillData& fill_data);

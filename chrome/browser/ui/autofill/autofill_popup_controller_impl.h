@@ -97,6 +97,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   bool IsViewVisibilityAcceptingThresholdEnabled() const override;
+  bool IsSearching() const override;
 
   // AutofillPopupController:
   void SelectSuggestion(int index) override;

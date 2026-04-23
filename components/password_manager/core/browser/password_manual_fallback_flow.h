@@ -87,6 +87,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
+  bool IsSearching() const override;
 
  private:
   // Is used to track whether the flow was invoked and whether the passwords

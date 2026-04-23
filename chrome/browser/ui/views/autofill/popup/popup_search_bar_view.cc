@@ -24,14 +24,17 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
 
 namespace autofill {
 
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                                        Delegate& delegate,
-                                       bool show_indicator)
+                                       bool show_indicator,
+                                       bool is_loading)
     : delegate_(delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -44,11 +47,15 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
                                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
-  AddChildView(
+  int icon_size = layout_provider->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE);
+
+  search_icon_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSearchChromeRefreshIcon, ui::kColorIcon,
-          layout_provider->GetDistanceMetric(
-              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+          vector_icons::kSearchChromeRefreshIcon, ui::kColorIcon, icon_size)));
+
+  throbber_ = AddChildView(std::make_unique<views::Throbber>(icon_size));
+  SetLoading(is_loading);
 
   input_ = AddChildView(
       views::Builder<views::Textfield>()
@@ -118,6 +125,16 @@ bool PopupSearchBarView::HandleKeyEvent(views::Textfield* sender,
     return delegate_->SearchBarHandleKeyPressed(key_event);
   }
   return false;
+}
+
+void PopupSearchBarView::SetLoading(bool is_loading) {
+  search_icon_->SetVisible(!is_loading);
+  throbber_->SetVisible(is_loading);
+  if (is_loading) {
+    throbber_->Start();
+  } else {
+    throbber_->Stop();
+  }
 }
 
 void PopupSearchBarView::Focus() {

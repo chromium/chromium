@@ -130,6 +130,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               IsViewVisibilityAcceptingThresholdEnabled,
               (),
               (const override));
+  MOCK_METHOD(bool, IsSearching, (), (const, override));
 
   void set_suggestions(const std::vector<SuggestionType>& ids) {
     suggestions_.clear();

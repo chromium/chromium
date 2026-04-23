@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -223,6 +225,20 @@ TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Disabled) {
 
   view->SetInputTextForTesting(u"");
   EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
+}
+
+TEST_F(PopupSearchBarViewTest, SetLoading) {
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  widget().Show();
+
+  view->SetLoading(true);
+  EXPECT_TRUE(view->GetThrobberForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetSearchIconForTesting()->GetVisible());
+
+  view->SetLoading(false);
+  EXPECT_FALSE(view->GetThrobberForTesting()->GetVisible());
+  EXPECT_TRUE(view->GetSearchIconForTesting()->GetVisible());
 }
 
 }  // namespace

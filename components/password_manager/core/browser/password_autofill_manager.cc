@@ -459,6 +459,10 @@ void PasswordAutofillManager::OnTabSelected(
   NOTREACHED();
 }
 
+bool PasswordAutofillManager::IsSearching() const {
+  return false;
+}
+
 void PasswordAutofillManager::OnAddPasswordFillData(
     const autofill::PasswordFormFillData& fill_data) {
   if (!autofill::IsValidPasswordFormFillData(fill_data)) {

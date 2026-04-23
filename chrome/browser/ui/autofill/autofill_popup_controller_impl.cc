@@ -398,6 +398,10 @@ bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
   return !disable_threshold_for_testing_;
 }
 
+bool AutofillPopupControllerImpl::IsSearching() const {
+  return delegate_ && delegate_->IsSearching();
+}
+
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   const bool ignore_focus_loss =
       *ignore_focus_loss_ || (view_ && view_->HasFocus());

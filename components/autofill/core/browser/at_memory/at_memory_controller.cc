@@ -269,6 +269,10 @@ void AtMemoryController::FillOrPreviewSearchResult(
   }
 }
 
+bool AtMemoryController::IsSearching() const {
+  return is_searching_;
+}
+
 void AtMemoryController::ExecuteQuery(const std::u16string& filter,
                                       bool full_search) {
   accessibility_annotator::AccessibilityQueryService* query_service =
@@ -278,21 +282,39 @@ void AtMemoryController::ExecuteQuery(const std::u16string& filter,
     return;
   }
 
+  // Cancel stale updates from previous queries.
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
+
   if (filter.empty()) {
+    is_searching_ = false;
     update_callback_.Run({}, trigger_source_);
     return;
   }
 
+  is_searching_ = true;
+  // Notify the UI that search has started. We repass the current suggestions
+  // to prevent them from disappearing while the search is in progress.
+  base::span<const Suggestion> current_suggestions =
+      manager_->client().GetAutofillSuggestions();
+  update_callback_.Run(base::ToVector(current_suggestions), trigger_source_);
   query_service->Query(
       filter, full_search,
       base::BindRepeating(&AtMemoryController::OnSearchResultsReceived,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          query_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AtMemoryController::OnSearchResultsReceived(
     accessibility_annotator::MemorySearchResults result) {
-  if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_) {
+  if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_ ||
+      !is_searching_) {
     return;
+  }
+
+  bool expecting_more_data =
+      result.status ==
+      accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess;
+  if (!expecting_more_data) {
+    is_searching_ = false;
   }
 
   update_callback_.Run(
@@ -337,7 +359,7 @@ void AtMemoryController::FillIban(
                   /*field_type_used=*/std::nullopt);
             }
           },
-          weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
+          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
 }
 
 void AtMemoryController::FillCreditCard(
@@ -396,7 +418,7 @@ void AtMemoryController::FillCreditCard(
                 fill_value, suggestion.type,
                 /*field_type_used=*/std::nullopt);
           },
-          weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
+          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
 }
 
 }  // namespace autofill

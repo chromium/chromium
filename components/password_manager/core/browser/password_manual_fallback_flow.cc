@@ -372,6 +372,10 @@ void PasswordManualFallbackFlow::OnTabSelected(
   NOTREACHED();
 }
 
+bool PasswordManualFallbackFlow::IsSearching() const {
+  return false;
+}
+
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
