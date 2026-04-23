@@ -60,7 +60,7 @@ public class LogoContainerViewBinderUnitTest {
     private Activity mActivity;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mLogoModel;
-    private LogoContainerView mLogoView;
+    private LogoContainerView mLogoContainerView;
     private LogoMediator mLogoMediator;
     private static final double DELTA = 1e-5;
     private static final String ANIMATED_LOGO_URL =
@@ -92,17 +92,17 @@ public class LogoContainerViewBinderUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mLogoView =
+        mLogoContainerView =
                 (LogoContainerView)
                         android.view.LayoutInflater.from(mActivity)
                                 .inflate(R.layout.logo_view_layout, null);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mActivity.setContentView(mLogoView, params);
+        mActivity.setContentView(mLogoContainerView, params);
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mLogoModel, mLogoView, new LogoContainerViewBinder());
+                        mLogoModel, mLogoContainerView, new LogoContainerViewBinder());
         mLogoMediator =
                 new LogoMediator(
                         /* logoClickedCallback= */ null,
@@ -116,7 +116,7 @@ public class LogoContainerViewBinderUnitTest {
     public void tearDown() throws Exception {
         mPropertyModelChangeProcessor.destroy();
         mLogoModel = null;
-        mLogoView = null;
+        mLogoContainerView = null;
         mActivity = null;
         mLogoMediator = null;
     }
@@ -130,22 +130,22 @@ public class LogoContainerViewBinderUnitTest {
         mLogoModel.set(LogoProperties.LOGO_BOTTOM_MARGIN, 20);
         mLogoModel.set(LogoProperties.VISIBILITY, true);
 
-        assertEquals(View.VISIBLE, mLogoView.getVisibility());
-        assertEquals(0.3, mLogoView.getAlpha(), DELTA);
+        assertEquals(View.VISIBLE, mLogoContainerView.getVisibility());
+        assertEquals(0.3, mLogoContainerView.getAlpha(), DELTA);
 
         // Check container layout params for bottom margin
         ViewGroup.MarginLayoutParams containerParams =
-                (ViewGroup.MarginLayoutParams) mLogoView.getLayoutParams();
+                (ViewGroup.MarginLayoutParams) mLogoContainerView.getLayoutParams();
         assertEquals(20, containerParams.bottomMargin);
 
         // Check child LogoView layout params for top margin
-        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
         ViewGroup.MarginLayoutParams childParams =
                 (ViewGroup.MarginLayoutParams) childLogoView.getLayoutParams();
         assertEquals(10, childParams.topMargin);
 
         mLogoModel.set(LogoProperties.VISIBILITY, false);
-        assertEquals(View.GONE, mLogoView.getVisibility());
+        assertEquals(View.GONE, mLogoContainerView.getVisibility());
     }
 
     @Test
@@ -157,11 +157,11 @@ public class LogoContainerViewBinderUnitTest {
                         null,
                         null,
                         "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
-        assertNull(mLogoView.getFadeAnimationForTesting());
+        assertNull(mLogoContainerView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
-        assertNotNull(mLogoView.getFadeAnimationForTesting());
+        assertNotNull(mLogoContainerView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
-        assertNull(mLogoView.getFadeAnimationForTesting());
+        assertNull(mLogoContainerView.getFadeAnimationForTesting());
         Logo newLogo =
                 new Logo(
                         Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888),
@@ -169,9 +169,9 @@ public class LogoContainerViewBinderUnitTest {
                         null,
                         null);
         mLogoModel.set(LogoProperties.LOGO, newLogo);
-        assertNotNull(mLogoView.getFadeAnimationForTesting());
+        assertNotNull(mLogoContainerView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
-        assertNull(mLogoView.getFadeAnimationForTesting());
+        assertNull(mLogoContainerView.getFadeAnimationForTesting());
     }
 
     @Test
@@ -183,42 +183,67 @@ public class LogoContainerViewBinderUnitTest {
                         null,
                         null,
                         "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
-        assertNull(mLogoView.getFadeAnimationForTesting());
-        assertNotEquals(logo.image, mLogoView.getNewLogoDrawableBitmapForTesting());
+        assertNull(mLogoContainerView.getFadeAnimationForTesting());
+        assertNotEquals(logo.image, mLogoContainerView.getNewLogoDrawableBitmapForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
-        assertNotNull(mLogoView.getFadeAnimationForTesting());
-        assertEquals(logo.image, mLogoView.getNewLogoDrawableBitmapForTesting());
+        assertNotNull(mLogoContainerView.getFadeAnimationForTesting());
+        assertEquals(logo.image, mLogoContainerView.getNewLogoDrawableBitmapForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateLogo_Null_ShowsDefault() {
+        Drawable defaultLogo =
+                ContextCompat.getDrawable(
+                        mLogoContainerView.getContext(), R.drawable.ic_google_logo);
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, defaultLogo);
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.VISIBLE);
+        mLogoModel.set(LogoProperties.LOGO, null);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateLogo_Null_ClearsLogo() {
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, null);
+        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null, null);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        mLogoModel.set(LogoProperties.LOGO, null);
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
+        assertNull(childLogoView.getLogoDrawableForTesting());
     }
 
     @Test
     @SmallTest
     public void testDefaultGoogleLogo() {
         Drawable defaultLogo =
-                ContextCompat.getDrawable(mLogoView.getContext(), R.drawable.ic_google_logo);
-        assertNotEquals(defaultLogo, mLogoView.getDefaultGoogleLogoDrawableForTesting());
+                ContextCompat.getDrawable(
+                        mLogoContainerView.getContext(), R.drawable.ic_google_logo);
+        assertNotEquals(defaultLogo, mLogoContainerView.getDefaultGoogleLogoDrawableForTesting());
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, defaultLogo);
-        assertEquals(defaultLogo, mLogoView.getDefaultGoogleLogoDrawableForTesting());
+        assertEquals(defaultLogo, mLogoContainerView.getDefaultGoogleLogoDrawableForTesting());
     }
 
     @Test
     @SmallTest
     public void testAnimationEnabled() {
-        assertEquals(true, mLogoView.getAnimationEnabledForTesting());
+        assertEquals(true, mLogoContainerView.getAnimationEnabledForTesting());
         mLogoModel.set(LogoProperties.ANIMATION_ENABLED, false);
-        assertEquals(false, mLogoView.getAnimationEnabledForTesting());
+        assertEquals(false, mLogoContainerView.getAnimationEnabledForTesting());
         mLogoModel.set(LogoProperties.ANIMATION_ENABLED, true);
-        assertEquals(true, mLogoView.getAnimationEnabledForTesting());
+        assertEquals(true, mLogoContainerView.getAnimationEnabledForTesting());
     }
 
     @Test
     @SmallTest
     public void testSetLogoClickHandler() {
-        assertNull(mLogoView.getClickHandlerForTesting());
+        assertNull(mLogoContainerView.getClickHandlerForTesting());
         mLogoMediator.setLogoBridgeForTesting(mLogoBridge);
         mLogoMediator.setImageFetcherForTesting(mImageFetcher);
         mLogoMediator.setAnimatedLogoUrlForTesting(ANIMATED_LOGO_URL);
         mLogoModel.set(LogoProperties.LOGO_CLICK_HANDLER, mLogoMediator::onLogoClicked);
-        mLogoView.findViewById(R.id.search_provider_logo).performClick();
+        mLogoContainerView.findViewById(R.id.search_provider_logo).performClick();
         assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting("NewTabPage.LogoClick", 1));
         verify(mImageFetcher, times(1)).fetchGif(any(), any());
@@ -239,27 +264,27 @@ public class LogoContainerViewBinderUnitTest {
     @Test
     @SmallTest
     public void testLoadingViewWithAnimatedLogo() {
-        mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
         mLogoModel.set(LogoProperties.ANIMATED_LOGO, new BaseGifImage(new byte[] {}));
-        assertEquals(View.GONE, mLogoView.getLoadingViewVisibilityForTesting());
+        assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test
     @SmallTest
     public void testLoadingViewWithAnimatedImageDrawable() {
-        mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
         mLogoModel.set(LogoProperties.ANIMATED_LOGO, mock(AnimatedImageDrawable.class));
-        assertEquals(View.GONE, mLogoView.getLoadingViewVisibilityForTesting());
+        assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test
     @SmallTest
     public void testSetDoodleSize() {
-        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoContainerView.getDoodleSizeForTesting());
         mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.REGULAR);
-        assertEquals(DoodleSize.REGULAR, mLogoView.getDoodleSizeForTesting());
+        assertEquals(DoodleSize.REGULAR, mLogoContainerView.getDoodleSizeForTesting());
         mLogoModel.set(LogoProperties.DOODLE_SIZE, DoodleSize.TABLET_SPLIT_SCREEN);
-        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoView.getDoodleSizeForTesting());
+        assertEquals(DoodleSize.TABLET_SPLIT_SCREEN, mLogoContainerView.getDoodleSizeForTesting());
     }
 
     @Test
@@ -277,7 +302,7 @@ public class LogoContainerViewBinderUnitTest {
     @SmallTest
     public void testSetLogoTopMargin() {
         mLogoModel.set(LogoProperties.LOGO_TOP_MARGIN, 10);
-        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
         MarginLayoutParams params = (MarginLayoutParams) childLogoView.getLayoutParams();
         assertEquals(10, params.topMargin);
     }
@@ -286,7 +311,7 @@ public class LogoContainerViewBinderUnitTest {
     @SmallTest
     public void testSetLogoBottomMargin() {
         mLogoModel.set(LogoProperties.LOGO_BOTTOM_MARGIN, 20);
-        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) mLogoContainerView.getLayoutParams();
         assertEquals(20, params.bottomMargin);
     }
 
@@ -294,7 +319,7 @@ public class LogoContainerViewBinderUnitTest {
     @SmallTest
     public void testSetLogoHeight() {
         mLogoModel.set(LogoProperties.LOGO_HEIGHT, 50);
-        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        LogoView childLogoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
         MarginLayoutParams params = (MarginLayoutParams) childLogoView.getLayoutParams();
         assertEquals(50, params.height);
     }
@@ -302,10 +327,10 @@ public class LogoContainerViewBinderUnitTest {
     @Test
     @SmallTest
     public void testShowLoadingView() {
-        mLogoView.setLoadingViewVisibilityForTesting(View.GONE);
+        mLogoContainerView.setLoadingViewVisibilityForTesting(View.GONE);
         mLogoModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(View.VISIBLE, mLogoView.getLoadingViewVisibilityForTesting());
+        assertEquals(View.VISIBLE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test
@@ -318,7 +343,7 @@ public class LogoContainerViewBinderUnitTest {
 
         Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888), null, null, null);
         mLogoModel.set(LogoProperties.LOGO, logo);
-        mLogoView.endAnimationsForTesting();
+        mLogoContainerView.endAnimationsForTesting();
         assertTrue(callbackCalled[0]);
     }
 }

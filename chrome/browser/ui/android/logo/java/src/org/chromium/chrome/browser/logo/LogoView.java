@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.LinearInterpolator;
@@ -36,7 +35,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.ui.widget.LoadingView;
 
 /**
  * This view shows the default search provider's logo and fades in a new logo if one becomes
@@ -60,8 +58,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private boolean mLogoIsDefault;
     private boolean mNewLogoIsDefault;
     private boolean mAnimationEnabled = true;
-
-    private final LoadingView mLoadingView;
 
     /**
      * A measure from 0 to 1 of how much the new logo has faded in. 0 shows the old logo, 1 shows
@@ -106,13 +102,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
         setOnClickListener(this);
         setClickable(false);
         setWillNotDraw(false);
-
-        mLoadingView = new LoadingView(getContext());
-        LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.CENTER;
-        mLoadingView.setLayoutParams(lp);
-        mLoadingView.setVisibility(View.GONE);
-        addView(mLoadingView);
     }
 
     /** Clean up member variables when this view is no longer needed.*/
@@ -121,7 +110,14 @@ public class LogoView extends FrameLayout implements OnClickListener {
         // has a reference to the animation callback which then can link back to the
         // {@code mTransitionProperty}.
         endFadeAnimation();
-        mLoadingView.destroy();
+    }
+
+    /** Clears the logo drawable and stops drawing it. */
+    void clearLogo() {
+        endFadeAnimation();
+        mLogoDrawable = null;
+        mNewLogoDrawable = null;
+        invalidate();
     }
 
     /** Sets the {@link LogoProperties.ClickHandler} to notify when the logo is pressed. */
@@ -183,8 +179,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
     // TODO(crbug.com/434200490): Replace Object reference with ImageDecoder.Source when the
     // refactoring is fully rolled out.
     void playAnimatedLogo(Object animatedLogo) {
-        mLoadingView.hideLoadingUi();
-
         if (animatedLogo instanceof BaseGifImage) {
             mAnimatedLogoDrawable =
                     new BaseGifDrawable((BaseGifImage) animatedLogo, Config.ARGB_8888);
@@ -210,26 +204,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
         }
     }
 
-    /** Show a spinning progressbar. */
-    void showLoadingView() {
-        mLogoDrawable = null;
-        invalidate();
-        mLoadingView.showLoadingUi();
-    }
-
-    /**
-     * Show a loading indicator or a baked-in default search provider logo, based on what is
-     * available.
-     */
-    void showSearchProviderInitialView() {
-        boolean isLogoAvailable;
-        isLogoAvailable = maybeShowDefaultLogoDrawable();
-
-        if (isLogoAvailable) return;
-
-        showLoadingView();
-    }
-
     /**
      * Fades in a new logo over the current logo.
      *
@@ -238,13 +212,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void updateLogo(Logo logo) {
         if (logo == null) {
-            boolean isLogoAvailable;
-            isLogoAvailable = maybeShowDefaultLogoDrawable();
-
-            if (!isLogoAvailable) {
-                mLogoDrawable = null;
-                invalidate();
-            }
+            clearLogo();
 
             if (mOnLogoAvailableCallback != null) {
                 mOnLogoAvailableCallback.onResult(logo);
@@ -286,8 +254,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
         assert logoDrawable != null;
 
         if (mFadeAnimation != null) mFadeAnimation.end();
-
-        mLoadingView.hideLoadingUi();
 
         // Don't crossfade if the new logoDrawable is the same as the old one.
         if (mLogoDrawable == logoDrawable) return;
@@ -553,14 +519,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     @Nullable Drawable getDefaultGoogleLogoDrawableForTesting() {
         return mDefaultGoogleLogoDrawable;
-    }
-
-    int getLoadingViewVisibilityForTesting() {
-        return mLoadingView.getVisibility();
-    }
-
-    void setLoadingViewVisibilityForTesting(int visibility) {
-        mLoadingView.setVisibility(visibility);
     }
 
     int getDoodleSizeForTesting() {

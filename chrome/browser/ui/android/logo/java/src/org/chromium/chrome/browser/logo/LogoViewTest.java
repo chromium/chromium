@@ -13,7 +13,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -84,7 +83,7 @@ public class LogoViewTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mView.setDefaultGoogleLogoDrawable(
                 mView.getContext().getDrawable(R.drawable.ic_google_logo));
-        mView.updateLogo(null);
+        mView.maybeShowDefaultLogoDrawable();
         mView.endAnimationsForTesting();
 
         Assert.assertFalse("Default logo should not be clickable.", mView.isClickable());
@@ -144,18 +143,6 @@ public class LogoViewTest {
     }
 
     @Test
-    public void testShowLoadingView() {
-        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null, null);
-        mView.updateLogo(logo);
-        mView.endAnimationsForTesting();
-        Assert.assertNotNull(mView.getLogoDrawableForTesting());
-        mView.setLoadingViewVisibilityForTesting(View.VISIBLE);
-        mView.showLoadingView();
-        Assert.assertNull(mView.getLogoDrawableForTesting());
-        Assert.assertEquals(View.GONE, mView.getLoadingViewVisibilityForTesting());
-    }
-
-    @Test
     @MediumTest
     public void testDoodleAnimation() {
         // Test default google logo drawable.
@@ -174,7 +161,7 @@ public class LogoViewTest {
         int doodleTopMargin = LogoUtils.getTopMarginForDoodle(res);
         MarginLayoutParams logoLayoutParams = (MarginLayoutParams) mView.getLayoutParams();
 
-        mView.updateLogo(null);
+        mView.maybeShowDefaultLogoDrawable();
         mView.endAnimationsForTesting();
         Assert.assertEquals(logoHeight, logoLayoutParams.height);
         Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);

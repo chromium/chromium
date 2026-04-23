@@ -19,4 +19,11 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="@dimen/ntp_logo_height"
         android:layout_marginTop="@dimen/ntp_logo_margin_top"/>
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/loading_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 </org.chromium.chrome.browser.logo.LogoContainerView>

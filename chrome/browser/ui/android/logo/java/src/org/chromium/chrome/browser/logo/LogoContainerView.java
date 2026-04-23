@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.logo;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -15,52 +13,91 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.ui.widget.LoadingView;
 
 /** Container view for the logo and loading view. */
 @NullMarked
 public class LogoContainerView extends FrameLayout {
-    private @Nullable LogoView mLogoView;
+    private LogoView mLogoView;
+    private LoadingView mLoadingView;
 
     public LogoContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     public void updateLogo(Logo logo) {
-        assumeNonNull(mLogoView).updateLogo(logo);
+        boolean shouldUpdateLogo = true;
+
+        // If no logo is provided, try to show the default logo first.
+        if (logo == null) {
+            shouldUpdateLogo = !maybeShowDefaultLogoDrawable();
+        }
+
+        // If a specific logo was provided, update the logo view.
+        // If no logo was provided (logo is null) and default logo is not available, clear the logo
+        // via updateLogo(null).
+        if (shouldUpdateLogo) {
+            mLogoView.updateLogo(logo);
+        }
+
+        // If a specific logo was provided, hide loading ui.
+        // Note: maybeShowDefaultLogoDrawable() handles hiding loading UI for the null case.
+        if (logo != null) {
+            hideLoadingUi();
+        }
     }
 
     public void endAnimationsForTesting() {
-        assumeNonNull(mLogoView).endAnimationsForTesting();
+        mLogoView.endAnimationsForTesting(); // IN-TEST
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mLogoView = findViewById(R.id.search_provider_logo);
+        mLoadingView = findViewById(R.id.loading_view);
     }
 
     void showSearchProviderInitialView() {
-        assumeNonNull(mLogoView).showSearchProviderInitialView();
+        boolean isLogoAvailable = maybeShowDefaultLogoDrawable();
+        if (!isLogoAvailable) {
+            showLoadingView();
+        }
     }
 
     void playAnimatedLogo(Object animatedLogo) {
-        assumeNonNull(mLogoView).playAnimatedLogo(animatedLogo);
+        mLoadingView.hideLoadingUi();
+        mLogoView.playAnimatedLogo(animatedLogo);
     }
 
     void setDefaultGoogleLogoDrawable(Drawable defaultGoogleLogoDrawable) {
-        assumeNonNull(mLogoView).setDefaultGoogleLogoDrawable(defaultGoogleLogoDrawable);
+        mLogoView.setDefaultGoogleLogoDrawable(defaultGoogleLogoDrawable);
     }
 
+    /**
+     * Shows the default search engine logo and hide loading UI if available.
+     *
+     * @return Whether the default search engine logo drawable is available.
+     */
     boolean maybeShowDefaultLogoDrawable() {
-        return assumeNonNull(mLogoView).maybeShowDefaultLogoDrawable();
+        boolean shown = mLogoView.maybeShowDefaultLogoDrawable();
+        if (shown) {
+            mLoadingView.hideLoadingUi();
+        }
+        return shown;
     }
 
     void showLoadingView() {
-        assumeNonNull(mLogoView).showLoadingView();
+        mLogoView.clearLogo();
+        mLoadingView.showLoadingUi();
+    }
+
+    void hideLoadingUi() {
+        mLoadingView.hideLoadingUi();
     }
 
     void setLogoTopMargin(int topMargin) {
-        assumeNonNull(mLogoView).setLogoTopMargin(topMargin);
+        mLogoView.setLogoTopMargin(topMargin);
     }
 
     void setLogoBottomMargin(int bottomMargin) {
@@ -70,63 +107,63 @@ public class LogoContainerView extends FrameLayout {
     }
 
     void setLogoHeight(int height) {
-        assumeNonNull(mLogoView).setLogoHeight(height);
+        mLogoView.setLogoHeight(height);
     }
 
     void endFadeAnimation() {
-        assumeNonNull(mLogoView).endFadeAnimation();
+        mLogoView.endFadeAnimation();
     }
 
     void setAnimationEnabled(boolean enabled) {
-        assumeNonNull(mLogoView).setAnimationEnabled(enabled);
+        mLogoView.setAnimationEnabled(enabled);
     }
 
     void setClickHandler(LogoProperties.ClickHandler handler) {
-        assumeNonNull(mLogoView).setClickHandler(handler);
+        mLogoView.setClickHandler(handler);
     }
 
     void setLogoAvailableCallback(Callback<Logo> callback) {
-        assumeNonNull(mLogoView).setLogoAvailableCallback(callback);
+        mLogoView.setLogoAvailableCallback(callback);
     }
 
     void setDoodleSize(int doodleSize) {
-        assumeNonNull(mLogoView).setDoodleSize(doodleSize);
+        mLogoView.setDoodleSize(doodleSize);
     }
 
     void destroy() {
-        assumeNonNull(mLogoView).destroy();
-        mLogoView = null;
+        mLogoView.destroy();
+        mLoadingView.destroy();
     }
 
     android.animation.@Nullable ObjectAnimator getFadeAnimationForTesting() {
-        return assumeNonNull(mLogoView).getFadeAnimationForTesting();
+        return mLogoView.getFadeAnimationForTesting(); // IN-TEST
     }
 
     android.graphics.@Nullable Bitmap getNewLogoDrawableBitmapForTesting() {
-        return assumeNonNull(mLogoView).getNewLogoDrawableBitmapForTesting();
+        return mLogoView.getNewLogoDrawableBitmapForTesting(); // IN-TEST
     }
 
     @Nullable Drawable getDefaultGoogleLogoDrawableForTesting() {
-        return assumeNonNull(mLogoView).getDefaultGoogleLogoDrawableForTesting();
+        return mLogoView.getDefaultGoogleLogoDrawableForTesting(); // IN-TEST
     }
 
     boolean getAnimationEnabledForTesting() {
-        return assumeNonNull(mLogoView).getAnimationEnabledForTesting();
+        return mLogoView.getAnimationEnabledForTesting(); // IN-TEST
     }
 
     LogoProperties.@Nullable ClickHandler getClickHandlerForTesting() {
-        return assumeNonNull(mLogoView).getClickHandlerForTesting();
+        return mLogoView.getClickHandlerForTesting(); // IN-TEST
     }
 
     int getDoodleSizeForTesting() {
-        return assumeNonNull(mLogoView).getDoodleSizeForTesting();
+        return mLogoView.getDoodleSizeForTesting(); // IN-TEST
     }
 
     void setLoadingViewVisibilityForTesting(int visibility) {
-        assumeNonNull(mLogoView).setLoadingViewVisibilityForTesting(visibility);
+        mLoadingView.setVisibility(visibility);
     }
 
     int getLoadingViewVisibilityForTesting() {
-        return assumeNonNull(mLogoView).getLoadingViewVisibilityForTesting();
+        return mLoadingView.getVisibility();
     }
 }
