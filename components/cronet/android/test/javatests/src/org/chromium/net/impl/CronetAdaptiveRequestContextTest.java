@@ -5,9 +5,11 @@
 package org.chromium.net.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -27,6 +29,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
@@ -38,6 +41,8 @@ import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 
 import java.net.URI;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 /** Test functionality of CronetAdaptiveRequestContext. */
 @DoNotBatch(reason = "HttpFlags are global")
@@ -317,6 +322,66 @@ public class CronetAdaptiveRequestContextTest {
 
     @Test
     @SmallTest
+    public void reportFallbackUsed_notifiesActiveStreams() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        ScheduledExecutorService mockExecutor1 = mock(ScheduledExecutorService.class);
+        ScheduledExecutorService mockExecutor2 = mock(ScheduledExecutorService.class);
+        ScheduledFuture mockFuture1 = mock(ScheduledFuture.class);
+        ScheduledFuture mockFuture2 = mock(ScheduledFuture.class);
+
+        when(mockFuture1.cancel(false)).thenReturn(true);
+        when(mockFuture2.cancel(false)).thenReturn(true);
+
+        when(mockExecutor1.schedule(any(Runnable.class), anyLong(), any())).thenReturn(mockFuture1);
+        when(mockExecutor2.schedule(any(Runnable.class), anyLong(), any())).thenReturn(mockFuture2);
+
+        CronetAdaptiveNetworkBidirectionalStream stream1 =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mock(BidirectionalStream.Callback.class),
+                        mockExecutor1,
+                        mContext,
+                        "https://example.com/path",
+                        mock(CronetLogger.class),
+                        false);
+
+        CronetAdaptiveNetworkBidirectionalStream stream2 =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mock(BidirectionalStream.Callback.class),
+                        mockExecutor2,
+                        mContext,
+                        "https://example.com/path",
+                        mock(CronetLogger.class),
+                        false);
+
+        CronetBidirectionalStream mockPrimary1 = mock(CronetBidirectionalStream.class);
+        CronetBidirectionalStream mockFallback1 = mock(CronetBidirectionalStream.class);
+        stream1.setPrimaryStream(mockPrimary1);
+        stream1.setFallbackStream(mockFallback1);
+
+        CronetBidirectionalStream mockPrimary2 = mock(CronetBidirectionalStream.class);
+        CronetBidirectionalStream mockFallback2 = mock(CronetBidirectionalStream.class);
+        stream2.setPrimaryStream(mockPrimary2);
+        stream2.setFallbackStream(mockFallback2);
+
+        long fallbackNetworkHandle = 12345L;
+        when(mockFallback1.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+        when(mockFallback2.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        // Call start() to register and set future
+        stream1.start();
+        stream2.start();
+
+        String url = "https://example.com/path";
+        mContext.reportFallbackUsed(url, fallbackNetworkHandle);
+
+        // Verify that both fallback streams were started (proving notification was delivered)
+        verify(mockFallback1).start();
+        verify(mockFallback2).start();
+    }
+
+    @Test
+    @SmallTest
     @Flags(
             boolFlags = {
                 @BoolFlag(
@@ -336,6 +401,44 @@ public class CronetAdaptiveRequestContextTest {
 
         spyContext.reportFallbackUsed(url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
         verify(spyContext).maybeShowDevToast("example.com", "/path", true);
+    }
+
+    @Test
+    @SmallTest
+    public void registerStream_calledTwice_throwsAssertionError() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        // Create real stream to avoid mocking final class
+        CronetAdaptiveNetworkBidirectionalStream stream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mock(BidirectionalStream.Callback.class),
+                        mock(ScheduledExecutorService.class),
+                        mContext,
+                        "https://example.com/path",
+                        mock(CronetLogger.class),
+                        false);
+
+        mContext.registerStream(stream);
+
+        assertThrows(AssertionError.class, () -> mContext.registerStream(stream));
+    }
+
+    @Test
+    @SmallTest
+    public void unregisterStream_notRegistered_throwsAssertionError() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        // Create real stream to avoid mocking final class
+        CronetAdaptiveNetworkBidirectionalStream stream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mock(BidirectionalStream.Callback.class),
+                        mock(ScheduledExecutorService.class),
+                        mContext,
+                        "https://example.com/path",
+                        mock(CronetLogger.class),
+                        false);
+
+        assertThrows(AssertionError.class, () -> mContext.unregisterStream(stream));
     }
 
     private CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles computeStreamNetworkHandles(

@@ -912,4 +912,165 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         when(mFallbackStream.isDone()).thenReturn(true);
         assertTrue(mAdaptiveStream.isDone());
     }
+
+    @Test
+    @SmallTest
+    public void start_registersWithContext() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+
+        verify(mMockAdaptiveRequestContext).registerStream(mAdaptiveStream);
+    }
+
+    @Test
+    @SmallTest
+    public void onFailed_terminal_unregistersFromContext() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        CronetException error = mock(CronetException.class);
+
+        // Fail primary
+        mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        when(mPrimaryStream.isDone()).thenReturn(true);
+        // Not terminal yet (fallback remains)
+        verify(mMockAdaptiveRequestContext, never()).unregisterStream(any());
+
+        // Fail fallback
+        mAdaptiveStream.getCallback().onFailed(mFallbackStream, info, error);
+        when(mFallbackStream.isDone()).thenReturn(true);
+
+        verify(mMockAdaptiveRequestContext).unregisterStream(mAdaptiveStream);
+    }
+
+    @Test
+    @SmallTest
+    public void onCanceled_terminal_unregistersFromContext() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+
+        // Cancel fallback
+        mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
+        when(mFallbackStream.isDone()).thenReturn(true);
+        // Not terminal yet
+        verify(mMockAdaptiveRequestContext, never()).unregisterStream(any());
+
+        // Cancel primary
+        mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+        when(mPrimaryStream.isDone()).thenReturn(true);
+
+        verify(mMockAdaptiveRequestContext).unregisterStream(mAdaptiveStream);
+    }
+
+    @Test
+    @SmallTest
+    public void reportOtherStreamFallback_matchingHostAndNetwork_triggersFailover() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        when(mockFuture.cancel(false)).thenReturn(true);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
+                .thenReturn(mockFuture);
+
+        mAdaptiveStream.start();
+
+        long fallbackNetworkHandle = 12345L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        mAdaptiveStream.reportOtherStreamFallback(
+                java.net.URI.create(TEST_URL), fallbackNetworkHandle);
+
+        verify(mFallbackStream).start();
+        verify(mockFuture).cancel(false);
+    }
+
+    @Test
+    @SmallTest
+    public void reportOtherStreamFallback_differentHost_ignored() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+
+        long fallbackNetworkHandle = 12345L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        mAdaptiveStream.reportOtherStreamFallback(
+                java.net.URI.create("https://other.com"), fallbackNetworkHandle);
+
+        verify(mFallbackStream, never()).start();
+    }
+
+    @Test
+    @SmallTest
+    public void reportOtherStreamFallback_differentNetwork_ignored() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+
+        long fallbackNetworkHandle = 12345L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        mAdaptiveStream.reportOtherStreamFallback(java.net.URI.create(TEST_URL), 99999L);
+
+        verify(mFallbackStream, never()).start();
+    }
+
+    @Test
+    @SmallTest
+    public void reportOtherStreamFallback_calledTwice_triggersFailoverOnlyOnce() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        when(mockFuture.cancel(false)).thenReturn(true);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
+                .thenReturn(mockFuture);
+
+        mAdaptiveStream.start();
+
+        long fallbackNetworkHandle = 12345L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        mAdaptiveStream.reportOtherStreamFallback(
+                java.net.URI.create(TEST_URL), fallbackNetworkHandle);
+        mAdaptiveStream.reportOtherStreamFallback(
+                java.net.URI.create(TEST_URL), fallbackNetworkHandle);
+
+        verify(mFallbackStream, times(1)).start();
+    }
+
+    @Test
+    @SmallTest
+    public void reportOtherStreamFallback_afterTimerFires_ignored() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        mAdaptiveStream.start();
+        verify(mMockScheduledExecutorService)
+                .schedule(failoverRunnableCaptor.capture(), eq(3000L), eq(MILLISECONDS));
+
+        long fallbackNetworkHandle = 12345L;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(fallbackNetworkHandle);
+
+        // Trigger failover via timer
+        failoverRunnableCaptor.getValue().run();
+        verify(mFallbackStream, times(1)).start();
+
+        // Now trigger via external fallback signal
+        mAdaptiveStream.reportOtherStreamFallback(
+                java.net.URI.create(TEST_URL), fallbackNetworkHandle);
+
+        // Fallback should still only have been started once (by the timer).
+        verify(mFallbackStream, times(1)).start();
+    }
 }

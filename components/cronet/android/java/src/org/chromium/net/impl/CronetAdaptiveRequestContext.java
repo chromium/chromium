@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -130,6 +131,10 @@ class CronetAdaptiveRequestContext {
     // hosts.
     private final Map<String, FallbackInfo> mFallbackNetworks =
             Collections.synchronizedMap(new HashMap<>());
+
+    // Keeps track of the adaptive streams that have started but do not yet have a winner.
+    private final Set<CronetAdaptiveNetworkBidirectionalStream> mActiveStreams =
+            Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 
     private final AtomicReference<ScheduledExecutorService> mExecutor = new AtomicReference<>(null);
     private ConnectivityManagerWrapper mConnectivityManagerWrapper;
@@ -266,6 +271,20 @@ class CronetAdaptiveRequestContext {
         return mFastIdempotentPaths.contains(uri.getPath());
     }
 
+    /** Registers a stream as active without a winner yet. */
+    void registerStream(CronetAdaptiveNetworkBidirectionalStream stream) {
+        if (!mActiveStreams.add(stream)) {
+            throw new AssertionError("Stream is already registered as active.");
+        }
+    }
+
+    /** Unregisters a stream that has either completed or has a winner. */
+    void unregisterStream(CronetAdaptiveNetworkBidirectionalStream stream) {
+        if (!mActiveStreams.remove(stream)) {
+            throw new AssertionError("Stream is not registered as active.");
+        }
+    }
+
     long getReadyFailoverMs() {
         return mReadyFailoverMs;
     }
@@ -279,6 +298,9 @@ class CronetAdaptiveRequestContext {
                 host,
                 parsedUri.getPath(),
                 /* isDefault= */ networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+
+        tellOtherStreamsAboutFallback(parsedUri, networkHandle);
+
         // If we started succeeding on the default network, we can reset the state for this host.
         if (networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
             mFallbackNetworks.remove(host);
@@ -289,6 +311,16 @@ class CronetAdaptiveRequestContext {
                 new FallbackInfo(
                         networkHandle,
                         mClock.elapsedRealtime() + DEFAULT_FALLBACK_CACHE_DURATION_MS));
+    }
+
+    private void tellOtherStreamsAboutFallback(URI parsedUri, Long networkHandle) {
+        synchronized (mActiveStreams) {
+            var iterator = mActiveStreams.iterator();
+            while (iterator.hasNext()) {
+                CronetAdaptiveNetworkBidirectionalStream stream = iterator.next();
+                stream.reportOtherStreamFallback(parsedUri, networkHandle);
+            }
+        }
     }
 
     @VisibleForTesting

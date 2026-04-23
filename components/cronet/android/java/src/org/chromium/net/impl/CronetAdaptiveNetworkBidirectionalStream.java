@@ -13,6 +13,7 @@ import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.UrlResponseInfo;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +51,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     private final CronetAdaptiveRequestContext mAdaptiveRequestContext;
     private final CronetLogger mLogger;
-    private final String mUrl;
+    private final URI mUri;
 
     private final CronetLogger.CronetAdaptiveTrafficTerminatedInfo mLoggingState =
             new CronetLogger.CronetAdaptiveTrafficTerminatedInfo(
@@ -195,6 +196,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             if (mActiveStream.get() == stream) {
                 mBackendCallback.onSucceeded(CronetAdaptiveNetworkBidirectionalStream.this, info);
                 mLogger.logCronetAdaptiveTrafficTerminated(mLoggingState);
+                mAdaptiveRequestContext.unregisterStream(
+                        CronetAdaptiveNetworkBidirectionalStream.this);
             }
         }
 
@@ -223,6 +226,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 mBackendCallback.onFailed(
                         CronetAdaptiveNetworkBidirectionalStream.this, info, error);
                 mLogger.logCronetAdaptiveTrafficTerminated(mLoggingState);
+                mAdaptiveRequestContext.unregisterStream(
+                        CronetAdaptiveNetworkBidirectionalStream.this);
             }
         }
 
@@ -248,6 +253,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             if (mActiveStream.get() == stream || mOnlyOneStreamRemains.getAndSet(true)) {
                 mBackendCallback.onCanceled(CronetAdaptiveNetworkBidirectionalStream.this, info);
                 mLogger.logCronetAdaptiveTrafficTerminated(mLoggingState);
+                mAdaptiveRequestContext.unregisterStream(
+                        CronetAdaptiveNetworkBidirectionalStream.this);
             }
         }
     }
@@ -324,7 +331,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
         mBackendCallback = new VersionSafeCallbacks.BidirectionalStreamCallback(backendCallback);
         mAdaptiveRequestContext = adaptiveRequestContext;
         mLogger = logger;
-        mUrl = url;
+        // TODO(b/474048542): get the mUri directly in the constructor here instead.
+        mUri = URI.create(url);
         mIsFastIdempotentRequest = isFastIdempotentRequest;
         mFallbackStream = null;
         mOnlyOneStreamRemains = new AtomicBoolean(false);
@@ -344,6 +352,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     @Override
     public void start() {
+        mAdaptiveRequestContext.registerStream(this);
         Objects.requireNonNull(mPrimaryStream, "Primary stream is required before starting.")
                 .start();
         mLoggingState.setMainRequestState(
@@ -355,6 +364,29 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                         this::maybeScheduleFastFailover,
                         mAdaptiveRequestContext.getReadyFailoverMs(),
                         MILLISECONDS));
+    }
+
+    void reportOtherStreamFallback(URI uri, long networkHandle) {
+        if (isDone()) {
+            // We are done, no need to do anything.
+            return;
+        }
+        if (mActiveStream.get() != null) {
+            // We already have an active stream, no need to do anything.
+            return;
+        }
+
+        if (Objects.equals(mUri.getHost(), uri.getHost())
+                && networkHandle == mFallbackStream.getTargetNetworkHandle()) {
+            // We have a fallback stream with matching host and network.
+            // Let's try to trigger the failover immediately since
+            // it seems likely this is what will happen anyway.
+            ScheduledFuture<?> future = mFailoverFuture.get();
+            if (future != null && future.cancel(/* mayInterruptIfRunning= */ false)) {
+                // And starting the fallback stream immediately.
+                maybeScheduleFastFailover();
+            }
+        }
     }
 
     private void maybeScheduleFastFailover() {
@@ -460,8 +492,9 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                             .CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK);
             // The primary stream was not ready in time, let's cancel it.
             mPrimaryStream.cancel();
+            // TODO(b/474048542): get the mUri directly here instead.
             mAdaptiveRequestContext.reportFallbackUsed(
-                    mUrl, mFallbackStream.getTargetNetworkHandle());
+                    mUri.toString(), mFallbackStream.getTargetNetworkHandle());
         } else {
             mLoggingState.setWinner(
                     CronetLogger.CronetAdaptiveTrafficWinner.CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN);
