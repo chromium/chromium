@@ -3716,6 +3716,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.MultiWindow.Occlusion.OcclusionCaclulationsPer5Minutes"
+    units="count" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of times WindowOcclusionTracker recalculates occlusion
+    over the preceding 5 minutes. Emitted every 5 minutes while occlusion
+    tracking is active.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.Occlusion.TrackResult" enum="Boolean"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

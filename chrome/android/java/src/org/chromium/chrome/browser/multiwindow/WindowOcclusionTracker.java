@@ -127,6 +127,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
     @VisibleForTesting
     void calculateOcclusionRateLimited() {
+        ThreadUtils.assertOnUiThread();
 
         // Calculate occlusion immediately if the rate limit is not set.
         if (mCalculateOcclusionRateLimitMs <= 0) {
@@ -160,6 +161,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
     @VisibleForTesting
     void calculateOcclusion() {
+        WindowOcclusionMetrics.onCalculateOcclusion();
         mLastCalculateOcclusionTimeMs = TimeUtils.uptimeMillis();
 
         try (TimingMetric t = WindowOcclusionMetrics.getCalculateDurationTimer()) {

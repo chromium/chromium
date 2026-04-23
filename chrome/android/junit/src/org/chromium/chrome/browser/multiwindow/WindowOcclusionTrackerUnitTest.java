@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.View;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +63,11 @@ public class WindowOcclusionTrackerUnitTest {
         mOcclusionTracker = new WindowOcclusionTracker(mZOrderTracker);
     }
 
+    @After
+    public void tearDown() {
+        WindowOcclusionMetrics.resetForTesting();
+    }
+
     private View createView(int x, int y, int width, int height) {
         View view = new View(ContextUtils.getApplicationContext());
         ShadowView shadowView = shadowOf(view);
@@ -96,6 +102,26 @@ public class WindowOcclusionTrackerUnitTest {
 
         verify(window, description("Window should not be occluded"))
                 .setOccluded(eq(false), any(), any());
+    }
+
+    @Test
+    public void testOcclusionCalculationsMetric() {
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.MultiWindow.Occlusion.OcclusionCalculationsPer5Minutes", 2)
+                        .build();
+
+        mOcclusionTracker.calculateOcclusion();
+        mOcclusionTracker.calculateOcclusion();
+
+        ShadowSystemClock.advanceBy(Duration.ofMinutes(5));
+        ShadowLooper.idleMainLooper();
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
