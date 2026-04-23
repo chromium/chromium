@@ -21,6 +21,10 @@ class PdfViewerPrivateGlicSummarizeFunction;
 
 class PasswordChangeFromCheckupDelegate;
 
+namespace ttc {
+class AiOverlayTools;
+}
+
 namespace glic {
 
 class GlicInternalsPageHandler;
@@ -49,6 +53,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class GlicApiTestPasskeys;
   friend class ::GlicExperimentalTriggeringMessageHandler;
   friend class GlicCueTarget;
+  friend class ::ttc::AiOverlayTools;
 };
 
 using InvokeWithAutoSubmitPasskey =

@@ -8,13 +8,21 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -347,6 +355,42 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
+}
+
+void AiOverlayTools::InvokeGlic(const std::string& prompt,
+                                InvokeGlicCallback callback) {
+  RecordToolCallInvoked("InvokeGlic");
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          browser_->GetProfile());
+
+  if (!glic_service) {
+    std::move(callback).Run(base::unexpected("Glic service not available"));
+    return;
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::Target(browser_->GetTabStripModel()->GetActiveTab()),
+      glic::mojom::InvocationSource::kOsButton);
+  options.prompts.push_back(prompt);
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  options.on_success = base::BindOnce(
+      [](InvokeGlicCallback cb) {
+        std::move(cb).Run(base::ok("Glic panel opened and task completed."));
+      },
+      std::move(split_callback.first));
+
+  options.on_error = base::BindOnce(
+      [](InvokeGlicCallback cb, glic::GlicInvokeError error) {
+        std::move(cb).Run(base::unexpected("Glic invocation failed"));
+      },
+      std::move(split_callback.second));
+
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options));
 }
 
 void AiOverlayTools::SeekToTimestamp(const std::string& timecode,

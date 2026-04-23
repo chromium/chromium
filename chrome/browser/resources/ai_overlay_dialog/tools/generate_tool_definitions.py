@@ -90,10 +90,18 @@ def ParseMojomFile(header_path):
 
         main_desc, param_descs = _ParseComments(comments, param_names)
 
+        is_non_blocking = False
+        if '@NON_BLOCKING' in main_desc:
+            is_non_blocking = True
+            main_desc = main_desc.replace('@NON_BLOCKING', '').strip()
+
         decl = {
             "name": _CamelToSnake(name),
             "description": main_desc,
         }
+
+        if is_non_blocking:
+            decl["behavior"] = "NON_BLOCKING"
 
         if len(args) > 0:
             decl["parameters"] = {

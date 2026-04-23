@@ -29,6 +29,11 @@ enum ScrollGranularity {
 // should be added here. The interface serves a dual purpose: defining the Mojo
 // IPC contract and acting as the source of truth for the agent's tool
 // definitions.
+//
+// Methods may be annotated with @NON_BLOCKING in their comment block. This
+// indicates to the generator that the tool should have the "NON_BLOCKING"
+// behavior set in its definition, allowing the Gemini Live agent to continue
+// without waiting for the tool's result.
 interface AiOverlayTools {
   // Browser tools
 
@@ -88,4 +93,11 @@ interface AiOverlayTools {
   //                  If empty, translates to the user's default language.
   TranslatePage(
       string target_language) => result<mojo_base.mojom.Empty, string>;
+
+  // @NON_BLOCKING
+  // Use for tasks taking >1s to process, or to generate images, audio, video,
+  // or long text. Prefer direct voice replies for quick (<1s) tasks.
+  //
+  // prompt: The request to send to Gemini in the side panel.
+  InvokeGlic(string prompt) => result<string, string>;
 };

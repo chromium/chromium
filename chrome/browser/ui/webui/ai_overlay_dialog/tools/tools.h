@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -51,6 +52,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
                        SeekToTimestampCallback callback) override;
   void TranslatePage(const std::string& target_language,
                      TranslatePageCallback callback) override;
+  void InvokeGlic(const std::string& prompt,
+                  InvokeGlicCallback callback) override;
 
  private:
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {

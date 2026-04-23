@@ -37,6 +37,10 @@ interface TranslatePageArgs {
   target_language: string;
 }
 
+interface InvokeGlicArgs {
+  prompt: string;
+}
+
 type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
     {name: 'perform_search', args: PerformSearchArgs}|
     {name: 'switch_tab', args: SwitchTabArgs}|
@@ -49,7 +53,8 @@ type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
     {name: 'reload_page', args: Record<string, unknown>}|
     {name: 'play_video', args: Record<string, unknown>}|
     {name: 'pause_video', args: Record<string, unknown>}|
-    {name: 'translate_page', args: TranslatePageArgs};
+    {name: 'translate_page', args: TranslatePageArgs}|
+    {name: 'invoke_glic', args: InvokeGlicArgs};
 
 export class ToolExecutor {
   private readonly toolsRemote: AiOverlayToolsRemote;
@@ -119,6 +124,20 @@ export class ToolExecutor {
         }
         case 'translate_page': {
           await this.toolsRemote.translatePage(call.args.target_language);
+          break;
+        }
+        case 'invoke_glic': {
+          const glicResult =
+              await this.toolsRemote.invokeGlic(call.args.prompt);
+          if (typeof glicResult === 'string') {
+            return {success: false, error: glicResult};
+          }
+          if (!glicResult || typeof glicResult !== 'object' ||
+              !('value' in glicResult)) {
+            return {success: false, error: 'Unknown result'};
+          }
+          outResult['response'] = (glicResult as {value: string}).value;
+          outResult['scheduling'] = 'INTERRUPT';
           break;
         }
         default:
