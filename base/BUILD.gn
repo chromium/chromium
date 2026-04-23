@@ -176,6 +176,46 @@ generate_allowlist_from_histograms_file("memory_dump_provider_name_variants") {
   allow_list_name = "MemoryDumpProviderName"
 }
 
+config("asan_raw_ptr_service_v2_config") {
+  # `-fsanitize-recover=address` makes asan report lazily. If tests expect
+  # immediate crash, this config will break the tests completely.
+  cflags = [ "-fsanitize-recover=address" ]
+}
+
+# `asan_raw_ptr_service` is built as a part of `base` without `-fsanitize=address`
+# to avoid performance regressions.
+source_set("asan_raw_ptr_service") {
+  # Used by raw_ptr_service.cc to override {malloc,free,ignore_free} hooks.
+  sources = []
+  if (use_asan_backup_ref_ptr) {
+    sources += [
+      "memory/raw_ptr_asan_allocator.cc",
+      "memory/raw_ptr_asan_allocator.h",
+      "memory/raw_ptr_asan_bound_arg_tracker.cc",
+      "memory/raw_ptr_asan_bound_arg_tracker.h",
+      "memory/raw_ptr_asan_event.cc",
+      "memory/raw_ptr_asan_event.h",
+      "memory/raw_ptr_asan_hooks.cc",
+      "memory/raw_ptr_asan_hooks.h",
+      "memory/raw_ptr_asan_service.cc",
+      "memory/raw_ptr_asan_service.h",
+    ]
+    deps = [ ":base_static" ]
+
+    if (use_asan_backup_ref_ptr_v2) {
+      deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
+      configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+    }
+
+    deps += [
+      ":compiler_specific",
+      "//base/allocator/partition_allocator/src/partition_alloc",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/perfetto:libperfetto",
+    ]
+  }
+}
+
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -1094,25 +1134,6 @@ component("base") {
     "//third_party/rust/serde_json_lenient/v0_2/wrapper",
   ]
 
-  if (use_asan_backup_ref_ptr) {
-    # Used by raw_ptr_service.cc to override {malloc,free,ignore_free} hooks.
-    sources += [
-      "memory/raw_ptr_asan_allocator.cc",
-      "memory/raw_ptr_asan_allocator.h",
-      "memory/raw_ptr_asan_bound_arg_tracker.cc",
-      "memory/raw_ptr_asan_bound_arg_tracker.h",
-      "memory/raw_ptr_asan_event.cc",
-      "memory/raw_ptr_asan_event.h",
-      "memory/raw_ptr_asan_hooks.cc",
-      "memory/raw_ptr_asan_hooks.h",
-      "memory/raw_ptr_asan_service.cc",
-      "memory/raw_ptr_asan_service.h",
-    ]
-    if (use_asan_backup_ref_ptr_v2) {
-      deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
-    }
-  }
-
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have
   # to provide the appropriate `#define` here.
@@ -1147,14 +1168,6 @@ component("base") {
     "//build:robolectric_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
-
-  if (use_asan_backup_ref_ptr) {
-    # raw_ptr_asan_service.cc depends on:
-    deps += [ "//base/allocator/partition_allocator/src/partition_alloc" ]
-    if (use_asan_backup_ref_ptr_v2) {
-      deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
-    }
-  }
 
   sources += [
     "containers/span_rust.h",
@@ -1791,6 +1804,23 @@ component("base") {
   }
   if (use_allocator_shim) {
     public_deps += [ "allocator/partition_allocator:allocator_shim" ]
+  }
+
+  if (use_asan_backup_ref_ptr) {
+    # To make `source_set("asan_raw_ptr_service")` only a part of `base`,
+    # use `deps` to make only `base` depend on it. This causes a few
+    # unittests have `//nogncheck`.
+    deps += [ ":asan_raw_ptr_service" ]
+    allow_circular_includes_from = [ ":asan_raw_ptr_service" ]
+
+    # Moves the `-fsanitize-recover=address` configuration to `//base` using
+    # `all_dependent_configs`. This ensures the flag is only active when
+    # `use_asan_backup_ref_ptr_v2=true`, preventing PartitionAlloc GN variables
+    # from polluting the global `//build` directory and breaking standalone
+    # projects like V8.
+    if (use_asan_backup_ref_ptr_v2) {
+      all_dependent_configs += [ ":asan_raw_ptr_service_v2_config" ]
+    }
   }
 
   # Windows.

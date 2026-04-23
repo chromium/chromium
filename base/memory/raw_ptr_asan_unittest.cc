@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_asan_service.h"
+#include "base/memory/raw_ptr_asan_service.h"  // nogncheck
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -621,4 +621,71 @@ TEST_F(AsanBackupRefPtrTest, DanglingUnretained) {
 }  // namespace base::internal
 
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
+TEST(AsanBackupRefPtrImpl, RawRefGet) {
+  base::debug::AsanService::GetInstance()->Initialize();
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+  base::RawPtrAsanService::GetInstance().Configure(
+      true, {.enable_data_race_check = base::RawPtrAsanServiceOptions::kEnabled,
+             .enable_free_after_quarantined_check =
+                 base::RawPtrAsanServiceOptions::kEnabled});
+#else
+  if (!base::RawPtrAsanService::GetInstance().IsEnabled()) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
+    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                    .is_instantiation_check_enabled());
+  }
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
+  auto ptr = ::std::make_unique<int>();
+  raw_ref<int> safe_ref(*ptr);
+  ptr.reset();
+
+  // This test is specifically to ensure that raw_ref.get() does not cause a
+  // dereference of the memory referred to by the reference. If there is a
+  // dereference, then this test will crash.
+  [[maybe_unused]] volatile int& ref = safe_ref.get();
+}
+
+TEST(AsanBackupRefPtrImpl, RawRefOperatorStar) {
+  base::debug::AsanService::GetInstance()->Initialize();
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+  base::RawPtrAsanService::GetInstance().Configure(
+      true, {.enable_data_race_check = base::RawPtrAsanServiceOptions::kEnabled,
+             .enable_free_after_quarantined_check =
+                 base::RawPtrAsanServiceOptions::kEnabled});
+#else
+  if (!base::RawPtrAsanService::GetInstance().IsEnabled()) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
+    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                    .is_instantiation_check_enabled());
+  }
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
+  auto ptr = ::std::make_unique<int>();
+  raw_ref<int> safe_ref(*ptr);
+  ptr.reset();
+
+  // This test is specifically to ensure that &*raw_ref does not cause a
+  // dereference of the memory referred to by the reference. If there is a
+  // dereference, then this test will crash.
+  [[maybe_unused]] volatile int& ref = *safe_ref;
+}
+
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
