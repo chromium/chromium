@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html >
+<title>Overscroll properties are reflected on HTMLElement</title>
+<meta name="author" content="github.com/flackr">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=container1 overscrollcontainer>
+  <div id=area1 overscrollarea></div>
+</div>
+
+<div id=container2 overscrollcontainer="overlay">
+  <div id=area2></div>
+  <button command="toggle-overscroll" commandfor="area2"></button>
+</div>
+
+<div id=container3 overscrollcontainer="invalid-value">
+  <div id=area3 overscrollarea="invalid-value"></div>
+</div>
+
+<div id=container4>
+  <div id=area4></div>
+</div>
+
+<div id=target></div>
+
+<script>
+test(() => {
+  assert_equals(HTMLElement.prototype.hasOwnProperty('overscrollcontainer'), true);
+}, "HTMLElement has overscrollcontainer property");
+
+test(() => {
+  assert_equals(HTMLElement.prototype.hasOwnProperty('overscrollarea'), true);
+}, "HTMLElement has overscrollarea property");
+
+test(() => {
+  assert_equals(container1.overscrollcontainer, 'auto');
+  assert_equals(container2.overscrollcontainer, 'overlay');
+  assert_equals(container3.overscrollcontainer, 'auto', 'invalid property value returns auto');
+  assert_equals(container4.overscrollcontainer, null, 'missing property is reflected');
+}, "HTMLElement overscrollcontainer property value");
+
+test(() => {
+  target.overscrollcontainer = '';
+  assert_equals(target.getAttribute('overscrollcontainer'), '');
+  target.overscrollcontainer = 'overlay';
+  assert_equals(target.getAttribute('overscrollcontainer'), 'overlay');
+  target.overscrollcontainer = null;
+  assert_equals(target.hasAttribute('overscrollcontainer'), false, 'setting null removes property');
+}, "Setting HTMLElement overscrollcontainer property");
+
+test(() => {
+  assert_equals(area1.overscrollarea, 'auto');
+  assert_equals(area2.overscrollarea, null, `being an overscroll-target doesn't set property`);
+  assert_equals(area3.overscrollarea, 'auto', 'invalid property value returns auto');
+  assert_equals(area4.overscrollarea, null, 'missing property is reflected');
+}, "HTMLElement overscrollarea property value");
+
+test(() => {
+  target.overscrollarea = '';
+  assert_equals(target.getAttribute('overscrollarea'), '');
+  target.overscrollarea = null;
+  assert_equals(target.hasAttribute('overscrollarea'), false, 'setting null removes property');
+}, "Setting HTMLElement overscrollarea property");
+
+</script>

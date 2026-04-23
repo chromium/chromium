@@ -3929,6 +3929,8 @@ interface HTMLElement : Element
     getter onwebkittransitionend
     getter onwheel
     getter outerText
+    getter overscrollarea
+    getter overscrollcontainer
     getter popover
     getter scrollParent
     getter spellcheck
@@ -4073,6 +4075,8 @@ interface HTMLElement : Element
     setter onwebkittransitionend
     setter onwheel
     setter outerText
+    setter overscrollarea
+    setter overscrollcontainer
     setter popover
     setter spellcheck
     setter style

@@ -118,6 +118,13 @@
     "eager",
     "auto",
 
+    // overscrollcontainer attribute
+    "auto",
+    "overlay",
+
+    // overscrollarea attribute
+    "auto",
+
     // popover attribute
     // https://html.spec.whatwg.org/multipage/popover.html#dom-popover
     "auto",

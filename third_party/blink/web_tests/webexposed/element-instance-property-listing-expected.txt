@@ -313,6 +313,8 @@ namespace http://www.w3.org/1999/xhtml
     property onwheel
     property outerHTML
     property outerText
+    property overscrollarea
+    property overscrollcontainer
     property ownerDocument
     property parentElement
     property parentNode
