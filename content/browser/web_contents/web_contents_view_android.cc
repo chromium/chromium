@@ -457,6 +457,10 @@ void WebContentsViewAndroid::StartDragging(
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect,
     const blink::mojom::DragEventSourceInfo& event_info) {
+  // Disallow reentrant drag which could be an attempt to exploit drag state.
+  if (current_source_rwh_for_drag_) {
+    return;
+  }
   RenderWidgetHostImpl* const source_rwh =
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   current_source_rwh_for_drag_ = source_rwh->GetWeakPtr();
