@@ -64,7 +64,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
         mPropertyModel = propertyModel;
 
-        mLabel = new TextView(context, null, 0, R.style.TextAppearance_TextMediumThick_Primary);
+        mLabel = new TextView(context, null, 0, R.style.TextAppearance_TextSmall_Secondary);
         mLabel.setVisibility(View.GONE);
         mLabel.setId(R.id.date_field_label);
         mLabel.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
