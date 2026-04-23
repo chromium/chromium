@@ -90,15 +90,6 @@ class VerticalTabStripRegionViewTest
     return contents;
   }
 
-  // After changing the preferred width, wait for a layout to happen in order
-  // for the bounds to match the preferred width.
-  void WaitForBoundsToMatchPreferredWidth() {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return region_view()->width() ==
-             region_view()->GetPreferredSize().width();
-    }));
-  }
-
   void PressCollapseButton() {
     region_view()
         ->GetTopContainer()
@@ -153,7 +144,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
       region_view()->target_collapse_state_for_testing().uncollapsed_width);
   ASSERT_FALSE(IsAnimatingSize());
   ASSERT_FALSE(state_controller()->IsCollapsed());
-  WaitForBoundsToMatchPreferredWidth();
 
   // Shrink the area a small amount and the preferred width will adjust
   // immediately.
@@ -170,7 +160,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Shrink the area beyond the minimum expanded width and the preferred width
@@ -190,7 +179,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Shrink the area beyond the snap point and the tab strip will start
@@ -217,23 +205,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
     EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
               region_view()->GetPreferredSize().width());
-    WaitForBoundsToMatchPreferredWidth();
   }
 }
 
-// TODO(https://crbug.com/481074869): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ResizeViewBigger DISABLED_ResizeViewBigger
-#else
-#define MAYBE_ResizeViewBigger ResizeViewBigger
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   const int initial_width = VerticalTabStripRegionView::kCollapsedWidth;
 
   // Start this test from the collapsed state.
   state_controller()->RequestCollapse(true);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
-  WaitForBoundsToMatchPreferredWidth();
 
   // Verify the initial state of the region view.
   ASSERT_EQ(initial_width, region_view()->GetPreferredSize().width());
@@ -258,7 +238,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_TRUE(state_controller()->IsCollapsed());
-    EXPECT_EQ(initial_width, region_view()->width());
   }
 
   // Grow the area beyond the snap point and tab strip will start expanding.
@@ -285,7 +264,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
     EXPECT_EQ(VerticalTabStripRegionView::kUncollapsedMinWidth,
               region_view()->GetPreferredSize().width());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Grow the area beyond the minimum expanded width and the preferred width
@@ -304,7 +282,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Grow the area beyond the maximum expanded width and the preferred width
@@ -323,7 +300,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_FALSE(IsAnimatingSize());
     EXPECT_FALSE(state_controller()->IsCollapsed());
-    WaitForBoundsToMatchPreferredWidth();
   }
 }
 
@@ -334,7 +310,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Verify the initial state of the region view.
   ASSERT_EQ(initial_width, region_view()->GetPreferredSize().width());
   ASSERT_EQ(initial_width, state_controller()->GetUncollapsedWidth());
-  WaitForBoundsToMatchPreferredWidth();
 
   // Adjust the area without finishing resizing. The state controller's
   // uncollapsed width will not change.
@@ -347,7 +322,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     region_view()->OnResize(resize_amount, false);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
     EXPECT_EQ(initial_width, state_controller()->GetUncollapsedWidth());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Adjust the area and finish resizing. The state controller's uncollapsed
@@ -361,7 +335,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     region_view()->OnResize(resize_amount, true);
     EXPECT_EQ(resize_width, region_view()->GetPreferredSize().width());
     EXPECT_EQ(resize_width, state_controller()->GetUncollapsedWidth());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   const int last_uncollapsed_width = state_controller()->GetUncollapsedWidth();
@@ -369,16 +342,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Collapse then expand the tab strip using the collapse button. The width
   // should be restored to the state controller's uncollapsed width.
   PressCollapseButton();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return region_view()->GetPreferredSize().width() ==
-           VerticalTabStripRegionView::kCollapsedWidth;
-  }));
-  WaitForBoundsToMatchPreferredWidth();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
+            region_view()->GetPreferredSize().width());
   PressCollapseButton();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return region_view()->GetPreferredSize().width() == last_uncollapsed_width;
-  }));
-  WaitForBoundsToMatchPreferredWidth();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  EXPECT_EQ(last_uncollapsed_width, region_view()->GetPreferredSize().width());
 
   // Shrink the area beyond the minimum expanded width without finishing
   // resizing. The state controller's uncollapsed width should not update.
@@ -393,7 +362,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
               region_view()->GetPreferredSize().width());
     EXPECT_EQ(last_uncollapsed_width,
               state_controller()->GetUncollapsedWidth());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Shrink the area beyond the snap point and finish resizing, so that the tab
@@ -409,17 +377,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
               region_view()->GetPreferredSize().width());
     EXPECT_EQ(last_uncollapsed_width,
               state_controller()->GetUncollapsedWidth());
-    WaitForBoundsToMatchPreferredWidth();
   }
 
   // Expand the tab strip using the collapse button. The width will be restored
   // to what it was before the drag-to-collapse operation and not the minimum
   // expanded width.
   PressCollapseButton();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return region_view()->GetPreferredSize().width() == last_uncollapsed_width;
-  }));
-  WaitForBoundsToMatchPreferredWidth();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  EXPECT_EQ(last_uncollapsed_width, region_view()->GetPreferredSize().width());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
@@ -429,7 +394,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
 
   ASSERT_EQ(initial_width, region_view()->GetPreferredSize().width());
   ASSERT_EQ(initial_width, state_controller()->GetUncollapsedWidth());
-  WaitForBoundsToMatchPreferredWidth();
   ASSERT_EQ(0, user_action_tester.GetActionCount(
                    "VerticalTabs_TabStrip_ResizeToCollapsed"));
   ASSERT_EQ(0, user_action_tester.GetActionCount(
@@ -444,7 +408,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, false);
-    WaitForBoundsToMatchPreferredWidth();
     EXPECT_EQ(0, user_action_tester.GetActionCount(
                      "VerticalTabs_TabStrip_ResizeToCollapsed"));
     EXPECT_EQ(0, user_action_tester.GetActionCount(
@@ -461,7 +424,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
 
     region_view()->OnResize(resize_amount, true);
-    WaitForBoundsToMatchPreferredWidth();
     EXPECT_EQ(0, user_action_tester.GetActionCount(
                      "VerticalTabs_TabStrip_ResizeToCollapsed"));
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -480,7 +442,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
 
     region_view()->OnResize(resize_amount, true);
-    WaitForBoundsToMatchPreferredWidth();
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "VerticalTabs_TabStrip_ResizeToCollapsed"));
     EXPECT_EQ(1, user_action_tester.GetActionCount(
