@@ -215,7 +215,7 @@ class LaunchCommand(object):
       # the source of the crash.
       if result.crashed and iossim_util.is_device_with_udid_simulator(
           self.udid):
-        self.delete_cached_simulator()
+        self.test_runner.delete_cached_simulator()
 
       tests_to_include = set()
       # |running_tests| are compiled tests in target intersecting with swarming
