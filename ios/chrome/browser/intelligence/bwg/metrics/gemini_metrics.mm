@@ -124,6 +124,9 @@ const char kGeminiSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
 const char kFirstPromptSubmissionMethodHistogram[] =
     "IOS.Gemini.FirstPrompt.SubmissionMethod";
 
+const char kPromptSubmissionMethodHistogram[] =
+    "IOS.Gemini.Prompt.SubmissionMethod";
+
 const char kPromptImagesAttachedCountHistogram[] =
     "IOS.Gemini.Prompt.ImagesAttached.Count";
 
@@ -336,6 +339,10 @@ void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method) {
   base::RecordAction(
       base::UserMetricsAction("MobileGeminiFirstPromptSubmitted"));
   base::UmaHistogramEnumeration(kFirstPromptSubmissionMethodHistogram, method);
+}
+
+void RecordPromptSubmissionMethod(IOSGeminiFirstPromptSubmissionMethod method) {
+  base::UmaHistogramEnumeration(kPromptSubmissionMethodHistogram, method);
 }
 
 void RecordGeminiResponseReceived(bool generated_image_included) {

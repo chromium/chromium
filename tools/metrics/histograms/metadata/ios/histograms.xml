@@ -2740,6 +2740,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.SubmissionMethod"
+    enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-10-11">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Records how the user submitted any prompt to Gemini on iOS.</summary>
+</histogram>
+
 <histogram name="IOS.Gemini.RegenerateButton.Tapped"
     enum="IOSGeminiRegenerateOptionType" expires_after="2027-04-01">
   <owner>fbeauchamp@google.com</owner>

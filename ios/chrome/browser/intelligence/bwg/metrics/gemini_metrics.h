@@ -202,15 +202,20 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kNanoBananaTurnThisImageIntoAWatercolorPainting = 22,
   kNanoBananaMakeThisImageLookLikeInstantFilm = 23,
   kEditMenuPrompt = 24,
-  kMaxValue = kEditMenuPrompt,
+  kOnboardingNoIAmDone = 25,
+  kOnboardingKeepLearning = 26,
+  kMaxValue = kOnboardingKeepLearning,
 };
 // LINT.ThenChange(
 //   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod,
-//   /ios/chrome/browser/intelligence/bwg/model/gemini_constants.h:InputType
+//   /ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:InputType
 // )
 
 // UMA histogram key for IOS.Gemini.FirstPrompt.SubmissionMethod.
 extern const char kFirstPromptSubmissionMethodHistogram[];
+
+// UMA histogram key for IOS.Gemini.Prompt.SubmissionMethod.
+extern const char kPromptSubmissionMethodHistogram[];
 
 // UMA histogram key for IOS.Gemini.Prompt.ImagesAttached.Count.
 extern const char kPromptImagesAttachedCountHistogram[];
@@ -421,6 +426,9 @@ void RecordFirstResponseReceived();
 
 // Records that the user submitted their first prompt.
 void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method);
+
+// Records the submission method for any prompt.
+void RecordPromptSubmissionMethod(IOSGeminiFirstPromptSubmissionMethod method);
 
 // Records that the user received a response from Gemini with a boolean
 // indicating whether a generated image was included in the response.

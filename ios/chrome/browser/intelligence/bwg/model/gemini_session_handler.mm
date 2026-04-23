@@ -56,6 +56,10 @@ IOSGeminiFirstPromptSubmissionMethod ConvertInputTypeToHistogramEnum(
       return IOSGeminiFirstPromptSubmissionMethod::kOnboardingAskAboutPage;
     case gemini::InputType::kOnboardingSummarize:
       return IOSGeminiFirstPromptSubmissionMethod::kOnboardingSummarize;
+    case gemini::InputType::kOnboardingNoIAmDone:
+      return IOSGeminiFirstPromptSubmissionMethod::kOnboardingNoIAmDone;
+    case gemini::InputType::kOnboardingKeepLearning:
+      return IOSGeminiFirstPromptSubmissionMethod::kOnboardingKeepLearning;
     case gemini::InputType::kSuggestedReply:
       return IOSGeminiFirstPromptSubmissionMethod::kSuggestedReply;
     case gemini::InputType::kNanoBananaTurnThisPageIntoAComicStrip:
@@ -273,12 +277,16 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                          pageContextAttached);
 
   // Check if this is the user's first prompt.
+  IOSGeminiFirstPromptSubmissionMethod method =
+      ConvertInputTypeToHistogramEnum(inputType);
+
   if (!_hasSubmittedFirstPrompt) {
     _hasSubmittedFirstPrompt = YES;
-    IOSGeminiFirstPromptSubmissionMethod method =
-        ConvertInputTypeToHistogramEnum(inputType);
     RecordFirstPromptSubmission(method);
   }
+
+  // Log submission method for all prompts.
+  RecordPromptSubmissionMethod(method);
   // Start latency tracking.
   _lastPromptSentTime = base::TimeTicks::Now();
   _lastPromptHadPageContext = pageContextAttached;
@@ -300,6 +308,14 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   BWGTabHelper->NotifyPageContextUpdated(webState);
   // Record the new chat metric.
   RecordGeminiNewChatButtonTapped();
+
+  // Reset flags for the new conversation session.
+  _hasSubmittedFirstPrompt = NO;
+  _hasReceivedFirstResponse = NO;
+  _totalPromptsInSession = 0;
+  _waitingForResponse = NO;
+  _lastPromptSentTime = base::TimeTicks();
+  _lastPromptHadPageContext = NO;
 }
 
 // Called when a feedback button is tapped in the Gemini UI.

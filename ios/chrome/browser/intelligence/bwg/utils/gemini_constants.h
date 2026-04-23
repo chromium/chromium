@@ -155,14 +155,14 @@ enum class InputType {
   kAskAboutPage = 5,
   // Create FAQ input type.
   kCreateFaq = 6,
-  // Zero state model suggestion input type.
-  kZeroStateModelSuggestion = 7,
-  // 'What can Gemini do' input type.
-  kWhatCanGeminiDo = 8,
-  // Discovery card input type.
-  kDiscoveryCard = 9,
   // Omnibox summarize input type.
-  kOmniboxSummarize = 10,
+  kOmniboxSummarize = 7,
+  // Zero state model suggestion input type.
+  kZeroStateModelSuggestion = 8,
+  // 'What can Gemini do' input type.
+  kWhatCanGeminiDo = 9,
+  // Discovery card input type.
+  kDiscoveryCard = 10,
   // Omnibox prompt input type.
   kOmniboxPrompt = 11,
   // Transition to live input type.
@@ -173,25 +173,29 @@ enum class InputType {
   kOnboardingAskAboutPage = 14,
   // Onboarding: summarize input type.
   kOnboardingSummarize = 15,
+  // Onboarding: no I am done input type.
+  kOnboardingNoIAmDone = 16,
+  // Onboarding: keep learning input type.
+  kOnboardingKeepLearning = 17,
   // Suggested reply input type.
-  kSuggestedReply = 16,
+  kSuggestedReply = 18,
   // Nano Banana: turn this page into a comic strip input type.
-  kNanoBananaTurnThisPageIntoAComicStrip = 17,
+  kNanoBananaTurnThisPageIntoAComicStrip = 19,
   // Nano Banana: make a folk art illustration input type.
-  kNanoBananaMakeAFolkArtIllustration = 18,
+  kNanoBananaMakeAFolkArtIllustration = 20,
   // Nano Banana: make a custom mini figure input type.
-  kNanoBananaMakeACustomMiniFigure = 19,
+  kNanoBananaMakeACustomMiniFigure = 21,
   // Nano Banana: give me a grunge makeover input type.
-  kNanoBananaGiveMeAGrungeMakeover = 20,
+  kNanoBananaGiveMeAGrungeMakeover = 22,
   // Nano Banana: turn this image into a vintage postcard input type.
-  kNanoBananaTurnThisImageIntoAVintagePostcard = 21,
+  kNanoBananaTurnThisImageIntoAVintagePostcard = 23,
   // Nano Banana: turn this image into a watercolor painting input type.
-  kNanoBananaTurnThisImageIntoAWatercolorPainting = 22,
+  kNanoBananaTurnThisImageIntoAWatercolorPainting = 24,
   // Nano Banana: make this image look like instant film input type.
-  kNanoBananaMakeThisImageLookLikeInstantFilm = 23,
+  kNanoBananaMakeThisImageLookLikeInstantFilm = 25,
   // Input from Helios entry point on the Edit menu when user highlights text
   // Something like: “Explain this to me: <selected text>”
-  kEditMenuPrompt = 24,
+  kEditMenuPrompt = 26,
   kMaxValue = kEditMenuPrompt,
 };
 // LINT.ThenChange(

@@ -409,6 +409,42 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatButtonTapped) {
   EXPECT_EQ(initial_client_id, post_delete_client_id);
 }
 
+// Tests that didTapNewChatButtonWithSessionID resets prompt counters and flags.
+TEST_F(GeminiSessionHandlerTest, TestNewChatButtonResetsFlags) {
+  NSString* client_id = GetClientID();
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
+                          pageContextAttached:NO];
+
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kText, 1);
+
+  // Tap new chat button.
+  [session_handler_ didTapNewChatButtonWithSessionID:client_id
+                                      conversationID:@"conversation_123"];
+
+  // Now send another query and check that it logs as the first prompt again.
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
+                          pageContextAttached:NO];
+
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kText, 2);
+  histogram_tester_.ExpectBucketCount(
+      kPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kText, 2);
+}
+
 // Tests that didTapFeedbackButton records the correct metrics.
 TEST_F(GeminiSessionHandlerTest, TestFeedbackMetricsRecorded) {
   // Test Thumbs Up.

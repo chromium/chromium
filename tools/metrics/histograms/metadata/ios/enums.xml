@@ -829,11 +829,13 @@ chromium-metrics-reviews@google.com.
       label="Nano Banana: Turn This Image Into a Watercolor Painting"/>
   <int value="23" label="Nano Banana: Make This Image Look Like Instant Film"/>
   <int value="24" label="Edit Menu Prompt"/>
+  <int value="25" label="Onboarding: No I Am Done"/>
+  <int value="26" label="Onboarding: Keep Learning"/>
 </enum>
 
 <!-- LINT.ThenChange(
     /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,
-    /ios/chrome/browser/intelligence/bwg/model/gemini_constants.h:InputType
+    /ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:InputType
 ) -->
 
 <!-- LINT.IfChange(IOSGeminiFloatyUpdateSource) -->
