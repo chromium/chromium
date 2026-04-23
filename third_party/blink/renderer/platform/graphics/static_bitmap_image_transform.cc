@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(https://crbug.com/40773069): The function FlipSkPixmapInPlace triggers
-// unsafe buffer access warnings that were suppressed in the path it was moved
-// from. Update the function to fix this issue.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -52,8 +46,8 @@ void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
         size_t first_element = i * row_bytes + j * pixel_bytes;
         size_t last_element = i * row_bytes + (j + 1) * pixel_bytes;
         size_t bottom_element = (i + 1) * row_bytes - (j + 1) * pixel_bytes;
-        std::swap_ranges(&data[first_element], &data[last_element],
-                         &data[bottom_element]);
+        UNSAFE_TODO(std::swap_ranges(&data[first_element], &data[last_element],
+                                     &data[bottom_element]));
       }
     }
   } else {
@@ -61,8 +55,9 @@ void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
       size_t top_first_element = i * row_bytes;
       size_t top_last_element = (i + 1) * row_bytes;
       size_t bottom_first_element = (pm.height() - 1 - i) * row_bytes;
-      std::swap_ranges(&data[top_first_element], &data[top_last_element],
-                       &data[bottom_first_element]);
+      UNSAFE_TODO(std::swap_ranges(&data[top_first_element],
+                                   &data[top_last_element],
+                                   &data[bottom_first_element]));
     }
   }
 }
