@@ -1026,18 +1026,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Used User-Created Skill"/>
   <int value="3" label="Used Derived First-Party Skill"/>
   <int value="4" label="Opened Menu"/>
-  <int value="5" label="Clicked Manage from Menu"/>
-  <int value="6" label="Clicked Add from Menu"/>
-  <int value="7" label="Clicked Edit from Menu"/>
-  <int value="8" label="Clicked + on 1p Skill from Menu"/>
+  <int value="5" label="Clicked Manage Skills from Slash Menu"/>
+  <int value="6" label="Clicked Add Skill from Slash Menu"/>
+  <int value="7" label="Clicked Edit on a Skill from Slash Menu"/>
+  <int value="8" label="Clicked + on 1p Skill from Slash Menu"/>
   <int value="9" label="Clicked Save as Skill Hover Chip"/>
   <int value="10" label="Clicked Edit Skill Hover Chip"/>
-  <int value="11" label="Clicked Browse Skill from Plus Menu"/>
+  <int value="11" label="Clicked Browse Skills from Plus Menu"/>
   <int value="12" label="Clicked Skill from Plus Menu"/>
-  <int value="13" label="Clicked Manage Skill from Plus Menu"/>
-  <int value="14" label="Clicked More from Menu"/>
-  <int value="15" label="Clicked Manage Skill from Menu"/>
-  <int value="16" label="Clicked Skill from Menu"/>
+  <int value="13" label="Clicked Manage Skills from Plus Menu"/>
+  <int value="14" label="Clicked More from Slash Menu"/>
+  <int value="15" label="(Obsolete) Clicked Manage Skills from Menu"/>
+  <int value="16" label="Clicked Skill from Slash Menu"/>
+  <int value="17" label="Clicked Browse Skills from Slash Menu"/>
   <int value="20" label="Skill Builder: Clicked Promo Chip"/>
   <int value="21" label="Skill Builder: Prompt Generated"/>
   <int value="22" label="Skill Builder: Clicked Save as Skill"/>
