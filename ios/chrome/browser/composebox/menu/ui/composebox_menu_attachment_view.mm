@@ -62,6 +62,7 @@ const CGFloat kIconSize = 24.0f;
 - (void)setUpImageView {
   _imageBackgroundView = [[UIView alloc] init];
   _imageBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  _imageBackgroundView.userInteractionEnabled = NO;
   _imageBackgroundView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   _imageBackgroundView.layer.cornerRadius = kImageContainerCornerRadius;
   [self addSubview:_imageBackgroundView];
@@ -69,6 +70,7 @@ const CGFloat kIconSize = 24.0f;
   _imageView = [[UIImageView alloc] init];
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
+  _imageView.userInteractionEnabled = NO;
   [self addSubview:_imageView];
 
   AddSameCenterConstraints(_imageView, _imageBackgroundView);

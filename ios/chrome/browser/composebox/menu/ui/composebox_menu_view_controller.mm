@@ -202,6 +202,19 @@ NSString* const kComposeboxMenuCellIdentifier = @"ComposeboxMenuCell";
   attachmentView.title = title;
   attachmentView.image =
       SymbolWithPalette(symbol, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+  attachmentView.accessibilityLabel = title;
+
+  attachmentView.configurationUpdateHandler = ^(UIButton* updatedButton) {
+    BOOL isHighlighted = updatedButton.state == UIControlStateHighlighted;
+    CGFloat scale = isHighlighted ? 1.05 : 1.0;
+    CGFloat alpha = isHighlighted ? 0.7 : 1.0;
+    [UIView animateWithDuration:0.1
+                     animations:^{
+                       updatedButton.alpha = alpha;
+                       updatedButton.transform =
+                           CGAffineTransformMakeScale(scale, scale);
+                     }];
+  };
   return attachmentView;
 }
 
