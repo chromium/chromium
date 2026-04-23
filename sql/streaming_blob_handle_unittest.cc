@@ -726,5 +726,35 @@ TEST_F(StreamingBlobHandleDeathTest, DatabaseCannotBeClosedWhileBlobExists) {
       "sql::Database");
 }
 
+TEST_F(StreamingBlobHandleDeathTest, BlobIsClosedOnErrors) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo (data BLOB, timestamp INTEGER)"));
+  ASSERT_TRUE(
+      db.Execute("INSERT INTO foo (data, timestamp) VALUES (x'C0FFEE', 10)"));
+  const int64_t row_id = db.GetLastInsertRowId();
+
+  ASSERT_OK_AND_ASSIGN(
+      StreamingBlobHandle blob,
+      db.GetStreamingBlob("foo", "data", row_id, /*readonly=*/true));
+
+  // The blob handle expires when the row it's in is updated.
+  {
+    Statement statement(db.GetCachedStatement(
+        SQL_FROM_HERE, "UPDATE foo SET timestamp = 20 WHERE rowid = ?"));
+    statement.BindInt64(0, row_id);
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // The blob is now unusable, `Read()` will fail.
+  auto read_data = base::HeapArray<uint8_t>::Uninit(blob.GetSize());
+  EXPECT_FALSE(blob.Read(0, read_data));
+
+  // The blob will now crash on all operations.
+  EXPECT_CHECK_DEATH(blob.GetSize());
+  EXPECT_CHECK_DEATH((void)blob.Read(0, read_data));
+  EXPECT_CHECK_DEATH((void)blob.Write(0, {0xDE, 0xCA, 0xFF}));
+}
+
 }  // namespace
 }  // namespace sql
