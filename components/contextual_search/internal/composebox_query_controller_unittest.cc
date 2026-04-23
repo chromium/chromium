@@ -1922,6 +1922,46 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithFileName) {
             "test_file.pdf");
 }
 
+TEST_F(ComposeboxQueryControllerTest, PopulatesContentMetadataForPdfUpload) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  input_data->page_title = "test title";
+  input_data->file_name = "test_file.pdf";
+  input_data->page_url = GURL("https://example.com");
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Assert: Check that ContentMetadata is correctly set.
+  auto request = controller().last_sent_file_upload_request();
+  ASSERT_TRUE(request.has_value());
+  ASSERT_TRUE(request->has_objects_request());
+  ASSERT_TRUE(request->objects_request().has_payload());
+  ASSERT_TRUE(request->objects_request().payload().has_content_metadata());
+  EXPECT_EQ(
+      request->objects_request().payload().content_metadata().content_title(),
+      "test title");
+  EXPECT_EQ(request->objects_request().payload().content_metadata().file_name(),
+            "test_file.pdf");
+  EXPECT_EQ(request->objects_request().payload().content_metadata().url(),
+            "https://example.com/");
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
