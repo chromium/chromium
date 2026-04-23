@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -59,12 +60,16 @@ public class AwPreconnectorTest extends AwParameterizedTest {
         AwBrowserContext profile = mTestRule.getProfileSync("Default", /* createIfNeeded= */ true);
         String url = "http://localhost:" + mServerThread.getPort();
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.WebView.Preconnect.Event", 0);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     profile.getPreconnector().preconnect(new GURL(url));
                 });
 
         mServerThread.waitForConnection();
+        histogramWatcher.assertExpected();
     }
 
     @Test

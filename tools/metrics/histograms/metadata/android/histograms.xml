@@ -8285,6 +8285,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Preconnect.Event"
+    enum="AndroidWebViewPreconnectEvent" expires_after="2026-09-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records events during the WebView preconnect lifecycle. Logged when the
+    preconnect process begins and when the session is closed.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
     enum="PrimaryCpuAbiBitness" expires_after="2026-11-30">
   <owner>tasak@google.com</owner>

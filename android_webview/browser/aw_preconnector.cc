@@ -25,6 +25,17 @@
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AwPreconnectEvent)
+enum class AwPreconnectEvent {
+  kPreconnectCalled = 0,
+  kSessionClosed = 1,
+  kMaxValue = kSessionClosed,
+};
+// LINT.ThenChange(tools/metrics/histograms/enums.xml:AndroidWebViewPreconnectEvent)
+
 inline constexpr net::NetworkTrafficAnnotationTag
     kWebViewPreconnectTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("webview_preconnect",
@@ -106,6 +117,9 @@ bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
 
   TRACE_EVENT1("android_webview", "Preconnect::Begin", "url", url);
 
+  base::UmaHistogramEnumeration("Android.WebView.Preconnect.Event",
+                                AwPreconnectEvent::kPreconnectCalled);
+
   return true;
 }
 
@@ -147,6 +161,9 @@ void AwPreconnector::OnSessionClosed() {
 
   base::UmaHistogramMediumTimes("Android.WebView.Preconnect.ConnectionDuration",
                                 duration);
+
+  base::UmaHistogramEnumeration("Android.WebView.Preconnect.Event",
+                                AwPreconnectEvent::kSessionClosed);
 
   TRACE_EVENT2("android_webview", "Preconnect::OnSessionClosed", "url",
                context.url, "duration", duration);

@@ -404,6 +404,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="17" label="Package was updated"/>
 </enum>
 
+<enum name="AndroidWebViewPreconnectEvent">
+  <int value="0" label="preconnect called"/>
+  <int value="1" label="session closed"/>
+</enum>
+
 <enum name="AnrSkippedReason">
   <int value="0" label="Filesystem Read Failure"/>
   <int value="1" label="Filesystem Write Failure"/>
