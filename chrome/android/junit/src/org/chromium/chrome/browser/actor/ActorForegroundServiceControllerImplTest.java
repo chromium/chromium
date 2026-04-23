@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 
@@ -220,6 +221,36 @@ public class ActorForegroundServiceControllerImplTest {
     @Test
     public void testIsActivityVisibleForTabs_SettingsActivity_NotVisible() {
         ApplicationStatus.onStateChangeForTesting(mSettingsActivity, ActivityState.CREATED);
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceWhenActivityFinishing() {
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+        when(mChromeActivity.isFinishing()).thenReturn(true);
+
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceWhenActivityDestroyed() {
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+        when(mChromeActivity.isDestroyed()).thenReturn(true);
+
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceOnNtp() {
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+
+        GURL ntpUrl = new GURL("chrome-native://newtab/");
+        when(mTab.getUrl()).thenReturn(ntpUrl);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+
         assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
     }
 

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.util.Set;
 
@@ -133,10 +134,16 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         // task's tabs. If the task is generic (has no tabs), it is considered not visible.
         if (!(activity instanceof AsyncInitializationActivity asyncInitActivity)) return false;
         if (asyncInitActivity.isInPictureInPictureMode()) return false;
+        if (asyncInitActivity.isFinishing() || asyncInitActivity.isDestroyed()) return false;
 
         TabModelSelector selector =
                 TabModelSelectorSupplier.getValueOrNullFrom(asyncInitActivity.getWindowAndroid());
         if (selector == null || selector.isIncognitoBrandedModelSelected()) return false;
+
+        // If the user is on the NTP, the user has no visible indicators that there is an active
+        // task. So, this is treated as not visible.
+        Tab currentTab = selector.getCurrentTab();
+        if (currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl())) return false;
 
         // TODO(crbug.com/494093802): When the task first starts and ends, getTabs is empty. This
         // check is neccesarry to ensure that we have silent notifications when the user is on the
