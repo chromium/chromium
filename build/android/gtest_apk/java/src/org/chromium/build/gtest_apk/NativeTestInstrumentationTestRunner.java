@@ -352,7 +352,12 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
 
         @Override
         public void run() {
-            getContext().unbindService(mConnection);
+            try {
+                getContext().unbindService(mConnection);
+            } catch (IllegalArgumentException e) {
+                // Sometimes we get IllegalArgumentException: Service not registered when the test
+                // process crashes.
+            }
 
             if (mPid != Process.myPid()) {
                 Process.killProcess(mPid);
