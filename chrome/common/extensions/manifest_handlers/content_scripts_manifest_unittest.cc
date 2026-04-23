@@ -69,7 +69,7 @@ TEST_F(ContentScriptsManifestTest, OnChromeUrlsWithFlag) {
       switches::kExtensionsOnChromeURLs);
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("content_script_invalid_match_chrome_url.json");
-  const GURL newtab_url(chrome::kChromeUINewTabURL);
+  const GURL& newtab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_TRUE(
       ContentScriptsInfo::ExtensionHasScriptAtURL(extension.get(), newtab_url));
 }

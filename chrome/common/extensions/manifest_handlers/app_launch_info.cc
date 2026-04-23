@@ -164,7 +164,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
   // For the Chrome component app, override launch url to new tab.
   if (extension->id() == app_constants::kChromeAppId) {
-    launch_web_url_ = GURL(chrome::kChromeUINewTabURL);
+    launch_web_url_ = chrome::ChromeUINewTabURLAsGURL();
     return true;
   }
 
