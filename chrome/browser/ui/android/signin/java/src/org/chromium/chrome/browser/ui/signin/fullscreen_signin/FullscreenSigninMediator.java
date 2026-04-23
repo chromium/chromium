@@ -554,7 +554,7 @@ public class FullscreenSigninMediator
                 // and the sign-in animation profile picture data cache should have been
                 // initialized.
                 assumeNonNull(mSigninAnimationProfileDataCache)
-                        .getProfileDataOrDefault(assumeNonNull(mSelectedAccount).getEmail())
+                        .getById(assumeNonNull(mSelectedAccount).getId())
                         .getImage());
         if (sAnimationsEnabled) {
             mModel.set(
@@ -776,8 +776,7 @@ public class FullscreenSigninMediator
 
             mModel.set(
                     FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA,
-                    mContinueButtonProfileDataCache.getProfileDataOrDefault(
-                            mSelectedAccount.getEmail()));
+                    mContinueButtonProfileDataCache.getById(mSelectedAccount.getId()));
             mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, !mIsChild);
 
             // Until real data arrives, PROFILE_PICTURE is a placeholder silhouette.
@@ -791,7 +790,7 @@ public class FullscreenSigninMediator
                 mModel.set(
                         FullscreenSigninProperties.PROFILE_PICTURE,
                         mSigninAnimationProfileDataCache
-                                .getProfileDataOrDefault(mSelectedAccount.getEmail())
+                                .getById(mSelectedAccount.getId())
                                 .getImage());
             }
         }
