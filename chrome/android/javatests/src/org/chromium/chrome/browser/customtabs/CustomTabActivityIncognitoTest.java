@@ -495,7 +495,7 @@ public class CustomTabActivityIncognitoTest {
     public void ensureMayLaunchUrlIsBlockedForIncognitoWithExtraInConnection() throws Exception {
         // mayLaunchUrl should be blocked for incognito mode since it runs with always regular
         // profile. Need to update the test if the mayLaunchUrl is ever
-        // allowed in incognito. (crbug.com/1106757)
+        // allowed in incognito. (crbug.com/40706528)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final var token = SessionHolder.getSessionHolderFromIntent(intent);
@@ -526,7 +526,7 @@ public class CustomTabActivityIncognitoTest {
         // Creation of hidden tab should be blocked for incognito mode for the same setup as regular
         // mode above. Currently hidden tabs are created always with regular profile, so we
         // should block the hidden tab creation. Need to update the test if the hidden tabs are
-        // allowed in incognito. (crbug.com/1190971)
+        // allowed in incognito. (crbug.com/40174356)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final var token = SessionHolder.getSessionHolderFromIntent(intent);
@@ -551,7 +551,7 @@ public class CustomTabActivityIncognitoTest {
         connection.cleanUpSession(token.getSessionAsCustomTab());
     }
 
-    /** Regression test for crbug.com/1325331. */
+    /** Regression test for crbug.com/40839771. */
     @Test
     @MediumTest
     public void testIncognitoReauthControllerCreated_WhenReauthFeatureIsEnabled()

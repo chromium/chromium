@@ -154,7 +154,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1448777")
+    @DisabledTest(message = "https://crbug.com/40914476")
     public void validIndexAfterRestored_FromPreviousActivity() {
         mActivityTestRule.recreateActivity();
         ChromeTabbedActivity newActivity = mActivityTestRule.getActivity();

@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * A payment integration test for when shipping is requested but no shipping options are provided by
- * the merchant. See crbug.com/1082630
+ * the merchant. See crbug.com/40692028
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -94,7 +94,7 @@ public class PaymentRequestNoShippingOptionsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testAllShippingAddressesInvalid() throws TimeoutException {
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());

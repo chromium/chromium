@@ -243,7 +243,7 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
         assertNotNull("No splash screen available.", splashScreen);
 
         // TODO(pkotwicz): Change return type in order to accommodate new-style WebAPKs.
-        // (crbug.com/958288)
+        // (crbug.com/40625410)
         return (splashScreen instanceof ViewGroup) ? (ViewGroup) splashScreen : null;
     }
 

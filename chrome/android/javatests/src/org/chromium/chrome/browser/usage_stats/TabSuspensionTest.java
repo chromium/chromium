@@ -201,7 +201,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1345655")
+    @DisabledTest(message = "https://crbug.com/40232211")
     public void testEagerSuspension() {
         mActivityTestRule.loadUrl(mStartingUrl);
         CriteriaHelper.pollUiThread(() -> !mTab.isLoading());
@@ -219,7 +219,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1036556")
+    @DisabledTest(message = "https://crbug.com/40112684")
     public void testMediaSuspension() throws TimeoutException {
         mActivityTestRule.loadUrl(
                 mTestServer.getURLWithHostName(STARTING_FQDN, MEDIA_FILE_TEST_PATH));
@@ -259,7 +259,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1345655")
+    @DisabledTest(message = "https://crbug.com/40232211")
     public void testMultiWindow() {
         mActivityTestRule.loadUrl(mStartingUrl);
         Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
@@ -309,7 +309,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = 30, message = "https://crbug.com/1036556")
+    @DisableIf.Build(sdk_is_greater_than = 30, message = "https://crbug.com/40112684")
     public void testTabAddedFromCustomTab() {
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -373,7 +373,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1345655")
+    @DisabledTest(message = "https://crbug.com/40232211")
     public void testNavigationFromSuspendedTabToInterstitial() {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         startLoadingUrl(mTab, mStartingUrl);

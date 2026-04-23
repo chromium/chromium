@@ -131,7 +131,7 @@ public class LocationBarModelTest {
                     model.setDisplayUrl("one.com");
                     assertDisplayAndEditText(model, "one.com", "https://one.com");
 
-                    // https://crbug.com/1214481
+                    // https://crbug.com/40056044
                     model.setVisibleGurl(GURL.emptyGURL());
                     model.setDisplayUrl("about:blank");
                     model.setFullUrl("about:blank");

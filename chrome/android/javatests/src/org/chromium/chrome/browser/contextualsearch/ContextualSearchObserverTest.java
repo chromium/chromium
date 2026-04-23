@@ -99,7 +99,7 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(DeviceFormFactor.PHONE)
-    // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
+    // Previously flaky and disabled 4/2021.  https://crbug.com/40750236
     public void testNotifyObserversAfterLongPressWithoutSurroundings() throws Exception {
         // Mark the user undecided so we won't allow sending surroundings.
         mPolicy.overrideDecidedStateForTesting(false);
@@ -197,8 +197,8 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @DisabledTest(
             message =
-                    "Flaking on multiple bots, see https://crbug.com/1403674 and"
-                            + " https://crbug.com/1459535")
+                    "Flaking on multiple bots, see https://crbug.com/40885543 and"
+                            + " https://crbug.com/40919489")
     public void testSecondTap() throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
@@ -212,7 +212,7 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
         closePanel();
 
         // Sometimes we get an additional Show notification on the second Tap, but not reliably in
-        // tests.  See crbug.com/776541.
+        // tests.  See crbug.com/40545734.
         assertValueIs1or2(observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));

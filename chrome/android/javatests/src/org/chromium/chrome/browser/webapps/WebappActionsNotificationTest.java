@@ -108,7 +108,7 @@ public class WebappActionsNotificationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @DisabledTest(message = "crbug.com/774491")
+    @DisabledTest(message = "crbug.com/40544652")
     public void testNotification_copyUrl() throws Exception {
         Notification notification = getWebappNotification();
         Assert.assertNotNull(notification);

@@ -88,7 +88,7 @@ public class InstalledAppTest {
      * <p>Note this isn't a very thorough test; it just expects an empty response. Testing any real
      * response would require setting up (or mocking) a real APK. There are extremely thorough
      * layout tests and Java unit tests for this feature. This end-to-end test just ensures that the
-     * Mojo bridge between Blink and Java is working (regression: https://crbug.com/750348).
+     * Mojo bridge between Blink and Java is working (regression: https://crbug.com/40532462).
      */
     @Test
     @MediumTest

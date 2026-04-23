@@ -37,7 +37,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @DoNotBatch(
         reason =
                 "Some tests are Testing CCT start up behavior. "
-                        + "Unit test conversion tracked in crbug.com/1217031")
+                        + "Unit test conversion tracked in crbug.com/40185034")
 public class CustomTabsFeatureUsageTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
 

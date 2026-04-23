@@ -255,7 +255,7 @@ public class CustomTabActivityEphemeralTest {
     public void testHiddenTabCreationIsBlocked() throws Exception {
         // mayLaunchUrl should be blocked for ephemeral mode since it runs with always regular
         // profile. Need to update the test if the mayLaunchUrl is ever
-        // allowed in OTR profiles. (crbug.com/1106757)
+        // allowed in OTR profiles. (crbug.com/40706528)
         Intent intent = createEphemeralCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);

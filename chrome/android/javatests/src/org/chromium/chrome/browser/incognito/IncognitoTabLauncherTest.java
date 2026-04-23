@@ -91,7 +91,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
-    @DisabledTest(message = "crbug.com/1237504")
+    @DisabledTest(message = "crbug.com/40783511")
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_firstParty()
             throws TimeoutException {
         IncognitoNewTabPageStation ntp = startOnIncognitoNtp(true);

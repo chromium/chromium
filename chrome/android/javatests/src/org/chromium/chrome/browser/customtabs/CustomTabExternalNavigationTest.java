@@ -265,7 +265,7 @@ public class CustomTabExternalNavigationTest {
     @DisableIf.Build(
             supported_abis_includes = "x86_64",
             sdk_is_less_than = VERSION_CODES.TIRAMISU,
-            message = "crbug.com/1188920")
+            message = "crbug.com/40755139")
     public void testIntentPickerNotShownForNormalUrl() throws TimeoutException {
         setUpTwa();
         final GURL testUrl = new GURL("http://customtabtest.com");

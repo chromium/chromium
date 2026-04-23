@@ -643,7 +643,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Icon rendering blurry at times: crbug.com/1491905")
+    @DisabledTest(message = "Icon rendering blurry at times: crbug.com/40935939")
     public void testShowConnectionInfoSubpageInsecure() throws IOException {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));

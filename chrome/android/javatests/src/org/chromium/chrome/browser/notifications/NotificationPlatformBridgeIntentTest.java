@@ -137,7 +137,7 @@ public class NotificationPlatformBridgeIntentTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @DisabledTest(message = "https://crbug.com/1420990")
+    @DisabledTest(message = "https://crbug.com/40896027")
     public void testLaunchProcessForNotificationActivation() throws Exception {
         Assert.assertFalse(
                 "The native library should not be loaded yet",

@@ -71,7 +71,7 @@ public class ChromeFeedbackCollectorTest {
                 });
 
         // FamilyInfoFeedbackSource relies on IdentityManager which is not available for the
-        // incognito profile. See https://crbug.com/1340320.
+        // incognito profile. See https://crbug.com/40850279.
         Assert.assertFalse(
                 "FamilyInfoFeedbackSource should not be present.", containsFamilyFeedbackSource());
     }

@@ -84,7 +84,7 @@ public class CompositorVisibilityTest {
     // The surfaceview should be attached during construction, so that the application window knows
     // to set the blending hint correctly on the surface.  Otherwise, it will have to setFormat()
     // when the SurfaceView is attached to the CompositorView, which causes visual artifacts when
-    // the surface is torn down and re-created (crbug.com/704866).
+    // the surface is torn down and re-created (crbug.com/40512358).
     @Test
     @SmallTest
     public void testSurfaceViewIsAttachedImmediately() throws Throwable {

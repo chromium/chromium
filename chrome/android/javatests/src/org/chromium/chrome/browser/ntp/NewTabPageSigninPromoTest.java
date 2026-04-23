@@ -399,7 +399,7 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @DisabledTest(message = "https://crbug.com/1046822")
+    @DisabledTest(message = "https://crbug.com/40116614")
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSignInPromo_DismissBySwipe() {
         openNewTabPage();

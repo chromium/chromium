@@ -438,7 +438,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/1437093")
+    @DisabledTest(message = "crbug.com/40265353")
     public void testPrivacyGuideNotDisplayedWhenUserIsChild() {
         // TODO(crbug.com/40264499): Remove once SigninChecker is automatically created.
         ThreadUtils.runOnUiThreadBlocking(

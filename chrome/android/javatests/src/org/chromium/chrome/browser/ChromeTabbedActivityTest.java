@@ -123,11 +123,11 @@ public class ChromeTabbedActivityTest {
     /**
      * Verifies that the front tab receives the hide() call when the activity is stopped (hidden);
      * and that it receives the show() call when the activity is started again. This is a regression
-     * test for http://crbug.com/319804 .
+     * test for http://crbug.com/40341526 .
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1347506")
+    @DisabledTest(message = "https://crbug.com/40854746")
     public void testTabVisibility() {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final Tab[] tabs = new Tab[2];
@@ -228,7 +228,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1347506")
+    @DisabledTest(message = "https://crbug.com/40854746")
     public void testMultiUrlIntent() {
         Intent viewIntent =
                 new Intent(
@@ -593,7 +593,8 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     // Intentionally not batched due to recreating activity.
     @RequiresRestart
-    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
+    @DisabledTest(
+            message = "crbug.com/40754249 This doesn't work with FeedV2 and crbug.com/40136142")
     public void testActivityCanBeGarbageCollectedAfterFinished() {
         WeakReference<ChromeTabbedActivity> activityRef =
                 new WeakReference<>(mActivityTestRule.getActivity());

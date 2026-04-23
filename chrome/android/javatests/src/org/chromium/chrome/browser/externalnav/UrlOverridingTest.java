@@ -643,7 +643,7 @@ public class UrlOverridingTest {
                     // Note that we do not distinguish between OVERRIDE_WITH_NAVIGATE_TAB
                     // and NO_OVERRIDE since tab clobbering will eventually lead to NO_OVERRIDE.
                     // in the tab. Rather, we check the final URL to distinguish between
-                    // fallback and normal navigation. See crbug.com/487364 for more.
+                    // fallback and normal navigation. See crbug.com/40417893 for more.
                     Tab latestTab = latestTabHolder.value;
                     if (params.shouldLaunchExternalIntent) {
                         Criteria.checkThat(

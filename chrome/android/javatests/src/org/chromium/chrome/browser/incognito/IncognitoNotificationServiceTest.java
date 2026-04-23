@@ -119,7 +119,7 @@ public class IncognitoNotificationServiceTest {
     @Test
     @Feature("Incognito")
     @MediumTest
-    @DisabledTest(message = "crbug.com/1033835")
+    @DisabledTest(message = "crbug.com/40663500")
     public void testNoAliveProcess() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         final TestTabModelDirectory tabbedModeDirectory =

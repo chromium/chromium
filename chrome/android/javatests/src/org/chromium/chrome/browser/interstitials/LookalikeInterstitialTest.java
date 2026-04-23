@@ -59,7 +59,7 @@ public class LookalikeInterstitialTest {
     }
 
     @Test
-    @Ignore("crbug/941488")
+    @Ignore("crbug.com/41446661")
     public void testBasicInterstitialShown() throws Exception {
         Tab tab = mPage.getTab();
         ChromeTabUtils.loadUrlOnUiThread(

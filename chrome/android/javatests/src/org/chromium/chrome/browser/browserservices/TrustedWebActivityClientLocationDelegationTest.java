@@ -33,7 +33,7 @@ import java.util.concurrent.TimeoutException;
  *
  * <p>The control flow in these tests is a bit complicated since attempting to connect to a test
  * TrustedWebActivityService in the chrome_public_test results in a ClassLoader error (see
- * https://crbug.com/841178#c1). Therefore we must put the test TrustedWebActivityService in
+ * https://crbug.com/40575521#c1). Therefore we must put the test TrustedWebActivityService in
  * chrome_public_test_support.
  *
  * <p>The general flow of these tests is as follows: 1. Call a method on TrustedWebActivityClient.

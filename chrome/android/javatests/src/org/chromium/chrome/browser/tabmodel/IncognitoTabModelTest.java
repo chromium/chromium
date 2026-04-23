@@ -114,7 +114,7 @@ public class IncognitoTabModelTest {
      * Verify that a close all operation that occurs while a tab is being added does not crash the
      * browser and results in 1 valid tab. This test simulates the case where the user selects
      * "Close all incognito tabs" then quickly clicks the "+" button to add a new incognito tab. See
-     * crbug.com/496651.
+     * crbug.com/41180542.
      */
     @Test
     @SmallTest

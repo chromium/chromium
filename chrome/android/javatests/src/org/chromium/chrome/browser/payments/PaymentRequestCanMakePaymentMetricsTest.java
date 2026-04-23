@@ -48,7 +48,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testCannotMakePayment_UserAbort() throws TimeoutException {
@@ -93,7 +93,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testCannotMakePayment_Complete() throws TimeoutException {

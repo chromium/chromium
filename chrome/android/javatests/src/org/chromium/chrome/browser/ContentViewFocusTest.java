@@ -113,7 +113,7 @@ public class ContentViewFocusTest {
      *     Exception @MediumTest @Feature({"TabContents"}) @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
      */
     @Test
-    @DisabledTest(message = "http://crbug.com/172473")
+    @DisabledTest(message = "http://crbug.com/40961297")
     public void testHideSelectionOnPhoneTabSwiping() throws Exception {
         mActivityTestRule.startOnBlankPage();
         // Setup
@@ -179,7 +179,7 @@ public class ContentViewFocusTest {
     @MediumTest
     @Feature({"TabContents"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "http://crbug.com/967128")
+    @DisabledTest(message = "http://crbug.com/40629209")
     public void testHideSelectionOnPhoneTabSwitcher() throws Exception {
         mActivityTestRule.startOnBlankPage();
         // Setup

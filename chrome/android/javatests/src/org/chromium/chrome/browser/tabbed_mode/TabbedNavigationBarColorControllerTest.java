@@ -191,7 +191,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1381509")
+    @DisabledTest(message = "crbug.com/40876827")
     public void testToggleFullscreen() throws TimeoutException {
         initialize();
 

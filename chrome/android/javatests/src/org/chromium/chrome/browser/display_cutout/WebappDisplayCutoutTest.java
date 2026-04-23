@@ -42,7 +42,7 @@ public class WebappDisplayCutoutTest {
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.FULLSCREEN)
-    @DisabledTest(message = "Flaky test - see: https://crbug.com/1211064")
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/40767445")
     public void testViewportFitWebapp_Fullscreen() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 

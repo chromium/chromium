@@ -117,7 +117,7 @@ public class TabSwitcherActionMenuPTTest {
         assertEquals(0, getTabCountOnUiThread(getCurrentTabModel()));
     }
 
-    /** Regression test for crbug.com/1448791 */
+    /** Regression test for crbug.com/40064814 */
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)

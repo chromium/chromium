@@ -566,7 +566,7 @@ public class CustomTabActivityAppMenuTest {
     // TODO(crbug.com/40896028): Re-enable this test after fixing/diagnosing flakiness.
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1420991")
+    @DisabledTest(message = "https://crbug.com/40896028")
     public void testCustomMenuEntry() throws TimeoutException {
         Intent customTabIntent = createMinimalCustomTabIntent();
         Intent baseCallbackIntent = new Intent();

@@ -823,7 +823,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1395173")
+    @DisabledTest(message = "https://crbug.com/40881976")
     public void testSiteExceptionSiteDataBlocked() throws Exception {
         setGlobalToggleForCategory(SiteSettingsCategory.Type.SITE_DATA, true);
 
@@ -856,7 +856,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1112409")
+    @DisabledTest(message = "https://crbug.com/40709705")
     public void testClearCookies() throws Exception {
         final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
 
@@ -941,7 +941,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1329450")
+    @DisabledTest(message = "https://crbug.com/40842614")
     public void testClearDomainCookies() throws Exception {
         final String url =
                 mPermissionRule.getURLWithHostName(
@@ -1209,7 +1209,7 @@ public class SiteSettingsTest {
         Assert.assertEquals(2, getTabCount());
     }
 
-    /** Test that showing the Site Settings menu doesn't crash (crbug.com/610576). */
+    /** Test that showing the Site Settings menu doesn't crash (crbug.com/40468610). */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -3245,7 +3245,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1094934")
+    @DisabledTest(message = "https://crbug.com/40699792")
     public void testEmbargoedNotificationCategorySiteSettings() throws Exception {
         final String urlToEmbargo =
                 mPermissionRule.getURLWithHostName(
@@ -3424,7 +3424,8 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1269556,https://crbug.com/1414569,crbug.com/1234530")
+    @DisabledTest(
+            message = "https://crbug.com/40804306,https://crbug.com/40256198,crbug.com/40781540")
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionRule.runNoPromptTest(

@@ -72,7 +72,7 @@ public class SearchEngineSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableIf.Build(hardware_is = "sprout", message = "crashes on android-one: crbug.com/540720")
+    @DisableIf.Build(hardware_is = "sprout", message = "crashes on android-one: crbug.com/40439156")
     public void testSearchEnginePreference() throws Exception {
         ensureTemplateUrlServiceLoaded();
 
@@ -145,8 +145,8 @@ public class SearchEngineSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/540706")
-    @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/540706")
+    @DisabledTest(message = "crbug.com/40439147")
+    @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/40439147")
     public void testSearchEnginePreferenceHttp() throws Exception {
         ensureTemplateUrlServiceLoaded();
 

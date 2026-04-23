@@ -55,7 +55,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// See: https://crbug.com/1120707
+// See: https://crbug.com/40145907
 @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
 @Batch(PER_CLASS)
 public class TrustedWebActivityPermissionsTest {

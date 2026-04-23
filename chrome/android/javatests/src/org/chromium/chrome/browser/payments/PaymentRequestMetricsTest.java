@@ -451,7 +451,7 @@ public class PaymentRequestMetricsTest {
     @Feature({"Payments"})
     @DisabledTest(
             message =
-                    "crbug.com/1260121 - The test deterministically fails in local run. "
+                    "crbug.com/40798033 - The test deterministically fails in local run. "
                             + "Efforts are needed to fix the test or the implementation code.")
     public void testShownLoggedOnlyOnce() throws TimeoutException {
         // Initiate a payment request.

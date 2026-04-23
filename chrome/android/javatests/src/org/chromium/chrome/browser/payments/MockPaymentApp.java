@@ -105,7 +105,7 @@ import java.util.Set;
 
     @Override
     public boolean canPreselect() {
-        // (https://crbug.com/1090604): Move pre-selection tests from
+        // (https://crbug.com/40697262): Move pre-selection tests from
         // PaymentRequestServiceWorker*Test.java to android_browsertests with a real service
         // worker based payment app.
         return !TextUtils.isEmpty(getLabel()) && getDrawableIcon() != null;

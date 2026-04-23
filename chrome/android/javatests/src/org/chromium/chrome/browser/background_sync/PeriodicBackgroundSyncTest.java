@@ -80,8 +80,8 @@ public final class PeriodicBackgroundSyncTest {
     @Before
     public void setUp() throws InterruptedException, TimeoutException {
         // This is necessary because our test devices don't have Google Play Services up to date,
-        // and Periodic Background Sync requires that. Remove this once https://crbug.com/514449 has
-        // been fixed.
+        // and Periodic Background Sync requires that. Remove this once https://crbug.com/40428648
+        // has been fixed.
         // Note that this should be done before the startMainActivityOnBlankPage(), because Chrome
         // will otherwise run this check on startup and disable Periodic Background Sync code.
         if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
@@ -236,7 +236,7 @@ public final class PeriodicBackgroundSyncTest {
     private void resetEngagementForUrl(final String url, final double engagement) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                    // TODO (https://crbug.com/40680929):  Add incognito mode tests.
                     SiteEngagementService.getForBrowserContext(
                                     ProfileManager.getLastUsedRegularProfile())
                             .resetBaseScoreForUrl(url, engagement);

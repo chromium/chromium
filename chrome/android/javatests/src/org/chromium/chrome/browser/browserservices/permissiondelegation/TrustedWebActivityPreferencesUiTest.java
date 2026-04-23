@@ -62,7 +62,7 @@ public class TrustedWebActivityPreferencesUiTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/1202711")
+    @DisabledTest(message = "https://crbug.com/40763065")
     public void testSingleCategoryManagedBy() throws Exception {
         final String site = "http://example.com";
         final Origin origin = Origin.create(site);

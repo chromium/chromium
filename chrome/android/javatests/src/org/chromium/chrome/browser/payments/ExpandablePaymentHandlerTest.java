@@ -231,7 +231,7 @@ public class ExpandablePaymentHandlerTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1191988")
+    @DisabledTest(message = "https://crbug.com/40756976")
     @Feature({"Payments"})
     public void testSwipeDownCloseUi() throws Throwable {
         startDefaultServer();
@@ -398,7 +398,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    @DisabledTest(message = "https://crbug.com/1491094")
+    @DisabledTest(message = "https://crbug.com/40074447")
     public void testWebContentsInputProtection() throws Throwable {
         startDefaultServer();
         PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
@@ -446,7 +446,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    @DisabledTest(message = "https://crbug.com/1382925")
+    @DisabledTest(message = "https://crbug.com/40877540")
     public void testOpenPageInfoDialog() throws Throwable {
         startDefaultServer();
         PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
@@ -525,7 +525,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1135547
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/40151924
     @ParameterAnnotations.UseMethodParameter(GoodCertParams.class)
     public void testSecureConnectionShowUi(int goodCertificate) throws Throwable {
         startServer(goodCertificate);

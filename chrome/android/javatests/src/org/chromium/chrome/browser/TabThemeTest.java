@@ -115,7 +115,7 @@ public class TabThemeTest {
     @Feature({"Toolbar-Theme-Color"})
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Flaky: https://crbug.com/1355516")
+    @DisabledTest(message = "Flaky: https://crbug.com/40859837")
     public void testThemeColorIsCorrect() throws ExecutionException, TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(

@@ -197,7 +197,7 @@ public class ChromeTabModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "https://crbug.com/1420186")
+    @DisabledTest(message = "https://crbug.com/40895583")
     public void testSuspend_ToggleOverview() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getActivityTab().addObserver(mTestObserver));
@@ -324,7 +324,7 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @DisabledTest(message = "https://crbug.com/1382221")
+    @DisabledTest(message = "https://crbug.com/40877195")
     @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_TabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
@@ -586,7 +586,7 @@ public class ChromeTabModalPresenterTest {
     @RequiresRestart("Removing views is global and cannot be reversed.")
     @Feature({"ModalDialog"})
     // Ensures an exception isn't thrown when a dialog is dismissed and the View is no longer
-    // attached to a Window. See https://crbug.com/1127254 for the specifics.
+    // attached to a Window. See https://crbug.com/40718955 for the specifics.
     public void testDismissAfterRemovingView() throws Throwable {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         ThreadUtils.runOnUiThreadBlocking(

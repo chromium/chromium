@@ -587,7 +587,7 @@ public class FindTest {
     @Test
     @MediumTest
     @Feature({"FindInPage"})
-    @DisabledTest(message = "https://crbug.com/1458344")
+    @DisabledTest(message = "https://crbug.com/40918821")
     public void testBackKeyDismissesFind() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
         waitForIME(true);

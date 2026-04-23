@@ -312,7 +312,7 @@ public class OmniboxTest {
      *   <li>pressing back
      * </ol>
      *
-     * All while the search engine is not the default one. See https://crbug.com/1173447
+     * All while the search engine is not the default one. See https://crbug.com/40746183
      */
     @Test
     @MediumTest

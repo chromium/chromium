@@ -330,7 +330,7 @@ public class CustomTabPostMessageTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/692025")
+    @DisabledTest(message = "https://crbug.com/41301759")
     public void testPostMessageReceivedFromPageWithLateRequest() throws Exception {
         final CallbackHelper messageChannelHelper = new CallbackHelper();
         final CallbackHelper onPostMessageHelper = new CallbackHelper();

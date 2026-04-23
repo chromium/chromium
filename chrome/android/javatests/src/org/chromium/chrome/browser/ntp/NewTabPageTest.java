@@ -289,7 +289,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "https://crbug.com/1033654")
+    @DisabledTest(message = "https://crbug.com/40663427")
     public void testSearchFromFakebox() {
         TouchCommon.singleClickView(mFakebox);
         waitForFakeboxFocusAnimationComplete(mNtp);
@@ -326,7 +326,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "Flaky - crbug.com/543138")
+    @DisabledTest(message = "Flaky - crbug.com/40440132")
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
@@ -596,7 +596,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1434807")
+    @DisabledTest(message = "https://crbug.com/40904417")
     public void testRecordHistogramMostVisitedItemClick_Ntp() {
         Tile tileForTest = new Tile(mSiteSuggestions.get(0), 0);
         ThreadUtils.runOnUiThreadBlocking(

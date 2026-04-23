@@ -71,7 +71,7 @@ public class FullscreenVideoTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
+    @DisabledTest(message = "Flaky https://crbug.com/41157404 https://crbug.com/40843959")
     public void testExitFullscreenNotifiesTabObservers() {
         testExitFullscreenNotifiesTabObserversInternal();
     }

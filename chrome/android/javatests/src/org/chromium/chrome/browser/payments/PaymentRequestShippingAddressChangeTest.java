@@ -72,7 +72,7 @@ public class PaymentRequestShippingAddressChangeTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testAddressRedactionInShippingAddressChange() throws TimeoutException {
         // Select a shipping address and cancel out.

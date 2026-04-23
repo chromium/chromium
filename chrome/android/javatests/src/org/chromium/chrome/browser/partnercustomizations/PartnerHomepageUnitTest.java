@@ -223,7 +223,7 @@ public class PartnerHomepageUnitTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/837311")
+    @DisabledTest(message = "crbug.com/40573802")
     @Feature({"Homepage"})
     public void testHomepageProviderTimeout() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
@@ -269,7 +269,7 @@ public class PartnerHomepageUnitTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    @DisabledTest(message = "crbug.com/837130")
+    @DisabledTest(message = "crbug.com/41385622")
     public void testHomepageProviderDelayed() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

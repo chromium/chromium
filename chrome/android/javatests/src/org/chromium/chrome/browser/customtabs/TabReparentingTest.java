@@ -182,7 +182,7 @@ public class TabReparentingTest {
     /** Test whether a custom tab can be reparented to a new activity. */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1434800")
+    @DisabledTest(message = "crbug.com/40904413")
     public void testTabReparentingBasic() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         assertEquals(

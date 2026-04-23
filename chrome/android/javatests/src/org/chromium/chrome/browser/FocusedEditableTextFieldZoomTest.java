@@ -85,7 +85,7 @@ public class FocusedEditableTextFieldZoomTest {
      * @LargeTest
      */
     @Test
-    @DisabledTest(message = "Broken by subpixel precision changes crbug.com/371119")
+    @DisabledTest(message = "Broken by subpixel precision changes crbug.com/41106056")
     @Feature({"TabContents"})
     public void testZoomInToSelected() throws Throwable {
         // This should focus the text field and initiate a zoom in.
@@ -102,7 +102,7 @@ public class FocusedEditableTextFieldZoomTest {
      * @LargeTest
      */
     @Test
-    @DisabledTest(message = "Broken by subpixel precision changes crbug.com/371119")
+    @DisabledTest(message = "Broken by subpixel precision changes crbug.com/41106056")
     @Feature({"TabContents"})
     public void testZoomOutOfSelectedIfOnlyBackPressed() throws Throwable {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();

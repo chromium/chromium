@@ -328,7 +328,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
     public void testTapContentView() {
         positionPanelInAlmostMaximizedState();
 
@@ -366,7 +366,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
     public void testScrollUpContentView() {
         positionPanelInMaximizedState();
 
@@ -386,7 +386,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
     public void testScrollDownContentView() {
         positionPanelInMaximizedState();
 
@@ -433,7 +433,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
     public void testUnwantedScrollDoesNotHappenInContentView() {
         positionPanelInAlmostMaximizedState();
 
@@ -469,7 +469,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40256612")
     @DisableIf.Device(
             DeviceFormFactor.DESKTOP) // TODO(crbug.com/493853052): Test failing on Desktop bot
     public void testDragPanelThenContinuouslyScrollContentView() {

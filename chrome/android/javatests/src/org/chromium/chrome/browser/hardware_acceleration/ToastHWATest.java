@@ -86,7 +86,7 @@ public class ToastHWATest {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @DisabledTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/41287849")
     public void testNoRenderThread() {
         Utils.assertNoRenderThread();
     }
@@ -94,7 +94,7 @@ public class ToastHWATest {
     @Test
     @MediumTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @DisabledTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/41287849")
     public void testDownloadingToast() throws Exception {
         mActivityTestRule.loadUrl(mTestServer.getURL(URL_PATH));
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
@@ -122,7 +122,7 @@ public class ToastHWATest {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @DisabledTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/41287849")
     public void testOpenedInBackgroundToast() throws Exception {
         mActivityTestRule.loadUrl(mTestServer.getURL(URL_PATH));
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
@@ -145,7 +145,7 @@ public class ToastHWATest {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @DisabledTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/41287849")
     public void testToastNoAcceleration() throws Exception {
         // Toasts created on low-end devices shouldn't be HW accelerated.
         Assert.assertFalse(isToastAcceleratedWithContext(mActivityTestRule.getActivity()));

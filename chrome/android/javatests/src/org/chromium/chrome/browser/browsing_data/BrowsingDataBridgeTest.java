@@ -336,7 +336,7 @@ public class BrowsingDataBridgeTest {
 
     /**
      * Tests that calling getContentsStateAsByteBuffer on a tab that has never committed a
-     * navigation results in a null ByteBuffer. Regression test for https://crbug.com/1240138.
+     * navigation results in a null ByteBuffer. Regression test for https://crbug.com/40194151.
      */
     @Test
     @MediumTest

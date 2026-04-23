@@ -416,7 +416,7 @@ public class WebApkUpdateManagerTest {
      * the WebAPK Android Manifest. Chrome and the WebAPK server used to parse URLs differently.
      *
      * <p>TODO(crbug.com/40279669): We probably no longer need this test because
-     * https://crbug.com/1252531 was fixed. Someone familiar with the context of this test might
+     * https://crbug.com/40198802 was fixed. Someone familiar with the context of this test might
      * want to update or remove this test.
      */
     @Test

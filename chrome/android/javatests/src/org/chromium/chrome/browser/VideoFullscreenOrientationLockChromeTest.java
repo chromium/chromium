@@ -110,7 +110,7 @@ public class VideoFullscreenOrientationLockChromeTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - crbug.com/888161")
+    @DisabledTest(message = "Flaky - crbug.com/41416571")
     public void testUnlockWithDownloadViewerActivity() throws Exception {
         if (mActivityTestRule.getActivity().isTablet()) {
             return;

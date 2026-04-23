@@ -197,7 +197,7 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Test for http://crbug.com/528909 Simulating while a printing job is triggered and about to
+     * Test for http://crbug.com/40434612 Simulating while a printing job is triggered and about to
      * call Android framework to show UI, the corresponding tab is closed, this behaviour is mostly
      * from JavaScript code. Make sure we don't crash and won't call into framework.
      */
@@ -230,9 +230,10 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Test for http://crbug.com/528909 Simulating while a printing job is triggered and printing UI
-     * is showing, the corresponding tab is closed, this behaviour is mostly from JavaScript code.
-     * Make sure we don't crash and let framework notify user that we can't perform printing job.
+     * Test for http://crbug.com/40434612 Simulating while a printing job is triggered and printing
+     * UI is showing, the corresponding tab is closed, this behaviour is mostly from JavaScript
+     * code. Make sure we don't crash and let framework notify user that we can't perform printing
+     * job.
      */
     @Test
     @LargeTest
@@ -305,7 +306,7 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Test for http://crbug.com/863297 This bug shows Android printing framework could call
+     * Test for http://crbug.com/41401371 This bug shows Android printing framework could call
      * |PrintDocumentAdapter.onFinish()| before one of |WriteResultCallback.onWrite{Cancelled,
      * Failed, Finished}()| get called. Crash test, pass if there is no crash.
      */
@@ -368,9 +369,9 @@ public class PrintingControllerTest {
     }
 
     /**
-     * Regresstion test for crbug.com/974581. In some cases, native printing code will fail without
-     * starting a printing task in Java side. pdfWritingDone() will be called with |pageCount| = 0
-     * in this case. We don't need to do anything for this in Java side for now.
+     * Regresstion test for crbug.com/40632299. In some cases, native printing code will fail
+     * without starting a printing task in Java side. pdfWritingDone() will be called with
+     * |pageCount| = 0 in this case. We don't need to do anything for this in Java side for now.
      */
     @Test
     @SmallTest

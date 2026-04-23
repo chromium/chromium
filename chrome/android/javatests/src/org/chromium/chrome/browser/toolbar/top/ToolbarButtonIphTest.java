@@ -71,7 +71,7 @@ public class ToolbarButtonIphTest {
 
         // Start on a page from the test server. This works around a bug that causes the top toolbar
         // to flicker. If the flicker happens while the IPH is visible, it will auto dismiss, and
-        // the test case will fail. See https://crbug.com/1144328.
+        // the test case will fail. See https://crbug.com/40728784.
         mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");
     }
 

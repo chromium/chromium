@@ -320,7 +320,7 @@ public class PaymentRequestContactDetailsTest {
     /** Quickly pressing on "cancel" and then "add contact info" should not crash. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testQuickCancelAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -368,7 +368,7 @@ public class PaymentRequestContactDetailsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
@@ -398,7 +398,7 @@ public class PaymentRequestContactDetailsTest {
      * helper text ("Cards and addresses are from...") would try to fetch the signed-in user in
      * incognito and hit a null-deference in doing so.
      *
-     * <p>See https://crbug.com/1311352
+     * <p>See https://crbug.com/40830987
      */
     @Test
     @MediumTest

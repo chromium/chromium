@@ -171,7 +171,7 @@ public class TabbedAppMenuTest {
 
     /**
      * Test that hitting ENTER past the bottom item doesn't crash Chrome. Catches regressions for
-     * http://crbug.com/181067
+     * http://crbug.com/40965967
      */
     @Test
     @SmallTest
@@ -184,7 +184,7 @@ public class TabbedAppMenuTest {
 
     /**
      * Test that hitting ENTER on the top item actually triggers the top item. Catches regressions
-     * for https://crbug.com/191239 for shrunken menus in landscape.
+     * for https://crbug.com/40306580 for shrunken menus in landscape.
      */
     @Test
     @SmallTest

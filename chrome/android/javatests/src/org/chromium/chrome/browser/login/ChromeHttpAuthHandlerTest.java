@@ -119,7 +119,7 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1218039")
+    @DisabledTest(message = "https://crbug.com/40771422")
     public void authDialogSuppressedOnBackgroundTab() throws Exception {
         Tab firstTab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.newTabFromMenu(

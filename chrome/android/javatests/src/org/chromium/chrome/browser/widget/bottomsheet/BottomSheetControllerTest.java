@@ -79,7 +79,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Restriction(DeviceFormFactor.PHONE) // TODO(mdjones): Remove this (crbug.com/837838).
+@Restriction(DeviceFormFactor.PHONE) // TODO(mdjones): Remove this (crbug.com/40574069).
 @Batch(Batch.PER_CLASS)
 public class BottomSheetControllerTest {
     @Rule
@@ -325,7 +325,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
-    @DisabledTest(message = "https://crbug.com/1523222")
+    @DisabledTest(message = "https://crbug.com/41496174")
     public void testGestureCannotMoveSheetDuringHideAnimation() {
         Rect visibleViewportRect = new Rect();
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleViewportRect);
@@ -523,7 +523,7 @@ public class BottomSheetControllerTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/837809")
+    @DisabledTest(message = "https://crbug.com/41385989")
     @MediumTest
     @Feature({"BottomSheetController"})
     public void testSwitchTabsMultipleTimes() throws TimeoutException {

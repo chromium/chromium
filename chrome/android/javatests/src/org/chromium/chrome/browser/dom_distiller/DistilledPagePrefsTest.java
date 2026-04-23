@@ -60,7 +60,7 @@ public class DistilledPagePrefsTest {
     private void getDistilledPagePrefs() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                    // TODO (https://crbug.com/40680929):  Add incognito mode tests.
                     DomDistillerService domDistillerService =
                             DomDistillerServiceFactory.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());

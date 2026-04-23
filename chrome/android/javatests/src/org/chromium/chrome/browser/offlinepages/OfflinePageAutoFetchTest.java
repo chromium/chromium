@@ -196,7 +196,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1108684")
+    @DisabledTest(message = "https://crbug.com/40141407")
     public void testAutoFetchTriggersOnDNSErrorWhenOffline() {
         attemptLoadPage("http://does.not.resolve.com");
         waitForRequestCount(1);
@@ -215,7 +215,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1424463")
+    @DisabledTest(message = "https://crbug.com/40898162")
     public void testAutoFetchOnDinoPage() throws Exception {
         startWebServer();
         final String testUrl = mWebServer.getBaseUrl();
@@ -254,7 +254,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1042215")
+    @DisabledTest(message = "https://crbug.com/40668364")
     public void testAutoFetchWithRedirect() throws Exception {
         startWebServer();
         useRedirectWebServerResponse();
@@ -300,7 +300,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1424463")
+    @DisabledTest(message = "https://crbug.com/40898162")
     public void testSwipeAwayCompleteNotification() throws Exception {
         // Standard setup to trigger auto-fetch.
         startWebServer();
@@ -345,7 +345,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/923212")
+    @DisabledTest(message = "https://crbug.com/40610094")
     public void testAutoFetchRequestRetainedOnOtherTabClosed() throws Exception {
         startWebServer();
         final String testUrl = mWebServer.getBaseUrl();
@@ -386,7 +386,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1424463")
+    @DisabledTest(message = "https://crbug.com/40898162")
     public void testAutoFetchSwipeInProgressNotification() throws Exception {
         // Trigger an auto-fetch request, and then an in-progress notification.
         final String testUrl = "http://www.offline.com";
@@ -404,7 +404,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
-    @DisabledTest(message = "https://crbug.com/1426451, https://crbug.com/1424463")
+    @DisabledTest(message = "https://crbug.com/40261294, https://crbug.com/40898162")
     public void testAutoFetchTwoRequestsCancel() throws Exception {
         // Trigger two auto-fetch requests.
         final String testUrl1 = "http://www.offline1.com";

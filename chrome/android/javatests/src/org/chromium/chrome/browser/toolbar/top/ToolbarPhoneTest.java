@@ -294,7 +294,7 @@ public class ToolbarPhoneTest {
         // The purpose of this test is to document the expected behavior for setting
         // paddings and sizes of toolbar elements based on the visibility of the menu button.
         // This test fails if View#isShown() is used to determine visibility.
-        // See https://crbug.com/1176992 for an example when it caused an issue.
+        // See https://crbug.com/40748221 for an example when it caused an issue.
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);

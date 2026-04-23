@@ -104,7 +104,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
         assertFinalDestination(blankPage);
     }
 
-    /** Regression test for crbug.com/1448791 */
+    /** Regression test for crbug.com/40064814 */
     @Test
     @LargeTest
     public void testClosingAllRegularTabs_DoNotFinishActivity() {

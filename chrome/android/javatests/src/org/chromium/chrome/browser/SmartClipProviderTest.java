@@ -194,12 +194,13 @@ public class SmartClipProviderTest implements Handler.Callback {
         return null;
     }
 
-    // Disable test on tablet since it fails consistently on M tablet. See https://crbug.com/853816
+    // Disable test on tablet since it fails consistently on M tablet. See
+    // https://crbug.com/41395212
     @Restriction(DeviceFormFactor.PHONE)
     @Test
     @MediumTest
     @Feature({"SmartClip"})
-    @DisabledTest(message = "https://crbug.com/853816")
+    @DisabledTest(message = "https://crbug.com/41395212")
     public void testSmartClipDataCallback() throws TimeoutException {
         final float dpi = Coordinates.createFor(mWebContents).getDeviceScaleFactor();
         final Rect bounds = DOMUtils.getNodeBounds(mWebContents, "simple_text");
@@ -249,7 +250,7 @@ public class SmartClipProviderTest implements Handler.Callback {
                     Assert.assertNotNull(scp);
                     try {
                         // Galaxy Note 4 has a bug where it doesn't always set the handler first; in
-                        // that case, we shouldn't crash: http://crbug.com/710147
+                        // that case, we shouldn't crash: http://crbug.com/40514899
                         mExtractSmartClipDataMethod.invoke(scp, 10, 20, 100, 70);
 
                         // Add a wait for a valid callback to make sure we have time to

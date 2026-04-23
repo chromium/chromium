@@ -828,7 +828,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1221647")
+    @DisabledTest(message = "https://crbug.com/40773589")
     public void testExitFirstRunWithPolicy() throws Exception {
         initializePreferences(new FirstRunPagesTestCase().withCctTosDisabled());
 
@@ -869,7 +869,7 @@ public class FirstRunIntegrationTest {
                 "Native init never completed", activity::didFinishNativeInitialization);
 
         // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
-        // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.
+        // Use longer timeout here to avoid flakiness. See https://crbug.com/40736538.
         CriteriaHelper.pollUiThread(activity::deferredStartupPostedForTesting);
         Assert.assertTrue(
                 "Deferred startup never completed",
@@ -930,7 +930,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testFastDestroy() {
-        // Inspired by crbug.com/1119548, where onDestroy() before triggerLayoutInflation() caused
+        // Inspired by crbug.com/40145537, where onDestroy() before triggerLayoutInflation() caused
         // a crash.
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
@@ -1027,7 +1027,7 @@ public class FirstRunIntegrationTest {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase().withoutSignIn();
         initializePreferences(testCase);
 
-        // Inspired by https://crbug.com/1207683 where a notification was dropped because native
+        // Inspired by https://crbug.com/40181400 where a notification was dropped because native
         // initialized before the first fragment was attached to the activity.
         FirstRunActivity firstRunActivity;
         try (var ignored = mSigninTestRule.blockGetAccountsUpdate()) {
@@ -1086,7 +1086,7 @@ public class FirstRunIntegrationTest {
                         // Replace the progress bar with a placeholder to allow other checks.
                         // Currently
                         // the progress bar cannot be stopped otherwise due to some espresso issues
-                        // (crbug.com/1115067).
+                        // (crbug.com/40144184).
                         progressBar.setIndeterminateDrawable(
                                 new ColorDrawable(
                                         SemanticColorUtils.getDefaultBgColor(firstRunActivity)));

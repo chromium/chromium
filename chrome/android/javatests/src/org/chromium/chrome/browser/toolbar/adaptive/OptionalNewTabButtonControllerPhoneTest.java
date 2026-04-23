@@ -222,7 +222,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1450561")
+    @DisabledTest(message = "crbug.com/40915363")
     public void testButton_hidesOnNtp() {
         mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
         ThreadUtils.runOnUiThreadBlocking(

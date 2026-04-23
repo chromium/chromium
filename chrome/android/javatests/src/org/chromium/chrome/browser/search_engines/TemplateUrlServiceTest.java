@@ -156,7 +156,7 @@ public class TemplateUrlServiceTest {
     @Test
     @SmallTest
     @Feature({"SearchEngines"})
-    @Restriction(DeviceFormFactor.PHONE) // see crbug.com/581268
+    @Restriction(DeviceFormFactor.PHONE) // see crbug.com/40453883
     public void testLoadUrlService() {
         waitForTemplateUrlServiceToLoad();
 

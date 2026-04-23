@@ -1737,7 +1737,7 @@ public class SigninFirstRunFragmentTest {
 
     /**
      * The dialog does not open instantly, and if we do not wait we get a small percentage of
-     * flakes. See https://crbug.com/1343519.
+     * flakes. See https://crbug.com/40231389.
      */
     private void clickOnUmaDialogLinkAndWait() {
         onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());

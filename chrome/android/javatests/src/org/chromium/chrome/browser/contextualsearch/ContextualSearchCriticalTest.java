@@ -55,7 +55,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Previously disabled:  https://crbug.com/1058297
+    // Previously disabled:  https://crbug.com/40121079
     public void testResolveCausesOneLowPriorityRequest() throws Exception {
         simulateSlowResolveSearch("states");
 
@@ -109,7 +109,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @DisabledTest(message = "Flaky, crbug.com/40757167")
-    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
+    // Previously flaky and disabled 4/2021.  https://crbug.com/40757167
     public void testResolveDisablePreload() throws Exception {
         simulateSlowResolveSearch("intelligence");
 
@@ -129,7 +129,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Previously disabled: crbug.com/765403
+    // Previously disabled: crbug.com/40540137
     @DisabledTest(message = "crbug.com/377363763")
     public void testSearchTermResolutionError() throws Exception {
         simulateSlowResolveSearch("states");
@@ -266,7 +266,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "crbug.com/1404658")
+    @DisabledTest(message = "crbug.com/40886219")
     public void testChainedSearchCreatesNewContent() throws Exception {
         // This test depends on preloading the content - which is loaded and not made visible.
         // We only preload when the user has decided to accept the privacy opt-in.
@@ -304,7 +304,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
 
     /** Tests that chained searches load correctly. */
     @Test
-    @DisabledTest(message = "crbug.com/549805")
+    @DisabledTest(message = "crbug.com/40442750")
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(DeviceFormFactor.PHONE)

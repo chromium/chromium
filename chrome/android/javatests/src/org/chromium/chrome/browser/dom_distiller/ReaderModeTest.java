@@ -211,7 +211,7 @@ public class ReaderModeTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1338273")
+    @DisabledTest(message = "https://crbug.com/40848950")
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testCloseAllIncognitoNotification_ClosesCct()
             throws PendingIntent.CanceledException, TimeoutException {

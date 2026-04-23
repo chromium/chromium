@@ -121,7 +121,7 @@ public class PaymentRequestEmailTest {
     /** Provide the existing valid email address to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -193,7 +193,7 @@ public class PaymentRequestEmailTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.

@@ -81,7 +81,7 @@ public class DownloadLocationChangeEnd2EndTest {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "crbug.com/1415500")
+    @DisabledTest(message = "crbug.com/40892752")
     public void testDefaultDialogPositiveButtonClickThrough() {
         startDownload(/* hasSDCard= */ true);
 
@@ -127,7 +127,7 @@ public class DownloadLocationChangeEnd2EndTest {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "https://crbug.com/1381286")
+    @DisabledTest(message = "https://crbug.com/40876707")
     public void testDefaultDialogShowSpinner() {
         startDownload(/* hasSDCard= */ true);
 

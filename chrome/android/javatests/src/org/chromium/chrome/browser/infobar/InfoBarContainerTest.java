@@ -338,7 +338,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @RequiresRestart("crbug.com/1242720")
+    @RequiresRestart("crbug.com/40195124")
     @DisabledTest(message = "https://crbug.com/430777988")
     public void testAddAndDismissSurfaceFlingerOverlays() throws Exception {
         final ViewGroup decorView =

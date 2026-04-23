@@ -13,10 +13,10 @@ import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTest
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.spoofVerification;
 
-import android.os.Build;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -70,7 +70,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-@DoNotBatch(reason = "https://crbug.com/1454648")
+@DoNotBatch(reason = "https://crbug.com/40272410")
 public class TrustedWebActivityTest {
     // TODO(peconn): Add test for navigating away from the trusted origin.
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

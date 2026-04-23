@@ -125,7 +125,7 @@ public class OfflinePageRequestTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/786233")
+    @DisabledTest(message = "crbug.com/41356134")
     public void testLoadOfflinePageFromDownloadsOnDisconnectedNetwork() throws Exception {
         // Specifically tests saving to and loading from Downloads.
         EmbeddedTestServer testServer =

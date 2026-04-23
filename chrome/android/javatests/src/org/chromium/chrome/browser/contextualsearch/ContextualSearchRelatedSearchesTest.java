@@ -73,7 +73,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
 
     /**
      * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches in
-     * the Bar or not. See https://crbug.com/1250546.
+     * the Bar or not. See https://crbug.com/40791940.
      */
     @Test
     @SmallTest
@@ -226,7 +226,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1255084")
+    @DisabledTest(message = "https://crbug.com/40794713")
     public void testRelatedSearchesDismissDuringAnimation() throws Exception {
         // Use the "intelligence" node to generate Related Searches suggestions.
         simulateResolveSearch("intelligence");

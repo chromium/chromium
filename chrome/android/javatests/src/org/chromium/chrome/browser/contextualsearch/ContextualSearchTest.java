@@ -100,7 +100,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
 
     /**
      * Tests that a Tap gesture processing is robust even when the selection somehow gets cleared
-     * during that process. This tests a failure-case found in crbug.com/728644.
+     * during that process. This tests a failure-case found in crbug.com/41322728.
      */
     @Test
     @SmallTest

@@ -337,14 +337,16 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
+    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/40091497")
     public void testOfflinePage() throws TimeoutException {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
-                publisherUrl, "com.example.test", "example.com",
+                publisherUrl,
+                "com.example.test",
+                "example.com",
                 R.drawable.omnibox_https_valid_page_info);
 
-        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+        // TODO (https://crbug.com/40680929):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {

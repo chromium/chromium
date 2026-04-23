@@ -98,7 +98,7 @@ public class MHTMLPageTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky. crbug.com/1030558")
+    @DisabledTest(message = "Flaky. crbug.com/40661925")
     public void testDownloadMultipartRelatedPageFromServer() throws Exception {
         // .mhtml file is mapped to "multipart/related" by the test server.
         final String url = mTestServer.getURL("/chrome/test/data/android/hello.mhtml");

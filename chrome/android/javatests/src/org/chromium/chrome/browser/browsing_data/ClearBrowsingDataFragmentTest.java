@@ -718,7 +718,7 @@ public class ClearBrowsingDataFragmentTest {
     /**
      * Tests that the important sites dialog is shown and if we cancel nothing happens.
      *
-     * <p>http://crbug.com/727310
+     * <p>http://crbug.com/41322002
      */
     @Test
     @MediumTest

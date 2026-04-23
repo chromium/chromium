@@ -280,7 +280,7 @@ public class PreviewTabTest {
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
-    @DisabledTest(message = "https://crbug.com/1412050")
+    @DisabledTest(message = "https://crbug.com/40890672")
     public void testObserverMethods() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver));

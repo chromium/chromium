@@ -520,7 +520,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/1188548")
+    @DisabledTest(message = "https://crbug.com/40754932")
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();

@@ -6,6 +6,12 @@ package org.chromium.chrome.browser.permissions;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -23,10 +29,6 @@ import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /** Test suite for permissions automatic embargo logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -134,14 +136,14 @@ public class AutomaticEmbargoTest {
   @DisabledTest(message = "Flaky. See crbug.com/380193331")
   public void testMicrophoneEmbargo() throws Exception {
     runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", /* withGesture= */ true);
-  }
+    }
 
-  @Test
-  @LargeTest
-  @Feature({"MediaPermissions"})
-  @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-  @DisabledTest(message = "https://crbug.com/1378316")
-  public void testMicrophoneAndCameraEmbargo() throws Exception {
-    runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", /* withGesture= */ true);
-  }
+    @Test
+    @LargeTest
+    @Feature({"MediaPermissions"})
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisabledTest(message = "https://crbug.com/40874926")
+    public void testMicrophoneAndCameraEmbargo() throws Exception {
+        runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", /* withGesture= */ true);
+    }
 }

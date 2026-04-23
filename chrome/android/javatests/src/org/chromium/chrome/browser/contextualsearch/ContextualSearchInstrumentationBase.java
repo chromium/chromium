@@ -370,7 +370,7 @@ public class ContextualSearchInstrumentationBase {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
         // DOMUtils sometimes hits the wrong node due to an incorrect page scale factor,
-        // so wait until that is set. https://crbug.com/1327063
+        // so wait until that is set. https://crbug.com/40840940
         mActivityTestRule.assertWaitForPageScaleFactorMatch(1.0f);
 
         mManager = mActivityTestRule.getActivity().getContextualSearchManagerForTesting();
@@ -1015,7 +1015,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for a Normal priority URL to be loaded, or asserts that the load never happened. This
      * is needed when we test with a live internet connection and an invalid url fails to load (as
-     * expected. See crbug.com/682953 for background.
+     * expected. See crbug.com/40502510 for background.
      */
     protected void waitForNormalPriorityUrlLoaded() {
         CriteriaHelper.pollInstrumentationThread(

@@ -180,7 +180,7 @@ public class CustomTabsConnectionTest {
 
     /*
      * Tests that when the disconnection notification comes from a non-UI thread, Chrome doesn't
-     * crash. Non-regression test for crbug.com/623128.
+     * crash. Non-regression test for crbug.com/41260795.
      */
     @Test
     @SmallTest

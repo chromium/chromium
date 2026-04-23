@@ -543,7 +543,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                     Assert.assertEquals(LayoutType.TAB_SWITCHER, getActiveLayout().getLayoutType());
                 });
 
-        // See https://crbug.com/1522983 this shouldn't crash.
+        // See https://crbug.com/41495937 this shouldn't crash.
         showTabSwitcherLayout();
     }
 
@@ -599,7 +599,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1216438, crbug.com/1139943")
+    @DisabledTest(message = "crbug.com/40770485, crbug.com/40726298")
     public void testLayoutObserverNotification_ShowAndHide_TabSwitcher() throws TimeoutException {
         LayoutObserverCallbackHelper startedShowingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedShowingCallback = new LayoutObserverCallbackHelper();

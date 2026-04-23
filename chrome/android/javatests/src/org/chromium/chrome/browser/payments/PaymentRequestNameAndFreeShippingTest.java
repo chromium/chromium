@@ -74,7 +74,7 @@ public class PaymentRequestNameAndFreeShippingTest {
     /** Submit the payer name and shipping address to the merchant when the user clicks "Pay." */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -110,7 +110,7 @@ public class PaymentRequestNameAndFreeShippingTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and cancel the Payment Request.

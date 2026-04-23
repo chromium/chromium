@@ -120,7 +120,7 @@ public final class ShareButtonControllerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1381572")
+    @DisabledTest(message = "crbug.com/40876865")
     public void testShareButtonInToolbarIsDisabledOnUpdate() {
         View experimentalButton =
                 mActivityTestRule

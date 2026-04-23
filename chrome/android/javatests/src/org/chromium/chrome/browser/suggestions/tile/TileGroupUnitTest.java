@@ -116,7 +116,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1292469")
+    @DisabledTest(message = "https://crbug.com/40819365")
     public void testInitialiseWithTileList() {
         mMostVisitedSites.setTileSuggestionsPassive(URLS);
 
@@ -169,7 +169,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    // If this flakes again, refer to https://crbug.com/1336867.
+    // If this flakes again, refer to https://crbug.com/40848015.
     public void testReceiveNewTilesWithoutChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
 
@@ -184,7 +184,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1336867")
+    @DisabledTest(message = "https://crbug.com/40848015")
     public void testReceiveNewTilesWithoutChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad= */ true, URLS);
 
@@ -218,7 +218,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
+    // If this flakes again, refer to https://crbug.com/40227230, https://crbug.com/40819839.
     public void testReceiveNewTilesWithDataChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad= */ true, URLS);
 
@@ -327,7 +327,7 @@ public class TileGroupUnitTest {
     @UiThreadTest
     @SmallTest
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
+    // If this flakes again, refer to https://crbug.com/40227230, https://crbug.com/40819839.
     public void testRenderTileView_DisableMvtCustomization() {
         doRenderTileViewTest();
     }
@@ -336,7 +336,7 @@ public class TileGroupUnitTest {
     @UiThreadTest
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
+    // If this flakes again, refer to https://crbug.com/40227230, https://crbug.com/40819839.
     public void testRenderTileView_EnableMvtCustomization() {
         doRenderTileViewTest();
     }
@@ -380,7 +380,7 @@ public class TileGroupUnitTest {
         refreshData(tileGroup, layout);
     }
 
-    /** Check for https://crbug.com/703628: don't crash on duplicated URLs. */
+    /** Check for https://crbug.com/40511776: don't crash on duplicated URLs. */
     @Test
     @UiThreadTest
     @SmallTest
@@ -412,7 +412,7 @@ public class TileGroupUnitTest {
     @UiThreadTest
     @SmallTest
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    // If this flakes again, refer to https://crbug.com/1286755.
+    // If this flakes again, refer to https://crbug.com/40815816.
     public void testRenderTileViewReplacing_DisableMvtCustomization() {
         doRenderTileViewReplacingTest();
     }
@@ -421,7 +421,7 @@ public class TileGroupUnitTest {
     @UiThreadTest
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    // If this flakes again, refer to https://crbug.com/1286755.
+    // If this flakes again, refer to https://crbug.com/40815816.
     public void testRenderTileViewReplacing_EnableMvtCustomization() {
         doRenderTileViewReplacingTest();
     }
@@ -504,7 +504,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoadingForInit() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
         Tile tile = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED).get(0);
@@ -523,7 +523,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "Test is flaky, see crbug.com/1288425")
+    @DisabledTest(message = "Test is flaky, see crbug.com/40816947")
     public void testIconLoadingWhenTileNotRegistered() {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);
@@ -541,7 +541,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_Sync() {
         TileGroup tileGroup = initialiseTileGroup();
         mImageFetcher.fulfillLargeIconRequests();
@@ -561,7 +561,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_AsyncNoTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad= */ true);
         mImageFetcher.fulfillLargeIconRequests();
@@ -582,7 +582,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_AsyncTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad= */ true);
         mImageFetcher.fulfillLargeIconRequests();

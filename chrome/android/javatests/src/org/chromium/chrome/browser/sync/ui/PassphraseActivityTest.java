@@ -41,7 +41,7 @@ public class PassphraseActivityTest {
         mContext = ApplicationProvider.getApplicationContext();
     }
 
-    /** This is a regression test for http://crbug.com/469890. */
+    /** This is a regression test for http://crbug.com/41164232. */
     @Test
     @SmallTest
     @Feature({"Sync"})

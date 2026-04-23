@@ -60,7 +60,7 @@ public class ToolbarProgressBarIntegrationTest {
     @Test
     @Feature({"Android-Progress-Bar"})
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1269029")
+    @DisabledTest(message = "https://crbug.com/40803941")
     public void testProgressBarTraversesScreenOnce() throws TimeoutException {
         final WebContents webContents = mActivityTestRule.getWebContents();
 

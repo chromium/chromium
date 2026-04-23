@@ -407,7 +407,7 @@ public class OmniboxUrlEmphasizerTest {
 
     /**
      * Verify that an empty URL is processed correctly by OmniboxUrlEmphasizer.emphasizeUrl().
-     * Regression test for crbug.com/700769
+     * Regression test for crbug.com/41306934
      */
     @Test
     @MediumTest

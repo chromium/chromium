@@ -301,7 +301,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "crbug.com/1348310")
+    @DisabledTest(message = "crbug.com/40855224")
     public void testCloseTabWithTwoTabs() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -348,7 +348,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "crbug.com/1348310")
+    @DisabledTest(message = "crbug.com/40855224")
     public void testCloseTabWithManyTabs() throws Exception {
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity(), 4);
@@ -998,7 +998,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "crbug.com/1348310")
+    @DisabledTest(message = "crbug.com/40855224")
     public void testScrollingStripStackersWithMiddleTabSelected() throws Exception {
         // Open enough regular tabs to cause the tab strip to scroll.
         ChromeTabUtils.newTabsFromMenu(
@@ -1120,7 +1120,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "crbug.com/1348310")
+    @DisabledTest(message = "crbug.com/40855224")
     public void testScrollingStripStackerTabOffsets() throws Exception {
         // Check scrolling tab strip
         checkTabStrips();

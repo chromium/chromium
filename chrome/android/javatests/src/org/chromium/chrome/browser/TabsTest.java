@@ -101,7 +101,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @DoNotBatch(
         reason =
-                "https://crbug.com/1347598: Side effects are causing flakes in CI and failures"
+                "https://crbug.com/40854790: Side effects are causing flakes in CI and failures"
                         + " locally. Unbatched to isolate flakes before batching again.")
 public class TabsTest {
     @Rule
@@ -395,7 +395,7 @@ public class TabsTest {
 
     /**
      * Verify that the selection is collapsed when switching to the tab-switcher mode then switching
-     * back. https://crbug.com/697756
+     * back. https://crbug.com/40508949
      */
     @Test
     @MediumTest
@@ -416,7 +416,7 @@ public class TabsTest {
 
     /**
      * Verify that opening a new tab and navigating immediately sets a size on the newly created
-     * renderer. https://crbug.com/434477.
+     * renderer. https://crbug.com/41143678.
      */
     @Test
     @SmallTest
@@ -497,7 +497,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "https://crbug.com/1347598")
+    @DisabledTest(message = "https://crbug.com/40854790")
     public void testQuickSwitchBetweenTabAndSwitcherMode() {
         final String[] urls = {
             getUrl("/chrome/test/data/android/navigate/one.html"),
@@ -632,7 +632,7 @@ public class TabsTest {
         }
     }
 
-    // Regression test for https://crbug.com/1394372.
+    // Regression test for https://crbug.com/40881554.
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)

@@ -136,9 +136,9 @@ public class SelectFileDialogTest {
     @Test
     @MediumTest
     @Feature({"TextInput", "Main"})
-    @DisabledTest(message = "https://crbug.com/724163")
+    @DisabledTest(message = "https://crbug.com/40521518")
     public void testSelectFileAndCancelRequest() throws Throwable {
-        // TODO(aurimas) remove this wait once crbug.com/179511 is fixed.
+        // TODO(aurimas) remove this wait once crbug.com/40303742 is fixed.
         // Wait for page scale will timeout and causing the test to fail.
         mActivityTestRule.assertWaitForPageScaleFactorMatch(2);
         {

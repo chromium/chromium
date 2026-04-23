@@ -59,7 +59,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "https://crbug.com/1454648")
+@DoNotBatch(reason = "https://crbug.com/40272410")
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})

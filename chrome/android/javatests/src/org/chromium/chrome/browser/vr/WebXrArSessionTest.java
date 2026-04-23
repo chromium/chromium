@@ -102,7 +102,7 @@ public class WebXrArSessionTest {
 
     /**
      * Tests that repeatedly starting and stopping AR sessions does not cause any unexpected
-     * behavior. Regression test for https://crbug.com/837894.
+     * behavior. Regression test for https://crbug.com/41386035.
      */
     @Test
     @MediumTest

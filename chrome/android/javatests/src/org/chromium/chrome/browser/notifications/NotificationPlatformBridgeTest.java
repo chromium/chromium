@@ -139,7 +139,7 @@ public class NotificationPlatformBridgeTest {
     }
 
     private double getEngagementScoreBlocking() {
-        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+        // TODO (https://crbug.com/40680929):  Add incognito mode tests.
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SiteEngagementService.getForBrowserContext(
@@ -154,7 +154,7 @@ public class NotificationPlatformBridgeTest {
     @LargeTest
     @Feature({"Browser", "Notifications"})
     @Test
-    @DisabledTest(message = "https://crbug.com/1435133")
+    @DisabledTest(message = "https://crbug.com/40904618")
     public void testPermissionDenied() throws Exception {
         // Notifications permission should initially be prompt, and showing should fail.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
@@ -199,7 +199,7 @@ public class NotificationPlatformBridgeTest {
     @MediumTest
     @Feature({"Browser", "Notifications"})
     @Test
-    @DisabledTest(message = "https://crbug.com/1435133")
+    @DisabledTest(message = "https://crbug.com/40904618")
     public void testPermissionGranted() throws Exception {
         // Notifications permission should initially be prompt, and showing should fail.
         Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));

@@ -120,7 +120,8 @@ public class WarmupManagerTest {
         // Unlike most of Chrome, the WarmupManager inflates layouts with the application context.
         // This is because the inflation happens before an activity exists. If you're trying to fix
         // a failing test, it's important to not add extra theme/style information to this context
-        // in this test because it could hide a real production issue. See https://crbug.com/1246329
+        // in this test because it could hide a real production issue. See
+        // https://crbug.com/40196491
         // for an example.
         mContext =
                 InstrumentationRegistry.getInstrumentation()

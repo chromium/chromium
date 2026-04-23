@@ -403,7 +403,7 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1085592")
+    @DisabledTest(message = "https://crbug.com/40693706")
     public void testFetcherDoesNotTimeOutWithManyUrls() throws Exception {
         final WebsitePermissionsWaiter waiter = new WebsitePermissionsWaiter();
         // Set lots of permissions values.
@@ -455,7 +455,7 @@ public class WebsitePermissionsFetcherTest {
                                         ContentSetting.BLOCK);
                     }
 
-                    // This should not time out. See crbug.com/732907.
+                    // This should not time out. See crbug.com/40525586.
                     WebsitePermissionsFetcher fetcher =
                             new WebsitePermissionsFetcher(mSiteSettingsDelegate);
                     fetcher.fetchAllPreferences(waiter);

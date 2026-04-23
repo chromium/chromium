@@ -126,7 +126,7 @@ public class PasswordSavingIntegrationTest {
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
     @DisabledTest(message = "https://crbug.com/371014579")
-    // TODO(crbug/1475346): Add integration tests for automotive save password flow.
+    // TODO(crbug.com/40927881): Add integration tests for automotive save password flow.
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 

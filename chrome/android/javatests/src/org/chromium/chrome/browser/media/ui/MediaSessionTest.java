@@ -75,7 +75,7 @@ public class MediaSessionTest {
     }
 
     /**
-     * Regression test for crbug.com/1108038.
+     * Regression test for crbug.com/40141115.
      *
      * <p>Makes sure the notification info is updated after a navigation from a native page to a
      * site with media.
@@ -116,7 +116,7 @@ public class MediaSessionTest {
     }
 
     private void waitForNotificationReady() {
-        // Extended timeout to avoid flakiness https://crbug.com/1315419
+        // Extended timeout to avoid flakiness https://crbug.com/40833503
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     if (MediaNotificationManager.getController(R.id.media_playback_notification)

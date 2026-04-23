@@ -57,7 +57,7 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Flaky - crbug/1455454")
+    @DisabledTest(message = "Flaky - crbug.com/40917393")
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(

@@ -345,7 +345,7 @@ public class MostVisitedTilesLayoutTest {
 
         ChromeActivity activity = mActivityTestRule.getActivity();
 
-        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+        // TODO (https://crbug.com/40680929):  Add incognito mode tests.
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         SuggestionsUiDelegate uiDelegate =
                 new SuggestionsUiDelegateImpl(null, profile, null, activity.getSnackbarManager());

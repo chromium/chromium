@@ -757,7 +757,7 @@ public class NavigateTest {
     }
 
     @Test
-    @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/540723")
+    @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/40439157")
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376375165
     @MediumTest
     @Feature({"Navigation"})
@@ -842,7 +842,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "crbug.com/1130419")
+    @DisabledTest(message = "crbug.com/40720772")
     public void testRendererInitiatedIntentNavigate() throws Exception {
         final String finalUrl =
                 mTestServer.getURL("/chrome/test/data/android/renderer_initiated/final.html");

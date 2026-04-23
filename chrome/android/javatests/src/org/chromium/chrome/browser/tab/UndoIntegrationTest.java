@@ -119,7 +119,7 @@ public class UndoIntegrationTest {
                 });
     }
 
-    // Regression test for crbug/1465745.
+    // Regression test for crbug.com/40276103.
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)

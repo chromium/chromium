@@ -264,7 +264,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @Test
     @MediumTest
-    @RequiresRestart("crbug.com/1223068")
+    @RequiresRestart("crbug.com/40774438")
     public void testExternalSearchIntentNoResolvers() throws Throwable {
         final int count =
                 1

@@ -296,7 +296,8 @@ public class ProfileTest {
     @Test
     @LargeTest
     @RequiresRestart(
-            "crbug/1161449 - Other tests create profiles which invalidate the first assertion.")
+            "crbug.com/40738830 - Other tests create profiles which invalidate the first"
+                    + " assertion.")
     public void testGetOffTheRecordProfile() {
         OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
 

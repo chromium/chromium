@@ -43,7 +43,7 @@ public class CustomTabTabPersistenceIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1477814")
+    @DisabledTest(message = "crbug.com/40929072")
     public void testTabFilesDeletedOnClose() {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         String expectedTabFileName =

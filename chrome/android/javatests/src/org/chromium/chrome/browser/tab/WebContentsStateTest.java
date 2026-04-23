@@ -63,7 +63,7 @@ public class WebContentsStateTest {
         }
     }
 
-    /** Tests that Chrome doesn't crash parsing a corrupted tab state. crbug/1094239 */
+    /** Tests that Chrome doesn't crash parsing a corrupted tab state. crbug.com/40135353 */
     @Test
     @SmallTest
     public void testLoadCorruptedTabState() throws Exception {

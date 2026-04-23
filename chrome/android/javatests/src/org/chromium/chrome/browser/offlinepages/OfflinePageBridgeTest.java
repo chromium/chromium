@@ -428,7 +428,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/842801")
+    @DisabledTest(message = "crbug.com/41388878")
     public void testSavePageNoOrigin() throws Exception {
         mActivityTestRule.loadUrl(mTestUrl);
         savePage(SavePageResult.SUCCESS, mTestUrl);

@@ -130,7 +130,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when we navigate the main page. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1211930/")
+    @DisabledTest(message = "https://crbug.com/40767862/")
     public void testExitPipOnNavigation() throws Throwable {
         testExitOn(
                 () ->
@@ -191,7 +191,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1211930/#c10")
+    @DisabledTest(message = "https://crbug.com/40767862/#c10")
     public void testNoExitOnIframeNavigation() throws Throwable {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
         // we are still in PiP.

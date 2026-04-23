@@ -9,9 +9,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import android.app.Notification;
 import android.os.Bundle;
 import android.util.Pair;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import java.util.concurrent.TimeoutException;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -35,12 +43,8 @@ import org.chromium.components.gcm_driver.instance_id.FakeInstanceIDWithSubtype;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Instrumentation tests for the Push API and the integration with the Notifications API on Android.
@@ -183,7 +187,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @Test
     @MediumTest
     @Feature({"Browser", "PushMessaging"})
-    @DisabledTest(message = "Disabled for flakiness, see https://crbug.com/1442707")
+    @DisabledTest(message = "Disabled for flakiness, see https://crbug.com/40910713")
     public void testPushPermissionGranted() throws TimeoutException {
         // Notifications permission should initially be prompt.
         Assert.assertEquals("\"default\"", runScriptBlocking("Notification.permission"));
@@ -210,7 +214,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @Test
     @MediumTest
     @Feature({"Browser", "PushMessaging"})
-    @DisabledTest(message = "https://crbug.com/707528")
+    @DisabledTest(message = "https://crbug.com/40513652")
     public void testPushAndShowNotification() throws TimeoutException {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSetting.ALLOW, mEmbeddedTestServerRule.getOrigin());
@@ -232,7 +236,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @Test
     @LargeTest
     @Feature({"Browser", "PushMessaging"})
-    @DisabledTest(message = "https://crbug.com/707528")
+    @DisabledTest(message = "https://crbug.com/40513652")
     public void testDefaultNotification() throws TimeoutException {
         // Start off using the tab loaded in setUp().
         Assert.assertEquals(1, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());

@@ -892,7 +892,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceFormFactor.PHONE}) // see crbug.com/1429025
+    @Restriction({DeviceFormFactor.PHONE}) // see crbug.com/40262498
     public void testEditHiddenWhileStillLoading() throws Exception {
         BookmarkManagerCoordinator.preventLoadingForTesting(true);
 
@@ -1088,7 +1088,7 @@ public class BookmarkTest {
                 });
 
         // After a drag is finished, the toolbar menu items should still reflect the selected state.
-        // Check inspired by https://crbug.com/1434566.
+        // Check inspired by https://crbug.com/40904288.
         assertTrue(mToolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
         assertTrue(mToolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
         assertTrue(mToolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
@@ -1377,7 +1377,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1046653")
+    @DisabledTest(message = "crbug.com/40116541")
     public void testMoveButtonsGoneInSearchMode() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();

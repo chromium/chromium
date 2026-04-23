@@ -70,7 +70,7 @@ public class PaymentRequestEmptyUpdateTest {
     /** Expand the shipping address section and select a valid address. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testSelectValidAddress() throws Throwable {
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());

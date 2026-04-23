@@ -95,7 +95,7 @@ public class CustomTabModalDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1511082")
+    @DisabledTest(message = "https://crbug.com/41483669")
     public void testShowAndDismissTabModalDialog() throws InterruptedException {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);

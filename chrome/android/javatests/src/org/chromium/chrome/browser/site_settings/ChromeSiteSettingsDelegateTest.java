@@ -75,7 +75,7 @@ public class ChromeSiteSettingsDelegateTest {
     }
 
     // Tests that a fallback favicon is generated when a real one isn't found locally.
-    // This is a regression test for crbug.com/1077716.
+    // This is a regression test for crbug.com/40688837.
     @Test
     @SmallTest
     @DisableIf.Build(
