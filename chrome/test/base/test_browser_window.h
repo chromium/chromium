@@ -33,10 +33,6 @@ class LocationBarTesting;
 class GlobalBrowserCollection;
 class OmniboxView;
 
-namespace qrcode_generator {
-class QRCodeGeneratorBubbleView;
-}  // namespace qrcode_generator
-
 // WARNING WARNING WARNING WARNING
 // Do not use this class. See docs/chrome_browser_design_principles.md for
 // details.  Either write a browser test which provides both a "class Browser"
@@ -154,10 +150,6 @@ class TestBrowserWindow : public BrowserWindow,
   BrowserView* AsBrowserView() override;
   void ShowUpdateChromeDialog() override {}
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override {}
-  qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
-      content::WebContents* contents,
-      const GURL& url,
-      bool show_back_button) override;
 #if !BUILDFLAG(IS_ANDROID)
   void ShowIntentPickerBubble(
       std::vector<apps::IntentPickerAppInfo> app_info,

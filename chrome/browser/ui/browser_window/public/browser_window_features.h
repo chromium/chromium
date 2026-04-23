@@ -198,6 +198,10 @@ class SharedTabGroupFeedbackController;
 class MostRecentSharedTabUpdateStore;
 }  // namespace tab_groups
 
+namespace qrcode_generator {
+class QRCodeWindowController;
+}  // namespace qrcode_generator
+
 class SharingWindowController;
 
 namespace sharing_hub {
@@ -521,6 +525,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<SharingWindowController> sharing_window_controller_;
   std::unique_ptr<sharing_hub::SharingHubWindowController>
       sharing_hub_window_controller_;
+  std::unique_ptr<qrcode_generator::QRCodeWindowController>
+      qrcode_window_controller_;
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_;
 
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;

@@ -60,10 +60,6 @@ namespace gfx {
 class Size;
 }
 
-namespace qrcode_generator {
-class QRCodeGeneratorBubbleView;
-}  // namespace qrcode_generator
-
 namespace signin_metrics {
 enum class AccessPoint;
 }
@@ -385,12 +381,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Bookmark bubble. |url| is the URL being bookmarked,
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
-
-  // Shows the QR Code generator bubble. |url| is the URL for the initial code.
-  virtual qrcode_generator::QRCodeGeneratorBubbleView*
-  ShowQRCodeGeneratorBubble(content::WebContents* contents,
-                            const GURL& url,
-                            bool show_back_button) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Toggles the multitask menu on the browser frame size button.

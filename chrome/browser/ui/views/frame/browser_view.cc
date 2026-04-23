@@ -3163,30 +3163,6 @@ void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   toolbar_->ShowBookmarkBubble(url, already_bookmarked);
 }
 
-qrcode_generator::QRCodeGeneratorBubbleView*
-BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
-                                       const GURL& url,
-                                       bool show_back_button) {
-  auto* controller =
-      qrcode_generator::QRCodeGeneratorBubbleController::Get(contents);
-  base::OnceClosure on_closing = controller->GetOnBubbleClosedCallback();
-  base::OnceClosure on_back_button_pressed;
-  if (show_back_button) {
-    on_back_button_pressed = controller->GetOnBackButtonPressedCallback();
-  }
-
-  auto anchor =
-      toolbar_button_provider()->GetBubbleAnchor(kActionQrCodeGenerator);
-
-  auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
-      anchor, contents->GetWeakPtr(), std::move(on_closing),
-      std::move(on_back_button_pressed), url);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show();
-  return bubble;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void BrowserView::ToggleMultitaskMenu() {
   auto* frame_view = static_cast<BrowserFrameViewChromeOS*>(GetFrameView());

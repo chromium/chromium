@@ -338,13 +338,6 @@ void TestBrowserWindow::StartPartialTranslate(
     const std::string& target_language,
     const std::u16string& text_selection) {}
 
-qrcode_generator::QRCodeGeneratorBubbleView*
-TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
-                                             const GURL& url,
-                                             bool show_back_button) {
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void TestBrowserWindow::ToggleMultitaskMenu() {
   return;

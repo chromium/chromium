@@ -4450,6 +4450,8 @@ static_library("ui") {
       "views/promos/ios_promo_constants.h",
       "views/qrcode_generator/qrcode_generator_bubble.cc",
       "views/qrcode_generator/qrcode_generator_bubble.h",
+      "views/qrcode_generator/qrcode_window_controller.cc",
+      "views/qrcode_generator/qrcode_window_controller.h",
       "views/record_replay/save_recording_bubble_view.cc",
       "views/record_replay/save_recording_bubble_view.h",
       "views/relaunch_notification/relaunch_notification_controller.cc",

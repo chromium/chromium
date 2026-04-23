@@ -859,14 +859,6 @@ void WebUIBrowserWindow::ShowBookmarkBubble(const GURL& url,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-qrcode_generator::QRCodeGeneratorBubbleView*
-WebUIBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
-                                              const GURL& url,
-                                              bool show_back_button) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void WebUIBrowserWindow::ToggleMultitaskMenu() {
   NOTIMPLEMENTED_LOG_ONCE();
