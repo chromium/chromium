@@ -65,12 +65,6 @@ class ASH_EXPORT PersistentWindowController
     base::flat_map<aura::Window*, gfx::Rect> window_restore_bounds_map_;
   };
 
-  // Public so it can be used by unit tests.
-  constexpr static char kNumOfWindowsRestoredOnDisplayAdded[] =
-      "Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded";
-  constexpr static char kNumOfWindowsRestoredOnScreenRotation[] =
-      "Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation";
-
   PersistentWindowController();
   PersistentWindowController(const PersistentWindowController&) = delete;
   PersistentWindowController& operator=(const PersistentWindowController&) =

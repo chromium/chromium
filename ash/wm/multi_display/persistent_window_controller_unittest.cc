@@ -15,7 +15,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -407,49 +406,6 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 }
 
-TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
-  UpdateDisplay("500x600,500x600");
-  aura::Window* w1 =
-      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0})
-          .release();
-  aura::Window* w2 =
-      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0})
-          .release();
-  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
-  EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
-
-  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  const int64_t secondary_id =
-      display::test::DisplayManagerTestApi(display_manager())
-          .GetSecondaryDisplay()
-          .id();
-
-  display::ManagedDisplayInfo primary_info =
-      display_manager()->GetDisplayInfo(primary_id);
-  display::ManagedDisplayInfo secondary_info =
-      display_manager()->GetDisplayInfo(secondary_id);
-
-  // Disconnects secondary display.
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(primary_info);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
-  EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredOnDisplayAdded, 0);
-
-  // Reconnects secondary display.
-  display_info_list.push_back(secondary_info);
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
-  EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
-
-  histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredOnDisplayAdded, 1);
-}
-
 // Tests that swapping primary display shall not do persistent window restore.
 TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
   const int64_t internal_display_id =
@@ -801,7 +757,6 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
   EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
 
   // The window should be fully visible after rotation.
-  base::HistogramTester histogram_tester;
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
@@ -809,8 +764,6 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
   gfx::Rect bounds_in_portrait = w1->GetBoundsInScreen();
   EXPECT_NE(bounds_in_landscape, bounds_in_portrait);
   EXPECT_TRUE(GetPrimaryDisplay().bounds().Contains(bounds_in_portrait));
-  histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredOnScreenRotation, 0);
 
   // The window's bounds should be restored after rotated back to landscape
   // primary.
@@ -819,8 +772,6 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
   EXPECT_EQ(test_api.GetCurrentOrientation(),
             chromeos::OrientationType::kLandscapePrimary);
   EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
-  histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredOnScreenRotation, 1);
 
   // Update window's bounds in portrait primary.
   auto* window_state = WindowState::Get(w1);
