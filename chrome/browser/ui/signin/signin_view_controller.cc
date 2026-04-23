@@ -140,7 +140,7 @@ void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
   content::WebContents* contents = tab_strip_model->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
-    if (contents_url == chrome::kChromeUINewTabURL ||
+    if (contents_url == chrome::ChromeUINewTabURLAsGURL() ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
       params.disposition = WindowOpenDisposition::CURRENT_TAB;
     }
@@ -357,7 +357,7 @@ bool SigninViewController::IsNTPTab(content::WebContents* contents) {
     return false;
   }
   const GURL& contents_url = contents->GetVisibleURL();
-  return contents_url == chrome::kChromeUINewTabURL ||
+  return contents_url == chrome::ChromeUINewTabURLAsGURL() ||
          search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL;
 }
 
@@ -459,7 +459,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
 
   // Create a new tab page and wait for the navigation to complete.
   NavigateParams params(browser_->GetBrowserForMigrationOnly(),
-                        GURL(chrome::kChromeUINewTabURL),
+                        chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -706,7 +706,7 @@ void SigninViewController::ShowDiceEnableSyncTab(
     DCHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use));
   }
   ShowDiceSigninTab(reason, access_point, promo_action, email_to_use,
-                    GURL(chrome::kChromeUINewTabURL));
+                    chrome::ChromeUINewTabURLAsGURL());
 }
 
 void SigninViewController::ShowDiceAddAccountTab(

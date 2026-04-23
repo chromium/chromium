@@ -104,7 +104,7 @@ class SigninViewController {
   // page.
   // DEPRECATED: Use ShowDiceEnableSyncTab instead.
   void ShowSignin(signin_metrics::AccessPoint access_point,
-                  const GURL& redirect_url = GURL(chrome::kChromeUINewTabURL));
+                  const GURL& redirect_url = chrome::ChromeUINewTabURLAsGURL());
 
   // Shows a Chrome Sync signin tab. |email_hint| may be empty.
   // Note: If the user has already set a primary account, then this is
