@@ -38,7 +38,6 @@ class WebUIBackForwardControl {
   void SetEnabled(bool enabled);
   void SetVisible(bool visible);
   bool GetVisible() const;
-  void SetLeadingMargin(int margin);
 
   toolbar_ui_api::mojom::BackForwardButtonStatePtr GetButtonState() const;
 

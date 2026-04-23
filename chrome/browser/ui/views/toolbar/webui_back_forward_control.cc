@@ -71,12 +71,6 @@ bool WebUIBackForwardControl::GetVisible() const {
   return visible_;
 }
 
-void WebUIBackForwardControl::SetLeadingMargin(int margin) {
-  if (direction_ == BackForwardButton::Direction::kBack) {
-    webui_toolbar_web_view_->SetBackButtonLeadingMargin(margin);
-  }
-}
-
 toolbar_ui_api::mojom::BackForwardButtonStatePtr
 WebUIBackForwardControl::GetButtonState() const {
   return toolbar_ui_api::mojom::BackForwardButtonState::New(
