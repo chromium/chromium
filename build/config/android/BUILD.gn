@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 if (current_toolchain == default_toolchain) {
