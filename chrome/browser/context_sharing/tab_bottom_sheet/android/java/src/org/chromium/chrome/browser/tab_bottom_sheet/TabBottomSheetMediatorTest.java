@@ -68,6 +68,7 @@ public class TabBottomSheetMediatorTest {
     public void testOnSheetStateChanged_Full() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.FULL);
         assertEquals(BottomSheetController.SheetState.FULL, mMediator.getSheetStateForTesting());
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -75,6 +76,7 @@ public class TabBottomSheetMediatorTest {
     public void testOnSheetStateChanged_Peek() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.PEEK);
         assertEquals(BottomSheetController.SheetState.PEEK, mMediator.getSheetStateForTesting());
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -82,6 +84,7 @@ public class TabBottomSheetMediatorTest {
     public void testOnSheetStateChanged_Half() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.HALF);
         assertEquals(BottomSheetController.SheetState.HALF, mMediator.getSheetStateForTesting());
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -117,6 +120,57 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(offsetPx);
 
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateCrossFadeAlpha_PeekHeightZero() {
+        mMediator.setPeekHeight(0);
+        mMediator.updateCrossFadeAlpha(100);
+
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateCrossFadeAlpha_BelowPeek() {
+        int peekHeight = 100;
+        float offsetPx = 50f;
+
+        mMediator.setPeekHeight(peekHeight);
+        mMediator.updateCrossFadeAlpha(offsetPx);
+
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateCrossFadeAlpha_AboveDoublePeek() {
+        int peekHeight = 100;
+        float offsetPx = 250f;
+
+        mMediator.setPeekHeight(peekHeight);
+        mMediator.updateCrossFadeAlpha(offsetPx);
+
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testIsSheetHeightSufficient_Sufficient() {
+        float density =
+                org.chromium.ui.display.DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
+        int sufficientPx = (int) Math.ceil(240 * density);
+        Assert.assertTrue(mMediator.isSheetHeightSufficient(sufficientPx));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsSheetHeightSufficient_Insufficient() {
+        float density =
+                org.chromium.ui.display.DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
+        int insufficientPx = (int) (239 * density);
+        Assert.assertFalse(mMediator.isSheetHeightSufficient(insufficientPx));
     }
 
     @Test
@@ -164,6 +218,42 @@ public class TabBottomSheetMediatorTest {
     }
 
     @Test
+    public void testTouchArbitrator_SheetHidden() {
+        mMediator.onSheetStateChanged(SheetState.HIDDEN);
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+        boolean handled = mMediator.getWebUiTouchHandler().handleTouchEvent(mView, down);
+
+        Assert.assertFalse("Should return false immediately when sheet is hidden", handled);
+    }
+
+    @Test
+    public void testTouchArbitrator_SmallPeekHeight() {
+        mMediator.onSheetStateChanged(SheetState.FULL);
+        mMediator.setPeekHeight(10); // Small peek height
+
+        int minTouchTargetPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.components.browser_ui.widget.R.dimen
+                                        .min_touch_target_size);
+        // Gesture zone should be minTouchTargetPx (since 10 < minTouchTargetPx)
+
+        // Touch inside gesture zone
+        MotionEvent downInside =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, minTouchTargetPx - 1, 0);
+        boolean handledInside =
+                mMediator.getWebUiTouchHandler().handleTouchEvent(mView, downInside);
+        Assert.assertFalse("Should fallback to sheet inside gesture zone", handledInside);
+
+        // Touch outside gesture zone
+        MotionEvent downOutside =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, minTouchTargetPx + 1, 0);
+        boolean handledOutside =
+                mMediator.getWebUiTouchHandler().handleTouchEvent(mView, downOutside);
+        Assert.assertTrue("Should be dispatched to content outside gesture zone", handledOutside);
+    }
+
+    @Test
     public void testIsMaximized() {
         mMediator.onSheetStateChanged(SheetState.PEEK);
         Assert.assertFalse(mMediator.isMaximized());
@@ -190,5 +280,15 @@ public class TabBottomSheetMediatorTest {
         ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
         Assert.assertTrue(state.atFixedHeight);
         assertEquals(MAX_OFFSET, state.webUiContainerHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnSheetResizingStatusChanged() {
+        mMediator.onSheetResizingStatusChanged(true);
+        Assert.assertTrue(mModel.get(TabBottomSheetProperties.IS_RESIZING));
+
+        mMediator.onSheetResizingStatusChanged(false);
+        Assert.assertFalse(mModel.get(TabBottomSheetProperties.IS_RESIZING));
     }
 }
