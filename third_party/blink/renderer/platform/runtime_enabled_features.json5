@@ -6358,6 +6358,13 @@
       base_feature: "none",
     },
     {
+      // https://chromestatus.com/feature/6024844719947776, take 2
+      name: "WebAssemblyCustomDescriptorsV2",
+      origin_trial_feature_name: "WebAssemblyCustomDescriptorsV2",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       // WebAssembly JS Promise Integration,
       // https://github.com/WebAssembly/js-promise-integration/blob/main/proposals/js-promise-integration
       name: "WebAssemblyJSPromiseIntegration",
