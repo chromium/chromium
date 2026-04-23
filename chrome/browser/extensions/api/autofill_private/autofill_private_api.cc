@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
@@ -1157,6 +1158,15 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
         {"Add or update entity instance - ", kErrorAutofillAiUnavailable})));
   }
 
+  const bool is_new_entity = private_api_entity_instance.guid.empty();
+  if (is_new_entity) {
+    autofill::LogEntityAddedFromSettings(entity_instance->type(),
+                                         entity_instance->record_type());
+  } else {
+    autofill::LogEntityUpdatedFromSettings(entity_instance->type(),
+                                           entity_instance->record_type());
+  }
+
   // Wallet passes are strictly read-only from the client's perspective in
   // settings. Therefore, we only ever "Save" them. Any downstream "Update"
   // attempts are inapplicable.
@@ -1281,8 +1291,14 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
     return RespondNow(Error(base::StrCat(
         {"Remove entity instance - ", kErrorAutofillAiUnavailable})));
   }
-  entity_data_manager->RemoveEntityInstance(
-      EntityInstance::EntityId(parameters->guid));
+
+  const autofill::EntityInstance::EntityId guid(parameters->guid);
+  if (auto entity = entity_data_manager->GetEntityInstance(guid)) {
+    autofill::LogEntityDeletedFromSettings(entity->type(),
+                                           entity->record_type());
+    entity_data_manager->RemoveEntityInstance(guid);
+  }
+
   return RespondNow(NoArguments());
 }
 

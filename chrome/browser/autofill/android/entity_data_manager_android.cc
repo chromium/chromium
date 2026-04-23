@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -182,7 +183,12 @@ EntityDataManagerAndroid::GetEntityInstance(JNIEnv* env,
 
 void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
                                                     const std::string& guid) {
-  entity_data_manager().RemoveEntityInstance(EntityInstance::EntityId(guid));
+  const EntityInstance::EntityId entity_id(guid);
+  if (base::optional_ref<const EntityInstance> entity =
+          entity_data_manager().GetEntityInstance(entity_id)) {
+    LogEntityDeletedFromSettings(entity->type(), entity->record_type());
+    entity_data_manager().RemoveEntityInstance(entity_id);
+  }
 }
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
@@ -215,6 +221,16 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     int description_string_id,
     int accept_button_string_id,
     base::OnceClosure on_local_save_fallback) {
+  const bool is_new_entity =
+      !entity_data_manager().GetEntityInstance(entity_instance.guid());
+  if (is_new_entity) {
+    LogEntityAddedFromSettings(entity_instance.type(),
+                               entity_instance.record_type());
+  } else {
+    LogEntityUpdatedFromSettings(entity_instance.type(),
+                                 entity_instance.record_type());
+  }
+
   if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     const bool is_masked_storage_supported = IsMaskedStorageSupported(
         entity_instance.type(), entity_instance.record_type());
@@ -236,9 +252,10 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
               weak_ptr_factory_.GetWeakPtr(), std::move(on_local_save_fallback),
               entity_instance));
     } else {
-      // If `IsMaskedStorageSupported` returns true for `entity_instance.type()`
-      // and `targeted_record_type` the user initially wanted to
-      // store the entity on the server but became ineligible.
+      // If `IsMaskedStorageSupported` returns true for
+      // `entity_instance.type()` and `targeted_record_type` the user
+      // initially wanted to store the entity on the server but became
+      // ineligible.
       if (IsMaskedStorageSupported(entity_instance.type(),
                                    targeted_record_type)) {
         std::move(on_local_save_fallback).Run();

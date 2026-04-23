@@ -36,6 +36,15 @@ void LogLocalEntitiesDeduplicationMetrics(
 
 void LogStoredEntitiesCount(base::span<const EntityInstance> entities);
 
+void LogEntityDeletedFromSettings(EntityType type,
+                                  EntityInstance::RecordType record_type);
+
+void LogEntityUpdatedFromSettings(EntityType type,
+                                  EntityInstance::RecordType record_type);
+
+void LogEntityAddedFromSettings(EntityType type,
+                                EntityInstance::RecordType record_type);
+
 std::string_view EntityTypeToMetricsString(EntityType type);
 
 std::string_view EntityRecordTypeToMetricsString(

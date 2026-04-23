@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
@@ -235,6 +237,81 @@ TEST_F(EntityDataManagerAndroidTest,
       entity_data_manager().GetEntityInstances();
   ASSERT_EQ(instances.size(), 1u);
   EXPECT_EQ(instances[0].record_type(), EntityInstance::RecordType::kLocal);
+}
+
+TEST_F(EntityDataManagerAndroidTest, LogEntityAddedFromSettings) {
+  base::HistogramTester histogram_tester;
+  EntityInstance entity = test::GetPassportEntityInstance();
+
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityAddedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
+}
+
+TEST_F(EntityDataManagerAndroidTest, LogEntityUpdatedFromSettings) {
+  base::HistogramTester histogram_tester;
+  EntityInstance entity = test::GetPassportEntityInstance();
+
+  // First add the entity.
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  // Now update it.
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.EntityUpdatedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.EntityUpdatedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.EntityUpdatedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectBucketCount("Autofill.Ai.EntityUpdatedFromSettings",
+                                     autofill::EntityTypeName::kPassport, 1);
+}
+
+TEST_F(EntityDataManagerAndroidTest, LogEntityDeletedFromSettings) {
+  base::HistogramTester histogram_tester;
+  EntityInstance entity = test::GetPassportEntityInstance();
+
+  // First add the entity.
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  // Now delete it.
+  entity_data_manager_android_->RemoveEntityInstance(env(),
+                                                     entity.guid().value());
+  webdata_helper_.WaitUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityDeletedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
 }
 
 }  // namespace

@@ -1540,6 +1540,39 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.EntityAddedFromSettings{EntityType}{RecordType}"
+    enum="AutofillAiEntityType" expires_after="2026-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Emitted when an Autofill AI entity is added from the settings page. This
+    metric is logged with granularity for the entity type and the record type.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for any kind of entities."/>
+  </token>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Emitted for all entity record types."/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.Ai.EntityDeletedFromSettings{EntityType}{RecordType}"
+    enum="AutofillAiEntityType" expires_after="2026-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Emitted when an Autofill AI entity is deleted by the user in the settings
+    page. This metric is logged with granularity for the entity type and the
+    record type.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for any kind of entities."/>
+  </token>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Emitted for all entity record types."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.EntityTable.DecryptStatus2"
     enum="AutofillAiDecryptStatus" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>
@@ -1565,6 +1598,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EncryptionStage">
     <variant name="Decrypt" summary="decrypt"/>
     <variant name="Encrypt" summary="encrypt"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.Ai.EntityUpdatedFromSettings{EntityType}{RecordType}"
+    enum="AutofillAiEntityType" expires_after="2026-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Emitted when an Autofill AI entity is updated from the settings page. This
+    metric is logged with granularity for the entity type and the record type.
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for any kind of entities."/>
+  </token>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Emitted for all entity record types."/>
   </token>
 </histogram>
 

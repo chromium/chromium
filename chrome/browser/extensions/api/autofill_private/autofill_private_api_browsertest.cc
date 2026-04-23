@@ -739,6 +739,133 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   EXPECT_EQ(saved_entity->record_type(), EntityInstance::RecordType::kLocal);
 }
 
+class AutofillPrivateApiAutofillAiMetricsTest
+    : public AutofillPrivateApiBrowserTest {
+ public:
+  AutofillPrivateApiAutofillAiMetricsTest() = default;
+
+  autofill::EntityDataManager* entity_data_manager() {
+    return autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  }
+
+  [[nodiscard]] bool AddEntity(const EntityInstance& entity_instance) {
+    entity_data_manager()->AddOrUpdateEntityInstance(entity_instance);
+    return base::test::RunUntil([&]() {
+      return entity_data_manager()
+          ->GetEntityInstance(entity_instance.guid())
+          .has_value();
+    });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
+                       LogEntityAddedFromSettings) {
+  base::HistogramTester histogram_tester;
+
+  EntityInstance entity_instance =
+      autofill::test::GetPassportEntityInstanceWithRandomGuid();
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.guid = "";  // New entity.
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(), json_args, profile(),
+      extensions::api_test_utils::FunctionMode::kNone));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityAddedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityAddedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
+                       LogEntityUpdatedFromSettings) {
+  base::HistogramTester histogram_tester;
+
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance();
+  ASSERT_TRUE(AddEntity(entity_instance));
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(), json_args, profile(),
+      extensions::api_test_utils::FunctionMode::kNone));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityUpdatedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityUpdatedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityUpdatedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityUpdatedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
+                       LogEntityDeletedFromSettings) {
+  base::HistogramTester histogram_tester;
+
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance();
+  ASSERT_TRUE(AddEntity(entity_instance));
+
+  base::ListValue args;
+  args.Append(entity_instance.guid().value());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateRemoveEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(), json_args, profile(),
+      extensions::api_test_utils::FunctionMode::kNone));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Passport.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Local",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.EntityDeletedFromSettings.Passport",
+      autofill::EntityTypeName::kPassport, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityDeletedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
 class AutofillPrivateApiAuthToViewSensitiveEntityTest
@@ -1038,6 +1165,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiGetEntityInstancedTest,
   ASSERT_TRUE(result->is_dict());
   EXPECT_THAT(result->GetDict().FindString("guid"), Pointee(Eq(guid)));
 }
+
 class AutofillPrivateApiObfuscationUnitTest
     : public AutofillPrivateApiBrowserTest {
  public:

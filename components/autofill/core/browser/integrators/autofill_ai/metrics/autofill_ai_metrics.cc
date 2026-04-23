@@ -96,6 +96,60 @@ void LogStoredEntitiesCount(base::span<const EntityInstance> entities) {
   }
 }
 
+void LogEntityDeletedFromSettings(EntityType type,
+                                  EntityInstance::RecordType record_type) {
+  static constexpr std::string_view kHistogramPrefix =
+      "Autofill.Ai.EntityDeletedFromSettings";
+  const std::string_view type_string = EntityTypeToMetricsString(type);
+  const std::string_view record_type_string =
+      EntityRecordTypeToMetricsString(record_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kHistogramPrefix, ".", type_string, ".", record_type_string}),
+      type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", record_type_string}), type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", type_string}), type.name());
+  base::UmaHistogramEnumeration(kHistogramPrefix, type.name());
+}
+
+void LogEntityUpdatedFromSettings(EntityType type,
+                                  EntityInstance::RecordType record_type) {
+  static constexpr std::string_view kHistogramPrefix =
+      "Autofill.Ai.EntityUpdatedFromSettings";
+  const std::string_view type_string = EntityTypeToMetricsString(type);
+  const std::string_view record_type_string =
+      EntityRecordTypeToMetricsString(record_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kHistogramPrefix, ".", type_string, ".", record_type_string}),
+      type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", record_type_string}), type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", type_string}), type.name());
+  base::UmaHistogramEnumeration(kHistogramPrefix, type.name());
+}
+
+void LogEntityAddedFromSettings(EntityType type,
+                                EntityInstance::RecordType record_type) {
+  static constexpr std::string_view kHistogramPrefix =
+      "Autofill.Ai.EntityAddedFromSettings";
+  const std::string_view type_string = EntityTypeToMetricsString(type);
+  const std::string_view record_type_string =
+      EntityRecordTypeToMetricsString(record_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kHistogramPrefix, ".", type_string, ".", record_type_string}),
+      type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", record_type_string}), type.name());
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, ".", type_string}), type.name());
+  base::UmaHistogramEnumeration(kHistogramPrefix, type.name());
+}
+
 // LINT.IfChange(EntityTypeToMetricsString)
 std::string_view EntityTypeToMetricsString(EntityType type) {
   switch (type.name()) {
