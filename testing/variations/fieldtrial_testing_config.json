@@ -5734,6 +5734,64 @@
             ]
         }
     ],
+    "ClankBackButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "gesture-user-education-page-load-delay": "4000"
+                    },
+                    "enable_features": [
+                        "GestureUserEducationBackSwipe",
+                        "IPH_GestureUserEducation",
+                        "IPH_ThreeDotMenuBackButton",
+                        "ThreeDotMenuBackButton"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "GestureUserEducationBackSwipe",
+                        "IPH_GestureUserEducation",
+                        "IPH_ThreeDotMenuBackButton",
+                        "ThreeDotMenuBackButton"
+                    ]
+                },
+                {
+                    "name": "BackButtonWithIPH",
+                    "disable_features": [
+                        "GestureUserEducationBackSwipe",
+                        "IPH_GestureUserEducation"
+                    ]
+                },
+                {
+                    "name": "BackButtonWithoutIPH",
+                    "enable_features": [
+                        "ThreeDotMenuBackButton"
+                    ],
+                    "disable_features": [
+                        "GestureUserEducationBackSwipe",
+                        "IPH_GestureUserEducation",
+                        "IPH_ThreeDotMenuBackButton"
+                    ]
+                },
+                {
+                    "name": "GestureUserEducation",
+                    "params": {
+                        "gesture-user-education-page-load-delay": "4000"
+                    },
+                    "enable_features": [
+                        "GestureUserEducationBackSwipe",
+                        "IPH_GestureUserEducation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankDefaultSearchApi": [
         {
             "platforms": [

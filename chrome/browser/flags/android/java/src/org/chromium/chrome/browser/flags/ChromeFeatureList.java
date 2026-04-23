@@ -999,7 +999,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     GESTURE_USER_EDUCATION_BACK_SWIPE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sGlic = newCachedFlag(GLIC, false);
     public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =
             newCachedFlag(
@@ -1161,7 +1161,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     THREE_DOT_MENU_BACK_BUTTON,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarPhoneAnimationRefactor =
             newCachedFlag(
                     TOOLBAR_PHONE_ANIMATION_REFACTOR,

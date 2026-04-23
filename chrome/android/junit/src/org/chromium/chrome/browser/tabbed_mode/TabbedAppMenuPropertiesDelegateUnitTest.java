@@ -734,13 +734,23 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(R.id.help_id);
         expectedTitles.add(R.string.menu_help);
 
-        Integer[] expectedActionBarItems = {
-            R.id.forward_menu_id,
-            R.id.bookmark_this_page_id,
-            R.id.offline_page_id,
-            R.id.info_menu_id,
-            R.id.reload_menu_id
-        };
+        Integer[] expectedActionBarItems =
+                ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()
+                        ? new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.back_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.reload_menu_id
+                        }
+                        : new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.info_menu_id,
+                            R.id.reload_menu_id
+                        };
+
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
         assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
         assertMenuItemsAreEqual(
@@ -834,13 +844,22 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(R.id.help_id);
         expectedTitles.add(R.string.menu_help);
 
-        Integer[] expectedActionBarItems = {
-            R.id.forward_menu_id,
-            R.id.bookmark_this_page_id,
-            R.id.offline_page_id,
-            R.id.info_menu_id,
-            R.id.reload_menu_id
-        };
+        Integer[] expectedActionBarItems =
+                ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()
+                        ? new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.back_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.reload_menu_id
+                        }
+                        : new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.info_menu_id,
+                            R.id.reload_menu_id
+                        };
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
         assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
         assertActionBarItemsAreEqual(modelList, expectedActionBarItems);
@@ -936,13 +955,23 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(R.id.help_id);
         expectedTitles.add(R.string.menu_help);
 
-        Integer[] expectedActionBarItems = {
-            R.id.forward_menu_id,
-            R.id.bookmark_this_page_id,
-            R.id.offline_page_id,
-            R.id.info_menu_id,
-            R.id.reload_menu_id
-        };
+        Integer[] expectedActionBarItems =
+                ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()
+                        ? new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.back_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.reload_menu_id
+                        }
+                        : new Integer[] {
+                            R.id.forward_menu_id,
+                            R.id.bookmark_this_page_id,
+                            R.id.offline_page_id,
+                            R.id.info_menu_id,
+                            R.id.reload_menu_id
+                        };
+
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
         assertMenuTitlesAreEqual(modelList, expectedTitles.toArray(new Integer[0]));
         assertMenuItemsAreEqual(
