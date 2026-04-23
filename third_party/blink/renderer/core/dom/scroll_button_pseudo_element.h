@@ -24,6 +24,9 @@ class ScrollButtonPseudoElement : public PseudoElement,
 
   bool IsEnabled() const { return enabled_; }
   bool IsDisabledFormControl() const final { return !IsEnabled(); }
+  bool MatchesDisabledPseudoClass() const final { return !IsEnabled(); }
+  bool MatchesEnabledPseudoClass() const final { return IsEnabled(); }
+
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
   // PostLayoutSnapshotClient:
