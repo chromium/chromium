@@ -636,6 +636,11 @@ public class EntityEditorModuleTest {
                         .build();
         showEditorDialog(entity);
 
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+        EditorItem issueDateItem = editorFields.get(3);
+        EditorItem sourceNoticeItem = editorFields.get(5);
+
         ViewGroup content = mCoordinator.getEntityEditorViewForTest().getContentView();
         DateFieldView issueDate = (DateFieldView) content.getChildAt(3);
 
@@ -645,11 +650,17 @@ public class EntityEditorModuleTest {
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // Only the month is set, the date is not valid yet.
         verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt());
+        assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
+        // The source notice is only show for required fields.
+        assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
 
         setDropdownValue(issueDate.getDayPickerForTest(), "20");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // Only the month and day are set, the date is not valid yet.
         verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt());
+        assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
+        // The source notice is only show for required fields.
+        assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
 
         setDropdownValue(issueDate.getYearPickerForTest(), "2026");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
@@ -663,6 +674,9 @@ public class EntityEditorModuleTest {
         assertEquals(
                 LocalDate.of(2026, 6, 20),
                 ((DateValue) passportIssueDate.getAttributeValue()).getDate());
+        // The source notice error message must be hidden after successful validation.
+        assertTrue(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
+        assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
     }
 
     @Test
@@ -688,6 +702,7 @@ public class EntityEditorModuleTest {
         EditorItem passportNameItem = editorFields.get(0);
         EditorItem passportNumberItem = editorFields.get(2);
         EditorItem issueDateItem = editorFields.get(3);
+        EditorItem sourceNoticeItem = editorFields.get(5);
 
         // Update some fields to values with whitespaces.
         passportNameItem.model.set(VALUE, "     ");
@@ -705,6 +720,7 @@ public class EntityEditorModuleTest {
         verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt());
         assertFalse(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
+        assertTrue(sourceNoticeItem.model.get(NOTICE_VISIBLE));
 
         verifyRequiredFieldsItem(
                 editorFields,
@@ -728,6 +744,10 @@ public class EntityEditorModuleTest {
                 updatedEntityInstance
                         .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
                         .getAttributeValue());
+        // All error messages must be hidden after validation.
+        assertTrue(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
+        assertTrue(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
+        assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
     }
 
     /** Test that the entity editor works correctly if the date fields are required. */
@@ -813,6 +833,7 @@ public class EntityEditorModuleTest {
         ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
         EditorItem vehicleLicensePlate = editorFields.get(4);
         EditorItem vehicleIdentificationNumber = editorFields.get(6);
+        EditorItem sourceNotice = editorFields.get(7);
 
         // Make sure both fields are required.
         assertTrue(vehicleLicensePlate.model.get(IS_REQUIRED));
@@ -823,6 +844,7 @@ public class EntityEditorModuleTest {
         verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt());
         assertFalse(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
+        assertTrue(sourceNotice.model.get(NOTICE_VISIBLE));
 
         verifyRequiredFieldsItem(
                 editorFields,
@@ -845,6 +867,10 @@ public class EntityEditorModuleTest {
         assertEquals(
                 new StringValue("AA123456BB"),
                 updatedEntityInstance.getAttribute(sVehicleLicensePlateType).getAttributeValue());
+        // Error messages must be hidden after successful validation.
+        assertTrue(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
+        assertTrue(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
+        assertFalse(sourceNotice.model.get(NOTICE_VISIBLE));
     }
 
     @Test
@@ -1039,7 +1065,7 @@ public class EntityEditorModuleTest {
             if (item.type == NOTICE && expectedText.equals(item.model.get(NOTICE_TEXT))) {
                 assertFalse(item.model.get(SHOW_BACKGROUND));
                 assertFalse(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
-                assertFalse(item.model.get(NOTICE_VISIBLE));
+                assertTrue(item.model.get(NOTICE_VISIBLE));
                 assertEquals(R.style.TextAppearance_ErrorCaption, item.model.get(TEXT_APPEARANCE));
                 return;
             }

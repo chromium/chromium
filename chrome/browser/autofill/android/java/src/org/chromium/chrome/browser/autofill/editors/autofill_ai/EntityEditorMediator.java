@@ -94,6 +94,7 @@ class EntityEditorMediator {
     private final EntityInstance mEntityInstance;
     private final PropertyModel mEditorModel;
     private final Map<AttributeType, PropertyModel> mAttributeFields = new HashMap<>();
+    private @Nullable EditorItem mRequiredSourceNotice;
 
     EntityEditorMediator(
             Context context,
@@ -219,9 +220,28 @@ class EntityEditorMediator {
                 editorItem.model.set(
                         ERROR_MESSAGE, getRequiredFieldErrorMessage(editorItem.model.get(LABEL)));
             }
+            if (mRequiredSourceNotice != null) {
+                mRequiredSourceNotice.model.set(NOTICE_VISIBLE, true);
+            }
             return false;
         }
+        if (isFormValid) {
+            // Hide the error messages even though the editor is about to be hidden as well.
+            resetErrorMessages();
+        }
         return isFormValid;
+    }
+
+    private void resetErrorMessages() {
+        if (mRequiredSourceNotice != null) {
+            mRequiredSourceNotice.model.set(NOTICE_VISIBLE, false);
+        }
+        for (EditorItem editorItem : mEditorModel.get(EDITOR_FIELDS)) {
+            if (!isEditable(editorItem)) {
+                continue;
+            }
+            editorItem.model.set(ERROR_MESSAGE, "");
+        }
     }
 
     private void commitChanges() {
@@ -361,7 +381,8 @@ class EntityEditorMediator {
         }
         String notice = getRequiredFieldsNotice(requiredFields);
         if (!TextUtils.isEmpty(notice)) {
-            editorFields.add(getRequiredFieldsNoticeItem(notice));
+            mRequiredSourceNotice = getRequiredFieldsNoticeItem(notice);
+            editorFields.add(mRequiredSourceNotice);
         }
     }
 
