@@ -529,7 +529,7 @@ interface AuthenticationExtensionsPRFOutputsJSON {
 // Interface containing serialized extension outputs.
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface AuthenticationExtensionsClientOutputsJSON {
-  prf: AuthenticationExtensionsPRFOutputsJSON;
+  prf?: AuthenticationExtensionsPRFOutputsJSON;
 }
 
 // Deserializes all PRF-related data from the extensions dictionary.
@@ -557,9 +557,23 @@ function deserializeExtensions(
   return result;
 }
 
+// Serialize all extension outputs.
+function serializeExtensionOutputs(
+    outputs: AuthenticationExtensionsClientOutputs):
+    AuthenticationExtensionsClientOutputsJSON {
+  const result: AuthenticationExtensionsClientOutputsJSON = {};
+  if (outputs.prf?.results) {
+    result.prf = {
+      enabled: outputs.prf.enabled ?? false,
+      results: prfValuesToBase64URL(outputs.prf.results),
+    };
+  }
+  return result;
+}
+
 // JSON formatted authenticator response for passkey assertions.
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface AuthenticatorAssertionResponseJSON {
+interface AuthenticationResponseJSON {
   clientDataJSON: string;
   authenticatorData: string;
   signature: string;
@@ -568,7 +582,7 @@ interface AuthenticatorAssertionResponseJSON {
 
 // JSON formatted authenticator response for passkey attestations.
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface AuthenticatorAttestationResponseJSON {
+interface RegistrationResponseJSON {
   attestationObject: string;
   authenticatorData: string;
   clientDataJSON: string;
@@ -576,11 +590,6 @@ interface AuthenticatorAttestationResponseJSON {
   publicKey: string;
   publicKeyAlgorithm: COSEAlgorithmIdentifier;
 }
-
-// Type containing both types of JSON formatted authenticator responses.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-type AuthenticatorRequestResponseJSON =
-    AuthenticatorAssertionResponseJSON|AuthenticatorAttestationResponseJSON;
 
 // Helper function to convert a list of string transports to
 // AuthenticatorTransport types.
@@ -590,9 +599,8 @@ function toAuthenticatorTransports(transports: string[]):
 }
 
 // Helper function to serialize an AuthenticatorAttestationResponse.
-function toAuthenticatorAttestationResponseJSON(
-    response: AuthenticatorAttestationResponse):
-    AuthenticatorAttestationResponseJSON {
+function toRegistrationResponseJSON(response: AuthenticatorAttestationResponse):
+    RegistrationResponseJSON {
   const publicKey = response.getPublicKey();
   return {
     clientDataJSON: bufferSourceToBase64URL(response.clientDataJSON),
@@ -605,10 +613,9 @@ function toAuthenticatorAttestationResponseJSON(
 }
 
 // Helper function to serialize an AuthenticatorAssertionResponse.
-function toAuthenticatorAssertionResponseJSON(
-    response: AuthenticatorAssertionResponse):
-    AuthenticatorAssertionResponseJSON {
-  const responseJson: AuthenticatorAssertionResponseJSON = {
+function toAuthenticationResponseJSON(response: AuthenticatorAssertionResponse):
+    AuthenticationResponseJSON {
+  const responseJson: AuthenticationResponseJSON = {
     clientDataJSON: bufferSourceToBase64URL(response.clientDataJSON),
     authenticatorData: bufferSourceToBase64URL(response.authenticatorData),
     signature: bufferSourceToBase64URL(response.signature),
@@ -617,18 +624,6 @@ function toAuthenticatorAssertionResponseJSON(
     responseJson.userHandle = bufferSourceToBase64URL(response.userHandle);
   }
   return responseJson;
-}
-
-// Helper function to serialize an AuthenticatorResponse.
-function toAuthenticatorRequestResponseJSON(response: AuthenticatorResponse):
-    AuthenticatorRequestResponseJSON {
-  if ('attestationObject' in response) {
-    const attestationResponse = response as AuthenticatorAttestationResponse;
-    return toAuthenticatorAttestationResponseJSON(attestationResponse);
-  } else {
-    const assertionResponse = response as AuthenticatorAssertionResponse;
-    return toAuthenticatorAssertionResponseJSON(assertionResponse);
-  }
 }
 
 // Creates a PublicKeyCredential from the provided list of arguments.
@@ -646,17 +641,23 @@ function createPublicKeyCredential(
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
       return extensionOutputs;
     },
-    // TODO(crbug.com/487338357): Update returned object to match expected type
-    // and remove casting through `any`.
     toJSON() {
-      return {
+      const base = {
         id: this.id,
         rawId: this.id,
-        response: toAuthenticatorRequestResponseJSON(this.response),
         authenticatorAttachment: authenticatorAttachment,
-        clientExtensionResults: extensionOutputs,
+        clientExtensionResults: serializeExtensionOutputs(extensionOutputs),
         type: PUBLIC_KEY,
-      } as unknown as any;
+      };
+      if ('attestationObject' in response) {
+        const registrationResponseJson = toRegistrationResponseJSON(
+            this.response as AuthenticatorAttestationResponse);
+        return {...base, response: registrationResponseJson};
+      } else {
+        const authenticationResponseJson = toAuthenticationResponseJSON(
+            this.response as AuthenticatorAssertionResponse);
+        return {...base, response: authenticationResponseJson};
+      }
     },
   };
 }
