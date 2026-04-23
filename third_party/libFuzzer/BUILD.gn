@@ -56,6 +56,12 @@ source_set("libfuzzer") {
     "//build/config/compiler:no_exit_time_destructors",
   ]
 
+  if (is_android) {
+    # Bypasses the "initial-exec" TLS model in libFuzzer's FuzzerPlatform.h
+    # which causes dlopen() crashes when fuzzers are packaged as Android APKs.
+    defines = [ "tls_model(x)=" ]
+  }
+
   deps = []
   if (is_fuchsia) {
     deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]

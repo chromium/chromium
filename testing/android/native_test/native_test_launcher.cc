@@ -150,6 +150,11 @@ static void JNI_NativeTest_RunTests(
   base::InitAndroidTestPaths(test_data_dir);
 
   ScopedMainEntryLogger scoped_main_entry_logger;
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+  // This handler immediately terminates the process via _exit( ), safely
+  // bypassing global destructors and ensuring the fuzzer exits cleanly.
+  atexit([]() { _exit(0); });
+#endif
   main(argc, &argv[0]);
 
 // Explicitly write profiling data to LLVM profile file.
