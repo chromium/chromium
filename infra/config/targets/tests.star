@@ -3418,7 +3418,7 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.script_test(
-    name = "webkit_lint",
+    name = "blink_lint",
     script = "blink_lint_expectations.py",
     module_scheme = "single",
 )

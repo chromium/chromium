@@ -2086,7 +2086,7 @@ targets.bundle(
         "checkdeps",
         "checkperms",
         "metrics_python_tests",
-        "webkit_lint",
+        "blink_lint",
     ],
 )
 
@@ -2195,7 +2195,7 @@ targets.bundle(
     targets = [
         "check_static_initializers",
         "metrics_python_tests",
-        "webkit_lint",
+        "blink_lint",
     ],
 )
 
@@ -2391,7 +2391,7 @@ targets.bundle(
     targets = [
         "check_network_annotations",
         "metrics_python_tests",
-        "webkit_lint",
+        "blink_lint",
     ],
 )
 
