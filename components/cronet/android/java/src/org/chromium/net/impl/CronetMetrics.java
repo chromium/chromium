@@ -287,6 +287,10 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         return mSendingEndMicroseconds;
     }
 
+    public long getRequestFinishedMicroseconds() {
+        return mRequestEndMicroseconds;
+    }
+
     // Package-private as we don't want to expose these in the public Cronet API, for now. These
     // return long, not Date, because we want to preserve the microsecond precision (Date is
     // millisecond precision).
