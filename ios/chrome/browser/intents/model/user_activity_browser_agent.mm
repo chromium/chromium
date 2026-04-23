@@ -94,6 +94,10 @@ UserActivityBrowserAgent::~UserActivityBrowserAgent() {}
 
 #pragma mark - Public methods.
 
+// LINT.IfChange
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_user_activity.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 BOOL UserActivityBrowserAgent::ContinueUserActivity(
     NSUserActivity* user_activity,
     BOOL application_is_active) {
@@ -419,6 +423,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
   }
   return ContinueUserActivityURL(webpage_url, application_is_active, NO, NO);
 }
+// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
 
 // LINT.IfChange
 // TODO(crbug.com/462018636): This code will be soon migrated to
@@ -630,6 +635,10 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
   }
 }
 
+// LINT.IfChange
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_user_activity.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
     NSURL* webpage_url,
     BOOL application_is_active,
@@ -673,6 +682,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
   }
   return YES;
 }
+// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
 
 void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
