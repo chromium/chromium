@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -145,6 +147,10 @@ void GlicSelectionObserver::OnInputEvent(
     return;
   }
 
+  if (!IsTabValidForSharing(web_contents())) {
+    return;
+  }
+
   auto dismiss_ui = [this]() {
     if (selection_widget_) {
       selection_widget_->CloseWithReason(
@@ -235,6 +241,10 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     content::RenderFrameHost* render_frame_host,
     std::u16string_view selected_text) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+    return;
+  }
+
+  if (!IsTabValidForSharing(web_contents())) {
     return;
   }
 
