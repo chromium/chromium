@@ -108,4 +108,14 @@ BASE_FEATURE(kGlicGetTabFaviconById, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSkipCookieSyncOnOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicCookieSyncOnTokenChange, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicWebClientLoadTimes, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGlicPreLoadingTimeMs{
+    &kGlicWebClientLoadTimes, "glic-pre-loading-time-ms", 200};
+const base::FeatureParam<int> kGlicMinLoadingTimeMs{
+    &kGlicWebClientLoadTimes, "glic-min-loading-time-ms", 1000};
+const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
+    &kGlicWebClientLoadTimes, "glic-max-loading-time-ms", 20000};
+const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
+    &kGlicWebClientLoadTimes, "glic-reload-max-loading-time-ms", 30000};
+
 }  // namespace features

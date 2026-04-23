@@ -13,6 +13,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -140,6 +141,9 @@ class GlicApiTestBase : public T {
             {features::kGlic,
              {
                  {"glic-default-hotkey", "Ctrl+G"},
+             }},
+            {features::kGlicWebClientLoadTimes,
+             {
                  // Shorten load timeouts.
                  {features::kGlicPreLoadingTimeMs.name, "20"},
                  {features::kGlicMinLoadingTimeMs.name, "40"},

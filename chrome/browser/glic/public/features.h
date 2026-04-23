@@ -61,6 +61,12 @@ BASE_DECLARE_FEATURE(kGlicGetTabFaviconById);
 BASE_DECLARE_FEATURE(kGlicSkipCookieSyncOnOpen);
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
 
+BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
+extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;
+extern const base::FeatureParam<int> kGlicMinLoadingTimeMs;
+extern const base::FeatureParam<int> kGlicMaxLoadingTimeMs;
+extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
