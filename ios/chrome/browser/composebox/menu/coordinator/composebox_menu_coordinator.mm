@@ -13,6 +13,18 @@
 @implementation ComposeboxMenuCoordinator {
   ComposeboxMenuViewController* _viewController;
   ComposeboxMenuMediator* _mediator;
+  ComposeboxEntrypoint _entrypoint;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                entrypoint:(ComposeboxEntrypoint)entrypoint {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _entrypoint = entrypoint;
+  }
+
+  return self;
 }
 
 - (void)start {

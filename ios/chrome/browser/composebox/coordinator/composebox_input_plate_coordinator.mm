@@ -454,7 +454,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   if (IsComposeboxPlusButtonBottomSheet()) {
     _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:_viewController
-                           browser:self.browser];
+                           browser:self.browser
+                        entrypoint:_entrypoint];
     // TODO(crbug.com/504900698): Pass the UIInputState and the delegate to
     // handle actions.
     [_menuCoorinator start];

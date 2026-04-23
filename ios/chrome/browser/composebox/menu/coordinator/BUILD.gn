@@ -13,4 +13,5 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/menu/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
+  public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]
 }

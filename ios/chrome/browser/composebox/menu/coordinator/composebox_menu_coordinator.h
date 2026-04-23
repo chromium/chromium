@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_COORDINATOR_H_
 
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ComposeboxMenuCoordinator;
@@ -23,6 +24,18 @@
 
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<ComposeboxMenuCoordinatorDelegate> delegate;
+
+// Creates a coordinator that uses `viewController` and `browser` with the given
+// entrypoint.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                entrypoint:(ComposeboxEntrypoint)entrypoint
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

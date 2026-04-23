@@ -1991,10 +1991,10 @@
 
   if (IsComposeboxPlusButtonBottomSheet()) {
     [_composeboxMenuCoordinator stop];
-    // TODO(crbug.com/505386922): Add entrypoint.
     _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:self.viewController
-                           browser:self.browser];
+                           browser:self.browser
+                        entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
     _composeboxMenuCoordinator.delegate = self;
     [_composeboxMenuCoordinator start];
   } else if (MaybeShowComposebox(self.browser,
