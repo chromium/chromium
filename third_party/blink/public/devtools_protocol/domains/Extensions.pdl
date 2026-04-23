@@ -15,8 +15,6 @@ experimental domain Extensions
       managed
 
   # Runs an extension default action.
-  # Available if the client is connected using the --remote-debugging-pipe
-  # flag and the --enable-unsafe-extension-debugging flag is set.
   command triggerAction
     parameters
       # Extension id.
@@ -26,9 +24,7 @@ experimental domain Extensions
 
   # Installs an unpacked extension from the filesystem similar to
   # --load-extension CLI flags. Returns extension ID once the extension
-  # has been installed. Available if the client is connected using the
-  # --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging
-  # flag is set.
+  # has been installed.
   command loadUnpacked
     parameters
       # Absolute file path.
@@ -54,15 +50,11 @@ experimental domain Extensions
       boolean enabled
 
   # Gets a list of all unpacked extensions.
-  # Available if the client is connected using the --remote-debugging-pipe flag
-  # and the --enable-unsafe-extension-debugging flag is set.
   command getExtensions
     returns
       array of ExtensionInfo extensions
 
   # Uninstalls an unpacked extension (others not supported) from the profile.
-  # Available if the client is connected using the --remote-debugging-pipe flag
-  # and the --enable-unsafe-extension-debugging.
   command uninstall
     parameters
       # Extension id.
