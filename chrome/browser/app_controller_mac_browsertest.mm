@@ -766,8 +766,17 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
 // Tests that, even if only an incognito browser is currently opened, a GURL
 // is opened in a regular (non-incognito) browser.
 // Regression test for https://crbug.com/757253, https://crbug.com/1444747
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
+// TODO(crbug.com/505221665): Re-enable this test once it's no longer flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened \
+  DISABLED_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened
+#else
+#define MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened \
+  OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AppControllerBrowserTest,
+    MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure the AppController is the NSApp delegate.
   std::ignore = AppController.sharedController;
@@ -850,7 +859,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
 // Tests that when a GURL is opened while incognito forced and there is no
 // browser opened, it is opened in a new incognito browser.
 // Test for https://crbug.com/1444747#c8
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
+// TODO(crbug.com/505499902): Re-enable this test once it's no longer flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenUrlWhenForcedIncognito DISABLED_OpenUrlWhenForcedIncognito
+#else
+#define MAYBE_OpenUrlWhenForcedIncognito OpenUrlWhenForcedIncognito
+#endif
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       MAYBE_OpenUrlWhenForcedIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current non-incognito browser.
@@ -883,8 +899,17 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
 // Tests that when a GURL is opened while incognito forced and an incognito
 // browser is opened, it is opened in the already opened incognito browser.
 // Test for https://crbug.com/1444747#c8
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened) {
+// TODO(crbug.com/504176001): Re-enable this test once it's no longer flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened \
+  DISABLED_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened
+#else
+#define MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened \
+  OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AppControllerBrowserTest,
+    MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current non-incognito browser.
