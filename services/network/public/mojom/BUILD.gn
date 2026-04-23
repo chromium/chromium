@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/dcheck_always_on.gni")
+import("//components/vrp_flags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
@@ -2067,6 +2068,11 @@ mojom("mojom") {
     # TODO(crbug.com/40263697): Remove this once is_linux in the mojom IDL does
     # not include lacros.
     enabled_features += [ "use_network_interface_change_listener" ]
+  }
+
+  if (enable_vrp_flags) {
+    enabled_features += [ "enable_vrp_flags" ]
+    public_deps += [ "//components/vrp_flags:mojom" ]
   }
 
   # Typemaps which apply to both Blink and non-Blink bindings.

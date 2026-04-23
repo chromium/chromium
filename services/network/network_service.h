@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/vrp_flags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -272,6 +273,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       const ResourceRequest& request,
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<mojom::URLLoaderClient> client_remote) override;
+#endif
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+  void GetVrpFlags(GetVrpFlagsCallback callback) override;
 #endif
 
   void StartNetLogBounded(base::File file,

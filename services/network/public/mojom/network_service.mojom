@@ -52,6 +52,9 @@ import "mojo/public/mojom/base/application_state.mojom";
 [EnableIf=is_ct_supported]
 import "services/network/public/mojom/ct_log_info.mojom";
 
+[EnableIf=enable_vrp_flags]
+import "components/vrp_flags/vrp_flags.mojom";
+
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
   // File name the GSSAPI library to load. Only supported on platforms where an
@@ -475,6 +478,12 @@ interface NetworkService {
       URLRequest request,
       pending_receiver<URLLoader> loader_receiver,
       pending_remote<URLLoaderClient> client_remote);
+
+  // Returns a connection to the VrpFlags if the Network process was
+  // launched with --vrp-flags, otherwise returns a null remote.
+  [EnableIf=enable_vrp_flags]
+  GetVrpFlags()
+      => (pending_remote<vrp_flags.mojom.VrpFlags>? vrp_flags);
 };
 
 struct NetworkDurableMessageConfig {

@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module vrp_flags.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Only bound when --vrp-flags is provided to the browser.
+interface VrpFlags {
+  // Returns five locations a researcher can attempt to write to and the
+  // arbitrary
+  // value they should attempt to write. These are
+  // fixed for the lifetime of the privileged process.
+  GetWriteLocations() => (array<uint64> locations, uint64 value);
+
+  // The renderer notifies the browser a write to one of the locations has been
+  // attempted - the browser will verify that the location is one that was
+  // provided by the GetWriteLocations() call before seeing if the arbitrary
+  // value was written. This can be called only once by the researcher and will
+  // terminate the browser process independent of the write's success.
+  WriteAttempted(uint64 location) => (bool success);
+
+  // Returns the prefix of a value to leak. This will be followed in the browser
+  // memory by the token the researcher should leak to win the read flag.
+  GetReadPrefix() => (mojo_base.mojom.UnguessableToken prefix);
+
+  // The renderer notifies the browser that is has read the requested value.
+  // The browser will verify if the read was successful and terminate the
+  // browser process independent of the read's success.
+  ReadAttempted(mojo_base.mojom.UnguessableToken flag) => (bool success);
+};
+
+// Brokered by the Browser process to allow the renderer to connect to the
+// VrpFlags implementation in various privileged processes.
+// Only bound when --vrp-flags is provided.
+interface VrpFlagsFactory {
+  // Connects to the vrp_flags implementation running in the Browser process.
+  BindBrowserVrpFlags(pending_receiver<VrpFlags> receiver);
+
+  // Connects to the vrp_flags implementation running in the Network process.
+  BindNetworkVrpFlags(pending_receiver<VrpFlags> receiver);
+
+  // Connects to the vrp_flags implementation running in the GPU process.
+  BindGpuVrpFlags(pending_receiver<VrpFlags> receiver);
+};

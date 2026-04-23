@@ -120,4 +120,10 @@ void StubGpuService::Hang() {}
 
 void StubGpuService::ThrowJavaException() {}
 
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+void StubGpuService::GetVrpFlags(GetVrpFlagsCallback callback) {
+  std::move(callback).Run(mojo::NullRemote());
+}
+#endif
+
 }  // namespace viz

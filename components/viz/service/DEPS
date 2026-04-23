@@ -4,6 +4,7 @@ include_rules = [
   "+cc",
   "+components/input",
   "+components/input/render_input_router.mojom.h",
+  "+components/vrp_flags",
   "-components/viz/service",
   "+components/viz/service/debugger/viz_debugger.h",
   "+components/viz/service/gl/gpu_service_impl.h",

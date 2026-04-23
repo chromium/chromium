@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//components/vrp_flags/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_VRP_FLAGS=$enable_vrp_flags" ]
+}
+
+if (enable_vrp_flags) {
+  mojom_component("mojom") {
+    sources = [ "vrp_flags.mojom" ]
+    public_deps = [ "//mojo/public/mojom/base" ]
+    output_prefix = "vrp_flags_mojom"
+    macro_prefix = "VRP_FLAGS_MOJOM"
+  }
+
+  component("vrp_flags") {
+    defines = [ "IS_VRP_FLAGS_IMPL" ]
+
+    sources = [
+      "vrp_flags.cc",
+      "vrp_flags.h",
+      "vrp_flags_impl.cc",
+      "vrp_flags_impl.h",
+    ]
+
+    deps = [
+      "//base",
+      "//gpu/config",
+      "//sandbox/policy",
+    ]
+
+    public_deps = [
+      ":buildflags",
+      ":mojom",
+    ]
+  }
+}

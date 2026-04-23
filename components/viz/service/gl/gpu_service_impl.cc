@@ -36,6 +36,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "components/viz/service/gl/gpu_log_message_manager.h"
+#include "components/vrp_flags/buildflags.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -124,6 +125,11 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif  // BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"       // nogncheck
+#include "components/vrp_flags/vrp_flags_impl.h"  // nogncheck
+#endif                                            // BUILDFLAG(ENABLE_VRP_FLAGS)
 
 namespace viz {
 
@@ -1196,6 +1202,20 @@ void GpuServiceImpl::ThrowJavaException() {
   NOTREACHED() << "Java exception not supported on this platform.";
 #endif
 }
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+void GpuServiceImpl::GetVrpFlags(GetVrpFlagsCallback callback) {
+  mojo::PendingRemote<vrp_flags::mojom::VrpFlags> remote;
+  if (!vrp_flags::IsEnabled()) {
+    std::move(callback).Run(std::move(remote));
+    return;
+  }
+
+  vrp_flags::VrpFlagsImpl::GetInstance()->Bind(
+      remote.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(remote));
+}
+#endif
 
 void GpuServiceImpl::StartPeakMemoryMonitorOnMainThread(uint32_t sequence_num) {
   gpu_channel_manager_->StartPeakMemoryMonitor(sequence_num);

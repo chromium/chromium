@@ -1,0 +1,10 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # If this platform provides security vrp_flags for VRP researchers. VrpFlags
+  # are not available on any 32 bit platforms.
+  enable_vrp_flags = (is_win || is_mac || is_linux) &&
+                     (current_cpu == "x64" || current_cpu == "arm64")
+}

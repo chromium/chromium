@@ -39,6 +39,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
+#include "components/vrp_flags/buildflags.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
@@ -129,6 +130,10 @@
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/gpu/browser_child_process_backgrounded_bridge.h"
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"  // nogncheck
 #endif
 
 namespace content {
@@ -329,6 +334,9 @@ static const char* const kSwitchNames[] = {
 #endif
 #if BUILDFLAG(USE_VAAPI)
     switches::kHardwareVideoDevicePath,
+#endif
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+    vrp_flags::switches::kVrpFlags,
 #endif
 };
 

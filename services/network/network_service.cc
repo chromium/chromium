@@ -42,6 +42,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "components/vrp_flags/buildflags.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
@@ -119,6 +120,11 @@
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"       // nogncheck
+#include "components/vrp_flags/vrp_flags_impl.h"  // nogncheck
+#endif                                            // BUILDFLAG(ENABLE_VRP_FLAGS)
 
 namespace net {
 class FirstPartySetEntry;
@@ -1288,6 +1294,20 @@ void NetworkService::CreateURLSessionURLLoaderAndStart(
   }
 }
 #endif
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+void NetworkService::GetVrpFlags(GetVrpFlagsCallback callback) {
+  mojo::PendingRemote<vrp_flags::mojom::VrpFlags> remote;
+  if (!vrp_flags::IsEnabled()) {
+    std::move(callback).Run(std::move(remote));
+    return;
+  }
+
+  vrp_flags::VrpFlagsImpl::GetInstance()->Bind(
+      remote.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(remote));
+}
+#endif  // BUILDFLAG(ENABLE_VRP_FLAGS)
 
 std::unique_ptr<DevtoolsDurableMessageWriter>
 NetworkService::MaybeCreateDurableMessageWriter(

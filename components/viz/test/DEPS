@@ -53,6 +53,7 @@ specific_include_rules = {
   ],
 
   "stub_gpu_service\.h": [
+    "+components/vrp_flags/buildflags.h",
     "+media/media_buildflags.h",
   ],
 

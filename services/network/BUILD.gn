@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/vrp_flags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
@@ -365,6 +366,7 @@ component("network_service") {
     "//components/url_matcher",
     "//components/url_pattern",
     "//components/variations/net",
+    "//components/vrp_flags:buildflags",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
     "//crypto",
@@ -435,6 +437,10 @@ component("network_service") {
     deps += [ "//components/enterprise/platform_auth:enterprise_platform_auth" ]
   }
 
+  if (enable_vrp_flags) {
+    deps += [ "//components/vrp_flags" ]
+  }
+
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 }
 
@@ -446,6 +452,7 @@ if (is_linux || is_chromeos) {
     ]
     deps = [
       "//base",
+      "//components/vrp_flags:buildflags",
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy",
     ]
@@ -608,6 +615,7 @@ source_set("tests") {
     "//components/prefs:test_support",
     "//components/variations:test_support",
     "//components/variations/net",
+    "//components/vrp_flags:buildflags",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
     "//crypto",
@@ -730,6 +738,7 @@ source_set("test_support") {
   }
 
   public_deps = [
+    "//components/vrp_flags:buildflags",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/cpp:buildflags",
@@ -741,6 +750,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//components/cbor",
+    "//components/vrp_flags:buildflags",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
@@ -756,6 +766,7 @@ fuzzer_test("network_content_security_policy_fuzzer") {
   sources = [ "content_security_policy_fuzzer.cc" ]
   deps = [
     "//base",
+    "//components/vrp_flags:buildflags",
     "//net",
     "//services/network:network_service",
     "//services/network/public/cpp",

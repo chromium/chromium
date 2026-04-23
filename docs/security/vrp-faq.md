@@ -152,6 +152,62 @@ reports:
 * Suggested patches (attached to the report as `fix.patch`) will contribute to
   our assessment of report quality, but will not be eligible for a patch bonus.
 
+### Demonstrating controlled read or write
+
+Mojom interfaces to demonstrate controlled reads or controlled writes in
+privileged processes are available in [vrp_flags.mojom](../../components/vrp_flags/vrp_flags.mojom).
+
+To prove a controlled read or write you must attach a small json file
+`vrp-flag.json` to your report:
+
+```
+{
+  "flag": "read",
+  "params": {
+    "process": "browser",
+    "poc": "poc-read.html",
+    "chrome_version": "123.6789.0.1",
+    "os": "win",
+    "arch": "x64",
+    "command_line": ["--enable-features=FeatureName", ...],
+  }
+}
+```
+
+* attach a minimized `poc.html` that triggers the bug under ASAN
+* attach an additional `poc-read.html` or `poc-write.html`
+* provide additional command line arguments needed to run the poc
+* provide the full version of the released version of Chrome the poc targets
+* provide the operating system the poc targets
+* provide the process the poc targets
+
+`poc-read.html` or `poc-write.html` will be loaded from a local server, with
+mojojs files available under `/gen/`. If your poc reliably hits the VRP flag,
+your report will be eligible for the controlled read or controlled write reward.
+
+If the controlled read or write is not reproducible or not reliable, but the
+minimized poc does trigger an ASAN report, your issue will receive the standard
+reward.
+
+The controlled read or controlled write poc must be included in your initial
+report - we will not consider submissions added at a later time.
+
+Your poc must target a released version of Chrome Stable, Beta or Dev. We will
+not accept submissions that target Canary or local builds.
+
+At this time we do not accept controlled read/write submissions that patch the
+renderer or that require multiple files or servers to demonstrate an issue.
+
+Supported operating systems and architectures (with default hardware mitigations
+enabled):
+
+* `win` - Windows 11 on `x64` or `ARM64`
+* `mac` - The latest release of MacOS on `ARM64`
+* `linux` - The latest release of Debian stable on `x64` or `ARM64`
+
+Non-standard, debugging or unsafe command line flags and features are not
+accepted.
+
 ## Frequently Asked Questions (FAQ)
 
 ### Scope / Reward Eligibility

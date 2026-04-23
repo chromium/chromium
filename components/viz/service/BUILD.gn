@@ -5,6 +5,7 @@
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
+import("//components/vrp_flags/features.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//skia/features.gni")
@@ -43,6 +44,7 @@ static_library("viz_debugger") {
     "//base",
     "//components/viz/common:buildflags",
     "//components/viz/service/debugger/mojom",
+    "//components/vrp_flags:buildflags",
     "//mojo/public/cpp/bindings",
     "//skia",
     "//skia:skia_core_public_headers",
@@ -335,6 +337,7 @@ viz_component("service") {
     "//cc",
     "//cc/debug",
     "//components/viz/common",
+    "//components/vrp_flags:buildflags",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//gpu/vulkan:buildflags",
@@ -583,6 +586,10 @@ viz_component("service") {
       "//third_party/dawn/src/dawn/native",
     ]
   }
+
+  if (enable_vrp_flags) {
+    deps += [ "//components/vrp_flags" ]
+  }
 }
 
 viz_source_set("unit_tests") {
@@ -691,6 +698,7 @@ viz_source_set("unit_tests") {
     "//components/viz/service/main",
     "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
+    "//components/vrp_flags:buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/ipc:gl_in_process_context",
@@ -796,6 +804,7 @@ viz_source_set("perf_tests") {
     "//cc/mojo_embedder",
     "//components/viz/client",
     "//components/viz/test:test_support",
+    "//components/vrp_flags:buildflags",
     "//testing/gtest",
     "//testing/perf",
     "//third_party/zlib/google:zip",
@@ -811,6 +820,7 @@ fuzzer_test("hit_test_manager_fuzzer") {
     ":service",
     "//base/test:test_support",
     "//components/viz/test:test_support",
+    "//components/vrp_flags:buildflags",
     "//ui/gfx:test_support",
   ]
 }
@@ -820,6 +830,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/vrp_flags:buildflags",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",

@@ -11,6 +11,7 @@ include_rules = [
   # than to store user preferences.
   "+components/prefs",
   "+components/privacy_sandbox/privacy_sandbox_features.h",
+  "+components/vrp_flags",
   "+components/unexportable_keys",
   "+components/url_matcher",
   "+components/url_pattern",

@@ -119,6 +119,7 @@ viz_static_library("test_support") {
 
   public_deps = [
     ":buildflags",
+    "//components/vrp_flags:buildflags",
     "//gpu/ipc:gl_in_process_context",
     "//media:media_buildflags",
   ]
@@ -145,6 +146,7 @@ viz_source_set("test_suite") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/vrp_flags:buildflags",
     "//ui/events/platform",
     "//ui/gl:test_support",
   ]
@@ -161,6 +163,7 @@ viz_source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/vrp_flags:buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]

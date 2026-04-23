@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/vrp_flags/buildflags.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -87,6 +88,10 @@
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/switches.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+#include "components/vrp_flags/vrp_flags.h"  // nogncheck
 #endif
 
 namespace content {
@@ -396,6 +401,9 @@ bool UtilityProcessHost::StartProcess() {
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       switches::kDisableDevShmUsage,
+#endif
+#if BUILDFLAG(ENABLE_VRP_FLAGS)
+      vrp_flags::switches::kVrpFlags,
 #endif
 #if BUILDFLAG(IS_MAC)
       sandbox::policy::switches::kDisableMetalShaderCache,

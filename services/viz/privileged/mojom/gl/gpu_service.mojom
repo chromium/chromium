@@ -51,6 +51,9 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
 
+[EnableIf=enable_vrp_flags]
+import "components/vrp_flags/vrp_flags.mojom";
+
 interface GpuService {
   // Tells the GPU service to connect `channel_handle` for communication with a
   // client. The GPU service responds with `success` to indicate whether the
@@ -218,4 +221,10 @@ interface GpuService {
   Hang();
 
   ThrowJavaException();
+
+  // Returns a connection to the VrpFlags if the GPU process was
+  // launched with --vrp-flags, otherwise returns a null remote.
+  [EnableIf=enable_vrp_flags]
+  GetVrpFlags()
+      => (pending_remote<vrp_flags.mojom.VrpFlags>? vrp_flags);
 };

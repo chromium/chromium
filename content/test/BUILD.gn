@@ -11,6 +11,7 @@ import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
+import("//components/vrp_flags/features.gni")
 import("//content/common/features.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -2410,6 +2411,11 @@ test("content_browsertests") {
   if (enable_vr) {
     sources += [ "../browser/xr/metrics/session_metrics_browsertest.cc" ]
     deps += [ "//device/vr:vr_fakes" ]
+  }
+
+  if (enable_vrp_flags) {
+    sources += [ "../browser/vrp_flags/vrp_flags_browsertest.cc" ]
+    deps += [ "//components/vrp_flags" ]
   }
 
   if ((is_win || is_chromeos || is_linux) && !is_tsan &&

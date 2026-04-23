@@ -47,6 +47,7 @@ include_rules = [
   "+components/webauthn/json",
   "+components/cbor",
   "+components/os_crypt/common/os_crypt_switches.h",
+  "+components/vrp_flags",
   # *********************************** NOTE ***********************************
   # If adding a new component dependency, email
   # content-owners@chromium.org first.
