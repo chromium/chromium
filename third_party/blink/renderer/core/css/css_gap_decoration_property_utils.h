@@ -98,6 +98,19 @@ class CORE_EXPORT CSSGapDecorationUtils {
   // Returns true if any inset property in the given direction uses
   // `overlap-join`.
   static bool HasOverlapJoin(const ComputedStyle& style, bool is_column_gap);
+
+  // Checks whether a cross-direction gap segment exists at the given
+  // intersection. A segment is "present" if it passes the cross-direction
+  // visibility rules and is not blocked by a spanning item. Returns true if at
+  // least one segment (before or after) is present. Only applies to grid
+  // containers with `rule-visibility-items: between`.
+  static bool HasCrossGapSegment(GridTrackSizingDirection cross_direction,
+                                 wtf_size_t gap_index,
+                                 wtf_size_t intersection_index,
+                                 RuleVisibilityItems rule_visibility,
+                                 RuleVisibilityItems cross_rule_visibility,
+                                 const GapGeometry& gap_geometry,
+                                 const Vector<GapIntersection>& intersections);
 };
 
 }  // namespace blink

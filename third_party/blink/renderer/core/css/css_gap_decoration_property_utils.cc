@@ -277,6 +277,45 @@ bool CSSGapDecorationUtils::HasOverlapJoin(const ComputedStyle& style,
              .IsOverlapJoin();
 }
 
+bool CSSGapDecorationUtils::HasCrossGapSegment(
+    GridTrackSizingDirection cross_direction,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    RuleVisibilityItems rule_visibility,
+    RuleVisibilityItems cross_rule_visibility,
+    const GapGeometry& gap_geometry,
+    const Vector<GapIntersection>& intersections) {
+  if ((gap_geometry.GetContainerType() != GapGeometry::ContainerType::kGrid &&
+       gap_geometry.GetContainerType() !=
+           GapGeometry::ContainerType::kMultiColumn) ||
+      rule_visibility != RuleVisibilityItems::kBetween) {
+    return true;
+  }
+
+  const wtf_size_t cross_gap_index = intersection_index - 1;
+  const wtf_size_t cross_intersection_index = gap_index + 1;
+
+  const bool is_cross_before_visible =
+      IsRuleSegmentVisible(cross_direction, cross_gap_index, gap_index,
+                           cross_rule_visibility, gap_geometry);
+  const bool is_cross_after_visible = IsRuleSegmentVisible(
+      cross_direction, cross_gap_index, cross_intersection_index,
+      cross_rule_visibility, gap_geometry);
+
+  const BlockedStatus cross_blocked = gap_geometry.GetIntersectionBlockedStatus(
+      cross_direction, cross_gap_index, cross_intersection_index,
+      intersections);
+
+  const bool is_cross_before_present =
+      is_cross_before_visible &&
+      !cross_blocked.HasBlockedStatus(BlockedStatus::kBlockedBefore);
+  const bool is_cross_after_present =
+      is_cross_after_visible &&
+      !cross_blocked.HasBlockedStatus(BlockedStatus::kBlockedAfter);
+
+  return is_cross_before_present || is_cross_after_present;
+}
+
 // Explicit template instantiations
 template GapDataList<StyleColor>::GapDataVector
 CSSGapDecorationUtils::GetExpandedGapDataList(

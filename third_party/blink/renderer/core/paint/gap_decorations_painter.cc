@@ -194,49 +194,6 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   }
 }
 
-// Checks whether a cross-direction gap segment exists at the given
-// intersection. A segment is "present" if it passes the cross-direction
-// visibility rules and is not blocked by a spanning item. Returns true if at
-// least one segment (before or after) is present. Only applies to grid
-// containers with `rule-visibility-items: between`.
-bool HasCrossGapSegment(GridTrackSizingDirection cross_direction,
-                        wtf_size_t gap_index,
-                        wtf_size_t intersection_index,
-                        RuleVisibilityItems rule_visibility,
-                        RuleVisibilityItems cross_rule_visibility,
-                        const GapGeometry& gap_geometry,
-                        const Vector<GapIntersection>& intersections) {
-  if (gap_geometry.GetContainerType() != GapGeometry::ContainerType::kGrid ||
-      rule_visibility != RuleVisibilityItems::kBetween) {
-    return true;
-  }
-
-  const wtf_size_t cross_gap_index = intersection_index - 1;
-  const wtf_size_t cross_intersection_index = gap_index + 1;
-
-  const bool is_cross_before_visible =
-      CSSGapDecorationUtils::IsRuleSegmentVisible(
-          cross_direction, cross_gap_index, gap_index, cross_rule_visibility,
-          gap_geometry);
-  const bool is_cross_after_visible =
-      CSSGapDecorationUtils::IsRuleSegmentVisible(
-          cross_direction, cross_gap_index, cross_intersection_index,
-          cross_rule_visibility, gap_geometry);
-
-  const BlockedStatus cross_blocked = gap_geometry.GetIntersectionBlockedStatus(
-      cross_direction, cross_gap_index, cross_intersection_index,
-      intersections);
-
-  const bool is_cross_before_present =
-      is_cross_before_visible &&
-      !cross_blocked.HasBlockedStatus(BlockedStatus::kBlockedBefore);
-  const bool is_cross_after_present =
-      is_cross_after_visible &&
-      !cross_blocked.HasBlockedStatus(BlockedStatus::kBlockedAfter);
-
-  return is_cross_before_present || is_cross_after_present;
-}
-
 }  // namespace
 
 // TODO(samomekarajr): Consider refactoring the Paint method to improve
@@ -338,6 +295,15 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         break;
       }
 
+      const bool start_is_dangling_intersection =
+          gap_geometry.IsDanglingIntersection(
+              cross_direction, gap_index, start, is_main, rule_visibility,
+              cross_rule_visibility, intersections);
+      const bool end_is_dangling_intersection =
+          gap_geometry.IsDanglingIntersection(
+              cross_direction, gap_index, end, is_main, rule_visibility,
+              cross_rule_visibility, intersections);
+
       // The `*inset_width` is the base value against which percentage inset
       // values are resolved. It is `0` for edge intersections (content edges
       // of the container). For interior intersections it is typically the
@@ -357,44 +323,37 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         start_cross_decoration_width =
             gap_geometry.GetCrossDecorationWidthForIntersection(
                 gap_index, start, is_main, intersections,
-                cross_decoration_widths);
+                start_is_dangling_intersection, cross_decoration_widths);
         end_cross_decoration_width =
             gap_geometry.GetCrossDecorationWidthForIntersection(
                 gap_index, end, is_main, intersections,
-                cross_decoration_widths);
+                end_is_dangling_intersection, cross_decoration_widths);
       }
 
       // When `overlap-join` is active in a grid container with
       // `rule-visibility-items: between`, determine whether there is a
       // cross-direction joining decoration at the intersection. When true,
       // the inset extends to meet the cross decoration; otherwise it is 0.
+      // Effective edges have no crossing decoration to join with (either
+      // at the container boundary or at dangling interior endpoints).
       const bool start_has_joining_decoration =
-          has_overlap_join &&
-          !gap_geometry.IsEdgeIntersection(
-              gap_index, start, intersections.size(), is_main, intersections) &&
-          HasCrossGapSegment(cross_direction, gap_index, start, rule_visibility,
-                             cross_rule_visibility, gap_geometry,
-                             intersections);
+          has_overlap_join && !start_is_dangling_intersection;
       const bool end_has_joining_decoration =
-          has_overlap_join &&
-          !gap_geometry.IsEdgeIntersection(gap_index, end, intersections.size(),
-                                           is_main, intersections) &&
-          HasCrossGapSegment(cross_direction, gap_index, end, rule_visibility,
-                             cross_rule_visibility, gap_geometry,
-                             intersections);
+          has_overlap_join && !end_is_dangling_intersection;
 
       // Inset values are used to offset the end points of gap decorations.
       // Percentage values are resolved against the `*inset_width` of the
       // intersection point.
       // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
       LayoutUnit start_inset = gap_geometry.ComputeInsetStart(
-          style, gap_index, start, intersections, is_column_gap, is_main,
+          style, gap_index, start, intersections,
+          start_is_dangling_intersection, is_column_gap, is_main,
           start_has_joining_decoration, start_max_inset_width,
           start_cross_decoration_width);
       LayoutUnit end_inset = gap_geometry.ComputeInsetEnd(
-          style, gap_index, end, intersections, is_column_gap, is_main,
-          end_has_joining_decoration, end_max_inset_width,
-          end_cross_decoration_width);
+          style, gap_index, end, intersections, end_is_dangling_intersection,
+          is_column_gap, is_main, end_has_joining_decoration,
+          end_max_inset_width, end_cross_decoration_width);
 
       // `*_cross_width` is the width of the gap at the intersection point in
       // the cross axis, which is used to compute the gap decoration offset from

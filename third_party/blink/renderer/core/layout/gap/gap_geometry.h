@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/gap/main_gap.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -188,25 +189,47 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t gap_index) const;
 
   // Determines whether the intersection at `intersection_index` within
-  // `gap_index` lies on a container edge. Typically, the first and last
-  // intersections are edges, but for flex cross gaps, we must first check if
-  // the gap itself is an edge gap before deciding whether the first or last
-  // intersection is an edge intersection.
-  bool IsEdgeIntersection(wtf_size_t gap_index,
-                          wtf_size_t intersection_index,
-                          wtf_size_t intersection_count,
-                          bool is_main_gap,
-                          const Vector<GapIntersection>& intersections) const;
+  // `gap_index` lies on the container boundary. Typically, the first and last
+  // intersections are at the container edge, but for flex cross gaps, we must
+  // first check if the gap itself is an edge gap before deciding whether the
+  // first or last intersection is at the container edge.
+  bool IsIntersectionAtContainerEdge(
+      wtf_size_t gap_index,
+      wtf_size_t intersection_index,
+      wtf_size_t intersection_count,
+      bool is_main_gap,
+      const Vector<GapIntersection>& intersections) const;
+
+  // Returns true if the intersection should be treated as an "edge" for
+  // decoration purposes. An intersection is an edge if it is either:
+  // - At the container boundary (per IsIntersectionAtContainerEdge), or
+  // - A dangling interior endpoint with no visible crossing decoration
+  //   (https://github.com/w3c/csswg-drafts/issues/13697).
+  // `gap_index` is the index of the gap itself and
+  // `intersection_index` is the index of the intersection point within that
+  // gap.
+  bool IsDanglingIntersection(
+      GridTrackSizingDirection cross_direction,
+      wtf_size_t gap_index,
+      wtf_size_t intersection_index,
+      bool is_main_gap,
+      RuleVisibilityItems rule_visibility,
+      RuleVisibilityItems cross_rule_visibility,
+      const Vector<GapIntersection>& intersections) const;
 
   // Returns the cross-direction decoration width at the given intersection,
   // used by `overlap-join` to determine how far the decoration should extend.
   // Edge intersections border the container and have no crossing decoration, so
-  // they return 0.
+  // they return 0. `is_dangling_intersection` indicates whether the
+  // intersection is at a container edge or a dangling interior endpoint with no
+  // visible crossing decoration
+  // (https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit GetCrossDecorationWidthForIntersection(
       wtf_size_t gap_index,
       wtf_size_t intersection_index,
       bool is_main_gap,
       const Vector<GapIntersection>& intersections,
+      bool is_dangling_intersection,
       const Vector<int>& cross_decoration_widths) const;
 
   // Returns the base width used to resolve percentage inset values at the
@@ -279,20 +302,28 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   bool IsMultiColSpanner(wtf_size_t gap_index,
                          GridTrackSizingDirection direction = kForRows) const;
 
+  // `is_dangling_intersection` indicates whether the intersection is at a
+  // container edge or a dangling interior endpoint with no visible crossing
+  // decoration (https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetEnd(const ComputedStyle& style,
                              wtf_size_t gap_index,
                              wtf_size_t intersection_index,
                              const Vector<GapIntersection>& intersections,
+                             bool is_dangling_intersection,
                              bool is_column_gap,
                              bool is_main,
                              bool has_joining_decoration,
                              LayoutUnit cross_gap_width,
                              LayoutUnit cross_decoration_width) const;
 
+  // `is_dangling_intersection` indicates whether the intersection is at a
+  // container edge or a dangling interior endpoint with no visible crossing
+  // decoration (https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetStart(const ComputedStyle& style,
                                wtf_size_t gap_index,
                                wtf_size_t intersection_index,
                                const Vector<GapIntersection>& intersections,
+                               bool is_dangling_intersection,
                                bool is_column_gap,
                                bool is_main,
                                bool has_joining_decoration,

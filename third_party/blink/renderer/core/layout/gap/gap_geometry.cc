@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
@@ -68,6 +69,7 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     const Vector<GapIntersection>& intersections,
+    bool is_dangling_intersection,
     bool is_column_gap,
     bool is_main,
     bool has_joining_decoration,
@@ -77,14 +79,12 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
   // Percentage values are resolved against the crossing gap width of the
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
-  const bool is_edge =
-      IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main, intersections);
   const Length& inset =
-      is_edge ? (is_column_gap ? style.ColumnRuleEdgeInsetEnd()
-                               : style.RowRuleEdgeInsetEnd())
-              : (is_column_gap ? style.ColumnRuleInteriorInsetEnd()
-                               : style.RowRuleInteriorInsetEnd());
+      is_dangling_intersection
+          ? (is_column_gap ? style.ColumnRuleEdgeInsetEnd()
+                           : style.RowRuleEdgeInsetEnd())
+          : (is_column_gap ? style.ColumnRuleInteriorInsetEnd()
+                           : style.RowRuleInteriorInsetEnd());
 
   if (inset.IsOverlapJoin()) {
     return ComputeOverlapJoinInset(has_joining_decoration, is_main,
@@ -98,6 +98,7 @@ LayoutUnit GapGeometry::ComputeInsetStart(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     const Vector<GapIntersection>& intersections,
+    bool is_dangling_intersection,
     bool is_column_gap,
     bool is_main,
     bool has_joining_decoration,
@@ -107,14 +108,12 @@ LayoutUnit GapGeometry::ComputeInsetStart(
   // Percentage values are resolved against the crossing gap width of the
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
-  const bool is_edge =
-      IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main, intersections);
   const Length& inset =
-      is_edge ? (is_column_gap ? style.ColumnRuleEdgeInsetStart()
-                               : style.RowRuleEdgeInsetStart())
-              : (is_column_gap ? style.ColumnRuleInteriorInsetStart()
-                               : style.RowRuleInteriorInsetStart());
+      is_dangling_intersection
+          ? (is_column_gap ? style.ColumnRuleEdgeInsetStart()
+                           : style.RowRuleEdgeInsetStart())
+          : (is_column_gap ? style.ColumnRuleInteriorInsetStart()
+                           : style.RowRuleInteriorInsetStart());
 
   if (inset.IsOverlapJoin()) {
     return ComputeOverlapJoinInset(has_joining_decoration, is_main,
@@ -584,7 +583,7 @@ LayoutUnit GapGeometry::ComputeEndOffsetForFlexCrossGap(
   return main_gaps[main_gap_running_index_].GetGapOffset();
 }
 
-bool GapGeometry::IsEdgeIntersection(
+bool GapGeometry::IsIntersectionAtContainerEdge(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     wtf_size_t intersection_count,
@@ -638,14 +637,30 @@ bool GapGeometry::IsEdgeIntersection(
   return false;
 }
 
+bool GapGeometry::IsDanglingIntersection(
+    GridTrackSizingDirection cross_direction,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    bool is_main_gap,
+    RuleVisibilityItems rule_visibility,
+    RuleVisibilityItems cross_rule_visibility,
+    const Vector<GapIntersection>& intersections) const {
+  return IsIntersectionAtContainerEdge(gap_index, intersection_index,
+                                       intersections.size(), is_main_gap,
+                                       intersections) ||
+         !CSSGapDecorationUtils::HasCrossGapSegment(
+             cross_direction, gap_index, intersection_index, rule_visibility,
+             cross_rule_visibility, *this, intersections);
+}
+
 LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     bool is_main_gap,
     const Vector<GapIntersection>& intersections,
+    bool is_dangling_intersection,
     const Vector<int>& cross_decoration_widths) const {
-  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main_gap, intersections)) {
+  if (is_dangling_intersection) {
     return LayoutUnit();
   }
 
@@ -679,8 +694,9 @@ LayoutUnit GapGeometry::GetMaxInsetWidth(
                                         intersections);
   }
 
-  CHECK(!IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                            is_main_gap, intersections));
+  CHECK(!IsIntersectionAtContainerEdge(gap_index, intersection_index,
+                                       intersections.size(), is_main_gap,
+                                       intersections));
 
   // For flex main-direction overlap intersections, compute the interior width
   // as the distance of the overlap window, which is defined by the two
@@ -714,8 +730,9 @@ LayoutUnit GapGeometry::GetCrossWidthForIntersection(
     wtf_size_t intersection_index,
     bool is_main_gap,
     const Vector<GapIntersection>& intersections) const {
-  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main_gap, intersections)) {
+  if (IsIntersectionAtContainerEdge(gap_index, intersection_index,
+                                    intersections.size(), is_main_gap,
+                                    intersections)) {
     return LayoutUnit();
   }
 
