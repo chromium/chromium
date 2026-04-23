@@ -65,6 +65,9 @@ public class ContentFeatureList {
 
     public static final String ANDROID_PK_AUTOCORRECT_UNDERLINE = "AndroidPkAutocorrectUnderline";
 
+    public static final String ANDROID_PK_AUTOCORRECT_UNDERLINE_V2 =
+            "AndroidPkAutocorrectUnderlineV2";
+
     public static final String ANDROID_SPELLCHECK_FULL_API_BLINK = "AndroidSpellcheckFullApiBlink";
 
     public static final String ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE =

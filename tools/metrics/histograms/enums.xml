@@ -9616,6 +9616,7 @@ from previous Chrome versions.
   <int value="-1491705891"
       label="EnableBluetoothVerboseLogsForGooglers:disabled"/>
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
+  <int value="-1491319328" label="AndroidPkAutocorrectUnderlineV2:enabled"/>
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
   <int value="-1490827023" label="EnableCbdSignOut:disabled"/>
   <int value="-1490669772" label="EnableHistorySyncOptin:disabled"/>
@@ -16705,6 +16706,7 @@ from previous Chrome versions.
   <int value="863584992" label="ExtensionsFSPInServiceWorkers:enabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
   <int value="865096806" label="CrosMall:disabled"/>
+  <int value="865710468" label="AndroidPkAutocorrectUnderlineV2:disabled"/>
   <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867061581" label="AllowWindowDragUsingSystemDragDrop:enabled"/>

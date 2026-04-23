@@ -5196,6 +5196,14 @@ inline constexpr char kAndroidPkAutocorrectUnderlineDescription[] =
     "by underlining the original typo after a correction is made, which then "
     "disappears as typing resumes.";
 
+inline constexpr char kAndroidPkAutocorrectUnderlineV2Name[] =
+    "Enable Android physical keyboard autocorrect underline V2";
+inline constexpr char kAndroidPkAutocorrectUnderlineV2Description[] =
+    "Provides visual feedback for physical keyboard autocorrect on Android "
+    "by underlining the original typo after a correction is made, which then "
+    "disappears as typing resumes. V2 simplifies V1 implementation, while "
+    "improving the input app-compatibility.";
+
 inline constexpr char kAndroidSpellcheckFullApiBlinkName[] =
     "Enable full Android Spellchecker API support for Blink";
 inline constexpr char kAndroidSpellcheckFullApiBlinkDescription[] =

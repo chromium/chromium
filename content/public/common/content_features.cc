@@ -67,6 +67,10 @@ const base::FeatureParam<double> kAndroidNavigationAnimationBlurSigma{
 // Enables the physical keyboard autocorrect underline feature.
 BASE_FEATURE(kAndroidPkAutocorrectUnderline, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the physical keyboard autocorrect underline feature V2.
+BASE_FEATURE(kAndroidPkAutocorrectUnderlineV2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Blocks the misspelling suggestion span in composition mode.
 BASE_FEATURE(kAndroidBlockMisspellingSuggestionSpanInCompositionMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
