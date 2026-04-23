@@ -36,6 +36,8 @@
 #include "net/filter/zstd_source_stream.h"
 #include "net/http/http_request_info.h"
 #include "net/http/structured_headers.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
@@ -49,8 +51,10 @@ namespace {
 // Convert the interface from HttpTransaction to SourceStream.
 class ProxyingSourceStream : public SourceStream {
  public:
-  explicit ProxyingSourceStream(HttpTransaction* transaction)
-      : SourceStream(SourceStreamType::kNone), transaction_(transaction) {}
+  ProxyingSourceStream(HttpTransaction* transaction, NetLogWithSource net_log)
+      : SourceStream(SourceStreamType::kNone),
+        transaction_(transaction),
+        net_log_(net_log) {}
 
   ProxyingSourceStream(const ProxyingSourceStream&) = delete;
   ProxyingSourceStream& operator=(const ProxyingSourceStream&) = delete;
@@ -62,7 +66,16 @@ class ProxyingSourceStream : public SourceStream {
            int buffer_size,
            CompletionOnceCallback callback) override {
     DCHECK(transaction_);
-    return transaction_->Read(dest_buffer, buffer_size, std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
+    int result = transaction_->Read(
+        dest_buffer, buffer_size,
+        base::BindOnce(&ProxyingSourceStream::OnReadComplete,
+                       base::Unretained(this), std::move(split_callback.first),
+                       base::RetainedRef(dest_buffer)));
+    if (result != ERR_IO_PENDING) {
+      OnReadComplete(CompletionOnceCallback(), dest_buffer, result);
+    }
+    return result;
   }
 
   std::string Description() const override { return std::string(); }
@@ -70,7 +83,20 @@ class ProxyingSourceStream : public SourceStream {
   bool MayHaveMoreBytes() const override { return true; }
 
  private:
+  void OnReadComplete(CompletionOnceCallback callback,
+                      scoped_refptr<IOBuffer> dest_buffer,
+                      int result) {
+    if (result > 0 && net_log_.IsCapturing()) {
+      net_log_.AddByteTransferEvent(NetLogEventType::URL_REQUEST_JOB_BYTES_READ,
+                                    result, dest_buffer->data());
+    }
+    if (callback) {
+      std::move(callback).Run(result);
+    }
+  }
+
   const raw_ptr<HttpTransaction> transaction_;
+  const NetLogWithSource net_log_;
 };
 
 void AddAcceptEncoding(HttpRequestHeaders* request_headers,
@@ -110,6 +136,7 @@ SharedDictionaryNetworkTransaction::~SharedDictionaryNetworkTransaction() =
 int SharedDictionaryNetworkTransaction::Start(const HttpRequestInfo* request,
                                               CompletionOnceCallback callback,
                                               const NetLogWithSource& net_log) {
+  net_log_ = net_log;
   request_destination_is_document_ = request->is_main_frame_navigation ||
                                      request->is_subframe_document_resource;
   if (!(request->load_flags & LOAD_CAN_USE_SHARED_DICTIONARY) ||
@@ -368,7 +395,7 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
         std::unique_ptr<SourceStream> header_checker_source_stream =
             std::make_unique<SharedDictionaryHeaderCheckerSourceStream>(
                 std::make_unique<ProxyingSourceStream>(
-                    network_transaction_.get()),
+                    network_transaction_.get(), net_log_),
                 shared_dictionary_encoding_type_ ==
                         SharedDictionaryEncodingType::kSharedBrotli
                     ? SharedDictionaryHeaderCheckerSourceStream::Type::

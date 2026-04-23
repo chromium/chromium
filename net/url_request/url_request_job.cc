@@ -734,7 +734,10 @@ void URLRequestJob::GatherRawReadStats(int bytes_read) {
 
   if (bytes_read > 0) {
     // If there is a filter, bytes will be logged after the filter is applied.
+    // Shared dictionary reads are decoded and logged in
+    // SharedDictionaryNetworkTransaction.
     if (source_stream_->type() != SourceStreamType::kNone &&
+        !request_->response_info_.did_use_shared_dictionary &&
         request()->net_log().IsCapturing()) {
       request()->net_log().AddByteTransferEvent(
           NetLogEventType::URL_REQUEST_JOB_BYTES_READ, bytes_read,

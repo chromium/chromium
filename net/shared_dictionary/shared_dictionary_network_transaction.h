@@ -174,6 +174,8 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
   base::RepeatingCallback<scoped_refptr<SharedDictionary>()>
       shared_dictionary_getter_;
 
+  NetLogWithSource net_log_;
+
   base::WeakPtrFactory<SharedDictionaryNetworkTransaction> weak_factory_{this};
 };
 

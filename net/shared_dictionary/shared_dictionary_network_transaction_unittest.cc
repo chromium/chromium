@@ -22,6 +22,7 @@
 #include "net/http/http_transaction.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/shared_dictionary/shared_dictionary_transaction_outcome.h"
@@ -284,6 +285,51 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       NetLog_URL_REQUEST_JOB_BYTES_READ) {
+  RecordingNetLogObserver net_log_observer;
+
+  MockHttpRequest request(*scoped_mock_transaction_);
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
+      });
+
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/false);
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  TestCompletionCallback start_callback;
+  NetLogWithSource net_log =
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::URL_REQUEST);
+
+  ASSERT_THAT(transaction.Start(&request, start_callback.callback(), net_log),
+              test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
+      test::IsError(ERR_IO_PENDING));
+  int read_result = read_callback.WaitForResult();
+  EXPECT_THAT(read_result, kTestData.size());
+
+  auto entries = net_log_observer.GetEntries();
+  int total_bytes_read = 0;
+  for (const auto& entry : entries) {
+    if (entry.type == NetLogEventType::URL_REQUEST_JOB_BYTES_READ) {
+      int bytes_read = entry.params.FindInt("byte_count").value_or(0);
+      total_bytes_read += bytes_read;
+    }
+  }
+  EXPECT_EQ(total_bytes_read,
+            static_cast<int>(kBrotliEncodedDataString.size()));
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
