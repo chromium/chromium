@@ -1185,6 +1185,78 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   ASSERT_TRUE(observer.last_navigation_succeeded());
 }
 
+class WebUIToolbarWebViewRaceTest : public InProcessBrowserTest {
+ public:
+  WebUIToolbarWebViewRaceTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kSkipIPCChannelPausingForNonGuests},
+        {features::kInitialWebUISyncNavStartToCommit});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for crbug.com/478033216.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
+                       BindInterfaceAfterCloseRace) {
+  // 1. Setup: Create a new browser window.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
+
+  WebUIToolbarWebView* toolbar_view = ::GetWebUIToolbarWebView(new_browser);
+  ASSERT_TRUE(toolbar_view);
+  content::WebContents* webui_contents =
+      toolbar_view->GetWebViewForTesting()->GetWebContents();
+  ASSERT_TRUE(webui_contents);
+
+  // 2. Prepare Navigation Manager to hang the navigation.
+  GURL toolbar_url(chrome::kChromeUIWebUIToolbarURL);
+
+  // Trigger a reload to start a new navigation that we can control.
+  content::TestNavigationManager nav_manager(webui_contents, toolbar_url);
+  webui_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                         /*check_for_repost=*/false);
+  EXPECT_TRUE(nav_manager.WaitForResponse());
+
+  // 3. Resume navigation (this queues the commit task on the UI thread).
+  nav_manager.ResumeNavigation();
+
+  // 4. Initiate browser closure.
+  // This synchronously calls Browser::OnWindowClosing() which nulls the
+  // BrowserWindowInterface reference and posts SynchronouslyDestroyBrowser.
+  new_browser->window()->Close();
+
+  // 5. Queue BindInterface manually.
+  // This mimics the Mojo request from the renderer arriving after the BWI is
+  // nulled but BEFORE the browser is destroyed.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> weak_wc) {
+            if (!weak_wc) {
+              return;
+            }
+            auto* rfh = weak_wc->GetPrimaryMainFrame();
+            auto* web_ui = rfh ? rfh->GetWebUI() : nullptr;
+            auto* ui = web_ui ? web_ui->GetController()->GetAs<WebUIToolbarUI>()
+                              : nullptr;
+            if (ui) {
+              mojo::PendingRemote<tracked_element::mojom::TrackedElementHandler>
+                  remote;
+              ui->BindInterface(remote.InitWithNewPipeAndPassReceiver());
+            }
+          },
+          webui_contents->GetWeakPtr()));
+
+  // 6. Return to the message loop.
+  // This will process: [Commit Task] -> [BindInterface Task] -> [Destruction
+  // Task]. Without the fix, both Commit and BindInterface tasks would crash.
+  std::ignore = nav_manager.WaitForNavigationFinished();
+}
+
 // Verify that the crash is recovered by reloading the page until it hits the
 // limit set in `WebUIReloadButtonMaxCrashRecoveryTimes`, after that it will
 // remain crashed.
