@@ -2192,6 +2192,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   // updates. As this is a transient property, we should set but not clear it.
   if (update->full_tree_damaged) {
     property_trees.set_full_tree_damaged(true);
+    layers.set_needs_update_draw_properties();
   }
 
   // Safe down-cast: AnimationHost is the only subclass of MutatorHost.
@@ -2204,7 +2205,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   // flagging draw properties as needing an update when no relevant properties
   // have changed.
   if (any_tree_changed || scroll_properties_changed ||
-      transform_layer_properties_changed) {
+      transform_layer_properties_changed || update->full_tree_damaged) {
     layers.MoveChangeTrackingToLayers();
   }
 
