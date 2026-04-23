@@ -51,6 +51,8 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
     window_capturer_for_testing_ = std::move(window_capturer);
   }
 
+  void ResetExplicitDecisionForTesting() { explicit_decision_ = false; }
+
  private:
   bool IsWidgetFocused() const;
   void FocusTab(const content::DesktopMediaID& media_id);
