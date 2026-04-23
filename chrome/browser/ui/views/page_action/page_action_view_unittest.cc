@@ -558,6 +558,21 @@ TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
   second_loop.Run();
 }
 
+TEST_F(PageActionViewTest, AnchoredMessageChipClickCallbackOrder) {
+  base::MockCallback<base::RepeatingCallback<void(PageActionTrigger)>>
+      click_callback;
+  base::MockCallback<base::RepeatingClosure> close_callback;
+
+  page_action_view()->SetClickCallback(click_callback.Get());
+  page_action_view()->SetAnchoredMessageCloseCallback(close_callback.Get());
+
+  testing::InSequence s;
+  EXPECT_CALL(click_callback, Run(PageActionTrigger::kMouse));
+  EXPECT_CALL(close_callback, Run());
+
+  page_action_view()->AnchoredMessageChipClick();
+}
+
 class PageActionViewTriggerTest : public PageActionViewTest {
  public:
   PageActionViewTriggerTest() = default;

@@ -140,6 +140,8 @@ source_set("test_support") {
   sources = [
     "test_support/fake_tab_interface.cc",
     "test_support/fake_tab_interface.h",
+    "test_support/mock_anchored_message_delegate.cc",
+    "test_support/mock_anchored_message_delegate.h",
     "test_support/mock_page_action_controller.cc",
     "test_support/mock_page_action_controller.h",
     "test_support/mock_page_action_model.cc",

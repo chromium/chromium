@@ -225,10 +225,16 @@ void PageActionControllerImpl::DoShowAnchoredMessage(
   active_anchored_message_ = action_id;
   anchored_message_timeout_.Start(
       FROM_HERE, base::Seconds(12),
-      base::BindRepeating(
-          static_cast<void (PageActionControllerImpl::*)(actions::ActionId)>(
-              &PageActionControllerImpl::ShowSuggestionChip),
-          base::Unretained(this), action_id));
+      base::BindRepeating(&PageActionControllerImpl::DowngradeAnchoredMessage,
+                          base::Unretained(this), action_id));
+}
+
+void PageActionControllerImpl::DowngradeAnchoredMessage(
+    actions::ActionId action_id) {
+  if (active_anchored_message_ != action_id) {
+    return;
+  }
+  ShowSuggestionChip(action_id);
 }
 
 void PageActionControllerImpl::HideAnchoredMessage(
@@ -238,14 +244,29 @@ void PageActionControllerImpl::HideAnchoredMessage(
 
 void PageActionControllerImpl::DoHideAnchoredMessage(
     actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(
-      PageActionPassKey(),
-      /*show=*/false);
   if (active_anchored_message_ == action_id) {
     active_anchored_message_ = std::nullopt;
     if (anchored_message_timeout_.IsRunning()) {
       anchored_message_timeout_.Stop();
     }
+  }
+  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(
+      PageActionPassKey(),
+      /*show=*/false);
+}
+
+void PageActionControllerImpl::PauseAnchoredMessageTimeout(
+    actions::ActionId action_id) {
+  if (active_anchored_message_ == action_id &&
+      anchored_message_timeout_.IsRunning()) {
+    anchored_message_timeout_.Stop();
+  }
+}
+
+void PageActionControllerImpl::ResumeAnchoredMessageTimeout(
+    actions::ActionId action_id) {
+  if (active_anchored_message_ == action_id) {
+    anchored_message_timeout_.Reset();
   }
 }
 
@@ -491,6 +512,12 @@ void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
   delegate->SetClickCallback(
       base::BindRepeating(&PageActionControllerImpl::RecordClickMetric,
                           weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetAnchoredMessagePauseCallback(base::BindRepeating(
+      &PageActionControllerImpl::PauseAnchoredMessageTimeout,
+      weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetAnchoredMessageResumeCallback(base::BindRepeating(
+      &PageActionControllerImpl::ResumeAnchoredMessageTimeout,
+      weak_factory_.GetWeakPtr(), action_id));
 }
 
 void PageActionControllerImpl::RecordClickMetric(

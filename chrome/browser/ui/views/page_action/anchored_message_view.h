@@ -49,10 +49,20 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageChipLabelId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageCloseIconId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageMenuIconId);
+
+  // Delegate is the interface for the AnchoredMessageBubbleView to use the
+  // callbacks registered in the PageActionView.
+  class Delegate {
+   public:
+    virtual void AnchoredMessageChipClick() = 0;
+    virtual void CloseAnchoredMessage() = 0;
+    virtual void PauseAnchoredMessageTimeout() = 0;
+    virtual void ResumeAnchoredMessageTimeout() = 0;
+  };
+
   AnchoredMessageBubbleView(views::BubbleAnchor parent,
                             const PageActionModelInterface& model,
-                            base::RepeatingClosure chip_callback,
-                            base::RepeatingClosure close_callback);
+                            Delegate& delegate);
   AnchoredMessageBubbleView(const AnchoredMessageBubbleView& other) = delete;
   ~AnchoredMessageBubbleView() override;
 
@@ -85,11 +95,10 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   std::optional<ui::ImageModel> icon_ = std::nullopt;
   std::u16string label_text_;
   bool show_close_button_;
-  base::RepeatingClosure chip_callback_;
-  base::RepeatingClosure close_callback_;
-  raw_ptr<ui::SimpleMenuModel> menu_model_;
+  raw_ptr<ui::SimpleMenuModel> menu_model_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
+  const raw_ref<Delegate> delegate_;
 };
 
 }  // namespace page_actions

@@ -418,6 +418,10 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
         IsChipShowingChangedCallback callback) override {}
     void SetAnchoredMessageCloseCallback(
         base::RepeatingClosure callback) override {}
+    void SetAnchoredMessagePauseCallback(
+        base::RepeatingClosure callback) override {}
+    void SetAnchoredMessageResumeCallback(
+        base::RepeatingClosure callback) override {}
     void SetClickCallback(
         base::RepeatingCallback<void(PageActionTrigger)> callback) override {
       click_callback_ = std::move(callback);

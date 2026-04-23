@@ -68,8 +68,8 @@ class ChipContainerView : public views::View {
  public:
   ChipContainerView(const std::u16string& label_text,
                     const std::optional<ui::ImageModel>& icon,
-                    base::RepeatingClosure callback)
-      : callback_(callback) {
+                    const raw_ref<AnchoredMessageBubbleView::Delegate> delegate)
+      : delegate_(delegate) {
     icon_view_ = AddChildView(std::make_unique<views::ImageView>());
     icon_view_->SetVisible(false);
     icon_view_->SetProperty(
@@ -124,8 +124,7 @@ class ChipContainerView : public views::View {
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (event.IsOnlyLeftMouseButton()) {
-      CHECK(callback_);
-      callback_.Run();
+      delegate_->AnchoredMessageChipClick();
     }
     // If the event has been handled, this will never be reached, so we can just
     // always return false.
@@ -146,7 +145,7 @@ class ChipContainerView : public views::View {
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   std::optional<ui::ImageModel> icon_;
-  base::RepeatingClosure callback_;
+  const raw_ref<AnchoredMessageBubbleView::Delegate> delegate_;
 };
 
 BEGIN_METADATA(ChipContainerView)
@@ -172,15 +171,13 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
 AnchoredMessageBubbleView::AnchoredMessageBubbleView(
     views::BubbleAnchor parent,
     const PageActionModelInterface& model,
-    base::RepeatingClosure chip_callback,
-    base::RepeatingClosure close_callback)
+    Delegate& delegate)
     : BubbleDialogDelegate(parent,
                            views::BubbleBorder::Arrow::TOP_RIGHT,
                            views::BubbleBorder::DIALOG_SHADOW,
                            true),
-      chip_callback_(std::move(chip_callback)),
-      close_callback_(std::move(close_callback)),
-      menu_model_(model.GetAnchoredMessageMenuModel()) {
+      menu_model_(model.GetAnchoredMessageMenuModel()),
+      delegate_(delegate) {
   SetProperty(views::kElementIdentifierKey, kAnchoredMessageBubbleId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetBackgroundColor(ui::kColorSysSurface);
@@ -205,14 +202,14 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   label_->SetProperty(views::kElementIdentifierKey, kAnchoredMessageLabelId);
 
   chip_container_ = AddChildView(std::make_unique<ChipContainerView>(
-      std::u16string(), std::nullopt,
-      base::BindRepeating(&AnchoredMessageBubbleView::ChipCallback,
-                          base::Unretained(this))));
+      std::u16string(), std::nullopt, delegate_));
   chip_container_->SetProperty(views::kElementIdentifierKey,
                                kAnchoredMessageChipId);
 
   close_button_ =
-      AddChildView(std::make_unique<views::ImageButton>(close_callback_));
+      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
+          &AnchoredMessageBubbleView::Delegate::CloseAnchoredMessage,
+          base::Unretained(delegate_))));
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
@@ -346,17 +343,6 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
   SetAnchorView(nullptr);
 }
 
-void AnchoredMessageBubbleView::ChipCallback() {
-  CHECK(close_callback_);
-  CHECK(chip_callback_);
-  // Copy callbacks to locals before invoking: close_callback_ destroys the
-  // bubble (and |this|), so member access after that is a use-after-free.
-  auto chip_callback = chip_callback_;
-  auto close_callback = close_callback_;
-  chip_callback.Run();
-  close_callback.Run();
-}
-
 void AnchoredMessageBubbleView::MenuButtonPressed() {
   if (!menu_model_) {
     return;
@@ -370,10 +356,16 @@ void AnchoredMessageBubbleView::MenuButtonPressed() {
   menu_runner_->RunMenuAt(
       GetWidget(), nullptr, menu_button_->GetBoundsInScreen(),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
+  if (menu_runner_->IsRunning()) {
+    delegate_->PauseAnchoredMessageTimeout();
+  } else {
+    pressed_lock_.reset();
+  }
 }
 
 void AnchoredMessageBubbleView::OnMenuClosed() {
   pressed_lock_.reset();
+  delegate_->ResumeAnchoredMessageTimeout();
 }
 
 void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {

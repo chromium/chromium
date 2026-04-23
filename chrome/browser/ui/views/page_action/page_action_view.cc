@@ -102,6 +102,16 @@ void PageActionView::SetClickCallback(
   click_callback_ = std::move(callback);
 }
 
+void PageActionView::SetAnchoredMessagePauseCallback(
+    base::RepeatingClosure callback) {
+  anchored_message_pause_callback_ = std::move(callback);
+}
+
+void PageActionView::SetAnchoredMessageResumeCallback(
+    base::RepeatingClosure callback) {
+  anchored_message_resume_callback_ = std::move(callback);
+}
+
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
@@ -366,11 +376,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
   }
 
   auto message_delegate = std::make_unique<AnchoredMessageBubbleView>(
-      views::BubbleAnchor(this), model,
-      base::BindRepeating(&PageActionView::AnchoredMessageClick,
-                          base::Unretained(this)),
-      base::BindRepeating(&PageActionView::CloseAnchoredMessage,
-                          base::Unretained(this)));
+      views::BubbleAnchor(this), model, *this);
   anchored_message_ = message_delegate.get();
 
   anchored_message_widget_ =
@@ -387,12 +393,15 @@ void PageActionView::CreateAndShowAnchoredMessage(
     anchored_message_ = nullptr;
   }
 }
-
-void PageActionView::CloseAnchoredMessage() {
-  anchored_message_close_callback_.Run();
+void PageActionView::OnAnchoredMessageWidgetClose(
+    views::Widget::ClosedReason closed_reason) {
+  CHECK(anchored_message_);
+  CHECK(anchored_message_widget_);
+  anchored_message_ = nullptr;
+  anchored_message_widget_ = nullptr;
 }
 
-void PageActionView::AnchoredMessageClick() {
+void PageActionView::AnchoredMessageChipClick() {
   CHECK(click_callback_);
   click_callback_.Run(PageActionTrigger::kMouse);
   action_item_->InvokeAction(
@@ -401,14 +410,19 @@ void PageActionView::AnchoredMessageClick() {
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            PageActionTrigger::kMouse))
           .Build());
+  anchored_message_close_callback_.Run();
 }
 
-void PageActionView::OnAnchoredMessageWidgetClose(
-    views::Widget::ClosedReason closed_reason) {
-  CHECK(anchored_message_);
-  CHECK(anchored_message_widget_);
-  anchored_message_ = nullptr;
-  anchored_message_widget_ = nullptr;
+void PageActionView::CloseAnchoredMessage() {
+  anchored_message_close_callback_.Run();
+}
+
+void PageActionView::PauseAnchoredMessageTimeout() {
+  anchored_message_pause_callback_.Run();
+}
+
+void PageActionView::ResumeAnchoredMessageTimeout() {
+  anchored_message_resume_callback_.Run();
 }
 
 AnchoredMessageBubbleView* PageActionView::GetAnchoredMessageForTesting() {

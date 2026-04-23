@@ -151,12 +151,18 @@ class PageActionController {
     using IsChipShowingChangedCallback =
         base::RepeatingCallback<void(bool is_chip_showing)>;
     using AnchoredMessageCloseCallback = base::RepeatingClosure;
+    using AnchoredMessagePauseCallback = base::RepeatingClosure;
+    using AnchoredMessageResumeCallback = base::RepeatingClosure;
     using ClickCallback = base::RepeatingCallback<void(PageActionTrigger)>;
 
     virtual void SetIsChipShowingChangedCallback(
         IsChipShowingChangedCallback callback) = 0;
     virtual void SetAnchoredMessageCloseCallback(
         AnchoredMessageCloseCallback callback) = 0;
+    virtual void SetAnchoredMessagePauseCallback(
+        AnchoredMessagePauseCallback callback) = 0;
+    virtual void SetAnchoredMessageResumeCallback(
+        AnchoredMessageResumeCallback callback) = 0;
     virtual void SetClickCallback(ClickCallback callback) = 0;
   };
 
@@ -410,6 +416,10 @@ class PageActionControllerImpl : public PageActionController,
   void DoShowAnchoredMessage(actions::ActionId action_id,
                              const AnchoredMessageConfig& config);
   void DoHideAnchoredMessage(actions::ActionId action_id);
+  void DowngradeAnchoredMessage(actions::ActionId action_id);
+
+  void PauseAnchoredMessageTimeout(actions::ActionId action_id);
+  void ResumeAnchoredMessageTimeout(actions::ActionId action_id);
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>

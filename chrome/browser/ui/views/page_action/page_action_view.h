@@ -36,7 +36,8 @@ struct PageActionViewParams;
 // browser, per page action.
 class PageActionView : public IconLabelBubbleView,
                        public PageActionModelObserver,
-                       public PageActionController::Delegate {
+                       public PageActionController::Delegate,
+                       public AnchoredMessageBubbleView::Delegate {
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
@@ -65,10 +66,15 @@ class PageActionView : public IconLabelBubbleView,
   base::CallbackListSubscription AddChipVisibilityChangedCallback(
       ChipVisibilityChanged callback);
 
+  // PageActionController::Delegate:
   // Reports the chip visibility change state at the end of the animation.
   void SetIsChipShowingChangedCallback(
       IsChipShowingChangedCallback callback) override;
   void SetAnchoredMessageCloseCallback(
+      base::RepeatingClosure callback) override;
+  void SetAnchoredMessagePauseCallback(
+      base::RepeatingClosure callback) override;
+  void SetAnchoredMessageResumeCallback(
       base::RepeatingClosure callback) override;
   void SetClickCallback(
       base::RepeatingCallback<void(PageActionTrigger)> callback) override;
@@ -92,6 +98,12 @@ class PageActionView : public IconLabelBubbleView,
   bool IsBubbleShowing() const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  // AnchoredMessageBubbleView::Delegate:
+  void AnchoredMessageChipClick() override;
+  void CloseAnchoredMessage() override;
+  void PauseAnchoredMessageTimeout() override;
+  void ResumeAnchoredMessageTimeout() override;
 
   actions::ActionId GetActionId() const;
 
@@ -119,9 +131,6 @@ class PageActionView : public IconLabelBubbleView,
   // Runs `is_chip_showing_changed_callback_` asynchronously to ensure that this
   // notification will happen after PageActionModel::NotifyChange().
   void NotifyIsChipShowingChange();
-
-  void CloseAnchoredMessage();
-  void AnchoredMessageClick();
 
   void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
 
@@ -165,6 +174,8 @@ class PageActionView : public IconLabelBubbleView,
   std::unique_ptr<views::Widget> anchored_message_widget_;
 
   base::RepeatingClosure anchored_message_close_callback_ = base::DoNothing();
+  base::RepeatingClosure anchored_message_pause_callback_ = base::DoNothing();
+  base::RepeatingClosure anchored_message_resume_callback_ = base::DoNothing();
   base::WeakPtrFactory<PageActionView> weak_factory_{this};
 };
 
