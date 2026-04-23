@@ -21,6 +21,8 @@
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
   _viewController.sheetPresentationController.delegate = self;
+  _viewController.sheetPresentationController
+      .prefersEdgeAttachedInCompactHeight = YES;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
