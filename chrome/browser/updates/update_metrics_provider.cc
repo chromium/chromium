@@ -75,7 +75,7 @@ PageBlockingUpdate GetPageBlockingUpdate() {
   }
 
   const GURL& url = active_contents->GetVisibleURL();
-  if (url == GURL(chrome::kChromeUINewTabURL)) {
+  if (url == chrome::ChromeUINewTabURLAsGURL()) {
     return PageBlockingUpdate::kNtp;
   }
   if (url.IsAboutBlank()) {

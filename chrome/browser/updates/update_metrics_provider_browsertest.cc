@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(UpdateMetricsProviderBrowserTest,
 IN_PROC_BROWSER_TEST_F(UpdateMetricsProviderBrowserTest,
                        UpdateAvailableNtpOnly) {
   SetUpgradeAvailable();
-  NavigateToURL(GURL(chrome::kChromeUINewTabURL));
+  NavigateToURL(chrome::ChromeUINewTabURLAsGURL());
 
   provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample("Chrome.BuildState.PendingUpdateState",
