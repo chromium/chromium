@@ -14198,6 +14198,7 @@ from previous Chrome versions.
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
   <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
   <int value="30668734" label="CanvasDrawElement:enabled"/>
+  <int value="30914609" label="DisablePartnerHomepageAndroid:enabled"/>
   <int value="31258497"
       label="AutofillEnableSyncingOfPixBankAccounts:disabled"/>
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
@@ -19454,6 +19455,7 @@ from previous Chrome versions.
   <int value="1776527118" label="enable-webgpu-testing:enabled"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>
   <int value="1777241671" label="EnableAriaElementReflection:disabled"/>
+  <int value="1777529925" label="DisablePartnerHomepageAndroid:disabled"/>
   <int value="1777695562" label="SendTabToSelfShowSendingUI:disabled"/>
   <int value="1777806335" label="UsePasswordSeparatedSigninFlow:disabled"/>
   <int value="1779095819" label="BatchUploadDesktop:disabled"/>

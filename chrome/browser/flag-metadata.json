@@ -2397,6 +2397,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "disable-partner-homepage-android",
+    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "disable-process-reuse",
     "owners": [
       "alexmos@google.com", "creis@google.com" ],

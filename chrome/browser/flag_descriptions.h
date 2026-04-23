@@ -496,6 +496,11 @@ inline constexpr char kDisableAutofillStrikeSystemDescription[] =
     "When enabled, the Autofill strike system will not block a feature from "
     "being offered.";
 
+inline constexpr char kDisablePartnerHomepageAndroidName[] =
+    "Disable Partner Homepage";
+inline constexpr char kDisablePartnerHomepageAndroidDescription[] =
+    "Disables the partner homepage on Android.";
+
 inline constexpr char kDisableFacilitatedPaymentsMerchantAllowlistName[] =
     "Disable the merchant allowlist check for facilitated payments";
 inline constexpr char

@@ -9798,6 +9798,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidZoomImmersiveDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidZoomImmersive)},
 
+    {"disable-partner-homepage-android",
+     flag_descriptions::kDisablePartnerHomepageAndroidName,
+     flag_descriptions::kDisablePartnerHomepageAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDisablePartnerHomepageAndroid)},
+
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
