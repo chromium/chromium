@@ -76,6 +76,11 @@ iwa_access_control {
     key: "5qpj5uu6nmdigeqdkrlmfo5uqwpedb3ps6skhe6276wciir5h6yaaaic"
     value: {}
   }
+  # crbug.com/492436668
+  managed_allowlist {
+    key: "6skus5o46zlwbkaajs7auua5ntjhld6i3qxft3py6737xvrwic4aaaic"
+    value: {}
+  }
   # crbug.com/457325169
   managed_allowlist {
     key: "aicmibhbmnxp2r7ai552eyuxjls5ksceyen5aj37f35cdr5wihvyyaacai"
@@ -121,6 +126,11 @@ iwa_access_control {
     key: "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic"
     value: {}
   }
+  # crbug.com/492434018
+  managed_allowlist {
+    key: "fastb5gbwigsdvngfspsjt7nvlq2cur7ywysdizyxmoywcnxbplqaaic"
+    value: {}
+  }
   managed_allowlist {
     key: "grhw2odotdqioi5nwwftz62kslybtoj5smahu2wkhds4kupuvuraaaic"
     value: {}
@@ -163,9 +173,39 @@ iwa_access_control {
     key: "t5y5u5ypkkszc6gproxry53r6itx72lzow6tbpxryk5xtjus6ieqaaic"
     value: {}
   }
+  # crbug.com/492435648
+  managed_allowlist {
+    key: "u5guulqoop6gbmcrx5dkyee3wx6dwkmrufqpxjveipjuydqpidtqaaic"
+    value: {}
+  }
+  # crbug.com/497720013
+  managed_allowlist {
+    key: "w3qlcgzfj7ch4ejo56aawwm2r3p2bnx52lbvukeskbq26sgskvzqaaic"
+    value: {}
+  }
+  # crbug.com/492434221
+  managed_allowlist {
+    key: "wibwt63t4vrnwzzzcp6k55b4sger2zbaw2ojwcrhancd3j2rdzaqaaic"
+    value: {}
+  }
+  # crbug.com/496294809
+  managed_allowlist {
+    key: "xfwlzxjaddzrkm6hgasosed65wchld6sqhkyn74je4cku55adccaaaic"
+    value: {}
+  }
   # crbug.com/459313816
   managed_allowlist {
     key: "xg7j4jhurxb7v5kpnt6asdfdap4lgygu7rxw6wwmpg4p3zs3rffaaaic"
+    value: {}
+  }
+  # crbug.com/492435718
+  managed_allowlist {
+    key: "yrgjmfspm4zk44nzcr2xfj7qneuugb4tql6lxzm2odnygx7dyknaaaic"
+    value: {}
+  }
+  # crbug.com/500617956
+  managed_allowlist {
+    key: "zaeekwjquidnqkdbaxlveqbqgjkwqpp76lozvs4hkgv3afuaqteaaaic"
     value: {}
   }
 
