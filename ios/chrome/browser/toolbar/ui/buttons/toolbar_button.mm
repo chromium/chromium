@@ -97,9 +97,9 @@ UIColor* NormalTintColor() {
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   if (enabled) {
-    self.tintColor = NormalTintColor();
+    self.imageView.tintColor = NormalTintColor();
   } else {
-    self.tintColor =
+    self.imageView.tintColor =
         [NormalTintColor() colorWithAlphaComponent:kDisabledOpacity];
   }
   [self updateAppearance];
