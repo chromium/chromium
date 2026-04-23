@@ -72,6 +72,7 @@ class GlicSelectionObserver
 
  private:
   void ProcessPendingSelection();
+  void ResetPendingSelection();
 
   static void InvokeGlicFromSelectionAffordance(
       std::u16string selected_text,

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -321,8 +322,18 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
 
   // Keyboard events should dismiss UI with keep_nudge = false.
   // The nudge should be dismissed.
+  // DismissUI posts a task to update the nudge label. To verify the
+  // expectations we must wait for this posted task to run. The posted task
+  // calls GetBrowserWindowInterface() on the TabInterface. By hooking into this
+  // mock call, we can quit the RunLoop, ensuring the test waits exactly until
+  // the async task executes before proceeding to VerifyAndClearExpectations.
+  base::RunLoop run_loop_keyboard;
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillOnce(testing::Return(nullptr));
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&run_loop_keyboard]() -> BrowserWindowInterface* {
+            run_loop_keyboard.Quit();
+            return nullptr;
+          }));
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -331,13 +342,20 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
                              InputEventSource::kUnknown);
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  run_loop_keyboard.Run();
   testing::Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
   // Mouse clicks should dismiss UI with keep_nudge = false.
   // The nudge should be dismissed.
+  // We use the same RunLoop trick as above to wait for the posted task to run.
+  base::RunLoop run_loop_mouse;
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillOnce(testing::Return(nullptr));
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&run_loop_mouse]() -> BrowserWindowInterface* {
+            run_loop_mouse.Quit();
+            return nullptr;
+          }));
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown,
       blink::WebInputEvent::kNoModifiers,
@@ -348,6 +366,7 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
                              InputEventSource::kUnknown);
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  run_loop_mouse.Run();
   testing::Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
