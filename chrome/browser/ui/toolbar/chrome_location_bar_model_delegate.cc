@@ -227,13 +227,13 @@ bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
     return false;
   }
 
-  GURL ntp_url(chrome::kChromeUINewTabPageURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
   return ntp_url.scheme() == entry->GetURL().scheme() &&
          ntp_url.host() == entry->GetURL().host();
 }
 
 bool ChromeLocationBarModelDelegate::IsNewTabPageURL(const GURL& url) const {
-  GURL ntp_url(chrome::kChromeUINewTabURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
   return ntp_url.scheme() == url.scheme() && ntp_url.host() == url.host();
 }
 

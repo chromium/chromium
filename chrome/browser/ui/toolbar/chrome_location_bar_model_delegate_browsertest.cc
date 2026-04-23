@@ -110,7 +110,7 @@ class ChromeLocationBarModelDelegateTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeLocationBarModelDelegateTest, IsNewTabPage) {
   chrome::NewTab(browser());
   // New Tab URL with Google DSP resolves to the local or the WebUI NTP URL.
-  GURL ntp_url(chrome::kChromeUINewTabPageURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
   EXPECT_EQ(ntp_url, search::GetNewTabPageURL(browser()->profile()));
 
   EXPECT_TRUE(delegate()->IsNewTabPage());

@@ -53,7 +53,7 @@ const std::vector<TestItem>& TestItems() {
           "view-source:a.test",
       },
       {
-          GURL(chrome::kChromeUINewTabURL),
+          chrome::ChromeUINewTabURLAsGURL(),
           "",
       },
       // After executing the associated JS code, the "javascript:" scheme
