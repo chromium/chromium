@@ -6,6 +6,10 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_H_
 
 #include <string>
+
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -33,11 +37,15 @@ class LeakDetectionCheck {
   LeakDetectionCheck(LeakDetectionCheck&&) = delete;
   LeakDetectionCheck& operator=(LeakDetectionCheck&&) = delete;
 
+  using LeakDetectionCallback =
+      base::OnceCallback<void(base::expected<IsLeaked, LeakDetectionError>)>;
+
   // Starts checking |username| and |password| pair asynchronously.
   // |url| is used later for presentation in the UI but not for actual business
   // logic. The method should be called only once per lifetime of the object.
   virtual void Start(LeakDetectionInitiator initiator,
-                     const PasswordForm& credentials) = 0;
+                     const PasswordForm& credentials,
+                     LeakDetectionCallback callback) = 0;
 
   // Determines whether the leak check can be started depending on `prefs`. Will
   // use `logger` for logging if non-null. Leak check can be blocked if

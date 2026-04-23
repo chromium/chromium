@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 
 #include "base/barrier_callback.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -75,19 +76,30 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
   DCHECK(!credentials.password_value.empty());
 
   leak_check_ = leak_factory_->TryCreateLeakCheck(
-      this, client_->GetIdentityManager(), client_->GetURLLoaderFactory(),
+      client_->GetIdentityManager(), client_->GetURLLoaderFactory(),
       client_->GetChannel());
   // Reset the helper to avoid notifications from the currently running check.
   helper_.reset();
   if (leak_check_) {
-    is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
-    leak_check_->Start(initiator, credentials);
+    leak_check_->Start(
+        initiator, credentials,
+        base::BindOnce(&LeakDetectionDelegate::OnLeakDetectionDone,
+                       weak_ptr_factory_.GetWeakPtr(), credentials,
+                       base::Time::Now()));
   }
 }
 
-void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
-                                                PasswordForm credentials) {
-  leak_check_.reset();
+void LeakDetectionDelegate::OnLeakDetectionDone(
+    PasswordForm credentials,
+    base::Time check_start_time,
+    base::expected<IsLeaked, LeakDetectionError> result) {
+  if (!result.has_value()) {
+    OnError(result.error());
+    return;
+  }
+
+  const bool is_leaked = result.value().value();
+
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogBoolean(Logger::STRING_LEAK_DETECTION_FINISHED, is_leaked);
@@ -98,7 +110,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
 
   auto notify_callback =
       base::BindOnce(&LeakDetectionDelegate::NotifyUserCredentialsWereLeaked,
-                     weak_ptr_factory_.GetWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr(), check_start_time);
   auto barrier_callback =
       base::BarrierCallback<std::optional<LeakedPasswordDetails>>(
           /*num_callbacks=*/2,
@@ -178,10 +190,10 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
 }
 
 void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
+    base::Time check_start_time,
     LeakedPasswordDetails details) {
-  CHECK(is_leaked_timer_);
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",
-                          std::exchange(is_leaked_timer_, nullptr)->Elapsed());
+                          base::Time::Now() - check_start_time);
 
   HasChangePasswordUrl has_change_url(
       client_->GetPasswordChangeService() &&
@@ -194,8 +206,6 @@ void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
 }
 
 void LeakDetectionDelegate::OnError(LeakDetectionError error) {
-  leak_check_.reset();
-
   base::UmaHistogramEnumeration("PasswordManager.LeakDetection.Error", error);
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());

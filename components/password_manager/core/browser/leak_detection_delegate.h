@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -24,10 +25,10 @@ class PasswordManagerClient;
 struct PasswordForm;
 
 // The helper class that encapsulates the requests and their processing.
-class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
+class LeakDetectionDelegate {
  public:
   explicit LeakDetectionDelegate(PasswordManagerClient* client);
-  ~LeakDetectionDelegate() override;
+  ~LeakDetectionDelegate();
 
   // Not copyable or movable
   LeakDetectionDelegate(const LeakDetectionDelegate&) = delete;
@@ -39,8 +40,6 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
     leak_factory_ = std::move(factory);
   }
-
-  LeakDetectionCheck* leak_check() const { return leak_check_.get(); }
 #endif  // defined(UNIT_TEST)
 
   void StartLeakCheck(LeakDetectionInitiator initiator,
@@ -48,9 +47,10 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
                       const GURL& form_url);
 
  private:
-  // LeakDetectionDelegateInterface:
-  void OnLeakDetectionDone(bool is_leaked, PasswordForm credentials) override;
-  void OnError(LeakDetectionError error) override;
+  void OnLeakDetectionDone(PasswordForm credentials,
+                           base::Time check_start_time,
+                           base::expected<IsLeaked, LeakDetectionError> result);
+  void OnError(LeakDetectionError error);
 
   // Initiates the showing of the leak detection notification. It is called by
   // `helper_` after `in_stores` and `is_reused`
@@ -64,7 +64,8 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
       std::vector<GURL> all_urls_with_leaked_credentials);
 
   // Notifies `client_` about leaked credentials.
-  void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
+  void NotifyUserCredentialsWereLeaked(base::Time check_start_time,
+                                       LeakedPasswordDetails details);
 
   raw_ptr<PasswordManagerClient> client_;
   // The factory that creates objects for performing a leak check up.
@@ -72,10 +73,6 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
 
   // Current leak check-up being performed in the background.
   std::unique_ptr<LeakDetectionCheck> leak_check_;
-
-  // Timer measuring the time it takes from StartLeakCheck() until a call to
-  // OnLeakDetectionDone() with is_leaked = true.
-  std::unique_ptr<base::ElapsedTimer> is_leaked_timer_;
 
   // Helper class to asynchronously determine `CredentialLeakType` for leaked
   // credentials.

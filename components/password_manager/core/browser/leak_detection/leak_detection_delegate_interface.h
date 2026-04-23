@@ -15,8 +15,6 @@ namespace password_manager {
 class LeakCheckCredential;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-struct PasswordForm;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Needs to stay in sync with PasswordLeakDetectionError in enums.xml.
@@ -37,32 +35,6 @@ enum class LeakDetectionError {
 };
 
 using IsLeaked = base::StrongAlias<class IsLeakedTag, bool>;
-
-// Interface with callbacks for LeakDetectionCheck. Used to get the result of
-// the check.
-class LeakDetectionDelegateInterface {
- public:
-  LeakDetectionDelegateInterface() = default;
-  virtual ~LeakDetectionDelegateInterface() = default;
-
-  // Not copyable or movable
-  LeakDetectionDelegateInterface(const LeakDetectionDelegateInterface&) =
-      delete;
-  LeakDetectionDelegateInterface& operator=(
-      const LeakDetectionDelegateInterface&) = delete;
-  LeakDetectionDelegateInterface(LeakDetectionDelegateInterface&&) = delete;
-  LeakDetectionDelegateInterface& operator=(LeakDetectionDelegateInterface&&) =
-      delete;
-
-  // Called when the request is finished without error.
-  // |leak| is true iff the checked credential was leaked.
-  // |url| and |username| are taken from Start() for presentation in the UI.
-  // Pass parameters by value because the caller can be destroyed here.
-  virtual void OnLeakDetectionDone(bool is_leaked,
-                                   PasswordForm credentials) = 0;
-
-  virtual void OnError(LeakDetectionError error) = 0;
-};
 
 #if !BUILDFLAG(IS_ANDROID)
 // Delegate for BulkLeakCheck. Gets the updates during processing the list.

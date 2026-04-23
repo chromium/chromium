@@ -75,7 +75,9 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
   MOCK_METHOD(void,
               Start,
-              (LeakDetectionInitiator, const PasswordForm&),
+              (LeakDetectionInitiator,
+               const PasswordForm&,
+               LeakDetectionCallback),
               (override));
 };
 
@@ -1862,10 +1864,10 @@ TEST_P(CredentialManagerImplTest, StorePasswordCredentialStartsLeakDetection) {
       *check_instance,
       Start(
           Eq(LeakDetectionInitiator::kSignInCheck),
-          AllOf(
-              Field(&PasswordForm::url, Eq(form_.url)),
-              Field(&PasswordForm::username_value, Eq(form_.username_value)),
-              Field(&PasswordForm::password_value, Eq(form_.password_value)))));
+          AllOf(Field(&PasswordForm::url, Eq(form_.url)),
+                Field(&PasswordForm::username_value, Eq(form_.username_value)),
+                Field(&PasswordForm::password_value, Eq(form_.password_value))),
+          _));
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck)
       .WillOnce(Return(testing::ByMove(std::move(check_instance))));
   CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());

@@ -29,7 +29,6 @@ class BulkLeakCheck;
 class BulkLeakCheckDelegateInterface;
 #endif  // !BUILDFLAG(IS_ANDROID)
 class LeakDetectionCheck;
-class LeakDetectionDelegateInterface;
 
 // The interface for creating instances of requests for checking if
 // {username, password} pair was leaked in the internet.
@@ -52,7 +51,6 @@ class LeakDetectionCheckFactory {
   // |url_loader_factory| does the actual network request.
   // |channel| is used to obtain correct api key for signed out users.
   virtual std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
-      LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel) const = 0;

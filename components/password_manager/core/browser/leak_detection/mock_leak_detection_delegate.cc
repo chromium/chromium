@@ -8,11 +8,6 @@
 
 namespace password_manager {
 
-MockLeakDetectionDelegateInterface::MockLeakDetectionDelegateInterface() =
-    default;
-MockLeakDetectionDelegateInterface::~MockLeakDetectionDelegateInterface() =
-    default;
-
 #if !BUILDFLAG(IS_ANDROID)
 MockBulkLeakCheckDelegateInterface::MockBulkLeakCheckDelegateInterface() =
     default;

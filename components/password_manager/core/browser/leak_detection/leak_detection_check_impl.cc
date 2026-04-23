@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
@@ -174,19 +175,15 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::CheckAllStepsDone() {
 }
 
 LeakDetectionCheckImpl::LeakDetectionCheckImpl(
-    LeakDetectionDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::optional<std::string> api_key)
-    : delegate_(delegate),
-      payload_helper_(new RequestPayloadHelper(this,
+    : payload_helper_(new RequestPayloadHelper(this,
                                                identity_manager,
                                                std::move(url_loader_factory),
                                                std::move(api_key))),
       network_request_factory_(
-          std::make_unique<LeakDetectionRequestFactory>()) {
-  DCHECK(delegate_);
-}
+          std::make_unique<LeakDetectionRequestFactory>()) {}
 
 LeakDetectionCheckImpl::~LeakDetectionCheckImpl() = default;
 
@@ -200,10 +197,12 @@ bool LeakDetectionCheckImpl::HasAccountForRequest(
 }
 
 void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
-                                   const PasswordForm& credentials) {
+                                   const PasswordForm& credentials,
+                                   LeakDetectionCallback callback) {
   DCHECK(payload_helper_);
   DCHECK(!request_);
 
+  callback_ = std::move(callback);
   // The copy is necessary here as we need to pass the credentials to the
   // delegate when the leak check is done.
   credentials_ = credentials;
@@ -243,7 +242,8 @@ void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(
   if (error.state() != GoogleServiceAuthError::NONE) {
     // Network error codes are negative. See: src/net/base/net_error_list.h.
     DLOG(ERROR) << "Token request error: " << error.error_message();
-    delegate_->OnError(LeakDetectionError::kTokenRequestFailure);
+    std::move(callback_).Run(
+        base::unexpected(LeakDetectionError::kTokenRequestFailure));
     return;
   }
 
@@ -255,7 +255,8 @@ void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(
 void LeakDetectionCheckImpl::OnRequestDataReady(LookupSingleLeakData data) {
   if (data.encryption_key.empty()) {
     DLOG(ERROR) << "Preparing the payload for leak  detection failed";
-    delegate_->OnError(LeakDetectionError::kHashingFailure);
+    std::move(callback_).Run(
+        base::unexpected(LeakDetectionError::kHashingFailure));
     return;
   }
   payload_helper_->OnGotPayload(std::move(data));
@@ -286,7 +287,7 @@ void LeakDetectionCheckImpl::OnLookupSingleLeakResponse(
     std::optional<LeakDetectionError> error) {
   request_.reset();
   if (!response) {
-    delegate_->OnError(*error);
+    std::move(callback_).Run(base::unexpected(*error));
     return;
   }
 
@@ -305,7 +306,7 @@ void LeakDetectionCheckImpl::OnAnalyzeSingleLeakResponse(
       "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseResult", result);
   const bool is_leaked = result == AnalyzeResponseResult::kLeaked;
   DVLOG(0) << "Leak check result=" << is_leaked;
-  delegate_->OnLeakDetectionDone(is_leaked, std::move(credentials_));
+  std::move(callback_).Run(IsLeaked(is_leaked));
 }
 
 bool LeakDetectionCheck::IsURLBlockedByPolicy(

@@ -21,8 +21,7 @@ class MockLeakDetectionCheckFactory : public LeakDetectionCheckFactory {
   // LeakDetectionCheckFactory:
   MOCK_METHOD(std::unique_ptr<LeakDetectionCheck>,
               TryCreateLeakCheck,
-              (LeakDetectionDelegateInterface*,
-               signin::IdentityManager*,
+              (signin::IdentityManager*,
                scoped_refptr<network::SharedURLLoaderFactory>,
                version_info::Channel),
               (const, override));

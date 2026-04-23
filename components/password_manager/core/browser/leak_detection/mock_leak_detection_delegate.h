@@ -16,17 +16,6 @@
 
 namespace password_manager {
 
-class MockLeakDetectionDelegateInterface
-    : public LeakDetectionDelegateInterface {
- public:
-  MockLeakDetectionDelegateInterface();
-  ~MockLeakDetectionDelegateInterface() override;
-
-  // LeakDetectionDelegateInterface:
-  MOCK_METHOD(void, OnLeakDetectionDone, (bool, PasswordForm), (override));
-  MOCK_METHOD(void, OnError, (LeakDetectionError), (override));
-};
-
 #if !BUILDFLAG(IS_ANDROID)
 class MockBulkLeakCheckDelegateInterface
     : public BulkLeakCheckDelegateInterface {
