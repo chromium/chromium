@@ -450,7 +450,7 @@ void KeywordProvider::FillInUrlAndContents(
         turl == GetTemplateURLService()->GetDefaultSearchProvider();
     match->destination_url = GURL(turl_ref.ReplaceSearchTerms(
         search_terms_args, GetTemplateURLService()->search_terms_data()));
-    match->contents = remaining_input;
+    match->contents = AutocompleteMatch::SanitizeString(remaining_input);
     match->contents_class.emplace_back(0, ACMatchClassification::NONE);
   }
 }
