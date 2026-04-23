@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] regions, lines
-  assert_equals: Failed with region 5 expected 4294967296 but got 4294967295
-Harness: the test ran to completion.
-

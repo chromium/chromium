@@ -2,17 +2,6 @@
 <head>
 <meta charset="utf-8">
 <title>HTMLImageElement attributes naturalWidth, naturalHeight, width, height</title>
-<!-- Note: this test asserts a different expectation from what the HTML spec
-     requires, as of mid-2025 when this testcase is being written. The spec
-     behavior doesn't appear to be web-compatible for some of the cases here,
-     and issue https://github.com/whatwg/html/issues/11287 is filed on
-     addresing that.  In the meantime, this test is named with ".tentative" to
-     indicate that it's not authoritative. After the spec change is accepted,
-     we can remove the neighboring naturalWidth-naturalHeight.html test which
-     asserts the prior spec text's expectations, since this test covers the
-     same ground but with its expectations set according to the
-     soon-to-be-updated spec text.  -->
-<link rel="help" href="https://github.com/whatwg/html/issues/11287">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-naturalwidth-dev">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-width">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height">
@@ -55,6 +44,11 @@ img {
      not correct, we provide the actual expected value in the
      "data-{width,height}" attributes (as distinguished from
      data-natural-{width,height}).
+     * The "data-density" attribute indicates which natural dimensions are
+     SVG-intrinsic (and thus should be density-corrected): "both" (default for
+     raster), "width", "height", or "none". Default dimensions (300x150) and
+     dimensions derived from fitting an aspect ratio into the default object
+     size are not density-corrected.
      * The "title" attribute is a description of the scenario being tested, and
      it must be unique to satisfy the test harness requirements. -->
 
@@ -85,52 +79,64 @@ img {
      root svg element in a SVG image. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      title="SVG image, no natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      width="40" height="10"
      data-width="40" data-height="10"
      data-not-rendered-width="40" data-not-rendered-height="10"
      title="SVG image with width/height attrs, no natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      width="40"
      data-width="40" data-not-rendered-width="40"
      title="SVG image with width attr, no natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
      height="10"
      data-height="10" data-not-rendered-height="10"
      title="SVG image with height attr, no natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <!-- Note: percent values can't be resolved when determining natural
      dimensions, so the exact percentage shouldn't matter. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='400%' height='10%'></svg>"
      title="SVG image, percengage natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='-400%' height='-10%'></svg>"
      title="SVG image, negative percengage natural dimensions"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <!-- If only one attribute is present, it should show up as a natural
      dimension, without influencing the other natural dimension. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60'></svg>"
      title="SVG image, with natural width"
+     data-density="width"
      data-natural-width="60" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60'></svg>"
      title="SVG image, with natural height"
+     data-density="height"
      data-natural-width="300" data-natural-height="60">
 <!-- If either attribute is 0 or a negative length, it should show up as a
      natural dimension: of 0. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='0'></svg>"
      title="SVG image, with natural width of 0"
+     data-density="width"
      data-natural-width="0" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='0'></svg>"
      title="SVG image, with natural height of 0"
+     data-density="height"
      data-natural-width="300" data-natural-height="0">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='-5'></svg>"
      title="SVG image, with natural width being negative"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='-5'></svg>"
      title="SVG image, with natural height being negative"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 
 <!-- Second group of SVG images: Same as above, but now with a viewBox that grants a
@@ -146,34 +152,43 @@ img {
      img.naturalHeight). -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'></svg>"
      title="SVG image, no natural dimensions, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='400%' height='10%' viewBox='0 0 600 200'></svg>"
      title="SVG image, percengage natural dimensions, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='-400%' height='-10%' viewBox='0 0 600 200'></svg>"
      title="SVG image, negative percengage natural dimensions, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="60" data-natural-height="20">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural height, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="180" data-natural-height="60">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='0' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width of 0, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="0" data-natural-height="0">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='0' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural height of 0, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="0" data-natural-height="0">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='-5' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width being negative, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='-5' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural height being negative, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
 
@@ -181,48 +196,88 @@ img {
      cases; it should have no impact. -->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 0 0'></svg>"
      title="SVG image, no natural dimensions, viewBox with 0 width/height"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 0'></svg>"
      title="SVG image, no natural dimensions, viewBox with 0 width"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 0 10'></svg>"
      title="SVG image, no natural dimensions, viewBox with 0 height"
+     data-density="none"
      data-natural-width="300" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' viewBox='0 0 0 0'></svg>"
      title="SVG image, with natural width, viewBox with 0 width/height"
+     data-density="width"
      data-natural-width="60" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' viewBox='0 0 10 0'></svg>"
      title="SVG image, with natural width, viewBox with 0 width"
+     data-density="width"
      data-natural-width="60" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' viewBox='0 0 0 10'></svg>"
      title="SVG image, with natural width, viewBox with 0 height"
+     data-density="width"
      data-natural-width="60" data-natural-height="150">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60' viewBox='0 0 0 0'></svg>"
      title="SVG image, with natural height, viewBox with 0 width/height"
+     data-density="height"
      data-natural-width="300" data-natural-height="60">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60' viewBox='0 0 10 0'></svg>"
      title="SVG image, with natural height, viewBox with 0 width"
+     data-density="height"
      data-natural-width="300" data-natural-height="60">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='60' viewBox='0 0 0 10'></svg>"
      title="SVG image, with natural height, viewBox with 0 height"
+     data-density="height"
      data-natural-width="300" data-natural-height="60">
 
-<!~- Final group of SVG images: we have pixel-valued width/height on the root
+<!--~- Final group of SVG images: we have pixel-valued width/height on the root
      svg element, and possibly viewBox as well. The width and height attrs should
-     determine the natural dimensions, with no impact from viewBox. -->
+     determine the natural dimensions, with no impact from viewBox. ---->
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='40'></svg>"
      title="SVG image, with natural width and height"
+     data-density="both"
      data-natural-width="60" data-natural-height="40">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='40' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width and height, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="60" data-natural-height="40">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='0' height='0' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width and height of 0, and aspect ratio from viewBox"
+     data-density="both"
      data-natural-width="0" data-natural-height="0">
 <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='-5' height='-5' viewBox='0 0 600 200'></svg>"
      title="SVG image, with natural width and height being negative, and aspect ratio from viewBox"
+     data-density="none"
      data-natural-width="300" data-natural-height="100"
      data-width="720" data-height="240">
+
+<!-- SVG images with intrinsic dimensions that happen to match the default
+     concrete object size (300x150). This group screens for a possible bug
+     where a browser recognizes 300 and/or 150 as "special" values and
+     declines to density-correct them, mistakenly assuming they came from
+     the default concrete object size rather than from the SVG's own
+     intrinsic dimensions. -->
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300'></svg>"
+     title="SVG image, with natural width matching default concrete object size"
+     data-density="width"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='150'></svg>"
+     title="SVG image, with natural height matching default concrete object size"
+     data-density="height"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' viewBox='0 0 300 150'></svg>"
+     title="SVG image, with natural width matching default concrete object size, and aspect ratio from viewBox"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' height='150' viewBox='0 0 300 150'></svg>"
+     title="SVG image, with natural height matching default concrete object size, and aspect ratio from viewBox"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
+<img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='150'></svg>"
+     title="SVG image, with natural width and height matching default concrete object size"
+     data-density="both"
+     data-natural-width="300" data-natural-height="150">
 </template>
 </head>
 <body>
@@ -258,15 +313,21 @@ function cloneTemplateWithDensity(density) {
     img.setAttribute("title",
                      `${img.getAttribute("title")} (with srcset/${density}x)`);
 
-    const isUsingConcreteObjectWidth = (img.dataset.naturalWidth == "300");
-    const isUsingConcreteObjectHeight = (img.dataset.naturalHeight == "150");
+    // Determine which dimensions are density-corrected. For raster images
+    // (no data-density attribute), both dimensions are always corrected.
+    // For SVG images, only intrinsic (non-default) dimensions are corrected.
+    const densityAttr = img.dataset.density || "both";
+    const validDensityValues = ["none", "both", "width", "height"];
+    if (!validDensityValues.includes(densityAttr)) {
+      throw new Error(`test error: data-density="${densityAttr}" on "${img.getAttribute("title")}" is not a recognized value (expected one of: ${validDensityValues})`);
+    }
+    const scaleWidth = (densityAttr === "both" || densityAttr === "width");
+    const scaleHeight = (densityAttr === "both" || densityAttr === "height");
 
-    // Scale our 'data-natural-{width,height}' expectations by the density.
-    // But also:
-    // * Preserve the original 'data-natural-{width,height}' as the
-    // 'data-{width,height}' expectation if it's just the concrete object size
-    // (which doesn't actually get scaled by the density in practice when
-    // the image actually renders).
+    // Scale our 'data-natural-{width,height}' expectations by the density,
+    // but only for dimensions that are density-corrected (i.e., derived from
+    // the image's own intrinsic dimensions, not from the default object size).
+    // Also:
     // * Preserve the original 'data-natural-{width,height}' as the
     // 'data-not-rendered-{width,height}' expectation (if we don't already have
     // one) since browsers don't do density-correction on .width and .height when
@@ -276,16 +337,12 @@ function cloneTemplateWithDensity(density) {
       if (name.startsWith("natural")) {
         let origExpectation = img.dataset[name];
 
-        // Scale our img.natural{Width,Height} expectation:
-        img.dataset[name] = origExpectation / density;
-
         let isWidthAxis = (name == "naturalWidth");
-        let nameWithoutNatural = (isWidthAxis ? "width" : "height");
+        let shouldScale = isWidthAxis ? scaleWidth : scaleHeight;
 
-        let isConcreteObjectSize =
-          (isWidthAxis ? isUsingConcreteObjectWidth : isUsingConcreteObjectHeight);
-        if (isConcreteObjectSize && !(nameWithoutNatural in img.dataset)) {
-          img.dataset[nameWithoutNatural] = origExpectation;
+        // Scale our img.natural{Width,Height} expectation:
+        if (shouldScale) {
+          img.dataset[name] = origExpectation / density;
         }
 
         // Construct a string for "data-not-rendered-{width,height}" for

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] value with leading '+' should parse as 5
+  assert_equals: expected 5 but got 0
+[FAIL] max with leading '+' should parse as 10
+  assert_equals: expected 10 but got 1
+[FAIL] min with leading '+' should parse as 1
+  assert_equals: expected 1 but got 0
+[FAIL] low with leading '+' should parse as 2
+  assert_equals: expected 2 but got 0
+[FAIL] high with leading '+' should parse as 8
+  assert_equals: expected 8 but got 10
+[FAIL] optimum with leading '+' should parse as 6
+  assert_equals: expected 6 but got 5
+[FAIL] value '+3.14' should parse as 3.14
+  assert_equals: expected 3.14 but got 0
+[FAIL] setAttribute with leading '+' should parse correctly
+  assert_equals: max expected 10 but got 1
+Harness: the test ran to completion.
+
