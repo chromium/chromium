@@ -397,7 +397,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
         callOnTwaStartupTimeAvailable(
                 () -> {
-                    long twaDuration = mFirstCommitUptimeMillis - mTwaStartupUptimeMillis;
+                    long twaDuration = paintUptimeMillis - mTwaStartupUptimeMillis;
                     // The TWA durations are always relative to the startup time passed in the
                     // Intent.
                     RecordHistogram.recordCustomTimesHistogram(
