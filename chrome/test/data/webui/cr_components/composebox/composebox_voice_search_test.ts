@@ -16,7 +16,7 @@ import type {AudioWaveElement} from 'chrome://resources/cr_components/search/aud
 import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -47,6 +47,7 @@ class MockSpeechRecognition {
         ev: SpeechRecognitionErrorEvent) => void)|null = null;
   onaudiostart: ((this: MockSpeechRecognition, ev: Event) => void)|null = null;
   onspeechstart: ((this: MockSpeechRecognition, ev: Event) => void)|null = null;
+  onnomatch: ((this: MockSpeechRecognition, ev: Event) => void)|null = null;
   interimResults = true;
   continuous = false;
   constructor() {
@@ -251,23 +252,22 @@ suite('ComposeboxVoiceSearch', () => {
     await hidePromise;
 
     assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-    const showPromise =
-        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
 
     const [callback] = await windowProxy.whenCalled('setTimeout');
     callback();
     await microtasksFinished();
-    await showPromise;
-    await composeboxElement.updateComplete;
     const voiceSearchElement = getVoiceSearchElement(composeboxElement);
     await voiceSearchElement.updateComplete;
 
     // Assert.
+    assertEquals(VoiceSearchError.NO_SPEECH, voiceSearchElement.detailedError_);
+    assertEquals(
+        loadTimeData.getString('noVoice'),
+        (voiceSearchElement as any).errorMessage_);
     assertFalse(mockSpeechRecognition.voiceSearchInProgress);
     assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
-    assertStyle(composeboxElement.$.composebox, 'display', 'flex');
-    assertStyle(voiceSearchElement, 'display', 'none');
-    assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
+    assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+    assertStyle(voiceSearchElement, 'display', 'inline');
   });
 
   test('idle timer submits voice search if final result exists', async () => {
@@ -395,7 +395,7 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test(
-      'on end submits and exits voice search if no final result is available',
+      'on end shows error and keeps voice search open if no final result is available',
       async () => {
         (composeboxElement as any).autoSubmitVoiceSearch = true;
 
@@ -414,43 +414,33 @@ suite('ComposeboxVoiceSearch', () => {
         Object.assign(
             result.results[1]![0]!, {confidence: 0, transcript: 'world'});
 
-        const showPromise =
-            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
-
-        // Act.
+        // Act. End recognition abruptly after receiving interim results.
+        // This will trigger a NO_MATCH error.
         mockSpeechRecognition.onresult!(result);
         mockSpeechRecognition.onend!();
         await microtasksFinished();
-        await showPromise;
-        await composeboxElement.updateComplete;
+
+        // Note: The `await showPromise` is intentionally removed here because
+        // the UI no longer auto-closes on errors. We just wait for the update.
         const voiceSearchElement =
             getVoiceSearchElement(composeboxElement) as any;
         await voiceSearchElement.updateComplete;
-        assertEquals(voiceSearchElement.finalResult_, '');
-        assertEquals(
-            voiceSearchElement.transcript_, 'helloworld',
-            'transcript should be set after result is' +
-                'processed but not finalized');
 
-        const [callback] = await windowProxy.whenCalled('setTimeout');
-        callback();
-        await microtasksFinished();
-
-        assertEquals(voiceSearchElement.finalResult_, '');
+        // Assert: The specific NO_MATCH error enum is recorded.
         assertEquals(
-            voiceSearchElement.transcript_, '',
-            'transcript should be cleared after onend with no final result');
+            VoiceSearchError.NO_MATCH, voiceSearchElement.detailedError_);
 
-        // Assert.
-        assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
-        assertStyle(composeboxElement.$.composebox, 'display', 'flex');
-        assertStyle(
-            getVoiceSearchElement(composeboxElement), 'display', 'none');
-        assertEquals(
-            composeboxElement.animationState, GlowAnimationState.SUBMITTING);
+        // Assert: The error container is visible.
+        const errorContainer = $$(voiceSearchElement, '#error-container');
+        assertTrue(!!errorContainer);
+        assertFalse(errorContainer.hidden);
+
+        // Assert: The voice search UI remains open and is not hidden.
+        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+        assertStyle(voiceSearchElement, 'display', 'inline');
       });
 
-  test('transcript is cleared to avoid leftover past queries', async () => {
+  test('transcript is cleared when user closes the error overlay', async () => {
     (composeboxElement as any).autoSubmitVoiceSearch = true;
 
     const hidePromise =
@@ -460,46 +450,40 @@ suite('ComposeboxVoiceSearch', () => {
     await microtasksFinished();
     await hidePromise;
 
-    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-
     const result = createResults(2);
     Object.assign(result.results[0]![0]!, {confidence: 0, transcript: 'hello'});
     Object.assign(result.results[1]![0]!, {confidence: 0, transcript: 'world'});
     mockSpeechRecognition.onresult!(result);
+
+    // Triggers NO_MATCH error, UI stays open.
     mockSpeechRecognition.onend!();
-
-    const showPromise =
-        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
-
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
-    assertEquals(voiceSearchElement.finalResult_, '');
-    assertEquals(
-        voiceSearchElement.transcript_, 'helloworld',
-        'transcript should be set after result is processed');
-    await showPromise;
-    await composeboxElement.updateComplete;
-    await getVoiceSearchElement(composeboxElement).updateComplete;
-    const [callback] = await windowProxy.whenCalled('setTimeout');
-    callback();
     await microtasksFinished();
 
-    assertEquals(
-        voiceSearchElement.finalResult_, '',
-        'finalResult should be empty as no final result was received');
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
 
-    assertEquals(
-        voiceSearchElement.interimResult_, '',
-        'interimResult should be cleared after idle timeout');
+    // The error UI is open, and the transcript is retained for now.
+    assertEquals(VoiceSearchError.NO_MATCH, voiceSearchElement.detailedError_);
+    assertEquals('helloworld', voiceSearchElement.transcript_);
 
-    assertEquals(
-        voiceSearchElement.transcript_, '',
-        'transcript should be cleared after idle timeout');
+    // Act. Simulate the user manually clicking the close button on the error
+    // overlay.
+    const showPromise =
+        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+    voiceSearchElement.$.closeButton.click();
+    await microtasksFinished();
 
-    assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
+    // Await showPromise here since the UI is actually closing now.
+    await showPromise;
+
+    // Assert: All internal states and transcripts are completely cleared after
+    // closing.
+    assertEquals('', voiceSearchElement.finalResult_);
+    assertEquals('', voiceSearchElement.interimResult_);
+    assertEquals('', voiceSearchElement.transcript_);
+    assertEquals(null, voiceSearchElement.detailedError_);
+
     assertStyle(composeboxElement.$.composebox, 'display', 'flex');
-    assertStyle(getVoiceSearchElement(composeboxElement), 'display', 'none');
-    assertEquals(
-        composeboxElement.animationState, GlowAnimationState.SUBMITTING);
+    assertStyle(voiceSearchElement, 'display', 'none');
   });
 
   test('on error shows error container for NOT_ALLOWED', async () => {
@@ -531,42 +515,94 @@ suite('ComposeboxVoiceSearch', () => {
         composeboxElement.animationState, GlowAnimationState.LISTENING);
   });
 
-  test('on error closes voice search for other errors', async () => {
-    const hidePromise =
-        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+  test(
+      'on error keeps voice search open and shows error container for all errors',
+      async () => {
+        const hidePromise =
+            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+        await hidePromise;
+
+        // Simulate a generic error, e.g., network error.
+        mockSpeechRecognition.onerror!
+            ({error: 'network'} as SpeechRecognitionErrorEvent);
+        await microtasksFinished();
+        await composeboxElement.updateComplete;
+        await getVoiceSearchElement(composeboxElement).updateComplete;
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        const errorContainer = $$(voiceSearchElement, '#error-container');
+        const inputElement = $$(voiceSearchElement, '#input');
+
+        // Assert: The error container should be visible for ALL errors now.
+        assertTrue(!!errorContainer);
+        assertFalse(errorContainer.hidden);
+        assertTrue(inputElement!.hidden);
+
+        // Assert: The UI should remain open (not display: none).
+        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+        assertStyle(voiceSearchElement, 'display', 'inline');
+
+        // Assert: The error message is populated directly from loadTimeData.
+        assertEquals(
+            loadTimeData.getString('networkError'),
+            (voiceSearchElement as any).errorMessage_);
+      });
+
+  test('onnomatch triggers NO_MATCH error and shows text', async () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
-    await hidePromise;
 
-    const showPromise =
-        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+    // Simulate the underlying speech engine triggering a nomatch event.
+    mockSpeechRecognition.onnomatch!(new Event('nomatch'));
+    await microtasksFinished();
 
-    // Simulate a 'network' error.
-    mockSpeechRecognition.onerror!
-        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
+
+    // Assert: The specific error enum is recorded.
+    assertEquals(VoiceSearchError.NO_MATCH, voiceSearchElement.detailedError_);
+
+    // Assert: The error message is populated directly from loadTimeData.
+    assertEquals(
+        loadTimeData.getString('noTranslation'),
+        voiceSearchElement.errorMessage_);
+  });
+
+  test('onEnd_ triggers AUDIO_CAPTURE error if state is STARTED', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    // State is STARTED. Trigger end event directly, skipping audio/speech
+    // start.
     mockSpeechRecognition.onend!();
     await microtasksFinished();
-    await showPromise;
-    await composeboxElement.updateComplete;
-    await getVoiceSearchElement(composeboxElement).updateComplete;
 
-    const [callback] = await windowProxy.whenCalled('setTimeout');
-    callback();
-
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-    const errorContainer = $$(voiceSearchElement, '#error-container');
-    const inputElement = $$(voiceSearchElement, '#input');
-
-    // The error container should be hidden because it's not a NOT_ALLOWED
-    // error, and the voice search should close.
-    assertTrue(errorContainer!.hidden);
-    assertFalse(inputElement!.hidden);
-
-    assertStyle(composeboxElement.$.composebox, 'display', 'flex');
-    assertStyle(getVoiceSearchElement(composeboxElement), 'display', 'none');
-    assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
+    // Assert: The onEnd_ fallback routing works.
+    assertEquals(
+        VoiceSearchError.AUDIO_CAPTURE, voiceSearchElement.detailedError_);
   });
+
+  test('ABORTED error is ignored and does not overwrite state', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    // Simulate receiving a system ABORTED error.
+    mockSpeechRecognition.onerror!
+        ({error: 'aborted'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement) as any;
+    // Assert: The component should guard against ABORTED and not record it.
+    assertNotEquals(
+        VoiceSearchError.ABORTED, voiceSearchElement.detailedError_);
+  });
+
 
   test('audio wave is rendered when listening', async () => {
     const mockComposeboxElement =
@@ -883,22 +919,22 @@ suite('ComposeboxVoiceSearchMetrics', () => {
             VoiceSearchState.VOICE_SEARCH_ERROR));
   });
 
-  test('Records ERROR_CANCELING state for other errors in onEnd_', async () => {
-    // Trigger: Simulate network error.
+  test('Records ERROR_NON_CANCELING state for all errors', async () => {
+    // Trigger: Simulate a generic error like network.
     const errorEvent = new Event('error') as any;
     errorEvent.error = 'network';
-    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
 
-    // Call onEnd_ to simulate recognition ending.
-    (voiceSearchElement as any).onEnd_();
+    // Note: Metrics are now recorded immediately in onError_, not in onEnd_.
+    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
     await microtasksFinished();
 
-    // Verify: State logged a canceling error (ERROR_CANCELING).
+    // Verify: State logged a non-canceling error (VOICE_SEARCH_ERROR)
+    // because all errors now keep the UI open.
     assertEquals(
         1,
         metrics.count(
             'VoiceSearch.State.NTP_REALBOX',
-            VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
+            VoiceSearchState.VOICE_SEARCH_ERROR));
   });
 
   test('Records NO_MATCH error on nomatch event', async () => {
