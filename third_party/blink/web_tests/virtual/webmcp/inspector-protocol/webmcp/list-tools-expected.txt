@@ -24,6 +24,7 @@ Adding {
         [1] : {
             annotations : {
                 readOnly : true
+                untrustedContent : false
             }
             description : An imperative WebMCP tool
             frameId : <string>
@@ -48,6 +49,7 @@ Adding {
         [0] : {
             annotations : {
                 readOnly : false
+                untrustedContent : false
             }
             description : Another imperative tool
             frameId : <string>

@@ -169,7 +169,8 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
           required: ["text"]
       },
       annotations: {
-        readOnlyHint: "true"
+        readOnlyHint: true,
+        untrustedContentHint: true
       },
     });
     </script>
@@ -649,7 +650,6 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
 class ModelContextOriginTrialTest : public ModelContextTestBase {
  public:
   ModelContextOriginTrialTest() = default;
-
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{false};

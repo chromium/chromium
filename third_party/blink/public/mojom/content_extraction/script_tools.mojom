@@ -8,6 +8,7 @@ module blink.mojom;
 // data structure.
 struct ScriptToolAnnotations {
   bool read_only;
+  bool untrusted_content;
 };
 
 // See ModelContextTool in model_context_tool.idl for details of

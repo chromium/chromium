@@ -21,7 +21,7 @@
           execute: echo,
           name: "initial_imperative_tool",
           description: "An imperative WebMCP tool",
-          annotations: { readOnlyHint: true },
+          annotations: { readOnlyHint: true, untrustedContentHint: false },
         };
         window.initialController = new AbortController();
         navigator.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
@@ -32,7 +32,7 @@
               name: "new_imperative_tool",
               description: "Another imperative tool",
               inputSchema,
-              annotations: { readOnlyHint: false },
+              annotations: { readOnlyHint: false, untrustedContentHint: false },
             });
             const form = document.createElement("form");
             form.id = "new_declarative";

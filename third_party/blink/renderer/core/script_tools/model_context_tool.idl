@@ -14,6 +14,7 @@ dictionary ModelContextTool {
 
 dictionary ToolAnnotations {
   boolean readOnlyHint = false;
+  boolean untrustedContentHint = false;
 };
 
 // The structure of `input` is expected to match the structure described in

@@ -77,6 +77,7 @@ std::unique_ptr<protocol::WebMCP::Annotation> BuildAnnotations(
   bool has_annotations = false;
   if (annotations) {
     builder.setReadOnly(annotations->read_only);
+    builder.setUntrustedContent(annotations->untrusted_content);
     has_annotations = true;
   }
   if (element && element->FastHasAttribute(html_names::kToolautosubmitAttr)) {

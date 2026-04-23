@@ -61,11 +61,17 @@ mojom::ActionResultPtr OnToolExecuted(
   script_tool_response->tool->name = name;
   script_tool_response->tool->description = tool->description.Utf8();
   script_tool_response->tool->input_schema = tool->input_schema.Utf8();
-  if (tool->read_only.has_value()) {
+  if (tool->read_only.has_value() || tool->untrusted_content.has_value()) {
     script_tool_response->tool->annotations =
         blink::mojom::ScriptToolAnnotations::New();
-    script_tool_response->tool->annotations->read_only =
-        tool->read_only.value();
+    if (tool->read_only.has_value()) {
+      script_tool_response->tool->annotations->read_only =
+          tool->read_only.value();
+    }
+    if (tool->untrusted_content.has_value()) {
+      script_tool_response->tool->annotations->untrusted_content =
+          tool->untrusted_content.value();
+    }
   }
   if (!response->IsEmpty()) {
     script_tool_response->result = response->Utf8();

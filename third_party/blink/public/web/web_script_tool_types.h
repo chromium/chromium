@@ -42,6 +42,7 @@ struct WebScriptToolDeclaration {
   WebString description;
   WebString input_schema;
   std::optional<bool> read_only;
+  std::optional<bool> untrusted_content;
 };
 
 using WebScriptToolResultCallback =
