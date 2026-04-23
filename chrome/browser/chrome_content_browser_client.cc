@@ -2272,10 +2272,10 @@ bool ChromeContentBrowserClient::HasWebRequestAPIProxy(
           browser_context);
   if (!web_request_api) {
     return false;
+  } else if (base::FeatureList::IsEnabled(
+          features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload)) {
+    return web_request_api->HasWebRequestOrDeclarativeWebRequestExtension();
   } else {
-    // TODO(crbug.com/362539771): Check if the request is from guest view and
-    // use HasWebRequestOrDeclarativeWebRequestExtension() instead of using
-    // MayHaveProxies().
     return web_request_api->MayHaveProxies();
   }
 #else

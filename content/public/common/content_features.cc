@@ -900,6 +900,21 @@ constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
 // crbug.com/1472634 for more details.
 BASE_FEATURE(kServiceWorkerAutoPreload, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Improve ServiceWorkerAutoPreload coverage by using more accurate web request
+// proxy detection.
+//
+// If enabled, ServiceWorkerAutoPreload will not start if any installed
+// extension has the `webRequest` or `declarativeNetRequest` permission, or if
+// the request is initiated by <webview>.
+//
+// If not enabled, ServiceWorkerAutoPreload will not start if any installed
+// extension has the `webRequest`, `declarativeNetRequest`, or `webview`
+// permission. On Desktop platforms, there are often default extensions with the
+// `webview` permission, meaning ServiceWorkerAutoPreload is almost always not
+// enabled.
+BASE_FEATURE(kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
 // prioritize the response processing for the network request over the
 // processing for the fetch handler.
