@@ -511,16 +511,6 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   _webState->GetWebViewProxy().allowsLinkPreview = allowsLinkPreview;
 }
 
-- (void)dealloc {
-  if (_webState) {
-    if (_webStateObserver) {
-      _webState->RemoveObserver(_webStateObserver.get());
-      _webStateObserver.reset();
-    }
-    WebViewHolder::RemoveFromWebState(_webState.get());
-  }
-}
-
 - (void)goBack {
   if (![self isWebStateSafeToUse]) {
     return;
@@ -1253,20 +1243,31 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
 - (void)shutDown {
   if (_webState) {
-    // CWVBackForwardList is unsafe to use after shutting down.
-    _backForwardList.navigationManager = nil;
-
     // To handle the case where -[CWVWebView encodeRestorableStateWithCoder:] is
     // called after this method, precompute the session storage so it may be
     // used during encoding later.
     [_serializationHelper updateStateFromWebState:_webState.get()];
-    if (_webStateObserver) {
-      _webState->RemoveObserver(_webStateObserver.get());
-      _webStateObserver.reset();
-    }
-    WebViewHolder::RemoveFromWebState(_webState.get());
+
+    [self cleanupWebStateReference];
     _webState.reset();
   }
+}
+
+- (void)dealloc {
+  if (_webState) {
+    [self cleanupWebStateReference];
+  }
+}
+
+- (void)cleanupWebStateReference {
+  // CWVBackForwardList is unsafe to use after shutting down.
+  _backForwardList.navigationManager = nil;
+
+  if (_webStateObserver) {
+    _webState->RemoveObserver(_webStateObserver.get());
+    _webStateObserver.reset();
+  }
+  WebViewHolder::RemoveFromWebState(_webState.get());
 }
 
 @end
