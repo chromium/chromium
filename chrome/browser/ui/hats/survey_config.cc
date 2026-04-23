@@ -840,19 +840,20 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::nullopt, std::vector<std::string>{}, signin_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeAndroidIdentitySurveyNtpSigninButton,
-      kHatsSurveyTriggerSigninNtpSigninButton, std::nullopt,
+      kHatsSurveyTriggerSigninNtpSigninButton, "yirfCKnhD0tK1KeaPYj0P9BTzPNw",
       std::vector<std::string>{}, signin_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeAndroidIdentitySurveyNtpAccountAvatarTap,
-      kHatsSurveyTriggerSigninNtpAccountAvatarTap, std::nullopt,
+      kHatsSurveyTriggerSigninNtpAccountAvatarTap,
+      "DujcsCGkZ0tK1KeaPYj0RGm9FgKX", std::vector<std::string>{},
+      signin_string_psd_fields);
+  survey_configs.emplace_back(
+      &switches::kChromeAndroidIdentitySurveyNtpPromo,
+      kHatsSurveyTriggerSigninNtpPromo, "15CWgMniG0tK1KeaPYj0RkWoZ4B9",
       std::vector<std::string>{}, signin_string_psd_fields);
-  survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyNtpPromo,
-                              kHatsSurveyTriggerSigninNtpPromo, std::nullopt,
-                              std::vector<std::string>{},
-                              signin_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
-      kHatsSurveyTriggerSigninBookmarkPromo, std::nullopt,
+      kHatsSurveyTriggerSigninBookmarkPromo, "o2YBX3ZJc0tK1KeaPYj0UveLWhmf",
       std::vector<std::string>{}, signin_string_psd_fields);
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
