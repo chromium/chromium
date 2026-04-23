@@ -6,6 +6,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -58,6 +59,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -110,6 +112,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -162,6 +165,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -214,6 +218,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -266,6 +271,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -318,6 +324,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -370,6 +377,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -422,6 +430,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -474,6 +483,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -526,6 +536,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -578,6 +589,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -630,6 +642,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -682,6 +695,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -734,6 +748,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -786,6 +801,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -842,6 +858,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -900,6 +917,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -958,6 +976,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1016,6 +1035,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1074,6 +1094,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1130,6 +1151,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1186,6 +1208,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1242,6 +1265,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1297,6 +1321,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1354,6 +1379,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1412,6 +1438,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1468,6 +1495,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1520,6 +1548,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1572,6 +1601,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -1624,6 +1654,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1680,6 +1711,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1736,6 +1768,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1788,6 +1821,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1841,6 +1875,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -1893,6 +1928,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -1945,6 +1981,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -1997,6 +2034,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2050,6 +2088,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2103,6 +2142,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2156,6 +2196,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2208,6 +2249,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2260,6 +2302,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2312,6 +2355,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -2364,6 +2408,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2419,6 +2464,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2474,6 +2520,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2526,6 +2573,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2578,6 +2626,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -2630,6 +2679,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2682,6 +2732,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2734,6 +2785,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -2786,6 +2838,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -2838,6 +2891,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2890,6 +2944,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -2942,6 +2997,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -2994,6 +3050,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -3046,6 +3103,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -3098,6 +3156,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -3150,6 +3209,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -3202,6 +3262,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -3254,6 +3315,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
@@ -3306,6 +3368,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
@@ -3358,6 +3421,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
@@ -3410,6 +3474,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 15",
           "--version",
