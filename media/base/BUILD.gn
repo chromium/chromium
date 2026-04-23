@@ -653,6 +653,7 @@ source_set("unit_tests") {
     "frame_rate_estimator_unittest.cc",
     "hdr_metadata_reordering_map_unittest.cc",
     "interval_map_unittest.cc",
+    "key_system_names_unittest.cc",
     "key_systems_unittest.cc",
     "limiting_audio_queue_unittest.cc",
     "media_log_unittest.cc",
