@@ -437,8 +437,46 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/486232932): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kFinds:
-      // TODO(crbug.com/490501055): Add network traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation("finds_model_execution", R"(
+        semantics {
+          sender: "Finds"
+          description:
+            "Suggests URLs based on user browsing history and interests."
+          trigger:
+            "The only way for end-users to access finds is by opting into the "
+            "feature when prompted."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "The user's browsing history over the past week, including URLs, "
+            "page titles, and visit timestamps."
+          internal {
+            contacts {
+              email: "wylieb@google.com"
+            }
+            contacts {
+              email: "chrome-finds-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+            type: USER_CONTENT
+          }
+          last_reviewed: "2026-03-19"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature is only available to users who explicitly opt-in. It"
+            " can be disabled through android notification settings, and also "
+            "controlled by the GenAI policy and the Finds policy."
+          chrome_policy {
+            FindsSettings {
+              FindsSettings: 2
+            }
+          }
+        })");
     case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
       // TODO(crbug.com/487416734): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
