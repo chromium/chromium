@@ -67,6 +67,20 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
   button_->RequestFocus();
 }
 
+IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest,
+                       EnabledStateChanged) {
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
+@UIA-WIN-ALLOW:IsEnabled*
+@AURALINUX-ALLOW:STATE-CHANGE:ENABLED*
+@AURALINUX-ALLOW:STATE-CHANGE:SENSITIVE*
+)");
+  BEGIN_RECORDING_EVENTS_OR_SKIP("button-enabled-state-changed");
+  button_->SetEnabled(false);
+  WaitForPendingSerialization();
+  button_->SetEnabled(true);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ButtonDumpAccessibilityEventsTest,
