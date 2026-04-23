@@ -83,6 +83,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
   //     via UpdateAssetState.
   void UpdateSolutionFactory(std::unique_ptr<ManifestSolutionFactory> factory);
 
+  // Refreshes all solutions for the current factory, if any.
+  void RefreshSolutions();
+
   // Returns a list of properties for the broker state info.
   std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
 

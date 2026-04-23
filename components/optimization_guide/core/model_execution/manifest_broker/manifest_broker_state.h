@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_classifier_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -82,10 +83,14 @@ class ManifestBrokerState final : public OnDeviceCapability,
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback,
       const on_device_model::Capabilities& possible_capabilities);
 
+  // Handle unexpected service disconnects.
+  void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
+
   raw_ref<PrefService> local_state_;
   std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
   on_device_model::ServiceClient service_client_;
   UsageTracker usage_tracker_;
+  OnDeviceModelAccessController access_controller_{*local_state_};
   ModelBrokerImpl model_broker_impl_;
   PerformanceClassifier performance_classifier_;
   std::vector<ModelBrokerImpl::InitCallback> init_callbacks_;

@@ -398,6 +398,13 @@ void ManifestAssetManager::UpdateSolutionFactory(
   UpdateActiveAssets();
 }
 
+void ManifestAssetManager::RefreshSolutions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (factory_) {
+    factory_->UpdateSolutions();
+  }
+}
+
 // static
 bool ManifestAssetManager::VerifyInstallation(const base::FilePath& install_dir,
                                               const base::DictValue& manifest) {

@@ -62,6 +62,9 @@ ManifestBrokerState::ManifestBrokerState(
           base::DoNothing()),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
       manifest_monitor_(local_state, performance_classifier_, *delegate_) {
+  service_client_.set_on_disconnect_fn(
+      base::BindRepeating(&ManifestBrokerState::OnServiceDisconnected,
+                          weak_ptr_factory_.GetWeakPtr()));
   manifest_monitor_.SetCallback(base::BindRepeating(
       &ManifestBrokerState::OnManifestUpdated, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -182,7 +185,7 @@ void ManifestBrokerState::OnManifestUpdated() {
   // for a manifest.
   auto factory = std::make_unique<ManifestSolutionFactory>(
       *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
-      service_client_,
+      service_client_, access_controller_,
       base::BindOnce(&ManifestBrokerState::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   if (!asset_manager_) {
@@ -226,6 +229,25 @@ void ManifestBrokerState::FinishGetOnDeviceModelEligibility(
     return;
   }
   std::move(callback).Run(GetOnDeviceModelEligibility(feature));
+}
+
+void ManifestBrokerState::OnServiceDisconnected(
+    on_device_model::ServiceDisconnectReason reason) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestBrokerState::OnServiceDisconnected", "reason", reason);
+  switch (reason) {
+    case on_device_model::ServiceDisconnectReason::kGpuBlocked:
+      access_controller_.OnGpuBlocked();
+      if (asset_manager_) {
+        asset_manager_->RefreshSolutions();
+      }
+      break;
+    // Below errors will be tracked by the related model disconnects, so they
+    // are not handled specifically here.
+    case on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary:
+    case on_device_model::ServiceDisconnectReason::kUnspecified:
+      break;
+  }
 }
 
 void ManifestBrokerState::GetStateInfo(
