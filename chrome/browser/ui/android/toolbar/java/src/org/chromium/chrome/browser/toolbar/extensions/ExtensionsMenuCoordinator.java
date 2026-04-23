@@ -153,7 +153,8 @@ public class ExtensionsMenuCoordinator
                         return MenuBuilderHelper.getRectProvider(mExtensionsMenuButton);
                     }
                 },
-                /* overrideOnClickListener= */ false);
+                /* overrideOnClickListener= */ true);
+
         // Menu mediator is created when menu is triggered.
         mExtensionsMenuButton.setOnClickListener(
                 (view) -> {
@@ -171,6 +172,7 @@ public class ExtensionsMenuCoordinator
                     public void onPopupMenuDismissed() {
                         mMenuButtonPinningDelegate.requestLayoutWithViewUtils();
                         destroyMediator();
+                        mExtensionModels.clear();
                     }
                 });
 
@@ -212,9 +214,6 @@ public class ExtensionsMenuCoordinator
         if (mMediator != null) {
             return;
         }
-
-        // Clear old data before repopulating.
-        mExtensionModels.clear();
 
         // Ensure we start on the main page.
         mMainPageModel.set(
@@ -401,6 +400,8 @@ public class ExtensionsMenuCoordinator
 
         extensionRecyclerView.setAdapter(extensionsAdapter);
         extensionRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        extensionRecyclerView.setItemAnimator(null);
     }
 
     private void updateButtonState() {
