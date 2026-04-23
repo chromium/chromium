@@ -29,7 +29,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "chromium_linux_blink_rel_isolated_scripts",
     basic_suites = [
-        "chromium_webkit_isolated_scripts",
+        "chromium_blink_isolated_scripts",
         "linux_specific_chromium_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",

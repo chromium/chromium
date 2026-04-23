@@ -182,7 +182,7 @@ _rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             targets.mixin(
@@ -242,7 +242,7 @@ _rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             targets.mixin(
@@ -305,7 +305,7 @@ _rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             targets.mixin(
@@ -363,7 +363,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_12_x64",
@@ -415,7 +415,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_12_arm64",
@@ -468,7 +468,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_13_x64",
@@ -523,7 +523,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_13_arm64",
@@ -593,7 +593,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_14_x64",
@@ -633,7 +633,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_14_arm64",
@@ -673,7 +673,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_15_x64",
@@ -713,7 +713,7 @@ _mac_rebaseline_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "mac_15_arm64",

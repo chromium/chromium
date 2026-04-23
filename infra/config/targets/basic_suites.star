@@ -509,7 +509,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_webkit_isolated_scripts",
+    name = "chromium_blink_isolated_scripts",
     tests = {
         "blink_web_tests": targets.legacy_test_config(
             swarming = targets.swarming(

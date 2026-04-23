@@ -792,7 +792,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'blink_unittests_suite',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'chromium_blink_isolated_scripts',
         },
       },
       'V8 Blink Linux Debug': {
@@ -802,7 +802,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'blink_unittests_suite',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'chromium_blink_isolated_scripts',
         },
       },
       'V8 Blink Linux Future': {
@@ -812,7 +812,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'blink_unittests_suite',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'chromium_blink_isolated_scripts',
         },
       },
       'V8 Blink Mac': {
@@ -825,7 +825,7 @@
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
           'gtest_tests': 'blink_unittests_suite',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'chromium_blink_isolated_scripts',
         },
       },
       'V8 Blink Win': {
@@ -834,7 +834,7 @@
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+          'isolated_scripts': 'chromium_blink_isolated_scripts',
         },
       },
       'V8 Linux GN': {

@@ -442,7 +442,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "linux-jammy",
@@ -500,7 +500,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "chromium_gtests",
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         mixins = [
             "linux-jammy",

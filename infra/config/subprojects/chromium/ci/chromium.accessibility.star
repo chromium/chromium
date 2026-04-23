@@ -123,7 +123,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "linux_force_accessibility_gtests",
-            "chromium_webkit_isolated_scripts",
+            "chromium_blink_isolated_scripts",
         ],
         additional_compile_targets = [
             "blink_tests",
