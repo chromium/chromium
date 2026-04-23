@@ -306,8 +306,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
         if (webContents != null) {
             if (mGestureStateListener != null) {
-                assumeNonNull(GestureListenerManager.fromWebContents(webContents))
-                        .removeListener(mGestureStateListener);
+                var manager = GestureListenerManager.fromWebContents(webContents);
+                if (manager != null) {
+                    manager.removeListener(mGestureStateListener);
+                }
             }
             if (mEngagementSignalWebContentsObserver != null) {
                 mEngagementSignalWebContentsObserver.observe(null);
