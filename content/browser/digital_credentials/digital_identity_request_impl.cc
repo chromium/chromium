@@ -48,10 +48,6 @@ namespace sdjwt = ::content::sdjwt;
 
 constexpr char kOpenid4vpProtocolPrefix[] = "openid4vp";
 
-constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
-
-constexpr char kOpenid4vpPathRegex[] =
-    R"(\$\['org\.iso\.18013\.5\.1'\]\['([^\)]*)'\])";
 constexpr char kMdocAgeOverDataElementRegex[] = R"(age_over_\d\d)";
 constexpr char kMdocAgeInYearsDataElement[] = "age_in_years";
 constexpr char kMdocAgeBirthYearDataElement[] = "age_birth_year";
@@ -72,17 +68,6 @@ constexpr char kDigitalIdentityDialogParam[] = "dialog";
 constexpr char kDigitalIdentityNoDialogParamValue[] = "no_dialog";
 constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
 constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
-
-// Returns entry if `dict` has a list with a single dict element for key
-// `list_key`.
-const base::DictValue* FindSingleElementListEntry(const base::DictValue& dict,
-                                                  const std::string& list_key) {
-  const base::ListValue* list = dict.FindList(list_key);
-  if (!list || list->size() != 1u) {
-    return nullptr;
-  }
-  return list->front().GetIfDict();
-}
 
 // Returns whether an interstitial should be shown for a request which solely
 // requests the passed-in claims/data elements.
@@ -119,54 +104,6 @@ bool CanVctValueBypassInterstitial(const std::string& vct_value) {
          vct_value == kVerifyPhoneNumberVctValue;
 }
 
-bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
-    const base::DictValue& request) {
-  const base::DictValue* presentation_dict =
-      request.FindDict("presentation_definition");
-  if (!presentation_dict) {
-    return false;
-  }
-
-  const base::DictValue* input_descriptor_dict =
-      FindSingleElementListEntry(*presentation_dict, "input_descriptors");
-  if (!input_descriptor_dict) {
-    return false;
-  }
-
-  const std::string* input_descriptor_id =
-      input_descriptor_dict->FindString("id");
-  if (!input_descriptor_id || *input_descriptor_id != kMdlDocumentType) {
-    return false;
-  }
-
-  const base::DictValue* constraints_dict =
-      input_descriptor_dict->FindDict("constraints");
-  if (!constraints_dict) {
-    return false;
-  }
-
-  const base::DictValue* field_dict =
-      FindSingleElementListEntry(*constraints_dict, "fields");
-  if (!field_dict) {
-    return false;
-  }
-
-  const base::ListValue* field_paths = field_dict->FindList("path");
-  if (!field_paths) {
-    return false;
-  }
-
-  if (!field_paths || field_paths->size() != 1u ||
-      !field_paths->front().is_string()) {
-    return false;
-  }
-
-  std::string mdoc_data_element;
-  return re2::RE2::FullMatch(field_paths->front().GetString(),
-                             re2::RE2(kOpenid4vpPathRegex),
-                             &mdoc_data_element) &&
-         CanClaimBypassInterstitial(mdoc_data_element);
-}
 
 // Returns whether the request is a Digital Payment Credential (DPC) request
 // that can bypass the interstitial.
@@ -302,10 +239,6 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
     request_dict = &payload->GetDict();
   }
 
-  if (request_dict->contains("presentation_definition")) {
-    return CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
-        *request_dict);
-  }
 
   if (request_dict->contains("dcql_query")) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(

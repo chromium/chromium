@@ -87,7 +87,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
             mWasAnyDialogShown = true;
 
             CharSequence paragraph1 = model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0);
-            if (paragraph1 != null && mSearchParagraph1.equals(paragraph1.toString())) {
+            if (paragraph1 != null && paragraph1.toString().equals(mSearchParagraph1)) {
                 mWasDialogShown = true;
                 mDialogPropertyModel = model;
                 if (mPressButtonOnShow) {
