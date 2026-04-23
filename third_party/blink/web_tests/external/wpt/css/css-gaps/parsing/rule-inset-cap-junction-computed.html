@@ -18,8 +18,8 @@
     }
   </style>
   <script>
-    const properties = ["column-rule-edge-inset", "row-rule-edge-inset", "rule-edge-inset",
-                        "column-rule-interior-inset", "row-rule-interior-inset", "rule-interior-inset"];
+    const properties = ["column-rule-inset-cap", "row-rule-inset-cap", "rule-inset-cap",
+                        "column-rule-inset-junction", "row-rule-inset-junction", "rule-inset-junction"];
     for (const property of properties) {
       test_computed_value(property, "10px", "10px");
       test_computed_value(property, "-20px 10px", "-20px 10px");

@@ -31,22 +31,22 @@ CSSPropertyID CSSGapDecorationUtils::GetLonghandProperty(
       return direction == CSSGapDecorationPropertyDirection::kRow
                  ? CSSPropertyID::kRowRuleColor
                  : CSSPropertyID::kColumnRuleColor;
-    case CSSGapDecorationPropertyType::kEdgeInsetEnd:
+    case CSSGapDecorationPropertyType::kInsetCapEnd:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleEdgeInsetEnd
-                 : CSSPropertyID::kColumnRuleEdgeInsetEnd;
-    case CSSGapDecorationPropertyType::kEdgeInsetStart:
+                 ? CSSPropertyID::kRowRuleInsetCapEnd
+                 : CSSPropertyID::kColumnRuleInsetCapEnd;
+    case CSSGapDecorationPropertyType::kInsetCapStart:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleEdgeInsetStart
-                 : CSSPropertyID::kColumnRuleEdgeInsetStart;
-    case CSSGapDecorationPropertyType::kInteriorInsetStart:
+                 ? CSSPropertyID::kRowRuleInsetCapStart
+                 : CSSPropertyID::kColumnRuleInsetCapStart;
+    case CSSGapDecorationPropertyType::kInsetJunctionStart:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleInteriorInsetStart
-                 : CSSPropertyID::kColumnRuleInteriorInsetStart;
-    case CSSGapDecorationPropertyType::kInteriorInsetEnd:
+                 ? CSSPropertyID::kRowRuleInsetJunctionStart
+                 : CSSPropertyID::kColumnRuleInsetJunctionStart;
+    case CSSGapDecorationPropertyType::kInsetJunctionEnd:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleInteriorInsetEnd
-                 : CSSPropertyID::kColumnRuleInteriorInsetEnd;
+                 ? CSSPropertyID::kRowRuleInsetJunctionEnd
+                 : CSSPropertyID::kColumnRuleInsetJunctionEnd;
   }
 }
 
@@ -263,17 +263,17 @@ bool CSSGapDecorationUtils::IsRuleSegmentVisible(
 
 bool CSSGapDecorationUtils::HasOverlapJoin(const ComputedStyle& style,
                                            bool is_column_gap) {
-  return (is_column_gap ? style.ColumnRuleEdgeInsetStart()
-                        : style.RowRuleEdgeInsetStart())
+  return (is_column_gap ? style.ColumnRuleInsetCapStart()
+                        : style.RowRuleInsetCapStart())
              .IsOverlapJoin() ||
-         (is_column_gap ? style.ColumnRuleEdgeInsetEnd()
-                        : style.RowRuleEdgeInsetEnd())
+         (is_column_gap ? style.ColumnRuleInsetCapEnd()
+                        : style.RowRuleInsetCapEnd())
              .IsOverlapJoin() ||
-         (is_column_gap ? style.ColumnRuleInteriorInsetStart()
-                        : style.RowRuleInteriorInsetStart())
+         (is_column_gap ? style.ColumnRuleInsetJunctionStart()
+                        : style.RowRuleInsetJunctionStart())
              .IsOverlapJoin() ||
-         (is_column_gap ? style.ColumnRuleInteriorInsetEnd()
-                        : style.RowRuleInteriorInsetEnd())
+         (is_column_gap ? style.ColumnRuleInsetJunctionEnd()
+                        : style.RowRuleInsetJunctionEnd())
              .IsOverlapJoin();
 }
 

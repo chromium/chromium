@@ -5846,10 +5846,10 @@ CSSValue* ConsumeGapDecorationPropertyValue(
         return ConsumeIdent(stream);
       }
       return nullptr;
-    case CSSGapDecorationPropertyType::kEdgeInsetEnd:
-    case CSSGapDecorationPropertyType::kEdgeInsetStart:
-    case CSSGapDecorationPropertyType::kInteriorInsetEnd:
-    case CSSGapDecorationPropertyType::kInteriorInsetStart:
+    case CSSGapDecorationPropertyType::kInsetCapEnd:
+    case CSSGapDecorationPropertyType::kInsetCapStart:
+    case CSSGapDecorationPropertyType::kInsetJunctionEnd:
+    case CSSGapDecorationPropertyType::kInsetJunctionStart:
       return nullptr;
   }
 }
@@ -8008,9 +8008,9 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
   return true;
 }
 
-// Consuming the `*-rule-edge-inset` and `*-rule-interior-inset` shorthands
+// Consuming the `*-rule-inset-cap` and `*-rule-inset-junction` shorthands
 // with syntax [ overlap-join | <length-percentage> ]
-bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
+bool ConsumeGapDecorationsRuleInsetCapJunctionShorthand(
     bool important,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
@@ -8069,26 +8069,26 @@ bool ConsumeGapDecorationsRuleInsetShorthand(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     CSSParserTokenStream& stream,
-    CSSValue*& rule_edge_start_inset,
-    CSSValue*& rule_edge_end_inset,
-    CSSValue*& rule_interior_start_inset,
-    CSSValue*& rule_interior_end_inset) {
+    CSSValue*& rule_inset_cap_start,
+    CSSValue*& rule_inset_cap_end,
+    CSSValue*& rule_inset_junction_start,
+    CSSValue*& rule_inset_junction_end) {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
-  rule_edge_start_inset = nullptr;
-  rule_edge_end_inset = nullptr;
-  rule_interior_start_inset = nullptr;
-  rule_interior_end_inset = nullptr;
+  rule_inset_cap_start = nullptr;
+  rule_inset_cap_end = nullptr;
+  rule_inset_junction_start = nullptr;
+  rule_inset_junction_end = nullptr;
 
-  wtf_size_t edge_count = 0;
-  wtf_size_t interior_count = 0;
+  wtf_size_t cap_count = 0;
+  wtf_size_t junction_count = 0;
   bool consumed_slash = false;
 
   while (!stream.AtEnd() && !(stream.Peek().GetType() == kDelimiterToken &&
                               stream.Peek().Delimiter() == '!')) {
     if (ConsumeSlashIncludingWhitespace(stream)) {
-      // Slash rules: only one allowed; must follow at least one edge value.
-      if (consumed_slash || edge_count == 0) {
+      // Slash rules: only one allowed; must follow at least one cap value.
+      if (consumed_slash || cap_count == 0) {
         return false;
       }
       consumed_slash = true;
@@ -8102,50 +8102,50 @@ bool ConsumeGapDecorationsRuleInsetShorthand(
     }
 
     if (!consumed_slash) {
-      if (edge_count >= 2) {
+      if (cap_count >= 2) {
         return false;
       }
-      if (edge_count == 0) {
-        rule_edge_start_inset = value;
+      if (cap_count == 0) {
+        rule_inset_cap_start = value;
       } else {
-        rule_edge_end_inset = value;
+        rule_inset_cap_end = value;
       }
-      ++edge_count;
+      ++cap_count;
     } else {
-      if (interior_count >= 2) {
+      if (junction_count >= 2) {
         return false;
       }
-      if (interior_count == 0) {
-        rule_interior_start_inset = value;
+      if (junction_count == 0) {
+        rule_inset_junction_start = value;
       } else {
-        rule_interior_end_inset = value;
+        rule_inset_junction_end = value;
       }
-      ++interior_count;
+      ++junction_count;
     }
   }
 
-  // At least one column/row rule edge value is needed.
-  if (edge_count == 0) {
+  // At least one column/row rule cap value is needed.
+  if (cap_count == 0) {
     return false;
   }
 
-  // If slash present, there must be at least one interior value.
-  if (consumed_slash && interior_count == 0) {
+  // If slash present, there must be at least one junction value.
+  if (consumed_slash && junction_count == 0) {
     return false;
   }
 
   // Expand shorthands per grammar:
   // <len-perc> <len-perc>? [ / <len-perc> <len-perc>? ]?
-  if (!rule_edge_end_inset) {
-    rule_edge_end_inset = rule_edge_start_inset;
+  if (!rule_inset_cap_end) {
+    rule_inset_cap_end = rule_inset_cap_start;
   }
 
   if (!consumed_slash) {
-    rule_interior_start_inset = rule_edge_start_inset;
-    rule_interior_end_inset = rule_edge_end_inset;
+    rule_inset_junction_start = rule_inset_cap_start;
+    rule_inset_junction_end = rule_inset_cap_end;
   } else {
-    if (!rule_interior_end_inset) {
-      rule_interior_end_inset = rule_interior_start_inset;
+    if (!rule_inset_junction_end) {
+      rule_inset_junction_end = rule_inset_junction_start;
     }
   }
 

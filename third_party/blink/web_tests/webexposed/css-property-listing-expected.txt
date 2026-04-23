@@ -147,10 +147,10 @@ All changes to this list should go through Blink's feature review process: http:
     column-height
     column-rule-break
     column-rule-color
-    column-rule-edge-inset-end
-    column-rule-edge-inset-start
-    column-rule-interior-inset-end
-    column-rule-interior-inset-start
+    column-rule-inset-cap-end
+    column-rule-inset-cap-start
+    column-rule-inset-junction-end
+    column-rule-inset-junction-start
     column-rule-style
     column-rule-visibility-items
     column-rule-width
@@ -361,10 +361,10 @@ All changes to this list should go through Blink's feature review process: http:
     row-gap
     row-rule-break
     row-rule-color
-    row-rule-edge-inset-end
-    row-rule-edge-inset-start
-    row-rule-interior-inset-end
-    row-rule-interior-inset-start
+    row-rule-inset-cap-end
+    row-rule-inset-cap-start
+    row-rule-inset-junction-end
+    row-rule-inset-junction-start
     row-rule-style
     row-rule-visibility-items
     row-rule-width
@@ -658,23 +658,23 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-color
         column-rule-style
         column-rule-width
-    column-rule-edge-inset
-        column-rule-edge-inset-end
-        column-rule-edge-inset-start
     column-rule-inset
-        column-rule-edge-inset-end
-        column-rule-edge-inset-start
-        column-rule-interior-inset-end
-        column-rule-interior-inset-start
+        column-rule-inset-cap-end
+        column-rule-inset-cap-start
+        column-rule-inset-junction-end
+        column-rule-inset-junction-start
+    column-rule-inset-cap
+        column-rule-inset-cap-end
+        column-rule-inset-cap-start
     column-rule-inset-end
-        column-rule-edge-inset-end
-        column-rule-interior-inset-end
+        column-rule-inset-cap-end
+        column-rule-inset-junction-end
+    column-rule-inset-junction
+        column-rule-inset-junction-end
+        column-rule-inset-junction-start
     column-rule-inset-start
-        column-rule-edge-inset-start
-        column-rule-interior-inset-start
-    column-rule-interior-inset
-        column-rule-interior-inset-end
-        column-rule-interior-inset-start
+        column-rule-inset-cap-start
+        column-rule-inset-junction-start
     columns
         column-count
         column-height
@@ -892,23 +892,23 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-color
         row-rule-style
         row-rule-width
-    row-rule-edge-inset
-        row-rule-edge-inset-end
-        row-rule-edge-inset-start
     row-rule-inset
-        row-rule-edge-inset-end
-        row-rule-edge-inset-start
-        row-rule-interior-inset-end
-        row-rule-interior-inset-start
+        row-rule-inset-cap-end
+        row-rule-inset-cap-start
+        row-rule-inset-junction-end
+        row-rule-inset-junction-start
+    row-rule-inset-cap
+        row-rule-inset-cap-end
+        row-rule-inset-cap-start
     row-rule-inset-end
-        row-rule-edge-inset-end
-        row-rule-interior-inset-end
+        row-rule-inset-cap-end
+        row-rule-inset-junction-end
+    row-rule-inset-junction
+        row-rule-inset-junction-end
+        row-rule-inset-junction-start
     row-rule-inset-start
-        row-rule-edge-inset-start
-        row-rule-interior-inset-start
-    row-rule-interior-inset
-        row-rule-interior-inset-end
-        row-rule-interior-inset-start
+        row-rule-inset-cap-start
+        row-rule-inset-junction-start
     rule
         column-rule-color
         column-rule-style
@@ -922,35 +922,35 @@ All changes to this list should go through Blink's feature review process: http:
     rule-color
         column-rule-color
         row-rule-color
-    rule-edge-inset
-        column-rule-edge-inset-end
-        column-rule-edge-inset-start
-        row-rule-edge-inset-end
-        row-rule-edge-inset-start
     rule-inset
-        column-rule-edge-inset-end
-        column-rule-edge-inset-start
-        column-rule-interior-inset-end
-        column-rule-interior-inset-start
-        row-rule-edge-inset-end
-        row-rule-edge-inset-start
-        row-rule-interior-inset-end
-        row-rule-interior-inset-start
+        column-rule-inset-cap-end
+        column-rule-inset-cap-start
+        column-rule-inset-junction-end
+        column-rule-inset-junction-start
+        row-rule-inset-cap-end
+        row-rule-inset-cap-start
+        row-rule-inset-junction-end
+        row-rule-inset-junction-start
+    rule-inset-cap
+        column-rule-inset-cap-end
+        column-rule-inset-cap-start
+        row-rule-inset-cap-end
+        row-rule-inset-cap-start
     rule-inset-end
-        column-rule-edge-inset-end
-        column-rule-interior-inset-end
-        row-rule-edge-inset-end
-        row-rule-interior-inset-end
+        column-rule-inset-cap-end
+        column-rule-inset-junction-end
+        row-rule-inset-cap-end
+        row-rule-inset-junction-end
+    rule-inset-junction
+        column-rule-inset-junction-end
+        column-rule-inset-junction-start
+        row-rule-inset-junction-end
+        row-rule-inset-junction-start
     rule-inset-start
-        column-rule-edge-inset-start
-        column-rule-interior-inset-start
-        row-rule-edge-inset-start
-        row-rule-interior-inset-start
-    rule-interior-inset
-        column-rule-interior-inset-end
-        column-rule-interior-inset-start
-        row-rule-interior-inset-end
-        row-rule-interior-inset-start
+        column-rule-inset-cap-start
+        column-rule-inset-junction-start
+        row-rule-inset-cap-start
+        row-rule-inset-junction-start
     rule-style
         column-rule-style
         row-rule-style

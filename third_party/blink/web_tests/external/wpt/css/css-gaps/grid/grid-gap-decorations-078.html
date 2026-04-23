@@ -2,7 +2,7 @@
 <title>
   CSS Gap Decorations: grid gap decorations extend to meet cross-direction
   decoration width at far edge with rule-inset: overlap-join. Tests scenario
-  for so called "donut" case, plus the dangling endpoints with -5px edge-inset.
+  for so called "donut" case, plus the dangling endpoints with -5px cap inset.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
 <link rel="match" href="grid-gap-decorations-078-ref.html">
@@ -27,8 +27,8 @@ body  {
   rule-visibility-items: between;
 }
 .overlapjoin {
-  rule-interior-inset: overlap-join;
-  rule-edge-inset: -5px;
+  rule-inset-junction: overlap-join;
+  rule-inset-cap: -5px;
 }
 
 .item {

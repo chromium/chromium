@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <title>
     CSS Gap Decorations: Multicolumn with column-wrap, rule-visibility-items:
-    between, rule-interior-inset: overlap-join, and rule-edge-inset: 10px.
+    between, rule-inset-junction: overlap-join, and rule-inset-cap: 10px.
     Dangling endpoints at the empty cells in the last row should be treated as
-    edges and use the 10px edge-inset.
+    edges and use the 10px cap inset.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
 <link rel="match" href="multicol-gap-decorations-036-ref.html">
@@ -34,8 +34,8 @@
         row-rule-break: intersection;
 
         rule-visibility-items: between;
-        column-rule-interior-inset: overlap-join;
-        rule-edge-inset: 10px;
+        column-rule-inset-junction: overlap-join;
+        rule-inset-cap: 10px;
     }
 
     p {

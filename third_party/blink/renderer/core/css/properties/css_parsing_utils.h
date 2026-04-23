@@ -708,13 +708,13 @@ CSSValue* ConsumeFlowTolerance(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSParserLocalContext&);
 
-bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
+bool ConsumeGapDecorationsRuleInsetCapJunctionShorthand(
     bool important,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     CSSParserTokenStream& stream,
-    CSSValue*& rule_edge_inset,
-    CSSValue*& rule_interior_inset);
+    CSSValue*& rule_inset_cap,
+    CSSValue*& rule_inset_junction);
 
 bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
     bool important,
@@ -729,10 +729,10 @@ bool ConsumeGapDecorationsRuleInsetShorthand(
     const CSSParserContext& context,
     CSSParserLocalContext&,
     CSSParserTokenStream& stream,
-    CSSValue*& rule_edge_start_inset,
-    CSSValue*& rule_edge_end_inset,
-    CSSValue*& rule_interior_start_inset,
-    CSSValue*& rule_interior_end_inset);
+    CSSValue*& rule_inset_cap_start,
+    CSSValue*& rule_inset_cap_end,
+    CSSValue*& rule_inset_junction_start,
+    CSSValue*& rule_inset_junction_end);
 
 bool ConsumeGapDecorationsRuleShorthand(bool important,
                                         const CSSParserContext& context,

@@ -8363,14 +8363,14 @@ Called by update_use_counter_css.py.-->
   <int value="888" label="rule-inset"/>
   <int value="889" label="column-rule-visibility-items"/>
   <int value="890" label="row-rule-visibility-items"/>
-  <int value="891" label="column-rule-edge-inset-start"/>
-  <int value="892" label="column-rule-edge-inset-end"/>
-  <int value="893" label="column-rule-interior-inset-start"/>
-  <int value="894" label="column-rule-interior-inset-end"/>
-  <int value="895" label="row-rule-edge-inset-start"/>
-  <int value="896" label="row-rule-edge-inset-end"/>
-  <int value="897" label="row-rule-interior-inset-start"/>
-  <int value="898" label="row-rule-interior-inset-end"/>
+  <int value="891" label="column-rule-inset-cap-start"/>
+  <int value="892" label="column-rule-inset-cap-end"/>
+  <int value="893" label="column-rule-inset-junction-start"/>
+  <int value="894" label="column-rule-inset-junction-end"/>
+  <int value="895" label="row-rule-inset-cap-start"/>
+  <int value="896" label="row-rule-inset-cap-end"/>
+  <int value="897" label="row-rule-inset-junction-start"/>
+  <int value="898" label="row-rule-inset-junction-end"/>
   <int value="899" label="timeline-trigger-range (obsolete)"/>
   <int value="900" label="timeline-trigger-exit-range (obsolete)"/>
   <int value="901" label="trigger-scope"/>
@@ -8382,12 +8382,12 @@ Called by update_use_counter_css.py.-->
   <int value="907" label="hash"/>
   <int value="908" label="base-url"/>
   <int value="909" label="pattern"/>
-  <int value="910" label="column-rule-edge-inset"/>
-  <int value="911" label="row-rule-edge-inset"/>
-  <int value="912" label="column-rule-interior-inset"/>
-  <int value="913" label="row-rule-interior-inset"/>
-  <int value="914" label="rule-edge-inset"/>
-  <int value="915" label="rule-interior-inset"/>
+  <int value="910" label="column-rule-inset-cap"/>
+  <int value="911" label="row-rule-inset-cap"/>
+  <int value="912" label="column-rule-inset-junction"/>
+  <int value="913" label="row-rule-inset-junction"/>
+  <int value="914" label="rule-inset-cap"/>
+  <int value="915" label="rule-inset-junction"/>
   <int value="916" label="page-margin-safety"/>
   <int value="917" label="timeline-trigger-entry-range-start (obsolete)"/>
   <int value="918" label="timeline-trigger-entry-range-end (obsolete)"/>

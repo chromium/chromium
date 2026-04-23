@@ -639,14 +639,14 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRowRule:
       return GetShorthandValueForGapDecorationsRule(
           rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
-    case CSSPropertyID::kColumnRuleEdgeInset:
-      return GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
-          columnRuleEdgeInsetShorthand(),
-          CSSGapDecorationPropertyDirection::kColumn, /*is_edge=*/true);
-    case CSSPropertyID::kRowRuleEdgeInset:
-      return GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
-          rowRuleEdgeInsetShorthand(), CSSGapDecorationPropertyDirection::kRow,
-          /*is_edge=*/true);
+    case CSSPropertyID::kColumnRuleInsetCap:
+      return GetShorthandValueForGapDecorationsRuleInsetCapJunction(
+          columnRuleInsetCapShorthand(),
+          CSSGapDecorationPropertyDirection::kColumn, /*is_cap=*/true);
+    case CSSPropertyID::kRowRuleInsetCap:
+      return GetShorthandValueForGapDecorationsRuleInsetCapJunction(
+          rowRuleInsetCapShorthand(), CSSGapDecorationPropertyDirection::kRow,
+          /*is_cap=*/true);
     case CSSPropertyID::kColumnRuleInset:
       return GetShorthandValueForGapDecorationsRuleInset(
           columnRuleInsetShorthand(),
@@ -666,14 +666,14 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRowRuleInsetStart:
       return GetShorthandValueForGapDecorationsRuleInsetStartEnd(
           rowRuleInsetStartShorthand());
-    case CSSPropertyID::kColumnRuleInteriorInset:
-      return GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
-          columnRuleInteriorInsetShorthand(),
-          CSSGapDecorationPropertyDirection::kColumn, /*is_edge=*/false);
-    case CSSPropertyID::kRowRuleInteriorInset:
-      return GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
-          rowRuleInteriorInsetShorthand(),
-          CSSGapDecorationPropertyDirection::kRow, /*is_edge=*/false);
+    case CSSPropertyID::kColumnRuleInsetJunction:
+      return GetShorthandValueForGapDecorationsRuleInsetCapJunction(
+          columnRuleInsetJunctionShorthand(),
+          CSSGapDecorationPropertyDirection::kColumn, /*is_cap=*/false);
+    case CSSPropertyID::kRowRuleInsetJunction:
+      return GetShorthandValueForGapDecorationsRuleInsetCapJunction(
+          rowRuleInsetJunctionShorthand(),
+          CSSGapDecorationPropertyDirection::kRow, /*is_cap=*/false);
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
@@ -755,12 +755,12 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
-    case CSSPropertyID::kRuleEdgeInset:
-      return GetShorthandValueForBidirectionalGapRuleEdgeInteriorInset(
-          ruleEdgeInsetShorthand());
-    case CSSPropertyID::kRuleInteriorInset:
-      return GetShorthandValueForBidirectionalGapRuleEdgeInteriorInset(
-          ruleInteriorInsetShorthand());
+    case CSSPropertyID::kRuleInsetCap:
+      return GetShorthandValueForBidirectionalGapRuleInsetCapJunction(
+          ruleInsetCapShorthand());
+    case CSSPropertyID::kRuleInsetJunction:
+      return GetShorthandValueForBidirectionalGapRuleInsetCapJunction(
+          ruleInsetJunctionShorthand());
     case CSSPropertyID::kRuleInset:
       return GetShorthandValueForBidirectionalGapRuleInset(
           ruleInsetShorthand());
@@ -2198,97 +2198,96 @@ String StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleInset(
   CHECK_EQ(shorthand.length(), 8u);
 
   StringBuilder result;
-  const CSSValue* column_rule_edge_start_inset_value =
+  const CSSValue* column_rule_inset_cap_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* column_rule_edge_end_inset_value =
+  const CSSValue* column_rule_inset_cap_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* column_rule_interior_start_inset_value =
+  const CSSValue* column_rule_inset_junction_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* column_rule_interior_end_inset_value =
+  const CSSValue* column_rule_inset_junction_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
-  const CSSValue* row_rule_edge_start_inset_value =
+  const CSSValue* row_rule_inset_cap_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[4]);
-  const CSSValue* row_rule_edge_end_inset_value =
+  const CSSValue* row_rule_inset_cap_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[5]);
-  const CSSValue* row_rule_interior_start_inset_value =
+  const CSSValue* row_rule_inset_junction_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[6]);
-  const CSSValue* row_rule_interior_end_inset_value =
+  const CSSValue* row_rule_inset_junction_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[7]);
 
   // The `rule-inset` shorthand is bi-directional, so the values should be
   // equivalent.
   //
   // https://drafts.csswg.org/css-gaps-1/#outset
-  if (!base::ValuesEquivalent(column_rule_edge_start_inset_value,
-                              row_rule_edge_start_inset_value) ||
-      !base::ValuesEquivalent(column_rule_edge_end_inset_value,
-                              row_rule_edge_end_inset_value) ||
-      !base::ValuesEquivalent(column_rule_interior_start_inset_value,
-                              row_rule_interior_start_inset_value) ||
-      !base::ValuesEquivalent(column_rule_interior_end_inset_value,
-                              row_rule_interior_end_inset_value)) {
+  if (!base::ValuesEquivalent(column_rule_inset_cap_start_value,
+                              row_rule_inset_cap_start_value) ||
+      !base::ValuesEquivalent(column_rule_inset_cap_end_value,
+                              row_rule_inset_cap_end_value) ||
+      !base::ValuesEquivalent(column_rule_inset_junction_start_value,
+                              row_rule_inset_junction_start_value) ||
+      !base::ValuesEquivalent(column_rule_inset_junction_end_value,
+                              row_rule_inset_junction_end_value)) {
     return String();
   }
-  if (AllCSSValuesEqual(
-          {column_rule_edge_start_inset_value,
-           column_rule_edge_end_inset_value,
-           column_rule_interior_start_inset_value,
-           column_rule_interior_end_inset_value})) {
-    return column_rule_edge_start_inset_value->CssText();
+  if (AllCSSValuesEqual({column_rule_inset_cap_start_value,
+                         column_rule_inset_cap_end_value,
+                         column_rule_inset_junction_start_value,
+                         column_rule_inset_junction_end_value})) {
+    return column_rule_inset_cap_start_value->CssText();
   }
 
-  if (!column_rule_edge_start_inset_value->IsInitialValue()) {
-    result.Append(column_rule_edge_start_inset_value->CssText());
+  if (!column_rule_inset_cap_start_value->IsInitialValue()) {
+    result.Append(column_rule_inset_cap_start_value->CssText());
     result.Append(' ');
-    result.Append(column_rule_edge_end_inset_value->CssText());
+    result.Append(column_rule_inset_cap_end_value->CssText());
     result.Append(' ');
     result.Append('/');
     result.Append(' ');
-    result.Append(column_rule_interior_start_inset_value->CssText());
+    result.Append(column_rule_inset_junction_start_value->CssText());
     result.Append(' ');
-    result.Append(column_rule_interior_end_inset_value->CssText());
+    result.Append(column_rule_inset_junction_end_value->CssText());
   }
 
   return result.ReleaseString();
 }
 
 String StylePropertySerializer::
-    GetShorthandValueForBidirectionalGapRuleEdgeInteriorInset(
+    GetShorthandValueForBidirectionalGapRuleInsetCapJunction(
         const StylePropertyShorthand& shorthand) const {
   CHECK_EQ(shorthand.length(), 4u);
 
   StringBuilder result;
-  const CSSValue* column_rule_edge_interior_start_inset_value =
+  const CSSValue* column_rule_inset_cap_junction_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* column_rule_edge_interior_end_inset_value =
+  const CSSValue* column_rule_inset_cap_junction_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* row_rule_edge_interior_start_inset_value =
+  const CSSValue* row_rule_inset_cap_junction_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* row_rule_edge_interior_end_inset_value =
+  const CSSValue* row_rule_inset_cap_junction_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // The `rule-inset` shorthand is bi-directional, so the values should be
   // equivalent.
   //
   // https://drafts.csswg.org/css-gaps-1/#inset
-  if (!base::ValuesEquivalent(column_rule_edge_interior_start_inset_value,
-                              row_rule_edge_interior_start_inset_value) ||
-      !base::ValuesEquivalent(column_rule_edge_interior_end_inset_value,
-                              row_rule_edge_interior_end_inset_value) ||
-      !base::ValuesEquivalent(column_rule_edge_interior_start_inset_value,
-                              row_rule_edge_interior_start_inset_value) ||
-      !base::ValuesEquivalent(column_rule_edge_interior_end_inset_value,
-                              row_rule_edge_interior_end_inset_value)) {
+  if (!base::ValuesEquivalent(column_rule_inset_cap_junction_start_value,
+                              row_rule_inset_cap_junction_start_value) ||
+      !base::ValuesEquivalent(column_rule_inset_cap_junction_end_value,
+                              row_rule_inset_cap_junction_end_value) ||
+      !base::ValuesEquivalent(column_rule_inset_cap_junction_start_value,
+                              row_rule_inset_cap_junction_start_value) ||
+      !base::ValuesEquivalent(column_rule_inset_cap_junction_end_value,
+                              row_rule_inset_cap_junction_end_value)) {
     return String();
   }
 
-  if (!column_rule_edge_interior_start_inset_value->IsInitialValue()) {
-    result.Append(column_rule_edge_interior_start_inset_value->CssText());
+  if (!column_rule_inset_cap_junction_start_value->IsInitialValue()) {
+    result.Append(column_rule_inset_cap_junction_start_value->CssText());
     // Only serialize the end inset if it differs from the start inset.
-    if (column_rule_edge_interior_start_inset_value !=
-        column_rule_edge_interior_end_inset_value) {
+    if (column_rule_inset_cap_junction_start_value !=
+        column_rule_inset_cap_junction_end_value) {
       result.Append(' ');
-      result.Append(column_rule_edge_interior_end_inset_value->CssText());
+      result.Append(column_rule_inset_cap_junction_end_value->CssText());
     }
   }
   return result.ReleaseString();
@@ -2299,28 +2298,28 @@ StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleInsetStartEnd(
     const StylePropertyShorthand& shorthand) const {
   CHECK_EQ(shorthand.length(), 4u);
 
-  const CSSValue* column_edge_inset_value =
+  const CSSValue* column_cap_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* column_interior_inset_value =
+  const CSSValue* column_junction_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* row_edge_inset_value =
+  const CSSValue* row_cap_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* row_interior_inset_value =
+  const CSSValue* row_junction_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // The shorthand is bi-directional and all four longhands must be equal.
   //
   // https://drafts.csswg.org/css-gaps-1/#inset
-  if (!base::ValuesEquivalent(column_edge_inset_value,
-                              column_interior_inset_value) ||
-      !base::ValuesEquivalent(column_edge_inset_value, row_edge_inset_value) ||
-      !base::ValuesEquivalent(column_edge_inset_value,
-                              row_interior_inset_value)) {
+  if (!base::ValuesEquivalent(column_cap_inset_value,
+                              column_junction_inset_value) ||
+      !base::ValuesEquivalent(column_cap_inset_value, row_cap_inset_value) ||
+      !base::ValuesEquivalent(column_cap_inset_value,
+                              row_junction_inset_value)) {
     return String();
   }
 
-  if (!column_edge_inset_value->IsInitialValue()) {
-    return column_edge_inset_value->CssText();
+  if (!column_cap_inset_value->IsInitialValue()) {
+    return column_cap_inset_value->CssText();
   }
   return String();
 }
@@ -2534,20 +2533,20 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
   return result.ReleaseString();
 }
 
-String StylePropertySerializer::
-    GetShorthandValueForGapDecorationsRuleEdgeInteriorInset(
-        const StylePropertyShorthand& shorthand,
-        CSSGapDecorationPropertyDirection direction,
-        bool is_edge) const {
+String
+StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInsetCapJunction(
+    const StylePropertyShorthand& shorthand,
+    CSSGapDecorationPropertyDirection direction,
+    bool is_cap) const {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
   CHECK_EQ(shorthand.length(), 2u);
 
   CSSGapDecorationPropertyType property_type_start =
-      is_edge ? CSSGapDecorationPropertyType::kEdgeInsetStart
-              : CSSGapDecorationPropertyType::kInteriorInsetStart;
+      is_cap ? CSSGapDecorationPropertyType::kInsetCapStart
+             : CSSGapDecorationPropertyType::kInsetJunctionStart;
   CSSGapDecorationPropertyType property_type_end =
-      is_edge ? CSSGapDecorationPropertyType::kEdgeInsetEnd
-              : CSSGapDecorationPropertyType::kInteriorInsetEnd;
+      is_cap ? CSSGapDecorationPropertyType::kInsetCapEnd
+             : CSSGapDecorationPropertyType::kInsetJunctionEnd;
 
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(direction,
@@ -2581,20 +2580,20 @@ StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInsetStartEnd(
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
   CHECK_EQ(shorthand.length(), 2u);
 
-  const CSSValue* edge_inset_value =
+  const CSSValue* cap_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* interior_inset_value =
+  const CSSValue* junction_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
 
   // All values must be specified.
-  CHECK(edge_inset_value && interior_inset_value);
+  CHECK(cap_inset_value && junction_inset_value);
 
   // The shorthand can only be serialized if both values are equal.
-  if (edge_inset_value != interior_inset_value) {
+  if (cap_inset_value != junction_inset_value) {
     return String();
   }
 
-  return edge_inset_value->CssText();
+  return cap_inset_value->CssText();
 }
 
 String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInset(
@@ -2604,47 +2603,46 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInset(
   CHECK_EQ(shorthand.length(), 4u);
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeInsetStart)));
+          direction, CSSGapDecorationPropertyType::kInsetCapStart)));
   CHECK(shorthand.properties()[1]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeInsetEnd)));
+          direction, CSSGapDecorationPropertyType::kInsetCapEnd)));
   CHECK(shorthand.properties()[2]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorInsetStart)));
+          direction, CSSGapDecorationPropertyType::kInsetJunctionStart)));
   CHECK(shorthand.properties()[3]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorInsetEnd)));
+          direction, CSSGapDecorationPropertyType::kInsetJunctionEnd)));
 
-  const CSSValue* rule_edge_start_inset_value =
+  const CSSValue* rule_inset_cap_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* rule_edge_end_inset_value =
+  const CSSValue* rule_inset_cap_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* rule_interior_start_inset_value =
+  const CSSValue* rule_inset_junction_start_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* rule_interior_end_inset_value =
+  const CSSValue* rule_inset_junction_end_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // All values must be specified.
-  CHECK(rule_edge_start_inset_value && rule_edge_end_inset_value &&
-        rule_interior_start_inset_value && rule_interior_end_inset_value);
+  CHECK(rule_inset_cap_start_value && rule_inset_cap_end_value &&
+        rule_inset_junction_start_value && rule_inset_junction_end_value);
 
-  if (AllCSSValuesEqual(
-          {rule_edge_start_inset_value, rule_edge_end_inset_value,
-           rule_interior_start_inset_value,
-           rule_interior_end_inset_value})) {
-    return rule_edge_start_inset_value->CssText();
+  if (AllCSSValuesEqual({rule_inset_cap_start_value, rule_inset_cap_end_value,
+                         rule_inset_junction_start_value,
+                         rule_inset_junction_end_value})) {
+    return rule_inset_cap_start_value->CssText();
   }
 
   StringBuilder result;
-  result.Append(rule_edge_start_inset_value->CssText());
+  result.Append(rule_inset_cap_start_value->CssText());
   result.Append(' ');
-  result.Append(rule_edge_end_inset_value->CssText());
+  result.Append(rule_inset_cap_end_value->CssText());
   result.Append(' ');
   result.Append('/');
   result.Append(' ');
-  result.Append(rule_interior_start_inset_value->CssText());
+  result.Append(rule_inset_junction_start_value->CssText());
   result.Append(' ');
-  result.Append(rule_interior_end_inset_value->CssText());
+  result.Append(rule_inset_junction_end_value->CssText());
 
   return result.ReleaseString();
 }

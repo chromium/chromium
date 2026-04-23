@@ -5627,7 +5627,7 @@ const CSSValue* RowRuleBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RowRuleBreak());
 }
 
-const CSSValue* ColumnRuleEdgeInsetEnd::ParseSingleValue(
+const CSSValue* ColumnRuleInsetCapEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5638,19 +5638,19 @@ const CSSValue* ColumnRuleEdgeInsetEnd::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleEdgeInsetEnd::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInsetCapEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ColumnRuleEdgeInsetEnd().IsOverlapJoin()) {
+  if (style.ColumnRuleInsetCapEnd().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleEdgeInsetEnd(), style);
+      style.ColumnRuleInsetCapEnd(), style);
 }
 
-const CSSValue* RowRuleEdgeInsetEnd::ParseSingleValue(
+const CSSValue* RowRuleInsetCapEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5661,19 +5661,19 @@ const CSSValue* RowRuleEdgeInsetEnd::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleEdgeInsetEnd::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInsetCapEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.RowRuleEdgeInsetEnd().IsOverlapJoin()) {
+  if (style.RowRuleInsetCapEnd().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleEdgeInsetEnd(), style);
+      style.RowRuleInsetCapEnd(), style);
 }
 
-const CSSValue* ColumnRuleEdgeInsetStart::ParseSingleValue(
+const CSSValue* ColumnRuleInsetCapStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5684,19 +5684,19 @@ const CSSValue* ColumnRuleEdgeInsetStart::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleEdgeInsetStart::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInsetCapStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ColumnRuleEdgeInsetStart().IsOverlapJoin()) {
+  if (style.ColumnRuleInsetCapStart().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleEdgeInsetStart(), style);
+      style.ColumnRuleInsetCapStart(), style);
 }
 
-const CSSValue* RowRuleEdgeInsetStart::ParseSingleValue(
+const CSSValue* RowRuleInsetCapStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5707,19 +5707,19 @@ const CSSValue* RowRuleEdgeInsetStart::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleEdgeInsetStart::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInsetCapStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.RowRuleEdgeInsetStart().IsOverlapJoin()) {
+  if (style.RowRuleInsetCapStart().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleEdgeInsetStart(), style);
+      style.RowRuleInsetCapStart(), style);
 }
 
-const CSSValue* ColumnRuleInteriorInsetEnd::ParseSingleValue(
+const CSSValue* ColumnRuleInsetJunctionEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5730,19 +5730,19 @@ const CSSValue* ColumnRuleInteriorInsetEnd::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleInteriorInsetEnd::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInsetJunctionEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ColumnRuleInteriorInsetEnd().IsOverlapJoin()) {
+  if (style.ColumnRuleInsetJunctionEnd().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleInteriorInsetEnd(), style);
+      style.ColumnRuleInsetJunctionEnd(), style);
 }
 
-const CSSValue* RowRuleInteriorInsetEnd::ParseSingleValue(
+const CSSValue* RowRuleInsetJunctionEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5753,19 +5753,19 @@ const CSSValue* RowRuleInteriorInsetEnd::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleInteriorInsetEnd::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInsetJunctionEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.RowRuleInteriorInsetEnd().IsOverlapJoin()) {
+  if (style.RowRuleInsetJunctionEnd().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleInteriorInsetEnd(), style);
+      style.RowRuleInsetJunctionEnd(), style);
 }
 
-const CSSValue* ColumnRuleInteriorInsetStart::ParseSingleValue(
+const CSSValue* ColumnRuleInsetJunctionStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5776,19 +5776,19 @@ const CSSValue* ColumnRuleInteriorInsetStart::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* ColumnRuleInteriorInsetStart::CSSValueFromComputedStyleInternal(
+const CSSValue* ColumnRuleInsetJunctionStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ColumnRuleInteriorInsetStart().IsOverlapJoin()) {
+  if (style.ColumnRuleInsetJunctionStart().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ColumnRuleInteriorInsetStart(), style);
+      style.ColumnRuleInsetJunctionStart(), style);
 }
 
-const CSSValue* RowRuleInteriorInsetStart::ParseSingleValue(
+const CSSValue* RowRuleInsetJunctionStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -5799,16 +5799,16 @@ const CSSValue* RowRuleInteriorInsetStart::ParseSingleValue(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
-const CSSValue* RowRuleInteriorInsetStart::CSSValueFromComputedStyleInternal(
+const CSSValue* RowRuleInsetJunctionStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.RowRuleInteriorInsetStart().IsOverlapJoin()) {
+  if (style.RowRuleInsetJunctionStart().IsOverlapJoin()) {
     return CSSIdentifierValue::Create(CSSValueID::kOverlapJoin);
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleInteriorInsetStart(), style);
+      style.RowRuleInsetJunctionStart(), style);
 }
 
 const CSSValue* ColumnRuleVisibilityItems::CSSValueFromComputedStyleInternal(

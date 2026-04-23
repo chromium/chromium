@@ -81,10 +81,10 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   const Length& inset =
       is_dangling_intersection
-          ? (is_column_gap ? style.ColumnRuleEdgeInsetEnd()
-                           : style.RowRuleEdgeInsetEnd())
-          : (is_column_gap ? style.ColumnRuleInteriorInsetEnd()
-                           : style.RowRuleInteriorInsetEnd());
+          ? (is_column_gap ? style.ColumnRuleInsetCapEnd()
+                           : style.RowRuleInsetCapEnd())
+          : (is_column_gap ? style.ColumnRuleInsetJunctionEnd()
+                           : style.RowRuleInsetJunctionEnd());
 
   if (inset.IsOverlapJoin()) {
     return ComputeOverlapJoinInset(has_joining_decoration, is_main,
@@ -110,10 +110,10 @@ LayoutUnit GapGeometry::ComputeInsetStart(
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   const Length& inset =
       is_dangling_intersection
-          ? (is_column_gap ? style.ColumnRuleEdgeInsetStart()
-                           : style.RowRuleEdgeInsetStart())
-          : (is_column_gap ? style.ColumnRuleInteriorInsetStart()
-                           : style.RowRuleInteriorInsetStart());
+          ? (is_column_gap ? style.ColumnRuleInsetCapStart()
+                           : style.RowRuleInsetCapStart())
+          : (is_column_gap ? style.ColumnRuleInsetJunctionStart()
+                           : style.RowRuleInsetJunctionStart());
 
   if (inset.IsOverlapJoin()) {
     return ComputeOverlapJoinInset(has_joining_decoration, is_main,

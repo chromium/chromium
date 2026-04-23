@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <title>
-  CSS Gap Decorations: percentage edge-inset at dangling endpoints resolves
+  CSS Gap Decorations: percentage cap inset at dangling endpoints resolves
   against zero, with overlap-join at interior intersections. Donut grid layout
   with rule-visibility-items: between.
 </title>
@@ -20,8 +20,8 @@ body {
   row-rule-color: rgba(0 0 128 / 0.5);
   padding: 10px;
   rule-visibility-items: between;
-  rule-interior-inset: overlap-join;
-  rule-edge-inset: 50%;
+  rule-inset-junction: overlap-join;
+  rule-inset-cap: 50%;
 }
 .item {
   background: rgba(192 192 192 / 0.75);
