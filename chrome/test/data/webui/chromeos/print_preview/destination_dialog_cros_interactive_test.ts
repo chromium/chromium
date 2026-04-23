@@ -4,10 +4,11 @@
 
 import type {PrintPreviewDestinationDialogCrosElement, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl, State} from 'chrome://print/print_preview.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -153,7 +154,7 @@ suite('DestinationDialogInteractiveTest', function() {
       const whenSearchChanged = eventToPromise('search-changed', searchBox);
       searchBox.setValue(query);
       await whenSearchChanged;
-      await microtasksFinished();
+      flush();
 
       const list =
           dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
