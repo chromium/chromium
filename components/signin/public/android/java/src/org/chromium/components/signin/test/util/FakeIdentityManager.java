@@ -11,7 +11,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -42,12 +41,12 @@ public class FakeIdentityManager implements IdentityManager {
     }
 
     @Override
-    public boolean hasPrimaryAccount(@ConsentLevel int consentLevel) {
+    public boolean hasPrimaryAccount() {
         return mPrimaryAccount != null;
     }
 
     @Override
-    public @Nullable CoreAccountInfo getPrimaryAccountInfo(@ConsentLevel int consentLevel) {
+    public @Nullable CoreAccountInfo getPrimaryAccountInfo() {
         return mPrimaryAccount;
     }
 

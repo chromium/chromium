@@ -66,14 +66,13 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
-    public boolean hasPrimaryAccount(@ConsentLevel int consentLevel) {
-        return getPrimaryAccountInfo(consentLevel) != null;
+    public boolean hasPrimaryAccount() {
+        return getPrimaryAccountInfo() != null;
     }
 
     @Override
-    public @Nullable CoreAccountInfo getPrimaryAccountInfo(@ConsentLevel int consentLevel) {
-        return IdentityManagerImplJni.get()
-                .getPrimaryAccountInfo(mNativeIdentityManager, consentLevel);
+    public @Nullable CoreAccountInfo getPrimaryAccountInfo() {
+        return IdentityManagerImplJni.get().getPrimaryAccountInfo(mNativeIdentityManager);
     }
 
     @Override
@@ -190,8 +189,7 @@ public class IdentityManagerImpl implements IdentityManager {
     @NativeMethods
     public interface Natives {
 
-        @Nullable CoreAccountInfo getPrimaryAccountInfo(
-                long nativeIdentityManager, int consentLevel);
+        @Nullable CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager);
 
         @Nullable AccountInfo findExtendedAccountInfoByAccountId(
                 long nativeIdentityManager, CoreAccountId accountId);

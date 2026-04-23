@@ -474,10 +474,8 @@ void IdentityManager::RefreshAccountInfoIfStale(JNIEnv* env) {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-IdentityManager::GetPrimaryAccountInfo(JNIEnv* env,
-                                       int32_t consent_level) const {
-  CoreAccountInfo account_info =
-      GetPrimaryAccountInfo(static_cast<ConsentLevel>(consent_level));
+IdentityManager::GetPrimaryAccountInfo(JNIEnv* env) const {
+  CoreAccountInfo account_info = GetPrimaryAccountInfo(ConsentLevel::kSignin);
   if (account_info.IsEmpty()) {
     return nullptr;
   }
