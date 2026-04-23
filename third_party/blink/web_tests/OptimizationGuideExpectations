@@ -16,14 +16,11 @@ crbug.com/489392109 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 
 # These tests produce different results locally vs. a bot.
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?gpu [ Failure ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/cast.https.any.html?gpu [ Failure ]
-crbug.com/489522225 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/exp.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure ]
-crbug.com/489392110 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/softsign.https.any.html?gpu [ Failure ]
