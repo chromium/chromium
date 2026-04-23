@@ -17,13 +17,9 @@
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/themed_vector_icon.h"
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -50,23 +46,6 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     }
   }
   return false;
-}
-
-void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
-  if (icon.IsImage()) {
-    menu_item.image = icon.GetImage().ToNSImage();
-  } else if (icon.IsVectorIcon()) {
-    ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
-    NSImage* ns_image =
-        gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
-    [ns_image setTemplate:YES];
-    menu_item.image = ns_image;
-  } else if (icon.IsEmpty()) {
-    menu_item.image = nil;
-  } else {
-    CHECK(icon.IsImageGenerator());
-    NOTREACHED();
-  }
 }
 
 }  // namespace
@@ -208,7 +187,10 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
                                                 action:@selector(itemSelected:)
                                          keyEquivalent:@""];
 
-  SetMenuItemIcon(item, model->GetIconAt(index));
+  // Do not set an icon. GM3 icons do not quite fit in with the SF Symbols icons
+  // that AppKit automatically adds to menus. TODO(https://crbug.com/423632863):
+  // Come up with a consistent way to handle icons, and return icons to menus
+  // when and where appropriate.
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
   const NSInteger modelIndex = base::checked_cast<NSInteger>(index);
@@ -282,12 +264,15 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
   menuItem.hidden = !model->IsVisibleAt(modelIndex);
 
   if (model->IsItemDynamicAt(modelIndex)) {
-    // Update the label and the icon.
+    // Update the label.
     NSString* label =
         l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(modelIndex));
     menuItem.title = label;
 
-    SetMenuItemIcon(menuItem, model->GetIconAt(modelIndex));
+    // Do not set an icon. GM3 icons do not quite fit in with the SF Symbols
+    // icons that AppKit automatically adds to menus.
+    // TODO(https://crbug.com/423632863): Come up with a consistent way to
+    // handle icons, and return icons to menus when and where appropriate.
   }
 
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);

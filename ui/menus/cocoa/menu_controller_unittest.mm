@@ -528,12 +528,14 @@ TEST_F(MenuControllerTest, Dynamic) {
   delegate.SetDynamicLabel(second);
   const gfx::Image& icon = gfx::test::CreateImage(32, 32);
   delegate.SetDynamicIcon(icon);
-  // Simulate opening the menu and validate that the item label + icon changes.
+  // Simulate opening the menu and validate that the item label changes.
+  // Currently, menus have no icons, so validate that the icon isn't present.
+  // TODO(https://crbug.com/423632863): Figure out the icons-in-menus situation.
   Validate(menu, menu.menu);
   EXPECT_EQ(second, base::SysNSStringToUTF16(item.title));
-  EXPECT_NE(nil, item.image);
+  EXPECT_EQ(nil, item.image);
 
-  // Now get rid of the icon and make sure it goes away.
+  // Now get rid of the icon and make sure it stays nonexistent.
   delegate.SetDynamicIcon(gfx::Image());
   Validate(menu, menu.menu);
   EXPECT_EQ(second, base::SysNSStringToUTF16(item.title));
