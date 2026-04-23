@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SELECTION_WIDGET_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_SELECTION_WIDGET_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -25,11 +27,19 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   // the Ask Gemini button is clicked. Parented to `web_contents`'s view.
   static views::Widget* Show(content::WebContents* web_contents,
                              const gfx::Rect& anchor_rect,
-                             base::RepeatingClosure on_click);
+                             const std::u16string& selected_text,
+                             base::RepeatingClosure on_ask_gemini,
+                             base::RepeatingClosure on_copy,
+                             base::RepeatingClosure on_copy_link);
 
   GlicSelectionWidgetDelegate(const gfx::Rect& anchor_rect,
-                              base::RepeatingClosure on_click);
+                              const std::u16string& selected_text,
+                              base::RepeatingClosure on_ask_gemini,
+                              base::RepeatingClosure on_copy,
+                              base::RepeatingClosure on_copy_link);
   ~GlicSelectionWidgetDelegate() override;
+
+  void UpdateCopyLinkButton(bool enabled);
 };
 
 }  // namespace glic

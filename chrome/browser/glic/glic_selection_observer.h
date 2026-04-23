@@ -15,9 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/public/browser/global_routing_id.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 
 namespace content {
 class Page;
@@ -83,6 +86,19 @@ class GlicSelectionObserver
   void ShowSelectionAffordance(const std::u16string& selected_text,
                                BrowserWindowInterface* bwi);
 
+  void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr);
+
+  void WriteLinkToClipboard(content::WeakDocumentPtr weak_document_ptr,
+                            const GURL& url);
+
+  void OnLinkGenerated(
+      const GURL& fallback_url,
+      const std::string& selector,
+      shared_highlighting::LinkGenerationError error,
+      shared_highlighting::LinkGenerationReadyStatus ready_status);
+
+  void RequestLinkGeneration(content::RenderFrameHost* rfh);
+
   raw_ptr<GlicKeyedService> glic_keyed_service_;
 
   // Timer to process the selection after a timeout.
@@ -102,6 +118,11 @@ class GlicSelectionObserver
   bool has_sent_selection_context_ = false;
 
   base::WeakPtr<views::Widget> selection_widget_;
+
+  mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_remote_;
+  std::optional<GURL> generated_link_;
+
+  base::WeakPtrFactory<GlicSelectionObserver> weak_ptr_factory_{this};
 
   friend class GlicSelectionObserverTest;
 };

@@ -62,13 +62,16 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser:primitives",
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic/fre",
       "//chrome/browser/themes",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/glic",
+      "//chrome/browser/ui/views/toolbar",
       "//components/pdf/common:constants",
+      "//ui/strings:ui_strings__strings_grit",
     ]
   }
 
@@ -155,7 +158,10 @@ source_set("glow_impl") {
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "glic_button_controller_unittest.cc" ]
+    sources = [
+      "glic_button_controller_unittest.cc",
+      "glic_selection_widget_unittest.cc",
+    ]
     deps = [
       ":browser_ui",
       "//base/test:test_support",
