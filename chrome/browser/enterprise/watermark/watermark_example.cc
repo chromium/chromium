@@ -8,7 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_canvas.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -75,7 +75,7 @@ void WatermarkExample::CreateExampleView(views::View* container) {
   watermark_container->AddChildView(std::make_unique<GradientView>());
   watermark_container->SetPaintToLayer();
   watermark_view_ = watermark_container->AddChildView(
-      std::make_unique<enterprise_watermark::WatermarkView>());
+      std::make_unique<enterprise_watermark::DataProtectionOverlayView>());
   watermark_view_->SetString("Private! Confidential", kDefaultExampleFillColor,
                              kDefaultExampleOutlineColor,
                              kDefaultExampleFontSize);
@@ -209,7 +209,8 @@ void WatermarkExample::UpdateWatermarkViewBackground() {
 WatermarkExample::~WatermarkExample() = default;
 
 // WatermarkTextArea
-WatermarkTextArea::WatermarkTextArea(enterprise_watermark::WatermarkView* view)
+WatermarkTextArea::WatermarkTextArea(
+    enterprise_watermark::DataProtectionOverlayView* view)
     : watermark_view_(view) {}
 
 void WatermarkTextArea::OnTextChanged() {

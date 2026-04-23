@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 
 #include <math.h>
 
@@ -26,7 +26,8 @@
 
 namespace enterprise_watermark {
 
-WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
+DataProtectionOverlayView::DataProtectionOverlayView()
+    : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   SetCanProcessEventsWithinSubtree(false);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -36,16 +37,17 @@ WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   GetViewAccessibility().SetIsInvisible(true);
 }
 
-WatermarkView::~WatermarkView() = default;
+DataProtectionOverlayView::~DataProtectionOverlayView() = default;
 
-void WatermarkView::InvalidateView() {
+void DataProtectionOverlayView::InvalidateView() {
   SchedulePaint();
 }
 
-void WatermarkView::MaybeUpdateWatermarkBlock(const std::string& watermark_text,
-                                              SkColor fill_color,
-                                              SkColor outline_color,
-                                              int font_size) {
+void DataProtectionOverlayView::MaybeUpdateWatermarkBlock(
+    const std::string& watermark_text,
+    SkColor fill_color,
+    SkColor outline_color,
+    int font_size) {
   // No need to invalidate when both old and new strings are empty, even if the
   // style values change.
   if (watermark_text_.empty() && watermark_text.empty()) {
@@ -67,17 +69,17 @@ void WatermarkView::MaybeUpdateWatermarkBlock(const std::string& watermark_text,
   }
 }
 
-void WatermarkView::SetString(const std::string& text,
-                              SkColor fill_color,
-                              SkColor outline_color,
-                              int font_size) {
+void DataProtectionOverlayView::SetString(const std::string& text,
+                                          SkColor fill_color,
+                                          SkColor outline_color,
+                                          int font_size) {
   DCHECK(base::IsStringUTF8(text));
   CHECK_GE(font_size, 1);
 
   MaybeUpdateWatermarkBlock(text, fill_color, outline_color, font_size);
 }
 
-void WatermarkView::OnPaint(gfx::Canvas* canvas) {
+void DataProtectionOverlayView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect contents_bounds = GetContentsBounds();
   DrawWatermark(
       canvas->sk_canvas(), &watermark_block_.record, watermark_block_.width,
@@ -85,21 +87,21 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
       SkSize::Make(contents_bounds.width(), contents_bounds.height()));
 }
 
-void WatermarkView::UpdateWatermarkBlock(const std::string& text,
-                                         SkColor fill_color,
-                                         SkColor outline_color,
-                                         int font_size) {
+void DataProtectionOverlayView::UpdateWatermarkBlock(const std::string& text,
+                                                     SkColor fill_color,
+                                                     SkColor outline_color,
+                                                     int font_size) {
   watermark_block_ =
       DrawWatermarkToPaintRecord(text, fill_color, outline_color, font_size);
   InvalidateView();
 }
 
-void WatermarkView::SetBackgroundColor(SkColor background_color) {
+void DataProtectionOverlayView::SetBackgroundColor(SkColor background_color) {
   background_color_ = background_color;
   InvalidateView();
 }
 
-BEGIN_METADATA(WatermarkView)
+BEGIN_METADATA(DataProtectionOverlayView)
 END_METADATA
 
 }  // namespace enterprise_watermark

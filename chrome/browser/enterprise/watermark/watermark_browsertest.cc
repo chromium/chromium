@@ -9,9 +9,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -95,11 +95,12 @@ class WatermarkBrowserTest
 
   // Returns true if a watermark view object was available to set the watermark.
   bool SetWatermark(const std::string& watermark_message) {
-    if (auto* watermark_view = BrowserView::GetBrowserViewForBrowser(browser())
-                                   ->GetContentsContainerViews()[0]
-                                   ->watermark_view()) {
-      watermark_view->SetString(watermark_message, kTestFillColor,
-                                kTestOutlineColor, kTestFontSize);
+    if (auto* data_protection_overlay_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetContentsContainerViews()[0]
+                ->data_protection_overlay_view()) {
+      data_protection_overlay_view->SetString(watermark_message, kTestFillColor,
+                                              kTestOutlineColor, kTestFontSize);
       return true;
     }
     return false;
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, Apply_NoWatermark) {
   NavigateToAndWait(GURL("https://nowatermark.com"));
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 }
 
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   // Initial page loaded into the browser view is a chrome:// URL that has no
   // watermark.
   EXPECT_FALSE(browser_view->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   base::test::TestFuture<void> future;
@@ -313,13 +314,13 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   auto* web_contents = NavigateAsync(GURL("https://watermark.com"));
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(browser_view->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Once the page loads, the watermark should remain.
   content::WaitForLoadStop(web_contents);
   EXPECT_TRUE(browser_view->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 }
 
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateToAndWait(GURL("https://watermark.com"));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Navigate to a page that should not show a watermark.  The watermark should
@@ -337,14 +338,14 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   auto* web_contents = NavigateAsync(GURL("https://nowatermark.com"));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Once the page loads, the watermark should be cleared.
   content::WaitForLoadStop(web_contents);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 }
 
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Switch active tabs back to watermarked page.
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 }
 
@@ -385,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Switch back to the watermarked tab. The watermark should still be showing.
@@ -394,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Wait for the second (now backgrounded) tab to finish loading. The watermark
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   content::WaitForLoadStop(params.navigated_or_inserted_contents);
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 }
 
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   NavigateToAndWait(GURL("https://watermark.com"));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Create a second tab. Navigate to a page that does not have a watermark.
@@ -425,12 +426,12 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   Navigate(&params);
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
   // Initial page loaded into the browser view is a chrome:// URL that has no
   // watermark.
   EXPECT_FALSE(browser_view->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   base::test::TestFuture<void> future;
@@ -445,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   // called with the verdict to clear the watermark.
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(browser_view->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Switch back to the watermarked tab. The watermark should show immediately.
@@ -454,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   // Wait for the second (now backgrounded) tab to finish loading. The watermark
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   content::WaitForLoadStop(params.navigated_or_inserted_contents);
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 }
 
@@ -481,12 +482,12 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[1]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Reverse the tabs in the split.
@@ -494,12 +495,12 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[1]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Switch to a different tab without split.
@@ -508,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -520,12 +521,12 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[1]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->GetContentsContainerViews()[0]
-                   ->watermark_view()
+                   ->data_protection_overlay_view()
                    ->has_text_for_testing());
 
   // Add watermark to the other split view as well.
@@ -534,12 +535,12 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[1]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[0]
-                  ->watermark_view()
+                  ->data_protection_overlay_view()
                   ->has_text_for_testing());
 }
 

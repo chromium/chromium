@@ -4,14 +4,14 @@
 
 source_set("watermark_view_lib") {
   sources = [
+    "../data_protection/data_protection_overlay_view.cc",
+    "../data_protection/data_protection_overlay_view.h",
     "settings.cc",
     "settings.h",
     "watermark_features.cc",
     "watermark_features.h",
     "watermark_style_policy_handler.cc",
     "watermark_style_policy_handler.h",
-    "watermark_view.cc",
-    "watermark_view.h",
   ]
 
   deps = [
@@ -41,6 +41,7 @@ executable("watermark_app") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
+    "//chrome/browser/enterprise",
     "//ui/base/metadata",
     "//ui/color:mixers",
     "//ui/gfx",

@@ -29,7 +29,7 @@
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "components/enterprise/watermarking/content/watermark_text_container.h"  // nogncheck
-#include "components/enterprise/watermarking/mojom/watermark.mojom.h"
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #endif
 
 namespace printing {

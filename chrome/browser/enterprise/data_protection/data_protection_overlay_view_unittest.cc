@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,15 +12,16 @@
 
 namespace enterprise_watermark {
 
-TEST(WatermarkViewTest, InvisibleToAccessibility) {
+TEST(DataProtectionOverlayViewTest, InvisibleToAccessibility) {
   {
     ui::AXNodeData node_data;
-    WatermarkView().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    DataProtectionOverlayView().GetViewAccessibility().GetAccessibleNodeData(
+        &node_data);
     ASSERT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
   }
   {
     ui::AXNodeData node_data;
-    WatermarkView view;
+    DataProtectionOverlayView view;
     view.SetString("foo", SK_ColorBLACK, SK_ColorWHITE,
                    enterprise_connectors::kWatermarkStyleFontSizeDefault);
     view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
@@ -28,30 +29,31 @@ TEST(WatermarkViewTest, InvisibleToAccessibility) {
   }
 }
 
-class MockWatermarkView : public WatermarkView {
+class MockDataProtectionOverlayView : public DataProtectionOverlayView {
  public:
   MOCK_METHOD(void, InvalidateView, (), (override));
 };
 
-TEST(WatermarkViewTest, UnchangedWatermarkSkipsRepaint) {
+TEST(DataProtectionOverlayViewTest, UnchangedWatermarkSkipsRepaint) {
   std::string watermark_text = "sample_text";
   SkColor fill_color = SK_ColorWHITE;
   SkColor outline_color = SK_ColorBLACK;
   int font_size = 10;
 
-  auto view = MockWatermarkView();
+  auto view = MockDataProtectionOverlayView();
   EXPECT_CALL(view, InvalidateView()).Times(1);
   view.SetString(watermark_text, fill_color, outline_color, font_size);
   view.SetString(watermark_text, fill_color, outline_color, font_size);
 }
 
-TEST(WatermarkViewTest, EmptyStringWithStyleChangeDoesNotInvalidateView) {
+TEST(DataProtectionOverlayViewTest,
+     EmptyStringWithStyleChangeDoesNotInvalidateView) {
   std::string watermark_text = "sample_text";
   SkColor old_color = SK_ColorWHITE;
   SkColor new_color = SK_ColorBLACK;
   int font_size = 10;
 
-  auto view = MockWatermarkView();
+  auto view = MockDataProtectionOverlayView();
   EXPECT_CALL(view, InvalidateView()).Times(2);
 
   // Set to an initial non-empty value, will invalidate.

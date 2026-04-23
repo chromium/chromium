@@ -42,7 +42,7 @@ class Widget;
 }  // namespace views
 
 namespace enterprise_watermark {
-class WatermarkView;
+class DataProtectionOverlayView;
 }  // namespace enterprise_watermark
 
 // ContentsContainerView holds the ContentsWebView and the outlines and
@@ -92,8 +92,9 @@ class ContentsContainerView : public views::View,
   views::Widget* capture_contents_border_widget() {
     return capture_contents_border_widget_.get();
   }
-  enterprise_watermark::WatermarkView* watermark_view() {
-    return watermark_view_;
+  enterprise_watermark::DataProtectionOverlayView*
+  data_protection_overlay_view() {
+    return data_protection_overlay_view_;
   }
   views::WebView* ai_overlay_dialog_view() { return ai_overlay_dialog_view_; }
   const ContentsContainerOutline* contents_outline_view() const {
@@ -189,8 +190,9 @@ class ContentsContainerView : public views::View,
   // Separator between the web contents and the Footer.
   raw_ptr<views::View> new_tab_footer_view_separator_ = nullptr;
 
-  // The view that overlays a watermark on the contents container.
-  raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
+  // The view that overlays the contents container.
+  raw_ptr<enterprise_watermark::DataProtectionOverlayView>
+      data_protection_overlay_view_ = nullptr;
 
   // The overlay dialog view that is displayed on top of the web contents.
   raw_ptr<views::WebView> ai_overlay_dialog_view_ = nullptr;

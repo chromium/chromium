@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
-#define CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_OVERLAY_VIEW_H_
+#define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_OVERLAY_VIEW_H_
 
 #include "components/enterprise/watermarking/watermark.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,19 +12,19 @@
 namespace gfx {
 class Canvas;
 class RenderText;
-}
+}  // namespace gfx
 
 namespace enterprise_watermark {
 
-// WatermarkView represents a view that can superimpose a watermark on top of
-// other views. The view should be appropriately sized using its parent's layout
-// manager.
-class WatermarkView : public views::View {
-  METADATA_HEADER(WatermarkView, views::View)
+// DataProtectionOverlayView represents a view that can add an overlay on top
+// of other views. The view should be appropriately sized using its parent's
+// layout manager.
+class DataProtectionOverlayView : public views::View {
+  METADATA_HEADER(DataProtectionOverlayView, views::View)
 
  public:
-  WatermarkView();
-  ~WatermarkView() override;
+  DataProtectionOverlayView();
+  ~DataProtectionOverlayView() override;
 
   // Set this to a translucent value for testing. Useful for visualizing the
   // view's bounds when performing transformations.
@@ -72,7 +72,7 @@ class WatermarkView : public views::View {
   SkColor outline_color_ = SK_ColorTRANSPARENT;
   int font_size_ = 10;
 
-  // Background color of the whole `WatermarkView`. This is normally
+  // Background color of the whole `DataProtectionOverlayView`. This is normally
   // transparent, but can be an arbitrary color for testing with the
   // "watermark_app" target.
   SkColor background_color_;
@@ -91,4 +91,4 @@ class WatermarkView : public views::View {
 
 }  // namespace enterprise_watermark
 
-#endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_OVERLAY_VIEW_H_

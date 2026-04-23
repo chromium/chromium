@@ -10,7 +10,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -100,10 +100,11 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     new_tab_footer_view_->SetVisible(false);
   }
 
-  watermark_view_ =
-      AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
+  data_protection_overlay_view_ = AddChildView(
+      std::make_unique<enterprise_watermark::DataProtectionOverlayView>());
 
-  // `indigo_toolbar_view_` dynamically adds itself after `watermark_view_`.
+  // `indigo_toolbar_view_` dynamically adds itself after
+  // `data_protection_overlay_view_`.
 
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
     auto ai_overlay_dialog_view =
@@ -182,7 +183,7 @@ void ContentsContainerView::SetIndigoToolbarView(
     RemoveChildViewT(std::exchange(indigo_toolbar_view_, nullptr));
   }
   if (view) {
-    size_t watermark_index = GetIndexOf(watermark_view_).value();
+    size_t watermark_index = GetIndexOf(data_protection_overlay_view_).value();
     indigo_toolbar_view_ = AddChildViewAt(std::move(view), watermark_index + 1);
   }
   InvalidateLayout();
@@ -390,8 +391,8 @@ void ContentsContainerView::ApplyWatermarkSettings(
     SkColor fill_color,
     SkColor outline_color,
     int font_size) {
-  watermark_view_->SetString(watermark_text, fill_color, outline_color,
-                             font_size);
+  data_protection_overlay_view_->SetString(watermark_text, fill_color,
+                                           outline_color, font_size);
 }
 
 void ContentsContainerView::UpdateDevToolsDockedPlacement() {
@@ -644,10 +645,10 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
                                      contents_scrim_view_->GetVisible(),
                                      full_contents_bounds);
 
-  CHECK(watermark_view_);
-  layouts.child_layouts.emplace_back(watermark_view_.get(),
-                                     watermark_view_->GetVisible(),
-                                     full_contents_bounds);
+  CHECK(data_protection_overlay_view_);
+  layouts.child_layouts.emplace_back(
+      data_protection_overlay_view_.get(),
+      data_protection_overlay_view_->GetVisible(), full_contents_bounds);
 
   // Actor Overlay view bounds are the same as the contents view.
   if (actor_overlay_web_view_) {

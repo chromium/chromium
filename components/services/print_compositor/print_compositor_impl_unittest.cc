@@ -23,7 +23,7 @@
 #include "cc/test/pixel_test_utils.h"  // nogncheck
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
-#include "components/enterprise/watermarking/watermark_test_utils.h"
+#include "components/enterprise/watermarking/watermark_test_utils.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
