@@ -179,6 +179,107 @@ TEST_F(VertexAttribManagerTest, CanAccess) {
   buffer_manager.Destroy();
 }
 
+TEST_F(VertexAttribManagerTest, CanAccessStrideSmallerThanGroup) {
+  // Regression test for bug: CanAccess() over-counts elements when
+  // real_stride < group_size, allowing the validating decoder to
+  // accept draw calls whose last vertex fetch reads past the end of
+  // the bound GL_ARRAY_BUFFER.
+  const GLenum kTarget = GL_ARRAY_BUFFER;
+  MockErrorState error_state;
+  BufferManager buffer_manager(nullptr, nullptr);
+  buffer_manager.CreateBuffer(1, 2);
+  Buffer* buffer = buffer_manager.GetBuffer(1);
+  ASSERT_TRUE(buffer != nullptr);
+
+  VertexAttrib* attrib = manager_->GetVertexAttrib(1);
+  manager_->Enable(1, true);
+
+  // size=4, type=GL_FLOAT -> group_size = 16 bytes per vertex fetch.
+  // gl_stride=4, real_stride=4 -> overlapping fetches (legal per GLES).
+  manager_->SetAttribInfo(1, buffer, 4, GL_FLOAT, GL_FALSE, 4, 4, 0, GL_FALSE);
+
+  EXPECT_TRUE(buffer_manager.SetTarget(buffer, kTarget));
+  // 20-byte buffer.
+  TestHelper::DoBufferData(gl_.get(), &error_state, &buffer_manager, buffer,
+                           kTarget, 20, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
+
+  // Vertex i fetches bytes [i*4, i*4 + 16). With a 20-byte buffer:
+  //   i=0 -> [0,16)  in bounds
+  //   i=1 -> [4,20)  in bounds
+  //   i=2 -> [8,24)  4 bytes OOB
+  //   i=3 -> [12,28) 8 bytes OOB
+  //   i=4 -> [16,32) 12 bytes OOB
+  EXPECT_TRUE(attrib->CanAccess(0));
+  EXPECT_TRUE(attrib->CanAccess(1));
+  // *** These three assertions FAIL on unpatched code: CanAccess() incorrectly
+  // returns true because num_elements is computed as 20/4 + (0>=16?1:0) = 5.
+  // ***
+  EXPECT_FALSE(attrib->CanAccess(2));
+  EXPECT_FALSE(attrib->CanAccess(3));
+  EXPECT_FALSE(attrib->CanAccess(4));
+  // Index 5 is rejected even by the buggy formula.
+  EXPECT_FALSE(attrib->CanAccess(5));
+
+  // Edge case: buffer smaller than one element. group_size=16, buffer=12.
+  // No vertex can be fetched at all, but the buggy formula computes
+  // 12/4 + (0>=16?1:0) = 3.
+  TestHelper::DoBufferData(gl_.get(), &error_state, &buffer_manager, buffer,
+                           kTarget, 12, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
+  EXPECT_FALSE(attrib->CanAccess(0));
+  EXPECT_FALSE(attrib->CanAccess(1));
+  EXPECT_FALSE(attrib->CanAccess(2));
+  EXPECT_FALSE(attrib->CanAccess(3));
+
+  manager_ = nullptr;
+  buffer_manager.MarkContextLost();
+  buffer_manager.Destroy();
+}
+
+TEST_F(VertexAttribManagerTest, CanAccessRemainderAndEdgeCases) {
+  const GLenum kTarget = GL_ARRAY_BUFFER;
+  MockErrorState error_state;
+  BufferManager buffer_manager(nullptr, nullptr);
+  buffer_manager.CreateBuffer(1, 2);
+  Buffer* buffer = buffer_manager.GetBuffer(1);
+  ASSERT_TRUE(buffer != nullptr);
+
+  VertexAttrib* attrib = manager_->GetVertexAttrib(1);
+  manager_->Enable(1, true);
+
+  EXPECT_TRUE(buffer_manager.SetTarget(buffer, kTarget));
+
+  // Case 1: offset > buffer_size
+  manager_->SetAttribInfo(1, buffer, 4, GL_FLOAT, GL_FALSE, 16, 16, 20,
+                          GL_FALSE);
+  TestHelper::DoBufferData(gl_.get(), &error_state, &buffer_manager, buffer,
+                           kTarget, 16, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
+  EXPECT_FALSE(attrib->CanAccess(0));
+
+  // Case 2: Remainder logic (usable_size % real_stride_ >= group_size)
+  // real_stride = 16, group_size = 8 (size=2, GL_FLOAT).
+  manager_->SetAttribInfo(1, buffer, 2, GL_FLOAT, GL_FALSE, 16, 16, 0,
+                          GL_FALSE);
+
+  // Subcase 2a: Remainder is enough.
+  // usable_size = 24. 24 % 16 = 8 >= 8. Should allow 2 elements.
+  TestHelper::DoBufferData(gl_.get(), &error_state, &buffer_manager, buffer,
+                           kTarget, 24, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
+  EXPECT_TRUE(attrib->CanAccess(0));
+  EXPECT_TRUE(attrib->CanAccess(1));
+  EXPECT_FALSE(attrib->CanAccess(2));
+
+  // Subcase 2b: Remainder is NOT enough.
+  // usable_size = 20. 20 % 16 = 4 < 8. Should allow 1 element.
+  TestHelper::DoBufferData(gl_.get(), &error_state, &buffer_manager, buffer,
+                           kTarget, 20, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
+  EXPECT_TRUE(attrib->CanAccess(0));
+  EXPECT_FALSE(attrib->CanAccess(1));
+
+  manager_ = nullptr;
+  buffer_manager.MarkContextLost();
+  buffer_manager.Destroy();
+}
+
 TEST_F(VertexAttribManagerTest, Unbind) {
   BufferManager buffer_manager(nullptr, nullptr);
   buffer_manager.CreateBuffer(1, 2);
