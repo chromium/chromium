@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -25,10 +25,10 @@ constexpr char kTestURL[] = "https://www.example.com/";
 
 }  // namespace
 
-// Test fixture for BWGLinkOpeningHandler.
-class BwgLinkOpeningHandlerTest : public PlatformTest {
+// Test fixture for GeminiLinkOpeningHandler.
+class GeminiLinkOpeningHandlerTest : public PlatformTest {
  protected:
-  BwgLinkOpeningHandlerTest() {
+  GeminiLinkOpeningHandlerTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -51,8 +51,8 @@ class BwgLinkOpeningHandlerTest : public PlatformTest {
     // Initialize the link opening handler with the fake loader and mock
     // dispatcher.
     link_opening_handler_ =
-        [[BWGLinkOpeningHandler alloc] initWithURLLoader:url_loader_
-                                              dispatcher:mock_dispatcher_];
+        [[GeminiLinkOpeningHandler alloc] initWithURLLoader:url_loader_
+                                                 dispatcher:mock_dispatcher_];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -62,12 +62,12 @@ class BwgLinkOpeningHandlerTest : public PlatformTest {
   id mock_dispatcher_;
   id mock_scene_commands_handler_;
   base::UserActionTester user_action_tester_;
-  BWGLinkOpeningHandler* link_opening_handler_;
+  GeminiLinkOpeningHandler* link_opening_handler_;
 };
 
 // Tests that when Copresence is enabled, openURLInNewTab uses
 // URLLoadingAgent to load the correct URL.
-TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithCopresence) {
+TEST_F(GeminiLinkOpeningHandlerTest, TestOpenURLInNewTabWithCopresence) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{kGeminiCopresence, kPageActionMenu},
@@ -81,7 +81,7 @@ TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithCopresence) {
 
 // Tests that when Copresence is disabled, openURLInNewTab uses the Scene
 // Command openURLInNewTab to load the correct URL.
-TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithoutCopresence) {
+TEST_F(GeminiLinkOpeningHandlerTest, TestOpenURLInNewTabWithoutCopresence) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kGeminiCopresence);
 
@@ -99,7 +99,7 @@ TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithoutCopresence) {
 
 // Tests that closePresentedViewsAndOpenURLInNewTab calls the Scene Command
 // openURLInNewTab to load the correct URL.
-TEST_F(BwgLinkOpeningHandlerTest, TestClosePresentedViewsAndOpenURL) {
+TEST_F(GeminiLinkOpeningHandlerTest, TestClosePresentedViewsAndOpenURL) {
   // Expect that openURLInNewTab is called with the correct URL.
   OCMExpect([mock_scene_commands_handler_
       closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
@@ -113,7 +113,7 @@ TEST_F(BwgLinkOpeningHandlerTest, TestClosePresentedViewsAndOpenURL) {
 }
 
 // Tests that openURLInNewTab records the appropriate user action.
-TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabRecordsUserAction) {
+TEST_F(GeminiLinkOpeningHandlerTest, TestOpenURLInNewTabRecordsUserAction) {
   [link_opening_handler_ openURLInNewTab:@(kTestURL)];
 
   // Verify that the URL opened user action was recorded.
@@ -122,7 +122,7 @@ TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabRecordsUserAction) {
 
 // Tests that closePresentedViewsAndOpenURLInNewTab records the appropriate user
 // action.
-TEST_F(BwgLinkOpeningHandlerTest,
+TEST_F(GeminiLinkOpeningHandlerTest,
        TestClosePresentedViewsAndOpenURLRecordsUserAction) {
   [link_opening_handler_ closePresentedViewsAndOpenURLInNewTab:@(kTestURL)];
 
@@ -131,7 +131,7 @@ TEST_F(BwgLinkOpeningHandlerTest,
 }
 
 // Tests that openURLInNewTab handles empty URL gracefully.
-TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithEmptyURL) {
+TEST_F(GeminiLinkOpeningHandlerTest, TestOpenURLInNewTabWithEmptyURL) {
   [link_opening_handler_ openURLInNewTab:@""];
 
   // The URL will be invalid so the loader should not be called.
@@ -141,7 +141,7 @@ TEST_F(BwgLinkOpeningHandlerTest, TestOpenURLInNewTabWithEmptyURL) {
 
 // Tests that closePresentedViewsAndOpenURLInNewTab handles empty URL
 // gracefully.
-TEST_F(BwgLinkOpeningHandlerTest,
+TEST_F(GeminiLinkOpeningHandlerTest,
        TestClosePresentedViewsAndOpenURLWithEmptyURL) {
   // Expect that openURLInNewTab is not called.
   [[mock_scene_commands_handler_ reject]

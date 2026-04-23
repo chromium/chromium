@@ -26,11 +26,11 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
@@ -166,7 +166,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
   bwg_gateway_ = ios::provider::CreateBWGGateway();
 
   if (bwg_gateway_) {
-    bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc]
+    gemini_link_opening_handler_ = [[GeminiLinkOpeningHandler alloc]
         initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)
                dispatcher:browser_->GetCommandDispatcher()];
     gemini_page_state_change_handler_ = [[GeminiPageStateChangeHandler alloc]
@@ -179,11 +179,11 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       gemini_view_state_handler_ = [[GeminiViewStateChangeHandler alloc]
           initWithBrowserAgent:weak_factory_.GetWeakPtr()];
       bwg_session_handler_.geminiViewStateDelegate = gemini_view_state_handler_;
-      bwg_link_opening_handler_.geminiViewStateDelegate =
+      gemini_link_opening_handler_.geminiViewStateDelegate =
           gemini_view_state_handler_;
     }
     bwg_gateway_.sessionHandler = bwg_session_handler_;
-    bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
+    bwg_gateway_.linkOpeningHandler = gemini_link_opening_handler_;
 
     gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -261,8 +261,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
     browser_->RemoveObserver(this);
   }
 
-  [bwg_link_opening_handler_ disconnect];
-  bwg_link_opening_handler_ = nil;
+  [gemini_link_opening_handler_ disconnect];
+  gemini_link_opening_handler_ = nil;
 
   gemini_actuation_handler_ = nil;
 
@@ -302,8 +302,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 }
 
 void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
-  [bwg_link_opening_handler_ disconnect];
-  bwg_link_opening_handler_ = nil;
+  [gemini_link_opening_handler_ disconnect];
+  gemini_link_opening_handler_ = nil;
 
   gemini_actuation_handler_ = nil;
 

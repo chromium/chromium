@@ -5,14 +5,14 @@
 source_set("model") {
   sources = [
     "bwg_link_opening_delegate.h",
-    "bwg_link_opening_handler.h",
-    "bwg_link_opening_handler.mm",
     "gemini_actuation_delegate.h",
     "gemini_actuation_handler.h",
     "gemini_actuation_handler.mm",
     "gemini_camera_delegate.h",
     "gemini_camera_handler.h",
     "gemini_camera_handler.mm",
+    "gemini_link_opening_handler.h",
+    "gemini_link_opening_handler.mm",
     "gemini_page_state_change_delegate.h",
     "gemini_page_state_change_handler.h",
     "gemini_page_state_change_handler.mm",
@@ -223,12 +223,12 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bwg_link_opening_handler_unittest.mm",
     "bwg_tab_helper_unittest.mm",
     "gemini_actuation_handler_unittest.mm",
     "gemini_browser_agent_unittest.mm",
     "gemini_camera_handler_unittest.mm",
     "gemini_configuration_unittest.mm",
+    "gemini_link_opening_handler_unittest.mm",
     "gemini_page_context_unittest.mm",
     "gemini_page_state_change_handler_unittest.mm",
     "gemini_scroll_observer_unittest.mm",

@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_HANDLER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_LINK_OPENING_HANDLER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_LINK_OPENING_HANDLER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -14,8 +14,8 @@ class UrlLoadingBrowserAgent;
 @class CommandDispatcher;
 @protocol GeminiViewStateDelegate;
 
-// The handler for opening links for BWG.
-@interface BWGLinkOpeningHandler : NSObject <BWGLinkOpeningDelegate>
+// The handler for opening links for Gemini.
+@interface GeminiLinkOpeningHandler : NSObject <BWGLinkOpeningDelegate>
 
 // Delegate for view state changes.
 @property(nonatomic, weak) id<GeminiViewStateDelegate> geminiViewStateDelegate;
@@ -35,4 +35,4 @@ class UrlLoadingBrowserAgent;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_LINK_OPENING_HANDLER_H_

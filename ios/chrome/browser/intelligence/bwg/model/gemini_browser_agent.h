@@ -40,7 +40,7 @@ class PageContext;
 }  // namespace optimization_guide::proto
 
 class ScopedFullscreenDisabler;
-@class BWGLinkOpeningHandler;
+@class GeminiLinkOpeningHandler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
 @class GeminiCameraHandler;
@@ -291,8 +291,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   /// TODO(crbug.com/491093929): Rename the below classes to move away from the
   /// `-Handler` naming scheme used by Chromium Objective-C command protocols.
-  // Handler for opening links from BWG.
-  __strong BWGLinkOpeningHandler* bwg_link_opening_handler_ = nullptr;
+  // Handler for opening links from Gemini.
+  __strong GeminiLinkOpeningHandler* gemini_link_opening_handler_ = nullptr;
 
   // Handler for PageState changes.
   __strong GeminiPageStateChangeHandler* gemini_page_state_change_handler_ =
