@@ -1161,6 +1161,7 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved(
 }
 
 void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
+  state_->account_level_signin_restriction_policy_fetcher_.reset();
   account_info_update_observation_.Reset();
   if (!state_->intercepted_account_profile_separation_policies_.has_value()) {
     state_->intercepted_account_profile_separation_policies_ =

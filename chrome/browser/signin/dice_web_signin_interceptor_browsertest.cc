@@ -2667,3 +2667,225 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
             account_info.account_id);
   EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
 }
+
+// =============================================================================
+// Regression test for b/504183747
+// =============================================================================
+//
+// This test verifies that any ongoing policy fetch is cancelled when the
+// interception info fetch timeout fires, preventing use-after-free issues from
+// late policy responses arriving during profile creation.
+//
+// Scenario (mirrors production):
+//  1) A managed account is web-signed-in. ProcessInterceptionOrWait() is called
+//     with an AccountInfo whose `is_subject_to_parental_controls` capability is
+//     still kUnknown (capabilities fetch hasn't completed). This starts the
+//     UserCloudSigninRestrictionPolicyFetcher with that stale AccountInfo
+//     bound by value into the completion callback, and starts observing the
+//     IdentityManager.
+//  2) The 5s interception-info timeout fires.
+//     OnInterceptionInfoFetchTimeout() explicitly cancels any pending policy
+//     fetch, completely eliminating the possibility of a late response.
+//  3) The user clicks Accept. OnProfileCreationChoice() is invoked and starts
+//     the DiceSignedInProfileCreator, which kicks off async profile creation.
+//
+// Before the fix:
+//     The IdentityManager observation was reset, but the pending policy fetcher
+//     was left active.
+//     If the user clicked Accept and profile creation began, a late policy
+//     response could arrive, re-register the IdentityManager observer, and
+//     cause a use-after-free when MoveAccount() later triggered account removal
+//     notifications.
+//
+// After the fix:
+//     The fetcher is explicitly cancelled on timeout, preventing any late
+//     policy response from re-registering the observer.
+//
+// In this browser test, we use IdentityTestEnvironment for accounts and call
+// the private timer callback directly (via friend access) to simulate the
+// timeout.
+
+namespace {
+
+// Delegate that captures the interception-bubble callback so the test can
+// invoke it at a precise point (simulating the user clicking "Accept" after
+// the timeout but before the late policy response).
+class CapturingInterceptorDelegate : public DiceWebSigninInterceptorDelegate {
+ public:
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
+      content::WebContents* web_contents,
+      const BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback) override {
+    callback_ = std::move(callback);
+    bubble_shown_ = true;
+    return std::make_unique<FakeBubbleHandle>();
+  }
+
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      WebSigninInterceptor::SigninInterceptionType type) override {}
+
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override {}
+
+  bool bubble_shown() const { return bubble_shown_; }
+  base::OnceCallback<void(SigninInterceptionResult)> TakeCallback() {
+    return std::move(callback_);
+  }
+
+  base::WeakPtr<CapturingInterceptorDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool bubble_shown_ = false;
+  base::OnceCallback<void(SigninInterceptionResult)> callback_;
+  base::WeakPtrFactory<CapturingInterceptorDelegate> weak_factory_{this};
+};
+
+}  // namespace
+
+class DiceWebSigninInterceptorLatePolicyCallbackUAFTest
+    : public SigninBrowserTestBase {
+ public:
+  DiceWebSigninInterceptorLatePolicyCallbackUAFTest()
+      : SigninBrowserTestBase(/*use_main_profile=*/true) {}
+
+  content::WebContents* AddTab(const GURL& url) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  CapturingInterceptorDelegate* delegate() { return delegate_.get(); }
+
+  // Directly invoke the private 5s-timeout handler (this is exactly what the
+  // PostDelayedTask at dice_web_signin_interceptor.cc:627 would call).
+  void FireInfoFetchTimeout(DiceWebSigninInterceptor* interceptor) {
+    interceptor->OnInterceptionInfoFetchTimeout();
+  }
+
+  bool IsObservingIdentityManager(DiceWebSigninInterceptor* interceptor) {
+    return interceptor->account_info_update_observation_.IsObserving();
+  }
+
+  bool HasPendingFetcher(DiceWebSigninInterceptor* interceptor) {
+    return interceptor->state_
+               ->account_level_signin_restriction_policy_fetcher_ != nullptr;
+  }
+
+  bool HasProfileCreator(DiceWebSigninInterceptor* interceptor) {
+    return interceptor->state_->dice_signed_in_profile_creator_ != nullptr;
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    DiceWebSigninInterceptorFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(&DiceWebSigninInterceptorLatePolicyCallbackUAFTest::
+                                BuildInterceptor,
+                            base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> BuildInterceptor(
+      content::BrowserContext* context) {
+    auto delegate = std::make_unique<CapturingInterceptorDelegate>();
+    if (!delegate_) {
+      delegate_ = delegate->GetWeakPtr();
+    }
+    return std::make_unique<DiceWebSigninInterceptor>(
+        Profile::FromBrowserContext(context), std::move(delegate),
+        &profile_metrics_service_);
+  }
+
+  base::WeakPtr<CapturingInterceptorDelegate> delegate_;
+  metrics::ProfileMetricsService profile_metrics_service_{
+      metrics::ProfileMetricsContext(1)};
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
+                       UseAfterFreeOnLatePolicyResponse) {
+  // (1) Source profile already has a primary account (so the bubble type is
+  //     SigninInterceptionType::kEnterprise -> OnProfileCreationChoice).
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+
+  // Intercepted managed account: IsRequiredExtendedAccountInfoAvailable() is
+  // true but is_subject_to_parental_controls() is left kUnknown so
+  // IsFullExtendedAccountInfoAvailable() is false. This is exactly the state
+  // of a freshly-DICE-added managed account before the capabilities fetch
+  // completes.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("fullname")
+                     .SetGivenName("givenname")
+                     .SetHostedDomain("example.com")
+                     .SetAvatarUrl("https://example.com")
+                     .SetLocale("en")
+                     .Build();
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_enterprise_features(true);
+  mutator.set_is_subject_to_account_level_enterprise_policies(true);
+  ASSERT_TRUE(account_info.IsValid());
+  ASSERT_EQ(signin::Tribool::kUnknown,
+            account_info.capabilities.is_subject_to_parental_controls());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  content::WebContents* web_contents =
+      AddTab(embedded_test_server()->GetURL("/defaultresponse"));
+
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
+  // Do NOT pre-set profile-separation policies for testing: we want the real
+  // UserCloudSigninRestrictionPolicyFetcher to be created so its callback (with
+  // the stale AccountInfo bound by value) is left pending.
+  interceptor->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      std::nullopt);
+
+  // This is what ProcessDiceHeaderDelegateImpl calls after the Gaia DICE token
+  // exchange completes.
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       signin_metrics::AccessPoint::kWebSignin,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  // The fetcher was created (its access-token request is pending in the test
+  // IdentityManager and is never answered, simulating a slow/stalled policy
+  // endpoint), and the IdentityManager is being observed.
+  ASSERT_TRUE(HasPendingFetcher(interceptor));
+  ASSERT_TRUE(IsObservingIdentityManager(interceptor));
+  ASSERT_FALSE(delegate()->bubble_shown());
+
+  // (2) The 5s timeout fires. account_info_update_observation_ is reset and the
+  //     pending policy fetcher is cancelled. The bubble is shown.
+  FireInfoFetchTimeout(interceptor);
+  ASSERT_TRUE(delegate()->bubble_shown());
+  ASSERT_FALSE(HasPendingFetcher(interceptor));
+  ASSERT_FALSE(IsObservingIdentityManager(interceptor));
+
+  // (3) The user clicks Accept. OnProfileCreationChoice() passes the
+  //     CHECK(!IsObserving()) and constructs DiceSignedInProfileCreator, which
+  //     asynchronously starts CreateMultiProfileAsync.
+  ProfileWaiter profile_waiter;
+  delegate()->TakeCallback().Run(SigninInterceptionResult::kAccepted);
+  ASSERT_TRUE(HasProfileCreator(interceptor));
+  ASSERT_FALSE(IsObservingIdentityManager(interceptor));
+
+  // Let the async profile creation complete. The observer is not active,
+  // so calling MoveAccount() will not trigger a premature Reset() and
+  // destruction of DiceSignedInProfileCreator.
+  profile_waiter.WaitForProfileAdded();
+}

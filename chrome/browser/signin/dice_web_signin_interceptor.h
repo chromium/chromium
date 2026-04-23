@@ -180,6 +180,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
  private:
   friend class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest;
+  friend class DiceWebSigninInterceptorLatePolicyCallbackUAFTest;
 
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowProfileSwitchBubble);
