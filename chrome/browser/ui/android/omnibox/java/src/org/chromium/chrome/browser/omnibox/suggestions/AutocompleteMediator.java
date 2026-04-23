@@ -1015,7 +1015,6 @@ class AutocompleteMediator
         // - the user accepts the input (by pressing Enter).
         // for that reason this logic should not apply UserText.
         mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
-        mAutocompleteInput.setSiteSearchData(null);
     }
 
     /**

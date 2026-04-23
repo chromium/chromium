@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -1789,14 +1789,14 @@ public class AutocompleteMediatorUnitTest {
 
         // Verify user text is NOT updated.
         assertEquals("u", session.getAutocompleteInput().getUserText());
-        // Verify SiteSearchData is cleared.
-        assertNull(session.getAutocompleteInput().getSiteSearchData());
+        // Verify SiteSearchData is NOT cleared.
+        assertNotNull(session.getAutocompleteInput().getSiteSearchData());
         // Verify UI is updated with stripped text.
         verify(mAutocompleteDelegate).setOmniboxEditingText("query");
     }
 
     @Test
-    public void setOmniboxEditingText_clearsKeywordModePreview() {
+    public void setOmniboxEditingText_preservesKeywordMode() {
         mMediator.onNativeInitialized();
         var session = createEmptySession();
         session.getAutocompleteInput().setUserText("user text");
@@ -1807,7 +1807,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setOmniboxEditingText("new text");
 
         assertEquals("user text", session.getAutocompleteInput().getUserText());
-        assertNull(session.getAutocompleteInput().getSiteSearchData());
+        assertNotNull(session.getAutocompleteInput().getSiteSearchData());
         verify(mAutocompleteDelegate).setOmniboxEditingText("new text");
     }
 

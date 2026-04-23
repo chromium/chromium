@@ -292,6 +292,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
             v.onParentViewSelected(selected);
         }
 
+        if (!selected) {
+            actionChipsView.setSelected(false);
+        }
+
         if (selected && mOnFocusViaSelectionListener != null) {
             mOnFocusViaSelectionListener.run();
         }
