@@ -1264,6 +1264,10 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.NETWORK_CONTEXT_DIRECT_RECEIVER,
                 "Bind NetworkContext as a DirectReceiver, allowing NetworkContext and all mojoms"
                         + " passed through it to receive IPCs directly."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_VIZ_DIRECT_COMPOSITOR_THREAD_IPC_FRAME_SINK_MANAGER,
+                "Binds FrameSinkManager as a DirectReceiver, allowing FSM and all mojoms passed"
+                        + " through it to receive IPCs directly."),
 
         // Features for PerfCombined2025_WebView study
         Flag.baseFeature("AsyncSetCookie"),
