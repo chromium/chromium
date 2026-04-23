@@ -185,7 +185,7 @@ void WebNNGraphImpl::Dispatch(
   }
 
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
-  auto task = base::BindOnce(
+  context_->RunOrScheduleTask(base::BindOnce(
       [](WebNNGraphImpl* self,
          base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
              name_to_input_tensor_map,
@@ -218,16 +218,7 @@ void WebNNGraphImpl::Dispatch(
       },
       base::RetainedRef(this), std::move(name_to_input_tensor_map),
       std::move(name_to_output_tensor_map), std::move(scoped_trace),
-      GetMojoReceiver().GetBadMessageCallback());
-
-  if (context_->gpu_sequence()) {
-    context_->gpu_sequence()->ScheduleGpuTask(std::move(task));
-  } else {
-    // Dispatch is bound to `owning_task_runner_` so the task runs directly
-    // on the current sequence.
-    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-    std::move(task).Run();
-  }
+      GetMojoReceiver().GetBadMessageCallback()));
 }
 
 }  // namespace webnn

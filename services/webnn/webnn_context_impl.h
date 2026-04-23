@@ -237,14 +237,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     return main_task_runner_;
   }
 
-  // Schedules `task` to `gpu_sequence()`, passing it a reference to this
-  // context. This allows arbitrary logic to be safely executed on the context's
-  // task runner. The context is guaranteed to remain alive for the duration of
-  // the task.
-  using ScheduleGpuTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
-  void ScheduleGpuTaskWithThisContext(ScheduleGpuTaskCallback task);
-  void ScheduleGpuTaskWithThisContext(ScheduleGpuTaskCallback task,
-                                      const gpu::SyncToken& fence);
+  // Runs `task` directly when already on the target sequence, otherwise
+  // schedules it on the context's GPU sequence. When there is no GPU sequence,
+  // runs on the owning task runner. This allows arbitrary logic to be safely
+  // executed on the context's task runner. The context is guaranteed to remain
+  // alive for the duration of the task.
+  void RunOrScheduleTask(
+      base::OnceClosure task,
+      const gpu::SyncToken& fence = gpu::SyncToken(),
+      const gpu::SyncToken& release_token = gpu::SyncToken());
 
   int tracing_id() const { return tracing_id_; }
 
@@ -337,6 +338,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  using RunOrScheduleTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
+  void RunOrScheduleTaskWithThisContext(
+      RunOrScheduleTaskCallback task,
+      const gpu::SyncToken& fence = gpu::SyncToken());
 
   // Graph builders owned by this context.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>

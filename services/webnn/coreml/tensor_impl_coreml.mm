@@ -411,7 +411,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
           },
           std::move(callback), std::move(scoped_trace), flow_id));
 
-  context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
+  context_->RunOrScheduleTask(base::BindOnce(
       [](TensorImplCoreml* self, base::OnceCallback<void()> callback,
          mojo::ReportBadMessageCallback bad_message_cb,
          gpu::SyncToken release) {
@@ -445,8 +445,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
 
                   // Schedule a task first to ensure export waits until
                   // ResourceTask completes.
-                  context->gpu_sequence()->ScheduleGpuTask(base::DoNothing(),
-                                                           {}, release);
+                  context->RunOrScheduleTask(base::DoNothing(), {}, release);
                   std::move(callback).Run();
                 },
                 self->context_->AsWeakPtr(), std::move(callback), release));
