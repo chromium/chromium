@@ -38,6 +38,10 @@ finally:
 
 IDLNode = idl_node.IDLNode  # Used for type hints.
 
+# Currently we only explicitly support these buffer source types, but more could
+# be added here if there was a use case for them.
+_SUPPORTED_BUFFER_SOURCE_TYPES = ['ArrayBuffer', 'Uint8Array']
+
 
 class SchemaCompilerError(Exception):
 
@@ -409,9 +413,9 @@ class Type():
     elif type_details.IsA('Typeref'):
       # Some common types don't actually have a custom class backing them and
       # are just Typerefs with a string name.
-      if type_details.GetName() == 'ArrayBuffer':
+      if type_details.GetName() in _SUPPORTED_BUFFER_SOURCE_TYPES:
         properties['type'] = 'binary'
-        properties['isInstanceOf'] = 'ArrayBuffer'
+        properties['isInstanceOf'] = type_details.GetName()
       else:
         # Other Typerefs will either be referencing a custom type defined as a
         # Dictionary/Enum or a function defined as a Callback in the schema

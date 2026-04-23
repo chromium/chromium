@@ -7,13 +7,22 @@ dictionary ArrayBufferDict {
   ArrayBuffer optionalArrayBuffer;
 };
 
-// Schema to test 'ArrayBuffer' types in IDL.
-interface ArrayBufferTypes {
+dictionary Uint8ArrayDict {
+  required Uint8Array requiredUint8Array;
+  Uint8Array optionalUint8Array;
+};
+
+// Schema to test supported 'binary' buffer source types in IDL.
+interface BufferSourceTypes {
   static undefined arrayBufferParamFunction(
       ArrayBuffer requiredArrayBufferParam,
       optional ArrayBuffer optionalArrayBufferParam);
+
+  static undefined uint8ArrayParamFunction(
+      Uint8Array requiredUint8ArrayParam,
+      optional Uint8Array optionalUint8ArrayParam);
 };
 
 partial interface Browser {
-  static attribute ArrayBufferTypes arrayBufferTypes;
+  static attribute BufferSourceTypes bufferSourceTypes;
 };
