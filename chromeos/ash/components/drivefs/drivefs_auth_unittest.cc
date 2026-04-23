@@ -97,9 +97,9 @@ class DriveFsAuthTest : public ::testing::Test {
   }
 
   // Helper function for better line wrapping.
-  void RespondWithAuthError(GoogleServiceAuthError::State error_state) {
+  void RespondWithAuthError(const GoogleServiceAuthError& error) {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-        GoogleServiceAuthError(error_state));
+        error);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -138,7 +138,8 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_Permanent) {
         EXPECT_FALSE(access_token.is_null());
         run_loop.Quit();
       }));
-  RespondWithAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  RespondWithAuthError(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   run_loop.Run();
 }
 
@@ -152,7 +153,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_Transient) {
         EXPECT_FALSE(access_token.is_null());
         run_loop.Quit();
       }));
-  RespondWithAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+  RespondWithAuthError(GoogleServiceAuthError::FromServiceUnavailable(""));
   run_loop.Run();
 }
 
@@ -235,7 +236,9 @@ TEST_F(DriveFsAuthTest, GetAccessToken_SequentialRequests) {
           EXPECT_FALSE(access_token.is_null());
           run_loop.Quit();
         }));
-    RespondWithAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+    RespondWithAuthError(
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
     run_loop.Run();
   }
 }
