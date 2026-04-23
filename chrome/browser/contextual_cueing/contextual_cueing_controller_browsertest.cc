@@ -25,6 +25,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -619,6 +622,35 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
                                       ContextualCueingDecision::kUrlNotEligible,
                                       1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       CueNotShowingBecauseSidePanelOpen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+
+  // Open side panel.
+  auto* side_panel_ui = SidePanelUIProvider::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kBookmarks);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kBookmarks));
+  }));
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kSidePanelShowing, 1);
 }
 
 }  // namespace

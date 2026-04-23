@@ -30,6 +30,9 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
@@ -398,6 +401,16 @@ bool ContextualCueingController::IsAllowedToShowCue() {
     return false;
   }
 #endif
+
+  if (auto* side_panel_ui =
+          SidePanelUIProvider::From(browser_window_interface_);
+      side_panel_ui &&
+      (side_panel_ui->IsSidePanelShowing(SidePanelType::kContent) ||
+       side_panel_ui->IsSidePanelShowing(SidePanelType::kToolbar))) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    return false;
+  }
+
   return true;
 }
 
