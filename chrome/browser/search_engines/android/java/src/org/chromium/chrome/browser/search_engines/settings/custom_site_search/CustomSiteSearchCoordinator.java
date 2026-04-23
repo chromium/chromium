@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProp
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -27,6 +29,7 @@ public class CustomSiteSearchCoordinator {
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final SiteSearchDialogCoordinator mSiteSearchDialogCoordinator;
+    private final ListObserver<Void> mListObserver;
 
     public CustomSiteSearchCoordinator(
             Context context,
@@ -52,6 +55,21 @@ public class CustomSiteSearchCoordinator {
                         /* onRemoveSearchEngine= */ mSiteSearchDialogCoordinator
                                 ::removeTemplateUrl);
 
+        mListObserver =
+                new ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        pref.invalidateDecorations();
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        pref.invalidateDecorations();
+                    }
+                };
+
+        mModelList.addObserver(mListObserver);
+
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
                         .with(SiteSearchProperties.ADAPTER, mAdapter)
@@ -66,6 +84,7 @@ public class CustomSiteSearchCoordinator {
         mSiteSearchDialogCoordinator.dismiss();
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
+        mModelList.removeObserver(mListObserver);
         mAdapter.destroy();
         mMediator.destroy();
     }

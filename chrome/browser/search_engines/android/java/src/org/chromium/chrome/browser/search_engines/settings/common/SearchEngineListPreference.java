@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 @NullMarked
 public class SearchEngineListPreference extends ChromeBasePreference {
     private @Nullable Adapter mAdapter;
+    private @Nullable RecyclerView mRecyclerView;
 
     public SearchEngineListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,7 +34,13 @@ public class SearchEngineListPreference extends ChromeBasePreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        RecyclerView recyclerView = (RecyclerView) holder.itemView;
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView = (RecyclerView) holder.itemView;
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void invalidateDecorations() {
+        if (mRecyclerView != null) {
+            mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
+        }
     }
 }
