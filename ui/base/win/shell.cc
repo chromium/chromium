@@ -29,10 +29,10 @@
 
 namespace ui::win {
 
-namespace {
-
 BASE_FEATURE(kManuallyParsePathForShellExecute,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+namespace {
 
 // Default ShellExecuteEx flags used with "openas", "explore", and default
 // verbs.

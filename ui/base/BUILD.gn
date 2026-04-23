@@ -1010,6 +1010,14 @@ source_set("run_all_unittests") {
   ]
 }
 
+if (is_win) {
+  executable("shell_test_helper") {
+    testonly = true
+    sources = [ "win/shell_test_helper.cc" ]
+    deps = [ "//base" ]
+  }
+}
+
 test("ui_base_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1252,6 +1260,7 @@ test("ui_base_unittests") {
       "dragdrop/os_exchange_data_win_unittest.cc",
       "view_prop_unittest.cc",
       "win/hwnd_subclass_unittest.cc",
+      "win/shell_unittest.cc",
       "win/win_cursor_factory_unittest.cc",
     ]
     deps += [
@@ -1259,6 +1268,9 @@ test("ui_base_unittests") {
       "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/base/idle:unit_tests",
     ]
+    if (!is_component_build && !is_asan) {
+      data_deps += [ ":shell_test_helper" ]
+    }
   }
 
   if (is_android) {
