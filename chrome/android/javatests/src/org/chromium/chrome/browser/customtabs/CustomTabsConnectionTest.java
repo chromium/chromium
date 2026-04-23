@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.WarmupManager;
@@ -143,23 +142,6 @@ public class CustomTabsConnectionTest {
     public void testCreateSpareRenderer() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         ThreadUtils.runOnUiThreadBlocking(this::assertSpareTabNotNullAndDestroy);
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
-    public void testDoNotCreateSpareRendererOnLowEnd() throws Exception {
-        CustomTabsTestUtils.warmUpAndWait();
-        // On UI thread because:
-        // 1. hasSpareTab needs to be called from the UI thread.
-        // 2. warmup() is non-blocking and posts tasks to the UI thread, it ensures proper ordering.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WarmupManager warmupManager = WarmupManager.getInstance();
-                    Assert.assertFalse(
-                            warmupManager.hasSpareTab(
-                                    ProfileManager.getLastUsedRegularProfile(), false));
-                });
     }
 
     @Test

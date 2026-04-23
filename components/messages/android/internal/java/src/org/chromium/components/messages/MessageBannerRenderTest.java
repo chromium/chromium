@@ -40,7 +40,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -550,38 +549,6 @@ public class MessageBannerRenderTest {
         View mainContent = getMainContent(view);
         ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mainContent, params));
         mRenderTestRule.render(mainContent, "message_banner_description_icon_with_text");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest", "Messages"})
-    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
-    public void testBasic_lowEnd() throws Exception {
-        Drawable drawable =
-                ApiCompatibilityUtils.getDrawable(
-                        sActivity.getResources(), android.R.drawable.ic_delete);
-        PropertyModel model =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(
-                                MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.TEST_MESSAGE)
-                        .with(MessageBannerProperties.ICON, drawable)
-                        .with(MessageBannerProperties.TITLE, "Primary Title")
-                        .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
-                        .build();
-        MessageBannerView view = inflateMessageViewOnUiThread();
-        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        LayoutParams params =
-                new LayoutParams(
-                        LayoutParams.MATCH_PARENT,
-                        sActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.message_banner_main_content_height));
-
-        View mainContent = getMainContent(view);
-        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mainContent, params));
-        mRenderTestRule.render(mainContent, "message_banner_basic_low_end");
     }
 
     @Test
