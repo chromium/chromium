@@ -1,5 +1,9 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/common/ui/button_stack/button_stack_action_delegate.h",
+  "+ios/chrome/common/ui/button_stack/button_stack_configuration.h",
+  "+ios/chrome/common/ui/button_stack/button_stack_constants.h",
+  "+ios/chrome/common/ui/button_stack/button_stack_view_controller.h",
   # keep-sorted end
 ]

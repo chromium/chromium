@@ -4,17 +4,23 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 
+#import <algorithm>
+
 #import "base/check.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Sheet Presentation corner radius.
@@ -26,19 +32,26 @@ const CGFloat kLottieAnimationContainerWidth = 150.0;
 const CGFloat kLogoTopGap = 32.0;
 const CGFloat kExtraSpacingTitleContent = 8.0;
 
-// Transitions.
-const CGFloat kAnimationDuration = 1.0;
-const CGFloat kDamping = 0.85;
+// Slide in configuration
+const CGFloat kSlideDuration = 1.0;
+const CGFloat kSpringDamping = 0.85;
 
-// Spacing for secondary button.
-const CGFloat kSpacingAfterSecondaryButton = 32.0;
+// Multipliers for the detent height.
+const CGFloat kMaxDetentRatio = 0.95;
+const CGFloat kMinDetentRatio = 0.25;
+
+// Adjustment taking into account the inset between the content and buttons.
+const CGFloat kInsetAdjustment = 20;
 
 }  // namespace
 
-@interface GeminiFREWrapperViewController () <GeminiPromoViewControllerDelegate>
+@interface GeminiFREWrapperViewController () <ButtonStackActionDelegate>
 
-// The main scroll view for the content.
-@property(nonatomic, strong) UIScrollView* contentScrollView;
+// Scroll view that contains the horizontal stack view for transitions.
+@property(nonatomic, strong) UIScrollView* horizontalScrollView;
+
+// Returns the button stack configuration for promo or consent.
++ (ButtonStackConfiguration*)buttonsConfigurationForPromo:(BOOL)promo;
 
 @end
 
@@ -47,8 +60,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   GeminiPromoViewController* _promoViewController;
   // The Gemini Consent View Controller.
   GeminiConsentViewController* _consentViewController;
-  // If YES, `_showPromo` will show the promo view. Otherwise, it will skip the
-  // promo view.
+  // If YES, the promo view is shown initially. Otherwise, we skip it.
   BOOL _showPromo;
   // Whether the account is managed.
   BOOL _isAccountManaged;
@@ -58,9 +70,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   NSString* _country;
   // The main stack view containing the logos.
   UIStackView* _mainStackView;
-  // Scroll view that contains the horizontal stack view for transitions.
   // Horizontal stack view holding the promo and consent views.
-  UIStackView* _contentHorizontalStackView;
+  UIStackView* _horizontalStackView;
   // Currently active child view controller.
   __weak UIViewController<GeminiFREViewControllerProtocol>*
       _currentChildViewController;
@@ -76,7 +87,10 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
              isAccountManaged:(BOOL)isAccountManaged
                       FREType:(GeminiFREType)FREType
                       country:(NSString*)country {
-  self = [super initWithNibName:nil bundle:nil];
+  ButtonStackConfiguration* configuration =
+      [GeminiFREWrapperViewController buttonsConfigurationForPromo:showPromo];
+
+  self = [super initWithConfiguration:configuration];
   if (self) {
     _showPromo = showPromo;
     _isAccountManaged = isAccountManaged;
@@ -91,17 +105,15 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.actionDelegate = self;
 
   [self setupChildViewControllers];
   [self setupSubviews];
   [self configureSheetPresentation];
+  _currentChildViewController =
+      _showPromo ? _promoViewController : _consentViewController;
 
-  if (_showPromo) {
-    _currentChildViewController = _promoViewController;
-  } else {
-    _currentChildViewController = _consentViewController;
-  }
-
+  [self updateButtonConfiguration];
   [self updateAccessibilityVisibility];
 }
 
@@ -117,8 +129,9 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
         [weakSelf updateContentHeightConstraint];
         [weakSelf.view layoutIfNeeded];
         if ([weakSelf isShowingConsentViewAfterPromo]) {
-          CGFloat newWidth = weakSelf.contentScrollView.frame.size.width;
-          weakSelf.contentScrollView.contentOffset = CGPointMake(newWidth, 0);
+          CGFloat newWidth = weakSelf.horizontalScrollView.frame.size.width;
+          weakSelf.horizontalScrollView.contentOffset =
+              CGPointMake(newWidth, 0);
         }
         [weakSelf.sheetPresentationController invalidateDetents];
       }
@@ -127,9 +140,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  _contentHeightConstraint = [self.contentScrollView.heightAnchor
-      constraintEqualToConstant:[self childContentHeight]];
-  _contentHeightConstraint.active = YES;
+  [self updateContentHeightConstraint];
+  [self.view layoutIfNeeded];
   [self.sheetPresentationController invalidateDetents];
 }
 
@@ -150,24 +162,16 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 #pragma mark - Private
 
-// Returns YES if the consent view is currently displayed as the second step
-// after the promo.
+// Whether the consent is currently shown as the second step after the promo.
 - (BOOL)isShowingConsentViewAfterPromo {
   return _showPromo && (_currentChildViewController == _consentViewController);
 }
 
 // Updates the content height constraint.
 - (void)updateContentHeightConstraint {
-  _contentHeightConstraint.constant = [self childContentHeight];
-}
-
-// Returns the child view controller's content height.
-- (CGFloat)childContentHeight {
-  if (@available(iOS 26, *)) {
-    return [_currentChildViewController contentHeight] +
-           kSpacingAfterSecondaryButton;
-  }
-  return [_currentChildViewController contentHeight];
+  _contentHeightConstraint.constant =
+      [_currentChildViewController contentHeight];
+  [self.sheetPresentationController invalidateDetents];
 }
 
 // Creates and returns the stack view containing the animated logos.
@@ -220,105 +224,73 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   return container;
 }
 
-// Constructs the main view hierarchy. The layout consists of a main vertical
-// scroll view which holds a stack view `_mainStackView`. This stack view
-// contains the top logos and a horizontal, non scrollable content area. The
-// content area itself uses a horizontal stack view
-// `_contentHorizontalStackView` to place the promo and consent views side by
-// side, for a smooth horizontal sliding transition between them.
+// Constructs the main view hierarchy. The different steps are contained in a
+// horizontal stack and transitioned using a horizontal scrollview.
 - (void)setupSubviews {
-  UIScrollView* mainScrollView = [[UIScrollView alloc] init];
-  mainScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:mainScrollView];
-  AddSameConstraints(mainScrollView, self.view.safeAreaLayoutGuide);
-
-  _mainStackView = [[UIStackView alloc] init];
-  _mainStackView.axis = UILayoutConstraintAxisVertical;
-  _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  _mainStackView.layoutMarginsRelativeArrangement = YES;
-  _mainStackView.directionalLayoutMargins =
+  UIStackView* wrapperStackView = [[UIStackView alloc] init];
+  wrapperStackView.axis = UILayoutConstraintAxisVertical;
+  wrapperStackView.layoutMarginsRelativeArrangement = YES;
+  wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  wrapperStackView.directionalLayoutMargins =
       NSDirectionalEdgeInsetsMake(kLogoTopGap, 0, 0, 0);
-  [mainScrollView addSubview:_mainStackView];
+  [self.contentView addSubview:wrapperStackView];
+  [self.contentView setContentHuggingPriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
+  AddSameConstraints(wrapperStackView, self.contentView);
 
   if (_FREType != GeminiFREType::kLive) {
     _logosStackView = [self createLogosStackView];
-    [_mainStackView addArrangedSubview:_logosStackView];
+    [wrapperStackView addArrangedSubview:_logosStackView];
+    [wrapperStackView setCustomSpacing:kExtraSpacingTitleContent
+                             afterView:_logosStackView];
   }
 
-  self.contentScrollView = [[UIScrollView alloc] init];
-  self.contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.contentScrollView.showsHorizontalScrollIndicator = NO;
-  self.contentScrollView.scrollEnabled = NO;
+  self.horizontalScrollView = [[UIScrollView alloc] init];
+  self.horizontalScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.horizontalScrollView.showsHorizontalScrollIndicator = NO;
+  self.horizontalScrollView.scrollEnabled = NO;
+  [wrapperStackView addArrangedSubview:self.horizontalScrollView];
 
-  _contentHorizontalStackView = [[UIStackView alloc] init];
-  _contentHorizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  _contentHorizontalStackView.axis = UILayoutConstraintAxisHorizontal;
-  _contentHorizontalStackView.distribution = UIStackViewDistributionFillEqually;
+  _horizontalStackView = [[UIStackView alloc] init];
+  _horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  _horizontalStackView.distribution = UIStackViewDistributionFill;
+  _horizontalStackView.alignment = UIStackViewAlignmentTop;
+  [self.horizontalScrollView addSubview:_horizontalStackView];
 
   if (_promoViewController) {
     [self addChildViewController:_promoViewController];
-    [_contentHorizontalStackView addArrangedSubview:_promoViewController.view];
+    [_horizontalStackView addArrangedSubview:_promoViewController.view];
     [_promoViewController didMoveToParentViewController:self];
+    // Force the promo view to be exactly one page wide
+    [_promoViewController.view.widthAnchor
+        constraintEqualToAnchor:self.horizontalScrollView.frameLayoutGuide
+                                    .widthAnchor]
+        .active = YES;
+    // Hide the other view to prevent invalid height computation.
+    _consentViewController.view.hidden = YES;
   }
 
   [self addChildViewController:_consentViewController];
-  [_contentHorizontalStackView addArrangedSubview:_consentViewController.view];
+  [_horizontalStackView addArrangedSubview:_consentViewController.view];
   [_consentViewController didMoveToParentViewController:self];
+  // Force the consent view to be exactly one page wide
+  [_consentViewController.view.widthAnchor
+      constraintEqualToAnchor:self.horizontalScrollView.frameLayoutGuide
+                                  .widthAnchor]
+      .active = YES;
 
-  [self.contentScrollView addSubview:_contentHorizontalStackView];
-
-  if (_FREType != GeminiFREType::kLive) {
-    [_mainStackView setCustomSpacing:kExtraSpacingTitleContent
-                           afterView:_logosStackView];
-  }
-  [_mainStackView addArrangedSubview:self.contentScrollView];
-
-  NSMutableArray<NSLayoutConstraint*>* constraints =
-      [NSMutableArray arrayWithArray:@[
-        // Main vertical stack view constraints.
-        [_mainStackView.topAnchor
-            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                        .topAnchor],
-        [_mainStackView.leadingAnchor
-            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                        .leadingAnchor],
-        [_mainStackView.trailingAnchor
-            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                        .trailingAnchor],
-        [_mainStackView.widthAnchor
-            constraintEqualToAnchor:mainScrollView.frameLayoutGuide
-                                        .widthAnchor],
-        [_mainStackView.bottomAnchor
-            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                        .bottomAnchor],
-
-        [_contentHorizontalStackView.widthAnchor
-            constraintEqualToAnchor:self.contentScrollView.frameLayoutGuide
-                                        .widthAnchor
-                         multiplier:[self contentStackViewWidthMultiplier]]
-      ]];
-
-  if (_FREType != GeminiFREType::kLive) {
-    [constraints
-        addObject:[_logosStackView.centerXAnchor
-                      constraintEqualToAnchor:_mainStackView.centerXAnchor]];
-  }
-
-  [NSLayoutConstraint activateConstraints:constraints];
-}
-
-// Returns the width multiplier for the content stack view based on the number
-// of pages. The multiplier is 2.0 if showing both promo and consent,
-// otherwise 1.0.
-- (CGFloat)contentStackViewWidthMultiplier {
-  return _showPromo ? 2.0 : 1.0;
+  _contentHeightConstraint = [self.horizontalScrollView.heightAnchor
+      constraintEqualToConstant:[_currentChildViewController contentHeight]];
+  _contentHeightConstraint.active = YES;
+  AddSameConstraints(_horizontalStackView,
+                     self.horizontalScrollView.contentLayoutGuide);
 }
 
 // Instantiates and configures the child view controllers.
 - (void)setupChildViewControllers {
   if (_showPromo) {
     _promoViewController = [[GeminiPromoViewController alloc] init];
-    _promoViewController.geminiPromoDelegate = self;
     _promoViewController.mutator = self.mutator;
   }
 
@@ -329,26 +301,33 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   _consentViewController.mutator = self.mutator;
 }
 
-// Configures the view controller to be presented as a sheet. It uses a
-// custom detent that resolves its height based on the currently visible
-// child view controller's content, ensuring the sheet is always perfectly
-// sized.
+// Configures modal presentation settings. We use a custom detent with a height
+// based on the visible content while taking into account the scrollview inset.
 - (void)configureSheetPresentation {
   __weak __typeof(self) weakSelf = self;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf contentHeight];
+    CGFloat height = [weakSelf preferredHeightForContent];
+    // Apply adjustment when needed. super.addsContentViewBottomInset adds
+    // insets which lead to an overly generous spacing between the content and
+    // the buttons stack for non-scrollable iPhone layouts.
+    if (context.containerTraitCollection.userInterfaceIdiom !=
+        UIUserInterfaceIdiomPad) {
+      height -= kInsetAdjustment;
+    }
+    CGFloat maxDetentValue = kMaxDetentRatio * context.maximumDetentValue;
+    CGFloat minDetentValue = kMinDetentRatio * context.maximumDetentValue;
+    return std::clamp(height, minDetentValue, maxDetentValue);
   };
+
   UISheetPresentationControllerDetent* detent =
       [UISheetPresentationControllerDetent
           customDetentWithIdentifier:kGeminiPromoConsentFullDetentIdentifier
                             resolver:resolver];
   self.sheetPresentationController.detents = @[ detent ];
-
   self.modalInPresentation = YES;
   self.modalPresentationStyle = UIModalPresentationPageSheet;
-  self.sheetPresentationController.selectedDetentIdentifier =
-      kGeminiPromoConsentFullDetentIdentifier;
+  self.sheetPresentationController.selectedDetentIdentifier = detent.identifier;
   [self configureCornerRadius];
 }
 
@@ -362,15 +341,6 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
       preferredCornerRadius;
 }
 
-// Calculates the total height of the content to be displayed in the sheet.
-- (CGFloat)contentHeight {
-  CGFloat childContentHeight = [self childContentHeight];
-  if (_FREType == GeminiFREType::kLive) {
-    return childContentHeight;
-  }
-  return childContentHeight + kLogoPointSize + kLogoTopGap +
-         kExtraSpacingTitleContent;
-}
 
 // Updates VoiceOver focus to the consent view after promo transition.
 - (void)updateAccessibilityFocus {
@@ -391,35 +361,89 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
       (_currentChildViewController != _consentViewController);
 }
 
-#pragma mark - GeminiPromoViewControllerDelegate
+#pragma mark - ButtonStackActionDelegate
 
 // Handles the primary action from the promo screen. It transitions the view
-// to the consent screen and animates the content scroll view horizontally.
+// to the next step and animates the scroll view horizontally.
 - (void)didAcceptPromo {
   _currentChildViewController = _consentViewController;
+  _consentViewController.view.hidden = NO;
   [self updateAccessibilityVisibility];
-  [self updateContentHeightConstraint];
+  [self updateButtonConfiguration];
 
   __weak __typeof(self) weakSelf = self;
   [self.sheetPresentationController animateChanges:^{
-    [weakSelf.sheetPresentationController invalidateDetents];
+    [weakSelf updateContentHeightConstraint];
   }];
 
-  CGFloat mainStackViewWidth = _mainStackView.frame.size.width;
-  [UIView animateWithDuration:kAnimationDuration
+  CGFloat target = self.contentView.frame.size.width;
+  [UIView animateWithDuration:kSlideDuration
       delay:0.0
-      usingSpringWithDamping:kDamping
+      usingSpringWithDamping:kSpringDamping
       initialSpringVelocity:0.0
       options:UIViewAnimationOptionCurveEaseInOut
       animations:^{
-        weakSelf.contentScrollView.contentOffset =
-            CGPointMake(mainStackViewWidth, 0);
+        weakSelf.horizontalScrollView.contentOffset = CGPointMake(target, 0);
       }
       completion:^(BOOL finished) {
         if (finished && UIAccessibilityIsVoiceOverRunning()) {
           [weakSelf updateAccessibilityFocus];
         }
       }];
+}
+
+- (void)didTapPrimaryActionButton {
+  if (_currentChildViewController == _promoViewController) {
+    RecordFREPromoAction(IOSGeminiFREAction::kAccept);
+    [self didAcceptPromo];
+  } else if (_currentChildViewController == _consentViewController) {
+    RecordFREConsentAction(IOSGeminiFREAction::kAccept);
+    if (_FREType == GeminiFREType::kLive) {
+      [self.mutator didConsentToLiveGemini];
+    } else {
+      [self.mutator didConsentGemini];
+    }
+  }
+}
+
+- (void)didTapSecondaryActionButton {
+  if (_currentChildViewController == _promoViewController) {
+    RecordFREPromoAction(IOSGeminiFREAction::kDismiss);
+    [self.mutator didCloseGeminiPromo];
+  } else if (_currentChildViewController == _consentViewController) {
+    RecordFREConsentAction(IOSGeminiFREAction::kDismiss);
+    [self.mutator didRefuseGeminiConsent];
+  }
+}
+
+- (void)didTapTertiaryActionButton {
+  // Not used.
+}
+
+// Generates the configuration required by `ButtonStackViewController` for the
+// primary & secondary actions. Buttons customization should all happen here.
++ (ButtonStackConfiguration*)buttonsConfigurationForPromo:(BOOL)promo {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  if (promo) {
+    configuration.primaryActionString =
+        l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
+    configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
+  } else {
+    configuration.primaryActionString =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
+    configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
+  }
+  return configuration;
+}
+
+- (void)updateButtonConfiguration {
+  BOOL onPromo = _currentChildViewController == _promoViewController;
+  ButtonStackConfiguration* configuration =
+      [GeminiFREWrapperViewController buttonsConfigurationForPromo:onPromo];
+  [self updateConfiguration:configuration];
 }
 
 @end

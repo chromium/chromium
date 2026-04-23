@@ -6,22 +6,17 @@
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-// Main Stack view insets and spacing.
-const CGFloat kMainStackHorizontalInset = 24.0;
 
 // Icons size.
 const CGFloat kIconSize = 20.0;
@@ -46,13 +41,6 @@ const CGFloat kOuterBoxSize = 64.0;
 
 // Height of the separator line.
 const CGFloat kSeparatorHeight = 1.0;
-
-// Spacing for primary and secondary buttons.
-const CGFloat kSpacingPrimarySecondaryButtonsIOS26 = 4.0;
-const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
-
-// Spacing between the scrollView and the buttons.
-const CGFloat kSpacingScrollViewAndButtons = 24.0;
 
 // Spacing between the main title and summary.
 const CGFloat kSpacingTitleAndSummary = 10.0;
@@ -86,14 +74,9 @@ const CGFloat kBaselineAdjustment = 10.0;
   [self configureMainStackView];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [super viewDidDisappear:animated];
-}
-
 #pragma mark - GeminiFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
-  [self.view layoutIfNeeded];
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
@@ -109,17 +92,15 @@ const CGFloat kBaselineAdjustment = 10.0;
   separator.backgroundColor = [UIColor colorNamed:kBWGSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
+  LayoutSides sides =
+      LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kTrailing;
+  AddSameConstraintsToSides(separator, wrapperContainer, sides);
   [NSLayoutConstraint activateConstraints:@[
     [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
     [separator.leadingAnchor
         constraintEqualToAnchor:wrapperContainer.leadingAnchor
                        constant:kOuterBoxSize + kContentHorizontalStackSpacing +
-                                kTitleBodyBoxContentPadding],
-    [separator.trailingAnchor
-        constraintEqualToAnchor:wrapperContainer.trailingAnchor],
-    [separator.topAnchor constraintEqualToAnchor:wrapperContainer.topAnchor],
-    [separator.bottomAnchor
-        constraintEqualToAnchor:wrapperContainer.bottomAnchor]
+                                kTitleBodyBoxContentPadding]
   ]];
   return wrapperContainer;
 }
@@ -147,17 +128,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   _mainStackView.axis = UILayoutConstraintAxisVertical;
   _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_mainStackView];
-
-  UILayoutGuide* safeArea = self.view.safeAreaLayoutGuide;
-  [NSLayoutConstraint activateConstraints:@[
-    [_mainStackView.topAnchor constraintEqualToAnchor:safeArea.topAnchor],
-    [_mainStackView.leadingAnchor
-        constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:kMainStackHorizontalInset],
-    [_mainStackView.trailingAnchor
-        constraintEqualToAnchor:safeArea.trailingAnchor
-                       constant:-kMainStackHorizontalInset],
-  ]];
+  PinToSafeArea(_mainStackView, self.view);
 
   [_mainStackView addArrangedSubview:[self createMainTitle]];
   [_mainStackView setCustomSpacing:kSpacingTitleAndSummary
@@ -191,10 +162,6 @@ const CGFloat kBaselineAdjustment = 10.0;
                              titleID:IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE
                               bodyID:IDS_IOS_BWG_PROMO_SECOND_BOX_BODY];
   [_mainStackView addArrangedSubview:summarizeRow];
-
-  [_mainStackView setCustomSpacing:kSpacingScrollViewAndButtons
-                         afterView:summarizeRow];
-  [self configureButtons];
 }
 
 // Creates the main title.
@@ -347,16 +314,9 @@ const CGFloat kBaselineAdjustment = 10.0;
   iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
   [innerBox addSubview:iconImageView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [iconImageView.centerXAnchor
-        constraintEqualToAnchor:innerBox.centerXAnchor],
-    [iconImageView.centerYAnchor
-        constraintEqualToAnchor:innerBox.centerYAnchor],
-    [innerBox.widthAnchor constraintEqualToConstant:kWhiteInnerSize],
-    [innerBox.heightAnchor constraintEqualToConstant:kWhiteInnerSize],
-    [iconBox.widthAnchor constraintEqualToConstant:kOuterBoxSize],
-    [iconBox.heightAnchor constraintEqualToConstant:kOuterBoxSize],
-  ]];
+  AddSameCenterConstraints(iconImageView, innerBox);
+  AddSquareConstraints(innerBox, kWhiteInnerSize);
+  AddSquareConstraints(iconBox, kOuterBoxSize);
   return iconBox;
 }
 
@@ -412,60 +372,6 @@ const CGFloat kBaselineAdjustment = 10.0;
   [contentHorizontalStackView addArrangedSubview:titleBodyVerticalStack];
 
   return contentHorizontalStackView;
-}
-
-// Creates the Primary Button.
-- (UIButton*)createPrimaryButton {
-  ChromeButton* primaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  primaryButton.title =
-      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
-  [primaryButton addTarget:self
-                    action:@selector(didTapPrimaryButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
-  return primaryButton;
-}
-
-// Creates the Secondary Button.
-- (UIButton*)createSecondaryButton {
-  ChromeButton* secondaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
-  secondaryButton.title =
-      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
-  [secondaryButton addTarget:self
-                      action:@selector(didTapSecondaryButton:)
-            forControlEvents:UIControlEventTouchUpInside];
-  secondaryButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_SECONDARY_BUTTON);
-  return secondaryButton;
-}
-
-// Configures Primary and Secondary Buttons.
-- (void)configureButtons {
-  UIView* primaryButtonView = [self createPrimaryButton];
-  [_mainStackView addArrangedSubview:primaryButtonView];
-  if (@available(iOS 26, *)) {
-    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS26
-                           afterView:primaryButtonView];
-  } else {
-    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS18
-                           afterView:primaryButtonView];
-  }
-  [_mainStackView addArrangedSubview:[self createSecondaryButton]];
-}
-
-// Did tap Primary Button.
-- (void)didTapPrimaryButton:(UIButton*)sender {
-  RecordFREPromoAction(IOSGeminiFREAction::kAccept);
-  [self.geminiPromoDelegate didAcceptPromo];
-}
-
-// Did tap Secondary Button.
-- (void)didTapSecondaryButton:(UIButton*)sender {
-  RecordFREPromoAction(IOSGeminiFREAction::kDismiss);
-  [self.mutator didCloseGeminiPromo];
 }
 
 @end

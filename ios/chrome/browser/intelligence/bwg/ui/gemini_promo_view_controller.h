@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_view_controller_protocol.h"
 
 @protocol GeminiConsentMutator;
-@protocol GeminiPromoViewControllerDelegate;
 
 // Gemini promo View Controller.
 @interface GeminiPromoViewController
@@ -18,10 +17,6 @@
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<GeminiConsentMutator> mutator;
-// The delegate for this view controller to communicate to the Gemini
-// NavigationController.
-@property(nonatomic, weak) id<GeminiPromoViewControllerDelegate>
-    geminiPromoDelegate;
 
 @end
 

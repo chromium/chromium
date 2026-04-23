@@ -236,12 +236,6 @@ extern const char kLastInteractionTimestampDictKey[];
 // The accessibility ID of the Gemini consent FootNote textView.
 extern NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier;
 
-// The accessibility ID the Gemini consent primary button.
-extern NSString* const kGeminiPrimaryButtonAccessibilityIdentifier;
-
-// The accessibility ID the Gemini consent secondary button.
-extern NSString* const kGeminiSecondaryButtonAccessibilityIdentifier;
-
 // Session map dictionary key for the visible URL during the last BWG
 // interaction.
 extern const char kURLOnLastInteractionDictKey[];

@@ -23,7 +23,6 @@
 namespace {
 
 // Main Stack view insets and spacing.
-const CGFloat kMainStackHorizontalInset = 20.0;
 const CGFloat kMainStackSpacing = 16.0;
 
 // Icons attributs.
@@ -38,10 +37,6 @@ const CGFloat kBoxesStackViewCornerRadius = 16.0;
 // Inner stack view spacing and padding.
 const CGFloat kInnerStackViewSpacing = 6.0;
 const CGFloat kInnerStackViewPadding = 12.0;
-
-// Spacing for primary and secondary buttons.
-const CGFloat kSpacingPrimarySecondaryButtonsIOS26 = 4.0;
-const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
 // Live Header traits.
 const CGFloat kLiveHeaderIconContainerCornerRadius = 16.0;
@@ -101,7 +96,6 @@ NSString* const kSouthKoreaCountryCode = @"kr";
 #pragma mark - GeminiFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
-  [self.view layoutIfNeeded];
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
@@ -365,10 +359,7 @@ NSString* const kSouthKoreaCountryCode = @"kr";
   _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view addSubview:_mainStackView];
-  AddSameConstraintsWithInsets(
-      _mainStackView, self.view,
-      NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
-                                  kMainStackHorizontalInset));
+  AddSameConstraints(_mainStackView, self.view);
 
   if (_FREType == GeminiFREType::kLive) {
     [_mainStackView addArrangedSubview:[self createLiveHeaderView]];
@@ -378,22 +369,6 @@ NSString* const kSouthKoreaCountryCode = @"kr";
   if (_FREType != GeminiFREType::kLive) {
     [_mainStackView addArrangedSubview:[self createFootnoteView]];
   }
-  [self configureButtons];
-}
-
-// Configures primary and secondary buttons.
-- (void)configureButtons {
-  UIView* primaryButtonView = [self createPrimaryButton];
-  [_mainStackView addArrangedSubview:primaryButtonView];
-  if (@available(iOS 26, *)) {
-    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS26
-                           afterView:primaryButtonView];
-  } else {
-    [_mainStackView setCustomSpacing:kSpacingPrimarySecondaryButtonsIOS18
-                           afterView:primaryButtonView];
-  }
-  UIView* secondaryButtonView = [self createSecondaryButton];
-  [_mainStackView addArrangedSubview:secondaryButtonView];
 }
 
 // Creates the header for Live FRE with sparkle icon and title.
@@ -591,10 +566,7 @@ NSString* const kSouthKoreaCountryCode = @"kr";
       [UIColor colorNamed:kSecondaryBackgroundColor];
 
   iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [iconImageView.widthAnchor constraintEqualToConstant:kIconSize],
-    [iconImageView.heightAnchor constraintEqualToConstant:kIconSize]
-  ]];
+  AddSquareConstraints(iconImageView, kIconSize);
 
   UIView* iconContainerView = [[UIView alloc] init];
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -727,54 +699,6 @@ NSString* const kSouthKoreaCountryCode = @"kr";
       kGeminiFootNoteTextViewAccessibilityIdentifier;
 
   return footNoteTextView;
-}
-
-// Creates the primary button.
-- (UIButton*)createPrimaryButton {
-  ChromeButton* primaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  primaryButton.title =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
-  [primaryButton addTarget:self
-                    action:@selector(didTapPrimaryButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-  primaryButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
-  primaryButton.accessibilityIdentifier =
-      kGeminiPrimaryButtonAccessibilityIdentifier;
-  return primaryButton;
-}
-
-// Creates the secondary button.
-- (UIButton*)createSecondaryButton {
-  ChromeButton* secondaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
-  secondaryButton.title =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
-  [secondaryButton addTarget:self
-                      action:@selector(didTapSecondaryButton:)
-            forControlEvents:UIControlEventTouchUpInside];
-  secondaryButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
-  secondaryButton.accessibilityIdentifier =
-      kGeminiSecondaryButtonAccessibilityIdentifier;
-  return secondaryButton;
-}
-
-// Did tap the primary button.
-- (void)didTapPrimaryButton:(UIButton*)sender {
-  RecordFREConsentAction(IOSGeminiFREAction::kAccept);
-  if (_FREType == GeminiFREType::kLive) {
-    [self.mutator didConsentToLiveGemini];
-  } else {
-    [self.mutator didConsentGemini];
-  }
-}
-
-// Did tap the secondary button.
-- (void)didTapSecondaryButton:(UIButton*)sender {
-  RecordFREConsentAction(IOSGeminiFREAction::kDismiss);
-  [self.mutator didRefuseGeminiConsent];
 }
 
 #pragma mark - UITextViewDelegate

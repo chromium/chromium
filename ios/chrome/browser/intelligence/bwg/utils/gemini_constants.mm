@@ -39,10 +39,6 @@ const char kLivePrivacyPolicyLinkURL[] = "https://policies.google.com/privacy";
 // Accessibility identifiers for Gemini consent view.
 NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier =
     @"GeminiFootNoteTextViewAccessibilityIdentifier";
-NSString* const kGeminiPrimaryButtonAccessibilityIdentifier =
-    @"GeminiPrimaryButtonAccessibilityIdentifier";
-NSString* const kGeminiSecondaryButtonAccessibilityIdentifier =
-    @"GeminiSecondaryButtonAccessibilityIdentifier";
 
 // Action identifier on a tap on links in the footnote of the Gemini consent
 // view.
