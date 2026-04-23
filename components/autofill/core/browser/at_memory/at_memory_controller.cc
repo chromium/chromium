@@ -129,6 +129,8 @@ Suggestion TransformResultIntoSuggestion(
     Suggestion::AtMemoryPayload child_at_memory_payload(metadata.value,
                                                         metadata.type);
     child_at_memory_payload.entry_type = metadata.type;
+    child_at_memory_payload.identifier =
+        GetPayloadIdentifier(metadata.type, entry.identifier);
     child.payload = std::move(child_at_memory_payload);
     suggestion.children.push_back(std::move(child));
   }

@@ -414,9 +414,24 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchCreditCardData(
         credit_card->usage_history().GetRankingScore(base::Time::Now()));
     entry.identifier = credit_card->guid();
 
-    // TODO(crbug.com/497795513): Add obfuscated credit card number.
     std::string app_locale =
         personal_data_manager_->address_data_manager().app_locale();
+
+    // All of the types different than the one being requested are added as
+    // metadata.
+    if (entry_type != EntryType::kCreditCardNumber) {
+      entry.metadata_list.emplace_back(
+          EntryType::kCreditCardNumber,
+          GetEntryTypeNameForI18n(EntryType::kCreditCardNumber),
+          credit_card->ObfuscatedNumberWithVisibleLastFourDigits());
+    }
+    if (entry_type != EntryType::kCreditCardSecurityCode) {
+      entry.metadata_list.emplace_back(
+          EntryType::kCreditCardSecurityCode,
+          GetEntryTypeNameForI18n(EntryType::kCreditCardSecurityCode),
+          std::u16string(3, kMidlineEllipsisPlainDot));
+    }
+
     AddMetadataToResult(entry, *credit_card, EntryType::kCreditCardNameOnCard,
                         field_type, app_locale);
     AddMetadataToResult(entry, *credit_card,

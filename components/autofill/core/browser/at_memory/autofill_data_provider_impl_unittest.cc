@@ -277,7 +277,9 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
                   credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
-              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card"),
+              IsMetadata(EntryType::kCreditCardSecurityCode,
+                         std::u16string(3, kMidlineEllipsisPlainDot))))));
   ASSERT_TRUE(
       std::holds_alternative<std::string>(number_results[0].identifier));
   EXPECT_EQ(std::get<std::string>(number_results[0].identifier),
@@ -297,7 +299,10 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
                   credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
-              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card"),
+              IsMetadata(
+                  EntryType::kCreditCardNumber,
+                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits())))));
 
   std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
       retriever(),
@@ -311,7 +316,12 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
                   credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
-              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card"),
+              IsMetadata(
+                  EntryType::kCreditCardNumber,
+                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+              IsMetadata(EntryType::kCreditCardSecurityCode,
+                         std::u16string(3, kMidlineEllipsisPlainDot))))));
 
   std::vector<MemorySearchResult> exp_results = RetrieveAllHelper(
       retriever(),
@@ -324,7 +334,12 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
           UnorderedElementsAre(
               IsMetadata(EntryType::kCreditCardNameOnCard,
                          credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
-              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card"),
+              IsMetadata(
+                  EntryType::kCreditCardNumber,
+                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+              IsMetadata(EntryType::kCreditCardSecurityCode,
+                         std::u16string(3, kMidlineEllipsisPlainDot))))));
 }
 
 // Tests that RetrieveAll correctly fetches and formats data from
