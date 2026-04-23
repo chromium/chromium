@@ -60,7 +60,6 @@ source_set("impl") {
     "notice",
     "notice:catalog",
     "notice:core",
-    "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile_manager",
@@ -92,10 +91,6 @@ source_set("impl") {
       "android:jni_headers",
       "//components/privacy_sandbox:tracking_protection_settings",
     ]
-  }
-
-  if (!is_android) {
-    deps += [ "//ui/views" ]
   }
 
   if (is_chromeos) {
@@ -304,27 +299,17 @@ source_set("service_impl_unittest") {
     ":headers",
     ":test_support",
     "//base/test:test_support",
-    "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/first_party_sets",
-    "//chrome/browser/policy:test_support",
-    "//chrome/browser/privacy_sandbox/notice:core",
-    "//chrome/browser/privacy_sandbox/notice:factory",
     "//chrome/browser/privacy_sandbox/notice:notice_mojom",
-    "//chrome/browser/privacy_sandbox/notice:test_support",
     "//chrome/browser/signin",
-    "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/browsing_topics:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
-    "//components/metrics:metrics_pref_names",
-    "//components/policy:generated",
-    "//components/policy:policy_code_generate",
-    "//components/policy/core/common:test_support",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
@@ -335,25 +320,13 @@ source_set("service_impl_unittest") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings",
-    "//components/sync:test_support",
-    "//components/sync/base",
     "//components/sync_preferences:test_support",
     "//content/public/browser",
-    "//content/public/common",
     "//content/test:test_support",
     "//net",
     "//third_party/blink/public/common:headers",
     "//url",
   ]
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/hats:test_support" ]
-  }
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/login/login_state:test_support",
-      "//chromeos/components/kiosk:test_support",
-    ]
-  }
 }
 
 source_set("settings_delegate_unittest") {

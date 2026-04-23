@@ -4,7 +4,6 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
-#include <array>
 #include <tuple>
 
 #include "base/containers/to_vector.h"
@@ -13,33 +12,19 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/gtest_util.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
-#include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -51,12 +36,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/policy/core/common/mock_policy_service.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -68,13 +48,10 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/interest_group_manager.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -84,19 +61,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif
 
 namespace {
 using ::browsing_topics::Topic;
@@ -110,9 +74,6 @@ using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::ValuesIn;
 
-using Notice = privacy_sandbox::notice::mojom::PrivacySandboxNotice;
-using NoticeEvent = privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
-
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
 using enum privacy_sandbox_test_util::OutputKey;
@@ -121,11 +82,6 @@ using privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::OutputKey;
 using privacy_sandbox_test_util::StateKey;
 
-using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
-using privacy_sandbox_test_util::MultipleInputKeys;
-using privacy_sandbox_test_util::MultipleOutputKeys;
-using privacy_sandbox_test_util::MultipleStateKeys;
-using privacy_sandbox_test_util::SiteDataExceptions;
 using privacy_sandbox_test_util::TestCase;
 using privacy_sandbox_test_util::TestInput;
 using privacy_sandbox_test_util::TestOutput;

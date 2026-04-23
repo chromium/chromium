@@ -9,23 +9,14 @@
 #include <numeric>
 #include <optional>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
-#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/common/semantic_tree.h"
@@ -47,10 +38,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "ui/views/widget/widget.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -59,11 +46,7 @@
 
 namespace {
 
-using NoticeSurfaceType = ::privacy_sandbox::SurfaceType;
 using ::privacy_sandbox::EligibilityLevel;
-using ::privacy_sandbox::PrivacySandboxNoticeServiceInterface;
-using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
-using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
 using enum privacy_sandbox::EligibilityLevel;
 
