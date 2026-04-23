@@ -13707,6 +13707,7 @@ from previous Chrome versions.
   <int value="-136974597" label="DefaultBrowserPromptSurfaces:disabled"/>
   <int value="-136663703" label="Compose:enabled"/>
   <int value="-136485076" label="NtpModules:disabled"/>
+  <int value="-136054398" label="TabsFromOtherDevicesSidePanel:enabled"/>
   <int value="-135705229" label="SyncAutofillValuableMetadata:enabled"/>
   <int value="-135584721"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:disabled"/>
@@ -20439,6 +20440,7 @@ from previous Chrome versions.
   <int value="2095250358"
       label="EnableBluetoothSerialPortProfileInSerialApi:disabled"/>
   <int value="2095569369" label="EnablePixAccountLinking:disabled"/>
+  <int value="2095659753" label="TabsFromOtherDevicesSidePanel:disabled"/>
   <int value="2095740699" label="OmniboxPedalsBatch3:disabled"/>
   <int value="2095789358"
       label="AccessibilitySetSelectableOnAllNodesWithText:disabled"/>

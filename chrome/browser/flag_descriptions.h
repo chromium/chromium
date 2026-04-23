@@ -557,6 +557,11 @@ inline constexpr char kDesktopUAOnConnectedDisplayDescription[] =
     "When enabled, this feature will request a desktop user agent on external "
     "displays.";
 
+inline constexpr char kTabsFromOtherDevicesSidePanelName[] =
+    "Tabs from other devices side panel";
+inline constexpr char kTabsFromOtherDevicesSidePanelDescription[] =
+    "Enables the tabs from other devices side panel.";
+
 inline constexpr char kTabStripDeclutterName[] = "Tab Strip Declutter";
 inline constexpr char kTabStripDeclutterDescription[] =
     "Enables the Tab Strip Declutter feature on Desktop.";

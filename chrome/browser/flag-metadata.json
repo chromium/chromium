@@ -9035,6 +9035,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tabs-from-other-devices-side-panel",
+    "owners": [ "treib@chromium.org" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "taiyaki-all-surfaces",
     "owners": [
       "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"

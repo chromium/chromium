@@ -12989,6 +12989,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarksBarNTPDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksBarNTP)},
 #endif
+
+    {"tabs-from-other-devices-side-panel",
+     flag_descriptions::kTabsFromOtherDevicesSidePanelName,
+     flag_descriptions::kTabsFromOtherDevicesSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabsFromOtherDevicesSidePanel)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
