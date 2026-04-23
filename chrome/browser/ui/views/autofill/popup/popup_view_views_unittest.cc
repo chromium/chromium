@@ -2858,5 +2858,49 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
   EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));
 }
 
+// Tests that arrow keys can be used to navigate between parent and sub-popup
+// back and forth.
+TEST_F(PopupViewViewsTest, AtMemory_KeyboardArrowsNavigationBetweenPopups) {
+  ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
+      .WillByDefault(Return(AutofillSuggestionTriggerSource::kAtMemory));
+
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kAtMemorySearchResult,
+          {Suggestion(u"Child #1", SuggestionType::kAtMemorySearchResult)}),
+  });
+  CreateAndShowView();
+
+  // Select first row content.
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+
+  // Press Right arrow to open the flyout menu.
+  EXPECT_CALL(controller(), OpenSubPopup(_, _, _));
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(), {Suggestion(u"Child #1", SuggestionType::kAtMemorySearchResult)});
+
+  ON_CALL(*sub_controller, GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+
+  // Select a cell in the sub-view to give it focus.
+  sub_view->SetSelectedCell(CellIndex{0, CellType::kContent},
+                            PopupCellSelectionSource::kNonUserInput);
+
+  // Verify that left arrow in the sub-view closes it.
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+  event.windows_key_code = ui::VKEY_LEFT;
+
+  EXPECT_FALSE(test_api(*sub_view).HandleKeyPressEvent(event));
+  EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));
+
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 }  // namespace
 }  // namespace autofill

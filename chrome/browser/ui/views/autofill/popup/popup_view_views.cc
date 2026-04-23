@@ -418,27 +418,8 @@ bool PopupViewViews::HandleKeyPressEvent(
       SelectNextRow(PopupCellSelectionSource::kKeyboard);
       return true;
     case ui::VKEY_LEFT:
-      // `base::i18n::IsRTL` is used here instead of the controller's method
-      // because the controller's `IsRTL` depends on the language of the focused
-      // field and not the overall UI language. However, the layout of the popup
-      // is determined by the overall UI language.
-      if (base::i18n::IsRTL()) {
-        return SelectNextHorizontalCell();
-      } else {
-        if (SelectParentPopupContentCell()) {
-          return true;
-        }
-        return SelectPreviousHorizontalCell();
-      }
     case ui::VKEY_RIGHT:
-      if (base::i18n::IsRTL()) {
-        if (SelectParentPopupContentCell()) {
-          return true;
-        }
-        return SelectPreviousHorizontalCell();
-      } else {
-        return SelectNextHorizontalCell();
-      }
+      return HandlePopupHorizontalNavigation(event);
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
@@ -500,27 +481,8 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
       }
       return false;
     case ui::VKEY_LEFT:
-      // `base::i18n::IsRTL` is used here instead of the controller's method
-      // because the controller's `IsRTL` depends on the language of the focused
-      // field and not the overall UI language. However, the layout of the popup
-      // is determined by the overall UI language.
-      if (base::i18n::IsRTL()) {
-        return SelectNextHorizontalCell();
-      } else {
-        if (SelectParentPopupContentCell()) {
-          return true;
-        }
-        return SelectPreviousHorizontalCell();
-      }
     case ui::VKEY_RIGHT:
-      if (base::i18n::IsRTL()) {
-        if (SelectParentPopupContentCell()) {
-          return true;
-        }
-        return SelectPreviousHorizontalCell();
-      } else {
-        return SelectNextHorizontalCell();
-      }
+      return HandlePopupHorizontalNavigation(event);
     case ui::VKEY_TAB: {
       const bool is_root_popup = !parent_;
       // TAB should only be handled by the root popup. The subpopup only deals
@@ -623,9 +585,41 @@ bool PopupViewViews::HandleKeyPressEventForAtMemory(
         return true;
       }
       return false;
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+      return HandlePopupHorizontalNavigation(event);
     default:
       return false;
   }
+}
+
+bool PopupViewViews::HandlePopupHorizontalNavigation(
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.windows_key_code == ui::VKEY_LEFT) {
+    // `base::i18n::IsRTL` is used here instead of the controller's method
+    // because the controller's `IsRTL` depends on the language of the focused
+    // field and not the overall UI language. However, the layout of the popup
+    // is determined by the overall UI language.
+    if (base::i18n::IsRTL()) {
+      return SelectNextHorizontalCell();
+    } else {
+      if (SelectParentPopupContentCell()) {
+        return true;
+      }
+      return SelectPreviousHorizontalCell();
+    }
+  }
+  if (event.windows_key_code == ui::VKEY_RIGHT) {
+    if (base::i18n::IsRTL()) {
+      if (SelectParentPopupContentCell()) {
+        return true;
+      }
+      return SelectPreviousHorizontalCell();
+    } else {
+      return SelectNextHorizontalCell();
+    }
+  }
+  return false;
 }
 
 void PopupViewViews::SelectPreviousRow() {

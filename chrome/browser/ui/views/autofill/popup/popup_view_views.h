@@ -273,6 +273,11 @@ class PopupViewViews : public PopupBaseView,
   bool HandleKeyPressEventForAtMemory(
       const input::NativeWebKeyboardEvent& event);
 
+  // Handles horizontal navigation (Left/Right arrows) for the popup, which
+  // may result in opening or closing sub-popups.
+  bool HandlePopupHorizontalNavigation(
+      const input::NativeWebKeyboardEvent& event);
+
   // AutofillPopupView:
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged(bool prefer_prev_arrow_side) override;
