@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HiddenOnNTP) {
 
   // Hidden on NTP page context ("chrome://newtab/").
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_FALSE(GetStarIcon()->GetVisible());
 
   // Shown on non-NTP page context.
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HiddenOnNTP) {
 
   // Hidden on NTP page context ("chrome://new-tab-page/").
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+      browser(), chrome::ChromeUINewTabPageURLAsGURL()));
   EXPECT_FALSE(GetStarIcon()->GetVisible());
 }
 

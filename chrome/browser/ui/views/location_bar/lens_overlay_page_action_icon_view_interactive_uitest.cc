@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest, DoesNotShowOnNTP) {
   // Navigate to the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+      browser(), chrome::ChromeUINewTabPageURLAsGURL()));
 
   views::View* page_action_view = PageActionView();
   views::FocusManager* focus_manager = page_action_view->GetFocusManager();
