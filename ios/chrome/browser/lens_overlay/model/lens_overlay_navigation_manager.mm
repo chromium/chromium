@@ -173,7 +173,8 @@ void LensOverlayNavigationManager::DidStartNavigation(
         cr_fromString:lens::ExtractQueryFromLensOverlaySRP(navigation_url)];
     [mutator_ onSRPLoadWithOmniboxText:omnibox_text
                           isMultimodal:isLensMultimodalSRP];
-    RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
+    RegisterSubNavigation(navigation_url,
+                          omnibox_text ? omnibox_text.cr_UTF16String : u"");
   } else {
     RegisterSubNavigation(navigation_url, PreviousOmniboxText());
   }
