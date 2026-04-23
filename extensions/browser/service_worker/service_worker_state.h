@@ -94,8 +94,9 @@ class ServiceWorkerState
   void StartWorker(const SequencedContextId& context_id);
 
   // Called once an extension service worker context was initialized, but has
-  // not necessarily started executing its JavaScript.
-  void RendererDidInitializeServiceWorkerContext(
+  // not necessarily started executing its JavaScript. Returns true if the
+  // worker was accepted and tracked, false if it was stale.
+  bool RendererDidInitializeServiceWorkerContext(
       const SequencedContextId& context_id,
       const WorkerId& worker_id);
 

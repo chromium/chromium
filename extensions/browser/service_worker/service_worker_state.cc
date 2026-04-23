@@ -199,14 +199,14 @@ void ServiceWorkerState::DidStartWorkerFail(
   }
 }
 
-void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
+bool ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     const SequencedContextId& context_id,
     const WorkerId& worker_id) {
   CHECK(worker_id.start_token);
   if (!service_worker_context_->IsLiveServiceWorkerWithToken(
           worker_id.version_id, *worker_id.start_token)) {
     // Drop the IPC message. It is from a stale worker instance.
-    return;
+    return false;
   }
 
   if (renderer_state() != RendererState::kNotActive) {
@@ -226,20 +226,26 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     auto new_version_id = worker_id.version_id;
     RecordWorkerVersionIdStateHistogram(new_version_id, preexisting_version_id);
 
+    // We don't expect to see this method being called twice for the same
+    // service worker version, and histograms confirm it, so let's assert it.
+    CHECK_NE(preexisting_version_id, new_version_id);
     if (new_version_id < preexisting_version_id) {
       // Drop the IPC message. It is from a stale worker version.
-      // TODO(andreaorru): we can also see a stale service worker instance with
-      // the same `version_id` and an "older" service worker token. However, we
-      // do not currently have a way to order service worker tokens. We should
-      // introduce a sequence id.
-      return;
+      return false;
     }
-    // TODO(andreaorru): if the preexisting `version_id` / service worker token
-    // is not valid anymore, should we untrack it from `ProcessManager` here?
+
+    // We received a message from a newer worker than the one we're tracking.
+    // This means a newer worker started up and we just haven't received the
+    // stop notification for the old one yet. Proactively stop tracking the
+    // old worker; it's now considered stale.
+    GURL scope = Extension::GetServiceWorkerScopeFromExtensionId(
+        context_id.extension_id);
+    HandleStop(worker_id_->version_id, scope, *worker_id_->start_token);
   }
 
   SetWorkerId(worker_id);
   SetRendererState(RendererState::kInitialized);
+  return true;
 }
 
 void ServiceWorkerState::RendererDidStartServiceWorkerContext(
