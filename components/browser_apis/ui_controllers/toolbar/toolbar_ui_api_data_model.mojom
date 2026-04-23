@@ -237,8 +237,8 @@ struct LocationBarFlags {
   // changes.
   bool user_input_in_progress = false;
 
-  // Whether to render as if we have focus, due to omnibox popup taking it over.
-  bool render_focused = false;
+  // Whether the omnibox popup is open
+  bool popup_open = false;
 };
 
 // Enum of all supported pinned toolbar actions.

@@ -135,7 +135,7 @@ export class ToolbarAppElement extends CrLitElement {
       },
       locationBarFlags: {
         userInputInProgress: false,
-        renderFocused: false,
+        popupOpen: false,
       },
       contentSettingImageStates: [],
       lhsChipsState: {

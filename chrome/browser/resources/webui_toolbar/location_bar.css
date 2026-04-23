@@ -52,8 +52,7 @@
 
   /* The border override for input-in-progress is only visible if
    * the location bar isn't visibly focused */
-  :host(#location-bar):has(
-      > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
+  :host(#location-bar):has(> readonly-omnibox:focus-within) {
     border: none;
   }
 }
@@ -63,8 +62,7 @@
     border: 1px solid var(--color-location-bar-border);
   }
 
-  :host:has(
-      > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
+  :host:has(> readonly-omnibox:focus-within) {
     border: 1px solid var(--color-omnibox-results-background);
   }
 }
@@ -75,14 +73,19 @@
   This should take precedence over :hover rules, so it throws in an ID
   selector for its specificity.
 */
-:host(#location-bar):has(
-    > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
+:host(#location-bar):has(> readonly-omnibox:focus-within) {
   background-color: var(--color-omnibox-results-background);
-
-  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
-      var(--cr-focus-outline-color));
-
   transition-property: none;
+}
+
+:host(#location-bar:not(.popup-open)):has(> readonly-omnibox:focus-within) {
+  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+@media (forced-colors: active) {
+  :host(#location-bar:not(.popup-open)):has(> readonly-omnibox:focus-within) {
+    outline: var(--cr-focus-outline-hcm);
+  }
 }
 
 /* Below are sketches of what the various LHS chips might look like,

@@ -521,5 +521,6 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
   auto location_bar_flags = toolbar_ui_api::mojom::LocationBarFlags::New();
   location_bar_flags->user_input_in_progress =
       omnibox_controller_->edit_model()->user_input_in_progress();
+  location_bar_flags->popup_open = omnibox_controller_->IsPopupOpen();
   toolbar_view_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
 }

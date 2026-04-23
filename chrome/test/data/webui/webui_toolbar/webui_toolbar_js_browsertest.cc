@@ -11,7 +11,6 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "ui/native_theme/mock_os_settings_provider.h"
 
 class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
  public:
@@ -39,23 +38,6 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PinnedToolbarAction) {
 
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationBar) {
   RunTest("webui_toolbar/location_bar_test.js", "mocha.run();");
-}
-
-class WebUiToolbarHighContrastJsTest : public WebUiToolbarJsTest {
- public:
-  void SetUpOnMainThread() override {
-    WebUiToolbarJsTest::SetUpOnMainThread();
-    os_settings_provider_.SetPreferredContrast(
-        ui::NativeTheme::PreferredContrast::kMore);
-  }
-
- private:
-  ui::MockOsSettingsProvider os_settings_provider_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebUiToolbarHighContrastJsTest,
-                       LocationBarHighContrast) {
-  RunTest("webui_toolbar/location_bar_high_contrast_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationIcon) {

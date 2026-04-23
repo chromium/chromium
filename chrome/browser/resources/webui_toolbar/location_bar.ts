@@ -11,11 +11,12 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './location_bar.css.js';
 import {getHtml} from './location_bar.html.js';
+import {type ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export interface LocationBarElement {
   $: {
-    omnibox: HTMLElement,
+    omnibox: ReadonlyOmniboxElement,
   };
 }
 
@@ -46,7 +47,7 @@ export class LocationBarElement extends CrLitElement {
     },
     locationBarFlags: {
       userInputInProgress: false,
-      renderFocused: false,
+      popupOpen: false,
     },
     contentSettingImageStates: [],
     lhsChipsState: {
@@ -82,9 +83,8 @@ export class LocationBarElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('locationBarState')) {
-      this.$.omnibox.classList.toggle(
-          'render-focused',
-          this.locationBarState.locationBarFlags.renderFocused);
+      this.classList.toggle(
+          'popup-open', this.locationBarState.locationBarFlags.popupOpen);
       this.classList.toggle(
           'input-in-progress',
           this.locationBarState.locationBarFlags.userInputInProgress);
