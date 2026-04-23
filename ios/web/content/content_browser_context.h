@@ -66,9 +66,6 @@ class ContentBrowserContext : public content::BrowserContext {
 
   bool ignore_certificate_errors() const { return false; }
 
-  // Remove when refactored to depend on browser_start_->GetStatePath()
-  base::FilePath browser_path_;
-
   // Performs initialization of the ContentBrowserContext while IO is still
   // allowed on the current thread.
   void InitWhileIOAllowed();

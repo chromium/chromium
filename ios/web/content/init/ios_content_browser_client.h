@@ -43,6 +43,13 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* context) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
+  void ConfigureNetworkContextParams(
+      content::BrowserContext* context,
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
 };
 
 }  // namespace web

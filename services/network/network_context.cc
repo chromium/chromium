@@ -3297,12 +3297,12 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
       crypto_delegate = std::make_unique<CookieOSCryptAsyncDelegate>(
           std::move(params_->cookie_encryption_provider));
     } else {
-#if !BUILDFLAG(IS_ANDROID)
-      // A cookie crypto delegate should not be created on Android to
-      // match the behavior of cookie_config::GetCookieCryptoDelegate().
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      // A cookie crypto delegate should not be created on Android or iOS
+      // to match the behavior of cookie_config::GetCookieCryptoDelegate().
       // See https://crbug.com/449652881
       NOTREACHED();
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     }
   }
 

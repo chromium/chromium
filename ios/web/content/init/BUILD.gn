@@ -37,6 +37,7 @@ source_set("init") {
     "//content/public/common/",
     "//content/public/renderer",
     "//ios/web/content:ui",
+    "//ios/web/content/common:non_code_constants",
     "//ios/web/public",
     "//ios/web/public/init",
   ]

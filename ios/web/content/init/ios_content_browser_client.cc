@@ -11,11 +11,26 @@
 #import "content/public/browser/devtools_manager_delegate.h"
 #import "content/public/browser/web_contents_view_delegate.h"
 #import "content/public/common/url_constants.h"
+#import "ios/web/content/common/constants.h"
 #import "ios/web/content/init/ios_browser_main_parts.h"
 #import "ios/web/content/ui/web_contents_view_delegate_impl.h"
+#import "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace web {
+
+namespace {
+
+base::FilePath GetPartitionPath(content::BrowserContext* context,
+                                const base::FilePath& relative_partition_path) {
+  base::FilePath path = context->GetPath();
+  if (!relative_partition_path.empty()) {
+    path = path.Append(relative_partition_path);
+  }
+  return path;
+}
+
+}  // namespace
 
 bool IOSContentBrowserClient::IsHandledURL(const GURL& url) {
   if (!url.is_valid()) {
@@ -120,6 +135,27 @@ IOSContentBrowserClient::GetGeneratedCodeCacheSettings(
 std::unique_ptr<content::DevToolsManagerDelegate>
 IOSContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<content::DevToolsManagerDelegate>();
+}
+
+void IOSContentBrowserClient::ConfigureNetworkContextParams(
+    content::BrowserContext* context,
+    bool in_memory,
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* network_context_params,
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
+  if (!in_memory) {
+    network_context_params->file_paths =
+        network::mojom::NetworkContextFilePaths::New();
+    network_context_params->file_paths->data_directory =
+        GetPartitionPath(context, relative_partition_path)
+            .Append(kNetworkDataDirname);
+    network_context_params->file_paths->cookie_database_name =
+        base::FilePath(kCookieFilename);
+
+    network_context_params->restore_old_session_cookies = true;
+    network_context_params->persist_session_cookies = true;
+  }
 }
 
 }  // namespace web
