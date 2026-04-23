@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_MODAL_BROWSER_WINDOW_MODAL_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_WEB_MODAL_BROWSER_WINDOW_MODAL_DIALOG_DELEGATE_H_
 
-#include "base/callback_list.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -21,8 +20,6 @@ class BrowserWindowModalDialogDelegate
  public:
   DECLARE_USER_DATA(BrowserWindowModalDialogDelegate);
 
-  using DevToolsScrimCallback = base::RepeatingCallback<void(bool)>;
-
   explicit BrowserWindowModalDialogDelegate(BrowserWindowInterface* browser);
   BrowserWindowModalDialogDelegate(const BrowserWindowModalDialogDelegate&) =
       delete;
@@ -33,11 +30,6 @@ class BrowserWindowModalDialogDelegate
   static BrowserWindowModalDialogDelegate* From(
       BrowserWindowInterface* browser);
 
-  // Register a callback invoked when a DevTools window's scrim visibility
-  // needs to change. The boolean parameter indicates the desired visibility.
-  base::CallbackListSubscription RegisterDevToolsScrimCallback(
-      DevToolsScrimCallback callback);
-
   // ChromeWebModalDialogManagerDelegate:
   void SetWebContentsBlocked(content::WebContents* web_contents,
                              bool blocked) override;
@@ -46,7 +38,6 @@ class BrowserWindowModalDialogDelegate
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
-  base::RepeatingCallbackList<void(bool)> devtools_scrim_callbacks_;
   ui::ScopedUnownedUserData<BrowserWindowModalDialogDelegate>
       scoped_unowned_user_data_;
 };

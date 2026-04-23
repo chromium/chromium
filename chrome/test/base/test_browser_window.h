@@ -78,8 +78,6 @@ class TestBrowserWindow : public BrowserWindow,
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override {}
-  void UpdateDevTools(content::WebContents* inspected_web_contents) override {}
-  bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,

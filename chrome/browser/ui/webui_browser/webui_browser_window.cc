@@ -642,18 +642,6 @@ void WebUIBrowserWindow::OnBookmarkBarStateChanged(
   GetWebUIBrowserUI()->BookmarkBarStateChanged(change_type);
 }
 
-void WebUIBrowserWindow::UpdateDevTools(
-    content::WebContents* inspected_web_contents) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool WebUIBrowserWindow::CanDockDevTools() const {
-  // This forces DevTools to open in a new window, which is currently necessary
-  // because the code path for a launching docked DevTools requires BrowserView,
-  // ContentsContainerView, etc.
-  return false;
-}
-
 void WebUIBrowserWindow::UpdateLoadingAnimations(bool is_visible) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

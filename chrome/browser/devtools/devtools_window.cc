@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
+#include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -1079,7 +1080,10 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
         FROM_HERE, base::BindOnce(&DevToolsWindow::ActivateInspectedTab,
                                   weak_factory_.GetWeakPtr()));
 
-    inspected_window->UpdateDevTools(inspected_web_contents);
+    if (auto* devtools_ui_controller =
+            DevtoolsUIController::From(inspected_browser)) {
+      devtools_ui_controller->UpdateDevtools(inspected_web_contents);
+    }
     main_web_contents_->SetInitialFocus();
     inspected_window->Show();
     // On Aura, focusing once is not enough. Do it again.
@@ -1380,8 +1384,9 @@ DevToolsWindow* DevToolsWindow::Create(
       inspected_browser_session_id = browser->GetSessionID();
     }
 #endif  // BUILDFLAG(IS_MAC)
-    if (!browser ||
-        !browser->GetBrowserForMigrationOnly()->window()->CanDockDevTools()) {
+    DevtoolsUIController* devtools_ui_controller =
+        browser ? DevtoolsUIController::From(browser) : nullptr;
+    if (!devtools_ui_controller || !devtools_ui_controller->CanDockDevtools()) {
       can_dock = false;
     }
   }

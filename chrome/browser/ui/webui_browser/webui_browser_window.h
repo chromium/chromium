@@ -78,8 +78,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   void UpdateTitleBar() override;
   void OnBookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
-  void UpdateDevTools(content::WebContents* inspected_web_contents) override;
-  bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override;
   void SetStarredState(bool is_starred) override;
   bool IsTabModalPopupDeprecated() const override;

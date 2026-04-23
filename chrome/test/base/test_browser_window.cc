@@ -210,10 +210,6 @@ std::vector<StatusBubble*> TestBrowserWindow::GetStatusBubbles() {
   return {};
 }
 
-bool TestBrowserWindow::CanDockDevTools() const {
-  return true;
-}
-
 gfx::Rect TestBrowserWindow::GetRestoredBounds() const {
   return gfx::Rect();
 }

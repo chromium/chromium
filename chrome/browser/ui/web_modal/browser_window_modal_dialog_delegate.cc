@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 
+#include "base/types/to_address.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"         // nogncheck
 #include "chrome/browser/ui/browser_window.h"  // nogncheck
@@ -34,12 +36,6 @@ BrowserWindowModalDialogDelegate* BrowserWindowModalDialogDelegate::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
-base::CallbackListSubscription
-BrowserWindowModalDialogDelegate::RegisterDevToolsScrimCallback(
-    DevToolsScrimCallback callback) {
-  return devtools_scrim_callbacks_.Add(std::move(callback));
-}
-
 void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
@@ -49,8 +45,11 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     // The WebContents may no longer exist in the TabStripModel.
     // If the WebContents has a DevTools window, the call is meant for the
     // DevTools area.
-    if (DevToolsWindow::AsDevToolsWindow(web_contents)) {
-      devtools_scrim_callbacks_.Notify(blocked);
+    auto* devtools_ui_controller =
+        DevtoolsUIController::From(base::to_address(browser_));
+    if (devtools_ui_controller &&
+        DevToolsWindow::AsDevToolsWindow(web_contents)) {
+      devtools_ui_controller->SetDevtoolsScrimVisibility(web_contents, blocked);
     }
     return;
   }

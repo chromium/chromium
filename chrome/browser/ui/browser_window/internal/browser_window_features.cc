@@ -974,7 +974,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 
   devtools_ui_controller_ = std::make_unique<DevtoolsUIController>(
-      browser_view->GetContentsContainerViews());
+      browser_, browser_view->GetContentsContainerViews());
 
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_ =

@@ -226,7 +226,6 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
@@ -1086,13 +1085,6 @@ BrowserView::BrowserView(Browser* browser)
             &BrowserView::ZoomChangedForActiveTab, base::Unretained(this)));
   }
 
-  if (auto* modal_delegate =
-          BrowserWindowModalDialogDelegate::From(browser_.get())) {
-    devtools_scrim_subscription_ =
-        modal_delegate->RegisterDevToolsScrimCallback(base::BindRepeating(
-            &BrowserView::SetDevToolsScrimVisibility, base::Unretained(this)));
-  }
-
   if (vertical_tab_strip_state_controller) {
     vertical_tab_subscription_ =
         vertical_tab_strip_state_controller->RegisterOnModeChanged(
@@ -1861,15 +1853,6 @@ void BrowserView::OnBookmarkBarStateChanged(
   }
 }
 
-void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
-  browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
-      inspected_web_contents, true);
-}
-
-bool BrowserView::CanDockDevTools() const {
-  return browser_->is_type_normal();
-}
-
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool should_animate =
       is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();
@@ -2398,10 +2381,6 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   if (toolbar_) {
     toolbar_->UpdateCustomTabBarVisibility(visible, animate);
   }
-}
-
-void BrowserView::SetDevToolsScrimVisibility(bool visible) {
-  GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(visible);
 }
 
 void BrowserView::ResetToolbarTabState(content::WebContents* contents) {

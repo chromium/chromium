@@ -528,8 +528,6 @@ class BrowserView : public BrowserWindow,
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override;
-  void UpdateDevTools(content::WebContents* inspected_web_contents) override;
-  bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override;
   void SetStarredState(bool is_starred) override;
   void OnActiveTabChanged(content::WebContents* old_contents,
@@ -1111,10 +1109,6 @@ class BrowserView : public BrowserWindow,
   // Called by BrowserWindowZoomObserver when zoom changes on the active tab.
   void ZoomChangedForActiveTab(bool can_show_bubble);
 
-  // Called by BrowserWindowModalDialogDelegate when DevTools scrim visibility
-  // needs to change.
-  void SetDevToolsScrimVisibility(bool visible);
-
   void UpdateAccessibleNameForRootView();
   void UpdateAccessibleURLForRootView(const GURL& url);
 
@@ -1435,8 +1429,6 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription theme_changed_subscription_;
 
   base::CallbackListSubscription zoom_changed_subscription_;
-
-  base::CallbackListSubscription devtools_scrim_subscription_;
 
   // Bitmask of current combination of reparenting states, e.g. immersive and
   // ChromeOS tablet modes.

@@ -9,8 +9,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/focus/external_focus_tracker.h"
 
+class BrowserWindowInterface;
 class ContentsContainerView;
 
 namespace content {
@@ -24,14 +26,29 @@ class WebView;
 // DevtoolsUIController handles managing the state of the devtools views.
 class DevtoolsUIController {
  public:
-  explicit DevtoolsUIController(
+  DECLARE_USER_DATA(DevtoolsUIController);
+
+  DevtoolsUIController(
+      BrowserWindowInterface* browser,
       std::vector<ContentsContainerView*> contents_container_views);
   ~DevtoolsUIController();
+
+  DevtoolsUIController(const DevtoolsUIController&) = delete;
+  DevtoolsUIController& operator=(const DevtoolsUIController&) = delete;
+
+  static DevtoolsUIController* From(BrowserWindowInterface* browser);
 
   void TearDown();
 
   bool UpdateDevtools(content::WebContents* web_contents,
-                      bool update_devtools_web_contents);
+                      bool update_devtools_web_contents = true);
+
+  // Returns true if the browser window can dock a DevTools panel.
+  bool CanDockDevtools() const;
+
+  // Updates the visibility of the scrim that covers the devtools area.
+  void SetDevtoolsScrimVisibility(content::WebContents* web_contents,
+                                  bool visible);
 
  private:
   // Controller for a single DevtoolsWebView owned by |contents_container_view|.
@@ -56,7 +73,7 @@ class DevtoolsUIController {
     // |update_devtools_web_contents|. Returns true if devtools changes
     // visibility or the resizing strategy is updated.
     bool UpdateDevtools(content::WebContents* web_contents,
-                        bool update_devtools_web_contents);
+                        bool update_devtools_web_contents = true);
 
     void RestoreFocus();
 
@@ -73,6 +90,10 @@ class DevtoolsUIController {
 
   std::map<ContentsContainerView*, std::unique_ptr<DevtoolsWebViewController>>
       devtools_web_view_controllers_;
+
+  const bool can_dock_devtools_;
+
+  ui::ScopedUnownedUserData<DevtoolsUIController> scoped_data_holder_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_UI_CONTROLLER_H_

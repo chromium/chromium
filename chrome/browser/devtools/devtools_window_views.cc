@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -124,9 +125,18 @@ void DevToolsWindow::UpdateBrowserToolbar() {
 }
 
 void DevToolsWindow::UpdateBrowserWindow() {
-  BrowserWindow* inspected_window = GetInspectedBrowserWindow();
-  if (inspected_window) {
-    inspected_window->UpdateDevTools(GetInspectedWebContents());
+  content::WebContents* inspected_web_contents = GetInspectedWebContents();
+  if (!inspected_web_contents) {
+    return;
+  }
+  BrowserWindowInterface* inspected_browser =
+      chrome::FindBrowserWithTab(inspected_web_contents);
+  if (!inspected_browser) {
+    return;
+  }
+  if (auto* devtools_ui_controller =
+          DevtoolsUIController::From(inspected_browser)) {
+    devtools_ui_controller->UpdateDevtools(inspected_web_contents);
   }
 }
 
