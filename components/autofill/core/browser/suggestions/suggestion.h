@@ -186,8 +186,11 @@ struct Suggestion {
   };
 
   struct AtMemoryPayload final {
-    using Identifier =
-        std::variant<std::monostate, Iban::Guid, Iban::InstrumentId>;
+    // `std::string` is used to store the `CreditCard::guid_`.
+    // TODO(crbug.com/505251083): Replace `std::string` with `CreditCard::Guid`
+    // once its added.
+    using Identifier = std::
+        variant<std::monostate, Iban::Guid, Iban::InstrumentId, std::string>;
 
     AtMemoryPayload();
     // `value` is the value to be shown in the suggestion UI and the preview.

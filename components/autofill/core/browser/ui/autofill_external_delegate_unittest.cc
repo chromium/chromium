@@ -301,6 +301,10 @@ class TestCreditCardAccessManager : public CreditCardAccessManager {
   void PrepareToFetchCreditCard() override {
     // Do nothing for testing.
   }
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard*, OnCreditCardFetchedCallback),
+              (override));
 };
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
@@ -3383,6 +3387,45 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                   iban.value(), SuggestionType::kAtMemorySearchResult, _));
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+// Tests that accepting an AtMemory suggestion for a Credit Card attempts to
+// fetch the value from the CreditCardAccessManager.
+TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsCreditCard) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+
+  CreditCard card = test::GetCreditCard();
+  pdm().payments_data_manager().AddCreditCard(card);
+
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+
+  Suggestion::AtMemoryPayload at_memory_payload(
+      u"some text", accessibility_annotator::EntryType::kCreditCardNumber);
+  at_memory_payload.identifier = card.guid();
+  at_memory_payload.entry_type =
+      accessibility_annotator::EntryType::kCreditCardNumber;
+  suggestion.payload = std::move(at_memory_payload);
+
+  TestCreditCardAccessManager* access_manager =
+      static_cast<TestCreditCardAccessManager*>(
+          autofill_manager().GetCreditCardAccessManager());
+
+  EXPECT_CALL(*access_manager, FetchCreditCard)
+      .WillOnce(
+          [card](
+              const CreditCard* passed_card,
+              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
+            std::move(callback).Run(card);
+          });
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  card.number(), SuggestionType::kAtMemorySearchResult, _));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

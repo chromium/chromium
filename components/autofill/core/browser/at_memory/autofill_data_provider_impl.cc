@@ -412,6 +412,7 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchCreditCardData(
     MemorySearchResult entry(
         entry_type, GetEntryTypeNameForI18n(entry_type), std::move(value),
         credit_card->usage_history().GetRankingScore(base::Time::Now()));
+    entry.identifier = credit_card->guid();
 
     // TODO(crbug.com/497795513): Add obfuscated credit card number.
     std::string app_locale =

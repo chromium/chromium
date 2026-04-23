@@ -278,6 +278,10 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                   EntryType::kCreditCardExpirationDate,
                   credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
               IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
+  ASSERT_TRUE(
+      std::holds_alternative<std::string>(number_results[0].identifier));
+  EXPECT_EQ(std::get<std::string>(number_results[0].identifier),
+            credit_card.guid());
 
   std::vector<MemorySearchResult> cvc_results = RetrieveAllHelper(
       retriever(),
