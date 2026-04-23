@@ -19,6 +19,8 @@ static_library("browser") {
     "activity_provider.h",
     "capabilities_database.cc",
     "capabilities_database.h",
+    "file_activity_provider.cc",
+    "file_activity_provider.h",
     "record_replay_client.cc",
     "record_replay_client.h",
     "record_replay_driver.h",
@@ -51,6 +53,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "capabilities_database_unittest.cc",
+    "file_activity_provider_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
   ]
   deps = [

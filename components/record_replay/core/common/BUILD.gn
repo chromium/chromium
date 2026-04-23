@@ -11,6 +11,8 @@ static_library("common") {
     "element_id.h",
     "record_replay_features.cc",
     "record_replay_features.h",
+    "record_replay_switches.cc",
+    "record_replay_switches.h",
   ]
   deps = [ "//base" ]
 }
