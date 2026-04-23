@@ -7,10 +7,12 @@
 # Reference this file instead of base/metrics/OWNERS for metrics declaration
 # files, which should also "set noparent" to require a metrics review (and
 # provide more specific owners to prefer).
+afie@google.com #{LAST_RESORT_SUGGESTION}
 asvitkine@chromium.org #{LAST_RESORT_SUGGESTION}
 caitlinfischer@google.com #{LAST_RESORT_SUGGESTION}
 holte@chromium.org #{LAST_RESORT_SUGGESTION}
 lucnguyen@google.com #{LAST_RESORT_SUGGESTION}
 mpearson@chromium.org #{LAST_RESORT_SUGGESTION}
+rcanoaparicio@google.com #{LAST_RESORT_SUGGESTION}
 rkaplow@chromium.org #{LAST_RESORT_SUGGESTION}
 rogerm@chromium.org #{LAST_RESORT_SUGGESTION}
