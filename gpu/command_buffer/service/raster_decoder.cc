@@ -205,12 +205,14 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
       scoped_refptr<SharedContextState> shared_context_state,
       SkSurface* output_surface,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      gles2::ErrorState* error_state)
+      gles2::ErrorState* error_state,
+      const gpu::Mailbox& active_write_mailbox)
       : shared_image_factory_(shared_image_factory),
         shared_context_state_(std::move(shared_context_state)),
         output_surface_(output_surface),
         end_semaphores_(end_semaphores),
-        error_state_(error_state) {
+        error_state_(error_state),
+        active_write_mailbox_(active_write_mailbox) {
     DCHECK(shared_image_factory_);
     DCHECK(shared_context_state_);
     DCHECK(output_surface_);
@@ -224,6 +226,16 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
 
   sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox,
                                         Error& error) override {
+    if (mailbox == active_write_mailbox_) {
+      ERRORSTATE_SET_GL_ERROR(error_state_, GL_INVALID_OPERATION,
+                              "SharedImageProviderImpl::OpenSharedImageForRead",
+                              ("Attempting to read from the active output mailbox:" +
+                               mailbox.ToDebugString())
+                                  .c_str());
+      error = Error::kNoAccess;
+      return nullptr;
+    }
+
     auto it = read_accessors_.find(mailbox);
     error = Error::kNoError;
     if (it != read_accessors_.end()) {
@@ -309,6 +321,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
     sk_sp<SkImage> read_access_sk_image;
   };
   base::flat_map<gpu::Mailbox, SharedImageReadAccess> read_accessors_;
+  gpu::Mailbox active_write_mailbox_;
 };
 
 class RasterCommandsCompletedQuery : public QueryManager::Query {
@@ -484,6 +497,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   void SetUpForRasterCHROMIUMForTest() override;
   void SetOOMErrorForTest() override;
   void DisableFlushWorkaroundForTest() override;
+  cc::SharedImageProvider* GetSharedImageProviderForTest() const override;
   gles2::GLES2Util* GetGLES2Util() override { return &util_; }
 
   // DecoderContext implementation.
@@ -1671,6 +1685,10 @@ void RasterDecoderImpl::SetOOMErrorForTest() {
 
 void RasterDecoderImpl::DisableFlushWorkaroundForTest() {
   flush_workaround_disabled_for_test_ = true;
+}
+
+cc::SharedImageProvider* RasterDecoderImpl::GetSharedImageProviderForTest() const {
+  return paint_op_shared_image_provider_.get();
 }
 
 void RasterDecoderImpl::OnContextLostError() {
@@ -2912,7 +2930,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
 
   paint_op_shared_image_provider_ = std::make_unique<SharedImageProviderImpl>(
       &shared_image_representation_factory_, shared_context_state_, sk_surface_,
-      &end_semaphores_, error_state_.get());
+      &end_semaphores_, error_state_.get(), mailbox);
 
   // All or nothing clearing, as no way to validate the client's input on what
   // is the "used" part of the texture.  A separate |needs_clear| flag is needed

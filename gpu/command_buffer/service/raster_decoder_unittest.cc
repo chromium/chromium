@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/raster_decoder.h"
 
+#include "cc/paint/paint_op_buffer.h"
+
 #include <limits>
 #include <memory>
 #include <string>
@@ -499,6 +501,27 @@ TEST_F(RasterDecoderOOPTest, StateRestoreAcrossDecoders) {
 
   // Make sure the context is preserved across decoders.
   EXPECT_FALSE(context_state_->gr_context()->abandoned());
+}
+
+TEST_F(RasterDecoderOOPTest, SharedImageProviderRejectsActiveOutputMailbox) {
+  context_state_->set_need_context_state_reset(true);
+  gpu::Mailbox mailbox =
+      CreateMailbox(viz::SinglePlaneFormat::kRGBA_8888,
+                    /*width=*/2, /*height=*/2,
+                    /*cleared=*/true);
+
+  auto& cmd = *GetImmediateAs<cmds::BeginRasterCHROMIUMImmediate>();
+  cmd.Init(0.0f, 0.0f, 0.0f, 0.0f, false, 0, kNoMSAA, false, false, 1.0f,
+           mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+
+  cc::SharedImageProvider* provider = decoder_->GetSharedImageProviderForTest();
+  ASSERT_TRUE(provider);
+
+  cc::SharedImageProvider::Error error;
+  sk_sp<SkImage> image = provider->OpenSharedImageForRead(mailbox, error);
+  EXPECT_FALSE(image);
+  EXPECT_EQ(error, cc::SharedImageProvider::Error::kNoAccess);
 }
 
 }  // namespace raster

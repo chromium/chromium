@@ -12,6 +12,10 @@
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"
 
+namespace cc {
+class SharedImageProvider;
+}  // namespace cc
+
 namespace gpu {
 
 class DecoderClient;
@@ -91,6 +95,8 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   virtual void SetUpForRasterCHROMIUMForTest() = 0;
   virtual void SetOOMErrorForTest() = 0;
   virtual void DisableFlushWorkaroundForTest() = 0;
+
+  virtual cc::SharedImageProvider* GetSharedImageProviderForTest() const = 0;
 
  protected:
   RasterDecoder(DecoderClient* client,
