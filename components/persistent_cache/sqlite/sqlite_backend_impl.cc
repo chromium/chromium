@@ -40,6 +40,7 @@
 #include "components/sqlite_vfs/vfs_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/streaming_blob_handle.h"
 #include "sql/transaction.h"
 
 namespace persistent_cache {

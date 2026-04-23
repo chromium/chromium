@@ -41,7 +41,6 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
-#include "sql/streaming_blob_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -64,6 +63,7 @@ namespace sql {
 
 class DatabaseMemoryDumpProvider;
 class Statement;
+class StreamingBlobHandle;
 
 namespace test {
 class ScopedErrorExpecter;
