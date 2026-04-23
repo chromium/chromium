@@ -109,7 +109,7 @@ NewTabUI::~NewTabUI() = default;
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {
   return url.DeprecatedGetOriginAsURL() ==
-         GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL();
+         chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL();
 }
 
 // static
