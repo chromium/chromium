@@ -95,13 +95,6 @@ struct ConfigInfo {
   url.mojom.Url web_continuity_originating_host_url;
 };
 
-// Consolidated data payload to populate the Glic internals page.
-struct InternalsDataPayload {
-  ProfileEnablement enablement;
-  ConfigInfo config;
-  bool show_error_allowed;
-};
-
 // Whether actuation is enabled, and if not, why not.
 enum ActuationEligibility {
   kEligible,
@@ -284,25 +277,6 @@ struct ZssConfig {
   string? additional_content;
 };
 
-// Configuration options for invoking Glic from the internals page.
-struct TriggerInvokeFromInternalsOptions {
-  InvocationSource invocation_source;
-  array<string> prompts;
-  AdditionalContext? additional_context;
-  InvokeConversationSelection conversation;
-  FeatureMode? feature_mode;
-  bool disable_zss;
-  ZssConfig? zss_config;
-  string? skill_id;
-  string? error_message;
-  mojo_base.mojom.TimeDelta? timeout;
-  AllowedInflightNavigation allowed_inflight_navigation;
-  bool auto_submit;
-  FreOverride fre_override = kUnspecified;
-  bool wait_for_panel_open;
-  InvokeTargetSurface surface;
-};
-
 // Page handler for the glic WebUI.
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
@@ -343,37 +317,6 @@ interface PageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
-};
-
-// Page handler for the glic internals WebUI.
-interface InternalsPageHandler {
-  // Called by the internals WebUI page to get the data it will present.
-  GetInternalsDataPayload() => (InternalsDataPayload internals_data);
-
-  // Sets the guest URL presets for the internals page.
-  SetGuestUrlPresets(url.mojom.Url autopush,
-                     url.mojom.Url staging,
-                     url.mojom.Url preprod,
-                     url.mojom.Url prod);
-
-  // Triggers an invocation for testing from the internals page.
-  TriggerInvokeFromInternalsAction(
-      TriggerInvokeFromInternalsOptions options)
-      => (bool success, string error_message);
-
-  // Sets the web continuity originating host URL preset for the internals page.
-  SetWebContinuityOriginatingHostUrlPreset(
-      url.mojom.Url web_continuity_originating_host_url);
-
-  // Sets whether errors are allowed to be shown.
-  SetShowErrorAllowed(bool allowed);
-};
-
-// Factory for InternalsPageHandler used in chrome://glic/internals.
-interface InternalsPageHandlerFactory {
-  // Creates the InternalsPageHandler for chrome://glic/internals.
-  CreateInternalsPageHandler(
-      pending_receiver<InternalsPageHandler> receiver);
 };
 
 // @generate glic_api

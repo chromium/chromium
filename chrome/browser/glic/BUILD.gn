@@ -508,6 +508,7 @@ mojom("mojo_bindings") {
   sources = [
     "host/glic.mojom",
     "host/glic_features.mojom",
+    "host/glic_internals.mojom",
   ]
   webui_module_path = "/"
 
