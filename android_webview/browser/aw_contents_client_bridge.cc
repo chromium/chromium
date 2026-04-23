@@ -119,6 +119,16 @@ AwContentsClientBridge::~AwContentsClientBridge() {
     // it is possible that java object lifetime can exceed the AwContens.
     Java_AwContentsClientBridge_setNativeContentsClientBridge(env, obj, 0);
   }
+
+  // Ensure any pending dialogs are cleanly canceled so that the
+  // RenderProcessHost is unblocked and mojo bindings are cleanly closed.
+  for (decltype(pending_js_dialog_callbacks_)::iterator iter(
+           &pending_js_dialog_callbacks_);
+       !iter.IsAtEnd(); iter.Advance()) {
+    if (iter.GetCurrentValue()) {
+      std::move(*iter.GetCurrentValue()).Run(false, std::u16string());
+    }
+  }
 }
 
 void AwContentsClientBridge::AllowCertificateError(int cert_error,

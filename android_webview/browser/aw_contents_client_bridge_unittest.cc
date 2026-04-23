@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/browser/javascript_dialog_manager.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -163,6 +164,35 @@ TEST_F(AwContentsClientBridgeTest,
   EXPECT_EQ(nullptr, selected_cert_.get());
   EXPECT_EQ(nullptr, selected_key_.get());
   EXPECT_EQ(1, cert_selected_callbacks_);
+}
+
+TEST_F(AwContentsClientBridgeTest, PendingJsDialogsCanceledOnDestruction) {
+  bool callback_called = false;
+  bool success_result = true;
+  std::u16string user_input_result;
+
+  auto callback = base::BindOnce(
+      [](bool* callback_called, bool* success_result,
+         std::u16string* user_input_result, bool success,
+         const std::u16string& user_input) {
+        *callback_called = true;
+        *success_result = success;
+        *user_input_result = user_input;
+      },
+      &callback_called, &success_result, &user_input_result);
+
+  bridge_->RunJavaScriptDialog(content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+                               GURL("https://example.com"), std::u16string(),
+                               std::u16string(), std::move(callback));
+
+  // Destroy the bridge. This should trigger the callback with success=false.
+  bridge_.reset();
+
+  EXPECT_TRUE(callback_called)
+      << "The dialog callback should be invoked when the bridge is destroyed.";
+  EXPECT_FALSE(success_result)
+      << "The dialog callback should return false for success when dropped "
+      << "due to bridge destruction.";
 }
 
 }  // namespace android_webview
