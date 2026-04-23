@@ -5,5 +5,5 @@
 // Changes the document's title based on the existence/value of
 // window.mainWorldFlag, which is set by a script that's part of a web page.
 document.title = window.mainWorldFlag === 'from main world' ?
-  'MAIN_WORLD' :
-  'USER_SCRIPTS_WORLD';
+    'MAIN_WORLD' :
+    'USER_SCRIPTS_WORLD';

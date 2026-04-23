@@ -7,7 +7,7 @@ const kRunAt = 'document_end';
 
 const kUserScriptCode = `var div = document.createElement('div');
      div.id = 'user-script-code';
-     document.body.appendChild(div);`
+     document.body.appendChild(div);`;
 
 async function checkApiAvailability() {
   // API hasn't been bound in this worker session before.
@@ -19,7 +19,7 @@ async function checkApiAvailability() {
   // If the API was bound before in this same worker session then it can still
   // look bound so let's call an API method to see if it's actually still
   // available to use.
-  var apiAvailableStatus;
+  let apiAvailableStatus;
   try {
     await chrome.userScripts.getScripts();
     apiAvailableStatus = 'available';
@@ -42,7 +42,7 @@ async function registerUserScripts() {
       matches: kMatches,
       js: [{code: kUserScriptCode}],
       runAt: kRunAt,
-    }
+    },
   ];
 
   try {

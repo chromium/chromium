@@ -9,7 +9,7 @@ import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_scri
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -24,14 +24,14 @@ chrome.test.runTests([
         id: 'us1',
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'us2',
         matches: ['*://*/*'],
         js: [{file: 'user_script_2.js'}],
-        runAt: 'document_end'
-      }
+        runAt: 'document_end',
+      },
     ];
 
     await chrome.userScripts.register(userScripts);
@@ -71,14 +71,14 @@ chrome.test.runTests([
         id: 'us1',
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'us2',
         matches: ['*://*/*'],
         js: [{file: 'user_script_2.js'}],
-        runAt: 'document_end'
-      }
+        runAt: 'document_end',
+      },
     ];
 
     await chrome.userScripts.register(userScripts);
@@ -118,7 +118,7 @@ chrome.test.runTests([
         id: 'us1',
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
     ];
 
@@ -134,7 +134,7 @@ chrome.test.runTests([
     await chrome.userScripts.unregister({ids: []});
 
     // Verify user script is still registered.
-    let registeredUserScripts = await chrome.userScripts.getScripts();
+    const registeredUserScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(1, registeredUserScripts.length);
 
     // Re-navigate to the requested url, and verify user script is injected.
@@ -168,7 +168,7 @@ chrome.test.runTests([
         id: validId,
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
     ];
 
@@ -181,7 +181,7 @@ chrome.test.runTests([
         `Error: Nonexistent script ID '${nonexistentId}'`);
 
     // unregister should be a no-op if it fails.
-    let registeredUserScripts = await chrome.userScripts.getScripts();
+    const registeredUserScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(1, registeredUserScripts.length);
     chrome.test.assertEq(validId, registeredUserScripts[0].id);
 
@@ -196,14 +196,14 @@ chrome.test.runTests([
       id: 'userScript',
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     const contentScripts = [{
       id: 'contentScript',
       matches: ['*://*/*'],
       js: ['content_script.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(userScripts);

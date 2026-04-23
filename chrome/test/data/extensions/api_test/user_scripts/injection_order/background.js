@@ -12,32 +12,35 @@ async function openExampleUrl() {
 }
 
 // Individual code pieces that append to a document's title.
-const codeA = {code: `document.title += ' script aaaa';`};
-const codeB = {code: `document.title += ' script bbbb';`};
-const codeC = {code: `document.title += ' script cccc';`};
+const codeA = {
+  code: `document.title += ' script aaaa';`,
+};
+const codeB = {
+  code: `document.title += ' script bbbb';`,
+};
+const codeC = {
+  code: `document.title += ' script cccc';`,
+};
 
 // Individual scripts using the code blocks.
-const scriptA =
-    {
-      id: 'aaaa',
-      matches: ['*://example.com/*'],
-      js: [codeA],
-      runAt: 'document_end',
-    };
-const scriptB =
-    {
-      id: 'bbbb',
-      matches: ['*://example.com/*'],
-      js: [codeB],
-      runAt: 'document_end',
-    };
-const scriptC =
-    {
-      id: 'cccc',
-      matches: ['*://example.com/*'],
-      js: [codeC],
-      runAt: 'document_end',
-    };
+const scriptA = {
+  id: 'aaaa',
+  matches: ['*://example.com/*'],
+  js: [codeA],
+  runAt: 'document_end',
+};
+const scriptB = {
+  id: 'bbbb',
+  matches: ['*://example.com/*'],
+  js: [codeB],
+  runAt: 'document_end',
+};
+const scriptC = {
+  id: 'cccc',
+  matches: ['*://example.com/*'],
+  js: [codeC],
+  runAt: 'document_end',
+};
 
 // A series of tests to exercise injection order of user scripts relative to
 // one another (within the same extension).
@@ -87,13 +90,12 @@ chrome.test.runTests([
   // registration, the injection order is the same as the order the code pieces
   // are declared in.
   async function individualScriptsInAUserScriptInjectInDeclaredOrder() {
-    const sharedScript =
-        {
-          id: 'cccc',
-          matches: ['*://example.com/*'],
-          js: [codeB, codeA, codeC],
-          runAt: 'document_end',
-        };
+    const sharedScript = {
+      id: 'cccc',
+      matches: ['*://example.com/*'],
+      js: [codeB, codeA, codeC],
+      runAt: 'document_end',
+    };
     await chrome.userScripts.register([sharedScript]);
 
     // Register a single user script with all three code pieces.

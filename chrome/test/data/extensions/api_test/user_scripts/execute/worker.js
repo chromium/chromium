@@ -9,14 +9,14 @@ import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_scri
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://requested.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
 async function navigateToNotRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://not-requested.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -90,7 +90,7 @@ chrome.test.runTests([
 
     const script = {
       js: [{file: 'script.js', code: ''}],
-      target: {tabId: tab.id}
+      target: {tabId: tab.id},
     };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
@@ -109,7 +109,7 @@ chrome.test.runTests([
 
     const script = {
       js: [{file: 'script.js'}],
-      target: {allFrames: true, frameIds: [456], tabId: tab.id}
+      target: {allFrames: true, frameIds: [456], tabId: tab.id},
     };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
@@ -128,7 +128,7 @@ chrome.test.runTests([
 
     const script = {
       js: [{file: 'script.js'}],
-      target: {documentIds: ['documentId'], frameIds: [456], tabId: tab.id}
+      target: {documentIds: ['documentId'], frameIds: [456], tabId: tab.id},
     };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
@@ -156,7 +156,7 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
             documentIds: documentIds,
-          }
+          },
         }),
         `Error: No document with id ${nonExistentDocumentId} in ` +
             `tab with id ${tab.id}`);
@@ -183,7 +183,7 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
             frameIds: frameIds,
-          }
+          },
         }),
         `Error: No frame with id ${nonExistentFrameId} in ` +
             `tab with id ${tab.id}`);
@@ -226,7 +226,7 @@ chrome.test.runTests([
     const script = {
       js: [{file: 'script.js'}],
       target: {tabId: tab.id},
-      worldId: '_foo'
+      worldId: '_foo',
     };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
@@ -243,7 +243,7 @@ chrome.test.runTests([
       js: [{file: 'script.js'}],
       target: {tabId: tab.id},
       world: 'MAIN',
-      worldId: '123'
+      worldId: '123',
     };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
@@ -290,10 +290,11 @@ chrome.test.runTests([
     const tab = await navigateToRequestedUrl();
     const script = {
       js: [
-        {code: injectDivScript}, {file: 'inject_element.js'},
-        {code: injectDivScript2}
+        {code: injectDivScript},
+        {file: 'inject_element.js'},
+        {code: injectDivScript2},
       ],
-      target: {tabId: tab.id}
+      target: {tabId: tab.id},
     };
     await chrome.userScripts.execute(script);
 
@@ -319,7 +320,7 @@ chrome.test.runTests([
     // When `world` is unspecified, it defaults to the user script world.
     const defaultWorldScript = {
       js: [{code: `window.userScriptWorldFlag = 'from user script world'`}],
-      target: {tabId: tab.id}
+      target: {tabId: tab.id},
     };
     await chrome.userScripts.execute(defaultWorldScript);
 
@@ -328,7 +329,7 @@ chrome.test.runTests([
     const userWorldScript = {
       js: [{code: executionWorldFlagsScript}],
       target: {tabId: tab.id},
-      world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
+      world: chrome.userScripts.ExecutionWorld.USER_SCRIPT,
     };
     let results = await chrome.userScripts.execute(userWorldScript);
 
@@ -342,7 +343,7 @@ chrome.test.runTests([
     const mainWorldScript = {
       js: [{code: executionWorldFlagsScript}],
       target: {tabId: tab.id},
-      world: chrome.userScripts.ExecutionWorld.MAIN
+      world: chrome.userScripts.ExecutionWorld.MAIN,
     };
     results = await chrome.userScripts.execute(mainWorldScript);
 
@@ -365,7 +366,7 @@ chrome.test.runTests([
     const scriptA_SetVariable = {
       js: [{code: `window.worldAFlag = true`}],
       target: {tabId: tab.id},
-      worldId: 'A'
+      worldId: 'A',
     };
     await chrome.userScripts.execute(scriptA_SetVariable);
 
@@ -373,7 +374,7 @@ chrome.test.runTests([
     const scriptA_GetVariable = {
       js: [{code: worldIdScript}],
       target: {tabId: tab.id},
-      worldId: 'A'
+      worldId: 'A',
     };
     let results = await chrome.userScripts.execute(scriptA_GetVariable);
 
@@ -385,7 +386,7 @@ chrome.test.runTests([
     const scriptB = {
       js: [{code: worldIdScript}],
       target: {tabId: tab.id},
-      worldId: 'B'
+      worldId: 'B',
     };
     results = await chrome.userScripts.execute(scriptB);
 
@@ -394,4 +395,4 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
-])
+]);

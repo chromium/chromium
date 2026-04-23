@@ -9,7 +9,7 @@ import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_scri
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://hostperms-a.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -24,25 +24,25 @@ chrome.test.runTests([
     await chrome.userScripts.unregister();
 
     // Register a user script.
-    const existentId = 'existentId'
+    const existentId = 'existentId';
     const scriptsToRegister = [
-      {id: existentId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]}
+      {id: existentId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]},
     ];
     await chrome.userScripts.register(scriptsToRegister);
 
     // Updating scripts when one of them has a non-existent id should fail.
-    const nonExistentId = 'nonExistentId'
+    const nonExistentId = 'nonExistentId';
     const scriptsToUpdate = [
       {
         id: existentId,
         matches: ['*://hostperms-a.com/*'],
-        js: [{file: 'user_script_2.js'}]
+        js: [{file: 'user_script_2.js'}],
       },
       {
         id: nonExistentId,
         matches: ['*://hostperms-a.com/*'],
-        js: [{file: 'user_script_3.js'}]
-      }
+        js: [{file: 'user_script_3.js'}],
+      },
     ];
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.update(scriptsToUpdate),
@@ -56,7 +56,7 @@ chrome.test.runTests([
       js: [{file: 'user_script.js'}],
       runAt: 'document_idle',
       allFrames: false,
-      world: 'USER_SCRIPT'
+      world: 'USER_SCRIPT',
     }];
     const registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -71,7 +71,7 @@ chrome.test.runTests([
     await chrome.userScripts.unregister();
 
     // Register a user script.
-    const scriptId = 'us1'
+    const scriptId = 'us1';
     const scriptsToRegister =
         [{id: scriptId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]}];
     await chrome.userScripts.register(scriptsToRegister);
@@ -81,13 +81,13 @@ chrome.test.runTests([
       {
         id: scriptId,
         matches: ['*://hostperms-a.com/*'],
-        js: [{file: 'user_script_2.js'}]
+        js: [{file: 'user_script_2.js'}],
       },
       {
         id: scriptId,
         matches: ['*://abc.com/*'],
-        js: [{file: 'user_script_2.js'}]
-      }
+        js: [{file: 'user_script_2.js'}],
+      },
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -101,7 +101,7 @@ chrome.test.runTests([
       js: [{file: 'user_script.js'}],
       runAt: 'document_idle',
       allFrames: false,
-      world: 'USER_SCRIPT'
+      world: 'USER_SCRIPT',
     }];
     const registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -118,10 +118,10 @@ chrome.test.runTests([
     // Register user script.
     const scriptsToRegister = [
       {id: 'us1', matches: ['*://*/*'], js: [{file: 'user_script.js'}]},
-      {id: 'us2', matches: ['*://*/*'], js: [{file: 'user_script_2.js'}]}
+      {id: 'us2', matches: ['*://*/*'], js: [{file: 'user_script_2.js'}]},
     ];
     await chrome.userScripts.register(scriptsToRegister);
-    let tab = await navigateToRequestedUrl();
+    const tab = await navigateToRequestedUrl();
 
     // Verify user scripts were registered and injected.
     let registeredScripts = await chrome.userScripts.getScripts();
@@ -136,13 +136,13 @@ chrome.test.runTests([
       {
         id: 'us1',
         matches: ['*://hostperms-a.com/*'],
-        js: [{file: 'user_script_3.js'}]
+        js: [{file: 'user_script_3.js'}],
       },
       {
         id: 'us2',
         matches: ['*://hostperms-a.com/*'],
-        js: [{file: nonExistentFile}]
-      }
+        js: [{file: nonExistentFile}],
+      },
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -167,31 +167,30 @@ chrome.test.runTests([
     // Register user script.
     const scriptId = 'us1';
     const scriptsToRegister = [
-      {id: scriptId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]}
+      {id: scriptId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]},
     ];
     await chrome.userScripts.register(scriptsToRegister);
-    let tab = await navigateToRequestedUrl();
+    const tab = await navigateToRequestedUrl();
 
     // Verify user script was registered and injected.
     let registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(1, registeredScripts.length);
     chrome.test.assertEq(
-        ['injected_user_script'],
-        await getInjectedElementIds(tab.id));
+        ['injected_user_script'], await getInjectedElementIds(tab.id));
 
     // Updating a script with an empty script source list should fail.
     const scriptsToUpdate = [
       {
         id: scriptId,
         matches: ['*://hostperms-a.com/*'],
-        js: []
-      }
+        js: [],
+      },
     ];
 
     await chrome.test.assertPromiseRejects(
-      chrome.userScripts.update(scriptsToUpdate),
-      `Error: User script with ID '${scriptId}' must specify at least one ` +
-          `js source.`);
+        chrome.userScripts.update(scriptsToUpdate),
+        `Error: User script with ID '${scriptId}' must specify at least one ` +
+            `js source.`);
 
     // Verify previously registered user script was not affected.
     const expectedScripts = [{
@@ -200,7 +199,7 @@ chrome.test.runTests([
       js: [{file: 'user_script.js'}],
       runAt: 'document_idle',
       allFrames: false,
-      world: "USER_SCRIPT"
+      world: 'USER_SCRIPT',
     }];
     registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -224,7 +223,7 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
         worldId: '_',
-      }
+      },
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -257,7 +256,7 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
         worldId: '',
-      }
+      },
     ];
 
     await chrome.userScripts.update(scriptUpdate);
@@ -290,7 +289,7 @@ chrome.test.runTests([
       excludeMatches: ['*://abc.com/*'],
       js: [{file: 'user_script.js'}],
       runAt: 'document_end',
-      allFrames: true
+      allFrames: true,
     }];
     await chrome.userScripts.register(scriptsToRegister);
 
@@ -306,7 +305,7 @@ chrome.test.runTests([
         ['injected_user_script'], await getInjectedElementIds(tab.id));
 
     // Update user script matches and javascript file.
-    var scriptsToUpdate = [{
+    const scriptsToUpdate = [{
       id: 'us1',
       matches: ['*://hostperms-b.com/*'],
       excludeMatches: ['*://def.com/*'],
@@ -355,10 +354,10 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
     await chrome.userScripts.register(scriptsToRegister);
-    let tab = await navigateToRequestedUrl();
+    const tab = await navigateToRequestedUrl();
 
     // Verify user script was registered and injected
     let registeredScripts = await chrome.userScripts.getScripts();
@@ -368,7 +367,7 @@ chrome.test.runTests([
 
     // Update user script with no changes.
     const scriptsToUpdate = [{
-      id: 'us1'
+      id: 'us1',
     }];
     await chrome.userScripts.update(scriptsToUpdate);
 
@@ -379,7 +378,7 @@ chrome.test.runTests([
       js: [{file: 'user_script.js'}],
       runAt: 'document_end',
       allFrames: false,
-      world:"USER_SCRIPT"
+      world: 'USER_SCRIPT',
     }];
     registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -398,7 +397,7 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://hostperms-a.com/*'],
       js: [{file: 'inject_to_world.js'}],
-      world: 'MAIN'
+      world: 'MAIN',
     }];
     await chrome.userScripts.register(scriptsToRegister);
 
@@ -414,7 +413,7 @@ chrome.test.runTests([
     chrome.test.assertEq('MAIN_WORLD', tab.title);
 
     // Update user script world.
-    var scriptsToUpdate =
+    const scriptsToUpdate =
         [{id: 'us1', js: [{file: 'inject_to_world.js'}], world: 'USER_SCRIPT'}];
     await chrome.userScripts.update(scriptsToUpdate);
 
@@ -425,7 +424,7 @@ chrome.test.runTests([
       js: [{file: 'inject_to_world.js'}],
       runAt: 'document_idle',
       allFrames: false,
-      world: 'USER_SCRIPT'
+      world: 'USER_SCRIPT',
     }];
     registeredScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq(expectedScripts, registeredScripts);
@@ -445,21 +444,21 @@ chrome.test.runTests([
 
     // Register two user scripts that each inject a different element into the
     // page.
-    var scriptsToRegister = [
+    const scriptsToRegister = [
       {
         id: 'us1',
         matches: ['*://*/*'],
         js: [{file: 'user_script.js'}],
         runAt: 'document_end',
-        allFrames: true
+        allFrames: true,
       },
       {
         id: 'us2',
         matches: ['*://*/*'],
         js: [{file: 'user_script_2.js'}],
         runAt: 'document_end',
-        allFrames: true
-      }
+        allFrames: true,
+      },
     ];
     await chrome.userScripts.register(scriptsToRegister);
     let tab = await navigateToRequestedUrl();
@@ -474,18 +473,18 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://*/*'],
       js: [{file: 'user_script_3.js'}],
-      allFrames: false
+      allFrames: false,
     }];
     let scriptToUpdate2 = [{
       id: 'us2',
       matches: ['*://*/*'],
       js: [{file: 'user_script_4.js'}],
-      allFrames: true
+      allFrames: true,
     }];
 
     await Promise.allSettled([
       chrome.userScripts.update(scriptToUpdate1),
-      chrome.userScripts.update(scriptToUpdate2)
+      chrome.userScripts.update(scriptToUpdate2),
     ]);
     tab = await navigateToRequestedUrl();
 
@@ -500,18 +499,18 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
-      allFrames: false
+      allFrames: false,
     }];
     scriptToUpdate2 = [{
       id: 'us1',
       matches: ['*://*/*'],
       js: [{file: 'user_script_2.js'}],
-      allFrames: true
+      allFrames: true,
     }];
 
     await Promise.allSettled([
       chrome.userScripts.update(scriptToUpdate1),
-      chrome.userScripts.update(scriptToUpdate2)
+      chrome.userScripts.update(scriptToUpdate2),
     ]);
     tab = await navigateToRequestedUrl();
 
@@ -524,5 +523,5 @@ chrome.test.runTests([
 
 
     chrome.test.succeed();
-  }
+  },
 ]);

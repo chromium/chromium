@@ -6,18 +6,16 @@ import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_scri
 
 const otherWorldId = 'some other id';
 
-const configForDefaultWorld =
-    {
-      csp: 'test csp',
-      messaging: true,
-    };
+const configForDefaultWorld = {
+  csp: 'test csp',
+  messaging: true,
+};
 
-const configForOtherWorld =
-    {
-      csp: 'another csp',
-      messaging: false,
-      worldId: otherWorldId,
-    };
+const configForOtherWorld = {
+  csp: 'another csp',
+  messaging: false,
+  worldId: otherWorldId,
+};
 
 function sortWorlds(worlds) {
   function worldIdOrDefault(id) {
@@ -56,7 +54,7 @@ chrome.test.runTests([
   },
 
   async function emptyWorldIdMapsToDefaultWorld() {
-    let defaultWorldWithEmptyIdConfig = { ...configForDefaultWorld };
+    const defaultWorldWithEmptyIdConfig = {...configForDefaultWorld};
     defaultWorldWithEmptyIdConfig.worldId = '';
 
     // Assign a config for a world with ''. This will map to the default world

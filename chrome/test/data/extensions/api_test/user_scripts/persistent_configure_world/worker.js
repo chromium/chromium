@@ -21,8 +21,7 @@ const evalScript = `let result;
 
 
 // Script that listens for a message and sends a response.
-const receiveMessageScript =
-    `if (chrome.runtime?.sendMessage) {
+const receiveMessageScript = `if (chrome.runtime?.sendMessage) {
        chrome.runtime.onMessage.addListener(
          (message, sender, sendResponse) => {
          sendResponse(message == 'ping' ? 'pong' : 'Bad message');
@@ -39,7 +38,7 @@ const updateTitleScript =
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://requested.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -50,15 +49,16 @@ async function runFirstSession() {
     id: 'us1',
     matches: ['*://*/*'],
     js: [
-      {code: receiveMessageScript}, {code: updateTitleScript},
-      {code: evalScript}
+      {code: receiveMessageScript},
+      {code: updateTitleScript},
+      {code: evalScript},
     ],
-    runAt: 'document_end'
+    runAt: 'document_end',
   }];
 
   await chrome.userScripts.register(userScripts);
   chrome.userScripts.configureWorld(
-    { messaging: true, csp: `script-src 'unsafe-eval'` });
+      {messaging: true, csp: `script-src 'unsafe-eval'`});
 
   const tab = await navigateToRequestedUrl();
 
@@ -66,7 +66,7 @@ async function runFirstSession() {
   chrome.test.assertEq('messaging enabled', tab.title);
 
   // Verify user script can receive messages.
-  let response = await chrome.tabs.sendMessage(tab.id, 'ping');
+  const response = await chrome.tabs.sendMessage(tab.id, 'ping');
   chrome.test.assertEq('pong', response);
 
   // Verify user script uses the customized csp.
@@ -88,7 +88,7 @@ async function runSecondSession() {
   chrome.test.assertEq('messaging enabled', tab.title);
 
   // Verify user script can receive messages.
-  let response = await chrome.tabs.sendMessage(tab.id, 'ping');
+  const response = await chrome.tabs.sendMessage(tab.id, 'ping');
   chrome.test.assertEq('pong', response);
 
   // Verify user script still uses the customized csp.
@@ -126,12 +126,13 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  if (testName.startsWith('PRE_PRE_PersistentWorldConfiguration'))
+  if (testName.startsWith('PRE_PRE_PersistentWorldConfiguration')) {
     runFirstSession();
-  else if (testName.startsWith('PRE_PersistentWorldConfiguration'))
+  } else if (testName.startsWith('PRE_PersistentWorldConfiguration')) {
     runSecondSession();
-  else if (testName.startsWith('PersistentWorldConfiguration'))
+  } else if (testName.startsWith('PersistentWorldConfiguration')) {
     runThirdSession();
-  else
+  } else {
     chrome.test.fail();
+  }
 });

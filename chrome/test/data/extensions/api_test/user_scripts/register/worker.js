@@ -23,7 +23,7 @@ async function runExecutionWorldTest(world, expectedTitle) {
     matches: ['*://*/*'],
     js: [{file: 'inject_to_world.js'}],
     runAt: 'document_end',
-    world
+    world,
   }];
   await chrome.userScripts.register(scripts);
   const config = await chrome.test.getConfig();
@@ -48,7 +48,7 @@ chrome.test.runTests([
 
     const scripts = [
       {id: scriptId, matches: ['*://*/*'], js: [{file: 'script.js'}]},
-      {id: scriptId, matches: ['*://*/*'], js: [{file: 'script_2.js'}]}
+      {id: scriptId, matches: ['*://*/*'], js: [{file: 'script_2.js'}]},
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -66,11 +66,12 @@ chrome.test.runTests([
 
     const scriptId = 'script2';
     const scripts = [
-      {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]}
+      {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]},
     ];
 
     const results = await Promise.allSettled([
-      chrome.userScripts.register(scripts), chrome.userScripts.register(scripts)
+      chrome.userScripts.register(scripts),
+      chrome.userScripts.register(scripts),
     ]);
 
     chrome.test.assertEq('fulfilled', results[0].status);
@@ -88,7 +89,7 @@ chrome.test.runTests([
 
     const scriptId = 'script3';
     const scripts = [
-      {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]}
+      {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]},
     ];
 
     await chrome.userScripts.register(scripts);
@@ -133,7 +134,7 @@ chrome.test.runTests([
 
     const scriptFile = 'nonexistent.js';
     const scripts = [
-      {id: 'script4', matches: ['*://notused.com/*'], js: [{file: scriptFile}]}
+      {id: 'script4', matches: ['*://notused.com/*'], js: [{file: scriptFile}]},
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -198,7 +199,7 @@ chrome.test.runTests([
     const scripts = [{
       id: scriptId,
       matches: ['*://notused.com/*'],
-      js: [{file: 'script.js', code: ''}]
+      js: [{file: 'script.js', code: ''}],
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -231,7 +232,7 @@ chrome.test.runTests([
     const scripts = [{
       id: 'invalidMatchPattern',
       matches: ['invalid**match////'],
-      js: [{file: 'script.js'}]
+      js: [{file: 'script.js'}],
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -248,7 +249,7 @@ chrome.test.runTests([
       id: 'invalidMatchPattern',
       matches: ['http://example.com/*'],
       js: [{file: 'script.js'}],
-      worldId: '_'
+      worldId: '_',
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -265,7 +266,7 @@ chrome.test.runTests([
       matches: ['http://example.com/*'],
       js: [{file: 'script.js'}],
       world: 'MAIN',
-      worldId: '123'
+      worldId: '123',
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -283,8 +284,8 @@ chrome.test.runTests([
     const scripts = [{
       id: 'hostPerms',
       matches: ['*://requested.com/*'],
-      js: [{ file: 'inject_element.js' }, { file: 'inject_element_2.js' }],
-      runAt: 'document_end'
+      js: [{file: 'inject_element.js'}, {file: 'inject_element_2.js'}],
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
@@ -297,8 +298,8 @@ chrome.test.runTests([
 
     // Verify script files were injected.
     chrome.test.assertEq(
-      ['injected_user_script', 'injected_user_script_2'],
-      await getInjectedElementIds(tab.id));
+        ['injected_user_script', 'injected_user_script_2'],
+        await getInjectedElementIds(tab.id));
     chrome.test.succeed();
   },
 
@@ -311,7 +312,7 @@ chrome.test.runTests([
       id: 'noHostPerms',
       matches: ['*://non-requested.com/*'],
       js: [{file: 'script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
@@ -344,7 +345,7 @@ chrome.test.runTests([
       includeGlobs: ['*include_glob*'],
       excludeGlobs: ['*exclude_glob*'],
       js: [{file: 'script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
@@ -414,13 +415,13 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://requested.com/*'],
       js: [{code: injectDivScript1}, {code: injectDivScript2}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
 
     // Verify script was registered.
-    let registeredUserScripts = await chrome.userScripts.getScripts();
+    const registeredUserScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq('us1', registeredUserScripts[0].id);
     chrome.test.assertEq(
         [{code: injectDivScript1}, {code: injectDivScript2}],
@@ -450,13 +451,13 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://matches.com/*'],
       js: [{code: injectDivScript1}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
 
     // Verify script was registered.
-    let registeredUserScripts = await chrome.userScripts.getScripts();
+    const registeredUserScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq('us1', registeredUserScripts[0].id);
 
     // After the script has been registered, navigate to a url requested by the
@@ -480,13 +481,13 @@ chrome.test.runTests([
       id: 'us1',
       matches: ['*://non-requested.com/*'],
       js: [{code: 'document.title = \'NEW TITLE\''}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.userScripts.register(scripts);
 
     // Verify script was registered.
-    let registeredUserScripts = await chrome.userScripts.getScripts();
+    const registeredUserScripts = await chrome.userScripts.getScripts();
     chrome.test.assertEq('us1', registeredUserScripts[0].id);
 
     // After the script has been registered, navigate to a url where the script
@@ -506,7 +507,7 @@ chrome.test.runTests([
   async function fileUsedAsContentScript() {
     await chrome.userScripts.unregister();
 
-    const file = 'script.js'
+    const file = 'script.js';
     const contentScripts =
         [{id: 'contentScript', matches: ['*://*/*'], js: [file]}];
     const userScripts =

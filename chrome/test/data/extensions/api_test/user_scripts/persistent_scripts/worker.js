@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 const injectDivScript = `var div = document.createElement('div');
                          div.id = 'injected_code';
@@ -12,7 +12,7 @@ const injectDivScript = `var div = document.createElement('div');
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
   const url = `http://requested.com:${config.testServer.port}/simple.html`;
-  let tab = await openTab(url);
+  const tab = await openTab(url);
   return tab;
 }
 
@@ -24,15 +24,15 @@ async function runFirstSession() {
       matches: ['*://*/*'],
       excludeGlobs: ['*exclude_glob*'],
       js: [{code: injectDivScript}, {file: 'user_script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     },
     {
       id: 'us2',
       matches: ['*://*/*'],
       includeGlobs: ['*include_glob*'],
       js: [{file: 'user_script_2.js'}],
-      runAt: 'document_end'
-    }
+      runAt: 'document_end',
+    },
   ];
 
   await chrome.userScripts.register(userScripts);
@@ -58,7 +58,7 @@ async function runSecondSession() {
       js: [{code: injectDivScript}, {file: 'user_script.js'}],
       allFrames: false,
       runAt: 'document_end',
-      world: 'USER_SCRIPT'
+      world: 'USER_SCRIPT',
     },
     {
       id: 'us2',
@@ -67,8 +67,8 @@ async function runSecondSession() {
       js: [{file: 'user_script_2.js'}],
       allFrames: false,
       runAt: 'document_end',
-      world: 'USER_SCRIPT'
-    }
+      world: 'USER_SCRIPT',
+    },
   ];
 
   // Verify scripts are registered.
@@ -98,10 +98,10 @@ async function runSecondSession() {
 async function runThirdSession() {
   const userScripts = await chrome.userScripts.getScripts();
   chrome.test.assertEq(1, userScripts.length);
-  chrome.test.assertEq('us1', userScripts[0].id)
+  chrome.test.assertEq('us1', userScripts[0].id);
   const contentScripts = await chrome.scripting.getRegisteredContentScripts();
   chrome.test.assertEq(1, contentScripts.length);
-  chrome.test.assertEq('cs1', contentScripts[0].id)
+  chrome.test.assertEq('cs1', contentScripts[0].id);
 
   // Verify registered scripts are injected
   const tab = await navigateToRequestedUrl();
@@ -117,12 +117,13 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  if (testName.startsWith('PRE_PRE_PersistentScripts'))
+  if (testName.startsWith('PRE_PRE_PersistentScripts')) {
     runFirstSession();
-  else if (testName.startsWith('PRE_PersistentScripts'))
+  } else if (testName.startsWith('PRE_PersistentScripts')) {
     runSecondSession();
-  else if (testName.startsWith('PersistentScripts'))
+  } else if (testName.startsWith('PersistentScripts')) {
     runThirdSession();
-  else
+  } else {
     chrome.test.fail();
+  }
 });
