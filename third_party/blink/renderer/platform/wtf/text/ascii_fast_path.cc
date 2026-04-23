@@ -59,20 +59,20 @@ CharacterAttributes(base::span<const LChar> chars) {
     // the word, determine if it's between A and Z. This algorithm uses only
     // bit operators and no conditionals. It uses the most significant bit
     // (msb) of each byte to store data.
-    constexpr MachineWord kMSBMask = FillCharsInWord(0x80);
-    constexpr MachineWord k7FMask = FillCharsInWord(0x7F);
+    constexpr MachineWord kMsbMask = FillCharsInWord(0x80);
+    constexpr MachineWord k7fMask = FillCharsInWord(0x7F);
     constexpr MachineWord kLowerAddend = FillCharsInWord(127 - ('A' - 1));
     constexpr MachineWord kUpperMinuend = FillCharsInWord(127 + ('Z' + 1));
 
     // 1. Strip the most significant bit from each character as we need it to
     // mark chars between A and Z (we correct for this later).
-    const MachineWord word_stripped_msb = word & k7FMask;
+    const MachineWord word_stripped_msb = word & k7fMask;
 
-    // 2. `wordStrippedMsb + kLowerAddend` sets msb for all chars >= 'A' and
+    // 2. `word_stripped_msb + kLowerAddend` sets msb for all chars >= 'A' and
     // is guaranteed not to overflow.
     const MachineWord greater_equal_upper_a = word_stripped_msb + kLowerAddend;
 
-    // 3. `kUpperMinuend - wordStrippedMsb` sets msb for all chars <= 'Z' and
+    // 3. `kUpperMinuend - word_stripped_msb` sets msb for all chars <= 'Z' and
     // is guaranteed not to underflow.
     const MachineWord less_equal_upper_z = kUpperMinuend - word_stripped_msb;
 
@@ -82,7 +82,7 @@ CharacterAttributes(base::span<const LChar> chars) {
 
     // 5. Zero out the non-msb bits. At this point, any byte == 128
     // had its lower 7 bits between [A,Z].
-    const MachineWord msb_only = msb_for_upper_case & kMSBMask;
+    const MachineWord msb_only = msb_for_upper_case & kMsbMask;
 
     // 6. AND with ~word to remove the msb for chars that were >= 128 to begin
     // with. At this point, if the value is non-zero, then there is at least
