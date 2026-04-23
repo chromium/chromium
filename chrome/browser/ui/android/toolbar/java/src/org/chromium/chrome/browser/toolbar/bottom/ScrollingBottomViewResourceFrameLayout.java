@@ -77,8 +77,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
             }
 
             @Override
-            @SuppressWarnings("NullAway")
-            public void onCaptureStart(Canvas canvas, @Nullable Rect dirtyRect) {
+            public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
                 // The android and composited views both have a shadow. The default state is to
                 // to show only the android shadow. When the bottom controls begin to scroll off,
                 // the android view is hidden, and the composited shadow is made visible. However,
@@ -107,7 +106,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     canvas.restore();
                 }
 
-                super.onCaptureStart(canvas, dirtyRect);
                 mLastCaptureSnapshotToken = mCurrentSnapshotToken;
             }
 

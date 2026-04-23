@@ -824,8 +824,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         @Override
-        @SuppressWarnings("NullAway")
-        public void onCaptureStart(Canvas canvas, @Nullable Rect dirtyRect) {
+        public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.Toolbar.BitmapCapture",
                     ToolbarCaptureType.TOP,
@@ -837,11 +836,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             canvas.clipRect(0, 0, mToolbarContainer.getWidth(), mToolbarContainer.getHeight());
             canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             canvas.restore();
-            dirtyRect.set(0, 0, mToolbarContainer.getWidth(), mToolbarContainer.getHeight());
 
             mToolbar.setTextureCaptureMode(true);
-
-            super.onCaptureStart(canvas, dirtyRect);
         }
 
         @Override

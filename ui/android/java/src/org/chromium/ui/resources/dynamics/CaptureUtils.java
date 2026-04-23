@@ -62,7 +62,7 @@ public class CaptureUtils {
         if (!willDraw) {
             return false;
         }
-        observer.onCaptureStart(canvas, dirtyRect.isEmpty() ? null : dirtyRect);
+        observer.onCaptureStart(canvas, dirtyRect);
         if (!dirtyRect.isEmpty()) {
             canvas.clipRect(dirtyRect);
         }

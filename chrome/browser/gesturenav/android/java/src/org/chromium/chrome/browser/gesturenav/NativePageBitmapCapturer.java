@@ -87,7 +87,7 @@ public class NativePageBitmapCapturer {
                     SCALE,
                     new CaptureObserver() {
                         @Override
-                        public void onCaptureStart(Canvas canvas, @Nullable Rect dirtyRect) {
+                        public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
                             assumeNonNull(tab.getNativePage());
                             canvas.drawColor(tab.getNativePage().getBackgroundColor());
                             canvas.translate(
