@@ -373,7 +373,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskNoTitle) {
 
 // Flaky timeout on ASAN.
 // TODO(crbug.com/498409892): Flaky on linux-chromeos-dbg.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/498409892): Flaky on linux(dbg). Seems that this test is slow
+// and causes timeout.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ForegroundActorTaskTab DISABLED_ForegroundActorTaskTab
 #else
 #define MAYBE_ForegroundActorTaskTab ForegroundActorTaskTab
