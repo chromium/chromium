@@ -75,6 +75,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   FidoTunnelDevice* GetTunnelDevice() override;
   base::flat_set<Feature> features() const;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
+  tunnelserver::KnownDomainID tunnel_server_domain() const;
 
   // GetNumEstablishedConnectionInstancesForTesting returns the current number
   // of live |EstablishedConnection| objects. This is only for testing that
@@ -169,6 +170,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::optional<std::array<uint8_t, kPskSize>> psk;
     std::optional<std::vector<uint8_t>> handshake_message;
     base::OnceClosure pairing_is_invalid;
+    tunnelserver::KnownDomainID tunnel_server_domain;
   };
 
   // EstablishedConnection represents a connection where the handshake has
@@ -180,6 +182,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
                           int protocol_revision,
                           std::unique_ptr<Crypter> crypter,
                           const HandshakeHash& handshake_hash,
+                          tunnelserver::KnownDomainID tunnel_server_domain,
                           QRInfo* maybe_qr_info);
     EstablishedConnection(const EstablishedConnection&) = delete;
     EstablishedConnection& operator=(const EstablishedConnection&) = delete;
@@ -213,11 +216,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     const std::unique_ptr<Crypter> crypter_;
     const HandshakeHash handshake_hash_;
 
-    // These three fields are either all present or all nullopt.
+    const tunnelserver::KnownDomainID tunnel_server_domain_;
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback_;
     std::optional<std::array<uint8_t, kQRSeedSize>> local_identity_seed_;
-    std::optional<tunnelserver::KnownDomainID> tunnel_server_domain_;
 
     base::OneShotTimer timer_;
     DeviceCallback callback_;

@@ -124,13 +124,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.CableV2.TunnelEvent"
+<histogram name="WebAuthentication.CableV2.TunnelEvent{Server}"
     enum="WebAuthenticationCableV2TunnelEvent" expires_after="2026-10-11">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
-    Records events that occur during the creation of a caBLEv2 tunnel.
+    Records events that occur during the creation of a caBLEv2 tunnel for
+    {Server}.
   </summary>
+  <token key="Server">
+    <variant name="" summary="any server"/>
+    <variant name=".Apple" summary="Apple's tunnel server (cable.auth.com)"/>
+    <variant name=".Google" summary="Google's tunnel server (cable.ua5v.com)"/>
+    <variant name=".Other" summary="other tunnel servers"/>
+  </token>
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
