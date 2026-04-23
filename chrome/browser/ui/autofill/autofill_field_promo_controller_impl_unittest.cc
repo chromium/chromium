@@ -94,7 +94,7 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     // Create the first tab so that `web_contents()` exists.
-    AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+    AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
 
     FocusMainFrameOfActiveWebContents();
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
