@@ -156,9 +156,7 @@ void GlicAnnotationManager::ScrollTo(
   }
   annotation_task_.reset();
 
-  if (auto* metrics = host->instance_metrics()) {
-    metrics->OnGlicScrollAttempt();
-  }
+  host->instance_metrics().OnGlicScrollAttempt();
 
   mojom::WebClientHandler::ScrollToCallback wrapped_callback =
       base::BindOnce(&RunScrollToCallback, std::move(callback));
@@ -424,7 +422,7 @@ void GlicAnnotationManager::AnnotationTask::SetState(State new_state) {
     case State::kFailed: {
       bool success = new_state == State::kActive;
       if (host_) {
-        host_->instance_metrics()->OnGlicScrollComplete(success);
+        host_->instance_metrics().OnGlicScrollComplete(success);
       }
       break;
     }
