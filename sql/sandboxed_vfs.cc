@@ -8,7 +8,7 @@
 #include <cstring>
 #include <memory>
 #include <optional>
-#include <ostream>
+#include <ostream>  // IWYU pragma: keep to use operator << with NOTREACHED().
 #include <string>
 #include <string_view>
 #include <utility>

@@ -21,6 +21,10 @@
 #include "base/time/time.h"
 #include "sql/database.h"
 
+namespace base {
+class RefCountedMemory;
+}  // namespace base
+
 namespace sql {
 
 enum class SqliteResultCode : int;

@@ -4,20 +4,13 @@
 
 #include "sql/sandboxed_vfs_file.h"
 
-#include <atomic>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
+#include <stddef.h>
+
 #include <type_traits>
-#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
-#include "sql/sandboxed_vfs.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {

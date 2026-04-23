@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "sql/database.h"
+#include "sql/internal_api_token.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/test/scoped_error_expecter.h"

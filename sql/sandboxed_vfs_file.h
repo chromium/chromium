@@ -6,7 +6,6 @@
 #define SQL_SANDBOXED_VFS_FILE_H_
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/sqlite/sqlite3.h"
 

@@ -22,7 +22,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/files/drive_info.h"
 #include "base/files/file_path.h"
@@ -32,6 +34,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -41,13 +44,12 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"  // IWYU pragma: keep
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -67,10 +69,13 @@
 #include "sql/streaming_blob_handle.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #endif
 

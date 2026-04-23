@@ -4,7 +4,7 @@
 
 #include "sql/error_delegate_util.h"
 
-#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
+#include <ostream>  // IWYU pragma: keep to use operator << with NOTREACHED().
 #include <string>
 
 #include "base/files/file_path.h"

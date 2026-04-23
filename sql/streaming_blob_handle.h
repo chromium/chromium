@@ -5,6 +5,8 @@
 #ifndef SQL_STREAMING_BLOB_HANDLE_H_
 #define SQL_STREAMING_BLOB_HANDLE_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"

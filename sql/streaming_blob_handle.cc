@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
 #include "sql/sqlite_result_code.h"
 #include "third_party/sqlite/sqlite3.h"
