@@ -1762,6 +1762,9 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Source">
     <variant name="AppMenu" summary="Clicked from the App Menu."/>
+    <variant name="AppMenu.RoleManagerDialog"
+        summary="App Menu click that successfully showed the Role Manager
+                 Dialog."/>
     <variant name="Settings" summary="Clicked from Chrome Settings."/>
   </token>
 </histogram>

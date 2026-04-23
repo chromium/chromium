@@ -76,7 +76,8 @@ public class DefaultBrowserPromoUtils {
         DefaultBrowserPromoEntryPoint.SETTINGS,
         DefaultBrowserPromoEntryPoint.SET_UP_LIST,
         DefaultBrowserPromoEntryPoint.CHROME_STARTUP,
-        DefaultBrowserPromoEntryPoint.FRE
+        DefaultBrowserPromoEntryPoint.FRE,
+        DefaultBrowserPromoEntryPoint.APP_MENU_RMD,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DefaultBrowserPromoEntryPoint {
@@ -85,6 +86,7 @@ public class DefaultBrowserPromoUtils {
         int SET_UP_LIST = 2;
         int CHROME_STARTUP = 3;
         int FRE = 4;
+        int APP_MENU_RMD = 5;
     }
 
     DefaultBrowserPromoUtils(
@@ -378,6 +380,13 @@ public class DefaultBrowserPromoUtils {
 
                     if (windowAndroid != null && shouldShowRoleManagerPromo(activity, source)) {
                         mImpressionCounter.onPromoShown();
+
+                        // Record how many people saw the RMD through the app menu item.
+                        if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
+                            DefaultBrowserPromoMetrics.recordEntrypointClick(
+                                    DefaultBrowserPromoEntryPoint.APP_MENU_RMD, currentState);
+                        }
+
                         DefaultBrowserPromoManager manager =
                                 new DefaultBrowserPromoManager(
                                         activity,
@@ -388,6 +397,18 @@ public class DefaultBrowserPromoUtils {
                         manager.promoByRoleManager();
                     } else {
                         // Fallback: show the default apps page in Android settings.
+
+                        // Record the specific deep-link source.
+                        if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
+                            DefaultBrowserPromoMetrics.recordPromoClick(
+                                    DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType
+                                            .APP_MENU_DEEPLINK);
+                        } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
+                            DefaultBrowserPromoMetrics.recordPromoClick(
+                                    DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType
+                                            .SETTINGS_ROW_DEEPLINK);
+                        }
+
                         openSystemDefaultAppsSettings(activity);
                     }
                 });

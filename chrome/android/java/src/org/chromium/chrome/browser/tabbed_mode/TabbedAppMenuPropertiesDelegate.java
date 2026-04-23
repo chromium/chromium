@@ -21,6 +21,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -477,6 +478,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Default browser promo menu item (entry point).
         if (shouldShowDefaultBrowserPromo()) {
+            // Used to track how many people saw the promo.
+            RecordUserAction.record("MobileMenuDefaultBrowserPromoShown");
+
             maybeAddDividerLine(modelList, R.id.divider_line_id);
             modelList.add(buildDefaultBrowserPromoItem());
         }

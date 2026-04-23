@@ -1024,6 +1024,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Setting Card Promo"/>
   <int value="2" label="Educational Tip Promo"/>
   <int value="3" label="FRE Promo"/>
+  <int value="4" label="App Menu Deep-link"/>
+  <int value="5" label="Settings Row Deep-link"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/default_browser_promo/java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java:DefaultBrowserPromoSourceType) -->

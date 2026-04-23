@@ -28515,6 +28515,15 @@ should be able to be added at any place in this file.
   <description>MobileMenuDefaultBrowserPromo</description>
 </action>
 
+<action name="MobileMenuDefaultBrowserPromoShown">
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    This metric is recorded every time the app menu is opened when Chrome is not
+    set to default and the app menu therefore has a default browser promo menu
+    item.
+  </description>
+</action>
+
 <action name="MobileMenuDeleteFromReadingList">
   <owner>wylieb@google.com</owner>
   <description>
