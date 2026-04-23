@@ -315,6 +315,14 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   }
 }
 
+void ContextualSearchboxHandler::UpdateTabListObservation(
+    TabListInterface* tab_list) {
+  tab_list_observation_.Reset();
+  if (tab_list) {
+    tab_list_observation_.Observe(tab_list);
+  }
+}
+
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
                                             tabs::TabInterface* tab,
                                             int index) {
