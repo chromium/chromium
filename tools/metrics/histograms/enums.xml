@@ -15079,7 +15079,6 @@ from previous Chrome versions.
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
   <int value="321616293" label="DrawWebEdgeToEdge:disabled"/>
   <int value="322118950" label="SyncPollImmediatelyOnEveryStartup:disabled"/>
-  <int value="322249981" label="CrostiniMultiContainer:enabled"/>
   <int value="322768805" label="DesktopPWAsPreventClose:disabled"/>
   <int value="323605372" label="ui-disable-compositor-animation-timelines"/>
   <int value="323657954" label="WasmTtsComponentUpdaterEnabled:disabled"/>
@@ -19620,7 +19619,6 @@ from previous Chrome versions.
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
   <int value="1820359113"
       label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:enabled"/>
-  <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
   <int value="1821347358"
