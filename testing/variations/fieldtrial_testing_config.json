@@ -10551,6 +10551,21 @@
             ]
         }
     ],
+    "FaviconDisableHostFallback": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FaviconDisableHostFallback"
+                    ]
+                }
+            ]
+        }
+    ],
     "FedCmIntrusion": [
         {
             "platforms": [
